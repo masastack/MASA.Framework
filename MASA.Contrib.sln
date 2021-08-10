@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31521.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicAbility", "BasicAbility", "{5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{59DA3D5F-9E39-4173-8C31-126967CC189F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dispatcher", "Dispatcher", "{FBD326D3-E59C-433E-A88E-14E179E3093D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "I18n", "I18n", "{EA2668AF-28E3-42C5-9FA5-8C9FF377180E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isolation", "Isolation", "{022D6FF5-4B65-4213-9A97-C69E2B2F99E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Observability", "Observability", "{75050CBC-A0F2-408A-A582-54EF37450B29}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadWriteSpliting", "ReadWriteSpliting", "{509BDB5A-5D32-478F-BF27-F0470C18C7C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SearchEngine", "SearchEngine", "{8C39C640-0E8A-43A7-890C-9742B6B70AA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{593A3114-D1E0-47ED-BC37-58E08886175B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testable", "Testable", "{57AD498B-D9AF-4479-8C14-45507F6509F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.ReadWriteSpliting.CQRS.Dapr", "src\ReadWriteSpliting\CQRS\MASA.Contrib.ReadWriteSpliting.CQRS.Dapr\MASA.Contrib.ReadWriteSpliting.CQRS.Dapr.csproj", "{DA342CF9-A80F-47F7-812E-F813D0ABBD75}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CQRS", "CQRS", "{DA885E64-C5E2-4C22-8C2A-26E68A593F29}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA342CF9-A80F-47F7-812E-F813D0ABBD75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA342CF9-A80F-47F7-812E-F813D0ABBD75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA342CF9-A80F-47F7-812E-F813D0ABBD75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA342CF9-A80F-47F7-812E-F813D0ABBD75}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DA342CF9-A80F-47F7-812E-F813D0ABBD75} = {DA885E64-C5E2-4C22-8C2A-26E68A593F29}
+		{DA885E64-C5E2-4C22-8C2A-26E68A593F29} = {509BDB5A-5D32-478F-BF27-F0470C18C7C9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
+	EndGlobalSection
+EndGlobal
