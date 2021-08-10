@@ -5,4 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MASA.BuildingBlocks.ReadWriteSpliting.CQRS" Version="0.0.4443" />
+  </ItemGroup>
+
 </Project>
