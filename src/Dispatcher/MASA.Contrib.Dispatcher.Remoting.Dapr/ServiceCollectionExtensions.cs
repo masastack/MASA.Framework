@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.ReadWriteSpliting.CQRS.Dapr
+﻿namespace MASA.Contrib.Dispatcher.Remoting.Dapr
 {
     public static class ServiceCollectionExtensions
     {

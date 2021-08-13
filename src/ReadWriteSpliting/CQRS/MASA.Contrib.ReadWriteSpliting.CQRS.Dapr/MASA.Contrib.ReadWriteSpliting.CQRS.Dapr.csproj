@@ -10,10 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Dapr.Client" Version="1.3.0" />
     <PackageReference Include="MASA.BuildingBlocks.ReadWriteSpliting.CQRS" Version="0.0.4611" />
     <PackageReference Include="MASA.Utils.Models.Config" Version="0.0.4683" />
