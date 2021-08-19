@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Dispatcher.Rem
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Dispatcher.Remoting.EventLogs.EF", "src\Dispatcher\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF.csproj", "{C592FD4A-4F45-438A-A092-4CBE85D4A77D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{38E6C400-90C0-493E-9266-C1602E229F1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -8,8 +8,12 @@
             services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
             services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
 
+            var serviceBuilder = services.BuildServiceProvider();
+            if (serviceBuilder.GetService<DaprClient>() is null)
+                throw new Exception("Please add DaprClient first.");
+
             // check AppConfig is configured
-            if (services.BuildServiceProvider().GetService<IOptionsMonitor<AppConfig>>() is null)
+            if (serviceBuilder.GetService<IOptionsMonitor<AppConfig>>() is null)
                 throw new Exception("Please configure the AppConfig options first.");
 
             return services;

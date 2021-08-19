@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.Remoting.EventLogs.EF.Services;
+﻿namespace MASA.Contrib.Dispatcher.Remoting.EventLogs.EF;
 public class IntegrationEventLogService : IIntegrationEventLogService
 {
     private readonly IntegrationEventLogContext _eventLogContext;
