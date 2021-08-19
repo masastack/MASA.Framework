@@ -9,6 +9,8 @@
             services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
 
             var serviceBuilder = services.BuildServiceProvider();
+
+            // check DaprClient is added
             if (serviceBuilder.GetService<DaprClient>() is null)
                 throw new Exception("Please add DaprClient first.");
 
