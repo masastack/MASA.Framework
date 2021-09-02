@@ -36,13 +36,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MASA.Contrib.ReadWriteSpliting.CQRS.EventLog.EF", "src\ReadWriteSpliting\CQRS\MASA.Contrib.ReadWriteSpliting.CQRS.EventLog.EF\MASA.Contrib.ReadWriteSpliting.CQRS.EventLog.EF.csproj", "{F66E619E-D604-4D40-838A-C4A514BA2E54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Dispatcher.InMemory", "src\Dispatcher\MASA.Contrib.Dispatcher.InMemory\MASA.Contrib.Dispatcher.InMemory.csproj", "{38449D4B-2E1B-4928-B83A-BE3C545AFF11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MASA.Contrib.Dispatcher.InMemory", "src\Dispatcher\MASA.Contrib.Dispatcher.InMemory\MASA.Contrib.Dispatcher.InMemory.csproj", "{38449D4B-2E1B-4928-B83A-BE3C545AFF11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Dispatcher.Remoting.Dapr", "src\Dispatcher\MASA.Contrib.Dispatcher.Remoting.Dapr\MASA.Contrib.Dispatcher.Remoting.Dapr.csproj", "{1F4D202A-823E-4588-908D-80B7D6031F99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MASA.Contrib.Dispatcher.Remoting.Dapr", "src\Dispatcher\MASA.Contrib.Dispatcher.Remoting.Dapr\MASA.Contrib.Dispatcher.Remoting.Dapr.csproj", "{1F4D202A-823E-4588-908D-80B7D6031F99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Dispatcher.Remoting.EventLogs.EF", "src\Dispatcher\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF.csproj", "{C592FD4A-4F45-438A-A092-4CBE85D4A77D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MASA.Contrib.Dispatcher.Remoting.EventLogs.EF", "src\Dispatcher\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF\MASA.Contrib.Dispatcher.Remoting.EventLogs.EF.csproj", "{C592FD4A-4F45-438A-A092-4CBE85D4A77D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{38E6C400-90C0-493E-9266-C1602E229F1B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{7445B379-BFA8-480B-A7F8-B7A65B46B2D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -91,6 +93,7 @@ Global
 		{38449D4B-2E1B-4928-B83A-BE3C545AFF11} = {FBD326D3-E59C-433E-A88E-14E179E3093D}
 		{1F4D202A-823E-4588-908D-80B7D6031F99} = {FBD326D3-E59C-433E-A88E-14E179E3093D}
 		{C592FD4A-4F45-438A-A092-4CBE85D4A77D} = {FBD326D3-E59C-433E-A88E-14E179E3093D}
+		{7445B379-BFA8-480B-A7F8-B7A65B46B2D9} = {42DF7AAC-362C-48F4-B76A-BDEEEFF17CC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
