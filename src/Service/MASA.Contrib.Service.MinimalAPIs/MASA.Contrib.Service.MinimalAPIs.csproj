@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.5943" />
-    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.5944" />
+    <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.5960" />
+    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.5963" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.7.21377.19" />
   </ItemGroup>
 
