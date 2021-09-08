@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Service.MinimalAPIs;
+﻿namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
