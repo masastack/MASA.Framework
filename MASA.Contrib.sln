@@ -46,6 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{38E6C400-9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Model", "Model", "{7445B379-BFA8-480B-A7F8-B7A65B46B2D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MASA.Contrib.Service.MinimalAPIs", "src\Service\MASA.Contrib.Service.MinimalAPIs\MASA.Contrib.Service.MinimalAPIs.csproj", "{ED301FA5-4E70-460B-A0D4-1D79D135769F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{C592FD4A-4F45-438A-A092-4CBE85D4A77D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C592FD4A-4F45-438A-A092-4CBE85D4A77D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C592FD4A-4F45-438A-A092-4CBE85D4A77D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED301FA5-4E70-460B-A0D4-1D79D135769F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED301FA5-4E70-460B-A0D4-1D79D135769F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED301FA5-4E70-460B-A0D4-1D79D135769F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED301FA5-4E70-460B-A0D4-1D79D135769F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,6 +100,7 @@ Global
 		{1F4D202A-823E-4588-908D-80B7D6031F99} = {FBD326D3-E59C-433E-A88E-14E179E3093D}
 		{C592FD4A-4F45-438A-A092-4CBE85D4A77D} = {FBD326D3-E59C-433E-A88E-14E179E3093D}
 		{7445B379-BFA8-480B-A7F8-B7A65B46B2D9} = {42DF7AAC-362C-48F4-B76A-BDEEEFF17CC9}
+		{ED301FA5-4E70-460B-A0D4-1D79D135769F} = {593A3114-D1E0-47ED-BC37-58E08886175B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
