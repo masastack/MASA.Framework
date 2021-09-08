@@ -3,7 +3,7 @@
 namespace MASA.Contrib.Service.MinimalAPIs;
 public class ServiceBase : IService
 {
-    public IServiceCollection Services { get; protected set}
+    public IServiceCollection Services { get; protected set; }
 
     public ServiceBase(IServiceCollection services) => Services = services;
 

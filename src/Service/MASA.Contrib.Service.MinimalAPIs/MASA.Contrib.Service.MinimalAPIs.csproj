@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.5943" />
-    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.5931" />
+    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.5944" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0-preview.7.21377.19" />
   </ItemGroup>
 

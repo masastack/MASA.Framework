@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        services.AddServices<ServiceBase>();
+        services.AddServices<ServiceBase>(true);
 
         return services;
     }
