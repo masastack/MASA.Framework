@@ -18,10 +18,36 @@
         }
 
         public async Task PublishAsync<TEvent>(TEvent @event)
-            where TEvent : IntegrationEvent
+            where TEvent : IIntegrationEvent
         {
             try
             {
+                _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppId} - ({@IntegrationEvent})", @event.Id, _appConfig.CurrentValue.AppId, @event);
+
+                await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
+
+                var topicName = @event.GetType().Name;
+                _logger.LogInformation("Publishing event {@Event} to {PubsubName}.{TopicName}", @event, DAPR_PUBSUB_NAME, topicName);
+                await _dapr.PublishEventAsync(DAPR_PUBSUB_NAME, topicName, (dynamic)@event);
+
+                await _eventLogService.MarkEventAsPublishedAsync(@event.Id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ERROR Publishing integration event: {IntegrationEventId} from {AppId} - ({@IntegrationEvent})", @event.Id, _appConfig.CurrentValue.AppId, @event);
+                await _eventLogService.MarkEventAsFailedAsync(@event.Id);
+            }
+        }
+
+        public async Task PublishAsync<TEvent>(TEvent @event, DbTransaction transaction)
+            where TEvent : IIntegrationEvent
+        {
+            try
+            {
+                _logger.LogInformation("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
+
+                await _eventLogService.SaveEventAsync(@event, transaction);
+
                 _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppId} - ({@IntegrationEvent})", @event.Id, _appConfig.CurrentValue.AppId, @event);
 
                 await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
