@@ -1,5 +1,4 @@
 ﻿using MASA.BuildingBlocks.Service.MinimalAPIs;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MASA.Contrib.Service.MinimalAPIs;
 public class ServiceBase : IService
