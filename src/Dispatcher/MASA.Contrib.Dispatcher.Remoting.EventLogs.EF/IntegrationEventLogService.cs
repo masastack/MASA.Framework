@@ -1,4 +1,5 @@
 ﻿namespace MASA.Contrib.Dispatcher.Remoting.EventLogs.EF;
+
 public class IntegrationEventLogService : IIntegrationEventLogService
 {
     private readonly IntegrationEventLogContext _eventLogContext;
@@ -8,7 +9,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     {
         _eventTypes = Assembly.Load(Assembly.GetEntryAssembly()!.FullName!)
                 .GetTypes()
-                .Where(t => t.Name.EndsWith(nameof(IntegrationEvent)))
+                .Where(t => t.Name.EndsWith(nameof(IIntegrationEvent)))
                 .ToList();
     }
 
@@ -33,7 +34,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         return new List<IntegrationEventLog>();
     }
 
-    public Task SaveEventAsync(IntegrationEvent @event, DbTransaction transaction)
+    public Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
     {
         if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 

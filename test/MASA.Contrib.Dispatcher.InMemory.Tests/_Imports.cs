@@ -1,0 +1,16 @@
+global using System.Reflection;
+global using MASA.BuildingBlocks.Dispatcher.InMemory;
+global using MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameter.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameterNotNull.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameterType.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.CheckMethodsType.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.Dispatch;
+global using MASA.Contrib.Dispatcher.InMemory.Enums;
+global using MASA.Contrib.Dispatcher.InMemory.OrderEqualBySaga.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.OrderLessThanZeroByFeature.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.OrderLessThanZeroBySaga.Tests.Events;
+global using MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;

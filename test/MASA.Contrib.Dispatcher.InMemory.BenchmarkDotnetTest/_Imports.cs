@@ -1,0 +1,15 @@
+global using System;
+global using System.Threading.Tasks;
+global using BenchmarkDotNet.Attributes;
+global using BenchmarkDotNet.Configs;
+global using BenchmarkDotNet.Engines;
+global using BenchmarkDotNet.Jobs;
+global using BenchmarkDotNet.Running;
+global using BenchmarkDotNet.Validators;
+global using MASA.BuildingBlocks.Dispatcher.InMemory;
+global using MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest.Extensions.EventHandlers;
+global using MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest.Extensions.Events;
+global using MASA.Contrib.Dispatcher.InMemory.Dispatch;
+global using MASA.Contrib.Dispatcher.InMemory.Enums;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
