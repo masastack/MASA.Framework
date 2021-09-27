@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
@@ -27,19 +25,23 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
     /// <returns></returns>
-    public static void AddServices(this IServiceCollection services)
+    public static WebApplication AddServices(this IServiceCollection services)
     {
         if (!services.Any(s => s.ImplementationType == typeof(MinimalApisMarkerService)))
         {
             throw new Exception("Please call AddLazyWebApplication first.");
         }
 
-        if (services.BuildServiceProvider().GetService<IServiceCollection>() is null)
+        var serviceProvider = services.BuildServiceProvider();
+
+        if (serviceProvider.GetService<IServiceCollection>() is null)
         {
-            services.AddScoped(serviceProvider => services);
+            services.AddScoped(sp => services);
         }
 
         services.AddServices<ServiceBase>(true);
+
+        return serviceProvider.GetRequiredService<WebApplication>();
     }
 
     private class MinimalApisMarkerService

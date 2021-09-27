@@ -1,4 +1,3 @@
-using MASA.BuildingBlocks.Service.MinimalAPIs;
 namespace MASA.Contrib.Service.MinimalAPIs;
 public class ServiceBase : IService
 {
