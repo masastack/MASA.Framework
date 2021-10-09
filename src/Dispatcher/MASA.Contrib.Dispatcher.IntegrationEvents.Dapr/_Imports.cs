@@ -1,0 +1,9 @@
+global using Dapr.Client;
+global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Dispatcher.Events;
+global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
+global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
+global using MASA.Utils.Models.Config;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
