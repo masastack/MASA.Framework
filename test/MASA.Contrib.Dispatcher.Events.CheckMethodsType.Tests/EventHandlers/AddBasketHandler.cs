@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.InMemory.CheckMethodsType.Tests.EventHandlers;
+namespace MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests.EventHandlers;
 
 public class AddBasketHandler
 {

@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.InMemory.Tests;
+namespace MASA.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
 public class TestBase
@@ -12,9 +12,9 @@ public class TestBase
 
     }
 
-    public TestBase(Func<IServiceCollection, IServiceCollection> func = null) => this.ResetMemoryEventBus(func, false, false, null);
+    public TestBase(Func<IServiceCollection, IServiceCollection> func = null) => ResetMemoryEventBus(func, false, null);
 
-    protected void ResetMemoryEventBus(Func<IServiceCollection, IServiceCollection> func = null, bool isReset = true, bool isAddLog = true, params Assembly[] assemblies)
+    protected void ResetMemoryEventBus(Func<IServiceCollection, IServiceCollection> func = null, bool isAddLog = true, params Assembly[] assemblies)
     {
         _services = new ServiceCollection();
         if (isAddLog)
@@ -38,7 +38,7 @@ public class TestBase
 
     private static Assembly[] _defaultAssemblies => new Assembly[1] { typeof(TestBase).Assembly };
 
-    protected void ResetMemoryEventBus(params Assembly[] assemblies) => this.ResetMemoryEventBus(null, true, true, assemblies);
+    protected void ResetMemoryEventBus(params Assembly[] assemblies) => ResetMemoryEventBus(null, true, assemblies);
 
-    protected void ResetMemoryEventBus(bool isAddLog, params Assembly[] assemblies) => this.ResetMemoryEventBus(null, true, isAddLog, assemblies);
+    protected void ResetMemoryEventBus(bool isAddLog, params Assembly[] assemblies) => ResetMemoryEventBus(null, true, assemblies);
 }

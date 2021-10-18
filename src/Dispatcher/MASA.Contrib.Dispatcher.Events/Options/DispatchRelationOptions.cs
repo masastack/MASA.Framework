@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.Events;
+namespace MASA.Contrib.Dispatcher.Events.Options;
 
 public class DispatchRelationOptions
 {

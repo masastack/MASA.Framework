@@ -1,4 +1,6 @@
-namespace MASA.Contrib.Dispatcher.InMemory.OrderEqualBySaga.Tests.EventHandlers;
+using MASA.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.Events;
+
+namespace MASA.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.EventHandlers;
 
 public class EditCategoryHandler : ISagaEventHandler<EditCategoryEvent>
 {

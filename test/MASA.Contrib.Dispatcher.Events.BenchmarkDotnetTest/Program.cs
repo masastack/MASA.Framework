@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest;
+﻿namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest;
 
 class Program
 {

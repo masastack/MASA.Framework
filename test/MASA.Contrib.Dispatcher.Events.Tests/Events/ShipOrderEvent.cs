@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
-public class ShipOrderEvent : Event
+public record ShipOrderEvent : Event
 {
     public string OrderId { get; set; }
 

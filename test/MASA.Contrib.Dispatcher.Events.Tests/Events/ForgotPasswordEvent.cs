@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
-public class ForgotPasswordEvent : Event
+public record ForgotPasswordEvent() : Event
 {
     public string Account { get; set; }
 

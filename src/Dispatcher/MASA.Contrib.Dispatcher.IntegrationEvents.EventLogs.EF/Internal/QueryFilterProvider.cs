@@ -3,10 +3,7 @@ using System.Linq.Expressions;
 
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Internal;
 
-internal class QueryFilterProvider : IQueryFilterProvider
+internal abstract class QueryFilterProvider : IQueryFilterProvider
 {
-    public LambdaExpression OnExecuting(IMutableEntityType entityType)
-    {
-        return default!;
-    }
+    public abstract LambdaExpression OnExecuting(IMutableEntityType entityType);
 }

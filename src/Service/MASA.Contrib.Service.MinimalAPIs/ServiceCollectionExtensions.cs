@@ -1,4 +1,6 @@
-namespace Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+
+namespace MASA.Contrib.Service.MinimalAPIs;
 
 public static class ServiceCollectionExtensions
 {
@@ -11,14 +13,23 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static WebApplication AddServices(this IServiceCollection services, WebApplicationBuilder builder)
     {
-        services.TryAddScoped(sp => services);
+        if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
+        {
+            services.AddSingleton<MinimalApisMarkerService>();
+            services.TryAddScoped(sp => services);
 
-        services.AddSingleton(new Lazy<WebApplication>(() => builder.Build(), LazyThreadSafetyMode.ExecutionAndPublication))
+            services.AddSingleton(new Lazy<WebApplication>(() => builder.Build(), LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
 
-        services.AddServices<ServiceBase>(true);
+            services.AddServices<ServiceBase>(true);
+        }
 
         var serviceProvider = services.BuildServiceProvider();
         return serviceProvider.GetRequiredService<WebApplication>();
+    }
+
+    private class MinimalApisMarkerService
+    {
+
     }
 }

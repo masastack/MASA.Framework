@@ -1,7 +1,9 @@
 global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Dispatcher.Events;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
 global using System;
 global using System.Threading.Tasks;

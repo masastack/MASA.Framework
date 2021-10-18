@@ -14,8 +14,6 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
     {
         try
         {
-            // TODO: need to consider the case of Command nested sending
-
             await next();
 
             if (@event is ITransaction transactionEvent)
@@ -37,14 +35,14 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
         {
             _logger.LogError(ex, nameof(TransactionMiddleware<TEvent>));
 
-            if (@event is ITransaction transactionEvent)
+            if (@event is ITransaction transactionEvent && transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun && !transactionEvent.UnitOfWork.DisableRollbackOnFailure)
             {
-                if (transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun)
-                {
-                    await transactionEvent.UnitOfWork.RollbackAsync();
-                }
+                await transactionEvent.UnitOfWork.RollbackAsync();
             }
-            throw;
+            else
+            {
+                throw;
+            }
         }
     }
 }

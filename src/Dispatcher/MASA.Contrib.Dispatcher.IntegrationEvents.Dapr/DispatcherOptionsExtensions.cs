@@ -12,7 +12,8 @@ public static class DispatcherOptionsExtensions
         {
             throw new ArgumentNullException(nameof(options.Services));
         }
-        options.Services.AddDaprEventBus<TIntegrationEventLogService>(builder, dispatcherOptions =>
+
+        options.Services.TryAddDaprEventBus<TIntegrationEventLogService>(builder, dispatcherOptions =>
         {
             dispatcherOptions.PubSubName = daprPubsubName;
         });

@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest.Extensions.Middleware;
+﻿namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest.Extensions.Middleware;
 
 public class LoggingMiddleware<TEvent> : IMiddleware<TEvent> where TEvent : notnull, IEvent
 {

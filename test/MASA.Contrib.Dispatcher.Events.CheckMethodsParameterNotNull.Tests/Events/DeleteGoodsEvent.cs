@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameterNotNull.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.Events;
 
-public class DeleteGoodsEvent : Event
+public record DeleteGoodsEvent : Event
 {
     public string GoodsId { get; set; }
 }

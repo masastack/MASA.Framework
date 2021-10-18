@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameterNotNull.Tests.EventHandlers;
+﻿namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.EventHandlers;
 
 public class DeleteGoodsHandler
 {

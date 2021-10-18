@@ -1,4 +1,6 @@
-namespace MASA.Contrib.Dispatcher.InMemory.OrderLessThanZeroBySaga.Tests.EventHandlers;
+using MASA.Contrib.Dispatcher.Events.OrderLessThanZeroBySaga.Tests.Events;
+
+namespace MASA.Contrib.Dispatcher.Events.OrderLessThanZeroBySaga.Tests.EventHandlers;
 
 public class EditGoodsHandler : IEventHandler<EditGoodsEvent>
 {

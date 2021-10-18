@@ -1,6 +1,6 @@
 namespace MASA.Contrib.ReadWriteSpliting.CQRS.Commands;
 
-public class Command : ICommand
+public record Command : ICommand
 {
     public Guid Id { get; init; }
 
@@ -10,12 +10,7 @@ public class Command : ICommand
 
     public Command(Guid id, DateTime creationTime)
     {
-        Id = id;
-        CreationTime = creationTime;
-    }
-
-    public override string ToString()
-    {
-        return $"Id:{Id}, CreationTime:{CreationTime}";
+        this.Id = id;
+        this.CreationTime = creationTime;
     }
 }

@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.Events;
+namespace MASA.Contrib.Dispatcher.Events.Options;
 
 public class DispatcherOptions : IDispatcherOptions
 {
@@ -14,20 +14,20 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_assemblies));
             }
-            Types = Assemblies.SelectMany(assembly => assembly.GetTypes());
-            AllEventTypes = GetTypes(typeof(IEvent));
+            Types = _assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
+            _allEventTypes = GetTypes(typeof(IEvent)).ToList();
         }
     }
 
     private IEnumerable<Type> Types { get; set; }
 
-    private IEnumerable<Type> AllEventTypes { get; set; }
+    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass);
 
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t));
-
-    public IEnumerable<Type> GetAllEventTypes() => AllEventTypes;
+    public IEnumerable<Type> GetAllEventTypes() => _allEventTypes;
 
     public IServiceCollection Services { get; }
+
+    private IEnumerable<Type> _allEventTypes;
 
     public DispatcherOptions(IServiceCollection services) => Services = services;
 }

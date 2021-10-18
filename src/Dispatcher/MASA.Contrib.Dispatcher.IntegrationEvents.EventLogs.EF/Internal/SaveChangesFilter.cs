@@ -1,8 +1,6 @@
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Internal;
 
-internal class SaveChangesFilter : ISaveChangesFilter
+internal abstract class SaveChangesFilter : ISaveChangesFilter
 {
-    public void OnExecuting(ChangeTracker changeTracker)
-    {
-    }
+    public abstract void OnExecuting(ChangeTracker changeTracker);
 }

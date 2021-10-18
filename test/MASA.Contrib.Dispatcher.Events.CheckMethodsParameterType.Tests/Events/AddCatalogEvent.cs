@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameterType.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.Events;
 
 public class AddCatalogEvent
 {

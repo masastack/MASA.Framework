@@ -1,6 +1,6 @@
 namespace MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests.Events;
 
-public class AddBasketEvent : Event
+public record AddBasketEvent : Event
 {
     public string GoodsId { get; set; }
 

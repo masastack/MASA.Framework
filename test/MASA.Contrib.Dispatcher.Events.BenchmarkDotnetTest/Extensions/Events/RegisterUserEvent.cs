@@ -1,6 +1,6 @@
-namespace MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest.Extensions.Events;
+namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest.Extensions.Events;
 
-public class RegisterUserEvent : Event
+public record RegisterUserEvent : Event
 {
     public string Name { get; set; }
 

@@ -19,17 +19,26 @@ public class EventBus : IEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
     {
+        if (@event is null)
+        {
+            throw new ArgumentNullException(typeof(TEvent).Name);
+        }
+
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
         if (@event is ITransaction transactionEvent)
         {
-            transactionEvent.UnitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
-            if (_unitOfWork is null)
+            var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
+            if (unitOfWork != null)
             {
-                _unitOfWork = transactionEvent.UnitOfWork;
-            }
-            else
-            {
-                middlewares = middlewares.Where(middleware => middleware is not TransactionMiddleware<TEvent>);
+                transactionEvent.UnitOfWork = unitOfWork;
+                if (_unitOfWork is null)
+                {
+                    _unitOfWork = transactionEvent.UnitOfWork;
+                }
+                else
+                {
+                    middlewares = middlewares.Where(middleware => middleware is not TransactionMiddleware<TEvent>);
+                }
             }
         }
 

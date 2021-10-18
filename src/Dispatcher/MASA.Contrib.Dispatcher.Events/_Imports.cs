@@ -6,6 +6,7 @@ global using MASA.Contrib.Dispatcher.Events.Internal;
 global using MASA.Contrib.Dispatcher.Events.Internal.Dispatch;
 global using MASA.Contrib.Dispatcher.Events.Internal.Expressions;
 global using MASA.Contrib.Dispatcher.Events.Internal.Middleware;
+global using MASA.Contrib.Dispatcher.Events.Options;
 global using MASA.Contrib.Dispatcher.Events.Strategies;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

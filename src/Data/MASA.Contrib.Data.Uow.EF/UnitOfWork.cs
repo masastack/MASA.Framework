@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Data.Uow;
+namespace MASA.Contrib.Data.Uow.EF;
 
 public class UnitOfWork<TDbContext> : IUnitOfWork
     where TDbContext : MasaDbContext

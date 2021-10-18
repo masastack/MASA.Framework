@@ -29,7 +29,10 @@ public class IntegrationEventBus : IIntegrationEventBus
         _unitOfWork = unitOfWork;
     }
 
-    public IEnumerable<Type> GetAllEventTypes() => _eventBus != null ? _eventBus.GetAllEventTypes().Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)) : dispatcherOptions.GetAllEventTypes();
+    public IEnumerable<Type> GetAllEventTypes() =>
+        _eventBus == null ?
+        dispatcherOptions.GetAllEventTypes() :
+        dispatcherOptions.GetAllEventTypes().Concat(_eventBus.GetAllEventTypes()).Distinct();
 
     public async Task PublishAsync<TEvent>(TEvent @event)
         where TEvent : IEvent

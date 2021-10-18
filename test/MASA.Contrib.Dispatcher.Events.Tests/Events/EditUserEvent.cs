@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
-public class EditUserEvent : Event
+public record EditUserEvent : Event
 {
     public string UserId { get; set; }
 

@@ -12,28 +12,33 @@ public static class ServiceCollectionExtensions
         ServiceLifetime lifetime,
         Action<DispatcherOptions>? options = null)
     {
-        services.AddLogging();
+        if (services.Any(service => service.ImplementationType == typeof (EventBusProvider))) return services;
+        services.AddSingleton<EventBusProvider>();
 
+        services.AddLogging();
+        
         DispatcherOptions dispatcherOptions = new DispatcherOptions(services);
         options?.Invoke(dispatcherOptions);
         if (dispatcherOptions.Assemblies.Length == 0)
         {
             dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         }
-
-        services.AddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Options.Create(dispatcherOptions));
+        services.AddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         services.AddSingleton(new SagaDispatcher(services).Build(lifetime, dispatcherOptions.Assemblies));
         services.AddSingleton(new Internal.Dispatch.Dispatcher(services).Build(lifetime, dispatcherOptions.Assemblies));
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
-        services.TryAddScoped(typeof(IEventBus), typeof(EventBus));
+        services.AddScoped(typeof(IEventBus), typeof(EventBus));
         return services;
     }
 
     public static IServiceCollection AddTestEventBus(this IServiceCollection services, ServiceLifetime lifetime,
         Action<DispatcherOptions>? options = null)
     {
+        if (services.Any(service => service.ImplementationType == typeof (EventBusProvider))) return services;
+        services.AddSingleton<EventBusProvider>();
+
         services.AddLogging();
 
         DispatcherOptions dispatcherOptions = new DispatcherOptions(services);
@@ -42,14 +47,19 @@ public static class ServiceCollectionExtensions
         {
             dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         }
+        services.AddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
-        services.AddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, true).Build(lifetime, dispatcherOptions.Assemblies));
         services.AddSingleton(new Internal.Dispatch.Dispatcher(services).Build(lifetime, dispatcherOptions.Assemblies));
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
-        services.TryAdd(typeof(IEventBus), typeof(EventBus), lifetime);
+        services.AddScoped(typeof(IEventBus), typeof(EventBus));
 
         return services;
+    }
+
+    private class EventBusProvider
+    {
+
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
 /// <summary>
 /// Just event, not handler, so let's see what happens when you publish an event
 /// </summary>
-public class AddUserEvent : Event
+public record AddUserEvent : Event
 {
     public string Account { get; set; }
 

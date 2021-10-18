@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.OrderLessThanZeroByFeature.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.OrderLessThanZeroByFeature.Tests.Events;
 
-public class OrderStockConfirmedEvent : Event
+public record OrderStockConfirmedEvent : Event
 {
     public string OrderId { get; set; }
 }

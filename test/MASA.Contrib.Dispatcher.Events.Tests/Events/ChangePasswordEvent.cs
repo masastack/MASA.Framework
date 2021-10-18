@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
 public class ChangePasswordEvent : IEvent
 {

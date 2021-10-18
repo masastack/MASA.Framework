@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.InMemory.Tests.Middleware;
+namespace MASA.Contrib.Dispatcher.Events.Tests.Middleware;
 
 public class LoggingMiddleware<TEvent> : IMiddleware<TEvent> where TEvent : notnull, IEvent
 {

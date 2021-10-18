@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
 public class ChoreTest : TestBase

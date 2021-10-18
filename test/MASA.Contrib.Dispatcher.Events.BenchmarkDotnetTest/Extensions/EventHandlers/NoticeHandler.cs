@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest.Extensions.EventHandlers;
+﻿namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest.Extensions.EventHandlers;
 
 public class SendCouponHandler : ISagaEventHandler<ForgetPasswordEvent>
 {

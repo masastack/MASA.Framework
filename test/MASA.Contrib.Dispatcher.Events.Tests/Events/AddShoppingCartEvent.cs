@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
-public class AddShoppingCartEvent : Event
+public record AddShoppingCartEvent : Event
 {
     public string GoodsId { get; set; }
 

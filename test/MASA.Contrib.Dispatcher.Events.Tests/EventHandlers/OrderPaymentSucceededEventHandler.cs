@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.InMemory.Tests.EventHandlers;
+namespace MASA.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
 public class OrderPaymentSucceededEventHandler
 {

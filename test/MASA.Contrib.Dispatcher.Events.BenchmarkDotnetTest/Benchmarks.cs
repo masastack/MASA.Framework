@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Dispatcher.InMemory.BenchmarkDotnetTest;
+namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest;
 
 [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net60, targetCount: 100)]
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
@@ -13,7 +13,7 @@ public class Benchmarks
     public void GlobalSetup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders()) ;
+        services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
         services.AddEventBus();
         _serviceProvider = services.BuildServiceProvider();
         _eventBus = _serviceProvider.GetService<IEventBus>();

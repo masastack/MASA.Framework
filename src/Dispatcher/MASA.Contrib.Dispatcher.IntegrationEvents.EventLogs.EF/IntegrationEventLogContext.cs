@@ -10,7 +10,7 @@ public class IntegrationEventLogContext : MasaDbContext
     {
     }
 
-    public DbSet<IntegrationEventLog> EventLogs { get; set; } = null!;
+    public DbSet<IntegrationEventLog> EventLogs { get; set; }
 
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {

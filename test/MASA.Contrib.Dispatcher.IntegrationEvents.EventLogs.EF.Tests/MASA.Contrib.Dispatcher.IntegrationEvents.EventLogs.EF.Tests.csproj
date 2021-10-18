@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Dispatcher\MASA.Contrib.Dispatcher.IntegrationEvents.Dapr\MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.csproj" />
     <ProjectReference Include="..\..\src\Dispatcher\MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF\MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.csproj" />
   </ItemGroup>
 

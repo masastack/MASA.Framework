@@ -4,7 +4,7 @@ namespace MASA.Contrib.Data.Uow.EF.Tests
 {
     public class TestBase : IDisposable
     {
-        private readonly SqliteConnection _connection;
+        protected readonly SqliteConnection _connection;
 
         protected TestBase()
         {
@@ -17,18 +17,12 @@ namespace MASA.Contrib.Data.Uow.EF.Tests
             _connection.Close();
         }
 
-        protected IServiceProvider CreateProviderByEmptyDbConnectionString()
-        {
-            var services = new ServiceCollection();
-            services.AddUoW<CustomerDbContext>();
-            return services.BuildServiceProvider();
-        }
-
         private IServiceProvider CreateDefaultProvider()
         {
-            var services = new ServiceCollection();
-            services.AddUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
-            return services.BuildServiceProvider();
+            var options = new Mock<IDispatcherOptions>();
+            options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+            options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+            return options.Object.Services.BuildServiceProvider();
         }
 
         protected (IServiceProvider serviceProvider, CustomerDbContext dbContext) CreateDefault()

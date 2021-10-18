@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.OrderEqualBySaga.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.Events;
 
-public class EditCategoryEvent : Event
+public record EditCategoryEvent : Event
 {
     public string CategoryId { get; set; }
 

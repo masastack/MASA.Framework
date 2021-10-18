@@ -1,6 +1,4 @@
-using System.Reflection;
-
-namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr;
+namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 
 public class DispatcherOptions : IDispatcherOptions
 {
@@ -33,16 +31,16 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_assemblies));
             }
-            Types = Assemblies.SelectMany(assembly => assembly.GetTypes());
-            AllEventTypes = GetTypes(typeof(IIntegrationEvent));
+            Types = _assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
+            AllEventTypes = GetTypes(typeof(IEvent)).ToList();
         }
     }
 
-    private IEnumerable<Type> Types { get; set; }
+    private List<Type> Types { get; set; }
 
-    private IEnumerable<Type> AllEventTypes { get; set; }
+    private List<Type> AllEventTypes { get; set; }
 
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t));
+    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass && t != typeof(IntegrationEvent));
 
     public IEnumerable<Type> GetAllEventTypes() => AllEventTypes;
 

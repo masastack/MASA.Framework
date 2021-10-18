@@ -1,12 +1,17 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.EventHandlers;
+namespace MASA.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
 public class TransferEventHandler : ISagaEventHandler<TransferEvent>
 {
     private readonly List<string> _blackAccount = new List<string>() { "roller", "thomas" };
 
     private readonly ILogger<TransferEventHandler> _logger;
+    private readonly IEventBus _eventBus;
 
-    public TransferEventHandler(ILogger<TransferEventHandler> logger) => _logger = logger;
+    public TransferEventHandler(ILogger<TransferEventHandler> logger, IEventBus eventBus)
+    {
+        _logger = logger;
+        _eventBus = eventBus;
+    }
 
     [EventHandler(EnableRetry = true, RetryTimes = 3)]
     public Task HandleAsync(TransferEvent @event)
@@ -30,6 +35,27 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
         {
             return Task.CompletedTask;
         }
+    }
+
+    [EventHandler]
+    public async Task DeductionMoneyHandler(DeductionMoneyEvent @event)
+    {
+        // TODO: The simulated deduction is successful
+
+        IncreaseMoneyEvent increaseMoneyEvent = new IncreaseMoneyEvent()
+        {
+            Account = @event.PayeeAccount,
+            TransferAccount=@event.Account,
+            Money = @event.Money
+        };
+        await _eventBus.PublishAsync(increaseMoneyEvent);
+    }
+
+    [EventHandler]
+    public Task IncreaseMoneyHandler(IncreaseMoneyEvent @event)
+    {
+        // TODO: Succeeded in simulated increase
+        return Task.CompletedTask;
     }
 }
 

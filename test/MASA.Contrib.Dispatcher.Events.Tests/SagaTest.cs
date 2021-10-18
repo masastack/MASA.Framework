@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests;
+namespace MASA.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
 public class SagaTest : TestBase
@@ -30,7 +30,7 @@ public class SagaTest : TestBase
     [DataRow("jordan", "change password notcices @", 0)]
     public async Task TestLastCancelError(string account, string content, int isError)
     {
-        base.ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null);
         ChangePasswordEvent @event = new ChangePasswordEvent()
         {
             Account = account,
@@ -92,8 +92,8 @@ public class SagaTest : TestBase
         IEventBus eventBus = null;
         Assert.ThrowsException<ArgumentException>(() =>
         {
-            base.ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
-            eventBus = base._serviceProvider.GetRequiredService<IEventBus>();
+            ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
+            eventBus = _serviceProvider.GetRequiredService<IEventBus>();
         });
         EditCategoryEvent @event = new EditCategoryEvent()
         {
@@ -104,7 +104,7 @@ public class SagaTest : TestBase
         {
             await eventBus.PublishAsync(@event);
         }
-        base.ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null);
     }
 
     [TestMethod]
@@ -113,8 +113,8 @@ public class SagaTest : TestBase
         IEventBus eventBus = null;
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
-            base.ResetMemoryEventBus(false, typeof(EditGoodsEvent).Assembly);
-            eventBus = base._serviceProvider.GetRequiredService<IEventBus>();
+            ResetMemoryEventBus(false, typeof(EditGoodsEvent).Assembly);
+            eventBus = _serviceProvider.GetRequiredService<IEventBus>();
         });
         EditGoodsEvent @event = new EditGoodsEvent()
         {
@@ -126,6 +126,6 @@ public class SagaTest : TestBase
         {
             await eventBus.PublishAsync(@event);
         }
-        base.ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null);
     }
 }

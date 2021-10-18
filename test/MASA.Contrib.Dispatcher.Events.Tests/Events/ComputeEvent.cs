@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.Tests.Events;
+﻿namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
-public class ComputeEvent : Event
+public record ComputeEvent : Event
 {
     /// <summary>
     /// the unit price

@@ -4,11 +4,11 @@ internal static class DbContextExtensions
 {
     internal static IServiceCollection AddCustomMasaDbContext<TDbContext>(
         this IServiceCollection services,
-        Action<DbContextOptionsBuilder>? contextAction = null)
+        Action<DbContextOptionsBuilder> contextAction)
         where TDbContext : MasaDbContext
     {
         var optionsBuilder = new DbContextOptionsBuilder<TDbContext>();
-        contextAction?.Invoke(optionsBuilder);
+        contextAction.Invoke(optionsBuilder);
 
         services.AddDbContext<TDbContext>();
         services.TryAddScoped(typeof(MasaDbContextOptions<TDbContext>), serviceProvider =>

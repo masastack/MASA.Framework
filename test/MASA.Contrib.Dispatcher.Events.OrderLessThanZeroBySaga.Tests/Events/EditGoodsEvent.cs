@@ -1,6 +1,6 @@
-﻿namespace MASA.Contrib.Dispatcher.InMemory.OrderLessThanZeroBySaga.Tests.Events;
+namespace MASA.Contrib.Dispatcher.Events.OrderLessThanZeroBySaga.Tests.Events;
 
-public class EditGoodsEvent : Event
+public record EditGoodsEvent : Event
 {
     public string GoodsId { get; set; }
 

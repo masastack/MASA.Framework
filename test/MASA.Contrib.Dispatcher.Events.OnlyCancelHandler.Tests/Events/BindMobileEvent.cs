@@ -1,6 +1,6 @@
-namespace MASA.Contrib.Dispatcher.InMemory.OnlyCancelHandler.Tests.Events;
+namespace MASA.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests.Events;
 
-public class BindMobileEvent : Event
+public record BindMobileEvent : Event
 {
     public string AccountId { get; set; }
 

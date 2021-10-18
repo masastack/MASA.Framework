@@ -8,7 +8,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public IntegrationEventLogService(IntegrationEventLogContext eventLogContext, IServiceProvider serviceProvider)
     {
-        _eventLogContext = eventLogContext ?? throw new ArgumentNullException(nameof(eventLogContext));
+        _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
     }
 
@@ -21,7 +21,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         {
             if (_eventTypes == null)
             {
-                _eventTypes = _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes();
+                _eventTypes = _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes().Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
             }
             return result.OrderBy(o => o.CreationTime)
                 .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));

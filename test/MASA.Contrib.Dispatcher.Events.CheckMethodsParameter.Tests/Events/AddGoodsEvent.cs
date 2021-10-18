@@ -1,6 +1,6 @@
-namespace MASA.Contrib.Dispatcher.InMemory.CheckMethodsParameter.Tests.Events;
+namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.Events;
 
-public class AddGoodsEvent : Event
+public record AddGoodsEvent : Event
 {
     public string GoodsId { get; set; }
 

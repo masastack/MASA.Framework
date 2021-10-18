@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MASA.Contrib.Data.Uow;
+namespace MASA.Contrib.Data.Uow.EF;
 
 public class Transaction : ITransaction
 {

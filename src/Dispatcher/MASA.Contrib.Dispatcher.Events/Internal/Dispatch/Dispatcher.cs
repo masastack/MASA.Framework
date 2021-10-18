@@ -47,8 +47,7 @@ internal class Dispatcher : DispatcherBase
             {
                 throw new ArgumentOutOfRangeException(string.Format("[{0}] must have only one argument and inherit from Event", method.Name));
             }
-
-            if (typeof(IIntegrationEvent).IsAssignableFrom(type) || IsSagaMode(type, method))
+            if (IsSagaMode(type, method))
             {
                 return;
             }

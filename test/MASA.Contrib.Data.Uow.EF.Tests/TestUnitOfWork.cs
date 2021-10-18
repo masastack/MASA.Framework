@@ -4,15 +4,45 @@ namespace MASA.Contrib.Data.Uow.EF.Tests;
 public class TestUnitOfWork : TestBase
 {
     [TestMethod]
-    public void TestAddUow()
+    public void TestAddUowAndNullServices()
     {
-        var serviceProvider = base.CreateProviderByEmptyDbConnectionString();
-        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
-        Assert.ThrowsException<InvalidOperationException>(() => dbContext.Database.EnsureCreated());
+        var options = new Mock<IDispatcherOptions>();
+        Assert.ThrowsException<ArgumentNullException>(() => options.Object.UseUoW<CustomerDbContext>());
     }
 
     [TestMethod]
-    public async Task TestCommitAsync()
+    public void TestAddUow()
+    {
+        var options = new Mock<IDispatcherOptions>();
+        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        options.Object.UseUoW<CustomerDbContext>();
+        var serviceProvider = options.Object.Services.BuildServiceProvider();
+        Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetRequiredService<CustomerDbContext>());
+    }
+
+    [TestMethod]
+    public void TestAddUowAndUseSqlLite()
+    {
+        var options = new Mock<IDispatcherOptions>();
+        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = options.Object.Services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetRequiredService<CustomerDbContext>());
+    }
+
+    [TestMethod]
+    public void TestAddMultUow()
+    {
+        var options = new Mock<IDispatcherOptions>();
+        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection)).UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = options.Object.Services.BuildServiceProvider();
+
+        Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);
+    }
+
+    [TestMethod]
+    public async Task TestNoTransactionAndCommitAsync()
     {
         var serviceProviderAndDbContext = base.CreateDefault();
         var serviceProvider = serviceProviderAndDbContext.serviceProvider;
@@ -31,20 +61,20 @@ public class TestUnitOfWork : TestBase
             dbContext.Add(user);
             await unitOfWork.CommitAsync();
 
-            Assert.IsFalse(dbContext.User.Any(user => user.Id == user.Id));
+            Assert.IsTrue(dbContext.User.Any(user => user.Id == user.Id));
         }
     }
 
     [TestMethod]
-    public async Task TestNoTransactionAndCommitAsync()
+    public async Task TestUseTransactionAndCommitAsync()
     {
         var serviceProviderAndDbContext = base.CreateDefault();
         var serviceProvider = serviceProviderAndDbContext.serviceProvider;
         var dbContext = serviceProviderAndDbContext.dbContext;
 
-        await using (var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>())
+        using (var transcation = await dbContext.Database.BeginTransactionAsync())
         {
-            Assert.IsTrue(unitOfWork == serviceProvider.GetRequiredService<ITransaction>().UnitOfWork);
+            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
 
             Users user = new Users()
             {
@@ -52,7 +82,7 @@ public class TestUnitOfWork : TestBase
                 Name = Guid.NewGuid().ToString()
             };
             dbContext.Add(user);
-            await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => { await unitOfWork.CommitAsync(); });
+            await unitOfWork.CommitAsync(); ;
         }
     }
 

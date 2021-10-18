@@ -1,6 +1,7 @@
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
+global using MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Internal;
 global using MASA.Utils.Data.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
