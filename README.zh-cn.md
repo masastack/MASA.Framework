@@ -1,8 +1,8 @@
-﻿﻿# MASA.Contrib
+﻿﻿中 | [EN](README.md)
+
+# MASA.Contrib
 
 MASA.BuildingBlocks最佳实践
-
-MASA.Contrib is the best practice of MASA.BuildingBlocks
 
 ## 结构
 

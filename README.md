@@ -1,3 +1,5 @@
+[中](README.zh-cn.md) | EN
+
 # MASA.Contrib
 
 MASA.Contrib is the best practice of MASA.BuildingBlocks
