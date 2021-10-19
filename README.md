@@ -1,4 +1,4 @@
-[中](README.zh-cn.md) | EN
+[中](README.zh-CN.md) | EN
 
 # MASA.Contrib
 
