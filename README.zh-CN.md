@@ -1,4 +1,4 @@
-﻿﻿中 | [EN](README.md)
+﻿中 | [EN](README.md)
 
 # MASA.Contrib
 
