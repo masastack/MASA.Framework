@@ -8,25 +8,25 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 ```c#
 MASA.Contrib
-│──solution items
-│   ── nuget.config
-│──src
+├── solution items
+│   ├── nuget.config
+├── src
 │   ├── Data
-│   │   ├── MASA.Contrib.Data.Uow.EF                                         Unit of work
-│   │   └── MASA.Contribs.Data.Contracts.EF                                  Protocol EF version
+│   │   ├── MASA.Contrib.Data.Uow.EF                               Unit of work
+│   │   └── MASA.Contribs.Data.Contracts.EF                        Protocol EF version
 │   ├── DDD
-│   │   ├── MASA.Contribs.DDD.Domain                                         In-process and cross-process support
+│   │   ├── MASA.Contribs.DDD.Domain                               In-process and cross-process support
 │   │   └── MASA.Contribs.DDD.Domain.Repository.EF
 │   ├── Dispatcher
-│   │   ├── MASA.Contrib.Dispatcher.Events									 In-process event
+│   │   ├── MASA.Contrib.Dispatcher.Events                         In-process event
 │   │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
-│   │   └── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF			 Cross-process event
+│   │   └── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF Cross-process event
 │   ├── ReadWriteSpliting
 │   │   └── CQRS
-│   │   │   └── MASA.Contrib.ReadWriteSpliting.CQRS							 CQRS
+│   │   │   └── MASA.Contrib.ReadWriteSpliting.CQRS                CQRS
 │   ├── Service
-│   │   └── MASA.Contrib.Service.MinimalAPIs								 Best practices for [MinimalAPI]
-│──test
+│   │   └── MASA.Contrib.Service.MinimalAPIs                       Best practices for [MinimalAPI]
+├── test
 │   ├── MASA.Contrib.Dispatcher.Events
 │   │   ├── MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest
 │   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests
@@ -46,7 +46,7 @@ MASA.Contrib
 
 ### 1. MinimalAPI
 
-What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Service/MASA.Contrib.Service.MinimalAPIs/README.md)
+What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[Usage introduction](/src/Service/MASA.Contrib.Service.MinimalAPIs/README.md)
 
 >  Advantage：
 >
@@ -54,7 +54,7 @@ What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-
 
 ### 2. EventBus
 
-[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Dispatcher/MASA.Contrib.Dispatcher.Events/README.md)
+[Usage introduction](/src/Dispatcher/MASA.Contrib.Dispatcher.Events/README.md)
 
 > Advantage：
 >
@@ -73,17 +73,17 @@ What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-
 
 ### 3. CQRS
 
-what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/ReadWriteSpliting/CQRS/MASA.Contrib.ReadWriteSpliting.CQRS/README.md)
+what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](/src/ReadWriteSpliting/CQRS/MASA.Contrib.ReadWriteSpliting.CQRS/README.md)
 
 ### 4. IntegrationEventBus
 
-Realize cross-process events based on Dapr。[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Dispatcher/MASA.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md)
+Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatcher/MASA.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md)
 
 > Advantage：Use the same transaction to commit the user-defined context and the log to ensure atomicity and consistency
 
 ### 5. DomainEventBus
 
-[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/DDD/MASA.Contribs.DDD.Domain/README.md)
+[Usage introduction](/src/DDD/MASA.Contribs.DDD.Domain/README.md)
 
 > Advantage：
 >
@@ -99,7 +99,7 @@ Realize cross-process events based on Dapr。[Usage introduction](http://gitlab-
 
 ### 7. Contracts.EF
 
-Protocol based on EF implementation，[Usage introduction](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/Data/MASA.Contribs.Data.Contracts.EF/README.md)
+Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contribs.Data.Contracts.EF/README.md)
 
 > Advantage：
 >
@@ -130,4 +130,4 @@ To ensure the reliability of the entire source code, the unit test coverage is a
 
 ## ☀️ License agreement
 
-[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/LICENSE)
+[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)

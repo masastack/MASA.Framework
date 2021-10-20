@@ -8,25 +8,25 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 
 ```c#
 MASA.Contrib
-│──solution items
-│   ── nuget.config
-│──src
+├── solution items
+│   ├── nuget.config
+├── src
 │   ├── Data
-│   │   ├── MASA.Contrib.Data.Uow.EF                                         工作单元
-│   │   └── MASA.Contribs.Data.Contracts.EF                                  规约EF版
+│   │   ├── MASA.Contrib.Data.Uow.EF                               工作单元
+│   │   └── MASA.Contribs.Data.Contracts.EF                        规约EF版
 │   ├── DDD
-│   │   ├── MASA.Contribs.DDD.Domain                                         进程内、跨进程都支持
+│   │   ├── MASA.Contribs.DDD.Domain                               进程内、跨进程都支持
 │   │   └── MASA.Contribs.DDD.Domain.Repository.EF
 │   ├── Dispatcher
-│   │   ├── MASA.Contrib.Dispatcher.Events									 进程内事件
+│   │   ├── MASA.Contrib.Dispatcher.Events                         进程内事件
 │   │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
-│   │   └── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF			 跨进程事件
+│   │   └── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF 跨进程事件
 │   ├── ReadWriteSpliting
 │   │   └── CQRS
-│   │   │   └── MASA.Contrib.ReadWriteSpliting.CQRS							 CQRS
+│   │   │   └── MASA.Contrib.ReadWriteSpliting.CQRS                CQRS
 │   ├── Service
-│   │   └── MASA.Contrib.Service.MinimalAPIs								 MinimalAPI最佳实践
-│──test
+│   │   └── MASA.Contrib.Service.MinimalAPIs                       MinimalAPI最佳实践
+├── test
 │   ├── MASA.Contrib.Dispatcher.Events
 │   │   ├── MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest
 │   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests
@@ -46,7 +46,7 @@ MASA.Contrib
 
 ### 1. MinimalAPI
 
-什么是[MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Service/MASA.Contrib.Service.MinimalAPIs/README.zh-cn.md)
+什么是[MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[用法介绍](/src/Service/MASA.Contrib.Service.MinimalAPIs/README.zh-cn.md)
 
 >  优势：
 >
@@ -54,7 +54,7 @@ MASA.Contrib
 
 ### 2. EventBus
 
-[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Dispatcher/MASA.Contrib.Dispatcher.Events/README.zh-cn.md)
+[用法介绍](/src/Dispatcher/MASA.Contrib.Dispatcher.Events/README.zh-cn.md)
 
 > 优势：
 >
@@ -73,17 +73,17 @@ MASA.Contrib
 
 ### 3. CQRS
 
-什么是[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/ReadWriteSpliting/CQRS/MASA.Contrib.ReadWriteSpliting.CQRS/README.zh-cn.md)
+什么是[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[用法介绍](/src/ReadWriteSpliting/CQRS/MASA.Contrib.ReadWriteSpliting.CQRS/README.zh-cn.md)
 
 ### 4. IntegrationEventBus
 
-基于Dapr实现跨进程的事件。[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/Dispatcher/MASA.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-cn.md)
+基于Dapr实现跨进程的事件。[用法介绍](/src/Dispatcher/MASA.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-cn.md)
 
 > 优势：将用户自定义上下文与日志使用同一事务提交，确保原子性、一致性
 
 ### 5. DomainEventBus
 
-[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/src/DDD/MASA.Contribs.DDD.Domain/README.zh-cn.md)
+[用法介绍](/src/DDD/MASA.Contribs.DDD.Domain/README.zh-cn.md)
 
 > 优势：
 >
@@ -99,7 +99,7 @@ MASA.Contrib
 
 ### 7. Contracts.EF
 
-基于EF实现的规约，[用法介绍](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/Data/MASA.Contribs.Data.Contracts.EF/README.zh-cn.md)
+基于EF实现的规约，[用法介绍](/Data/MASA.Contribs.Data.Contracts.EF/README.zh-cn.md)
 
 > 优势：
 >
@@ -130,5 +130,5 @@ builder.Services
 
 ## ☀️ 授权协议
 
-[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](http://gitlab-hz.lonsid.cn/MASA-Stack/Contribs/MASA.Contrib/-/tree/develop/LICENSE)
+[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
 

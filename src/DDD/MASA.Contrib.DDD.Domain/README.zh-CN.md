@@ -1,3 +1,5 @@
+中 | [EN](README.md)
+
 ### DomainEventBus
 
 用例：
@@ -46,8 +48,8 @@ public class RegisterUserDomainCommand : DomainCommand
 ```C#
 public class UserHandler
 {
-	[EventHandler]
-	public Task RegisterUserHandlerAsync(RegisterUserDomainCommand command)
+    [EventHandler]
+    public Task RegisterUserHandlerAsync(RegisterUserDomainCommand command)
     {
         //TODO 注册用户业务
     }

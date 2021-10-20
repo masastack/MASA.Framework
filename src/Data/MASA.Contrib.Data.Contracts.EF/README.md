@@ -1,3 +1,5 @@
+[中](RREADME.zh-CN.md) | EN
+
 ## Contracts.EF
 
 Example：

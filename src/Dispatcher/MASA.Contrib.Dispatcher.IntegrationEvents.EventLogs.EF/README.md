@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ## MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
 
 > Provide support for sending IntegrationEvent

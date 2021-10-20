@@ -1,3 +1,5 @@
+中 | [EN](README.md)
+
 ## EventBus
 
 用例：
@@ -13,8 +15,8 @@ Install-Package MASA.Contrib.Dispatcher.Events
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Services
-				 .AddEventBus()
-				 //TODO
+                 .AddEventBus()
+                 //TODO
 ```
 
 2. 自定义Event

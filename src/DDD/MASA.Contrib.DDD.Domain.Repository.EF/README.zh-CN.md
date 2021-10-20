@@ -1,3 +1,5 @@
+中 | [EN](README.md)
+
 ## MASA.Contrib.DDD.Domain.Repository.EF
 
 用例：
@@ -14,7 +16,7 @@ Install-Package MASA.Contrib.DDD.Domain.Repository.EF
 builder.Services
 .AddDomainEventBus(options =>
 {
-	options.UseRepository<CustomDbContext>();//使用Repository的EF版实现
+    options.UseRepository<CustomDbContext>();//使用Repository的EF版实现
 }
 ```
 
@@ -30,9 +32,9 @@ public class DemoService : ServiceBase
 {
     public CatalogService(IServiceCollection services) : base(services)
     {
-            
+
     }
-    
+
     public async Task CreateProduct(ProductItem product,[FromService]IRepository<Aggregate.Payment> repository)
     {
         await repository.AddAsync(product);
@@ -51,7 +53,7 @@ public interface IProductRepository : IRepository<ProductItem>
 
 public class ProductRepository : Repository<CustomDbContext, ProductItem>, IProductRepository
 {
-	public Task<List<ProductItem>> ItemsWithNameAsync(string name)
+    public Task<List<ProductItem>> ItemsWithNameAsync(string name)
     {
         //Todo
     }

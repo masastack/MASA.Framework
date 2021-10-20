@@ -1,3 +1,5 @@
+中 | [EN](README.md)
+
 ## Contracts.EF
 
 用例：

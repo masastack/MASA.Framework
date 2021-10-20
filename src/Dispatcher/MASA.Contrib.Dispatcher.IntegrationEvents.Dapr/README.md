@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ## IntegrationEventBus
 
 Example：
@@ -14,7 +16,7 @@ Install-Package MASA.Contrib.Data.Uow.EF //Use UnitOfWork
 builder.Services
     .AddDaprEventBus<IntegrationEventLogService>(options=>
     {
-    	options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
                .UseEventLog<CatalogDbContext>();
         )
     });
