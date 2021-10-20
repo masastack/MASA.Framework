@@ -1,8 +1,8 @@
-﻿﻿中 | [EN](README.md)
+﻿中 | [EN](README.md)
 
 # MASA.Contrib
 
-MASA.BuildingBlocks最佳实践
+MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MASA Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。  
 
 ## 结构
 

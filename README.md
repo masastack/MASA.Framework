@@ -2,7 +2,7 @@
 
 # MASA.Contrib
 
-MASA.Contrib is the best practice of MASA.BuildingBlocks
+The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
 
 ## Structure
 
