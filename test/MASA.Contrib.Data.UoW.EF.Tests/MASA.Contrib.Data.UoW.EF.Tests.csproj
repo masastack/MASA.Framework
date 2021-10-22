@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Data\MASA.Contrib.Data.Uow.EF\MASA.Contrib.Data.Uow.EF.csproj" />
+    <ProjectReference Include="..\..\src\Data\MASA.Contrib.Data.UoW.EF\MASA.Contrib.Data.UoW.EF.csproj" />
   </ItemGroup>
 
 </Project>

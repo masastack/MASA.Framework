@@ -1,17 +1,17 @@
-namespace MASA.Contrib.Data.Uow.EF.Tests;
+namespace MASA.Contrib.Data.UoW.EF.Tests;
 
 [TestClass]
 public class TestUnitOfWork : TestBase
 {
     [TestMethod]
-    public void TestAddUowAndNullServices()
+    public void TestAddUoWAndNullServices()
     {
         var options = new Mock<IDispatcherOptions>();
         Assert.ThrowsException<ArgumentNullException>(() => options.Object.UseUoW<CustomerDbContext>());
     }
 
     [TestMethod]
-    public void TestAddUow()
+    public void TestAddUoW()
     {
         var options = new Mock<IDispatcherOptions>();
         options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
@@ -21,7 +21,7 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public void TestAddUowAndUseSqlLite()
+    public void TestAddUoWAndUseSqlLite()
     {
         var options = new Mock<IDispatcherOptions>();
         options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
@@ -31,7 +31,7 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultUow()
+    public void TestAddMultUoW()
     {
         var options = new Mock<IDispatcherOptions>();
         options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();

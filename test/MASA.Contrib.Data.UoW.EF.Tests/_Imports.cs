@@ -1,4 +1,4 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;

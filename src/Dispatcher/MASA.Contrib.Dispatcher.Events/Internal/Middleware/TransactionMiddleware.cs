@@ -18,16 +18,9 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
 
             if (@event is ITransaction transactionEvent)
             {
-                if (transactionEvent.UnitOfWork != null)
+                if (transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun)
                 {
-                    if (transactionEvent.UnitOfWork.TransactionHasBegun)
-                    {
-                        await transactionEvent.UnitOfWork.CommitAsync();
-                    }
-                    else
-                    {
-                        await transactionEvent.UnitOfWork.SaveChangesAsync();
-                    }
+                    await transactionEvent.UnitOfWork.CommitAsync();
                 }
             }
         }

@@ -27,8 +27,8 @@ public class RepositoryTest : TestBase
     {
         var services = new ServiceCollection();
 
-        Mock<IUnitOfWork> uow = new();
-        services.AddScoped(serviceProvider => uow.Object);
+        Mock<IUnitOfWork> uoW = new();
+        services.AddScoped(serviceProvider => uoW.Object);
 
         Assert.ThrowsException<NotSupportedException>(() => new DispatcherOptions(services).UseRepository<OrderDbContext>(typeof(TestBase).Assembly, typeof(IUserRepository).Assembly));
     }

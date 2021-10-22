@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Data.Uow.EF;
+namespace MASA.Contrib.Data.UoW.EF;
 
 public static class DispatcherOptionsExtensions
 {
@@ -12,8 +12,8 @@ public static class DispatcherOptionsExtensions
             throw new ArgumentNullException(nameof(options.Services));
         }
 
-        if (options.Services.Any(service => service.ImplementationType == typeof(UowProvider))) return options;
-        options.Services.AddSingleton<UowProvider>();
+        if (options.Services.Any(service => service.ImplementationType == typeof(UoWProvider))) return options;
+        options.Services.AddSingleton<UoWProvider>();
 
         options.Services.AddLogging();
         options.Services.AddScoped<IUnitOfWork, UnitOfWork<TDbContext>>();
@@ -27,7 +27,7 @@ public static class DispatcherOptionsExtensions
         return options;
     }
 
-    private class UowProvider
+    private class UoWProvider
     {
 
     }

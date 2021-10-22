@@ -89,7 +89,7 @@ public class DomainEventBusTest : TestBase
         services.AddScoped(serviceProvider => eventBus.Object);
 
         var ex = Assert.ThrowsException<Exception>(() => services.AddDomainEventBus());
-        Assert.IsTrue(ex.Message == "Please add Uow first.");
+        Assert.IsTrue(ex.Message == "Please add UoW first.");
     }
 
     [TestMethod]
@@ -100,8 +100,8 @@ public class DomainEventBusTest : TestBase
         var eventBus = new Mock<IEventBus>();
         services.AddScoped(serviceProvider => eventBus.Object);
 
-        var uow = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uow.Object);
+        var uoW = new Mock<IUnitOfWork>();
+        services.AddScoped(serviceProvider => uoW.Object);
 
         var ex = Assert.ThrowsException<Exception>(() => services.AddDomainEventBus());
         Assert.IsTrue(ex.Message == "Please add IntegrationEventBus first.");
@@ -115,8 +115,8 @@ public class DomainEventBusTest : TestBase
         var eventBus = new Mock<IEventBus>();
         services.AddScoped(serviceProvider => eventBus.Object);
 
-        var uow = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uow.Object);
+        var uoW = new Mock<IUnitOfWork>();
+        services.AddScoped(serviceProvider => uoW.Object);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
         services.AddScoped(serviceProvider => integrationEventBus.Object);
@@ -132,8 +132,8 @@ public class DomainEventBusTest : TestBase
         var eventBus = new Mock<IEventBus>();
         services.AddScoped(serviceProvider => eventBus.Object);
 
-        var uow = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uow.Object);
+        var uoW = new Mock<IUnitOfWork>();
+        services.AddScoped(serviceProvider => uoW.Object);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
         services.AddScoped(serviceProvider => integrationEventBus.Object);
@@ -156,8 +156,8 @@ public class DomainEventBusTest : TestBase
         var eventBus = new Mock<IEventBus>();
         services.AddScoped(serviceProvider => eventBus.Object);
 
-        var uow = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uow.Object);
+        var uoW = new Mock<IUnitOfWork>();
+        services.AddScoped(serviceProvider => uoW.Object);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
         services.AddScoped(serviceProvider => integrationEventBus.Object);
@@ -207,12 +207,12 @@ public class DomainEventBusTest : TestBase
                 await Task.FromResult(result);
             });
 
-        var uow = new Mock<IUnitOfWork>();
-        uow.Setup(u => u.CommitAsync(default)).Verifiable();
+        var uoW = new Mock<IUnitOfWork>();
+        uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
         var options = Options.Create(new DispatcherOptions(services) { Assemblies = AppDomain.CurrentDomain.GetAssemblies() });
 
-        var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uow.Object, options);
+        var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uoW.Object, options);
 
         // todo: It has no practical meaning, just to show the order of entering and leaving the team
         await domainEventBus.Enqueue(new PaymentSucceededDomainEvent() { OrderId = "ef5f84db-76e4-4c79-9815-99a1543b6589" });
@@ -233,12 +233,12 @@ public class DomainEventBusTest : TestBase
                 query.Result = "apple";
             });
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        var uow = new Mock<IUnitOfWork>();
-        uow.Setup(u => u.CommitAsync(default)).Verifiable();
+        var uoW = new Mock<IUnitOfWork>();
+        uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
         var options = Options.Create(new DispatcherOptions(services) { Assemblies = AppDomain.CurrentDomain.GetAssemblies() });
 
-        var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uow.Object, options);
+        var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uoW.Object, options);
 
         var query = new ProductItemDomainQuery() { ProductId = "2f8d4c3c-1736-4e56-a188-f865da6a63d1" };
         await domainEventBus.PublishAsync(query);

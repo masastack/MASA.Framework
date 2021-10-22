@@ -1,4 +1,4 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.DDD.Domain.Entities;
 global using MASA.BuildingBlocks.DDD.Domain.Entities.Auditing;
 global using MASA.BuildingBlocks.DDD.Domain.Repositories;

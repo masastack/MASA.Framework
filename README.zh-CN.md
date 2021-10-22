@@ -2,7 +2,7 @@
 
 # MASA.Contrib
 
-MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MASA Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。  
+MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MASA Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。
 
 ## 结构
 
@@ -12,7 +12,7 @@ MASA.Contrib
 │   ├── nuget.config
 ├── src
 │   ├── Data
-│   │   ├── MASA.Contrib.Data.Uow.EF                               工作单元
+│   │   ├── MASA.Contrib.Data.UoW.EF                               工作单元
 │   │   └── MASA.Contribs.Data.Contracts.EF                        规约EF版
 │   ├── DDD
 │   │   ├── MASA.Contribs.DDD.Domain                               进程内、跨进程都支持
@@ -36,7 +36,7 @@ MASA.Contrib
 │   │   ├── MASA.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests
 │   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests
 │   │   ├── MASA.Contrib.Dispatcher.Events.Tests
-│   ├── MASA.Contrib.Data.Uow.EF.Tests
+│   ├── MASA.Contrib.Data.UoW.EF.Tests
 │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
 │   ├── MASA.Contribs.DDD.Domain.Tests
 │   ├── MASA.Contribs.DDD.Domain.Repository.EF.Tests

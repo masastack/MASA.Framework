@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace MASA.Contrib.Data.Uow.EF.Tests
+namespace MASA.Contrib.Data.UoW.EF.Tests
 {
     public class TestBase : IDisposable
     {

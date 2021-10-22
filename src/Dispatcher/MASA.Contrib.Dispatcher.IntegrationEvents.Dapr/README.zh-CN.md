@@ -7,7 +7,7 @@
 ```C#
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr //发送跨进程消息
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
-Install-Package MASA.Contrib.Data.Uow.EF //使用工作单元
+Install-Package MASA.Contrib.Data.UoW.EF //使用工作单元
 ```
 
 1. 添加IIntegrationEventBus

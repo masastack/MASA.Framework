@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
 
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
-            throw new Exception("Please add Uow first.");
+            throw new Exception("Please add UoW first.");
         }
 
         if (services.All(service => service.ServiceType != typeof(IIntegrationEventBus)))

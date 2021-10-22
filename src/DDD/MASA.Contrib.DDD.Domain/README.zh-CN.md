@@ -12,7 +12,7 @@ Install-Package MASA.Contrib.Dispatcher.Events
 
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
-Install-Package MASA.Contrib.Data.Uow.EF
+Install-Package MASA.Contrib.Data.UoW.EF
 ```
 
 1. 添加DomainEventBus
@@ -22,7 +22,7 @@ builder.Services
 .AddDomainEventBus(options =>
 {
     options.UseEventBus()//使用进程内事件
-        .UseUow<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
         .UseDaprEventBus<IntegrationEventLogService>()///使用跨进程事件
         .UseEventLog<PaymentDbContext>()
         .UseRepository<CustomDbContext>();//使用Repository的EF版实现

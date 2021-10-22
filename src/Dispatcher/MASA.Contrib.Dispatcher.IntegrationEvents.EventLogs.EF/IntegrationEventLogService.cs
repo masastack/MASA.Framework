@@ -34,10 +34,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     {
         if (transaction == null) throw new ArgumentNullException(nameof(transaction));
         if (_eventLogContext.Database.CurrentTransaction == null)
-            _eventLogContext.Database.UseTransaction(transaction, Guid.NewGuid());
+            await _eventLogContext.Database.UseTransactionAsync(transaction, Guid.NewGuid());
         var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry);
         await _eventLogContext.SaveChangesAsync();
+
+        CheckAndDetached(eventLogEntry);
     }
 
     public Task MarkEventAsPublishedAsync(Guid eventId)
@@ -55,7 +57,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed);
     }
 
-    private Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
+    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
     {
         var eventLogEntry = _eventLogContext.EventLogs.Single(e => e.Id == eventId);
         eventLogEntry.State = status;
@@ -64,6 +66,17 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             eventLogEntry.TimesSent++;
 
         _eventLogContext.EventLogs.Update(eventLogEntry);
-        return _eventLogContext.SaveChangesAsync();
+        await _eventLogContext.SaveChangesAsync();
+
+        CheckAndDetached(eventLogEntry);
+    }
+
+    private void CheckAndDetached(IntegrationEventLog integrationEvent)
+    {
+        return;
+        if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
+        {
+            _eventLogContext.Entry<IntegrationEventLog>(integrationEvent).State = EntityState.Detached;
+        }
     }
 }

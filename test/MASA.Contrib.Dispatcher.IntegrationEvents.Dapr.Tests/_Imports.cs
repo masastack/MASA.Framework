@@ -1,5 +1,5 @@
 global using Dapr.Client;
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;

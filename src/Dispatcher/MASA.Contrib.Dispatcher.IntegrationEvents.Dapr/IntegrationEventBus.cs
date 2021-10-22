@@ -82,4 +82,12 @@ public class IntegrationEventBus : IIntegrationEventBus
             await _eventLogService.MarkEventAsFailedAsync(@event.Id);
         }
     }
+
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
+    {
+        if (_unitOfWork is null)
+            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
+
+        await _unitOfWork.CommitAsync(cancellationToken);
+    }
 }

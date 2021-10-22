@@ -50,4 +50,12 @@ public class EventBus : IEventBus
     }
 
     public IEnumerable<Type> GetAllEventTypes() => _options.GetAllEventTypes();
+
+    public async Task CommitAsync(CancellationToken cancellationToken = default)
+    {
+        if (_unitOfWork is null)
+            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
+
+        await _unitOfWork.CommitAsync(cancellationToken);
+    }
 }

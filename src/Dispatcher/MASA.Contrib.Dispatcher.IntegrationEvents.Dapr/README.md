@@ -7,7 +7,7 @@ Example：
 ```C#
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
-Install-Package MASA.Contrib.Data.Uow.EF //Use UnitOfWork
+Install-Package MASA.Contrib.Data.UoW.EF //Use UnitOfWork
 ```
 
 1. Add IIntegrationEventBus

@@ -2,16 +2,17 @@ namespace MASA.Contrib.Data.Contracts.EF.SoftDelete
 {
     public class TransactionSaveChangesFilter : ISaveChangesFilter
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TransactionSaveChangesFilter(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
+        public TransactionSaveChangesFilter(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
         public void OnExecuting(ChangeTracker changeTracker)
         {
             changeTracker.DetectChanges();
-            if (changeTracker.Entries().Any(e => e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted) && !_unitOfWork.TransactionHasBegun)
+            var unitOfWork = _serviceProvider.GetRequiredService<IUnitOfWork>();
+            if (changeTracker.Entries().Any(e => e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted) && !unitOfWork.TransactionHasBegun)
             {
-                var transaction = _unitOfWork.Transaction; // Open the transaction
+                var transaction = unitOfWork.Transaction; // Open the transaction
             }
         }
     }

@@ -1,4 +1,4 @@
-namespace MASA.Contrib.Data.Uow.EF;
+namespace MASA.Contrib.Data.UoW.EF;
 
 public class UnitOfWork<TDbContext> : IUnitOfWork
     where TDbContext : MasaDbContext
@@ -38,7 +38,6 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
     {
         if (!TransactionHasBegun)
         {
-            await SaveChangesAsync();
             return;
         }
 

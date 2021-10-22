@@ -12,7 +12,7 @@ MASA.Contrib
 │   ├── nuget.config
 ├── src
 │   ├── Data
-│   │   ├── MASA.Contrib.Data.Uow.EF                               Unit of work
+│   │   ├── MASA.Contrib.Data.UoW.EF                               Unit of work
 │   │   └── MASA.Contribs.Data.Contracts.EF                        Protocol EF version
 │   ├── DDD
 │   │   ├── MASA.Contribs.DDD.Domain                               In-process and cross-process support
@@ -36,7 +36,7 @@ MASA.Contrib
 │   │   ├── MASA.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests
 │   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests
 │   │   ├── MASA.Contrib.Dispatcher.Events.Tests
-│   ├── MASA.Contrib.Data.Uow.EF.Tests
+│   ├── MASA.Contrib.Data.UoW.EF.Tests
 │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
 │   ├── MASA.Contribs.DDD.Domain.Tests
 │   ├── MASA.Contribs.DDD.Domain.Repository.EF.Tests
