@@ -1,9 +1,12 @@
-using MASA.Utils.Data.EntityFrameworkCore;
-
 namespace MASA.Contrib.Data.UoW.EF.Tests;
 
 public class CustomerDbContext : MasaDbContext
 {
+    public CustomerDbContext()
+    {
+
+    }
+
     public CustomerDbContext(MasaDbContextOptions<CustomerDbContext> options) : base(options) { }
 
     public DbSet<Users> User { get; set; }
@@ -30,7 +33,12 @@ public class CustomerDbContext : MasaDbContext
 
 public class Users
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; private set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
+
+    public Users()
+    {
+        this.Id = Guid.NewGuid();
+    }
 }

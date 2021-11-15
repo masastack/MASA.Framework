@@ -1,5 +1,3 @@
-﻿using MASA.Contrib.Dispatcher.Events.OrderLessThanZeroByFeature.Tests.Events;
-
 namespace MASA.Contrib.Dispatcher.Events.OrderLessThanZeroByFeature.Tests.EventHandlers;
 
 public class OrderStockConfirmedHandler

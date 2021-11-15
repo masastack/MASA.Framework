@@ -1,6 +1,3 @@
-using MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Infrastructure;
-using Moq;
-
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests;
 
 [TestClass]
@@ -42,28 +39,34 @@ public class IntegrationEventLogServiceTest : TestBase
         var eventLog = dbContext.EventLogs.FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
-        Assert.IsTrue(eventLog.Id == @event.Id);
+        Assert.IsTrue(eventLog.EventId == @event.Id);
 
         var eventLogs = await eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId);
         Assert.IsNotNull(eventLogs.Count() == 1);
         eventLog = dbContext.EventLogs.FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
-        Assert.IsTrue(eventLog.Id == @event.Id);
+        Assert.IsTrue(eventLog.EventId == @event.Id);
 
 
-        await eventLogService.MarkEventAsInProgressAsync(eventLog.Id);
+        await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+        {
+            await eventLogService.MarkEventAsInProgressAsync(eventLog.Id);
+        });
+        await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
+
+
         eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.InProgress);
         Assert.IsTrue(eventLog.TimesSent == 1);
 
-        await eventLogService.MarkEventAsPublishedAsync(eventLog.Id);
+        await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
         eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.Published);
 
-        await eventLogService.MarkEventAsFailedAsync(eventLog.Id);
+        await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
         eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.PublishedFailed);
@@ -124,7 +127,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestCustomDbContextAsync()
     {
         var options = new DispatcherOptions(new ServiceCollection());
-        options.Services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        options.Services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
         integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));

@@ -1,9 +1,16 @@
-using System.Linq;
-
 namespace MASA.Contrib.Service.MinimalAPIs;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
+    /// <para>Notice: this method must be last call.</para>
+    /// </summary>
+    /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
+    /// <returns></returns>
+    public static WebApplication AddServices(this WebApplicationBuilder builder)
+        => builder.Services.AddServices(builder);
+
     /// <summary>
     /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
     /// <para>Notice: this method must be last call.</para>
@@ -21,7 +28,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(new Lazy<WebApplication>(() => builder.Build(), LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
 
-            services.AddServices<ServiceBase>(true);
+            services.AddServices<ServiceBase>(true, AppDomain.CurrentDomain.GetAssemblies());
         }
 
         var serviceProvider = services.BuildServiceProvider();

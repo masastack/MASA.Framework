@@ -1,0 +1,30 @@
+{
+  "DccOptions": {
+    "Servers": [
+      {
+        "Host": "localhost",
+        "Port": 8888
+      }
+    ],
+    "DefaultDatabase": 0,
+    "Password": "",
+    "DccServiceAddress": "http://localhost:6379"
+  },
+  "AppId": "DccTest",
+  "Environment": "Test",
+  "Cluster": "Default",
+  "ConfigObjects": [
+    "Test1"
+  ],
+  "Sectet": "",
+  "ExpandSections": [
+    {
+      "AppId": "DccTest2",
+      "Environment": "Test2",
+      "Cluster": "Default",
+      "ConfigObjects": [
+        "Test3"
+      ]
+    }
+  ]
+}

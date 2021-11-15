@@ -12,30 +12,11 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
 
     public async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
     {
-        try
-        {
-            await next();
+        await next();
 
-            if (@event is ITransaction transactionEvent)
-            {
-                if (transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun)
-                {
-                    await transactionEvent.UnitOfWork.CommitAsync();
-                }
-            }
-        }
-        catch (Exception ex)
+        if (@event is ITransaction transactionEvent && transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun)
         {
-            _logger.LogError(ex, nameof(TransactionMiddleware<TEvent>));
-
-            if (@event is ITransaction transactionEvent && transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun && !transactionEvent.UnitOfWork.DisableRollbackOnFailure)
-            {
-                await transactionEvent.UnitOfWork.RollbackAsync();
-            }
-            else
-            {
-                throw;
-            }
+            await transactionEvent.UnitOfWork.CommitAsync();
         }
     }
 }

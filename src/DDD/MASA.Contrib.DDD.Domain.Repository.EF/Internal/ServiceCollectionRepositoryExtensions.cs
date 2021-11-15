@@ -2,6 +2,11 @@ namespace MASA.Contrib.DDD.Domain.Repository.EF.Internal;
 
 internal static class ServiceCollectionRepositoryExtensions
 {
+    /// <summary>
+    /// The relationship between entity and keys
+    /// </summary>
+    public static Dictionary<Type, string[]> Relations = new();
+
     public static IServiceCollection TryAddRepository<TDbContext>(
        this IServiceCollection services,
        params Assembly[] assemblies)
@@ -9,7 +14,7 @@ internal static class ServiceCollectionRepositoryExtensions
     {
         if (assemblies == null || assemblies.Length == 0)
         {
-            assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            throw new ArgumentNullException(nameof(assemblies));
         }
 
         var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes());
@@ -21,8 +26,44 @@ internal static class ServiceCollectionRepositoryExtensions
             services.TryAddAddDefaultRepository(repositoryInterfaceType, GetRepositoryImplementationType(typeof(TDbContext), entityType));
 
             services.TryAddCustomRepository(repositoryInterfaceType, allTypes.ToArray());
+
+            var keys = GetKeys(entityType);
+            CheckKeys(entityType, keys);
+            Relations.TryAdd(entityType, keys);
         }
+
         return services;
+    }
+
+    private static string[] GetKeys(Type entityType)
+    {
+        IAggregateRoot aggregateRoot;
+        try
+        {
+            aggregateRoot = (IAggregateRoot)(Activator.CreateInstance(entityType))!;
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentNullException("The entity needs to have an empty constructor");
+        }
+
+        var keys = aggregateRoot.GetKeys().Select(k => k.Name).ToArray();
+        if (keys.Length != keys.Where(key => !string.IsNullOrEmpty(key)).Distinct().Count())
+            throw new ArgumentException("The joint primary key cannot be empty");
+
+        return keys;
+    }
+
+    /// <summary>
+    /// Check if the combined primary key is correct
+    /// </summary>
+    private static void CheckKeys(Type entityType, string[] fields)
+    {
+        foreach (var field in fields)
+        {
+            if (!entityType.GetProperties().Any(p => p.Name.Equals(field, StringComparison.OrdinalIgnoreCase))!)
+                throw new ArgumentException("Check if the combined primary key is correct");
+        }
     }
 
     private static bool IsAggregateRootEntity(this Type type)

@@ -8,7 +8,11 @@ public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork UnitOfWork
+    {
+        get => throw new NotSupportedException(nameof(UnitOfWork));
+        set => throw new NotSupportedException(nameof(UnitOfWork));
+    }
 
     public abstract TResult Result { get; set; }
 

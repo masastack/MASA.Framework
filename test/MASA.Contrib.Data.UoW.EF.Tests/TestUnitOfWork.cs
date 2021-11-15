@@ -3,6 +3,15 @@ namespace MASA.Contrib.Data.UoW.EF.Tests;
 [TestClass]
 public class TestUnitOfWork : TestBase
 {
+    private Mock<IDispatcherOptions> _options;
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        _options = new();
+        _options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+    }
+
     [TestMethod]
     public void TestAddUoWAndNullServices()
     {
@@ -13,103 +22,179 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public void TestAddUoW()
     {
-        var options = new Mock<IDispatcherOptions>();
-        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
-        options.Object.UseUoW<CustomerDbContext>();
-        var serviceProvider = options.Object.Services.BuildServiceProvider();
-        Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetRequiredService<CustomerDbContext>());
+        _options.Object.UseUoW<CustomerDbContext>();
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        Assert.ThrowsException<InvalidOperationException>(()
+            => serviceProvider.GetRequiredService<CustomerDbContext>()
+        );
     }
 
     [TestMethod]
     public void TestAddUoWAndUseSqlLite()
     {
-        var options = new Mock<IDispatcherOptions>();
-        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
-        options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
-        var serviceProvider = options.Object.Services.BuildServiceProvider();
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetRequiredService<CustomerDbContext>());
     }
 
     [TestMethod]
     public void TestAddMultUoW()
     {
-        var options = new Mock<IDispatcherOptions>();
-        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
-        options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection)).UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
-        var serviceProvider = options.Object.Services.BuildServiceProvider();
+        _options.Object
+            .UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection))
+            .UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
 
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);
     }
 
     [TestMethod]
-    public async Task TestNoTransactionAndCommitAsync()
+    public void TestTransaction()
     {
-        var serviceProviderAndDbContext = base.CreateDefault();
-        var serviceProvider = serviceProviderAndDbContext.serviceProvider;
-        var dbContext = serviceProviderAndDbContext.dbContext;
-
-        await using (var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>())
-        {
-            var transcation = unitOfWork.Transaction;
-            Assert.IsTrue(unitOfWork == serviceProvider.GetRequiredService<ITransaction>().UnitOfWork);
-
-            Users user = new Users()
-            {
-                Id = Guid.NewGuid(),
-                Name = Guid.NewGuid().ToString()
-            };
-            dbContext.Add(user);
-            await unitOfWork.CommitAsync();
-
-            Assert.IsTrue(dbContext.User.Any(user => user.Id == user.Id));
-        }
+        Mock<IUnitOfWork> uoW = new();
+        Assert.IsTrue(new Transaction(uoW.Object).UnitOfWork.Equals(uoW.Object));
     }
 
     [TestMethod]
-    public async Task TestUseTransactionAndCommitAsync()
+    public async Task TestSaveChangesAsync()
     {
-        var serviceProviderAndDbContext = base.CreateDefault();
-        var serviceProvider = serviceProviderAndDbContext.serviceProvider;
-        var dbContext = serviceProviderAndDbContext.dbContext;
-
-        using (var transcation = await dbContext.Database.BeginTransactionAsync())
-        {
-            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-
-            Users user = new Users()
-            {
-                Id = Guid.NewGuid(),
-                Name = Guid.NewGuid().ToString()
-            };
-            dbContext.Add(user);
-            await unitOfWork.CommitAsync(); ;
-        }
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        Mock<CustomerDbContext> customerDbContext = new();
+        customerDbContext.Setup(dbContext => dbContext.SaveChangesAsync(default)).Verifiable();
+        var uoW = new UnitOfWork<CustomerDbContext>(customerDbContext.Object, null);
+        await uoW.SaveChangesAsync(default);
+        customerDbContext.Verify(dbContext => dbContext.SaveChangesAsync(default), Times.Once);
     }
 
     [TestMethod]
-    public async Task TestNoTransactionAsync()
+    public async Task TestUseTranscationAsync()
     {
-        var serviceProviderAndDbContext = base.CreateDefault();
-        var serviceProvider = serviceProviderAndDbContext.serviceProvider;
-        var dbContext = serviceProviderAndDbContext.dbContext;
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
 
-        await using (var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>())
+        var transaction = uoW.Transaction;
+        Users user = new Users()
         {
-            Users user = new Users()
-            {
-                Id = Guid.NewGuid(),
-                Name = Guid.NewGuid().ToString().Substring(0, 6)
-            };
-            dbContext.Add(user);
+            Name = Guid.NewGuid().ToString()
+        };
+        dbContext.Add(user);
+        await uoW.SaveChangesAsync();
+        await uoW.RollbackAsync();
 
-            await unitOfWork.SaveChangesAsync();
+        Assert.IsTrue(dbContext.User.ToList().Count() == 0);
+    }
 
-            await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
-            {
-                await unitOfWork.RollbackAsync();
-            });
+    [TestMethod]
+    public async Task TestNotUseTranscationAsync()
+    {
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = new UnitOfWork<CustomerDbContext>(dbContext, null);
 
-            Assert.IsTrue(dbContext.User.Any(user => user.Id == user.Id));
-        }
+        Users user = new Users()
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        dbContext.Add(user);
+        await uoW.SaveChangesAsync();
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await uoW.RollbackAsync());
+    }
+
+    [TestMethod]
+    public async Task TestNotTransactionCommitAsync()
+    {
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = new UnitOfWork<CustomerDbContext>(dbContext, null);
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await uoW.CommitAsync());
+    }
+
+    [TestMethod]
+    public async Task TestCommitAsync()
+    {
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = new UnitOfWork<CustomerDbContext>(dbContext, null);
+        var user = new Users()
+        {
+            Name = "Tom"
+        };
+        var transcation = uoW.Transaction;
+        dbContext.User.Add(user);
+        await uoW.SaveChangesAsync();
+        await uoW.CommitAsync();
+
+        Assert.IsTrue(dbContext.User.ToList().Count == 1);
+    }
+
+    [TestMethod]
+    public async Task TestCloseRollbackAsync()
+    {
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection), true);
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var user = new Users();
+        var transcation = uoW.Transaction;
+        dbContext.User.Add(user);
+        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await uoW.CommitAsync());
+    }
+
+    [TestMethod]
+    public async Task TestAddLoggerAndCloseRollbackAsync()
+    {
+        _options.Object.Services.AddLogging();
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection), true);
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var user = new Users();
+        var transcation = uoW.Transaction;
+        dbContext.User.Add(user);
+        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await uoW.CommitAsync());
+    }
+
+    [TestMethod]
+    public async Task TestOpenRollbackAsync()
+    {
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var user = new Users();
+        var transcation = uoW.Transaction;
+        dbContext.User.Add(user);
+        await uoW.CommitAsync();
+
+        Assert.IsTrue(!await dbContext.User.AnyAsync());
+    }
+
+    [TestMethod]
+    public async Task TestAddLoggerAndOpenRollbackAsync()
+    {
+        _options.Object.Services.AddLogging();
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
+        dbContext.Database.EnsureCreated();
+        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
+        var user = new Users();
+        var transcation = uoW.Transaction;
+        dbContext.User.Add(user);
+        await uoW.CommitAsync();
+
+        Assert.IsTrue(!await dbContext.User.AnyAsync());
     }
 }

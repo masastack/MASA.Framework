@@ -1,5 +1,3 @@
-using MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.Events;
-
 namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.EventHandlers;
 
 public class AddGoodsHandler

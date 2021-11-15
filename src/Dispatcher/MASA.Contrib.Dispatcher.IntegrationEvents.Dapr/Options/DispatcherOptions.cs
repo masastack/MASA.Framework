@@ -11,7 +11,7 @@ public class DispatcherOptions : IDispatcherOptions
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentNullException(_pubSubName);
+                throw new ArgumentNullException(nameof(_pubSubName));
             }
             _pubSubName = value;
         }
@@ -31,18 +31,15 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_assemblies));
             }
-            Types = _assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            AllEventTypes = GetTypes(typeof(IEvent)).ToList();
+
+            AllEventTypes = _assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
+                .ToList();
         }
     }
 
-    private List<Type> Types { get; set; }
-
-    private List<Type> AllEventTypes { get; set; }
-
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass && t != typeof(IntegrationEvent));
-
-    public IEnumerable<Type> GetAllEventTypes() => AllEventTypes;
+    public List<Type> AllEventTypes { get; private set; }
 
     public DispatcherOptions(IServiceCollection services) => Services = services;
 }

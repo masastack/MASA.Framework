@@ -1,5 +1,3 @@
-using MASA.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.Events;
-
 namespace MASA.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.EventHandlers;
 
 public class AddCatalogHandler

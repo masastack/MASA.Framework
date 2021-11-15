@@ -1,6 +1,6 @@
 namespace MASA.Contrib.Data.UoW.EF;
 
-public class UnitOfWork<TDbContext> : IUnitOfWork
+public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
     where TDbContext : MasaDbContext
 {
     public DbTransaction Transaction
@@ -21,9 +21,9 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
 
     private readonly DbContext _context;
 
-    private readonly ILogger<UnitOfWork<TDbContext>> _logger;
+    private readonly ILogger<UnitOfWork<TDbContext>>? _logger;
 
-    public UnitOfWork(TDbContext dbContext, ILogger<UnitOfWork<TDbContext>> logger)
+    public UnitOfWork(TDbContext dbContext, ILogger<UnitOfWork<TDbContext>>? logger = null)
     {
         _context = dbContext;
         _logger = logger;
@@ -37,24 +37,23 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (!TransactionHasBegun)
-        {
-            return;
-        }
+            throw new NotSupportedException("Transaction not opened");
 
         try
         {
-            await SaveChangesAsync();
+            await SaveChangesAsync(cancellationToken);
             await _context.Database.CommitTransactionAsync(cancellationToken);
         }
         catch (Exception ex)
         {
             if (DisableRollbackOnFailure)
             {
-                _logger.LogError(ex, "Failed to commit transaction");
+                _logger?.LogError(ex, "Failed to commit transaction");
                 throw;
             }
+
             await _context.Database.RollbackTransactionAsync(cancellationToken);
-            _logger.LogError(ex, "Failed to commit transaction, rolled back");
+            _logger?.LogError(ex, "Failed to commit transaction, rolled back");
         }
     }
 
@@ -62,11 +61,9 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
     {
         if (!TransactionHasBegun)
             throw new NotSupportedException("Transactions are not started and rollback is not supported");
+
         await _context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
-    public ValueTask DisposeAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

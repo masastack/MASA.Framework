@@ -22,17 +22,17 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     private bool IsAggregateRootEntity(Type type)
-        => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) && type != typeof(Entity) && typeof(IAggregateRoot).IsAssignableFrom(type);
+        => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) && typeof(IAggregateRoot).IsAssignableFrom(type);
 
     private IEnumerable<Type> Types { get; set; }
 
-    public List<Type> AllEventTypes { get; private set; }
+    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => t.IsClass && type.IsAssignableFrom(t));
 
-    public List<Type> AllDomainServiceTypes { get; private set; }
+    internal List<Type> AllEventTypes { get; private set; }
 
-    public List<Type> AllAggregateRootTypes { get; private set; }
+    internal List<Type> AllDomainServiceTypes { get; private set; }
 
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass);
+    internal List<Type> AllAggregateRootTypes { get; private set; }
 
     public IServiceCollection Services { get; }
 

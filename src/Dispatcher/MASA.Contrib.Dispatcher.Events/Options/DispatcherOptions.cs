@@ -14,20 +14,16 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_assemblies));
             }
-            Types = _assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            _allEventTypes = GetTypes(typeof(IEvent)).ToList();
+            AllEventTypes = _assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
+                .ToList();
         }
     }
 
-    private IEnumerable<Type> Types { get; set; }
-
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass);
-
-    public IEnumerable<Type> GetAllEventTypes() => _allEventTypes;
+    public IEnumerable<Type> AllEventTypes { get; private set; }
 
     public IServiceCollection Services { get; }
-
-    private IEnumerable<Type> _allEventTypes;
 
     public DispatcherOptions(IServiceCollection services) => Services = services;
 }

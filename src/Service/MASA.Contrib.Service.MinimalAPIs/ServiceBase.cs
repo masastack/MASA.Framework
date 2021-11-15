@@ -1,4 +1,5 @@
 namespace MASA.Contrib.Service.MinimalAPIs;
+
 public class ServiceBase : IService
 {
     private ServiceProvider _serviceProvider = default!;

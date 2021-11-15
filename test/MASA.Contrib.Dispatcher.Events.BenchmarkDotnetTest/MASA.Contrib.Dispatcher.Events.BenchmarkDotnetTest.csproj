@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -17,5 +17,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Dispatcher\MASA.Contrib.Dispatcher.Events\MASA.Contrib.Dispatcher.Events.csproj" />
   </ItemGroup>
-  
+
 </Project>

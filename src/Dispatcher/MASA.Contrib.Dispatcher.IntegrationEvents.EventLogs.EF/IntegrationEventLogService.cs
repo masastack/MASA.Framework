@@ -59,7 +59,10 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
     {
-        var eventLogEntry = _eventLogContext.EventLogs.Single(e => e.Id == eventId);
+        var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
+        if (eventLogEntry == null)
+            throw new ArgumentException(nameof(eventId));
+            
         eventLogEntry.State = status;
 
         if (status == IntegrationEventStates.InProgress)
@@ -73,10 +76,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     private void CheckAndDetached(IntegrationEventLog integrationEvent)
     {
-        return;
         if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {
-            _eventLogContext.Entry<IntegrationEventLog>(integrationEvent).State = EntityState.Detached;
+            _eventLogContext.Entry(integrationEvent).State = EntityState.Detached;
         }
     }
 }

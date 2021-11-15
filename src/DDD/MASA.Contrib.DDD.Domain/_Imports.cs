@@ -6,6 +6,7 @@ global using MASA.BuildingBlocks.DDD.Domain.Services;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
 global using System.Collections.Concurrent;
 global using System.Reflection;

@@ -19,17 +19,29 @@ public class DomainEventBus : IDomainEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
     {
+        if (@event is IDomainEvent @domainEvent && !IsAssignableFromDomainQuery(@event.GetType()))
+        {
+            @domainEvent.UnitOfWork = _unitOfWork;
+        }
         if (@event is IIntegrationEvent integrationEvent)
         {
-            if (integrationEvent.UnitOfWork == null)
-            {
-                integrationEvent.UnitOfWork = _unitOfWork;
-            }
-            await _integrationEventBus.PublishAsync(integrationEvent);
+            await _integrationEventBus.PublishAsync((TEvent)integrationEvent);
         }
         else
         {
             await _eventBus.PublishAsync(@event);
+        }
+
+        bool IsAssignableFromDomainQuery(Type? type)
+        {
+            if (type == null)
+                return false;
+
+            if (!type.IsGenericType)
+            {
+                return IsAssignableFromDomainQuery(type.BaseType);
+            }
+            return type.GetInterfaces().Any(type => type.GetGenericTypeDefinition() == typeof(IDomainQuery<>));
         }
     }
 
@@ -48,9 +60,7 @@ public class DomainEventBus : IDomainEventBus
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
-    {
-        await _unitOfWork.CommitAsync(cancellationToken);
-    }
+        => await _unitOfWork.CommitAsync(cancellationToken);
 
     public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 }

@@ -31,8 +31,8 @@ public class IntegrationEventBus : IIntegrationEventBus
 
     public IEnumerable<Type> GetAllEventTypes() =>
         _eventBus == null ?
-        dispatcherOptions.GetAllEventTypes() :
-        dispatcherOptions.GetAllEventTypes().Concat(_eventBus.GetAllEventTypes()).Distinct();
+        dispatcherOptions.AllEventTypes :
+        dispatcherOptions.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 
     public async Task PublishAsync<TEvent>(TEvent @event)
         where TEvent : IEvent

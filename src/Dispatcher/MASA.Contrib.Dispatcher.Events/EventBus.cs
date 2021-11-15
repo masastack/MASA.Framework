@@ -49,12 +49,12 @@ public class EventBus : IEventBus
         await middlewares.Reverse().Aggregate(publishEvent, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
-    public IEnumerable<Type> GetAllEventTypes() => _options.GetAllEventTypes();
+    public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes;
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_unitOfWork is null)
-            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
+            throw new ArgumentNullException("You need to UseUoW when adding services");
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
