@@ -54,10 +54,6 @@ public class ConfigurationTest
         builder.AddMasaConfiguration(configurationBuilder =>
         {
             configurationBuilder.AddSection(new ConfigurationBuilder()
-               .SetBasePath(builder.Environment.ContentRootPath)
-               .AddJsonFile("appsettings.json", true, true), "Appsettings");
-
-            configurationBuilder.AddSection(new ConfigurationBuilder()
                 .SetBasePath(builder.Environment.ContentRootPath)
                 .AddJsonFile("redis.json", true, true), "RedisOptions");
 
@@ -89,10 +85,6 @@ public class ConfigurationTest
         {
             configurationBuilder.AddSection(new ConfigurationBuilder()
                 .SetBasePath(builder.Environment.ContentRootPath)
-                .AddJsonFile("appsettings.json", true, true), "Appsettings");
-
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(builder.Environment.ContentRootPath)
                 .AddJsonFile("redis.json", true, true)
             );
             configurationBuilder.AddSection(new ConfigurationBuilder()
@@ -120,10 +112,6 @@ public class ConfigurationTest
         var builder = WebApplication.CreateBuilder();
         builder.AddMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(builder.Environment.ContentRootPath)
-                .AddJsonFile("appsettings.json", true, true), "Appsettings");
-
             configurationBuilder.AddSection(new ConfigurationBuilder()
                     .SetBasePath(builder.Environment.ContentRootPath)
                     .AddJsonFile("redis.json", true, true)
@@ -160,12 +148,7 @@ public class ConfigurationTest
         Assert.ThrowsException<ArgumentException>(() =>
             builder.AddMasaConfiguration(configurationBuilder =>
             {
-                configurationBuilder.AddSection(
-                new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true, true), "Appsettings"
-                    );
-            }, typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly));
+            }, "Appsettings", typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly));
     }
 
     [TestMethod]
@@ -178,14 +161,9 @@ public class ConfigurationTest
             {
                 configurationBuilder.AddSection(new ConfigurationBuilder()
                     .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true, true), "Appsettings"
-                   );
-
-                configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
                     .AddJsonFile("redis.json", true, true)
                 ); //Mount to the Local section
-            }, typeof(ConfigurationTest).Assembly, typeof(MountSectionRedisOptions).Assembly);
+            }, "Appsettings", typeof(ConfigurationTest).Assembly, typeof(MountSectionRedisOptions).Assembly);
         });
     }
 
@@ -259,10 +237,6 @@ public class ConfigurationTest
         {
             configurationBuilder.AddSection(new ConfigurationBuilder()
                 .SetBasePath(rootPath)
-                .AddJsonFile("appsettings.json", true, true), "Appsettings");
-
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(rootPath)
                 .AddJsonFile("redis.json", true, true), "RedisOptions");
 
             configurationBuilder.AddSection(new ConfigurationBuilder()
@@ -274,7 +248,7 @@ public class ConfigurationTest
             {
                 option.Mapping<RedisOptions>(SectionTypes.Local, "");
             });
-        }, typeof(ConfigurationTest).Assembly);
+        }, "Appsettings", typeof(ConfigurationTest).Assembly);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var systemOption = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();

@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Data.UoW" Version="0.0.7838" />
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.7838" />
-    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.7825" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-rc.2.21480.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0-rc.2.21480.5" />
+    <PackageReference Include="MASA.BuildingBlocks.Data.UoW" Version="0.0.7847" />
+    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.7847" />
+    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.7846" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

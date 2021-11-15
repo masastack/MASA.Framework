@@ -17,9 +17,9 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0-rc.2.21480.5" />
-    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.7838" />
-    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.7825" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
+    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.7847" />
+    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.7846" />
   </ItemGroup>
 
   <ItemGroup>

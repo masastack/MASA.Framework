@@ -6,16 +6,18 @@ public static class ServiceCollectionExtensions
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate = null)
         => builder.AddMasaConfiguration(configureDelegate,
+            "Appsettings",
             AppDomain.CurrentDomain.GetAssemblies());
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate,
+        string defaultSectionName = "Appsettings",
         params Assembly[] assemblies)
     {
-        // TODO Currently builder.Configuration does not support updating after refresh, wait for the problem to be fixed before processing
-        // https://github.com/dotnet/core/blob/main/release-notes/6.0/known-issues.md#configuration-not-reloaded-on-changes
-        var masaConfiguration = builder.Services.CreateMasaConfiguration(configureDelegate, assemblies: assemblies);
+        var configurationBuilder = GetConfigurationBuilder(builder.Configuration);
+
+        IConfigurationRoot masaConfiguration = builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, defaultSectionName, assemblies);
         if (!masaConfiguration.Providers.Any())
             return builder;
 
@@ -78,6 +80,24 @@ public static class ServiceCollectionExtensions
         });
 
         return configuration;
+    }
+
+    private static IConfigurationBuilder GetConfigurationBuilder(ConfigurationManager configuration)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        foreach (var source in ((IConfigurationBuilder)configuration).Sources)
+        {
+            configurationBuilder.Add(source);
+        }
+        return configurationBuilder;
+    }
+
+    private static void ClearSource(this WebApplicationBuilder builder)
+    {
+        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(builder.Host, configBuilder =>
+        {
+            configBuilder.Sources.Clear();
+        });
     }
 
     internal static void ConfigureOption(
