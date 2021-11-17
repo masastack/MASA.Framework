@@ -2,14 +2,14 @@ namespace MASA.Contrib.BasicAbility.Dcc;
 
 public static class MasaConfigurationExtensions
 {
-    public static IMasaConfigurationBuilder UseDCC(
+    public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         IServiceCollection services,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerOptions>? callerOptions = null)
-        => builder.UseDCC(services, "Appsettings", jsonSerializerOptions, callerOptions);
+        => builder.UseDcc(services, "Appsettings", jsonSerializerOptions, callerOptions);
 
-    public static IMasaConfigurationBuilder UseDCC(
+    public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         IServiceCollection services,
         string defaultSectionName,
@@ -29,7 +29,7 @@ public static class MasaConfigurationExtensions
             configurationExpandSection.Bind(expandSections);
         }
 
-        return builder.UseDCC(services, () => dccOptions, option =>
+        return builder.UseDcc(services, () => dccOptions, option =>
         {
             option.Environment = configuration["Environment"];
             option.Cluster = configuration["Cluster"];
@@ -39,7 +39,7 @@ public static class MasaConfigurationExtensions
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
-    public static IMasaConfigurationBuilder UseDCC(
+    public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         IServiceCollection services,
         Func<DccConfigurationOptions> configureOptions,
@@ -65,7 +65,7 @@ public static class MasaConfigurationExtensions
             if (callerOptions == null)
             {
                 Options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.DccServiceAddress), jsonSerializerOption)
+                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress), jsonSerializerOption)
                 );
             }
             else
@@ -74,7 +74,7 @@ public static class MasaConfigurationExtensions
             }
         });
 
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOption).AddSharedMasaMemoryCache(config.DccConfigurationOption.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
+        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOption.RedisOptions).AddSharedMasaMemoryCache(config.DccConfigurationOption.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
         TryAddConfigurationAPIClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
         TryAddConfigurationAPIManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
@@ -129,11 +129,14 @@ public static class MasaConfigurationExtensions
         if (dccConfigurationOption == null)
             throw new ArgumentNullException(nameof(configureOptions));
 
-        if (string.IsNullOrEmpty(dccConfigurationOption.DccServiceAddress))
-            throw new ArgumentNullException(nameof(dccConfigurationOption.DccServiceAddress));
+        if (string.IsNullOrEmpty(dccConfigurationOption.ManageServiceAddress))
+            throw new ArgumentNullException(nameof(dccConfigurationOption.ManageServiceAddress));
 
-        if (dccConfigurationOption.Servers == null || dccConfigurationOption.Servers.Count == 0 || dccConfigurationOption.Servers.Any(service => string.IsNullOrEmpty(service.Host) || service.Port <= 0))
-            throw new ArgumentNullException(nameof(dccConfigurationOption.Servers));
+        if (dccConfigurationOption.RedisOptions == null)
+            throw new ArgumentNullException(nameof(dccConfigurationOption.RedisOptions));
+
+        if (dccConfigurationOption.RedisOptions.Servers == null || dccConfigurationOption.RedisOptions.Servers.Count == 0 || dccConfigurationOption.RedisOptions.Servers.Any(service => string.IsNullOrEmpty(service.Host) || service.Port <= 0))
+            throw new ArgumentNullException(nameof(dccConfigurationOption.RedisOptions.Servers));
 
         if (defaultSectionOptions == null)
             throw new ArgumentNullException(nameof(defaultSectionOptions));

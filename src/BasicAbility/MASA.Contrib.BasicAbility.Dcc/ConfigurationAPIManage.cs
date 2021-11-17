@@ -15,7 +15,7 @@ public class ConfigurationAPIManage : ConfigurationAPIBase, IConfigurationAPIMan
 
     public async Task UpdateAsync(string environment, string cluster, string appId, string configObject, object value)
     {
-        var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppid(appId)}/{GetConfigObject(configObject)}?secret={GetSecret(appId)}";
+        var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{GetConfigObject(configObject)}?secret={GetSecret(appId)}";
         var result = await _callerProvider.PutAsync(requestUri, value, default);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework

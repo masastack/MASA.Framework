@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.7847" />
-    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.0.7846" />
-    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.7846" />
+    <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.7878" />
+    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.0.7849" />
+    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.7849" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 

@@ -115,5 +115,5 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
     }
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
-        => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppid(appId)}-{GetConfigObject(configObject)}".ToLower();
+        => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 }

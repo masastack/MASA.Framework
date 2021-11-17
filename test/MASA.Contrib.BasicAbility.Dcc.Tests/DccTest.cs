@@ -40,7 +40,7 @@ public class DccTest
     public void TestErrorDccSection()
     {
         _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(new ServiceCollection()));
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(new ServiceCollection()));
     }
 
     [TestMethod]
@@ -100,13 +100,13 @@ public class DccTest
     {
         _services.AddCaller(options => options.UseHttpClient());
         _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, "", null, null), "configureOptions");
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, "", null, null), "configureOptions");
     }
 
     [TestMethod]
     public void TestUseDCCAndNullDccConfigurationOption()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () => null, option =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () => null, option =>
         {
             option.AppId = "Test";
             option.Environment = "Test";
@@ -115,7 +115,7 @@ public class DccTest
 
         Initialize();
 
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, null, option =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, null, option =>
         {
             option.AppId = "Test";
             option.Environment = "Test";
@@ -129,10 +129,12 @@ public class DccTest
         Mock<IConfigurationAPIClient> configurationAPIClient = new();
         configurationAPIClient.Setup(client => client.GetRawAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), null).Result).Returns(() => ("", ConfigurationTypes.Text));
         _services.AddSingleton(configurationAPIClient.Object);
-        _masaConfigurationBuilder.Object.UseDCC(_services, () => new DccConfigurationOptions()
+        _masaConfigurationBuilder.Object.UseDcc(_services, () => new DccConfigurationOptions()
         {
-            DccServiceAddress = "https://github.com",
-            Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+            ManageServiceAddress = "https://github.com",
+            RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions
+            {
+                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                 {
                     new Utils.Caching.Redis.Models.RedisServerOptions()
                     {
@@ -140,6 +142,7 @@ public class DccTest
                         Port = 6379
                     }
                 }
+            }
         }, option =>
         {
             option.AppId = "Test";
@@ -166,11 +169,11 @@ public class DccTest
     [TestMethod]
     public void TestUseDCCAndEmptyDccServiceAddress()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "",
+                ManageServiceAddress = "",
             };
         }, null, null), "DccServiceAddress");
     }
@@ -178,54 +181,66 @@ public class DccTest
     [TestMethod]
     public void TestUseDCCAndErrorDccService()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = null
-            };
-        }, null, null), "Servers");
-
-        _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
-        {
-            return new DccConfigurationOptions()
-            {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
-            };
-        }, null, null), "Servers");
-
-        _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
-        {
-            return new DccConfigurationOptions()
-            {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = null
+                }
+            };
+        }, null, null), "Servers");
+
+        _services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
+        {
+            return new DccConfigurationOptions()
+            {
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions
+                {
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                }
+            };
+        }, null, null), "Servers");
+
+        _services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
+        {
+            return new DccConfigurationOptions()
+            {
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions
+                {
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host="",
-                        Port=8080
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host="",
+                            Port=8080
+                        }
                     }
                 }
             };
         }, null, null), "Servers");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host="localhost",
-                        Port=-1
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host="localhost",
+                            Port=-1
+                        }
                     }
                 }
             };
@@ -235,34 +250,40 @@ public class DccTest
     [TestMethod]
     public void TestUseDCCAndErrorDefaultSectionOption()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
         }, null, null), "defaultSectionOptions");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -272,17 +293,20 @@ public class DccTest
         }, null), "AppId cannot be empty");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -293,17 +317,20 @@ public class DccTest
         }, null), "ConfigObjects cannot be empty");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -314,17 +341,20 @@ public class DccTest
         }, null), "ConfigObjects cannot be empty");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -343,17 +373,20 @@ public class DccTest
     {
         System.Environment.SetEnvironmentVariable(DefaultEnvironmentName, "Test");
 
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -376,17 +409,20 @@ public class DccTest
         }), "ConfigObjects in the extension section cannot be empty");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -410,17 +446,20 @@ public class DccTest
         }), "ConfigObjects in the extension section cannot be empty");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -447,17 +486,20 @@ public class DccTest
         }), "The current section already exists, no need to mount repeatedly");
 
         _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -503,17 +545,20 @@ public class DccTest
             => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
-        _masaConfigurationBuilder.Object.UseDCC(_services, () =>
+        _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
             return new DccConfigurationOptions()
             {
-                DccServiceAddress = "https://github.com",
-                Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
+                ManageServiceAddress = "https://github.com",
+                RedisOptions = new Utils.Caching.Redis.Models.RedisConfigurationOptions()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        Host = "localhost",
-                        Port = 6379
+                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        {
+                            Host = "localhost",
+                            Port = 6379
+                        }
                     }
                 }
             };
@@ -559,7 +604,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
         trigger.Execute();
 
@@ -583,7 +628,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
 
         Initialize();
@@ -602,7 +647,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
 
         Initialize();
@@ -621,7 +666,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
 
 
@@ -641,7 +686,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        Assert.ThrowsException<NotSupportedException>(() => _masaConfigurationBuilder.Object.UseDCC(_services), "configurationType");
+        Assert.ThrowsException<NotSupportedException>(() => _masaConfigurationBuilder.Object.UseDcc(_services), "configurationType");
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
     }
 
@@ -666,7 +711,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync("Test", "Default", "DccTest", "Test1", It.IsAny<Action<string>>()), Times.Once);
         configurationAPIClient.Verify(client => client.GetRawAsync("Test2", "Default", "DccTest2", "Test3", It.IsAny<Action<string>>()), Times.Once);
         configurationAPIClient.Verify(client => client.GetRawAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Exactly(2));
@@ -691,7 +736,7 @@ public class DccTest
             { "Appsettings",chainedConfiguration.Build() }
         }).Verifiable();
 
-        _masaConfigurationBuilder.Object.UseDCC(_services).UseDCC(_services);
+        _masaConfigurationBuilder.Object.UseDcc(_services).UseDcc(_services);
         configurationAPIClient.Verify(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), Times.Once);
 
         var httpClient = _services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);

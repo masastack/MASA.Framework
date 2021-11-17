@@ -13,7 +13,7 @@ public class ConfigurationAPIBase
 
     protected string GetSecret(string appId)
     {
-        if (_defaultSectionOption.AppId == appId)
+        if (_defaultSectionOption.AppId == GetAppId(appId))
             return _defaultSectionOption.Secret ?? "";
 
         var option = _expandSectionOptions.FirstOrDefault(x => x.AppId == appId);
@@ -29,7 +29,7 @@ public class ConfigurationAPIBase
     protected string GetCluster(string cluster)
         => !string.IsNullOrEmpty(cluster) ? cluster : _defaultSectionOption.Cluster!;
 
-    protected string GetAppid(string appId)
+    protected string GetAppId(string appId)
         => !string.IsNullOrEmpty(appId) ? appId : _defaultSectionOption.AppId!;
 
     protected string GetConfigObject(string configObject)

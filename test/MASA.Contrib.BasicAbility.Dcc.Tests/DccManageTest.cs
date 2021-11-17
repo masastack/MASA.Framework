@@ -157,7 +157,7 @@ public class CustomConfigurationAPI : ConfigurationAPIBase
 
     public string GetCluster(string cluster) => base.GetCluster(cluster);
 
-    public string GetAppid(string appId) => base.GetAppid(appId);
+    public string GetAppid(string appId) => base.GetAppId(appId);
 
     public string GetConfigObject(string configObject) => base.GetConfigObject(configObject);
 }

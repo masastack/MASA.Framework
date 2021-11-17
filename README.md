@@ -11,12 +11,16 @@ MASA.Contrib
 ├── solution items
 │   ├── nuget.config
 ├── src
+│   ├── BasicAbility
+│   │   ├── MASA.Contrib.BasicAbility.Dcc                          ConfigurationAPI
+│   ├── Configuration
+│   │   ├── MASA.Contrib.Configuration
 │   ├── Data
 │   │   ├── MASA.Contrib.Data.UoW.EF                               Unit of work
-│   │   └── MASA.Contribs.Data.Contracts.EF                        Protocol EF version
+│   │   └── MASA.Contrib.Data.Contracts.EF                        Protocol EF version
 │   ├── DDD
-│   │   ├── MASA.Contribs.DDD.Domain                               In-process and cross-process support
-│   │   └── MASA.Contribs.DDD.Domain.Repository.EF
+│   │   ├── MASA.Contrib.DDD.Domain                               In-process and cross-process support
+│   │   └── MASA.Contrib.DDD.Domain.Repository.EF
 │   ├── Dispatcher
 │   │   ├── MASA.Contrib.Dispatcher.Events                         In-process event
 │   │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
@@ -38,8 +42,8 @@ MASA.Contrib
 │   │   ├── MASA.Contrib.Dispatcher.Events.Tests
 │   ├── MASA.Contrib.Data.UoW.EF.Tests
 │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
-│   ├── MASA.Contribs.DDD.Domain.Tests
-│   ├── MASA.Contribs.DDD.Domain.Repository.EF.Tests
+│   ├── MASA.Contrib.DDD.Domain.Tests
+│   ├── MASA.Contrib.DDD.Domain.Repository.EF.Tests
 ```
 
 ## Feature
@@ -83,7 +87,7 @@ Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatche
 
 ### 5. DomainEventBus
 
-[Usage introduction](/src/DDD/MASA.Contribs.DDD.Domain/README.md)
+[Usage introduction](/src/DDD/MASA.Contrib.DDD.Domain/README.md)
 
 > Advantage：
 >
@@ -99,7 +103,7 @@ Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatche
 
 ### 7. Contracts.EF
 
-Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contribs.Data.Contracts.EF/README.md)
+Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contrib.Data.Contracts.EF/README.md)
 
 > Advantage：
 >
@@ -108,7 +112,7 @@ Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contribs.D
 > 3. Soft delete
 
 ```C#
-Install-Package MASA.Contribs.Data.Contracts.EF
+Install-Package MASA.Contrib.Data.Contracts.EF
 ```
 
 ```C#
@@ -123,6 +127,10 @@ builder.Services
 > When the entity inherits ISoftware and is deleted, change the delete state to the modified state, and cooperate with the custom Remove operation to achieve soft deletion
 > Do not query the data marked as soft deleted when querying
 > When combined with EventBus, the transaction is opened after the first CUD, and the transaction rollback is supported when the entire Handler is abnormal.
+
+### 8. MASA.Contrib.Configuration
+
+Redefine Configuration, support the management of Local and ConfigurationAPI nodes, combine IOptions and IOptionsMonitor to complete configuration acquisition and configuration update subscription [Local Usage introduction](src/Configuration/MASA.Contrib.Configuration/README.md) 、[Dcc Usage introduction](src/BasicAbility/MASA.Contrib.BasicAbility.Dcc/README.md)
 
 ## Unit testing rules
 
