@@ -29,7 +29,7 @@ jobs:
     - name: build
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
     - name: test
-      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      run: dotnet test --filter FullyQualifiedName!~.Tests --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
     - name: codecov
       uses: codecov/codecov-action@v1
     - name: package push
