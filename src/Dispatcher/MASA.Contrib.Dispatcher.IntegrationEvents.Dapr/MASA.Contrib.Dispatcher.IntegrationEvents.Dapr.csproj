@@ -9,8 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.4.0" />
     <PackageReference Include="Dapr.Client" Version="1.4.0" />
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.8047" />
-    <PackageReference Include="MASA.Utils.Models.Config" Version="0.0.7849" />
+    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.1493805322" />
+    <PackageReference Include="MASA.Utils.Models.Config" Version="0.0.1493976048" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>
