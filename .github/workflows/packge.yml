@@ -24,6 +24,12 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
+    - name: build
+      run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
+    - name: test
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    - name: codecov
+      uses: codecov/codecov-action@v1
     - name: package push
       run: |
         env
