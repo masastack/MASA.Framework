@@ -51,7 +51,7 @@ public class SoftDeleteTest : IDisposable
         });
         dbContext.SaveChanges();
         Assert.IsTrue(dbContext.Students.Count() == 1);
-        uoW.Verify(u => u.Transaction, Times.Once);
+        uoW.Verify(u => u.Transaction, Times.Never);
 
         var student = dbContext.Students.Where(s => s.Name == "Tom").FirstOrDefault();
         Assert.IsNotNull(student);
@@ -66,6 +66,7 @@ public class SoftDeleteTest : IDisposable
 
         uoW = new();
         uoW.Setup(u => u.Transaction).Verifiable();
+        uoW.Setup(u => u.UseTransaction).Returns(() => true);
         services = new ServiceCollection();
         services.AddScoped(serviceProvider => uoW.Object);
         services.AddMasaDbContext<CustomDbContext>(option =>

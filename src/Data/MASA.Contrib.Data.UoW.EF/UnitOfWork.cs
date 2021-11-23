@@ -7,10 +7,12 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
     {
         get
         {
+            if (!UseTransaction)
+                throw new NotSupportedException("Doesn't support transaction opening");
+
             if (TransactionHasBegun)
-            {
                 return _context.Database.CurrentTransaction!.GetDbTransaction();
-            }
+
             return _context.Database.BeginTransaction().GetDbTransaction();
         }
     }
@@ -18,6 +20,8 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
     public bool TransactionHasBegun => _context.Database.CurrentTransaction != null;
 
     public bool DisableRollbackOnFailure { get; set; }
+
+    public bool UseTransaction { get; set; } = true;
 
     private readonly DbContext _context;
 
@@ -36,7 +40,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        if (!TransactionHasBegun)
+        if (!UseTransaction || !TransactionHasBegun)
             throw new NotSupportedException("Transaction not opened");
 
         try
@@ -59,8 +63,8 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        if (!TransactionHasBegun)
-            throw new NotSupportedException("Transactions are not started and rollback is not supported");
+        if (!UseTransaction || !TransactionHasBegun)
+            throw new NotSupportedException("Transactions are not opened and rollback is not supported");
 
         await _context.Database.RollbackTransactionAsync(cancellationToken);
     }

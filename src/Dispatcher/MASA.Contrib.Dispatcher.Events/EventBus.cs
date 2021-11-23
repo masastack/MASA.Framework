@@ -25,8 +25,9 @@ public class EventBus : IEventBus
         }
 
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
-        if (@event is ITransaction transactionEvent)
+        if (_options.UnitOfWorkRelation[typeof(TEvent)])
         {
+            ITransaction transactionEvent = (ITransaction)@event;
             var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
             if (unitOfWork != null)
             {

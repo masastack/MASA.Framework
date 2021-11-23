@@ -5,7 +5,8 @@ public static class DispatcherOptionsExtensions
     public static IDispatcherOptions UseUoW<TDbContext>(
         this IDispatcherOptions options,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
-        bool disableRollbackOnFailure = false)
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
         where TDbContext : MasaDbContext
     {
         if (options.Services == null)
@@ -22,7 +23,8 @@ public static class DispatcherOptionsExtensions
             var logger = serviceProvider.GetService<ILogger<UnitOfWork<TDbContext>>>();
             return new UnitOfWork<TDbContext>(dbContext, logger)
             {
-                DisableRollbackOnFailure = disableRollbackOnFailure
+                DisableRollbackOnFailure = disableRollbackOnFailure,
+                UseTransaction = useTransaction
             };
         });
         if (options.Services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))

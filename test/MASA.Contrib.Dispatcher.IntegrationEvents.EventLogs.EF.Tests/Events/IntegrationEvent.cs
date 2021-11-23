@@ -7,7 +7,7 @@ public abstract record IntegrationEvent : IIntegrationEvent
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork? UnitOfWork { get; set; }
 
     public abstract string Topic { get; set; }
 

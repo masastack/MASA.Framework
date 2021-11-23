@@ -14,15 +14,17 @@ public static class ServiceCollectionExtensions
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
-        if (services.Any(service => service.ImplementationType == typeof (IntegrationEventBusProvider))) return services;
+        if (services.Any(service => service.ImplementationType == typeof(IntegrationEventBusProvider)))
+            return services;
+
         services.AddSingleton<IntegrationEventBusProvider>();
 
         var dispatcherOptions = new DispatcherOptions(services);
         options?.Invoke(dispatcherOptions);
+
         if (dispatcherOptions.Assemblies.Length == 0)
-        {
             dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        }
+
         services.TryAddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         services.AddLogging();
@@ -30,6 +32,12 @@ public static class ServiceCollectionExtensions
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
+
+        if (!services.Any(service => service.ServiceType == typeof(IUnitOfWork)))
+        {
+            var logger = services.BuildServiceProvider().GetRequiredService<ILogger<IntegrationEventBus>>();
+            logger.LogWarning("UoW is not enabled, local messages will not be integrated");
+        }
 
         return services;
     }

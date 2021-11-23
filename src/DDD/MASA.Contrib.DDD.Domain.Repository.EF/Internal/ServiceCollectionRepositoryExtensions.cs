@@ -40,7 +40,14 @@ internal static class ServiceCollectionRepositoryExtensions
         IAggregateRoot aggregateRoot;
         try
         {
-            aggregateRoot = (IAggregateRoot)(Activator.CreateInstance(entityType))!;
+            var constructorInfo = entityType
+                .GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                .FirstOrDefault(con => !con.CustomAttributes.Any());
+
+            if (constructorInfo == null)
+                throw new ArgumentNullException("The entity needs to have an empty constructor");
+
+            aggregateRoot = (IAggregateRoot)Activator.CreateInstance(entityType, constructorInfo.IsPrivate)!;
         }
         catch (Exception ex)
         {

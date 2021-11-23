@@ -18,8 +18,15 @@ public class DispatcherOptions : IDispatcherOptions
                 .SelectMany(assembly => assembly.GetTypes())
                 .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
                 .ToList();
+
+            UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, type => IsSupportUnitOfWork(type));
         }
     }
+
+    private bool IsSupportUnitOfWork(Type eventType)
+        => typeof(ITransaction).IsAssignableFrom(eventType) && !typeof(IDomainQuery<>).IsGenericInterfaceAssignableFrom(eventType);
+
+    internal Dictionary<Type, bool> UnitOfWorkRelation { get; set; } = new();
 
     public IEnumerable<Type> AllEventTypes { get; private set; }
 

@@ -6,11 +6,14 @@ internal class DispatcherBase
 
     protected readonly IServiceCollection _services;
 
+    protected readonly Assembly[] _assemblies;
+
     private readonly ILogger<DispatcherBase> _logger;
 
-    public DispatcherBase(IServiceCollection services, bool forceInit)
+    public DispatcherBase(IServiceCollection services, Assembly[] assemblies, bool forceInit)
     {
         _services = services;
+        _assemblies = assemblies;
         var serviceProvider = services.BuildServiceProvider();
         if (_sharingRelationNetwork == null || forceInit)
         {
@@ -25,7 +28,7 @@ internal class DispatcherBase
         var eventType = typeof(TEvent);
         if (!_sharingRelationNetwork.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations) || dispatchRelations == null)
         {
-            if(@event is IIntegrationEvent)
+            if (@event is IIntegrationEvent)
             {
                 _logger.LogError($"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
                 throw new ArgumentNullException($"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");

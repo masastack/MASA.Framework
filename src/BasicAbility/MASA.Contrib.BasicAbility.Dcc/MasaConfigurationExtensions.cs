@@ -103,7 +103,12 @@ public static class MasaConfigurationExtensions
             if (client == null)
                 throw new ArgumentNullException(nameof(client));
 
-            return DccFactory.CreateClient(client, jsonSerializerOption, defaultSectionOption, expansionSectionOptions);
+            return DccFactory.CreateClient(
+                serviceProvider,
+                client,
+                jsonSerializerOption,
+                defaultSectionOption,
+                expansionSectionOptions);
         });
         return services;
     }
@@ -168,7 +173,8 @@ public static class MasaConfigurationExtensions
             if (expansionOption.ConfigObjects == null || !expansionOption.ConfigObjects.Any())
                 throw new ArgumentNullException("ConfigObjects in the extension section cannot be empty");
 
-            if (expansionOption.AppId == defaultSectionOption.AppId || expansionOptions.Any(section => section.AppId == expansionOption.AppId))
+            if (expansionOption.AppId == defaultSectionOption.AppId ||
+                expansionOptions.Any(section => section.AppId == expansionOption.AppId))
                 throw new ArgumentNullException("The current section already exists, no need to mount repeatedly");
 
             expansionOptions.Add(expansionOption);

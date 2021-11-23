@@ -7,7 +7,7 @@ public record DomainCommand : IDomainCommand
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork? UnitOfWork { get; set; }
 
     public DomainCommand() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 

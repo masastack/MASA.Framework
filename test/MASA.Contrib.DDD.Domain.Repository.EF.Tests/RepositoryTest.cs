@@ -17,6 +17,7 @@ public class RepositoryTest : TestBase
             typeof(BaseRepositoryTest).Assembly
         };
         _uoW = new();
+        _uoW.Setup(uoW => uoW.UseTransaction).Returns(true);
         _dispatcherOptions = new();
         _dispatcherOptions.Setup(options => options.Services).Returns(() => _services);
 
@@ -85,11 +86,12 @@ public class RepositoryTest : TestBase
         await repository.RemoveAsync(order => order.Description == "Apple", default);
         await repository.UnitOfWork.SaveChangesAsync(default);
 
-        var list = await repository.GetPaginatedListAsync(0, 10, "desc", default);
+        var list = await repository.GetPaginatedListAsync(0, 10, null, default);
 
         Assert.IsTrue(list.Count == 3);
-        Assert.IsTrue(list[0].Description == "Microsoft");
+        Assert.IsTrue(list[0].Description == "HuaWei");
         Assert.IsTrue(list[1].Description == "Google");
+        Assert.IsTrue(list[2].Description == "Microsoft");
 
         list = await repository.GetPaginatedListAsync(1, 10, null, default);
         Assert.IsTrue(list.Count == 2);
@@ -103,7 +105,7 @@ public class RepositoryTest : TestBase
         var count = await repository.GetCountAsync(default);
         Assert.IsTrue(count == 3);
 
-        var huaWei = await repository.FindAsync(huaweiOrder.Id);
+        var huaWei = await repository.FindAsync(huaweiOrder.Id, huaweiOrder.OrderNumber);
         await repository.RemoveAsync(huaWei!, default);
 
         await repository.UnitOfWork.SaveChangesAsync(default);
@@ -262,14 +264,10 @@ public class RepositoryTest : TestBase
     }
 
     [TestMethod]
-    public void TestErrorEntity()
+    public void TestPrivateEntity()
     {
         _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
         _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
-
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(BaseRepositoryTest).Assembly, typeof(Hobbies).Assembly);
-        });
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(BaseRepositoryTest).Assembly, typeof(Hobbies).Assembly);
     }
 }

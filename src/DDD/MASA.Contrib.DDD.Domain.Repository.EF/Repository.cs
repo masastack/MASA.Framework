@@ -19,12 +19,20 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     {
         get
         {
+            if (!UseTransaction)
+                throw new NotSupportedException(nameof(Transaction));
+
             if (TransactionHasBegun)
-            {
                 return _context.Database.CurrentTransaction!.GetDbTransaction();
-            }
+
             return _context.Database.BeginTransaction().GetDbTransaction();
         }
+    }
+
+    public override bool UseTransaction
+    {
+        get => UnitOfWork.UseTransaction;
+        set => UnitOfWork.UseTransaction = value;
     }
 
     public override IUnitOfWork UnitOfWork { get; }
@@ -40,8 +48,21 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
     public override async ValueTask DisposeAsync() => await ValueTask.CompletedTask;
 
-    public override ValueTask<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken)
-        => _context.Set<TEntity>().FindAsync(keyValues, cancellationToken);
+    public override Task<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken)
+    {
+        if (keyValues == null)
+            return null;
+
+        var keys = GetKeys(typeof(TEntity));
+        Dictionary<string, object> fields = new();
+        for (var i = 0; i < keys.Length; i++)
+        {
+            fields.Add(keys[i], keyValues[i]!);
+        }
+
+        return _context.Set<TEntity>().IgnoreQueryFilters().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
+    }
+
 
     public override Task<TEntity?> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -72,10 +93,12 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string? sorting, CancellationToken cancellationToken)
+    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken)
     {
-        var isDesc = !string.Equals(sorting ?? "asc", "asc", StringComparison.CurrentCultureIgnoreCase);
-        return _context.Set<TEntity>().OrderBy(GetKeys(typeof(TEntity)), isDesc).Skip(skip).Take(take).ToListAsync(cancellationToken);
+        if (sorting == null)
+            sorting = new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
+
+        return _context.Set<TEntity>().OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
 
     /// <summary>
@@ -87,10 +110,14 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string? sorting, CancellationToken cancellationToken)
+    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken)
     {
-        var isDesc = !string.Equals(sorting ?? "asc", "asc", StringComparison.CurrentCultureIgnoreCase);
-        return _context.Set<TEntity>().Where(predicate).OrderBy(GetKeys(typeof(TEntity)), isDesc).Skip(skip).Take(take).ToListAsync(cancellationToken);
+        if (sorting == null)
+        {
+            sorting = new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
+        }
+
+        return _context.Set<TEntity>().Where(predicate).OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
 
     public override Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)

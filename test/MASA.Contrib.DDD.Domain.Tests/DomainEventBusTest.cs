@@ -312,10 +312,7 @@ public class DomainEventBusTest
         {
             domainQuery.UnitOfWork = _uoW.Object;
         });
-        Assert.ThrowsException<NotSupportedException>(() =>
-        {
-            var unitOfWork = domainQuery.UnitOfWork;
-        });
+        Assert.IsNull(domainQuery.UnitOfWork);
     }
 
     [TestMethod]

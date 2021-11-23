@@ -32,9 +32,13 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
     {
-        if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
+        if (transaction == null)
+            throw new ArgumentNullException(nameof(transaction));
+
         if (_eventLogContext.Database.CurrentTransaction == null)
             await _eventLogContext.Database.UseTransactionAsync(transaction, Guid.NewGuid());
+
         var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry);
         await _eventLogContext.SaveChangesAsync();
@@ -62,7 +66,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
-            
+
         eventLogEntry.State = status;
 
         if (status == IntegrationEventStates.InProgress)

@@ -15,7 +15,7 @@ public class OrderRepository : Repository<CustomDbContext, Orders>, IOrderReposi
             await base.SaveChangesAsync();
             await base.CommitAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await base.RollbackAsync();
         }

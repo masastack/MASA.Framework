@@ -2,11 +2,11 @@ namespace MASA.Contrib.Dispatcher.Events.Internal.Dispatch;
 
 internal class Dispatcher : DispatcherBase
 {
-    public Dispatcher(IServiceCollection services, bool forceInit = false) : base(services, forceInit) { }
+    public Dispatcher(IServiceCollection services, Assembly[] assemblies, bool forceInit = false) : base(services, assemblies, forceInit) { }
 
-    public Dispatcher Build(ServiceLifetime lifetime, params Assembly[] assemblies)
+    public Dispatcher Build(ServiceLifetime lifetime)
     {
-        foreach (var assembly in assemblies)
+        foreach (var assembly in _assemblies)
         {
             AddRelationNetwork(assembly);
         }

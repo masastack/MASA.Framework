@@ -1,14 +1,16 @@
 {
   "DccOptions": {
-    "Servers": [
-      {
-        "Host": "localhost",
-        "Port": 8888
-      }
-    ],
-    "DefaultDatabase": 0,
-    "Password": "",
-    "DccServiceAddress": "http://localhost:6379"
+    "ManageServiceAddress": "http://localhost:6379",
+    "RedisOptions": {
+      "Servers": [
+        {
+          "Host": "localhost",
+          "Port": 8888
+        }
+      ],
+      "DefaultDatabase": 0,
+      "Password": ""
+    }
   },
   "AppId": "DccTest",
   "Environment": "Test",

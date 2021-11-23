@@ -2,18 +2,18 @@ namespace MASA.Contrib.Dispatcher.Events.Internal.Dispatch;
 
 internal class SagaDispatcher : DispatcherBase
 {
-    public SagaDispatcher(IServiceCollection services, bool forceInit = false) : base(services, forceInit) { }
+    public SagaDispatcher(IServiceCollection services, Assembly[] assemblies, bool forceInit = false) : base(services, assemblies, forceInit) { }
 
-    public SagaDispatcher Build(ServiceLifetime lifetime, params Assembly[] assemblies)
+    public SagaDispatcher Build(ServiceLifetime lifetime)
     {
-        AddSagaDispatchRelation(_services, typeof(IEventHandler<>), lifetime, assemblies);
-        AddSagaDispatchRelation(_services, typeof(ISagaEventHandler<>), lifetime, assemblies);
+        AddSagaDispatchRelation(_services, typeof(IEventHandler<>), lifetime);
+        AddSagaDispatchRelation(_services, typeof(ISagaEventHandler<>), lifetime);
         return this;
     }
 
-    private IServiceCollection AddSagaDispatchRelation(IServiceCollection services, Type eventBusHandlerType, ServiceLifetime lifetime, params Assembly[] assemblies)
+    private IServiceCollection AddSagaDispatchRelation(IServiceCollection services, Type eventBusHandlerType, ServiceLifetime lifetime)
     {
-        foreach (var item in GetAddSagaServices(eventBusHandlerType, assemblies))
+        foreach (var item in GetAddSagaServices(eventBusHandlerType))
         {
             services.Add(item.ServiceType, item.ImplementationType, lifetime);
             AddSagaRelationNetwork(item.ImplementationType);
@@ -80,10 +80,10 @@ internal class SagaDispatcher : DispatcherBase
         return eventHandlers;
     }
 
-    private List<(Type ServiceType, Type ImplementationType)> GetAddSagaServices(Type eventBusHandlerType, params Assembly[] assemblies)
+    private List<(Type ServiceType, Type ImplementationType)> GetAddSagaServices(Type eventBusHandlerType)
     {
         List<(Type ServiceType, Type ImplementationType)> list = new();
-        var serviceTypeAndImplementationInfo = GetSagaServiceTypeAndImplementations(eventBusHandlerType, assemblies);
+        var serviceTypeAndImplementationInfo = GetSagaServiceTypeAndImplementations(eventBusHandlerType);
         foreach (var serviceType in serviceTypeAndImplementationInfo.ServiceTypeList)
         {
             var implementationTypes = serviceTypeAndImplementationInfo.ImplementationType.Where(implementationType => serviceType.IsAssignableFrom(implementationType)).ToList();
@@ -97,11 +97,11 @@ internal class SagaDispatcher : DispatcherBase
         return list;
     }
 
-    private (List<Type> ServiceTypeList, List<Type> ImplementationType) GetSagaServiceTypeAndImplementations(Type eventBusHandlerType, params Assembly[] assemblies)
+    private (List<Type> ServiceTypeList, List<Type> ImplementationType) GetSagaServiceTypeAndImplementations(Type eventBusHandlerType)
     {
         var concretions = new List<Type>();
         var interfaces = new List<Type>();
-        foreach (var type in assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
+        foreach (var type in _assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
         {
             if (type.IsConcrete())
             {

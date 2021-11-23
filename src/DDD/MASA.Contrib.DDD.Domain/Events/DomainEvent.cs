@@ -7,7 +7,7 @@ public record DomainEvent : IDomainEvent
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork? UnitOfWork { get; set; }
 
     public DomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 

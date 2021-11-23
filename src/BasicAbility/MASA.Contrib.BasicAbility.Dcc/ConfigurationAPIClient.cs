@@ -2,6 +2,7 @@ namespace MASA.Contrib.BasicAbility.Dcc;
 
 public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPIClient
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
@@ -9,24 +10,26 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
 
     public ConfigurationAPIClient(
+        IServiceProvider serviceProvider,
         IMemoryCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
+        _serviceProvider = serviceProvider;
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
     }
 
-    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId, string configObject, Action<string> valueChanged)
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId,
+        string configObject, Action<string> valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
         return GetRawByKeyAsync(key, valueChanged);
     }
 
     public async Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T> valueChanged)
-        where T : class
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -43,15 +46,22 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
                 _taskJsonObjects.AddOrUpdate(k, newValue, (_, _) => newValue);
                 valueChanged?.Invoke(result!);
             });
+            if (typeof(T).GetInterfaces().Any(type => type == typeof(IConvertible)))
+            {
+                if (result.ConfigurationType == ConfigurationTypes.Text)
+                    return Convert.ChangeType(result.Raw, typeof(T));
+
+                throw new FormatException(result.Raw);
+            }
 
             return JsonSerializer.Deserialize<T>(result.Raw, options) ?? throw new ArgumentException(nameof(configObject));
-
         })).Value;
 
-        return (value as T)!;
+        return (T)value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic> valueChanged)
+    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
+        Action<dynamic> valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -72,6 +82,16 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
         })).Value;
 
         return await value;
+    }
+
+    public async Task<dynamic> GetDynamicAsync(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentNullException(nameof(key));
+
+        var configuration = _serviceProvider.GetRequiredService<IConfiguration>();
+        key = key.Replace(".", ConfigurationPath.KeyDelimiter);
+        return await Task.FromResult(Format(configuration.GetSection(key)));
     }
 
     private async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key, Action<string> valueChanged)
@@ -116,4 +136,23 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
 
     private string FomartKey(string environment, string cluster, string appId, string configObject)
         => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
+
+    private dynamic Format(IConfigurationSection section)
+    {
+        var childrenSections = section.GetChildren();
+        if (!section.Exists() || !childrenSections.Any())
+        {
+            return section.Value;
+        }
+        else
+        {
+            var result = new ExpandoObject();
+            var parent = result as IDictionary<string, object>;
+            foreach (var child in childrenSections)
+            {
+                parent[child.Key] = Format(child);
+            }
+            return result;
+        }
+    }
 }
