@@ -33,7 +33,7 @@ public class AssemblyResolutionTests
         services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            services.AddEventBus(options => options.Assemblies = null);
+            services.AddEventBus(options => options.Assemblies = null!);
         });
     }
 
@@ -57,7 +57,7 @@ public class AssemblyResolutionTests
         services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            services.AddTestEventBus(ServiceLifetime.Scoped, options => options.Assemblies = null);
+            services.AddTestEventBus(ServiceLifetime.Scoped, options => options.Assemblies = null!);
         });
     }
 
@@ -116,7 +116,7 @@ public class AssemblyResolutionTests
     [TestMethod]
     public void TestUseEventBusAndNullServices()
     {
-        var options = new DispatcherOptions(null);
+        var options = new DispatcherOptions(null!);
         Assert.ThrowsException<ArgumentNullException>(() => options.UseEventBus());
     }
 }

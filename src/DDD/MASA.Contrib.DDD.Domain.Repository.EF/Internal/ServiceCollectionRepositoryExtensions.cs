@@ -49,7 +49,7 @@ internal static class ServiceCollectionRepositoryExtensions
 
             aggregateRoot = (IAggregateRoot)Activator.CreateInstance(entityType, constructorInfo.IsPrivate)!;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             throw new ArgumentNullException("The entity needs to have an empty constructor");
         }

@@ -1,4 +1,6 @@
 global using MASA.BuildingBlocks.Configuration;
+global using MASA.Contrib.Configuration.ErrorSectionAutoMap.Tests;
+global using MASA.Contrib.Configuration.MountErrorSectionAutoMap.Tests;
 global using MASA.Contrib.Configuration.Tests.Config;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;

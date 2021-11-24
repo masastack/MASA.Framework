@@ -1,6 +1,3 @@
-using MASA.Contrib.Configuration.ErrorSectionAutoMapTests;
-using MASA.Contrib.Configuration.MountErrorSectionAutoMapTests;
-
 namespace MASA.Contrib.Configuration.Tests;
 
 [TestClass]
@@ -18,7 +15,7 @@ public class ConfigurationTest
     public void TestAddSection()
     {
         var masaConfigurationBuilder = new MasaConfigurationBuilder(_configurationBuilder);
-        Assert.ThrowsException<ArgumentNullException>(() => masaConfigurationBuilder.AddSection(null));
+        Assert.ThrowsException<ArgumentNullException>(() => masaConfigurationBuilder.AddSection(null!));
 
         Assert.ThrowsException<ArgumentException>(() => masaConfigurationBuilder.AddSection(new ConfigurationBuilder()));
 

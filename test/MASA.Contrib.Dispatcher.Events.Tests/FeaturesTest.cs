@@ -6,7 +6,7 @@ public class FeaturesTest : TestBase
     private readonly IEventBus _eventBus;
     public FeaturesTest() : base()
     {
-        _eventBus = _serviceProvider.GetService<IEventBus>();
+        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
     }
 
     [TestMethod]
@@ -77,8 +77,8 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNullEvent()
     {
-        AddShoppingCartEvent @event = null;
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event));
+        AddShoppingCartEvent? @event = null;
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event!));
     }
 
     [DataTestMethod]
@@ -146,7 +146,7 @@ public class FeaturesTest : TestBase
                 {
                     ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }

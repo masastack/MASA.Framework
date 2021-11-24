@@ -22,7 +22,7 @@ public class IntegrationEventBusTest
         _daprClient = new();
         _logger = new();
         _eventLog = new();
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
@@ -34,7 +34,7 @@ public class IntegrationEventBusTest
         _eventBus = new();
         _uoW = new();
         _uoW.Setup(uoW => uoW.CommitAsync(default)).Verifiable();
-        _uoW.Setup(uoW => uoW.Transaction).Returns(() => null);
+        _uoW.Setup(uoW => uoW.Transaction).Returns(() => null!);
     }
 
     [TestMethod]
@@ -47,7 +47,7 @@ public class IntegrationEventBusTest
         {
             options = new DispatcherOptions(services)
             {
-                Assemblies = null
+                Assemblies = null!
             };
         });
         Assert.ThrowsException<ArgumentNullException>(() =>
@@ -119,7 +119,7 @@ public class IntegrationEventBusTest
     [TestMethod]
     public void TestAddDaprEventBusAndNullServicesAsync()
     {
-        _options.Setup(option => option.Services).Returns(() => null);
+        _options.Setup(option => option.Services).Returns(() => null!);
         var ex = Assert.ThrowsException<ArgumentNullException>(() => _options.Object.UseDaprEventBus<IntegrationEventLogService>());
         Assert.IsTrue(ex.Message == $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }

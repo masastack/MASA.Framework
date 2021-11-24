@@ -12,9 +12,9 @@ public class TestBase
 
     }
 
-    public TestBase(Func<IServiceCollection, IServiceCollection> func = null) => ResetMemoryEventBus(func, false, null);
+    public TestBase(Func<IServiceCollection, IServiceCollection>? func = null) => ResetMemoryEventBus(func, false, null);
 
-    protected void ResetMemoryEventBus(Func<IServiceCollection, IServiceCollection> func = null, bool isAddLog = true, params Assembly[] assemblies)
+    protected void ResetMemoryEventBus(Func<IServiceCollection, IServiceCollection>? func = null, bool isAddLog = true, params Assembly[]? assemblies)
     {
         _services = new ServiceCollection();
         if (isAddLog)

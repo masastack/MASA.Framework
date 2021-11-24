@@ -88,7 +88,7 @@ public class IntegrationEventLogServiceTest : TestBase
     [TestMethod]
     public void TestNullServices()
     {
-        var options = new DispatcherOptions(null);
+        var options = new DispatcherOptions(null!);
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
             options.UseEventLog(options =>
@@ -104,14 +104,14 @@ public class IntegrationEventLogServiceTest : TestBase
         var options = new DispatcherOptions(new ServiceCollection());
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            options.UseEventLog(null);
+            options.UseEventLog(null!);
         });
     }
 
     [TestMethod]
     public void TestUseCustomDbContextByNullServices()
     {
-        var options = new DispatcherOptions(null);
+        var options = new DispatcherOptions(null!);
         Assert.IsNull(options.Services);
         Assert.ThrowsException<ArgumentNullException>(() => options.UseEventLog<CustomDbContext>());
     }

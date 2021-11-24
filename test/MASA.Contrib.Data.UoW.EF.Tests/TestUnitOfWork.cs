@@ -52,7 +52,7 @@ public class TestUnitOfWork : TestBase
     public void TestTransaction()
     {
         Mock<IUnitOfWork> uoW = new();
-        Assert.IsTrue(new Transaction(uoW.Object).UnitOfWork.Equals(uoW.Object));
+        Assert.IsTrue(new Transaction(uoW.Object).UnitOfWork!.Equals(uoW.Object));
     }
 
     [TestMethod]

@@ -48,7 +48,7 @@ public class DomainEventBusTest
 
         _eventBus.Verify(eventBus => eventBus.PublishAsync(domainEvent), Times.Once, "PublishAsync is executed multiple times");
         _integrationEventBus.Verify(integrationEventBus => integrationEventBus.PublishAsync(domainEvent), Times.Never, "integrationEventBus should not be executed");
-        Assert.IsTrue(domainEvent.UnitOfWork.Equals(_uoW.Object));
+        Assert.IsTrue(domainEvent.UnitOfWork!.Equals(_uoW.Object));
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class DomainEventBusTest
                     Name = "Jim"
                 };
                 userRepository.Setup(repository => repository.AddAsync(It.IsAny<Users>(), CancellationToken.None)).Verifiable();
-                domainEvent.UnitOfWork.CommitAsync();
+                domainEvent.UnitOfWork!.CommitAsync();
             });
 
         var @command = new CreateProductDomainCommand()
@@ -147,7 +147,7 @@ public class DomainEventBusTest
     [TestMethod]
     public void TestNullAssembly()
     {
-        Assert.ThrowsException<ArgumentNullException>(() => _dispatcherOptions.Value.Assemblies = null);
+        Assert.ThrowsException<ArgumentNullException>(() => _dispatcherOptions.Value.Assemblies = null!);
     }
 
     [TestMethod]

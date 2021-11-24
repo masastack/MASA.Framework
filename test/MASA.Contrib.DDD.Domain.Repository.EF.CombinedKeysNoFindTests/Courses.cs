@@ -1,4 +1,4 @@
-namespace MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFindTests;
+namespace MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFind.Tests;
 
 public class Courses : AggregateRoot
 {

@@ -49,7 +49,7 @@ internal sealed class JsonConfigurationParser
 
         if (isEmpty && _paths.Count > 0)
         {
-            _data[_paths.Peek()] = null;
+            _data[_paths.Peek()] = "";
         }
     }
 

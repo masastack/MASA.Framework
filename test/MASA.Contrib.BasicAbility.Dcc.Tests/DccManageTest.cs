@@ -10,7 +10,6 @@ public class DccManageTest
     private DccSectionOptions _dccSectionOptions;
     private JsonSerializerOptions _jsonSerializerOptions;
     private Mock<ICallerProvider> _callerProvider;
-    private Mock<HttpMessageHandler> _httpMessageHandler;
 
     [TestInitialize]
     public void Initialize()
@@ -129,7 +128,7 @@ public class DccManageTest
     public void GetAppid(string appId, string outAppid)
     {
         var api = new CustomConfigurationAPI(_dccSectionOptions, null);
-        Assert.IsTrue(api.GetAppid(appId) == outAppid);
+        Assert.IsTrue(api.GetAppId(appId) == outAppid);
     }
 
     [DataTestMethod]
@@ -151,13 +150,13 @@ public class CustomConfigurationAPI : ConfigurationAPIBase
     {
     }
 
-    public string GetSecret(string appId) => base.GetSecret(appId);
+    public new string GetSecret(string appId) => base.GetSecret(appId);
 
-    public string GetEnvironment(string environment) => base.GetEnvironment(environment);
+    public new string GetEnvironment(string environment) => base.GetEnvironment(environment);
 
-    public string GetCluster(string cluster) => base.GetCluster(cluster);
+    public new string GetCluster(string cluster) => base.GetCluster(cluster);
 
-    public string GetAppid(string appId) => base.GetAppId(appId);
+    public new string GetAppId(string appId) => base.GetAppId(appId);
 
-    public string GetConfigObject(string configObject) => base.GetConfigObject(configObject);
+    public new string GetConfigObject(string configObject) => base.GetConfigObject(configObject);
 }

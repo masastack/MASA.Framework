@@ -22,10 +22,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DDD\MASA.Contrib.DDD.Domain.Repository.EF\MASA.Contrib.DDD.Domain.Repository.EF.csproj" />
-    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFindTests\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFindTests.csproj" />
-    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysTests\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysTests.csproj" />
-    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository\MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository.csproj" />
-    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.EntityTests\MASA.Contrib.DDD.Domain.Repository.EF.EntityTests.csproj" />
+    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeys.Tests\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeys.Tests.csproj" />
+    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFindTests\MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFind.Tests.csproj" />
+    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository.Tests\MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository.Tests.csproj" />
+    <ProjectReference Include="..\MASA.Contrib.DDD.Domain.Repository.EF.Entity.Tests\MASA.Contrib.DDD.Domain.Repository.EF.Entity.Tests.csproj" />
   </ItemGroup>
 
 </Project>

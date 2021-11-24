@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.Events.Tests;
+namespace MASA.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
 public class ChoreTest : TestBase
@@ -6,7 +6,7 @@ public class ChoreTest : TestBase
     private readonly IEventBus _eventBus;
     public ChoreTest()
     {
-        _eventBus = _serviceProvider.GetService<IEventBus>();
+        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]

@@ -26,7 +26,7 @@ public class BaseRepositoryTest : TestBase
     {
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            _dispatcherOptions.Setup(options => options.Services).Returns(() => null);
+            _dispatcherOptions.Setup(options => options.Services).Returns(() => null!);
             var options = _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         });
     }
@@ -60,7 +60,7 @@ public class BaseRepositoryTest : TestBase
 
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            _dispatcherOptions.Object.UseRepository<CustomDbContext>(null);
+            _dispatcherOptions.Object.UseRepository<CustomDbContext>(null!);
         });
     }
 

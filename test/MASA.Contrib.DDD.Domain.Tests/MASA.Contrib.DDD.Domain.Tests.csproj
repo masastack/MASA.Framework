@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DDD\MASA.Contrib.DDD.Domain\MASA.Contrib.DDD.Domain.csproj" />
-    <ProjectReference Include="..\MASA.Contribs.DDD.Domain.Entities\MASA.Contribs.DDD.Domain.Entities.csproj" />
+    <ProjectReference Include="..\MASA.Contribs.DDD.Domain.Entities.Tests\MASA.Contribs.DDD.Domain.Entities.Tests.csproj" />
   </ItemGroup>
 
 </Project>

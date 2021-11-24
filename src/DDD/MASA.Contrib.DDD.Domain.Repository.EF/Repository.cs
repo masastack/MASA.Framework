@@ -51,7 +51,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override Task<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken)
     {
         if (keyValues == null)
-            return null;
+            return Task.FromResult(default(TEntity?));
 
         var keys = GetKeys(typeof(TEntity));
         Dictionary<string, object> fields = new();

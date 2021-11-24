@@ -37,9 +37,8 @@ public class DccClientTest
     [DataRow("Test", "Default", "DccTest", "Brand")]
     public async Task TestGetRawAsync(string environment, string cluster, string appId, string configObject)
     {
-
-        Action<string> valueChanged = delegate (string val) { };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), valueChanged).Result).Returns(() => null).Verifiable();
+        Action<string?> valueChanged = delegate (string? val) { };
+        _client.Setup(client => client.GetAsync<string?>(It.IsAny<string>(), valueChanged).Result).Returns(() => null).Verifiable();
         var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<ArgumentException>(async ()
                 => await client.GetRawAsync(environment, cluster, appId, configObject, valueChanged), "configObject invalid"
@@ -175,14 +174,14 @@ public class DccClientTest
             _trigger.Action = action;
         });
         client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
-        ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, null);
+        ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == brand.Id && ret.Name == brand.Name);
         _trigger.Execute();
-        ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, null);
+        ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsTrue(ret.Id == newBrand.Id && ret.Name == "Masa");
 
-        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), null).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -201,7 +200,7 @@ public class DccClientTest
         client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<FormatException>(async () =>
         {
-            await client.GetAsync<int>(environment, cluster, appId, configObject, null);
+            await client.GetAsync<int>(environment, cluster, appId, configObject, It.IsAny<Action<int>>());
         });
     }
 
@@ -316,7 +315,7 @@ public class DccClientTest
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == newBrand.Id.ToString() && ret.Name == newBrand.Name);
 
-        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), null).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
