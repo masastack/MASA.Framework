@@ -1,10 +1,20 @@
+image: mcr.microsoft.com/dotnet/sdk:6.0
+
 stages:
   - build
+  - test
 
 build:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:6.0
   only:
     - branches
   script:
     - dotnet build
+
+
+test:
+  stage: test
+  only:
+    - branches
+  script:
+    - dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
