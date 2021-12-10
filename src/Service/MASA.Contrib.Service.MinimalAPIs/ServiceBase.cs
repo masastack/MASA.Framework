@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Routing;
-
 namespace MASA.Contrib.Service.MinimalAPIs;
 
 public abstract class ServiceBase : IService
@@ -39,12 +37,15 @@ public abstract class ServiceBase : IService
     /// </summary>
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
+    /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
-    protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null)
+    protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name);
+        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        return App.MapGet($"{BaseUri}/{customUri}", handler);
+        var pattern = CombineUris(BaseUri, customUri);
+
+        return App.MapGet(pattern, handler);
     }
 
     /// <summary>
@@ -53,12 +54,15 @@ public abstract class ServiceBase : IService
     /// </summary>
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
+    /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
-    protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null)
+    protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name);
+        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        return App.MapPost($"{BaseUri}/{customUri}", handler);
+        var pattern = CombineUris(BaseUri, customUri);
+
+        return App.MapPost(pattern, handler);
     }
 
     /// <summary>
@@ -67,12 +71,15 @@ public abstract class ServiceBase : IService
     /// </summary>
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
+    /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
-    protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null)
+    protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name);
+        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        return App.MapPut($"{BaseUri}/{customUri}", handler);
+        var pattern = CombineUris(BaseUri, customUri);
+
+        return App.MapPut(pattern, handler);
     }
 
     /// <summary>
@@ -81,20 +88,31 @@ public abstract class ServiceBase : IService
     /// </summary>
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
+    /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
-    protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null)
+    protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name);
+        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        return App.MapDelete($"{BaseUri}/{customUri}", handler);
+        var pattern = CombineUris(BaseUri, customUri);
+
+        return App.MapDelete(pattern, handler);
     }
 
-    private static string FormatAction(string action)
+    private static string FormatAction(string action, bool trimEndAsync)
     {
-        if (!action.EndsWith("Async")) return action;
+        if (trimEndAsync && action.EndsWith("Async"))
+        {
+            var i = action.LastIndexOf("Async", StringComparison.Ordinal);
+            action = action[..i];
+        }
 
-        var i = action.LastIndexOf("Async", StringComparison.Ordinal);
-        return action[..i];
+        return action;
+    }
+
+    private static string CombineUris(params string[] uris)
+    {
+        return string.Join("/", uris.Select(u => u.Trim('/')));
     }
 
     #endregion
