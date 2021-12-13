@@ -48,7 +48,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
     public override async ValueTask DisposeAsync() => await ValueTask.CompletedTask;
 
-    public override Task<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken)
+    public override Task<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken = default)
     {
         if (keyValues == null)
             return Task.FromResult(default(TEntity?));
@@ -69,20 +69,20 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         CancellationToken cancellationToken = default)
         => _context.Set<TEntity>().Where(predicate).FirstOrDefaultAsync(cancellationToken);
 
-    public override async Task<long> GetCountAsync(CancellationToken cancellationToken)
+    public override async Task<long> GetCountAsync(CancellationToken cancellationToken = default)
         => await _context.Set<TEntity>().LongCountAsync(cancellationToken);
 
     public override Task<long> GetCountAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
         => _context.Set<TEntity>().LongCountAsync(predicate, cancellationToken);
 
-    public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken)
+    public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken = default)
         => await _context.Set<TEntity>().ToListAsync(cancellationToken);
 
     public override async Task<IEnumerable<TEntity>> GetListAsync(
         Expression<Func<TEntity, bool>> predicate,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
         => await _context.Set<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 
     /// <summary>
@@ -93,7 +93,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken)
+    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken = default)
     {
         if (sorting == null)
             sorting = new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
@@ -110,7 +110,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken)
+    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken = default)
     {
         if (sorting == null)
         {
