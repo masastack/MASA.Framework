@@ -8,10 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="MASA.BuildingBlocks.Configuration" Version="0.0.1493805322" />
-    <PackageReference Include="MASA.Utils.Caching.DistributedMemory" Version="0.0.1493976048" />
-    <PackageReference Include="MASA.Utils.Caching.Redis" Version="0.0.1493976048" />
-    <PackageReference Include="MASA.Utils.Caller.Core" Version="0.0.1493976048" />
-    <PackageReference Include="MASA.Utils.Caller.HttpClient" Version="0.0.1493976048" />
+    <PackageReference Include="MASA.Utils.Caching.DistributedMemory" Version="0.0.1614594271" />
+    <PackageReference Include="MASA.Utils.Caching.Redis" Version="0.0.1614594271" />
+    <PackageReference Include="MASA.Utils.Caller.Core" Version="0.0.1614594271" />
+    <PackageReference Include="MASA.Utils.Caller.HttpClient" Version="0.0.1614594271" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
