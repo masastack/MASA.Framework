@@ -20,12 +20,12 @@ public class Benchmarks
         _userEvent = new RegisterUserEvent()
         {
             Name = "tom",
-            Mobile = "18888888888"
+            PhoneNumber = "18888888888"
         };
         _forgetPasswordEvent = new ForgetPasswordEvent()
         {
             Name = "lisa",
-            Mobile = "19999999999"
+            PhoneNumber = "19999999999"
         };
     }
 

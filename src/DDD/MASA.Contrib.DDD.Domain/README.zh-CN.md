@@ -24,7 +24,7 @@ builder.Services
     options.UseEventBus()//使用进程内事件
         .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
         .UseDaprEventBus<IntegrationEventLogService>()///使用跨进程事件
-        .UseEventLog<PaymentDbContext>()
+        .UseEventLog<CustomDbContext>()
         .UseRepository<CustomDbContext>();//使用Repository的EF版实现
 })
 ```
@@ -38,7 +38,7 @@ public class RegisterUserDomainCommand : DomainCommand
 
     public string Password { get; set; } = default!;
 
-    public string Mobile { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
 }
 ```
 > DomainQuery参考CQRS中的Query

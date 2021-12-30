@@ -4,5 +4,5 @@ public record RegisterUserEvent : Event
 {
     public string Name { get; set; }
 
-    public string Mobile { get; set; }
+    public string PhoneNumber { get; set; }
 }

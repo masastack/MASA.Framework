@@ -163,7 +163,7 @@ public class FeaturesTest : TestBase
         {
             try
             {
-                ResetMemoryEventBus(typeof(OnlyCancelHandler.Tests.Events.BindMobileEvent).Assembly);
+                ResetMemoryEventBus(typeof(OnlyCancelHandler.Tests.Events.BindPhoneNumberEvent).Assembly);
             }
             catch (NotSupportedException)
             {

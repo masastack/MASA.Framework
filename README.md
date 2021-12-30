@@ -94,7 +94,7 @@ Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatche
 > Advantage：
 >
 > 1. CQRS
-> 2. Field Service
+> 2. Domain Service
 > 3. Support domain events (in-process), integrated domain events (cross-process)
 > 4. Support the unified sending of field events after being pushed onto the stack
 

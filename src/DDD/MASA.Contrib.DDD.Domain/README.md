@@ -24,7 +24,7 @@ builder.Services
     options.UseEventBus()//Use in-process events
         .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
         .UseDaprEventBus<IntegrationEventLogService>()///Use cross-process events
-        .UseEventLog<PaymentDbContext>()
+        .UseEventLog<CustomDbContext>()
         .UseRepository<CustomDbContext>();//Use the EF version of Repository to achieve
 })
 ```
@@ -38,7 +38,7 @@ public class RegisterUserDomainCommand : DomainCommand
 
     public string Password { get; set; } = default!;
 
-    public string Mobile { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
 }
 ```
 > DomainQuery refers to Query in CQRS

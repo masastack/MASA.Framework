@@ -1,4 +1,4 @@
-﻿﻿﻿﻿中 | [EN](README.md)
+﻿中 | [EN](README.md)
 
 [![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/develop/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
 
@@ -93,9 +93,9 @@ MASA.Contrib
 
 > 优势：
 >
-> 2. CQRS
-> 3. 领域服务
-> 4. 支持领域事件（进程内）、集成领域事件（跨进程）
+> 1. CQRS
+> 2. 领域服务
+> 3. 支持领域事件（进程内）、集成领域事件（跨进程）
 > 4. 支持对领域事件先压栈后统一发送
 
 ### 6. DDD
