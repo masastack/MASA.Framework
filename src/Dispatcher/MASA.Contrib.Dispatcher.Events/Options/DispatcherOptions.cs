@@ -2,7 +2,7 @@ namespace MASA.Contrib.Dispatcher.Events.Options;
 
 public class DispatcherOptions : IDispatcherOptions
 {
-    private Assembly[] _assemblies = new Assembly[0];
+    private Assembly[] _assemblies = Array.Empty<Assembly>();
 
     public Assembly[] Assemblies
     {
@@ -19,7 +19,7 @@ public class DispatcherOptions : IDispatcherOptions
                 .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
                 .ToList();
 
-            UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, type => IsSupportUnitOfWork(type));
+            UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
         }
     }
 

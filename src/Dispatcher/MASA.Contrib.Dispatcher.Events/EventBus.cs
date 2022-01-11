@@ -10,6 +10,8 @@ public class EventBus : IEventBus
 
     private IUnitOfWork? _unitOfWork;
 
+    private readonly string LoadEventHelpLink = "https://github.com/masastack/MASA.Contrib/tree/develop/docs/LoadEvent.md";
+
     public EventBus(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options)
     {
         _serviceProvider = serviceProvider;
@@ -19,15 +21,21 @@ public class EventBus : IEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
     {
+        var eventType = typeof(TEvent);
         if (@event is null)
         {
-            throw new ArgumentNullException(typeof(TEvent).Name);
+            throw new ArgumentNullException(eventType.Name);
         }
 
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
-        if (_options.UnitOfWorkRelation[typeof(TEvent)])
+        if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
-            ITransaction transactionEvent = (ITransaction)@event;
+            throw new NotSupportedException($"Getting \"{eventType.Name}\" relationship chain failed, see {LoadEventHelpLink} for details. ");
+        }
+
+        if (_options.UnitOfWorkRelation[eventType])
+        {
+            ITransaction transactionEvent = (ITransaction) @event;
             var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
             if (unitOfWork != null)
             {
@@ -43,10 +51,7 @@ public class EventBus : IEventBus
             }
         }
 
-        EventHandlerDelegate publishEvent = async () =>
-        {
-            await _dispatcher.PublishEventAsync(_serviceProvider, @event);
-        };
+        EventHandlerDelegate publishEvent = async () => { await _dispatcher.PublishEventAsync(_serviceProvider, @event); };
         await middlewares.Reverse().Aggregate(publishEvent, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
