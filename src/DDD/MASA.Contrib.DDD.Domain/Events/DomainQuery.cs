@@ -3,8 +3,10 @@ namespace MASA.Contrib.DDD.Domain.Events;
 public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
     where TResult : notnull
 {
+    [JsonIgnore]
     public Guid Id { get; init; }
 
+    [JsonIgnore]
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]

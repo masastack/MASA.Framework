@@ -8,7 +8,7 @@
 
     <ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App"></FrameworkReference>
-		<PackageReference Include="MASA.BuildingBlocks.Configuration" Version="0.0.1493805322" />
+		<PackageReference Include="MASA.BuildingBlocks.Configuration" Version="0.0.1681936502" />
     </ItemGroup>
 
 </Project>

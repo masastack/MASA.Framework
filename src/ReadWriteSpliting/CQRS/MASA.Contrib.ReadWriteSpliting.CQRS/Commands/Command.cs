@@ -2,8 +2,10 @@ namespace MASA.Contrib.ReadWriteSpliting.CQRS.Commands;
 
 public record Command : ICommand
 {
+    [JsonIgnore]
     public Guid Id { get; init; }
 
+    [JsonIgnore]
     public DateTime CreationTime { get; init; }
 
     public Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }

@@ -60,17 +60,17 @@ public static class MasaConfigurationExtensions
             PropertyNameCaseInsensitive = true
         };
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
-        services.AddCaller(Options =>
+        services.AddCaller(options =>
         {
             if (callerOptions == null)
             {
-                Options.UseHttpClient(()
+                options.UseHttpClient(()
                     => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress), jsonSerializerOption)
                 );
             }
             else
             {
-                callerOptions.Invoke(Options);
+                callerOptions.Invoke(options);
             }
         });
 

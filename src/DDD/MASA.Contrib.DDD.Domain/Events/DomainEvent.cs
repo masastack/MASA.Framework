@@ -2,8 +2,10 @@ namespace MASA.Contrib.DDD.Domain.Events;
 
 public record DomainEvent : IDomainEvent
 {
+    [JsonIgnore]
     public Guid Id { get; init; }
 
+    [JsonIgnore]
     public DateTime CreationTime { get; init; }
 
     [JsonIgnore]
