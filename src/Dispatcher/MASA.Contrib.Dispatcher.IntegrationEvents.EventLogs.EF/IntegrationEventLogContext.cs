@@ -12,9 +12,12 @@ public class IntegrationEventLogContext : MasaDbContext
 
     public DbSet<IntegrationEventLog> EventLogs { get; set; }
 
+    public DbSet<IntegrationEventLogRetryItems> IntegrationEventLogRetryItems { get; set; }
+
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
         builder.Entity<IntegrationEventLog>(ConfigureEventLogEntry);
+        builder.Entity<IntegrationEventLogRetryItems>(ConfigureEventLogRetryItemsEntry);
     }
 
     private void ConfigureEventLogEntry(EntityTypeBuilder<IntegrationEventLog> builder)
@@ -39,6 +42,25 @@ public class IntegrationEventLogContext : MasaDbContext
             .IsRequired();
 
         builder.Property(e => e.EventTypeName)
+            .IsRequired();
+    }
+
+    private void ConfigureEventLogRetryItemsEntry(EntityTypeBuilder<IntegrationEventLogRetryItems> builder)
+    {
+        builder.ToTable("IntegrationEventLogRetryItems");
+
+        builder.HasKey(e => e.Id);
+
+        builder.Property(e => e.Id)
+            .IsRequired();
+
+        builder.Property(e => e.LogId)
+            .IsRequired();
+
+        builder.Property(e => e.CreationTime)
+            .IsRequired();
+
+        builder.Property(e => e.RetryTimes)
             .IsRequired();
     }
 }
