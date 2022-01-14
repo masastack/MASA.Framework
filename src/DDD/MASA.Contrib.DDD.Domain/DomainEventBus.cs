@@ -7,7 +7,7 @@ public class DomainEventBus : IDomainEventBus
     private readonly IUnitOfWork _unitOfWork;
     private readonly DispatcherOptions _options;
 
-    private readonly ConcurrentQueue<IDomainEvent> _eventQueue = new ConcurrentQueue<IDomainEvent>();
+    private readonly ConcurrentQueue<IDomainEvent> _eventQueue = new();
 
     public DomainEventBus(IEventBus eventBus, IIntegrationEventBus integrationEventBus, IUnitOfWork unitOfWork, IOptions<DispatcherOptions> options)
     {

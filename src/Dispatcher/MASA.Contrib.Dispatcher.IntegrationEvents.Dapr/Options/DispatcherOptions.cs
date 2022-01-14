@@ -13,13 +13,28 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_pubSubName));
             }
+
             _pubSubName = value;
         }
     }
 
+    /// <summary>
+    /// When there is no message to retry, the thread sleep time
+    /// default: 30s
+    /// </summary>
+    public int IdleTime { get; set; } = 30;
+
+    /// <summary>
+    /// The size of a single event to be retried
+    /// default: 100
+    /// </summary>
+    public int RetryDepth { get; set; } = 100;
+
+    public bool IsRetry { get; set; } = true;
+
     public IServiceCollection Services { get; }
 
-    private Assembly[] _assemblies = new Assembly[0];
+    private Assembly[] _assemblies = Array.Empty<Assembly>();
 
     public Assembly[] Assemblies
     {
