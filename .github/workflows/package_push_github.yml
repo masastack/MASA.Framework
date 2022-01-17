@@ -1,4 +1,4 @@
-name: Nuget Push Github
+name: Package Push Github
 on:
   push:
     branches: [ develop ]
