@@ -1,4 +1,4 @@
-name: Packege CI
+name: Nuget Push Github
 on:
   push:
     branches: [ develop ]
