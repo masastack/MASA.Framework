@@ -100,7 +100,7 @@ public class FeaturesTest : TestBase
     {
         var @event = new DeleteGoodsEvent()
         {
-            CreationTime = DateTime.Now,
+            CreationTime = DateTime.UtcNow,
         };
         await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
         {

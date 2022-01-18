@@ -16,7 +16,7 @@ public class IntegrationEventLogRetryItems
     private IntegrationEventLogRetryItems()
     {
         Id = Guid.NewGuid();
-        CreationTime = DateTime.Now;
+        CreationTime = DateTime.UtcNow;
     }
 
     public IntegrationEventLogRetryItems(Guid logId, int retryTimes)
