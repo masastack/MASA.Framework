@@ -19,16 +19,22 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     /// <summary>
-    /// When there is no message to retry, the thread sleep time
-    /// default: 30s
+    /// Failed messages polling delay time.
+    /// Default is 60 seconds.
     /// </summary>
-    public int IdleTime { get; set; } = 30;
+    public int FailedRetryInterval { get; set; } = 60;
 
     /// <summary>
     /// The size of a single event to be retried
     /// default: 100
     /// </summary>
-    public int RetryDepth { get; set; } = 100;
+    public int RetryBatchSize { get; set; } = 100;
+
+    /// <summary>
+    /// Delete expired event interval
+    /// Default is 300 seconds.
+    /// </summary>
+    public int CleaningExpireInterval { get; set; }
 
     public bool IsRetry { get; set; } = true;
 

@@ -33,7 +33,9 @@ public static class ServiceCollectionExtensions
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-        services.TryAddSingleton<IIntegrationEventLogServiceHostedService, DefaultIntegrationEventLogServiceHostedService>();
+        services.AddSingleton<IProcessor, RetryProcessor>();
+        services.AddSingleton<IProcessor, DeleteExpiresProcessor>();
+        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
         services.AddHostedService<IntegrationEventHostedService>();
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {

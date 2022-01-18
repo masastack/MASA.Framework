@@ -14,8 +14,4 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Internal" />
-  </ItemGroup>
-
 </Project>

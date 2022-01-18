@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
-public interface IIntegrationEventLogServiceHostedService
+public interface IProcessor
 {
     Task ExecuteAsync(CancellationToken stoppingToken);
 }

@@ -43,6 +43,8 @@ public class IntegrationEventLogContext : MasaDbContext
 
         builder.Property(e => e.EventTypeName)
             .IsRequired();
+
+        builder.HasIndex(e => new { e.State, e.TimesSent });
     }
 
     private void ConfigureEventLogRetryItemsEntry(EntityTypeBuilder<IntegrationEventLogRetryItems> builder)

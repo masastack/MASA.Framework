@@ -25,15 +25,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <summary>
     /// Get messages to retry
     /// </summary>
-    /// <param name="retryDepth">The size of a single event to be retried</param>
+    /// <param name="retryBatchSize">The size of a single event to be retried</param>
     /// <returns></returns>
-    public virtual async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryDepth)
+    public virtual async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize)
     {
         var result = await _eventLogContext.EventLogs
             .Where(e => e.State == IntegrationEventStates.PublishedFailed &&
                         e.TimesSent <= _retryStrategyOptions.MaxRetryTimes) //todo: Need to add NextRetryTime condition
             .OrderBy(o => o.CreationTime)
-            .Take(retryDepth)
+            .Take(retryBatchSize)
             .ToListAsync();
 
         if (result.Any())
@@ -45,7 +45,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
-        return new List<IntegrationEventLog>();
+        return result;
     }
 
     public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
@@ -64,7 +64,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
-        return new List<IntegrationEventLog>();
+        return result;
     }
 
     public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
