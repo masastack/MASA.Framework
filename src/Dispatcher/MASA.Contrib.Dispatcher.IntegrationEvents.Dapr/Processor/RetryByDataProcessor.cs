@@ -48,9 +48,9 @@ public class RetryByDataProcessor : IProcessor
 
                     await dapr.PublishEventAsync(_options.Value.PubSubName, eventLog.Event.Topic, eventLog.Event, stoppingToken);
 
-                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
-
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+
+                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
                 }
                 catch (Exception ex)
                 {

@@ -36,7 +36,7 @@ internal class LocalQueueProcessor
         var eventLogItems = _retryEventLogs.Values.Where(log => log.RetryCount >= maxRetryTimes - 1).ToList();
         eventLogItems.ForEach(item =>
         {
-            _retryEventLogs.TryRemove(item.EventId,out _);
+            _retryEventLogs.TryRemove(item.EventId, out _);
         });
     }
 
