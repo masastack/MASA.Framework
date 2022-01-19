@@ -1,35 +1,22 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class RetryProcessor : IProcessor
+public class RetryByDbProcessor : IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<RetryProcessor> _logger;
-    private readonly DaprClient _dapr;
-    private readonly DispatcherOptions _options;
+    private readonly ILogger<RetryByDbProcessor> _logger;
+    private readonly IOptions<DispatcherOptions> _options;
     private readonly IOptionsMonitor<AppConfig> _appConfig;
-    private readonly StateOptions _stateOptions;
-    private readonly string _defaultTtLttlInSeconds;
-    private readonly string _storeName;
 
-    public RetryProcessor(
+    public RetryByDbProcessor(
         IServiceProvider serviceProvider,
-        ILogger<RetryProcessor> logger,
-        DaprClient dapr,
+        ILogger<RetryByDbProcessor> logger,
         IOptionsMonitor<AppConfig> appConfig,
         IOptions<DispatcherOptions> options)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
-        _dapr = dapr;
         _appConfig = appConfig;
-        _options = options.Value;
-        _stateOptions = new StateOptions()
-        {
-            Consistency = ConsistencyMode.Eventual,
-            Concurrency = ConcurrencyMode.FirstWrite
-        };
-        _defaultTtLttlInSeconds = "3";
-        _storeName = "statestore";
+        _options = options;
     }
 
     public async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -40,6 +27,7 @@ public class RetryProcessor : IProcessor
             if (unitOfWork != null)
                 unitOfWork.UseTransaction = false;
 
+            var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
@@ -51,32 +39,17 @@ public class RetryProcessor : IProcessor
             {
                 try
                 {
-                    var stateAndETag = await
-                        _dapr.GetStateAndETagAsync<Guid>(_storeName, eventLog.Id.ToString(), ConsistencyMode.Eventual,
-                            cancellationToken: stoppingToken);
-
-                    if (stateAndETag.value != Guid.Empty)
-                        continue;
-
-                    bool isSave = await _dapr.TrySaveStateAsync(
-                        _storeName,
-                        eventLog.Id.ToString(),
-                        Guid.NewGuid(),
-                        stateAndETag.etag, _stateOptions, new Dictionary<string, string>()
-                        {
-                            {"TTLttlInSeconds", _defaultTtLttlInSeconds}
-                        }, stoppingToken);
-                    if (!isSave)
-                        continue;
-
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
                     _logger.LogInformation("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
-                        _options.PubSubName,
+                        _options.Value.PubSubName,
                         eventLog.Event.Topic);
-                    await _dapr.PublishEventAsync(_options.PubSubName, eventLog.Event.Topic, (dynamic) eventLog);
+
+                    await dapr.PublishEventAsync(_options.Value.PubSubName, eventLog.Event.Topic, eventLog.Event, stoppingToken);
 
                     await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
+
+                    LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
                 }
                 catch (Exception ex)
                 {
@@ -93,6 +66,6 @@ public class RetryProcessor : IProcessor
             }
         }
 
-        await Task.Delay(_options.FailedRetryInterval, stoppingToken);
+        await Task.Delay(_options.Value.FailedRetryInterval, stoppingToken);
     }
 }

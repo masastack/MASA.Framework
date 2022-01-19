@@ -3,6 +3,7 @@ global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
+global using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
 global using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 global using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 global using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Servers;

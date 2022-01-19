@@ -2,7 +2,7 @@ namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
-    private readonly DispatcherOptions dispatcherOptions;
+    private readonly DispatcherOptions _dispatcherOptions;
     private readonly DaprClient _dapr;
     private readonly ILogger<IntegrationEventBus> _logger;
     private readonly IIntegrationEventLogService _eventLogService;
@@ -19,7 +19,7 @@ public class IntegrationEventBus : IIntegrationEventBus
         IEventBus? eventBus = null,
         IUnitOfWork? unitOfWork = null)
     {
-        dispatcherOptions = options.Value;
+        _dispatcherOptions = options.Value;
         _dapr = dapr;
         _eventLogService = eventLogService;
         _appConfig = appConfig;
@@ -30,9 +30,9 @@ public class IntegrationEventBus : IIntegrationEventBus
     }
 
     public IEnumerable<Type> GetAllEventTypes() =>
-        _eventBus == null ?
-        dispatcherOptions.AllEventTypes :
-        dispatcherOptions.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
+        _eventBus == null
+            ? _dispatcherOptions.AllEventTypes
+            : _dispatcherOptions.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 
     public async Task PublishAsync<TEvent>(TEvent @event)
         where TEvent : IEvent
@@ -65,24 +65,28 @@ public class IntegrationEventBus : IIntegrationEventBus
                 _logger.LogInformation("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
                 await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
 
-                _logger.LogInformation("----- Publishing integration event: {IntegrationEventId_published} from {AppId} - ({IntegrationEvent})", @event.Id, _appConfig.CurrentValue.AppId, @event);
+                _logger.LogInformation(
+                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.Id,
+                    _appConfig.CurrentValue.AppId, @event);
 
                 await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
 
                 _logger.LogInformation("Publishing event {Event} to {PubsubName}.{TopicName}", @event, _daprPubsubName, topicName);
-                await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
+                await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic) @event);
 
                 await _eventLogService.MarkEventAsPublishedAsync(@event.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})", @event.Id, _appConfig.CurrentValue.AppId, @event);
+                _logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
+                    @event.Id, _appConfig.CurrentValue.AppId, @event);
+                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItems(@event.Id, @event.Topic, @event));
                 await _eventLogService.MarkEventAsFailedAsync(@event.Id);
             }
         }
         else
         {
-            await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
+            await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic) @event);
         }
     }
 

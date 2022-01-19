@@ -1,3 +1,5 @@
+using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
+
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public static class ServiceCollectionExtensions
@@ -29,12 +31,13 @@ public static class ServiceCollectionExtensions
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         services.AddLogging();
-
+        LocalQueueProcessor.SetLogger(services);
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-        services.AddSingleton<IProcessor, RetryProcessor>();
+        services.AddSingleton<IProcessor, RetryByDbProcessor>();
         services.AddSingleton<IProcessor, DeleteExpiresProcessor>();
+        services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
         services.AddHostedService<IntegrationEventHostedService>();
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))

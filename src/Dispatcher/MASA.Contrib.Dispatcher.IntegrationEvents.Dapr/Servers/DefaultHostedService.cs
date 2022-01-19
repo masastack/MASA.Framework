@@ -1,6 +1,4 @@
-﻿using MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
-
-namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Servers;
+﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Servers;
 
 public class DefaultHostedService : IProcessingServer
 {

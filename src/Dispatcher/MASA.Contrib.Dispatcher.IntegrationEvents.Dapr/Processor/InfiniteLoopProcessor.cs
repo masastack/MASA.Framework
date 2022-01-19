@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
+﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
 public class InfiniteLoopProcessor : IProcessor
 {

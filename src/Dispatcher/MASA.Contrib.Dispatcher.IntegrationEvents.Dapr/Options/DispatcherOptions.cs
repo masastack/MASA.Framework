@@ -19,10 +19,17 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     /// <summary>
-    /// Failed messages polling delay time.
+    /// The interval at which db polls for failure messages.
     /// Default is 60 seconds.
     /// </summary>
     public int FailedRetryInterval { get; set; } = 60;
+
+    /// <summary>
+    /// The interval at which the local queue is polled for failed messages.
+    /// Local queue does not rebuild after service crash
+    /// Default is 3 seconds.
+    /// </summary>
+    public int LocalFailedRetryInterval { get; set; } = 3;
 
     /// <summary>
     /// The size of a single event to be retried
@@ -35,8 +42,6 @@ public class DispatcherOptions : IDispatcherOptions
     /// Default is 300 seconds.
     /// </summary>
     public int CleaningExpireInterval { get; set; }
-
-    public bool IsRetry { get; set; } = true;
 
     public IServiceCollection Services { get; }
 

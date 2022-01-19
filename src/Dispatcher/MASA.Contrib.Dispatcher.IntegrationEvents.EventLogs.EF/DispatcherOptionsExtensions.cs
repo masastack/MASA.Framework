@@ -7,13 +7,11 @@ public static class DispatcherOptionsExtensions
     /// </summary>
     /// <param name="options"></param>
     /// <param name="optionsBuilder">Separately specify database configuration for IntegrationEventLogContext</param>
-    /// <param name="retryStrategyOptions"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public static IDispatcherOptions UseEventLog(
         this IDispatcherOptions options,
-        Action<DbContextOptionsBuilder> optionsBuilder,
-        Action<RetryStrategyOptions>? retryStrategyOptions = null)
+        Action<DbContextOptionsBuilder> optionsBuilder)
     {
         if (options.Services == null)
             throw new ArgumentNullException(nameof(options.Services));
@@ -25,7 +23,6 @@ public static class DispatcherOptionsExtensions
         options.Services.AddSingleton<EventLogProvider>();
 
         options.Services.AddCustomMasaDbContext<IntegrationEventLogContext>(optionsBuilder);
-        options.Services.TryAddRetryStrategy(retryStrategyOptions);
         return options;
     }
 
@@ -35,11 +32,9 @@ public static class DispatcherOptionsExtensions
     /// </summary>
     /// <typeparam name="TDbContext"></typeparam>
     /// <param name="options"></param>
-    /// <param name="retryStrategyOptions"></param>
     /// <returns></returns>
     public static IDispatcherOptions UseEventLog<TDbContext>(
-        this IDispatcherOptions options,
-        Action<RetryStrategyOptions>? retryStrategyOptions = null) where TDbContext : IntegrationEventLogContext
+        this IDispatcherOptions options) where TDbContext : IntegrationEventLogContext
     {
         if (options.Services == null)
             throw new ArgumentNullException(nameof(options.Services));
@@ -52,15 +47,7 @@ public static class DispatcherOptionsExtensions
         options.Services.AddSingleton<EventLogProvider>();
 
         options.Services.TryAddScoped<IntegrationEventLogContext>(serviceProvider => serviceProvider.GetRequiredService<TDbContext>());
-        options.Services.TryAddRetryStrategy(retryStrategyOptions);
         return options;
-    }
-
-    private static void TryAddRetryStrategy(this IServiceCollection services,Action<RetryStrategyOptions>? retryStrategyOptions = null )
-    {
-        RetryStrategyOptions retryStrategyOption = new RetryStrategyOptions();
-        retryStrategyOptions?.Invoke(retryStrategyOption);
-        services.TryAddSingleton(retryStrategyOption);
     }
 
     private class EventLogProvider

@@ -7,18 +7,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly IServiceProvider _serviceProvider;
     private IEnumerable<Type>? _eventTypes;
-    private readonly RetryStrategyOptions _retryStrategyOptions;
     private readonly ILogger<IntegrationEventLogService> _logger;
 
     public IntegrationEventLogService(
         IntegrationEventLogContext eventLogContext,
         IServiceProvider serviceProvider,
-        RetryStrategyOptions retryStrategyOptions,
         ILogger<IntegrationEventLogService> logger)
     {
         _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
-        _retryStrategyOptions = retryStrategyOptions;
         _logger = logger;
     }
 
@@ -26,13 +23,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// Get messages to retry
     /// </summary>
     /// <param name="retryBatchSize">The size of a single event to be retried</param>
+    /// <param name="maxRetryTimes"></param>
     /// <returns></returns>
-    public virtual async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize)
+    public virtual async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize,int maxRetryTimes)
     {
         var result = await _eventLogContext.EventLogs
             .Where(e => e.State == IntegrationEventStates.PublishedFailed &&
-                        e.TimesSent <= _retryStrategyOptions.MaxRetryTimes) //todo: Need to add NextRetryTime condition
-            .OrderBy(o => o.CreationTime)
+                        e.TimesSent <= maxRetryTimes)
+            .OrderBy(o=>o.TimesSent)
+            .ThenBy(o => o.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync();
 
@@ -89,36 +88,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public Task MarkEventAsInProgressAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, (eventLog) =>
-        {
-            if (eventLog.TimesSent > 1)
-                _eventLogContext.IntegrationEventLogRetryItems.Add(new IntegrationEventLogRetryItems(eventLog.Id, eventLog.TimesSent - 1));
-        });
+        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress);
     }
 
     public Task MarkEventAsFailedAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed, (eventLog) =>
-        {
-            if (eventLog.TimesSent <= _retryStrategyOptions.MaxRetryTimes)
-            {
-                if (_retryStrategyOptions.RetryType == RetryType.RegularIntervals)
-                {
-                    //Need to mark the next retry time and add a retry record
-                }
-                else if (_retryStrategyOptions.RetryType == RetryType.IncrementalIntervals)
-                {
-                    //Need to mark the next retry time and add a retry record
-                }
-                else
-                {
-                    _logger.LogError("Unsupported retry policy");
-                }
-            }
-        });
+        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed);
     }
 
-    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
+    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
@@ -128,8 +106,6 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
-
-        action?.Invoke(eventLogEntry);
 
         _eventLogContext.EventLogs.Update(eventLogEntry);
         await _eventLogContext.SaveChangesAsync();
