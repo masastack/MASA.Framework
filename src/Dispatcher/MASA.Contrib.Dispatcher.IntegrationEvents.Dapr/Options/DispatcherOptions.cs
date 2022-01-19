@@ -19,6 +19,14 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     /// <summary>
+    /// maximum number of retries
+    /// If the local message queue exceeds the maximum number of retries and has not succeeded, it will be deleted
+    /// If the data persisted exceeds the maximum number of retries and is still unsuccessful, it will not be processed.
+    /// Default is 50
+    /// </summary>
+    public int MaxRetryTimes { get; set; } = 50;
+
+    /// <summary>
     /// The interval at which db polls for failure messages.
     /// Default is 60 seconds.
     /// </summary>
@@ -33,15 +41,27 @@ public class DispatcherOptions : IDispatcherOptions
 
     /// <summary>
     /// The size of a single event to be retried
-    /// default: 100
+    /// Default is 100 seconds.
     /// </summary>
     public int RetryBatchSize { get; set; } = 100;
+
+    /// <summary>
+    /// Delete local queue expired event interval
+    /// Default is 60 seconds.
+    /// </summary>
+    public int CleaningLocalQueueExpireInterval { get; set; } = 60;
 
     /// <summary>
     /// Delete expired event interval
     /// Default is 300 seconds.
     /// </summary>
-    public int CleaningExpireInterval { get; set; }
+    public int CleaningExpireInterval { get; set; } = 300;
+
+    /// <summary>
+    /// Expiration time, when the message status is successful and has expired, it will be deleted by the scheduled task
+    /// Default: ( 24 * 3600 )s
+    /// </summary>
+    public long ExpireDate { get; set; } = 24 * 3600;
 
     public IServiceCollection Services { get; }
 

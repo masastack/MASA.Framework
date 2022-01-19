@@ -13,6 +13,7 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
+global using System.Collections.Concurrent;
 global using System.Reflection;
 global using System.Text.Json.Serialization;
 

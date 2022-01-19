@@ -2,7 +2,7 @@
 
 internal class LocalQueueProcessor
 {
-    private readonly Dictionary<Guid, IntegrationEventLogItems> _retryEventLogs;
+    private readonly ConcurrentDictionary<Guid, IntegrationEventLogItems> _retryEventLogs;
 
     public static ILogger<LocalQueueProcessor> Logger = default!;
     public static readonly LocalQueueProcessor Default = new();
@@ -18,13 +18,38 @@ internal class LocalQueueProcessor
         => SafeMethods(() => _retryEventLogs.TryAdd(items.EventId, items), "add local queue jobs");
 
     public void RemoveJobs(Guid eventId)
-        => SafeMethods(() => _retryEventLogs.Remove(eventId), "remove local queue jobs");
+        => SafeMethods(() => _retryEventLogs.TryRemove(eventId, out _), "remove local queue jobs");
 
-    public List<IntegrationEventLogItems> RetrieveEventLogsFailedToPublishAsync()
+    public void RetryJobs(Guid eventId)
+    {
+        if (_retryEventLogs.TryGetValue(eventId, out IntegrationEventLogItems? item))
+        {
+            item.Retry();
+        }
+    }
+
+    public bool IsSkipJobs(Guid eventId)
+        => _retryEventLogs.ContainsKey(eventId);
+
+    public void DeleteAsync(int maxRetryTimes)
+    {
+        var eventLogItems = _retryEventLogs.Values.Where(log => log.RetryCount >= maxRetryTimes - 1).ToList();
+        eventLogItems.ForEach(item =>
+        {
+            _retryEventLogs.TryRemove(item.EventId,out _);
+        });
+    }
+
+    public List<IntegrationEventLogItems> RetrieveEventLogsFailedToPublishAsync(int maxRetryTimes)
     {
         try
         {
-            return _retryEventLogs.Select(x => x.Value).ToList();
+            return _retryEventLogs
+                .Select(item => item.Value)
+                .Where(log => log.RetryCount < maxRetryTimes)
+                .OrderBy(log => log.RetryCount)
+                .ThenBy(log => log.CreationTime)
+                .ToList();
         }
         catch (Exception ex)
         {

@@ -1,15 +1,15 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteExpiresProcessor : IProcessor
+public class DeleteDataExpiresProcessor : IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly ILogger<DeleteExpiresProcessor> _logger;
+    private readonly ILogger<DeleteDataExpiresProcessor> _logger;
 
-    public DeleteExpiresProcessor(
+    public DeleteDataExpiresProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
-        ILogger<DeleteExpiresProcessor> logger)
+        ILogger<DeleteDataExpiresProcessor> logger)
     {
         _serviceProvider = serviceProvider;
         _options = options;
@@ -25,7 +25,11 @@ public class DeleteExpiresProcessor : IProcessor
     {
         using (var scope = _serviceProvider.CreateScope())
         {
+            var logService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+            var expireDate = DateTime.Now.AddSeconds(-_options.Value.ExpireDate);
 
+
+            //todo: Delete expired events
         }
         await Task.Delay(_options.Value.CleaningExpireInterval, stoppingToken);
         //todo: Delete successfully published and expired messages

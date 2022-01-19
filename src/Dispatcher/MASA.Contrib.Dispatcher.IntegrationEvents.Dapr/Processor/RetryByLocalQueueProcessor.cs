@@ -30,12 +30,14 @@ public class RetryByLocalQueueProcessor : IProcessor
             var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync();
+            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.MaxRetryTimes);
 
             foreach (var eventLog in retrieveEventLogs)
             {
                 try
                 {
+                    LocalQueueProcessor.Default.RetryJobs(eventLog.EventId);
+
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
                     _logger.LogInformation("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
@@ -54,11 +56,6 @@ public class RetryByLocalQueueProcessor : IProcessor
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                         eventLog.EventId, _appConfig.CurrentValue.AppId, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
-                }
-                finally
-                {
-                    if (unitOfWork != null && unitOfWork.TransactionHasBegun)
-                        await unitOfWork.CommitAsync(stoppingToken);
                 }
             }
         }
