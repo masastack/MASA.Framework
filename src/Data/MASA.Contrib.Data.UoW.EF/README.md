@@ -10,10 +10,11 @@ Install-Package MASA.Contrib.Data.Contracts.EF
 ```
 
 ```C#
-builder.Services
-    .AddUoW<CustomDbContext>(dbOptions =>
+builder.Services.AddEventBus(options => {
+    options.UseUoW<CustomDbContext>(dbOptions =>
     {
         dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
-    })
+    });
+});
 ```
 

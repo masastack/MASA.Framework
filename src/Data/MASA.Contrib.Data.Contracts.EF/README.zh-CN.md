@@ -10,12 +10,13 @@ Install-Package MASA.Contrib.Data.Contracts.EF
 ```
 
 ```C#
-builder.Services
-    .AddUoW<CustomDbContext>(dbOptions =>
+builder.Services.AddEventBus(options => {
+    options.UseUoW<CustomDbContext>(dbOptions =>
     {
         dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
         dbOptions.UseSoftDelete(builder.Services);//启动软删除
-    })
+    });
+});
 ```
 
 > 当实体继承ISoftware，且被删除时，将删除状态改为修改状态，并配合自定义Remove操作，实现软删除
