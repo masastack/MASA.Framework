@@ -36,4 +36,4 @@ jobs:
 
     - name: package push
       run: |
-        dotnet nuget push "**/*.symbols.nupkg"  --api-key ${{secrets.PACKAGE_NUGET_GITHUB}}  --source "github"
+        dotnet nuget push "**/*.symbols.nupkg"  --api-key ${{secrets.PACKAGE_NUGET_GITHUB}}  --source https://nuget.pkg.github.com/masastack/index.json
