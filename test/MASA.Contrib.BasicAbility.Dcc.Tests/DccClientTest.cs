@@ -13,7 +13,7 @@ public class DccClientTest
     [TestInitialize]
     public void Initialize()
     {
-        _client = new();
+        _client = new Mock<IMemoryCacheClient>();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -112,7 +112,7 @@ public class DccClientTest
     {
         List<Property> properties = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Brand",
                 Value = "Microsoft"
@@ -235,12 +235,12 @@ public class DccClientTest
     {
         var brand = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Id",
                 Value = Guid.NewGuid().ToString(),
             },
-            new Property()
+            new()
             {
                 Key = "Name",
                 Value = "Microsoft"
@@ -362,12 +362,12 @@ public class DccClientTest
     {
         var brand = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Id",
                 Value = Guid.NewGuid().ToString(),
             },
-            new Property()
+            new()
             {
                 Key = "Name",
                 Value = "Microsoft"

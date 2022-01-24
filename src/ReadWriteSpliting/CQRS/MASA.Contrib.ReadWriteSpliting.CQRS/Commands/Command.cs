@@ -8,6 +8,9 @@ public record Command : ICommand
     [JsonIgnore]
     public DateTime CreationTime { get; init; }
 
+    [JsonIgnore]
+    public IUnitOfWork? UnitOfWork { get; set; }
+
     public Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
     public Command(Guid id, DateTime creationTime)

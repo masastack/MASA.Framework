@@ -10,7 +10,7 @@ public class IntegrationEventLogServiceTest : TestBase
         var @event = new OrderPaymentSucceededIntegrationEvent()
         {
             OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+            PaymentTime = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
         var serviceProvider = CreateDefaultProvider();
         var dbContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
@@ -28,7 +28,7 @@ public class IntegrationEventLogServiceTest : TestBase
         var @event = new OrderPaymentSucceededIntegrationEvent()
         {
             OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+            PaymentTime = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
 
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -41,8 +41,8 @@ public class IntegrationEventLogServiceTest : TestBase
         Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
         Assert.IsTrue(eventLog.EventId == @event.Id);
 
-        var eventLogs = await eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId);
-        Assert.IsNotNull(eventLogs.Count() == 1);
+        var eventLogs = await eventLogService.RetrieveEventLogsFailedToPublishAsync();
+        Assert.IsTrue(eventLogs.Any());
         eventLog = dbContext.EventLogs.FirstOrDefault();
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
@@ -55,24 +55,23 @@ public class IntegrationEventLogServiceTest : TestBase
         });
         await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-
-        eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
+        eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.InProgress);
         Assert.IsTrue(eventLog.TimesSent == 1);
 
         await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
-        eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
+        eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.Published);
 
         await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
-        eventLog = dbContext.EventLogs.Where(x => x.Id == eventLog.Id).FirstOrDefault();
+        eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
         Assert.IsNotNull(eventLog);
         Assert.IsTrue(eventLog.State == IntegrationEventStates.PublishedFailed);
 
-        eventLogs = await eventLogService.RetrieveEventLogsPendingToPublishAsync(transactionId);
-        Assert.IsNotNull(eventLogs.Count() == 0);
+        eventLogs = await eventLogService.RetrieveEventLogsFailedToPublishAsync();
+        Assert.IsNotNull(eventLogs.Count() == 1);
     }
 
     [TestMethod]
@@ -89,23 +88,14 @@ public class IntegrationEventLogServiceTest : TestBase
     public void TestNullServices()
     {
         var options = new DispatcherOptions(null!);
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            options.UseEventLog(options =>
-            {
-                options.UseSqlite(base._connection);
-            });
-        });
+        Assert.ThrowsException<ArgumentNullException>(() => { options.UseEventLog(options => { options.UseSqlite(base._connection); }); });
     }
 
     [TestMethod]
     public void TestNullDbContextOptionsBuilder()
     {
         var options = new DispatcherOptions(new ServiceCollection());
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            options.UseEventLog(null!);
-        });
+        Assert.ThrowsException<ArgumentNullException>(() => { options.UseEventLog(null!); });
     }
 
     [TestMethod]
@@ -127,10 +117,13 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestCustomDbContextAsync()
     {
         var options = new DispatcherOptions(new ServiceCollection());
-        options.Services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+        options.Services.AddMasaDbContext<CustomDbContext>(options =>
+            options.UseSqlite(_connection).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
+        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() =>
+            AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
         options.Services.AddScoped(serviceProvider => integrationEventBus.Object);
 
         options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
@@ -143,17 +136,18 @@ public class IntegrationEventLogServiceTest : TestBase
         var @event = new OrderPaymentSucceededIntegrationEvent()
         {
             OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+            PaymentTime = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
 
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-        using (var transaction = dbContext.Database.BeginTransaction())
-        {
-            await eventLogService.SaveEventAsync(@event, Microsoft.EntityFrameworkCore.Storage.DbContextTransactionExtensions.GetDbTransaction(transaction));
-
-            await eventLogService.RetrieveEventLogsPendingToPublishAsync(transaction.TransactionId);
-        }
+        await dbContext.Database.EnsureCreatedAsync();
+        // using (var transaction = await dbContext.Database.BeginTransactionAsync())
+        // {
+        //     await eventLogService.SaveEventAsync(@event,
+        //         Microsoft.EntityFrameworkCore.Storage.DbContextTransactionExtensions.GetDbTransaction(transaction));
+        //
+        //     await eventLogService.RetrieveEventLogsPendingToPublishAsync(transaction.TransactionId);
+        // }
     }
 
     [TestMethod]
@@ -163,7 +157,9 @@ public class IntegrationEventLogServiceTest : TestBase
         options.Services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
+        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() =>
+            AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
         options.Services.AddScoped(serviceProvider => integrationEventBus.Object);
 
         options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
@@ -176,17 +172,18 @@ public class IntegrationEventLogServiceTest : TestBase
         var @event = new OrderPaymentSucceededIntegrationEvent()
         {
             OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+            PaymentTime = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
 
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-        using (var transaction = dbContext.Database.BeginTransaction())
-        {
-            await eventLogService.SaveEventAsync(@event, Microsoft.EntityFrameworkCore.Storage.DbContextTransactionExtensions.GetDbTransaction(transaction));
-
-            await eventLogService.RetrieveEventLogsPendingToPublishAsync(transaction.TransactionId);
-        }
+        await dbContext.Database.EnsureCreatedAsync();
+        // using (var transaction = dbContext.Database.BeginTransaction())
+        // {
+        //     await eventLogService.SaveEventAsync(@event,
+        //         Microsoft.EntityFrameworkCore.Storage.DbContextTransactionExtensions.GetDbTransaction(transaction));
+        //
+        //     await eventLogService.RetrieveEventLogsPendingToPublishAsync(transaction.TransactionId);
+        // }
     }
 
     [TestMethod]

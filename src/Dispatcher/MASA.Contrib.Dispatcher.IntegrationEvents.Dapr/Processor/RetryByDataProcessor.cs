@@ -30,8 +30,8 @@ public class RetryByDataProcessor : IProcessor
             var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            // todo: Need to be replaced with RetrieveEventLogsFailedToPublishAsync method
-            var retrieveEventLogs = await eventLogService.RetrieveEventLogsPendingToPublishAsync(Guid.Empty);
+            var retrieveEventLogs =
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes);
 
             foreach (var eventLog in retrieveEventLogs)
             {

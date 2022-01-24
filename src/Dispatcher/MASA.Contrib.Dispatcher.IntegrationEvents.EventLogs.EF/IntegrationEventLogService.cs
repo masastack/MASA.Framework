@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
 
 public class IntegrationEventLogService : IIntegrationEventLogService
@@ -7,16 +5,13 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly IServiceProvider _serviceProvider;
     private IEnumerable<Type>? _eventTypes;
-    private readonly ILogger<IntegrationEventLogService> _logger;
 
     public IntegrationEventLogService(
         IntegrationEventLogContext eventLogContext,
-        IServiceProvider serviceProvider,
-        ILogger<IntegrationEventLogService> logger)
+        IServiceProvider serviceProvider)
     {
         _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
-        _logger = logger;
     }
 
     /// <summary>
@@ -25,8 +20,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="retryBatchSize">The size of a single event to be retried</param>
     /// <param name="maxRetryTimes"></param>
     /// <returns></returns>
-    public virtual async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize, int maxRetryTimes)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
     {
+
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
                         e.TimesSent <= maxRetryTimes)
@@ -41,25 +37,6 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
 
             return result.OrderBy(o => o.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
-        }
-
-        return result;
-    }
-
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
-    {
-        var result = await _eventLogContext.EventLogs
-            .Where(e => e.TransactionId == transactionId && e.State == IntegrationEventStates.NotPublished)
-            .OrderBy(o => o.CreationTime)
-            .ToListAsync();
-
-        if (result.Any())
-        {
-            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
-                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
-
-            return result
                 .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
@@ -94,6 +71,22 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     public Task MarkEventAsFailedAsync(Guid eventId)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed);
+    }
+
+    public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
+    {
+        var eventLogs = _eventLogContext.EventLogs.Where(e => e.CreationTime < expiresAt && e.State == IntegrationEventStates.Published)
+            .OrderBy(e => e.CreationTime).Take(batchCount);
+        _eventLogContext.EventLogs.RemoveRange(eventLogs);
+        await _eventLogContext.SaveChangesAsync(token);
+
+        if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
+        {
+            foreach (var log in eventLogs)
+            {
+                _eventLogContext.Entry(log).State = EntityState.Detached;
+            }
+        }
     }
 
     private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)

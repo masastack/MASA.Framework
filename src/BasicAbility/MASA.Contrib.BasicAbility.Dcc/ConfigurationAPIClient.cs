@@ -105,7 +105,7 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
         return FormatRaw(raw);
     }
 
-    private (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string raw)
+    private (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string? raw)
     {
         if (raw == null)
             throw new ArgumentException("configObject invalid");

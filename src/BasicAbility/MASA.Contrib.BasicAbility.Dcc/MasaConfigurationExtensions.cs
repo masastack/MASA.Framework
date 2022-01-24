@@ -130,7 +130,7 @@ public static class MasaConfigurationExtensions
         Action<DccSectionOptions> defaultSectionOptions,
         Action<DccExpandSectionOptions>? expansionSectionOptions = null)
     {
-        var dccConfigurationOption = configureOptions?.Invoke() ?? null;
+        var dccConfigurationOption = configureOptions();
         if (dccConfigurationOption == null)
             throw new ArgumentNullException(nameof(configureOptions));
 

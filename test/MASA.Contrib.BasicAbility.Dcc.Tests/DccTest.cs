@@ -25,10 +25,10 @@ public class DccTest
     [TestInitialize]
     public void Initialize()
     {
-        _masaConfigurationBuilder = new();
-        _memoryCacheClientFactory = new();
-        _memoryCache = new();
-        _distributedCacheClient = new();
+        _masaConfigurationBuilder = new Mock<IMasaConfigurationBuilder>();
+        _memoryCacheClientFactory = new Mock<IMemoryCacheClientFactory>();
+        _memoryCache = new Mock<IMemoryCache>();
+        _distributedCacheClient = new Mock<IDistributedCacheClient>();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -136,7 +136,7 @@ public class DccTest
             {
                 Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                 {
-                    new Utils.Caching.Redis.Models.RedisServerOptions()
+                    new()
                     {
                         Host = "localhost",
                         Port = 6379
@@ -216,7 +216,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host="",
                             Port=8080
@@ -236,7 +236,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host="localhost",
                             Port=-1
@@ -259,7 +259,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -279,7 +279,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -302,7 +302,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -326,7 +326,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -350,7 +350,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -382,7 +382,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -401,7 +401,7 @@ public class DccTest
         {
             option.ExpandSections = new List<DccSectionOptions>()
             {
-                new DccSectionOptions()
+                new()
                 {
                     AppId = "Test2",
                 }
@@ -418,7 +418,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -437,7 +437,7 @@ public class DccTest
         {
             option.ExpandSections = new List<DccSectionOptions>()
             {
-                new DccSectionOptions()
+                new()
                 {
                     AppId = "Test2",
                     ConfigObjects=new List<string>()
@@ -455,7 +455,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -474,7 +474,7 @@ public class DccTest
         {
             option.ExpandSections = new List<DccSectionOptions>()
             {
-                new DccSectionOptions()
+                new()
                 {
                     AppId = "Test",
                     ConfigObjects=new List<string>()
@@ -495,7 +495,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -514,7 +514,7 @@ public class DccTest
         {
             option.ExpandSections = new List<DccSectionOptions>()
             {
-                new DccSectionOptions()
+                new()
                 {
                     AppId = "Test2",
                     ConfigObjects=new List<string>()
@@ -522,7 +522,7 @@ public class DccTest
                         "Settings"
                     }
                 },
-                new DccSectionOptions()
+                new()
                 {
                     AppId = "Test2",
                     ConfigObjects=new List<string>()
@@ -542,7 +542,7 @@ public class DccTest
         var brand = new Brands("Microsoft");
         Mock<IConfigurationAPIClient> configurationAPIClient = new();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
+            => new ValueTuple<string, ConfigurationTypes>(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         _masaConfigurationBuilder.Object.UseDcc(_services, () =>
@@ -554,7 +554,7 @@ public class DccTest
                 {
                     Servers = new List<Utils.Caching.Redis.Models.RedisServerOptions>()
                     {
-                        new Utils.Caching.Redis.Models.RedisServerOptions()
+                        new()
                         {
                             Host = "localhost",
                             Port = 6379
@@ -587,7 +587,7 @@ public class DccTest
         var newBrand = new Brands("Masa");
         Mock<IConfigurationAPIClient> configurationAPIClient = new();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
+            => new ValueTuple<string, ConfigurationTypes>(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
         ).Callback((string environment, string cluster, string appId, string configObject, Action<string> action) =>
         {
             trigger.Formats = ConfigFormats.Json;
@@ -610,9 +610,9 @@ public class DccTest
 
         Initialize();
 
-        configurationAPIClient = new();
+        configurationAPIClient = new Mock<IConfigurationAPIClient>();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new(new Dictionary<string, string>()
+            => new ValueTuple<string, ConfigurationTypes>(new Dictionary<string, string>()
             {
                 { "Id",Guid.NewGuid().ToString()},
                 { "Name","Masa"}
@@ -633,9 +633,9 @@ public class DccTest
 
         Initialize();
 
-        configurationAPIClient = new();
+        configurationAPIClient = new Mock<IConfigurationAPIClient>();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new("Test", ConfigurationTypes.Text)
+            => new ValueTuple<string, ConfigurationTypes>("Test", ConfigurationTypes.Text)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         chainedConfiguration = new ConfigurationBuilder()
@@ -652,9 +652,9 @@ public class DccTest
 
         Initialize();
 
-        configurationAPIClient = new();
+        configurationAPIClient = new Mock<IConfigurationAPIClient>();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new(null, ConfigurationTypes.Text)
+            => new ValueTuple<string, ConfigurationTypes>(null, ConfigurationTypes.Text)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         chainedConfiguration = new ConfigurationBuilder()
@@ -672,9 +672,9 @@ public class DccTest
 
         Initialize();
 
-        configurationAPIClient = new();
+        configurationAPIClient = new Mock<IConfigurationAPIClient>();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new("Test", (ConfigurationTypes)4)
+            => new ValueTuple<string, ConfigurationTypes>("Test", (ConfigurationTypes)4)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         chainedConfiguration = new ConfigurationBuilder()
@@ -696,10 +696,10 @@ public class DccTest
         var brand = new Brands("Microsoft");
         Mock<IConfigurationAPIClient> configurationAPIClient = new();
         configurationAPIClient.Setup(client => client.GetRawAsync("Test", "Default", "DccTest", "Test1", It.IsAny<Action<string>>()).Result).Returns(()
-            => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
+            => new ValueTuple<string, ConfigurationTypes>(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
         ).Verifiable();
         configurationAPIClient.Setup(client => client.GetRawAsync("Test2", "Default", "DccTest2", "Test3", It.IsAny<Action<string>>()).Result).Returns(()
-           => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
+           => new ValueTuple<string, ConfigurationTypes>(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
        ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         var chainedConfiguration = new ConfigurationBuilder()
@@ -724,7 +724,7 @@ public class DccTest
         var brand = new Brands("Microsoft");
         Mock<IConfigurationAPIClient> configurationAPIClient = new();
         configurationAPIClient.Setup(client => client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result).Returns(()
-            => new(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
+            => new ValueTuple<string, ConfigurationTypes>(brand.Serialize(_jsonSerializerOptions), ConfigurationTypes.Json)
         ).Verifiable();
         _services.AddSingleton(configurationAPIClient.Object);
         var chainedConfiguration = new ConfigurationBuilder()

@@ -29,7 +29,7 @@ public class DccManageTest
         {
             PropertyNameCaseInsensitive = true
         };
-        _callerProvider = new();
+        _callerProvider = new Mock<ICallerProvider>();
     }
 
     [DataTestMethod]
@@ -86,7 +86,7 @@ public class DccManageTest
     {
         var api = new CustomConfigurationAPI(_dccSectionOptions, new List<DccSectionOptions>()
         {
-            new DccSectionOptions()
+            new()
             {
                 Environment = "Test2",
                 Cluster = "Default2",
