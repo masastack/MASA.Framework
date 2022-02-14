@@ -65,7 +65,7 @@ public static class MasaConfigurationExtensions
             if (callerOptions == null)
             {
                 options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress), jsonSerializerOption)
+                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress))
                 );
             }
             else
