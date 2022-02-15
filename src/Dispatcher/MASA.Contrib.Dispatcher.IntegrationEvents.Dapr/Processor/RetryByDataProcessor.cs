@@ -31,13 +31,13 @@ public class RetryByDataProcessor : IProcessor
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
-                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes);
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.DataRetryTimes);
 
             foreach (var eventLog in retrieveEventLogs)
             {
                 try
                 {
-                    if (LocalQueueProcessor.Default.IsSkipJobs(eventLog.EventId))
+                    if (LocalQueueProcessor.Default.IsExist(eventLog.EventId))
                         continue; // The local queue is retrying, no need to retry
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);

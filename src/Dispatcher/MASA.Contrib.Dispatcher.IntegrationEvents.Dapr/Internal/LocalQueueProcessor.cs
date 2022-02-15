@@ -28,7 +28,7 @@ internal class LocalQueueProcessor
         }
     }
 
-    public bool IsSkipJobs(Guid eventId)
+    public bool IsExist(Guid eventId)
         => _retryEventLogs.ContainsKey(eventId);
 
     public void DeleteAsync(int maxRetryTimes)

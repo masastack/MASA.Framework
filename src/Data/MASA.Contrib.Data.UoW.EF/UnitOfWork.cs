@@ -46,22 +46,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
         if (!UseTransaction || !TransactionHasBegun)
             throw new NotSupportedException("Transaction not opened");
 
-        try
-        {
-            await _context.Database.CommitTransactionAsync(cancellationToken);
-
-        }
-        catch (Exception ex)
-        {
-            if (DisableRollbackOnFailure)
-            {
-                _logger?.LogError(ex, "Failed to commit transaction");
-                throw;
-            }
-
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
-            _logger?.LogError(ex, "Failed to commit transaction, rolled back");
-        }
+        await _context.Database.CommitTransactionAsync(cancellationToken);
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)

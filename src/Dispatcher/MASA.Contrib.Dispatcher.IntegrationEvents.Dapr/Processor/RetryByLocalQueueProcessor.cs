@@ -30,7 +30,7 @@ public class RetryByLocalQueueProcessor : IProcessor
             var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.MaxRetryTimes);
+            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes);
 
             foreach (var eventLog in retrieveEventLogs)
             {

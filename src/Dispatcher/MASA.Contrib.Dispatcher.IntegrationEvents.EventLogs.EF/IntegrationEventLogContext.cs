@@ -38,6 +38,9 @@ public class IntegrationEventLogContext : MasaDbContext
         builder.Property(e => e.TimesSent)
             .IsRequired();
 
+        builder.Property(e => e.RowVersion)
+            .IsRowVersion();
+
         builder.Property(e => e.EventTypeName)
             .IsRequired();
 

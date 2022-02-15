@@ -112,15 +112,6 @@ public class DccTest
             option.Environment = "Test";
             option.ConfigObjects = new List<string>() { "Te" };
         }, null), "configureOptions");
-
-        Initialize();
-
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, null!, option =>
-        {
-            option.AppId = "Test";
-            option.Environment = "Test";
-            option.ConfigObjects = new List<string>() { "Te" };
-        }, null), "configureOptions");
     }
 
     [TestMethod]

@@ -137,35 +137,6 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public async Task TestCloseRollbackAsync()
-    {
-        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection), true);
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
-        dbContext.Database.EnsureCreated();
-        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
-        var user = new Users();
-        var transcation = uoW.Transaction;
-        dbContext.User.Add(user);
-        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await uoW.CommitAsync());
-    }
-
-    [TestMethod]
-    public async Task TestAddLoggerAndCloseRollbackAsync()
-    {
-        _options.Object.Services.AddLogging();
-        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection), true);
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
-        dbContext.Database.EnsureCreated();
-        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
-        var user = new Users();
-        var transcation = uoW.Transaction;
-        dbContext.User.Add(user);
-        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await uoW.CommitAsync());
-    }
-
-    [TestMethod]
     public async Task TestOpenRollbackAsync()
     {
         _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(_connection));

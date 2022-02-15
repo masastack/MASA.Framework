@@ -16,7 +16,7 @@ public class DeleteLocalQueueExpiresProcessor : IProcessor
     /// <returns></returns>
     public async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        LocalQueueProcessor.Default.DeleteAsync(_options.Value.MaxRetryTimes);
+        LocalQueueProcessor.Default.DeleteAsync(_options.Value.LocalRetryTimes);
         await Task.Delay(_options.Value.CleaningLocalQueueExpireInterval, stoppingToken);
     }
 }

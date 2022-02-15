@@ -20,11 +20,18 @@ public class DispatcherOptions : IDispatcherOptions
 
     /// <summary>
     /// maximum number of retries
-    /// If the local message queue exceeds the maximum number of retries and has not succeeded, it will be deleted
-    /// If the data persisted exceeds the maximum number of retries and is still unsuccessful, it will not be processed.
-    /// Default is 50
+    /// Local queue maximum number of retries
     /// </summary>
-    public int MaxRetryTimes { get; set; } = 50;
+    public int LocalRetryTimes { get; set; } = 3;
+
+    internal int DataRetryTimes => MaxRetryTimes - LocalRetryTimes;
+
+    /// <summary>
+    /// maximum number of retries
+    /// Sum of local queue retries and database queue retries
+    /// Default is 10
+    /// </summary>
+    public int MaxRetryTimes { get; set; } = 10;
 
     /// <summary>
     /// The interval at which db polls for failure messages.

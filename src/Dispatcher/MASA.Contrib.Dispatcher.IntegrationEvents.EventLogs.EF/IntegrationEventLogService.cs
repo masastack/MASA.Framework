@@ -25,8 +25,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
                         e.TimesSent <= maxRetryTimes)
-            .OrderBy(o => o.TimesSent)
-            .ThenBy(o => o.CreationTime)
+            .OrderBy(o => o.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync();
 
