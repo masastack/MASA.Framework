@@ -4,14 +4,17 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 {
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly IServiceProvider _serviceProvider;
+    private readonly Logger<IntegrationEventLogService>? _logger;
     private IEnumerable<Type>? _eventTypes;
 
     public IntegrationEventLogService(
         IntegrationEventLogContext eventLogContext,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        Logger<IntegrationEventLogService>? logger)
     {
         _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     /// <summary>
@@ -20,11 +23,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="retryBatchSize">The size of a single event to be retried</param>
     /// <param name="maxRetryTimes"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
+        int maxRetryTimes = 10)
     {
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
-                        e.TimesSent <= maxRetryTimes)
+                e.TimesSent <= maxRetryTimes)
             .OrderBy(o => o.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync();
@@ -58,17 +62,47 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public Task MarkEventAsPublishedAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.Published);
+        return UpdateEventStatus(eventId, IntegrationEventStates.Published, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.InProgress)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.Published, eventLog.State, eventLog.Id);
+                return true;
+            }
+            return false;
+        });
     }
 
     public Task MarkEventAsInProgressAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress);
+        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.NotPublished && eventLog.State != IntegrationEventStates.PublishedFailed)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
+                return true;
+            }
+            return false;
+        });
     }
 
     public Task MarkEventAsFailedAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed);
+        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.InProgress)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
+                return true;
+            }
+            return false;
+        });
     }
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
@@ -87,11 +121,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }
     }
 
-    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
+    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Func<IntegrationEventLog, bool>? action = null)
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
+
+        var isSkip = action?.Invoke(eventLogEntry) ?? false;
+        if (isSkip)
+            return;
 
         eventLogEntry.State = status;
 

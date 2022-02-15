@@ -27,7 +27,7 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
         }
         catch (Exception)
         {
-            if (IsUseTransaction(@event, out ITransaction? transaction) && !transaction.UnitOfWork.DisableRollbackOnFailure)
+            if (IsUseTransaction(@event, out ITransaction? transaction) && !transaction!.UnitOfWork!.DisableRollbackOnFailure)
             {
                 await transaction.UnitOfWork!.RollbackAsync();
             }

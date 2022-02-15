@@ -19,62 +19,6 @@ public class IntegrationEventLogServiceTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestEventLogServiceAsync()
-    {
-        // var serviceProvider = CreateDefaultProvider();
-        // var dbContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
-        // await dbContext.Database.EnsureCreatedAsync();
-        // var transaction = await dbContext.Database.GetDbConnection().BeginTransactionAsync();
-        // var @event = new OrderPaymentSucceededIntegrationEvent()
-        // {
-        //     OrderId = "1234567890123",
-        //     PaymentTime = (long) (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        // };
-        //
-        // var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        // await eventLogService.SaveEventAsync(@event, transaction);
-        //
-        // var transactionId = dbContext.Database.CurrentTransaction!.TransactionId;
-        //
-        // var eventLog = dbContext.EventLogs.FirstOrDefault();
-        // Assert.IsNotNull(eventLog);
-        // Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
-        // Assert.IsTrue(eventLog.EventId == @event.Id);
-        //
-        // var eventLogs = await eventLogService.RetrieveEventLogsFailedToPublishAsync();
-        // Assert.IsTrue(eventLogs.Any());
-        // eventLog = dbContext.EventLogs.FirstOrDefault();
-        // Assert.IsNotNull(eventLog);
-        // Assert.IsTrue(eventLog.State == IntegrationEventStates.NotPublished);
-        // Assert.IsTrue(eventLog.EventId == @event.Id);
-        //
-        //
-        // await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
-        // {
-        //     await eventLogService.MarkEventAsInProgressAsync(eventLog.Id);
-        // });
-        // await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
-        //
-        // eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
-        // Assert.IsNotNull(eventLog);
-        // Assert.IsTrue(eventLog.State == IntegrationEventStates.InProgress);
-        // Assert.IsTrue(eventLog.TimesSent == 1);
-        //
-        // await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
-        // eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
-        // Assert.IsNotNull(eventLog);
-        // Assert.IsTrue(eventLog.State == IntegrationEventStates.Published);
-        //
-        // await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
-        // eventLog = dbContext.EventLogs.FirstOrDefault(x => x.Id == eventLog.Id);
-        // Assert.IsNotNull(eventLog);
-        // Assert.IsTrue(eventLog.State == IntegrationEventStates.PublishedFailed);
-        //
-        // eventLogs = await eventLogService.RetrieveEventLogsFailedToPublishAsync();
-        // Assert.IsNotNull(eventLogs.Count() == 1);
-    }
-
-    [TestMethod]
     public void TestMultUseEventLogService()
     {
         var serviceProvider = CreateDefaultProvider(options =>
