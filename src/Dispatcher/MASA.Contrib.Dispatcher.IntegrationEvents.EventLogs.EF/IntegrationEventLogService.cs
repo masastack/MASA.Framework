@@ -22,7 +22,6 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <returns></returns>
     public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
     {
-
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
                         e.TimesSent <= maxRetryTimes)

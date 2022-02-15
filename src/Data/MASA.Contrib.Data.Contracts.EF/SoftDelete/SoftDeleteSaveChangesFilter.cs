@@ -4,6 +4,7 @@ public class SoftDeleteSaveChangesFilter : ISaveChangesFilter
 {
     public void OnExecuting(ChangeTracker changeTracker)
     {
+        changeTracker.DetectChanges();
         foreach (var entity in changeTracker.Entries().Where(e => e.State == Microsoft.EntityFrameworkCore.EntityState.Deleted))
         {
             if (entity.Entity is ISoftDelete)
