@@ -39,6 +39,7 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
     {
         if (@event is ITransaction transactionEvent &&
             transactionEvent.UnitOfWork != null &&
+            transactionEvent.UnitOfWork.UseTransaction &&
             transactionEvent.UnitOfWork.TransactionHasBegun)
         {
             transaction = transactionEvent;

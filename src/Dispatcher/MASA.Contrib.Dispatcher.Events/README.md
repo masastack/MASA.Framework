@@ -173,3 +173,22 @@ builder.Services
 4. Support Transaction
 
 > Used in conjunction with Contracts.EF and UnitOfWork, when Event implements ITransaction, the transaction will be automatically opened after the first CUD is executed, and the transaction will be submitted after all Handlers are executed. When an exception occurs in the transaction, the transaction will be automatically rolled back.
+
+##### Summarize
+
+IEventBus is the core of the event bus. It can be used with Cqrs, Uow, MASA.Contrib.DDD.Domain.Repository.EF to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
+
+> Question 1. Publishing events through eventBus, Handler error, but the data has been saved to the database, the transaction is not rolled back
+
+    > 1. Check whether the custom event implements ITransaction or whether the inherited class implements ITransaction
+    > 2. Whether to use UoW
+    > 3. Check if the UseTransaction property of UnitOfWork is false
+    > 4. Check if the DisableRollbackOnFailure property of UnitOfWork is true
+
+> Question 2. Under what circumstances will SaveChange be automatically saved
+
+    > Use UoW and MASA.Contrib.DDD.Domain.Repository.EF, and use the Add, Update, Delete operations provided by IRepository, publish events through EventBus, and automatically execute SaveChange after executing EventHandler
+
+> Question 3. If the SaveChange method of UoW is manually called in EventHandler to save, will the framework also save automatically?
+
+    > If the SaveChange method of UoW is manually called in the EventHandler to save, and the Add, Update, and Delete operations provided by IRepository are not used afterward, the SaveChange operation will not be executed twice after the EventHandler execution ends, but if the UoW is manually called. After the SaveChange method is saved and continue to use the Add, Update, and Delete operations provided by IRepository, the framework will call the SaveChange operation again to ensure that the data is saved successfully.

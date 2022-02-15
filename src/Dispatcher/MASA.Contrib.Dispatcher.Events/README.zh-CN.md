@@ -172,4 +172,23 @@ builder.Services
 
 4. 支持Transaction
 
-> 配合Contracts.EF、UnitOfWork使用，当Event实现了ITransaction，会在执行第一次CUD后自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
+> 配合MASA.Contrib.DDD.Domain.Repository.EF.Repository、UnitOfWork使用，当Event实现了ITransaction，会在执行Add、Update、Delete方法时自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
+
+##### 总结
+
+IEventBus是事件总线的核心，配合Cqrs、Uow、MASA.Contrib.DDD.Domain.Repository.EF使用，可实现自动执行SaveChange（启用UoW）与Commit（启用UoW且无关闭事务）操作，并支持出现异常后，回滚事务
+
+> 问题1. 通过eventBus发布事件，Handler出错，但数据已经保存到数据库中，事务并未回滚
+
+    > 1. 检查自定义事件是否实现ITransaction或继承类是否有实现ITransaction
+    > 2. 是否使用UoW
+    > 3. 检查UnitOfWork的UseTransaction属性是否为false
+    > 4. 检查UnitOfWork的DisableRollbackOnFailure属性是否为true
+
+> 问题2. 何种情况下会自动SaveChange
+
+    > 使用UoW且使用了MASA.Contrib.DDD.Domain.Repository.EF，并且使用IRepository提供的Add、Update、Delete操作，通过EventBus发布事件，在执行EventHandler后会自动执行SaveChange
+
+> 问题3. 如果在EventHandler中手动调用UoW的SaveChange方法保存，那框架还会自动保存吗？
+
+    > 如果在EventHandler中手动调用了UoW的SaveChange方法保存，且之后并未再使用IRepository提供的Add、Update、Delete操作，则在EventHandler执行结束后不会二次执行SaveChange操作，但如果在手动调用UoW的SaveChange方法保存后又继续使用IRepository提供的Add、Update、Delete操作，则框架会再次调用SaveChange操作以确保数据保存成功
