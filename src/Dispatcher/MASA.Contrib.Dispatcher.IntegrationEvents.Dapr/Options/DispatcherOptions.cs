@@ -24,11 +24,8 @@ public class DispatcherOptions : IDispatcherOptions
     /// </summary>
     public int LocalRetryTimes { get; set; } = 3;
 
-    internal int DataRetryTimes => MaxRetryTimes - LocalRetryTimes;
-
     /// <summary>
     /// maximum number of retries
-    /// Sum of local queue retries and database queue retries
     /// Default is 10
     /// </summary>
     public int MaxRetryTimes { get; set; } = 10;

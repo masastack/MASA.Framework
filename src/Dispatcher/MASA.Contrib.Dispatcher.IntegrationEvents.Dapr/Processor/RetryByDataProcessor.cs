@@ -31,7 +31,7 @@ public class RetryByDataProcessor : IProcessor
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
-                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.DataRetryTimes);
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes);
 
             foreach (var eventLog in retrieveEventLogs)
             {
