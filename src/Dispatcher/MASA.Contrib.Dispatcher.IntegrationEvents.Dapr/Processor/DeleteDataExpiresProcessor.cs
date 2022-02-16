@@ -26,7 +26,7 @@ public class DeleteDataExpiresProcessor : ProcessorBase, IProcessor
         using (var scope = _serviceProvider.CreateScope())
         {
             var logService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-            var expireDate = DateTime.Now.AddSeconds(-_options.Value.ExpireDate);
+            var expireDate = (_options.Value.GetCurrentTime?.Invoke() ?? DateTime.UtcNow).AddSeconds(-_options.Value.ExpireDate);
             await logService.DeleteExpiresAsync(expireDate, _options.Value.DeleteBatchCount, stoppingToken);
         }
     }
