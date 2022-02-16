@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class RetryByDataProcessor : IProcessor
+public class RetryByDataProcessor : ProcessorBase, IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<RetryByDataProcessor> _logger;
@@ -19,7 +19,7 @@ public class RetryByDataProcessor : IProcessor
         _options = options;
     }
 
-    public async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
@@ -52,6 +52,10 @@ public class RetryByDataProcessor : IProcessor
 
                     await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
                 }
+                catch (UserFriendlyException ex)
+                {
+                    //Update state due to multitasking contention, no processing required
+                }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex,
@@ -66,7 +70,7 @@ public class RetryByDataProcessor : IProcessor
                 }
             }
         }
-
-        await Task.Delay(_options.Value.FailedRetryInterval, stoppingToken);
     }
+
+    public override int SleepTime => _options.Value.FailedRetryInterval;
 }

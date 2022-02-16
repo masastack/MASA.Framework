@@ -31,7 +31,7 @@ internal class LocalQueueProcessor
     public bool IsExist(Guid eventId)
         => _retryEventLogs.ContainsKey(eventId);
 
-    public void DeleteAsync(int maxRetryTimes)
+    public void Delete(int maxRetryTimes)
     {
         var eventLogItems = _retryEventLogs.Values.Where(log => log.RetryCount >= maxRetryTimes - 1).ToList();
         eventLogItems.ForEach(item =>

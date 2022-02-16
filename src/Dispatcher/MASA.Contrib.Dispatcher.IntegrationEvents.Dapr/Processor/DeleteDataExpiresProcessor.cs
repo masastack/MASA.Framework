@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteDataExpiresProcessor : IProcessor
+public class DeleteDataExpiresProcessor : ProcessorBase, IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
@@ -21,17 +21,15 @@ public class DeleteDataExpiresProcessor : IProcessor
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    public async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
             var logService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
             var expireDate = DateTime.Now.AddSeconds(-_options.Value.ExpireDate);
-
-
-            //todo: Delete expired events
+            await logService.DeleteExpiresAsync(expireDate, _options.Value.DeleteBatchCount, stoppingToken);
         }
-        await Task.Delay(_options.Value.CleaningExpireInterval, stoppingToken);
-        //todo: Delete successfully published and expired messages
     }
+
+    public override int SleepTime => _options.Value.CleaningExpireInterval;
 }

@@ -67,6 +67,11 @@ public class DispatcherOptions : IDispatcherOptions
     /// </summary>
     public long ExpireDate { get; set; } = 24 * 3600;
 
+    /// <summary>
+    ///
+    /// </summary>
+    public int DeleteBatchCount { get; set; } = 1000;
+
     public IServiceCollection Services { get; }
 
     private Assembly[] _assemblies = Array.Empty<Assembly>();

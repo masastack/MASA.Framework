@@ -84,9 +84,9 @@ public static class MasaConfigurationExtensions
             config.DefaultSectionOption
         }.Concat(config.ExpansionSectionOptions);
 
-        var configurationAPIClient = services.BuildServiceProvider().GetRequiredService<IConfigurationAPIClient>();
+        var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationAPIClient>();
         var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(sectionOptions, configurationAPIClient, loggerFactory));
+        builder.AddRepository(new DccConfigurationRepository(sectionOptions, configurationApiClient, loggerFactory));
         return builder;
     }
 

@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.1840520225" />
     <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.1840510068" />
+    <PackageReference Include="MASA.Utils.Exceptions" Version="0.0.1844911562" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>

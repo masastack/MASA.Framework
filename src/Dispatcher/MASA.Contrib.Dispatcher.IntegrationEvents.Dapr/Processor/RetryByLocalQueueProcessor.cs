@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class RetryByLocalQueueProcessor : IProcessor
+public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptionsMonitor<AppConfig> _appConfig;
@@ -19,7 +19,7 @@ public class RetryByLocalQueueProcessor : IProcessor
         _logger = logger;
     }
 
-    public async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         using (var scope = _serviceProvider.CreateScope())
         {
@@ -40,7 +40,9 @@ public class RetryByLocalQueueProcessor : IProcessor
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger.LogInformation("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
+                    _logger.LogInformation(
+                        "Publishing integration event {Event} to {PubsubName}.{TopicName}",
+                        eventLog,
                         _options.Value.PubSubName,
                         eventLog.Topic);
 
@@ -48,6 +50,11 @@ public class RetryByLocalQueueProcessor : IProcessor
 
                     await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
 
+                    LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+                }
+                catch (UserFriendlyException ex)
+                {
+                    //Update state due to multitasking contention
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
                 }
                 catch (Exception ex)
@@ -59,7 +66,7 @@ public class RetryByLocalQueueProcessor : IProcessor
                 }
             }
         }
-
-        await Task.Delay(_options.Value.LocalFailedRetryInterval, stoppingToken);
     }
+
+    public override int SleepTime => _options.Value.LocalFailedRetryInterval;
 }
