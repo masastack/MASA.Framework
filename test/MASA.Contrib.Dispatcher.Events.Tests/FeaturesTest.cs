@@ -98,10 +98,6 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNotParameter()
     {
-        var @event = new DeleteGoodsEvent()
-        {
-            CreationTime = DateTime.UtcNow,
-        };
         await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
         {
             try

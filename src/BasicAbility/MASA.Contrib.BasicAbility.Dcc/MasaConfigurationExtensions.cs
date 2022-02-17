@@ -76,8 +76,8 @@ public static class MasaConfigurationExtensions
 
         services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOption.RedisOptions).AddSharedMasaMemoryCache(config.DccConfigurationOption.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
-        TryAddConfigurationAPIClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
-        TryAddConfigurationAPIManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
+        TryAddConfigurationApiClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
+        TryAddConfigurationApiManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
 
         var sectionOptions = new List<DccSectionOptions>()
         {
@@ -90,7 +90,7 @@ public static class MasaConfigurationExtensions
         return builder;
     }
 
-    public static IServiceCollection TryAddConfigurationAPIClient(IServiceCollection services,
+    public static IServiceCollection TryAddConfigurationApiClient(IServiceCollection services,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
@@ -113,7 +113,7 @@ public static class MasaConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection TryAddConfigurationAPIManage(IServiceCollection services,
+    public static IServiceCollection TryAddConfigurationApiManage(IServiceCollection services,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions)
     {

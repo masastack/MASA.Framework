@@ -4,6 +4,12 @@ public abstract record DomainQuery<TResult>(Guid Id, DateTime CreationTime) : ID
     where TResult : notnull
 {
     [JsonIgnore]
+    public Guid Id { get; } = Id;
+
+    [JsonIgnore]
+    public DateTime CreationTime { get; } = CreationTime;
+
+    [JsonIgnore]
     public IUnitOfWork? UnitOfWork
     {
         get => null;

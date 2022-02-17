@@ -10,7 +10,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     public IntegrationEventLogService(
         IntegrationEventLogContext eventLogContext,
         IServiceProvider serviceProvider,
-        Logger<IntegrationEventLogService>? logger)
+        Logger<IntegrationEventLogService>? logger = null)
     {
         _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
