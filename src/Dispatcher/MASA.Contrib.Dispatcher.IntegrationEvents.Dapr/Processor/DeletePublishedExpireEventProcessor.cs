@@ -1,15 +1,15 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteDataExpiresProcessor : ProcessorBase, IProcessor
+public class DeletePublishedExpireEventProcessor : ProcessorBase, IProcessor
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly ILogger<DeleteDataExpiresProcessor> _logger;
+    private readonly ILogger<DeletePublishedExpireEventProcessor> _logger;
 
-    public DeleteDataExpiresProcessor(
+    public DeletePublishedExpireEventProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
-        ILogger<DeleteDataExpiresProcessor> logger)
+        ILogger<DeletePublishedExpireEventProcessor> logger)
     {
         _serviceProvider = serviceProvider;
         _options = options;
@@ -26,7 +26,7 @@ public class DeleteDataExpiresProcessor : ProcessorBase, IProcessor
         using (var scope = _serviceProvider.CreateScope())
         {
             var logService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-            var expireDate = (_options.Value.GetCurrentTime?.Invoke() ?? DateTime.UtcNow).AddSeconds(-_options.Value.ExpireDate);
+            var expireDate = (_options.Value.GetCurrentTime?.Invoke() ?? DateTime.UtcNow).AddSeconds(-_options.Value.PublishedExpireTime);
             await logService.DeleteExpiresAsync(expireDate, _options.Value.DeleteBatchCount, stoppingToken);
         }
     }

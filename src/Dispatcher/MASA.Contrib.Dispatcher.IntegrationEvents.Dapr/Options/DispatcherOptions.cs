@@ -45,7 +45,6 @@ public class DispatcherOptions : IDispatcherOptions
 
     /// <summary>
     /// The size of a single event to be retried
-    /// Default is 100 seconds.
     /// </summary>
     public int RetryBatchSize { get; set; } = 100;
 
@@ -65,7 +64,7 @@ public class DispatcherOptions : IDispatcherOptions
     /// Expiration time, when the message status is successful and has expired, it will be deleted by the scheduled task
     /// Default: ( 24 * 3600 )s
     /// </summary>
-    public long ExpireDate { get; set; } = 24 * 3600;
+    public long PublishedExpireTime { get; set; } = 24 * 3600;
 
     /// <summary>
     /// Bulk delete expired messages

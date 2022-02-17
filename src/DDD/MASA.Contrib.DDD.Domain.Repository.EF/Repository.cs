@@ -177,7 +177,6 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await UnitOfWork.SaveChangesAsync(cancellationToken);
-        EntityState = EntityState.Unchanged;
     }
 
     public override Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
@@ -199,9 +198,13 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// </summary>
     private void CheckAndOpenTransaction()
     {
-        if (UnitOfWork.UseTransaction && !UnitOfWork.TransactionHasBegun)
+        if (UnitOfWork.UseTransaction)
         {
-            var _ = UnitOfWork.Transaction; // Open the transaction
+            if (!UnitOfWork.TransactionHasBegun)
+            {
+                _ = UnitOfWork.Transaction; // Open the transaction
+            }
+            CommitState = CommitState.UnCommited;
         }
     }
 

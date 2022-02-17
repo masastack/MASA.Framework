@@ -1,8 +1,8 @@
-﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
+namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
 
 internal class LocalQueueProcessor
 {
-    private readonly ConcurrentDictionary<Guid, IntegrationEventLogItems> _retryEventLogs;
+    private readonly ConcurrentDictionary<Guid, IntegrationEventLogItem> _retryEventLogs;
 
     public static ILogger<LocalQueueProcessor> Logger = default!;
     public static readonly LocalQueueProcessor Default = new();
@@ -14,15 +14,15 @@ internal class LocalQueueProcessor
         Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LocalQueueProcessor>>();
     }
 
-    public void AddJobs(IntegrationEventLogItems items)
-        => SafeMethods(() => _retryEventLogs.TryAdd(items.EventId, items), "add local queue jobs");
+    public void AddJobs(IntegrationEventLogItem items)
+        => _retryEventLogs.TryAdd(items.EventId, items);
 
     public void RemoveJobs(Guid eventId)
-        => SafeMethods(() => _retryEventLogs.TryRemove(eventId, out _), "remove local queue jobs");
+        => _retryEventLogs.TryRemove(eventId, out _);
 
     public void RetryJobs(Guid eventId)
     {
-        if (_retryEventLogs.TryGetValue(eventId, out IntegrationEventLogItems? item))
+        if (_retryEventLogs.TryGetValue(eventId, out IntegrationEventLogItem? item))
         {
             item.Retry();
         }
@@ -34,13 +34,10 @@ internal class LocalQueueProcessor
     public void Delete(int maxRetryTimes)
     {
         var eventLogItems = _retryEventLogs.Values.Where(log => log.RetryCount >= maxRetryTimes - 1).ToList();
-        eventLogItems.ForEach(item =>
-        {
-            _retryEventLogs.TryRemove(item.EventId, out _);
-        });
+        eventLogItems.ForEach(item => RemoveJobs(item.EventId));
     }
 
-    public List<IntegrationEventLogItems> RetrieveEventLogsFailedToPublishAsync(int maxRetryTimes)
+    public List<IntegrationEventLogItem> RetrieveEventLogsFailedToPublishAsync(int maxRetryTimes, int retryBatchSize)
     {
         try
         {
@@ -49,6 +46,7 @@ internal class LocalQueueProcessor
                 .Where(log => log.RetryCount < maxRetryTimes)
                 .OrderBy(log => log.RetryCount)
                 .ThenBy(log => log.CreationTime)
+                .Take(retryBatchSize)
                 .ToList();
         }
         catch (Exception ex)
@@ -56,20 +54,7 @@ internal class LocalQueueProcessor
             Logger.LogWarning(ex, "... getting local retry queue error");
 
             Task.Delay(TimeSpan.FromSeconds(2));
-            return new List<IntegrationEventLogItems>();
-        }
-    }
-
-    private void SafeMethods(Action action, string name)
-    {
-        try
-        {
-            action();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogWarning(ex, "... {Name} failed", name);
-            //ignore
+            return new List<IntegrationEventLogItem>();
         }
     }
 }

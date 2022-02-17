@@ -62,16 +62,16 @@ public class IntegrationEventBus : IIntegrationEventBus
         {
             try
             {
-                _logger.LogInformation("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
+                _logger.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
                 await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
 
-                _logger.LogInformation(
+                _logger.LogDebug(
                     "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.Id,
                     _appConfig.CurrentValue.AppId, @event);
 
                 await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
 
-                _logger.LogInformation("Publishing event {Event} to {PubsubName}.{TopicName}", @event, _daprPubsubName, topicName);
+                _logger.LogDebug("Publishing event {Event} to {PubsubName}.{TopicName}", @event, _daprPubsubName, topicName);
                 await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic) @event);
 
                 await _eventLogService.MarkEventAsPublishedAsync(@event.Id);
@@ -80,7 +80,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             {
                 _logger.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                     @event.Id, _appConfig.CurrentValue.AppId, @event);
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItems(@event.Id, @event.Topic, @event));
+                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.Id, @event.Topic, @event));
                 await _eventLogService.MarkEventAsFailedAsync(@event.Id);
             }
         }

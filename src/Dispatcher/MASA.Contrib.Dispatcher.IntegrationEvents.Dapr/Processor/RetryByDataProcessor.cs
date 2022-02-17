@@ -42,7 +42,7 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger.LogInformation("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
+                    _logger.LogDebug("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
                         _options.Value.PubSubName,
                         eventLog.Event.Topic);
 
@@ -52,7 +52,7 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
 
                     await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
                 }
-                catch (UserFriendlyException ex)
+                catch (UserFriendlyException)
                 {
                     //Update state due to multitasking contention, no processing required
                 }

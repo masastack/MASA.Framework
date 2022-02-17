@@ -3,7 +3,7 @@
 /// <summary>
 /// Use the local queue to retry sending failed messages
 /// </summary>
-internal class IntegrationEventLogItems
+internal class IntegrationEventLogItem
 {
     public Guid EventId { get; }
 
@@ -15,7 +15,7 @@ internal class IntegrationEventLogItems
 
     public object Event { get; }
 
-    public IntegrationEventLogItems(Guid eventId, string topic, object @event)
+    public IntegrationEventLogItem(Guid eventId, string topic, object @event)
     {
         EventId = eventId;
         Topic = topic;

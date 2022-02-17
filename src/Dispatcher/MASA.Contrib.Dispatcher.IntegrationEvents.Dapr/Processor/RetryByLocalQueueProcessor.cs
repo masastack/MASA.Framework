@@ -1,4 +1,4 @@
-﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
+namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
 public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
 {
@@ -30,7 +30,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
             var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes);
+            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes, _options.Value.RetryBatchSize);
 
             foreach (var eventLog in retrieveEventLogs)
             {
@@ -40,7 +40,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger.LogInformation(
+                    _logger.LogDebug(
                         "Publishing integration event {Event} to {PubsubName}.{TopicName}",
                         eventLog,
                         _options.Value.PubSubName,
@@ -52,7 +52,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
 
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
                 }
-                catch (UserFriendlyException ex)
+                catch (UserFriendlyException)
                 {
                     //Update state due to multitasking contention
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);

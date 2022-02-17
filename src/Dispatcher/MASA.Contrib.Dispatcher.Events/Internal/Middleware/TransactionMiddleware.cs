@@ -16,7 +16,7 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
         {
             await next();
 
-            if (_unitOfWork != null && _unitOfWork.EntityState == EntityState.Changed)
+            if (_unitOfWork is { EntityState: EntityState.Changed })
             {
                 await _unitOfWork.SaveChangesAsync();
             }
@@ -37,10 +37,7 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
 
     private bool IsUseTransaction(TEvent @event, out ITransaction? transaction)
     {
-        if (@event is ITransaction transactionEvent &&
-            transactionEvent.UnitOfWork != null &&
-            transactionEvent.UnitOfWork.UseTransaction &&
-            transactionEvent.UnitOfWork.TransactionHasBegun)
+        if (@event is ITransaction { UnitOfWork: { UseTransaction: true, TransactionHasBegun: true, CommitState: CommitState.UnCommited } } transactionEvent)
         {
             transaction = transactionEvent;
             return true;

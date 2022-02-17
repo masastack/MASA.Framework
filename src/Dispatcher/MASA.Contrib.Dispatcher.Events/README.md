@@ -176,16 +176,16 @@ builder.Services
 
 ##### Summarize
 
-IEventBus is the core of the event bus. It can be used with Cqrs, Uow, MASA.Contrib.DDD.Domain.Repository.EF to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
+IEventBus is the core of the event bus. It can be used with CQRS, Uow, MASA.Contrib.DDD.Domain.Repository.EF to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
 
-> Question 1. Publishing events through eventBus, Handler error, but the data has been saved to the database, the transaction is not rolled back
+> Question 1. Publishing events through eventBus, Handler error -> and handler throw exception
 
-    > 1. Check whether the custom event implements ITransaction or whether the inherited class implements ITransaction
-    > 2. Whether to use UoW
-    > 3. Check if the UseTransaction property of UnitOfWork is false
-    > 4. Check if the DisableRollbackOnFailure property of UnitOfWork is true
+     > 1. Check custom events or inherited classes to make sure ITransaction is implemented
+     > 2. Confirm that UoW is used
+     > 3. Make sure the UseTransaction property of UnitOfWork is false
+     > 4. Make sure that the DisableRollbackOnFailure property of UnitOfWork is true
 
-> Question 2. Under what circumstances will SaveChange be automatically saved
+> Question 2. Under what circumstances will SaveChange be automatically saved -> When auto call SaveChange?
 
     > Use UoW and MASA.Contrib.DDD.Domain.Repository.EF, and use the Add, Update, Delete operations provided by IRepository, publish events through EventBus, and automatically execute SaveChange after executing EventHandler
 

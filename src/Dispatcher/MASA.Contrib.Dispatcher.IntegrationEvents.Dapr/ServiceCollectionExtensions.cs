@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
         services.AddSingleton<IProcessor, RetryByDataProcessor>();
         services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
-        services.AddSingleton<IProcessor, DeleteDataExpiresProcessor>();
+        services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
         services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
         services.AddHostedService<IntegrationEventHostedService>();

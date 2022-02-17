@@ -1,7 +1,7 @@
 namespace MASA.Contrib.ReadWriteSpliting.CQRS.Tests;
 
 [TestClass]
-public class CqrsTest
+public class CQRSTest
 {
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider;

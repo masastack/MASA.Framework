@@ -23,6 +23,8 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
 
     public EntityState EntityState { get; set; }
 
+    public CommitState CommitState { get; set; }
+
     public bool UseTransaction { get; set; } = true;
 
     private readonly DbContext _context;
@@ -47,6 +49,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
             throw new NotSupportedException("Transaction not opened");
 
         await _context.Database.CommitTransactionAsync(cancellationToken);
+        CommitState = CommitState.Commited;
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)

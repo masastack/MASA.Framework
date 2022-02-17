@@ -176,16 +176,16 @@ builder.Services
 
 ##### 总结
 
-IEventBus是事件总线的核心，配合Cqrs、Uow、MASA.Contrib.DDD.Domain.Repository.EF使用，可实现自动执行SaveChange（启用UoW）与Commit（启用UoW且无关闭事务）操作，并支持出现异常后，回滚事务
+IEventBus是事件总线的核心，配合CQRS、Uow、MASA.Contrib.DDD.Domain.Repository.EF使用，可实现自动执行SaveChange（启用UoW）与Commit（启用UoW且无关闭事务）操作，并支持出现异常后，回滚事务
 
-> 问题1. 通过eventBus发布事件，Handler出错，但数据已经保存到数据库中，事务并未回滚
+> 问题1. 通过eventBus发布事件，Handler出错，但数据依然保存到数据库中，事务并未回滚
 
-    > 1. 检查自定义事件是否实现ITransaction或继承类是否有实现ITransaction
-    > 2. 是否使用UoW
-    > 3. 检查UnitOfWork的UseTransaction属性是否为false
-    > 4. 检查UnitOfWork的DisableRollbackOnFailure属性是否为true
+    > 1. 检查自定义事件或继承类，确保已经实现ITransaction
+    > 2. 确认已使用UoW
+    > 3. 确认UnitOfWork的UseTransaction属性为false
+    > 4. 确认UnitOfWork的DisableRollbackOnFailure属性为true
 
-> 问题2. 何种情况下会自动SaveChange
+> 问题2. 什么时候自动调用SaveChanges
 
     > 使用UoW且使用了MASA.Contrib.DDD.Domain.Repository.EF，并且使用IRepository提供的Add、Update、Delete操作，通过EventBus发布事件，在执行EventHandler后会自动执行SaveChange
 

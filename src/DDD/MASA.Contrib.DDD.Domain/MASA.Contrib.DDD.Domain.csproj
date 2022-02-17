@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1856207732" />
+    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1858161579" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
