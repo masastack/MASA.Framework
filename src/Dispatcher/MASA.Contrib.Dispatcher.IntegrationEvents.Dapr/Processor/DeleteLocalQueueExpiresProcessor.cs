@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteLocalQueueExpiresProcessor : IProcessor
+public class DeleteLocalQueueExpiresProcessor : ProcessorBase, IProcessor
 {
     private readonly IOptions<DispatcherOptions> _options;
 
@@ -14,9 +14,11 @@ public class DeleteLocalQueueExpiresProcessor : IProcessor
     /// </summary>
     /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    public async Task ExecuteAsync(CancellationToken stoppingToken)
+    public override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        LocalQueueProcessor.Default.DeleteAsync(_options.Value.LocalRetryTimes);
-        await Task.Delay(_options.Value.CleaningLocalQueueExpireInterval, stoppingToken);
+        LocalQueueProcessor.Default.Delete(_options.Value.LocalRetryTimes);
+        return Task.CompletedTask;
     }
+
+    public override int SleepTime => _options.Value.CleaningLocalQueueExpireInterval;
 }

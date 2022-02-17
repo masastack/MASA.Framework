@@ -10,6 +10,7 @@
     <PackageReference Include="Dapr.AspNetCore" Version="1.5.0" />
     <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.1856207732" />
     <PackageReference Include="MASA.Utils.Models.Config" Version="0.0.1844911562" />
+    <PackageReference Include="MASA.Utils.Exceptions" Version="0.0.1844911562" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>

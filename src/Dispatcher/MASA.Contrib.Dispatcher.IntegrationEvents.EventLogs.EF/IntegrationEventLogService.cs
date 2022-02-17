@@ -69,9 +69,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.Published, eventLog.State, eventLog.Id);
-                return true;
+                throw new UserFriendlyException("Failed to change state");
             }
-            return false;
         });
     }
 
@@ -84,9 +83,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
-                return true;
+                throw new UserFriendlyException("Failed to change state");
             }
-            return false;
         });
     }
 
@@ -99,9 +97,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
-                return true;
+                throw new UserFriendlyException("Failed to change state");
             }
-            return false;
         });
     }
 
@@ -121,23 +118,28 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }
     }
 
-    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Func<IntegrationEventLog, bool>? action = null)
+    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
 
-        var isSkip = action?.Invoke(eventLogEntry) ?? false;
-        if (isSkip)
-            return;
+        action?.Invoke(eventLogEntry);
 
         eventLogEntry.State = status;
 
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
 
-        _eventLogContext.EventLogs.Update(eventLogEntry);
-        await _eventLogContext.SaveChangesAsync();
+        try
+        {
+            _eventLogContext.EventLogs.Update(eventLogEntry);
+            await _eventLogContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new UserFriendlyException(ex.Message);
+        }
 
         CheckAndDetached(eventLogEntry);
     }

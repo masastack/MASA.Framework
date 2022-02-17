@@ -37,13 +37,27 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
     public override IUnitOfWork UnitOfWork { get; }
 
+
+    /// <summary>
+    /// todo: Change to reload after waiting for the Building Block to update
+    /// </summary>
+    public EntityState EntityState
+    {
+        get => UnitOfWork.EntityState;
+        set
+        {
+            UnitOfWork.EntityState = value;
+            if (value == EntityState.Changed)
+                CheckAndOpenTransaction();
+        }
+    }
+
     public override async ValueTask<TEntity> AddAsync(
         TEntity entity,
         CancellationToken cancellationToken = default)
     {
         var response = (await _context.AddAsync(entity, cancellationToken).AsTask()).Entity;
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         return response;
     }
 
@@ -52,8 +66,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         CancellationToken cancellationToken = default)
     {
         await _context.AddRangeAsync(entities, cancellationToken);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
     }
 
     public override Task CommitAsync(CancellationToken cancellationToken = default)
@@ -115,7 +128,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         Dictionary<string, bool>? sorting,
         CancellationToken cancellationToken = default)
     {
-        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
+        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
 
         return _context.Set<TEntity>().OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -136,7 +149,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         Dictionary<string, bool>? sorting,
         CancellationToken cancellationToken = default)
     {
-        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
+        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
 
         return _context.Set<TEntity>().Where(predicate).OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -144,24 +157,21 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().Remove(entity);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         return Task.FromResult(entity);
     }
 
     public override async Task RemoveAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
         var entities = await GetListAsync(predicate, cancellationToken);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         _context.Set<TEntity>().RemoveRange(entities);
     }
 
     public override Task RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().RemoveRange(entities);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         return Task.CompletedTask;
     }
 
@@ -171,22 +181,20 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await UnitOfWork.SaveChangesAsync(cancellationToken);
-        UnitOfWork.EntityState = EntityState.Unchanged;
+        EntityState = EntityState.Unchanged;
     }
 
     public override Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().Update(entity);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         return Task.FromResult(entity);
     }
 
     public override Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().UpdateRange(entities);
-        UnitOfWork.EntityState = EntityState.Changed;
-        CheckAndOpenTransaction();
+        EntityState = EntityState.Changed;
         return Task.CompletedTask;
     }
 
@@ -197,7 +205,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     {
         if (UnitOfWork.UseTransaction && !UnitOfWork.TransactionHasBegun)
         {
-            var transaction = UnitOfWork.Transaction; // Open the transaction
+            var _ = UnitOfWork.Transaction; // Open the transaction
         }
     }
 

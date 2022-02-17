@@ -67,6 +67,13 @@ public class DispatcherOptions : IDispatcherOptions
     /// </summary>
     public long ExpireDate { get; set; } = 24 * 3600;
 
+    /// <summary>
+    /// Bulk delete expired messages
+    /// </summary>
+    public int DeleteBatchCount { get; set; } = 1000;
+
+    public Func<DateTime>? GetCurrentTime { get; set; } = null;
+
     public IServiceCollection Services { get; }
 
     private Assembly[] _assemblies = Array.Empty<Assembly>();
