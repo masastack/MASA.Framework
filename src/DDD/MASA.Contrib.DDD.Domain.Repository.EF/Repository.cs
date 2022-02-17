@@ -37,11 +37,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
     public override IUnitOfWork UnitOfWork { get; }
 
-
-    /// <summary>
-    /// todo: Change to reload after waiting for the Building Block to update
-    /// </summary>
-    public EntityState EntityState
+    public override EntityState EntityState
     {
         get => UnitOfWork.EntityState;
         set
