@@ -2,7 +2,7 @@ namespace MASA.Contrib.BasicAbility.Dcc.Internal;
 
 internal class DccConfigurationRepository : AbstractConfigurationRepository
 {
-    private readonly IConfigurationAPIClient _client;
+    private readonly IConfigurationApiClient _client;
 
     public override SectionTypes SectionType { get; init; } = SectionTypes.ConfigurationAPI;
 
@@ -12,7 +12,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
 
     public DccConfigurationRepository(
         IEnumerable<DccSectionOptions> sectionOptions,
-        IConfigurationAPIClient client,
+        IConfigurationApiClient client,
         ILoggerFactory loggerFactory)
         : base(loggerFactory)
     {
