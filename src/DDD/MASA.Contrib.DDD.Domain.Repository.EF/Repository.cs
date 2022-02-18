@@ -37,18 +37,44 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
     public override IUnitOfWork UnitOfWork { get; }
 
-    public override async ValueTask<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
-        => (await _context.AddAsync(entity, cancellationToken).AsTask()).Entity;
+    public override EntityState EntityState
+    {
+        get => UnitOfWork.EntityState;
+        set
+        {
+            UnitOfWork.EntityState = value;
+            if (value == EntityState.Changed)
+                CheckAndOpenTransaction();
+        }
+    }
 
-    public override Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
-        => _context.AddRangeAsync(entities, cancellationToken);
+    public override async ValueTask<TEntity> AddAsync(
+        TEntity entity,
+        CancellationToken cancellationToken = default)
+    {
+        var response = (await _context.AddAsync(entity, cancellationToken).AsTask()).Entity;
+        EntityState = EntityState.Changed;
+        return response;
+    }
+
+    public override async Task AddRangeAsync(
+        IEnumerable<TEntity> entities,
+        CancellationToken cancellationToken = default)
+    {
+        await _context.AddRangeAsync(entities, cancellationToken);
+        EntityState = EntityState.Changed;
+    }
 
     public override Task CommitAsync(CancellationToken cancellationToken = default)
         => UnitOfWork.CommitAsync(cancellationToken);
 
-    public override async ValueTask DisposeAsync() => await ValueTask.CompletedTask;
+    public override async ValueTask DisposeAsync() => await _context.DisposeAsync();
 
-    public override Task<TEntity?> FindAsync(object?[]? keyValues, CancellationToken cancellationToken = default)
+    public override void Dispose() => _context.Dispose();
+
+    public override Task<TEntity?> FindAsync(
+        object?[]? keyValues,
+        CancellationToken cancellationToken = default)
     {
         if (keyValues == null)
             return Task.FromResult(default(TEntity?));
@@ -62,7 +88,6 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
 
         return _context.Set<TEntity>().IgnoreQueryFilters().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
     }
-
 
     public override Task<TEntity?> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -93,10 +118,13 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken = default)
+    public override Task<List<TEntity>> GetPaginatedListAsync(
+        int skip,
+        int take,
+        Dictionary<string, bool>? sorting,
+        CancellationToken cancellationToken = default)
     {
-        if (sorting == null)
-            sorting = new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
+        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
 
         return _context.Set<TEntity>().OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -110,12 +138,14 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// <param name="sorting">asc or desc, default asc</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, Dictionary<string, bool>? sorting, CancellationToken cancellationToken = default)
+    public override Task<List<TEntity>> GetPaginatedListAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        int skip,
+        int take,
+        Dictionary<string, bool>? sorting,
+        CancellationToken cancellationToken = default)
     {
-        if (sorting == null)
-        {
-            sorting = new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(x => new KeyValuePair<string, bool>(x, false)));
-        }
+        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
 
         return _context.Set<TEntity>().Where(predicate).OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -123,39 +153,61 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override Task<TEntity> RemoveAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().Remove(entity);
+        EntityState = EntityState.Changed;
         return Task.FromResult(entity);
     }
 
     public override async Task RemoveAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        var entities = await GetListAsync(predicate, cancellationToken)!;
+        var entities = await GetListAsync(predicate, cancellationToken);
+        EntityState = EntityState.Changed;
         _context.Set<TEntity>().RemoveRange(entities);
     }
 
     public override Task RemoveRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().RemoveRange(entities);
+        EntityState = EntityState.Changed;
         return Task.CompletedTask;
     }
 
     public override Task RollbackAsync(CancellationToken cancellationToken = default)
         => UnitOfWork.RollbackAsync(cancellationToken);
 
-    public override Task SaveChangesAsync(CancellationToken cancellationToken = default)
-         => UnitOfWork.SaveChangesAsync(cancellationToken);
+    public override async Task SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
+    }
 
     public override Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().Update(entity);
+        EntityState = EntityState.Changed;
         return Task.FromResult(entity);
     }
 
     public override Task UpdateRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         _context.Set<TEntity>().UpdateRange(entities);
+        EntityState = EntityState.Changed;
         return Task.CompletedTask;
     }
 
-    private string[] GetKeys(Type entityType)
+    /// <summary>
+    /// When additions, deletions and changes are made through the Repository and the transaction is currently allowed and the transaction is not opened, the transaction is started
+    /// </summary>
+    private void CheckAndOpenTransaction()
+    {
+        if (!UnitOfWork.UseTransaction)
+            return;
+
+        if (!UnitOfWork.TransactionHasBegun)
+        {
+            _ = UnitOfWork.Transaction; // Open the transaction
+        }
+        CommitState = CommitState.UnCommited;
+    }
+
+    protected string[] GetKeys(Type entityType)
         => ServiceCollectionRepositoryExtensions.Relations[entityType]!;
 }

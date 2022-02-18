@@ -214,7 +214,7 @@ public class RepositoryTest : TestBase
         };
         await repository.AddAsync(order, default);
         await repository.UnitOfWork.SaveChangesAsync(default);
-        dbContext.Entry(order).State = EntityState.Detached;
+        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
         order = await repository.FindAsync(order => order.Description == "Apple");
         order!.Description = "Apple Company";
@@ -225,7 +225,7 @@ public class RepositoryTest : TestBase
 
         await repository.UpdateAsync(order, default);
         await repository.UnitOfWork.SaveChangesAsync();
-        dbContext.Entry(order).State = EntityState.Detached;
+        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         Assert.IsTrue(await repository.GetCountAsync(default) == 1);
 
         order = await repository.FindAsync(order => order.Description == "Apple");
@@ -235,7 +235,7 @@ public class RepositoryTest : TestBase
         await repository.UpdateRangeAsync(new List<Orders>() { order }, default);
         await repository.UnitOfWork.SaveChangesAsync();
 
-        dbContext.Entry(order).State = EntityState.Detached;
+        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
         order = await repository.FindAsync(order => order.Description == "Apple");
         Assert.IsNull(order);

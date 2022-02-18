@@ -13,7 +13,7 @@ public class DccClientTest
     [TestInitialize]
     public void Initialize()
     {
-        _client = new();
+        _client = new Mock<IMemoryCacheClient>();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -39,13 +39,13 @@ public class DccClientTest
     {
         Action<string?> valueChanged = delegate (string? val) { };
         _client.Setup(client => client.GetAsync<string?>(It.IsAny<string>(), valueChanged).Result).Returns(() => null).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<ArgumentException>(async ()
                 => await client.GetRawAsync(environment, cluster, appId, configObject, valueChanged), "configObject invalid"
         );
 
         _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => "test").Verifiable();
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<JsonException>(async ()
             => await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
         );
@@ -78,7 +78,7 @@ public class DccClientTest
     [DataRow("Test", "Default", "DccTest", "Brand")]
     public async Task TestGetRawAsyncByJson(string environment, string cluster, string appId, string configObject)
     {
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
 
         var brand = new Brands("Apple");
         _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
@@ -100,7 +100,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Text,
             Content = "test"
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>());
         Assert.IsTrue(ret.Raw == "test");
         Assert.IsTrue(ret.ConfigurationType == ConfigurationTypes.Text);
@@ -112,7 +112,7 @@ public class DccClientTest
     {
         List<Property> properties = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Brand",
                 Value = "Microsoft"
@@ -123,7 +123,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Text,
             Content = properties.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>());
         Assert.IsTrue(ret.Raw == properties.Serialize(_jsonSerializerOptions));
         Assert.IsTrue(ret.ConfigurationType == ConfigurationTypes.Text);
@@ -146,7 +146,7 @@ public class DccClientTest
             _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
             _trigger.Action = action;
         });
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
         {
             Assert.IsTrue(br.Id == newBrand.Id);
@@ -173,7 +173,7 @@ public class DccClientTest
             _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
             _trigger.Action = action;
         });
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == brand.Id && ret.Name == brand.Name);
@@ -186,7 +186,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions));
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == brand.Id && ret.Name == brand.Name);
@@ -197,7 +197,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<FormatException>(async () =>
         {
             await client.GetAsync<int>(environment, cluster, appId, configObject, It.IsAny<Action<int>>());
@@ -213,7 +213,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Text,
             Content = "test"
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<JsonException>(async () =>
         {
             await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
@@ -225,7 +225,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Text,
             Content = "1"
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         Assert.IsTrue(await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<int>>()) == 1);
     }
 
@@ -235,12 +235,12 @@ public class DccClientTest
     {
         var brand = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Id",
                 Value = Guid.NewGuid().ToString(),
             },
-            new Property()
+            new()
             {
                 Key = "Name",
                 Value = "Microsoft"
@@ -251,7 +251,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Properties,
             Content = brand.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsNotNull(ret);
 
@@ -275,7 +275,7 @@ public class DccClientTest
             _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
             _trigger.Action = action;
         }).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetDynamicAsync(environment, cluster, appId, configObject, (dynamic obj) =>
         {
             Assert.IsTrue((obj.Id + "") == newBrand.Id.ToString());
@@ -304,7 +304,7 @@ public class DccClientTest
             _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
             _trigger.Action = action;
         }).Verifiable();
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         ret = await client.GetDynamicAsync(environment, cluster, appId, configObject, It.IsAny<dynamic>());
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == brand.Id.ToString());
@@ -320,7 +320,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions));
-        client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         ret = await client.GetDynamicAsync(environment, cluster, appId, configObject, It.IsAny<Action<dynamic>>());
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == brand.Id.ToString() && ret.Name == brand.Name);
@@ -334,7 +334,7 @@ public class DccClientTest
     {
         var configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
         _services.AddSingleton<IConfiguration>(configuration);
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var res = (await client.GetDynamicAsync(key));
         Assert.IsTrue(res + "" == value);
     }
@@ -349,7 +349,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Text,
             Content = result
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<JsonException>(async () =>
         {
             await client.GetDynamicAsync(environment, cluster, appId, configObject, It.IsAny<Action<dynamic>>());
@@ -362,12 +362,12 @@ public class DccClientTest
     {
         var brand = new List<Property>()
         {
-            new Property()
+            new()
             {
                 Key = "Id",
                 Value = Guid.NewGuid().ToString(),
             },
-            new Property()
+            new()
             {
                 Key = "Name",
                 Value = "Microsoft"
@@ -378,7 +378,7 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Properties,
             Content = brand.Serialize(_jsonSerializerOptions)
         }.Serialize(_jsonSerializerOptions)).Verifiable();
-        var client = new ConfigurationAPIClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         var ret = await client.GetDynamicAsync(environment, cluster, appId, configObject, It.IsAny<Action<dynamic>>());
         Assert.IsNotNull(ret);
 

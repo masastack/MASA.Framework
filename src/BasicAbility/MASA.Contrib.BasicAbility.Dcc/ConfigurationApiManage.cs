@@ -1,10 +1,10 @@
 namespace MASA.Contrib.BasicAbility.Dcc;
 
-public class ConfigurationAPIManage : ConfigurationAPIBase, IConfigurationAPIManage
+public class ConfigurationApiManage : ConfigurationAPIBase, IConfigurationApiManage
 {
     private readonly ICallerProvider _callerProvider;
 
-    public ConfigurationAPIManage(
+    public ConfigurationApiManage(
         ICallerProvider callerProvider,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)

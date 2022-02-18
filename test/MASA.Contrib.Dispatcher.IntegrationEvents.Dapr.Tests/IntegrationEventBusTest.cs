@@ -342,6 +342,11 @@ public class IntegrationEventBusTest
             return Task.CompletedTask;
         }
 
+        public Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = new CancellationToken())
+        {
+            throw new NotImplementedException();
+        }
+
         public Task MarkEventAsInProgressAsync(Guid eventId)
         {
             return Task.CompletedTask;
@@ -352,9 +357,9 @@ public class IntegrationEventBusTest
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
+        public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
         {
-            return await Task.FromResult(new List<IntegrationEventLog>());
+            throw new NotImplementedException();
         }
 
         public Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)

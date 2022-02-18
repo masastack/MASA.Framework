@@ -21,6 +21,10 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
 
     public bool DisableRollbackOnFailure { get; set; }
 
+    public EntityState EntityState { get; set; }
+
+    public CommitState CommitState { get; set; }
+
     public bool UseTransaction { get; set; } = true;
 
     private readonly DbContext _context;
@@ -36,6 +40,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);
+        EntityState = EntityState.Unchanged;
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
@@ -43,22 +48,8 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
         if (!UseTransaction || !TransactionHasBegun)
             throw new NotSupportedException("Transaction not opened");
 
-        try
-        {
-            await SaveChangesAsync(cancellationToken);
-            await _context.Database.CommitTransactionAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            if (DisableRollbackOnFailure)
-            {
-                _logger?.LogError(ex, "Failed to commit transaction");
-                throw;
-            }
-
-            await _context.Database.RollbackTransactionAsync(cancellationToken);
-            _logger?.LogError(ex, "Failed to commit transaction, rolled back");
-        }
+        await _context.Database.CommitTransactionAsync(cancellationToken);
+        CommitState = CommitState.Commited;
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
@@ -69,5 +60,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
         await _context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync() => _context.DisposeAsync();
+
+    public void Dispose() => _context.Dispose();
 }

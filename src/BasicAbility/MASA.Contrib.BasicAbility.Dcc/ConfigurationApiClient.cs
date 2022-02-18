@@ -1,6 +1,6 @@
 namespace MASA.Contrib.BasicAbility.Dcc;
 
-public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPIClient
+public class ConfigurationApiClient : ConfigurationAPIBase, IConfigurationApiClient
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCacheClient _client;
@@ -9,7 +9,7 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
 
-    public ConfigurationAPIClient(
+    public ConfigurationApiClient(
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
@@ -105,7 +105,7 @@ public class ConfigurationAPIClient : ConfigurationAPIBase, IConfigurationAPICli
         return FormatRaw(raw);
     }
 
-    private (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string raw)
+    private (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string? raw)
     {
         if (raw == null)
             throw new ArgumentException("configObject invalid");

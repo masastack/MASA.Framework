@@ -4,35 +4,48 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 {
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly IServiceProvider _serviceProvider;
-    private IEnumerable<Type> _eventTypes;
+    private readonly Logger<IntegrationEventLogService>? _logger;
+    private IEnumerable<Type>? _eventTypes;
 
-    public IntegrationEventLogService(IntegrationEventLogContext eventLogContext, IServiceProvider serviceProvider)
+    public IntegrationEventLogService(
+        IntegrationEventLogContext eventLogContext,
+        IServiceProvider serviceProvider,
+        Logger<IntegrationEventLogService>? logger = null)
     {
         _eventLogContext = eventLogContext;
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(Guid transactionId)
+    /// <summary>
+    /// Get messages to retry
+    /// </summary>
+    /// <param name="retryBatchSize">maximum number of retries per retry</param>
+    /// <param name="maxRetryTimes"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
     {
         var result = await _eventLogContext.EventLogs
-            .Where(e => e.TransactionId == transactionId && e.State == IntegrationEventStates.NotPublished).ToListAsync();
+            .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
+                e.TimesSent <= maxRetryTimes)
+            .OrderBy(o => o.CreationTime)
+            .Take(retryBatchSize)
+            .ToListAsync();
 
         if (result.Any())
         {
-            if (_eventTypes == null)
-            {
-                _eventTypes = _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes().Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
-            }
+            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
+
             return result.OrderBy(o => o.CreationTime)
                 .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
-        return new List<IntegrationEventLog>();
+        return result;
     }
 
     public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
     {
-
         if (transaction == null)
             throw new ArgumentNullException(nameof(transaction));
 
@@ -48,32 +61,84 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public Task MarkEventAsPublishedAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.Published);
+        return UpdateEventStatus(eventId, IntegrationEventStates.Published, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.InProgress)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.Published, eventLog.State, eventLog.Id);
+                throw new UserFriendlyException("Failed to change state");
+            }
+        });
     }
 
     public Task MarkEventAsInProgressAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress);
+        return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.NotPublished && eventLog.State != IntegrationEventStates.PublishedFailed)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
+                throw new UserFriendlyException("Failed to change state");
+            }
+        });
     }
 
     public Task MarkEventAsFailedAsync(Guid eventId)
     {
-        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed);
+        return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed, eventLog =>
+        {
+            if (eventLog.State != IntegrationEventStates.InProgress)
+            {
+                _logger?.LogWarning(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                    IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
+                throw new UserFriendlyException("Failed to change state");
+            }
+        });
     }
 
-    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status)
+    public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
+    {
+        var eventLogs = _eventLogContext.EventLogs.Where(e => e.CreationTime < expiresAt && e.State == IntegrationEventStates.Published)
+            .OrderBy(e => e.CreationTime).Take(batchCount);
+        _eventLogContext.EventLogs.RemoveRange(eventLogs);
+        await _eventLogContext.SaveChangesAsync(token);
+
+        if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
+        {
+            foreach (var log in eventLogs)
+            {
+                _eventLogContext.Entry(log).State = EntityState.Detached;
+            }
+        }
+    }
+
+    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
+
+        action?.Invoke(eventLogEntry);
 
         eventLogEntry.State = status;
 
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
 
-        _eventLogContext.EventLogs.Update(eventLogEntry);
-        await _eventLogContext.SaveChangesAsync();
+        try
+        {
+            _eventLogContext.EventLogs.Update(eventLogEntry);
+            await _eventLogContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            throw new UserFriendlyException(ex.Message);
+        }
 
         CheckAndDetached(eventLogEntry);
     }

@@ -2,19 +2,19 @@ namespace MASA.Contrib.BasicAbility.Dcc.Internal;
 
 internal class DccFactory
 {
-    public static IConfigurationAPIClient CreateClient(
+    public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationAPIClient(serviceProvider, client, jsonSerializerOptions, defaultSectionOption, expandSectionOptions);
+        return new ConfigurationApiClient(serviceProvider, client, jsonSerializerOptions, defaultSectionOption, expandSectionOptions);
     }
 
-    public static IConfigurationAPIManage CreateManage(
+    public static IConfigurationApiManage CreateManage(
         ICallerFactory callerFactory,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
-        => new ConfigurationAPIManage(callerFactory.CreateClient(), defaultSectionOption, expandSectionOptions);
+        => new ConfigurationApiManage(callerFactory.CreateClient(), defaultSectionOption, expandSectionOptions);
 }

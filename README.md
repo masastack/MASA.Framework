@@ -110,8 +110,7 @@ Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contrib.Da
 > Advantage：
 >
 > 1. Filter deleted information when querying
-> 2. Open transaction after query
-> 3. Soft delete
+> 2. Soft delete
 
 ```C#
 Install-Package MASA.Contrib.Data.Contracts.EF

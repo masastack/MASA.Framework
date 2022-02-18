@@ -29,7 +29,7 @@ public class DccManageTest
         {
             PropertyNameCaseInsensitive = true
         };
-        _callerProvider = new();
+        _callerProvider = new Mock<ICallerProvider>();
     }
 
     [DataTestMethod]
@@ -43,7 +43,7 @@ public class DccManageTest
             Content = new StringContent(brand.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationAPIManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
         await manage.UpdateAsync(environment, cluster, appId, configObject, brand);
     }
 
@@ -59,7 +59,7 @@ public class DccManageTest
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationAPIManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -74,7 +74,7 @@ public class DccManageTest
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationAPIManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -86,7 +86,7 @@ public class DccManageTest
     {
         var api = new CustomConfigurationAPI(_dccSectionOptions, new List<DccSectionOptions>()
         {
-            new DccSectionOptions()
+            new()
             {
                 Environment = "Test2",
                 Cluster = "Default2",

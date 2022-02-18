@@ -56,12 +56,12 @@ public class SoftDeleteTest : IDisposable
         Assert.IsTrue(dbContext.Students.Count() == 1);
         uoW.Verify(u => u.Transaction, Times.Never);
 
-        var student = dbContext.Students.Where(s => s.Name == "Tom").FirstOrDefault();
+        var student = dbContext.Students.FirstOrDefault(s => s.Name == "Tom");
         Assert.IsNotNull(student);
         dbContext.Set<Students>().Remove(student);
         dbContext.SaveChanges();
 
-        Assert.IsTrue(dbContext.Students.Count() == 0);
+        Assert.IsTrue(!dbContext.Students.Any());
 
         student.IsDeleted = false;
         dbContext.SaveChanges();
@@ -88,17 +88,17 @@ public class SoftDeleteTest : IDisposable
         });
         dbContext.SaveChanges();
         Assert.IsTrue(dbContext.Courses.Count() == 1);
-        uoW.Verify(u => u.Transaction, Times.Once);
+        uoW.Verify(u => u.Transaction, Times.Never);
 
         var course = dbContext.Set<Courses>().FirstOrDefault(c => c.Name == "Chinese");
         Assert.IsNotNull(course);
         dbContext.Set<Courses>().Remove(course);
         dbContext.SaveChanges();
-        Assert.IsTrue(dbContext.Courses.Count() == 0);
+        Assert.IsTrue(!dbContext.Courses.Any());
 
         course.IsDeleted = false;
         dbContext.SaveChanges();
-        Assert.IsTrue(dbContext.Courses.Count() == 0);
+        Assert.IsTrue(!dbContext.Courses.Any());
     }
 
     [TestMethod]

@@ -65,7 +65,7 @@ public static class MasaConfigurationExtensions
             if (callerOptions == null)
             {
                 options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress), jsonSerializerOption)
+                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress))
                 );
             }
             else
@@ -76,21 +76,21 @@ public static class MasaConfigurationExtensions
 
         services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOption.RedisOptions).AddSharedMasaMemoryCache(config.DccConfigurationOption.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
-        TryAddConfigurationAPIClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
-        TryAddConfigurationAPIManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
+        TryAddConfigurationApiClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
+        TryAddConfigurationApiManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
 
         var sectionOptions = new List<DccSectionOptions>()
         {
             config.DefaultSectionOption
         }.Concat(config.ExpansionSectionOptions);
 
-        var configurationAPIClient = services.BuildServiceProvider().GetRequiredService<IConfigurationAPIClient>();
+        var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationApiClient>();
         var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(sectionOptions, configurationAPIClient, loggerFactory));
+        builder.AddRepository(new DccConfigurationRepository(sectionOptions, configurationApiClient, loggerFactory));
         return builder;
     }
 
-    public static IServiceCollection TryAddConfigurationAPIClient(IServiceCollection services,
+    public static IServiceCollection TryAddConfigurationApiClient(IServiceCollection services,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
@@ -113,7 +113,7 @@ public static class MasaConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection TryAddConfigurationAPIManage(IServiceCollection services,
+    public static IServiceCollection TryAddConfigurationApiManage(IServiceCollection services,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions)
     {
@@ -130,7 +130,7 @@ public static class MasaConfigurationExtensions
         Action<DccSectionOptions> defaultSectionOptions,
         Action<DccExpandSectionOptions>? expansionSectionOptions = null)
     {
-        var dccConfigurationOption = configureOptions?.Invoke() ?? null;
+        var dccConfigurationOption = configureOptions();
         if (dccConfigurationOption == null)
             throw new ArgumentNullException(nameof(configureOptions));
 

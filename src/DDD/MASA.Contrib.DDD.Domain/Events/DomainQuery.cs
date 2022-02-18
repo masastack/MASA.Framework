@@ -1,13 +1,13 @@
 namespace MASA.Contrib.DDD.Domain.Events;
 
-public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
+public abstract record DomainQuery<TResult>(Guid Id, DateTime CreationTime) : IDomainQuery<TResult>
     where TResult : notnull
 {
     [JsonIgnore]
-    public Guid Id { get; init; }
+    public Guid Id { get; } = Id;
 
     [JsonIgnore]
-    public DateTime CreationTime { get; init; }
+    public DateTime CreationTime { get; } = CreationTime;
 
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork
@@ -19,10 +19,4 @@ public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
     public abstract TResult Result { get; set; }
 
     public DomainQuery() : this(Guid.NewGuid(), DateTime.UtcNow) { }
-
-    public DomainQuery(Guid id, DateTime creationTime)
-    {
-        this.Id = id;
-        this.CreationTime = creationTime;
-    }
 }

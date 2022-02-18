@@ -110,8 +110,7 @@ MASA.Contrib
 > 优势：
 >
 > 1. 查询的时候过滤已删除的信息
-> 2. 查询后开启事务
-> 3. 软删除
+> 2. 软删除
 
 ```C#
 Install-Package MASA.Contrib.Data.Contracts.EF

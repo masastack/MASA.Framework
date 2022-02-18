@@ -3,9 +3,9 @@ namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
-       this IServiceCollection services,
-       Action<DispatcherOptions>? options = null)
-       where TIntegrationEventLogService : class, IIntegrationEventLogService
+        this IServiceCollection services,
+        Action<DispatcherOptions>? options = null)
+        where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.TryAddDaprEventBus<TIntegrationEventLogService>(null, options);
 
     internal static IServiceCollection TryAddDaprEventBus<TIntegrationEventLogService>(
@@ -25,15 +25,21 @@ public static class ServiceCollectionExtensions
         if (dispatcherOptions.Assemblies.Length == 0)
             dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
+        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
+            serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         services.AddLogging();
-
+        LocalQueueProcessor.SetLogger(services);
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-
-        if (!services.Any(service => service.ServiceType == typeof(IUnitOfWork)))
+        services.AddSingleton<IProcessor, RetryByDataProcessor>();
+        services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
+        services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
+        services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
+        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
+        services.AddHostedService<IntegrationEventHostedService>();
+        if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
             var logger = services.BuildServiceProvider().GetRequiredService<ILogger<IntegrationEventBus>>();
             logger.LogWarning("UoW is not enabled, local messages will not be integrated");
@@ -44,6 +50,5 @@ public static class ServiceCollectionExtensions
 
     private class IntegrationEventBusProvider
     {
-
     }
 }
