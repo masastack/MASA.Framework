@@ -28,7 +28,7 @@ public class InfiniteLoopProcessor : ProcessorBase, IProcessor
             {
                 _logger.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
 
-                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
+                Thread.Sleep(TimeSpan.FromSeconds(2));
             }
         }
     }

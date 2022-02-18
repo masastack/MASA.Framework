@@ -44,7 +44,7 @@ public class DispatcherOptions : IDispatcherOptions
     public int LocalFailedRetryInterval { get; set; } = 3;
 
     /// <summary>
-    /// The size of a single event to be retried
+    /// maximum number of retries per retry
     /// </summary>
     public int RetryBatchSize { get; set; } = 100;
 

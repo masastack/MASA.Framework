@@ -20,11 +20,10 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <summary>
     /// Get messages to retry
     /// </summary>
-    /// <param name="retryBatchSize">The size of a single event to be retried</param>
+    /// <param name="retryBatchSize">maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
-        int maxRetryTimes = 10)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
     {
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&

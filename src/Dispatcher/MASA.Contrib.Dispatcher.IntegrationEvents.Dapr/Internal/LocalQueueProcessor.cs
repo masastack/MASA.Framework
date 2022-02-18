@@ -53,7 +53,7 @@ internal class LocalQueueProcessor
         {
             Logger.LogWarning(ex, "... getting local retry queue error");
 
-            Task.Delay(TimeSpan.FromSeconds(2));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
             return new List<IntegrationEventLogItem>();
         }
     }
