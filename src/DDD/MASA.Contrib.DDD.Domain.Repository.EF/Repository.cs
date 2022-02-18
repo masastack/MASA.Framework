@@ -198,14 +198,14 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     /// </summary>
     private void CheckAndOpenTransaction()
     {
-        if (UnitOfWork.UseTransaction)
+        if (!UnitOfWork.UseTransaction)
+            return;
+
+        if (!UnitOfWork.TransactionHasBegun)
         {
-            if (!UnitOfWork.TransactionHasBegun)
-            {
-                _ = UnitOfWork.Transaction; // Open the transaction
-            }
-            CommitState = CommitState.UnCommited;
+            _ = UnitOfWork.Transaction; // Open the transaction
         }
+        CommitState = CommitState.UnCommited;
     }
 
     protected string[] GetKeys(Type entityType)
