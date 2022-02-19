@@ -1,17 +1,17 @@
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
+public class RetryByLocalQueueProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptionsMonitor<AppConfig> _appConfig;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly ILogger<RetryByLocalQueueProcessor> _logger;
+    private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
 
     public RetryByLocalQueueProcessor(
         IServiceProvider serviceProvider,
         IOptionsMonitor<AppConfig> appConfig,
         IOptions<DispatcherOptions> options,
-        ILogger<RetryByLocalQueueProcessor> logger)
+        ILogger<RetryByLocalQueueProcessor>? logger = null)
     {
         _serviceProvider = serviceProvider;
         _appConfig = appConfig;
@@ -40,7 +40,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger.LogDebug(
+                    _logger?.LogDebug(
                         "Publishing integration event {Event} to {PubsubName}.{TopicName}",
                         eventLog,
                         _options.Value.PubSubName,
@@ -59,7 +59,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase, IProcessor
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
+                    _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                         eventLog.EventId, _appConfig.CurrentValue.AppId, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);

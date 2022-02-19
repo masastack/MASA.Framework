@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteLocalQueueExpiresProcessor : ProcessorBase, IProcessor
+public class DeleteLocalQueueExpiresProcessor : ProcessorBase
 {
     private readonly IOptions<DispatcherOptions> _options;
 

@@ -1,5 +1,3 @@
-using MASA.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.Events;
-
 namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.EventHandlers;
 
 public class CouponHandler

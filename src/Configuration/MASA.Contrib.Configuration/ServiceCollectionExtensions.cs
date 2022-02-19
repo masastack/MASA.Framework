@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<MasaConfigurationProvider>();
 
-        if (!services.Any(service => service.ImplementationType == typeof(ILoggerFactory)))
+        if (services.All(service => service.ImplementationType != typeof(ILoggerFactory)))
             services.AddLogging();
 
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(new ConfigurationBuilder());

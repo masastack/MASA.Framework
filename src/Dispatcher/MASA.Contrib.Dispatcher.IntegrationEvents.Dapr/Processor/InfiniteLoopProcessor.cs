@@ -3,9 +3,9 @@
 public class InfiniteLoopProcessor : ProcessorBase
 {
     private readonly IProcessor _processor;
-    private readonly Logger<InfiniteLoopProcessor> _logger;
+    private readonly Logger<InfiniteLoopProcessor>? _logger;
 
-    public InfiniteLoopProcessor(IProcessor processor, Logger<InfiniteLoopProcessor> logger)
+    public InfiniteLoopProcessor(IProcessor processor, Logger<InfiniteLoopProcessor>? logger = null)
     {
         _processor = processor;
         _logger = logger;
@@ -26,7 +26,7 @@ public class InfiniteLoopProcessor : ProcessorBase
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
+                _logger?.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
 
                 Thread.Sleep(TimeSpan.FromSeconds(2));
             }
