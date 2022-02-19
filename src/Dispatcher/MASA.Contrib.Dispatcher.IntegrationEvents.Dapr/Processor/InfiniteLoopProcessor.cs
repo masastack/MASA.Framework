@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class InfiniteLoopProcessor : ProcessorBase, IProcessor
+public class InfiniteLoopProcessor : ProcessorBase
 {
     private readonly IProcessor _processor;
     private readonly Logger<InfiniteLoopProcessor> _logger;

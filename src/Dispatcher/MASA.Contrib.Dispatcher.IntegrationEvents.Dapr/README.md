@@ -66,7 +66,7 @@ public async Task DomeIntegrationEventHandleAsync(DomeIntegrationEvent @event)
 }
 ```
 
-### retry strategy
+### retry policy
 
 ```C#
 builder.Services

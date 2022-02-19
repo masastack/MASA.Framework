@@ -19,7 +19,6 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     /// <summary>
-    /// maximum number of retries
     /// Local queue maximum number of retries
     /// </summary>
     public int LocalRetryTimes { get; set; } = 3;
@@ -35,6 +34,12 @@ public class DispatcherOptions : IDispatcherOptions
     /// Default is 60 seconds.
     /// </summary>
     public int FailedRetryInterval { get; set; } = 60;
+
+    /// <summary>
+    /// Minimum execution retry interval
+    /// Default is 60 seconds.
+    /// </summary>
+    public int MinimumRetryInterval { get; set; } = 60;
 
     /// <summary>
     /// The interval at which the local queue is polled for failed messages.

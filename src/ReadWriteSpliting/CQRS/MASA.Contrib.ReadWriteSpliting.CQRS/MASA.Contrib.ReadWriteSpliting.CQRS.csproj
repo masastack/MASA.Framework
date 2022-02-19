@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.1858161579" />
-    <PackageReference Include="MASA.BuildingBlocks.ReadWriteSpliting.CQRS" Version="0.0.1858161579" />
+    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.1868620703" />
+    <PackageReference Include="MASA.BuildingBlocks.ReadWriteSpliting.CQRS" Version="0.0.1868620703" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
