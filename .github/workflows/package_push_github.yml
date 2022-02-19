@@ -20,7 +20,7 @@ jobs:
         include-prerelease: true
 
     - name: add source
-      run: dotnet nuget add source https://nuget.pkg.github.com/masastack/index.json -n github_masastack -u masastack --store-password-in-clear-text ${{secrets.PACKAGE_NUGET_GITHUB}}
+      run: dotnet nuget add source --username masastack --password ${{ secrets.PACKAGE_NUGET_GITHUB }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/masastack/index.json"
       
     - name: restore
       run: dotnet restore
