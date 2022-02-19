@@ -3,9 +3,9 @@
 public class InfiniteLoopProcessor : ProcessorBase
 {
     private readonly IProcessor _processor;
-    private readonly Logger<InfiniteLoopProcessor>? _logger;
+    private readonly ILogger<InfiniteLoopProcessor>? _logger;
 
-    public InfiniteLoopProcessor(IProcessor processor, Logger<InfiniteLoopProcessor>? logger = null)
+    public InfiniteLoopProcessor(IProcessor processor, ILogger<InfiniteLoopProcessor>? logger = null)
     {
         _processor = processor;
         _logger = logger;
@@ -18,7 +18,7 @@ public class InfiniteLoopProcessor : ProcessorBase
             try
             {
                 await _processor.ExecuteAsync(stoppingToken);
-                await SleepAsync();
+                await DelayAsync(((ProcessorBase)_processor).Delay);
             }
             catch (OperationCanceledException)
             {
@@ -32,6 +32,4 @@ public class InfiniteLoopProcessor : ProcessorBase
             }
         }
     }
-
-    public override int SleepTime => 0;
 }

@@ -28,5 +28,5 @@ public class DeletePublishedExpireEventProcessor : ProcessorBase
         }
     }
 
-    public override int SleepTime => _options.Value.CleaningExpireInterval;
+    public override int Delay => _options.Value.CleaningExpireInterval;
 }

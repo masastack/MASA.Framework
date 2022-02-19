@@ -107,7 +107,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
     {
-        var eventLogs = _eventLogContext.EventLogs.Where(e => e.CreationTime < expiresAt && e.State == IntegrationEventStates.Published)
+        var eventLogs = _eventLogContext.EventLogs.Where(e => e.ModificationTime < expiresAt && e.State == IntegrationEventStates.Published)
             .OrderBy(e => e.CreationTime).Take(batchCount);
         _eventLogContext.EventLogs.RemoveRange(eventLogs);
         await _eventLogContext.SaveChangesAsync(token);
