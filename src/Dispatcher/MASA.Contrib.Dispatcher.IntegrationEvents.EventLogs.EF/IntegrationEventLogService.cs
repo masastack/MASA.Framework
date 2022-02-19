@@ -31,8 +31,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
                 e.TimesSent <= maxRetryTimes &&
-                e.ModificationTime < time
-                )
+                e.ModificationTime < time)
             .OrderBy(o => o.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync();
@@ -129,6 +128,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             throw new ArgumentException(nameof(eventId));
 
         action?.Invoke(eventLogEntry);
+
 
         eventLogEntry.State = status;
         eventLogEntry.ModificationTime = eventLogEntry.GetCurrentTime();
