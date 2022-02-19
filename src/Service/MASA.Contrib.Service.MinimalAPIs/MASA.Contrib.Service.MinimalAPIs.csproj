@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.1868620703" />
-    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.0.1858031525" />
-    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.1858031525" />
+    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.0.1862421399" />
+    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.1862421399" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 

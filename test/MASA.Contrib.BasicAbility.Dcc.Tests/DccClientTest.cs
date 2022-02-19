@@ -44,18 +44,18 @@ public class DccClientTest
                 => await client.GetRawAsync(environment, cluster, appId, configObject, valueChanged), "configObject invalid"
         );
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => "test").Verifiable();
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => "test").Verifiable();
         client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<JsonException>(async ()
             => await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
         );
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => "{}").Verifiable();
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => "{}").Verifiable();
         await Assert.ThrowsExceptionAsync<ArgumentException>(async ()
                 => await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), "configObject invalid"
         );
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new
         {
             ConfigFormat = "1",
             Content = ""
@@ -64,7 +64,7 @@ public class DccClientTest
                 => await client.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()), "configObject invalid"
         );
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease
         {
             ConfigFormat = (ConfigFormats)5,
             Content = ""
@@ -81,7 +81,7 @@ public class DccClientTest
         var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
 
         var brand = new Brands("Apple");
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -95,7 +95,7 @@ public class DccClientTest
     [DataRow("Test", "Default", "DccTest", "Brand")]
     public async Task TestGetRawAsyncByText(string environment, string cluster, string appId, string configObject)
     {
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Text,
             Content = "test"
@@ -118,7 +118,7 @@ public class DccClientTest
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Text,
             Content = properties.Serialize(_jsonSerializerOptions)
@@ -136,7 +136,7 @@ public class DccClientTest
         var brand = new Brands("Microsoft");
         var newBrand = new Brands("Microsoft2");
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -162,7 +162,7 @@ public class DccClientTest
 
         Assert.IsTrue(ret.Id == newBrand.Id && ret.Name == newBrand.Name);
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -181,7 +181,7 @@ public class DccClientTest
         ret = await client.GetAsync<Brands>(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsTrue(ret.Id == newBrand.Id && ret.Name == "Masa");
 
-        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -192,7 +192,7 @@ public class DccClientTest
         Assert.IsTrue(ret.Id == brand.Id && ret.Name == brand.Name);
 
         Initialize();
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -208,7 +208,7 @@ public class DccClientTest
     [DataRow("Test", "Default", "DccTest", "Brand")]
     public async Task GetAsyncByText(string environment, string cluster, string appId, string configObject)
     {
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Text,
             Content = "test"
@@ -220,7 +220,7 @@ public class DccClientTest
         });
 
         Initialize();
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Text,
             Content = "1"
@@ -246,7 +246,7 @@ public class DccClientTest
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Properties,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -265,7 +265,7 @@ public class DccClientTest
     {
         var brand = new Brands("Microsoft");
         var newBrand = new Brands("Microsoft2");
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -294,7 +294,7 @@ public class DccClientTest
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == newBrand.Id.ToString() && ret.Name == newBrand.Name);
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -315,7 +315,7 @@ public class DccClientTest
         Assert.IsNotNull(ret);
         Assert.IsTrue(ret.Id == newBrand.Id.ToString() && ret.Name == newBrand.Name);
 
-        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync<string>(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Json,
             Content = brand.Serialize(_jsonSerializerOptions)
@@ -344,7 +344,7 @@ public class DccClientTest
     public async Task GetDynamicAsyncByText(string environment, string cluster, string appId, string configObject)
     {
         string result = "Test";
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Text,
             Content = result
@@ -373,7 +373,7 @@ public class DccClientTest
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result).Returns(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
         {
             ConfigFormat = ConfigFormats.Properties,
             Content = brand.Serialize(_jsonSerializerOptions)

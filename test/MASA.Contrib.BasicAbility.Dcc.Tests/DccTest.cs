@@ -123,7 +123,7 @@ public class DccTest
             ConfigFormat = ConfigFormats.Text
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
@@ -546,7 +546,7 @@ public class DccTest
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
@@ -600,7 +600,7 @@ public class DccTest
             ConfigFormat = ConfigFormats.Text
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
@@ -635,7 +635,7 @@ public class DccTest
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Json
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
@@ -660,7 +660,7 @@ public class DccTest
             Content = "Test",
             ConfigFormat = ConfigFormats.Text
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
@@ -685,7 +685,7 @@ public class DccTest
             Content = null,
             ConfigFormat = ConfigFormats.Text
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
@@ -710,7 +710,7 @@ public class DccTest
             Content = "Test",
             ConfigFormat = (ConfigFormats)4
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
@@ -737,7 +737,7 @@ public class DccTest
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
@@ -771,7 +771,7 @@ public class DccTest
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
