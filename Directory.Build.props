@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageIcon>packageIcon.png</PackageIcon>
+    <Authors>masastack</Authors>
+    <Copyright>© masastack Corporation. All rights reserved.</Copyright>
+    <PackageIconUrl>packageIcon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/masastack/MASA.BuildingBlocks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(RepositoryRoot)packageIcon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+     <None Include="$(RepositoryRoot)LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+</Project>
