@@ -12,4 +12,5 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Reflection;
-
+global using MASA.Contrib.Dispatcher.Events;
+global using Microsoft.Extensions.Logging;

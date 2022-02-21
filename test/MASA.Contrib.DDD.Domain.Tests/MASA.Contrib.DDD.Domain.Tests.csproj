@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\DDD\MASA.Contrib.DDD.Domain\MASA.Contrib.DDD.Domain.csproj" />
+    <ProjectReference Include="..\..\src\Dispatcher\MASA.Contrib.Dispatcher.Events\MASA.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\MASA.Contribs.DDD.Domain.Entities.Tests\MASA.Contribs.DDD.Domain.Entities.Tests.csproj" />
   </ItemGroup>
 

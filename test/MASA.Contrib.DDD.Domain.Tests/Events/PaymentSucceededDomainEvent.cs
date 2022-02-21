@@ -1,7 +1,6 @@
 namespace MASA.Contrib.DDD.Domain.Tests.Events;
 
-public record PaymentSucceededDomainEvent : DomainEvent
+public record PaymentSucceededDomainEvent(string OrderId) : DomainEvent
 {
-    public string OrderId { get; set; }
+    public bool Result { get; set; } = false;
 }
-
