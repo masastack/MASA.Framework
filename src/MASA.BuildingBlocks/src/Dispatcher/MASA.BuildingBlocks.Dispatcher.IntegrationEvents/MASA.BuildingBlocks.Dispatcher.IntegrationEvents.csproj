@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\MASA.BuildingBlocks.Data.UoW\MASA.BuildingBlocks.Data.UoW.csproj" />
+    <ProjectReference Include="..\MASA.BuildingBlocks.Dispatcher.Events\MASA.BuildingBlocks.Dispatcher.Events.csproj" />
+  </ItemGroup>
+
+</Project>
