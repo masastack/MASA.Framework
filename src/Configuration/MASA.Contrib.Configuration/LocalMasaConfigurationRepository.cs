@@ -8,7 +8,7 @@ internal class LocalMasaConfigurationRepository : AbstractConfigurationRepositor
 
     public LocalMasaConfigurationRepository(
         Dictionary<string, IConfiguration> sectionRelation,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory? loggerFactory)
         : base(loggerFactory)
     {
         this.SectionType = SectionTypes.Local;

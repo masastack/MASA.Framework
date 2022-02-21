@@ -26,18 +26,16 @@ internal class DispatcherBase
         where TEvent : IEvent
     {
         var eventType = typeof(TEvent);
-        if (!_sharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations) || dispatchRelations == null)
+        if (!_sharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations))
         {
             if (@event is IIntegrationEvent)
             {
                 _logger?.LogError($"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
                 throw new ArgumentNullException($"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
             }
-            else
-            {
-                _logger?.LogError($"Dispatcher: The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
-                throw new ArgumentNullException($"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
-            }
+
+            _logger?.LogError($"Dispatcher: The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
+            throw new ArgumentNullException($"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
         }
         await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event);
     }
@@ -95,7 +93,7 @@ internal class DispatcherBase
         foreach (var cancelHandler in cancelHandlers)
         {
             strategyOptions.SetStrategy(cancelHandler);
-            await executionStrategy.ExecuteAsync(strategyOptions, @event, async (@event) =>
+            await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
                 logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event, @event.Id);
                 await cancelHandler.ExcuteAction(serviceProvider, @event);
@@ -113,16 +111,16 @@ internal class DispatcherBase
 
     protected void AddRelationNetwork(Type parameterType, EventHandlerAttribute handler)
     {
-        _sharingRelationNetwork.Add(parameterType, handler);
+        _sharingRelationNetwork!.Add(parameterType, handler);
     }
 
-    protected IEnumerable<Type> GetAddServiceTypeList() => _sharingRelationNetwork.HandlerRelationNetwork
+    protected IEnumerable<Type> GetAddServiceTypeList() => _sharingRelationNetwork!.HandlerRelationNetwork
         .Concat(_sharingRelationNetwork.CancelRelationNetwork)
         .SelectMany(relative => relative.Value)
         .Where(dispatchHandler => dispatchHandler.InvokeDelegate != null)
         .Select(dispatchHandler => dispatchHandler.InstanceType).Distinct();
 
-    protected void Build() => _sharingRelationNetwork.Build();
+    protected void Build() => _sharingRelationNetwork!.Build();
 
     protected bool IsSagaMode(Type handlerType, MethodInfo method) =>
       typeof(IEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) && method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync)) ||

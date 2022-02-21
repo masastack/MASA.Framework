@@ -13,8 +13,6 @@ public class IntegrationEventHostedService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Task.Delay(2000, stoppingToken);
-
         _logger?.LogDebug("----- IntegrationEvent background task is starting");
 
         return _processingServer.ExecuteAsync(stoppingToken);

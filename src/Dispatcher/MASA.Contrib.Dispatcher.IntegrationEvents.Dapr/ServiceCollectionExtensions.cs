@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
-        services.AddLogging();
         LocalQueueProcessor.SetLogger(services);
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();

@@ -41,9 +41,7 @@ public static class ServiceCollectionExtensions
             return new ConfigurationBuilder().Build();
 
         services.AddSingleton<MasaConfigurationProvider>();
-
-        if (services.All(service => service.ImplementationType != typeof(ILoggerFactory)))
-            services.AddLogging();
+        services.AddOptions();
 
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(new ConfigurationBuilder());
         if (configurationBuilder != null)
@@ -55,7 +53,7 @@ public static class ServiceCollectionExtensions
         if (masaConfigurationBuilder.SectionRelations.Count == 0)
             throw new Exception("Please add the section to be loaded");
 
-        var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.SectionRelations, services.BuildServiceProvider().GetRequiredService<ILoggerFactory>());
+        var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.SectionRelations, services.BuildServiceProvider().GetService<ILoggerFactory>());
         masaConfigurationBuilder.AddRepository(localConfigurationRepository);
 
         var source = new MasaConfigurationSource(masaConfigurationBuilder);

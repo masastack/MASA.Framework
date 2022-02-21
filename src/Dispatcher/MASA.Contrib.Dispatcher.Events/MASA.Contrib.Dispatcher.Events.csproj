@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1868620703" />
-    <PackageReference Include="MASA.BuildingBlocks.Data.UoW" Version="0.0.1868620703" />
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.1868620703" />
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.1868620703" />
+    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1874717732" />
+    <PackageReference Include="MASA.BuildingBlocks.Data.UoW" Version="0.0.1874717732" />
+    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.1874717732" />
+    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.1874717732" />
     <PackageReference Include="MASA.Utils.Models.Config" Version="0.0.1862421399" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />

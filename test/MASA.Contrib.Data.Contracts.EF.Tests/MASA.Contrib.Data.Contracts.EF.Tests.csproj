@@ -18,7 +18,7 @@
     <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
     <PackageReference Include="coverlet.collector" Version="3.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0" />
-    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1868620703" />
+    <PackageReference Include="MASA.BuildingBlocks.DDD.Domain" Version="0.0.1874717732" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,8 +2,8 @@ namespace MASA.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
 public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
 {
-    private readonly ILogger<ChangePasswordEventHandler> _logger;
-    public ChangePasswordEventHandler(ILogger<ChangePasswordEventHandler> logger) => _logger = logger;
+    private readonly ILogger<ChangePasswordEventHandler>? _logger;
+    public ChangePasswordEventHandler(ILogger<ChangePasswordEventHandler>? logger=null) => _logger = logger;
 
     [EventHandler(10, FailureLevels.ThrowAndCancel)]
     public Task HandleAsync(ChangePasswordEvent @event)
@@ -21,7 +21,7 @@ public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
         {
             throw new ArgumentException("System error, please try again later");
         }
-        _logger.LogInformation("cancel success");
+        _logger?.LogInformation("cancel success");
         return Task.CompletedTask;
     }
 
@@ -33,7 +33,7 @@ public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
         {
             throw new ArgumentException("System error, please try again later");
         }
-        _logger.LogInformation("cancel success");
+        _logger?.LogInformation("cancel success");
         return Task.CompletedTask;
     }
 }

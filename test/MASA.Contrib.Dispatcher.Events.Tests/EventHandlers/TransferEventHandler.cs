@@ -4,10 +4,10 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
 {
     private readonly List<string> _blackAccount = new List<string>() { "roller", "thomas" };
 
-    private readonly ILogger<TransferEventHandler> _logger;
+    private readonly ILogger<TransferEventHandler>? _logger;
     private readonly IEventBus _eventBus;
 
-    public TransferEventHandler(ILogger<TransferEventHandler> logger, IEventBus eventBus)
+    public TransferEventHandler(IEventBus eventBus, ILogger<TransferEventHandler>? logger = null)
     {
         _logger = logger;
         _eventBus = eventBus;
@@ -20,7 +20,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
         {
             throw new NotSupportedException("System error, please try again later");
         }
-        _logger.LogInformation("deduct account balance {event}", @event.ToString());
+        _logger?.LogInformation("deduct account balance {event}", @event.ToString());
         return Task.CompletedTask;
     }
 
@@ -45,7 +45,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
         IncreaseMoneyEvent increaseMoneyEvent = new IncreaseMoneyEvent()
         {
             Account = @event.PayeeAccount,
-            TransferAccount=@event.Account,
+            TransferAccount = @event.Account,
             Money = @event.Money
         };
         await _eventBus.PublishAsync(increaseMoneyEvent);

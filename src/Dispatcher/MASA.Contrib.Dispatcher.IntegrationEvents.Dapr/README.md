@@ -2,7 +2,7 @@
 
 ## IntegrationEventBus
 
-Exampleï¼
+Example:
 
 ```C#
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
