@@ -40,10 +40,7 @@ public class DomainEventBusTest
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, _uoW.Object, _dispatcherOptions);
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<PaymentSucceededDomainEvent>())).Verifiable();
 
-        var domainEvent = new PaymentSucceededDomainEvent()
-        {
-            OrderId = new Random().Next(10000, 1000000).ToString()
-        };
+        var domainEvent = new PaymentSucceededDomainEvent(new Random().Next(10000, 1000000).ToString());
         await domainEventBus.PublishAsync(domainEvent);
 
         _eventBus.Verify(eventBus => eventBus.PublishAsync(domainEvent), Times.Once, "PublishAsync is executed multiple times");
@@ -198,8 +195,8 @@ public class DomainEventBusTest
     [TestMethod]
     public async Task TestPublishQueueAsync()
     {
-        var domainEvent = new PaymentSucceededDomainEvent() { OrderId = "ef5f84db-76e4-4c79-9815-99a1543b6589" };
-        var integrationDomainEvent = new PaymentFailedIntegrationDomainEvent() { OrderId = "d65c1a0c-6e44-40ce-9737-738fa1dcdab4" };
+        var domainEvent = new PaymentSucceededDomainEvent("ef5f84db-76e4-4c79-9815-99a1543b6589");
+        var integrationDomainEvent = new PaymentFailedIntegrationDomainEvent { OrderId = "d65c1a0c-6e44-40ce-9737-738fa1dcdab4" };
 
         _eventBus
             .Setup(eventBus => eventBus.PublishAsync(It.IsAny<IDomainEvent>()))
