@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\MASA.BuildingBlocks.Data.Contracts\MASA.BuildingBlocks.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\Data\MASA.BuildingBlocks.Data.UoW\MASA.BuildingBlocks.Data.UoW.csproj" />
+    <ProjectReference Include="..\..\Dispatcher\MASA.BuildingBlocks.Dispatcher.IntegrationEvents\MASA.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\ReadWriteSpliting\MASA.BuildingBlocks.ReadWriteSpliting.CQRS\MASA.BuildingBlocks.ReadWriteSpliting.CQRS.csproj" />
+  </ItemGroup>
+
+</Project>
