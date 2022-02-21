@@ -1,5 +1,3 @@
-using MASA.Contrib.DDD.Domain.Internal;
-
 namespace MASA.Contrib.DDD.Domain;
 
 public class DomainEventBus : IDomainEventBus
