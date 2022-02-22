@@ -7,7 +7,7 @@ public interface IProcessor
     /// <summary>
     /// Easy to switch between background tasks
     /// </summary>
-    /// <param name="delay">unit: milliseconds</param>
+    /// <param name="delay">unit: seconds</param>
     /// <returns></returns>
     Task DelayAsync(int delay);
 }
