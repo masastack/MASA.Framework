@@ -20,5 +20,5 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase
         return Task.CompletedTask;
     }
 
-    public override int Delay => _options.Value.CleaningLocalQueueExpireInterval * 1000;
+    public override int Delay => _options.Value.CleaningLocalQueueExpireInterval;
 }

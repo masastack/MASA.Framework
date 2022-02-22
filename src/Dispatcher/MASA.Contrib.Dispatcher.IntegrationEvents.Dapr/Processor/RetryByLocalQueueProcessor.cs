@@ -68,5 +68,5 @@ public class RetryByLocalQueueProcessor : ProcessorBase
         }
     }
 
-    public override int Delay => _options.Value.LocalFailedRetryInterval * 1000;
+    public override int Delay => _options.Value.LocalFailedRetryInterval;
 }

@@ -72,5 +72,5 @@ public class RetryByDataProcessor : ProcessorBase
         }
     }
 
-    public override int Delay => _options.Value.FailedRetryInterval * 1000;
+    public override int Delay => _options.Value.FailedRetryInterval;
 }

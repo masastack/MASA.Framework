@@ -7,13 +7,13 @@ public abstract class ProcessorBase : IProcessor
     // /// <summary>
     // /// Easy to switch between background tasks
     // /// </summary>
-    /// <param name="delay">unit: milliseconds</param>
+    /// <param name="delay">unit: seconds</param>
     // /// <returns></returns>
     public Task DelayAsync(int delay)
-        => Task.Delay(TimeSpan.FromMilliseconds(delay));
+        => Task.Delay(TimeSpan.FromSeconds(delay));
 
     /// <summary>
-    /// Task delay time, unit: milliseconds
+    /// Task delay time, unit: seconds
     /// </summary>
     public virtual int Delay { get; }
 }
