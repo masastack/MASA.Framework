@@ -1,1 +1,3 @@
-
+[submodule "src/BuildingBlock/MASA.BuildingBlocks"]
+	path = src/BuildingBlock/MASA.BuildingBlocks
+	url = https://github.com/masastack/MASA.BuildingBlocks.git
