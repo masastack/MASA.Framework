@@ -6,10 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Service.MinimalAPIs" Version="0.0.1874717732" />
-    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.0.1874718461" />
-    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.0.1874718461" />
+    <PackageReference Include="MASA.Utils.Caching.Core" Version="0.3.0-preview.1" />
+    <PackageReference Include="MASA.Utils.Extensions.DependencyInjection" Version="0.3.0-preview.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Service\MASA.BuildingBlocks.Service.MinimalAPIs\MASA.BuildingBlocks.Service.MinimalAPIs.csproj" />
   </ItemGroup>
 
 </Project>
