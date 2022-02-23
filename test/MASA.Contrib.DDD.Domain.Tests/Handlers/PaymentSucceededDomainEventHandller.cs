@@ -4,7 +4,7 @@ public class PaymentSucceededDomainEventHandller
 {
     private readonly ILogger<PaymentSucceededDomainEventHandller>? _logger;
 
-    public PaymentSucceededDomainEventHandller(ILogger<PaymentSucceededDomainEventHandller>? logger)
+    public PaymentSucceededDomainEventHandller(ILogger<PaymentSucceededDomainEventHandller>? logger = null)
     {
         _logger = logger;
     }
@@ -12,7 +12,7 @@ public class PaymentSucceededDomainEventHandller
     [EventHandler]
     public Task PaymentSucceeded(PaymentSucceededDomainEvent domainEvent)
     {
-        _logger?.LogInformation("PaymentSucceeded: OrderId: {OrderId}",domainEvent.OrderId);
+        _logger?.LogInformation("PaymentSucceeded: OrderId: {OrderId}", domainEvent.OrderId);
         domainEvent.Result = true;
         return Task.CompletedTask;
     }

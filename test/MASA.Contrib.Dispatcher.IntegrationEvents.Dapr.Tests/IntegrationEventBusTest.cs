@@ -357,9 +357,9 @@ public class IntegrationEventBusTest
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
+        public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
         }
 
         public Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)

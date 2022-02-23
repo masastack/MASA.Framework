@@ -4,9 +4,9 @@ public class ShipOrderEventHandler : ISagaEventHandler<ShipOrderEvent>
 {
     private int ExecCount { get; set; }
 
-    private readonly ILogger<ShipOrderEventHandler> _logger;
+    private readonly ILogger<ShipOrderEventHandler>? _logger;
 
-    public ShipOrderEventHandler(ILogger<ShipOrderEventHandler> logger)
+    public ShipOrderEventHandler(ILogger<ShipOrderEventHandler>? logger = null)
     {
         _logger = logger;
         ExecCount = 0;
@@ -21,7 +21,7 @@ public class ShipOrderEventHandler : ISagaEventHandler<ShipOrderEvent>
             throw new Exception("try again");
         }
 
-        _logger.LogInformation("update express information");
+        _logger?.LogInformation("update express information");
         if (@event.OrderId.Length > 8)
         {
             @event.Message = "the delivery failure";
@@ -35,21 +35,21 @@ public class ShipOrderEventHandler : ISagaEventHandler<ShipOrderEvent>
     public Task CancelAsync(ShipOrderEvent @event)
     {
         @event.Message = "the delivery failed, rolling back success";
-        _logger.LogInformation("the delivery failed, rolling back success");
+        _logger?.LogInformation("the delivery failed, rolling back success");
         return Task.CompletedTask;
     }
 }
 
 public class ShipOrderAndNoticeHandler : IEventHandler<ShipOrderEvent>
 {
-    private readonly ILogger<ShipOrderAndNoticeHandler> _logger;
-    public ShipOrderAndNoticeHandler(ILogger<ShipOrderAndNoticeHandler> logger) => _logger = logger;
+    private readonly ILogger<ShipOrderAndNoticeHandler>? _logger;
+    public ShipOrderAndNoticeHandler(ILogger<ShipOrderAndNoticeHandler>? logger = null) => _logger = logger;
 
     [EventHandler(20)]
     public Task HandleAsync(ShipOrderEvent @event)
     {
         @event.Message = "the delivery and notice success";
-        _logger.LogInformation("order delivered successfully");
+        _logger?.LogInformation("order delivered successfully");
         return Task.CompletedTask;
     }
 }

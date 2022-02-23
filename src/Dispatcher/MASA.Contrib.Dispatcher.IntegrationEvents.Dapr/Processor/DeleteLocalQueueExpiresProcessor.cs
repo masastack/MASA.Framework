@@ -1,6 +1,6 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeleteLocalQueueExpiresProcessor : ProcessorBase, IProcessor
+public class DeleteLocalQueueExpiresProcessor : ProcessorBase
 {
     private readonly IOptions<DispatcherOptions> _options;
 
@@ -20,5 +20,5 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase, IProcessor
         return Task.CompletedTask;
     }
 
-    public override int SleepTime => _options.Value.CleaningLocalQueueExpireInterval;
+    public override int Delay => _options.Value.CleaningLocalQueueExpireInterval;
 }

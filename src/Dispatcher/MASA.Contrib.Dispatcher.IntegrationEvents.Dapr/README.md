@@ -2,7 +2,7 @@
 
 ## IntegrationEventBus
 
-Example：
+Example:
 
 ```C#
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
@@ -66,7 +66,7 @@ public async Task DomeIntegrationEventHandleAsync(DomeIntegrationEvent @event)
 }
 ```
 
-### retry strategy
+### retry policy
 
 ```C#
 builder.Services

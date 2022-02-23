@@ -3,9 +3,9 @@
 public class DefaultHostedService : IProcessingServer
 {
     private readonly IEnumerable<IProcessor> _processors;
-    private readonly Logger<InfiniteLoopProcessor> _logger;
+    private readonly ILogger<InfiniteLoopProcessor>? _logger;
 
-    public DefaultHostedService(IEnumerable<IProcessor> processors, Logger<InfiniteLoopProcessor> logger)
+    public DefaultHostedService(IEnumerable<IProcessor> processors, ILogger<InfiniteLoopProcessor>? logger = null)
     {
         _processors = processors;
         _logger = logger;

@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
-        services.AddLogging();
         LocalQueueProcessor.SetLogger(services);
         services.AddDaprClient(builder);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
@@ -41,8 +40,8 @@ public static class ServiceCollectionExtensions
         services.AddHostedService<IntegrationEventHostedService>();
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
-            var logger = services.BuildServiceProvider().GetRequiredService<ILogger<IntegrationEventBus>>();
-            logger.LogWarning("UoW is not enabled, local messages will not be integrated");
+            var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
+            logger?.LogWarning("UoW is not enabled, local messages will not be integrated");
         }
 
         return services;

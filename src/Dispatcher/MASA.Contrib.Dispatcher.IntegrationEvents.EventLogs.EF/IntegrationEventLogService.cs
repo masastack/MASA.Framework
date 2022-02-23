@@ -22,12 +22,16 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// </summary>
     /// <param name="retryBatchSize">maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
+    /// <param name="minimumRetryInterval">default: 60s</param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
     {
+        //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
+        var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
-                e.TimesSent <= maxRetryTimes)
+                e.TimesSent <= maxRetryTimes &&
+                e.ModificationTime < time)
             .OrderBy(o => o.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync();
@@ -68,7 +72,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.Published, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException("Failed to change state");
+                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.Published}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
@@ -82,7 +86,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException("Failed to change state");
+                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
@@ -96,14 +100,14 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException("Failed to change state");
+                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
     {
-        var eventLogs = _eventLogContext.EventLogs.Where(e => e.CreationTime < expiresAt && e.State == IntegrationEventStates.Published)
+        var eventLogs = _eventLogContext.EventLogs.Where(e => e.ModificationTime < expiresAt && e.State == IntegrationEventStates.Published)
             .OrderBy(e => e.CreationTime).Take(batchCount);
         _eventLogContext.EventLogs.RemoveRange(eventLogs);
         await _eventLogContext.SaveChangesAsync(token);
@@ -125,8 +129,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
         action?.Invoke(eventLogEntry);
 
-        eventLogEntry.State = status;
 
+        eventLogEntry.State = status;
+        eventLogEntry.ModificationTime = eventLogEntry.GetCurrentTime();
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
 

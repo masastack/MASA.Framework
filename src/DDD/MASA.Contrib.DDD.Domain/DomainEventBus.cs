@@ -9,7 +9,10 @@ public class DomainEventBus : IDomainEventBus
 
     private readonly ConcurrentQueue<KeyValuePair<Type, IDomainEvent>> _eventQueue = new();
 
-    public DomainEventBus(IEventBus eventBus, IIntegrationEventBus integrationEventBus, IUnitOfWork unitOfWork,
+    public DomainEventBus(
+        IEventBus eventBus,
+        IIntegrationEventBus integrationEventBus,
+        IUnitOfWork unitOfWork,
         IOptions<DispatcherOptions> options)
     {
         _eventBus = eventBus;

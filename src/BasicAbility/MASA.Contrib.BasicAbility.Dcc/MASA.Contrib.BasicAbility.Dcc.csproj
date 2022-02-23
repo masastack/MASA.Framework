@@ -7,14 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Configuration" Version="0.0.1858161579" />
-    <PackageReference Include="MASA.Utils.Caching.DistributedMemory" Version="0.0.1858031525" />
-    <PackageReference Include="MASA.Utils.Caching.Redis" Version="0.0.1858031525" />
-    <PackageReference Include="MASA.Utils.Caller.Core" Version="0.0.1858031525" />
-    <PackageReference Include="MASA.Utils.Caller.HttpClient" Version="0.0.1858031525" />
+    <PackageReference Include="MASA.Utils.Caching.DistributedMemory" Version="0.3.0-preview.1" />
+    <PackageReference Include="MASA.Utils.Caching.Redis" Version="0.3.0-preview.1" />
+    <PackageReference Include="MASA.Utils.Caller.Core" Version="0.3.0-preview.1" />
+    <PackageReference Include="MASA.Utils.Caller.HttpClient" Version="0.3.0-preview.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Configuration\MASA.BuildingBlocks.Configuration\MASA.BuildingBlocks.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

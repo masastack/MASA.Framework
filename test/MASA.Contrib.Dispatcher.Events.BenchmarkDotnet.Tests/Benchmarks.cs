@@ -16,7 +16,7 @@ public class Benchmarks
         services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
         services.AddEventBus();
         _serviceProvider = services.BuildServiceProvider();
-        _eventBus = _serviceProvider.GetService<IEventBus>();
+        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
         _userEvent = new RegisterUserEvent()
         {
             Name = "tom",

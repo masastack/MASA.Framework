@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.Events" Version="0.0.1858161579" />
-    <PackageReference Include="MASA.BuildingBlocks.ReadWriteSpliting.CQRS" Version="0.0.1858161579" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MASA.BuildingBlocks\src\Dispatcher\MASA.BuildingBlocks.Dispatcher.Events\MASA.BuildingBlocks.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\MASA.BuildingBlocks\src\ReadWriteSpliting\MASA.BuildingBlocks.ReadWriteSpliting.CQRS\MASA.BuildingBlocks.ReadWriteSpliting.CQRS.csproj" />
   </ItemGroup>
 
 </Project>

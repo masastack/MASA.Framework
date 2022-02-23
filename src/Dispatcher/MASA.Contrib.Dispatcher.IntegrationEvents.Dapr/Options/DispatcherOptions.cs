@@ -19,7 +19,6 @@ public class DispatcherOptions : IDispatcherOptions
     }
 
     /// <summary>
-    /// maximum number of retries
     /// Local queue maximum number of retries
     /// </summary>
     public int LocalRetryTimes { get; set; } = 3;
@@ -30,35 +29,93 @@ public class DispatcherOptions : IDispatcherOptions
     /// </summary>
     public int MaxRetryTimes { get; set; } = 10;
 
+    private int _failedRetryInterval = 60;
+
     /// <summary>
     /// The interval at which db polls for failure messages.
     /// Default is 60 seconds.
+    /// unit: seconds
     /// </summary>
-    public int FailedRetryInterval { get; set; } = 60;
+    public int FailedRetryInterval
+    {
+        get => _failedRetryInterval;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("must be greater than or equal to 0", nameof(FailedRetryInterval));
+
+            _failedRetryInterval = value;
+        }
+    }
+
+    /// <summary>
+    /// Minimum execution retry interval
+    /// Default is 60 seconds.
+    /// </summary>
+    public int MinimumRetryInterval { get; set; } = 60;
+
+    private int _localFailedRetryInterval = 3;
 
     /// <summary>
     /// The interval at which the local queue is polled for failed messages.
     /// Local queue does not rebuild after service crash
     /// Default is 3 seconds.
+    /// unit: seconds
     /// </summary>
-    public int LocalFailedRetryInterval { get; set; } = 3;
+    public int LocalFailedRetryInterval
+    {
+        get => _localFailedRetryInterval;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("must be greater than or equal to 0", nameof(LocalFailedRetryInterval));
+
+            _localFailedRetryInterval = value;
+        }
+    }
 
     /// <summary>
     /// maximum number of retries per retry
     /// </summary>
     public int RetryBatchSize { get; set; } = 100;
 
+    private int _cleaningLocalQueueExpireInterval = 60;
+
     /// <summary>
     /// Delete local queue expired event interval
-    /// Default is 60 seconds.
+    /// Default is 60 seconds
+    /// unit: seconds
     /// </summary>
-    public int CleaningLocalQueueExpireInterval { get; set; } = 60;
+    public int CleaningLocalQueueExpireInterval
+    {
+        get => _cleaningLocalQueueExpireInterval;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("must be greater than or equal to 0", nameof(CleaningLocalQueueExpireInterval));
+
+            _cleaningLocalQueueExpireInterval = value;
+        }
+    }
+
+    private int _cleaningExpireInterval = 300;
 
     /// <summary>
     /// Delete expired event interval
     /// Default is 300 seconds.
+    /// unit: seconds
     /// </summary>
-    public int CleaningExpireInterval { get; set; } = 300;
+    public int CleaningExpireInterval
+    {
+        get => _cleaningExpireInterval;
+        set
+        {
+            if (value <= 0)
+                throw new ArgumentException("must be greater than or equal to 0", nameof(CleaningExpireInterval));
+
+            _cleaningExpireInterval = value;
+        }
+    }
 
     /// <summary>
     /// Expiration time, when the message status is successful and has expired, it will be deleted by the scheduled task

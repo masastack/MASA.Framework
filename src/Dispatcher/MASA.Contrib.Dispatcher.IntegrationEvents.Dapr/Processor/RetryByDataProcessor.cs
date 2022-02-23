@@ -1,22 +1,22 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class RetryByDataProcessor : ProcessorBase, IProcessor
+public class RetryByDataProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<RetryByDataProcessor> _logger;
     private readonly IOptions<DispatcherOptions> _options;
     private readonly IOptionsMonitor<AppConfig> _appConfig;
+    private readonly ILogger<RetryByDataProcessor>? _logger;
 
     public RetryByDataProcessor(
         IServiceProvider serviceProvider,
-        ILogger<RetryByDataProcessor> logger,
         IOptionsMonitor<AppConfig> appConfig,
-        IOptions<DispatcherOptions> options)
+        IOptions<DispatcherOptions> options,
+        ILogger<RetryByDataProcessor>? logger = null)
     {
         _serviceProvider = serviceProvider;
-        _logger = logger;
         _appConfig = appConfig;
         _options = options;
+        _logger = logger;
     }
 
     public override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -31,7 +31,7 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
-                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes);
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes, _options.Value.MinimumRetryInterval);
 
             foreach (var eventLog in retrieveEventLogs)
             {
@@ -42,7 +42,7 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger.LogDebug("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
+                    _logger?.LogDebug("Publishing integration event {Event} to {PubsubName}.{TopicName}", eventLog,
                         _options.Value.PubSubName,
                         eventLog.Event.Topic);
 
@@ -58,7 +58,7 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
+                    _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                         eventLog.EventId, _appConfig.CurrentValue.AppId, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
@@ -72,5 +72,5 @@ public class RetryByDataProcessor : ProcessorBase, IProcessor
         }
     }
 
-    public override int SleepTime => _options.Value.FailedRetryInterval;
+    public override int Delay => _options.Value.FailedRetryInterval;
 }

@@ -4,10 +4,10 @@ public interface IProcessor
 {
     Task ExecuteAsync(CancellationToken stoppingToken);
 
-    Task SleepAsync();
-
     /// <summary>
-    /// The time to rest after the task is executed, in milliseconds
+    /// Easy to switch between background tasks
     /// </summary>
-    int SleepTime { get; }
+    /// <param name="delay">unit: seconds</param>
+    /// <returns></returns>
+    Task DelayAsync(int delay);
 }

@@ -4,7 +4,7 @@ namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.EventH
 
 public class SendCouponHandler : ISagaEventHandler<ForgetPasswordEvent>
 {
-    private readonly ILogger<SendCouponHandler> _logger;
+    private readonly ILogger<SendCouponHandler>? _logger;
 
     public SendCouponHandler(IServiceProvider serviceProvider) => _logger = serviceProvider.GetService<ILogger<SendCouponHandler>>();
 
@@ -24,7 +24,7 @@ public class SendCouponHandler : ISagaEventHandler<ForgetPasswordEvent>
 
 public class NoticeSmsHandler : ISagaEventHandler<ForgetPasswordEvent>
 {
-    private readonly ILogger<NoticeSmsHandler> _logger;
+    private readonly ILogger<NoticeSmsHandler>? _logger;
 
     public NoticeSmsHandler(IServiceProvider serviceProvider) => _logger = serviceProvider.GetService<ILogger<NoticeSmsHandler>>();
 
@@ -44,7 +44,7 @@ public class NoticeSmsHandler : ISagaEventHandler<ForgetPasswordEvent>
 
 public class NoticeEmailHandler : ISagaEventHandler<ForgetPasswordEvent>
 {
-    private readonly ILogger<NoticeEmailHandler> _logger;
+    private readonly ILogger<NoticeEmailHandler>? _logger;
 
     public NoticeEmailHandler(IServiceProvider serviceProvider) => _logger = serviceProvider.GetService<ILogger<NoticeEmailHandler>>();
 

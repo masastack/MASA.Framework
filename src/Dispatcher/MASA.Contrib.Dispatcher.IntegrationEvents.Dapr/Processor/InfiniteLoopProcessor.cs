@@ -1,11 +1,11 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class InfiniteLoopProcessor : ProcessorBase, IProcessor
+public class InfiniteLoopProcessor : ProcessorBase
 {
     private readonly IProcessor _processor;
-    private readonly Logger<InfiniteLoopProcessor> _logger;
+    private readonly ILogger<InfiniteLoopProcessor>? _logger;
 
-    public InfiniteLoopProcessor(IProcessor processor, Logger<InfiniteLoopProcessor> logger)
+    public InfiniteLoopProcessor(IProcessor processor, ILogger<InfiniteLoopProcessor>? logger = null)
     {
         _processor = processor;
         _logger = logger;
@@ -18,7 +18,7 @@ public class InfiniteLoopProcessor : ProcessorBase, IProcessor
             try
             {
                 await _processor.ExecuteAsync(stoppingToken);
-                await SleepAsync();
+                await DelayAsync(((ProcessorBase)_processor).Delay);
             }
             catch (OperationCanceledException)
             {
@@ -26,12 +26,10 @@ public class InfiniteLoopProcessor : ProcessorBase, IProcessor
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
+                _logger?.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
 
                 Thread.Sleep(TimeSpan.FromSeconds(2));
             }
         }
     }
-
-    public override int SleepTime => 0;
 }

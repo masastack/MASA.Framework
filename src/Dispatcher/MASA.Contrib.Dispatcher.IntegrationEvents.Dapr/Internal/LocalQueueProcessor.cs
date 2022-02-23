@@ -4,14 +4,14 @@ internal class LocalQueueProcessor
 {
     private readonly ConcurrentDictionary<Guid, IntegrationEventLogItem> _retryEventLogs;
 
-    public static ILogger<LocalQueueProcessor> Logger = default!;
+    public static ILogger<LocalQueueProcessor>? Logger;
     public static readonly LocalQueueProcessor Default = new();
 
     public LocalQueueProcessor() => _retryEventLogs = new();
 
     public static void SetLogger(IServiceCollection services)
     {
-        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LocalQueueProcessor>>();
+        Logger = services.BuildServiceProvider().GetService<ILogger<LocalQueueProcessor>>();
     }
 
     public void AddJobs(IntegrationEventLogItem items)
@@ -51,7 +51,7 @@ internal class LocalQueueProcessor
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "... getting local retry queue error");
+            Logger?.LogWarning(ex, "... getting local retry queue error");
 
             Thread.Sleep(TimeSpan.FromSeconds(2));
             return new List<IntegrationEventLogItem>();

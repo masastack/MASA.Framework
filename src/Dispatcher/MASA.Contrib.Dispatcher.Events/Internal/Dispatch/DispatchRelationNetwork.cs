@@ -8,9 +8,9 @@ internal class DispatchRelationNetwork
 
     public Dictionary<Type, List<EventHandlerAttribute>> CancelRelationNetwork { get; set; } = new();
 
-    private readonly ILogger<DispatchRelationNetwork> _logger;
+    private readonly ILogger<DispatchRelationNetwork>? _logger;
 
-    public DispatchRelationNetwork(ILogger<DispatchRelationNetwork> logger) => _logger = logger;
+    public DispatchRelationNetwork(ILogger<DispatchRelationNetwork>? logger) => _logger = logger;
 
     public void Add(Type keyEventType, EventHandlerAttribute handler)
     {
@@ -82,7 +82,7 @@ internal class DispatchRelationNetwork
     {
         foreach (var cancelRelation in CancelRelationNetwork)
         {
-            if (!HandlerRelationNetwork.Any(relation => relation.Key == cancelRelation.Key))
+            if (HandlerRelationNetwork.All(relation => relation.Key != cancelRelation.Key))
             {
                 throw new NotSupportedException($"{cancelRelation.Key.Name} is only have a cancel handler, it must have an event handler.");
             }
@@ -92,7 +92,7 @@ internal class DispatchRelationNetwork
             if (maxHandlerOrder == null || maxHandlerOrder.IsHandlerMissing(maxCancelOrder))
             {
                 var methodName = cancelRelation.Value.Select(x => x.ActionMethodInfo.Name).LastOrDefault();
-                _logger.LogWarning($"The {methodName} method is meaningless, because its Order attribute is too large, and no handler corresponding to the Order can be triggered. It is suggested to lower the Order attribute of {methodName} or add a matching handler - {cancelRelation.Value.Select(x => x.InstanceType.FullName).LastOrDefault()}");
+                _logger?.LogWarning($"The {methodName} method is meaningless, because its Order attribute is too large, and no handler corresponding to the Order can be triggered. It is suggested to lower the Order attribute of {methodName} or add a matching handler - {cancelRelation.Value.Select(x => x.InstanceType.FullName).LastOrDefault()}");
             }
         }
     }

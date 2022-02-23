@@ -1,10 +1,8 @@
-using MASA.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.Events;
-
 namespace MASA.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.EventHandlers;
 
 public class CouponHandler
 {
-    private readonly ILogger<CouponHandler> _logger;
+    private readonly ILogger<CouponHandler>? _logger;
 
     public CouponHandler(IServiceProvider serviceProvider) => _logger = serviceProvider.GetService<ILogger<CouponHandler>>();
 

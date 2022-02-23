@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Data.Contracts" Version="0.0.1858161579" />
-    <PackageReference Include="MASA.BuildingBlocks.Data.UoW" Version="0.0.1858161579" />
-    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.1858031525" />
+    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.3.0-preview.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\MASA.BuildingBlocks.Data.Contracts\MASA.BuildingBlocks.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\MASA.BuildingBlocks.Data.UoW\MASA.BuildingBlocks.Data.UoW.csproj" />
   </ItemGroup>
 </Project>

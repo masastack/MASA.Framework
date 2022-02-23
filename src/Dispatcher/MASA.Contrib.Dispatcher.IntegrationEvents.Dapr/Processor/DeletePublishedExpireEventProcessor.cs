@@ -1,19 +1,16 @@
 ﻿namespace MASA.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
-public class DeletePublishedExpireEventProcessor : ProcessorBase, IProcessor
+public class DeletePublishedExpireEventProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly ILogger<DeletePublishedExpireEventProcessor> _logger;
 
     public DeletePublishedExpireEventProcessor(
         IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
-        ILogger<DeletePublishedExpireEventProcessor> logger)
+        IOptions<DispatcherOptions> options)
     {
         _serviceProvider = serviceProvider;
         _options = options;
-        _logger = logger;
     }
 
     /// <summary>
@@ -31,5 +28,5 @@ public class DeletePublishedExpireEventProcessor : ProcessorBase, IProcessor
         }
     }
 
-    public override int SleepTime => _options.Value.CleaningExpireInterval;
+    public override int Delay => _options.Value.CleaningExpireInterval;
 }
