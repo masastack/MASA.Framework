@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ## EventBus
 
 Example：
@@ -13,8 +15,8 @@ Install-Package MASA.Contrib.Dispatcher.Events
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Services
-				 .AddEventBus()
-				 //TODO
+                 .AddEventBus()
+                 //TODO
 ```
 
 2. Custom Event
@@ -171,3 +173,22 @@ builder.Services
 4. Support Transaction
 
 > Used in conjunction with Contracts.EF and UnitOfWork, when Event implements ITransaction, the transaction will be automatically opened after the first CUD is executed, and the transaction will be submitted after all Handlers are executed. When an exception occurs in the transaction, the transaction will be automatically rolled back.
+
+##### Summarize
+
+IEventBus is the core of the event bus. It can be used with CQRS, Uow, MASA.Contrib.DDD.Domain.Repository.EF to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
+
+> Question 1. Publishing events through eventBus, Handler error -> and handler throw exception
+
+     > 1. Check custom events or inherited classes to make sure ITransaction is implemented
+     > 2. Confirm that UoW is used
+     > 3. Make sure the UseTransaction property of UnitOfWork is false
+     > 4. Make sure that the DisableRollbackOnFailure property of UnitOfWork is true
+
+> Question 2. Under what circumstances will SaveChange be automatically saved -> When auto call SaveChange?
+
+    > Use UoW and MASA.Contrib.DDD.Domain.Repository.EF, and use the Add, Update, Delete operations provided by IRepository, publish events through EventBus, and automatically execute SaveChange after executing EventHandler
+
+> Question 3. If the SaveChange method of UoW is manually called in EventHandler to save, will the framework also save automatically?
+
+    > If the SaveChange method of UoW is manually called in the EventHandler to save, and the Add, Update, and Delete operations provided by IRepository are not used afterward, the SaveChange operation will not be executed twice after the EventHandler execution ends, but if the UoW is manually called. After the SaveChange method is saved and continue to use the Add, Update, and Delete operations provided by IRepository, the framework will call the SaveChange operation again to ensure that the data is saved successfully.

@@ -1,4 +1,4 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.Events;
@@ -16,4 +16,5 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
 global using System.Reflection;

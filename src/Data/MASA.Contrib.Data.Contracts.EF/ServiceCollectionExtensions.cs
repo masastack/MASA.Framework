@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
             throw new Exception("Please add UoW first.");
 
         optionsBuilder.UseQueryFilterProvider<QueryFilterProvider>()
-            .UseSaveChangesFilter<TransactionSaveChangesFilter>()
             .UseSaveChangesFilter<SoftDeleteSaveChangesFilter>();
 
         return optionsBuilder;

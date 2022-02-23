@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ## CQRS
 
 Example：
@@ -18,9 +20,9 @@ Install-Package MASA.Contrib.ReadWriteSpliting.CQRS
 ```C#
 public class CatalogItemQuery : Query<List<CatalogItem>>
 {
-	public string Name { get; set; } = default!;
+    public string Name { get; set; } = default!;
 
-	public override List<CatalogItem> Result { get; set; } = default!;
+    public override List<CatalogItem> Result { get; set; } = default!;
 }
 ```
 
@@ -56,7 +58,7 @@ await eventBus.PublishAsync(new CatalogItemQuery() { Name = "Rolex" });
 ```c#
 public class CreateCatalogItemCommand : Command
 {
-	public string Name { get; set; } = default!;
+    public string Name { get; set; } = default!;
 
     //todo
 }

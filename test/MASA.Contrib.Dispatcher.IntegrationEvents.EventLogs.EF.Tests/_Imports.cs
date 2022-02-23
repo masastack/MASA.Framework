@@ -1,11 +1,15 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
+global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
 global using MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Domain.Entities;
 global using MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Events;
+global using MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Infrastructure;
 global using MASA.Utils.Data.EntityFrameworkCore;
+global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
 global using System.Data.Common;
 global using System.Text.Json.Serialization;

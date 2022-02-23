@@ -3,11 +3,11 @@ namespace MASA.Contrib.Dispatcher.Events.Internal.Middleware;
 public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
     where TEvent : notnull, IEvent
 {
-    private readonly ILogger<TransactionMiddleware<TEvent>> _logger;
+    private readonly IUnitOfWork? _unitOfWork;
 
-    public TransactionMiddleware(ILogger<TransactionMiddleware<TEvent>> logger)
+    public TransactionMiddleware(IUnitOfWork? unitOfWork = null)
     {
-        _logger = logger;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
@@ -16,33 +16,34 @@ public class TransactionMiddleware<TEvent> : IMiddleware<TEvent>
         {
             await next();
 
-            if (@event is ITransaction transactionEvent)
+            if (_unitOfWork is { EntityState: EntityState.Changed })
             {
-                if (transactionEvent.UnitOfWork != null)
-                {
-                    if (transactionEvent.UnitOfWork.TransactionHasBegun)
-                    {
-                        await transactionEvent.UnitOfWork.CommitAsync();
-                    }
-                    else
-                    {
-                        await transactionEvent.UnitOfWork.SaveChangesAsync();
-                    }
-                }
+                await _unitOfWork.SaveChangesAsync();
+            }
+            if (IsUseTransaction(@event, out ITransaction? transaction))
+            {
+                await transaction!.UnitOfWork!.CommitAsync();
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, nameof(TransactionMiddleware<TEvent>));
-
-            if (@event is ITransaction transactionEvent && transactionEvent.UnitOfWork != null && transactionEvent.UnitOfWork.TransactionHasBegun && !transactionEvent.UnitOfWork.DisableRollbackOnFailure)
+            if (IsUseTransaction(@event, out ITransaction? transaction) && !transaction!.UnitOfWork!.DisableRollbackOnFailure)
             {
-                await transactionEvent.UnitOfWork.RollbackAsync();
+                await transaction.UnitOfWork!.RollbackAsync();
             }
-            else
-            {
-                throw;
-            }
+            throw;
         }
+    }
+
+    private bool IsUseTransaction(TEvent @event, out ITransaction? transaction)
+    {
+        if (@event is ITransaction { UnitOfWork: { UseTransaction: true, TransactionHasBegun: true, CommitState: CommitState.UnCommited } } transactionEvent)
+        {
+            transaction = transactionEvent;
+            return true;
+        }
+
+        transaction = null;
+        return false;
     }
 }

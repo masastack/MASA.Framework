@@ -2,7 +2,7 @@ namespace MASA.Contrib.Dispatcher.Events.Tests.Events;
 
 public record DeductionMoneyEvent : Event, ITransaction
 {
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork? UnitOfWork { get; set; }
 
     public string Account { get; set; }
 

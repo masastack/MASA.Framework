@@ -1,4 +1,4 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.DDD.Domain.Entities;
 global using MASA.BuildingBlocks.DDD.Domain.Repositories;
 global using MASA.BuildingBlocks.Dispatcher.Events;
@@ -7,6 +7,9 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
+global using System.Collections.Concurrent;
 global using System.Data.Common;
 global using System.Linq.Expressions;
 global using System.Reflection;
+global using EntityState = MASA.BuildingBlocks.Data.UoW.EntityState;

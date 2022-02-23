@@ -2,7 +2,7 @@ namespace MASA.Contrib.Dispatcher.Events.Options;
 
 public class DispatcherOptions : IDispatcherOptions
 {
-    private Assembly[] _assemblies = new Assembly[0];
+    private Assembly[] _assemblies = Array.Empty<Assembly>();
 
     public Assembly[] Assemblies
     {
@@ -14,20 +14,23 @@ public class DispatcherOptions : IDispatcherOptions
             {
                 throw new ArgumentNullException(nameof(_assemblies));
             }
-            Types = _assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-            _allEventTypes = GetTypes(typeof(IEvent)).ToList();
+            AllEventTypes = _assemblies
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
+                .ToList();
+
+            UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
         }
     }
 
-    private IEnumerable<Type> Types { get; set; }
+    private bool IsSupportUnitOfWork(Type eventType)
+        => typeof(ITransaction).IsAssignableFrom(eventType) && !typeof(IDomainQuery<>).IsGenericInterfaceAssignableFrom(eventType);
 
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => type.IsAssignableFrom(t) && t.IsClass);
+    internal Dictionary<Type, bool> UnitOfWorkRelation { get; set; } = new();
 
-    public IEnumerable<Type> GetAllEventTypes() => _allEventTypes;
+    public IEnumerable<Type> AllEventTypes { get; private set; }
 
     public IServiceCollection Services { get; }
-
-    private IEnumerable<Type> _allEventTypes;
 
     public DispatcherOptions(IServiceCollection services) => Services = services;
 }

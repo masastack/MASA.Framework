@@ -1,5 +1,3 @@
-using Moq;
-
 namespace MASA.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -8,7 +6,7 @@ public class FeaturesTest : TestBase
     private readonly IEventBus _eventBus;
     public FeaturesTest() : base()
     {
-        _eventBus = _serviceProvider.GetService<IEventBus>();
+        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
     }
 
     [TestMethod]
@@ -79,8 +77,8 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNullEvent()
     {
-        AddShoppingCartEvent @event = null;
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event));
+        AddShoppingCartEvent? @event = null;
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event!));
     }
 
     [DataTestMethod]
@@ -100,10 +98,6 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestNotParameter()
     {
-        var @event = new DeleteGoodsEvent()
-        {
-            CreationTime = DateTime.Now,
-        };
         await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
         {
             try
@@ -148,7 +142,7 @@ public class FeaturesTest : TestBase
                 {
                     ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
 
                 }
@@ -165,7 +159,7 @@ public class FeaturesTest : TestBase
         {
             try
             {
-                ResetMemoryEventBus(typeof(OnlyCancelHandler.Tests.Events.BindMobileEvent).Assembly);
+                ResetMemoryEventBus(typeof(OnlyCancelHandler.Tests.Events.BindPhoneNumberEvent).Assembly);
             }
             catch (NotSupportedException)
             {
@@ -224,10 +218,10 @@ public class FeaturesTest : TestBase
     {
         base.ResetMemoryEventBus(services =>
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(x => x.TransactionHasBegun).Returns(true);
-            unitOfWork.Setup(e => e.CommitAsync(CancellationToken.None)).Verifiable();
-            services.AddScoped(serviceProvider => unitOfWork.Object);
+            var uoW = new Mock<IUnitOfWork>();
+            uoW.Setup(x => x.TransactionHasBegun).Returns(true);
+            uoW.Setup(e => e.CommitAsync(CancellationToken.None)).Verifiable();
+            services.AddScoped(serviceProvider => uoW.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new DeductionMoneyEvent()
@@ -240,13 +234,10 @@ public class FeaturesTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestTransferEventAndCloseTransaction()
+    public async Task TestCommitAsync()
     {
         base.ResetMemoryEventBus(services =>
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(e => e.SaveChangesAsync(CancellationToken.None)).Verifiable();
-            services.AddScoped(serviceProvider => unitOfWork.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new DeductionMoneyEvent()
@@ -255,19 +246,20 @@ public class FeaturesTest : TestBase
             PayeeAccount = "Jim",
             Money = 100
         };
-        await _services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
+        var serviceProvider = _services.BuildServiceProvider();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await eventBus.CommitAsync(default));
     }
 
     [TestMethod]
-    public async Task TestTransferEventAndOpenTransactionRollback()
+    public async Task TestUseUoWCommitAsync()
     {
+        var uoW = new Mock<IUnitOfWork>();
         base.ResetMemoryEventBus(services =>
         {
-            var unitOfWork = new Mock<IUnitOfWork>();
-            unitOfWork.Setup(x => x.TransactionHasBegun).Returns(true);
-            unitOfWork.Setup(e => e.CommitAsync(CancellationToken.None)).Throws(new ArgumentOutOfRangeException("The Money is error"));
-            unitOfWork.Setup(e => e.RollbackAsync(CancellationToken.None)).Verifiable();
-            services.AddScoped(serviceProvider => unitOfWork.Object);
+            uoW.Setup(e => e.CommitAsync(CancellationToken.None)).Verifiable();
+            services.AddScoped(serviceProvider => uoW.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new DeductionMoneyEvent()
@@ -276,7 +268,11 @@ public class FeaturesTest : TestBase
             PayeeAccount = "Jim",
             Money = 100
         };
+        var serviceProvider = _services.BuildServiceProvider();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        await eventBus.PublishAsync(@event);
 
-        await _services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
+        await eventBus.CommitAsync(default);
+        uoW.Verify(u => u.CommitAsync(default), Times.Once);
     }
 }

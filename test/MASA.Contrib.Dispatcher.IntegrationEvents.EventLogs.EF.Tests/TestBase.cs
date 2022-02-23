@@ -1,7 +1,3 @@
-using MASA.BuildingBlocks.Dispatcher.Events;
-using Microsoft.Data.Sqlite;
-using Moq;
-
 namespace MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests;
 
 public class TestBase

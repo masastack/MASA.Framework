@@ -1,19 +1,15 @@
 namespace MASA.Contrib.ReadWriteSpliting.CQRS.Queries;
 
-public abstract record Query<TResult> : IQuery<TResult>
+public abstract record Query<TResult>(Guid Id, DateTime CreationTime) : IQuery<TResult>
     where TResult : notnull
 {
-    public Guid Id { get; init; }
+    [JsonIgnore]
+    public Guid Id { get; } = Id;
 
-    public DateTime CreationTime { get; init; }
+    [JsonIgnore]
+    public DateTime CreationTime { get; } = CreationTime;
 
     public abstract TResult Result { get; set; }
 
     public Query() : this(Guid.NewGuid(), DateTime.UtcNow) { }
-
-    public Query(Guid id, DateTime creationTime)
-    {
-        this.Id = id;
-        this.CreationTime = creationTime;
-    }
 }

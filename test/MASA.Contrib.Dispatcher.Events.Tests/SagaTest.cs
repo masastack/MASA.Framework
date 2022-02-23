@@ -6,7 +6,7 @@ public class SagaTest : TestBase
     private readonly IEventBus _eventBus;
     public SagaTest() : base()
     {
-        _eventBus = _serviceProvider.GetService<IEventBus>();
+        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]
@@ -30,7 +30,7 @@ public class SagaTest : TestBase
     [DataRow("jordan", "change password notcices @", 0)]
     public async Task TestLastCancelError(string account, string content, int isError)
     {
-        ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null!);
         ChangePasswordEvent @event = new ChangePasswordEvent()
         {
             Account = account,
@@ -89,7 +89,7 @@ public class SagaTest : TestBase
     [TestMethod]
     public async Task TestMultiOrderBySaga()
     {
-        IEventBus eventBus = null;
+        IEventBus? eventBus = null;
         Assert.ThrowsException<ArgumentException>(() =>
         {
             ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
@@ -104,13 +104,13 @@ public class SagaTest : TestBase
         {
             await eventBus.PublishAsync(@event);
         }
-        ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null!);
     }
 
     [TestMethod]
     public async Task TestLessThenZeroBySaga()
     {
-        IEventBus eventBus = null;
+        IEventBus? eventBus = null;
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
             ResetMemoryEventBus(false, typeof(EditGoodsEvent).Assembly);
@@ -126,6 +126,6 @@ public class SagaTest : TestBase
         {
             await eventBus.PublishAsync(@event);
         }
-        ResetMemoryEventBus(false, null);
+        ResetMemoryEventBus(false, null!);
     }
 }

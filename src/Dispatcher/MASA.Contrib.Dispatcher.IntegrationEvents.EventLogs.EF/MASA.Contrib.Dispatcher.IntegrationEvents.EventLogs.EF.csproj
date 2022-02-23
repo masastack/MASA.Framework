@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MASA.BuildingBlocks.Dispatcher.IntegrationEvents" Version="0.0.7159" />
-    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.0.7145" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0-rc.1.21452.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0-rc.1.21452.10" />
+    <PackageReference Include="MASA.Utils.Data.EntityFrameworkCore" Version="0.3.0-preview.1" />
+    <PackageReference Include="MASA.Utils.Exceptions" Version="0.3.0-preview.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Dispatcher\MASA.BuildingBlocks.Dispatcher.IntegrationEvents\MASA.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
   </ItemGroup>
 
 </Project>

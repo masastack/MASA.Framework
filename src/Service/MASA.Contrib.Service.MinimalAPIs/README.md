@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ## MinimalAPI
 
 Original usage：
@@ -20,7 +22,7 @@ Install-Package MASA.Contrib.Service.MinimalAPIs
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Services
-				 .AddServices(builder);
+                 .AddServices(builder);
 ```
 
 2. Customize Service and inherit ServiceBase
@@ -28,7 +30,7 @@ var app = builder.Services
 ```c#
 public class IntegrationEventService : ServiceBase
 {
-	public IntegrationEventService(IServiceCollection services) : base(services)
+    public IntegrationEventService(IServiceCollection services) : base(services)
     {
         App.MapGet("/api/v1/payment/HelloWorld", HelloWorld);
     }

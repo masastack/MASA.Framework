@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace MASA.Contrib.DDD.Domain;
 
 public static class ServiceCollectionExtensions
@@ -8,7 +6,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
     {
-        if (services.Any(service => service.ImplementationType == typeof(DomainEventBusProvider))) return services;
+        if (services.Any(service => service.ImplementationType == typeof(DomainEventBusProvider)))
+            return services;
+
         services.AddSingleton<DomainEventBusProvider>();
 
         var dispatcherOptions = new DispatcherOptions(services);
@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         {
             dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         }
-        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
+        services.AddSingleton(typeof(IOptions<DispatcherOptions>), serviceProvider => Options.Create(dispatcherOptions));
 
         if (services.All(service => service.ServiceType != typeof(IEventBus)))
         {
@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
 
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
-            throw new Exception("Please add Uow first.");
+            throw new Exception("Please add UoW first.");
         }
 
         if (services.All(service => service.ServiceType != typeof(IIntegrationEventBus)))

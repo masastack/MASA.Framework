@@ -1,5 +1,5 @@
 global using MASA.BuildingBlocks.Data.Contracts;
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.Contrib.Data.Contracts.EF.SoftDelete;
 global using MASA.Utils.Data.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore;

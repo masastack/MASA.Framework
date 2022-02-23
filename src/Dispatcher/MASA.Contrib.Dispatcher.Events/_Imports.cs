@@ -1,4 +1,5 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
+global using MASA.BuildingBlocks.DDD.Domain.Events;
 global using MASA.BuildingBlocks.Dispatcher.Events;
 global using MASA.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using MASA.Contrib.Dispatcher.Events.Enums;
@@ -14,3 +15,4 @@ global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using System.Linq.Expressions;
 global using System.Reflection;
+global using System.Text.Json.Serialization;

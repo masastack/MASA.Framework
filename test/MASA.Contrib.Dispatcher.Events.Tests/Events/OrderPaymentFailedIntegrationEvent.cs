@@ -8,7 +8,7 @@ public class OrderPaymentFailedIntegrationEvent : IIntegrationEvent
 
     public string Topic { get; set; } = nameof(OrderPaymentFailedIntegrationEvent);
 
-    public IUnitOfWork UnitOfWork { get; set; }
+    public IUnitOfWork? UnitOfWork { get; set; }
 
     public string OrderId { get; set; }
 

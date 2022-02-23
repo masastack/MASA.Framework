@@ -32,13 +32,22 @@ public class IntegrationEventLogContext : MasaDbContext
         builder.Property(e => e.CreationTime)
             .IsRequired();
 
+        builder.Property(e => e.ModificationTime)
+            .IsRequired();
+
         builder.Property(e => e.State)
             .IsRequired();
 
         builder.Property(e => e.TimesSent)
             .IsRequired();
 
+        builder.Property(e => e.RowVersion)
+            .IsRowVersion();
+
         builder.Property(e => e.EventTypeName)
             .IsRequired();
+
+        builder.HasIndex(e => new { e.State, e.ModificationTime },"index_state_modificationtime");
+        builder.HasIndex(e => new { e.State, e.TimesSent, e.ModificationTime },"index_state_timessent_modificationtime");
     }
 }

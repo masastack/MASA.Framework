@@ -1,3 +1,5 @@
+[中](README.zh-CN.md) | EN
+
 ### DomainEventBus
 
 Example：
@@ -10,7 +12,7 @@ Install-Package MASA.Contrib.Dispatcher.Events
 
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
 Install-Package MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
-Install-Package MASA.Contrib.Data.Uow.EF
+Install-Package MASA.Contrib.Data.UoW.EF
 ```
 
 1. Add DomainEventBus
@@ -20,9 +22,9 @@ builder.Services
 .AddDomainEventBus(options =>
 {
     options.UseEventBus()//Use in-process events
-        .UseUow<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
         .UseDaprEventBus<IntegrationEventLogService>()///Use cross-process events
-        .UseEventLog<PaymentDbContext>()
+        .UseEventLog<CustomDbContext>()
         .UseRepository<CustomDbContext>();//Use the EF version of Repository to achieve
 })
 ```
@@ -36,7 +38,7 @@ public class RegisterUserDomainCommand : DomainCommand
 
     public string Password { get; set; } = default!;
 
-    public string Mobile { get; set; } = default!;
+    public string PhoneNumber { get; set; } = default!;
 }
 ```
 > DomainQuery refers to Query in CQRS
@@ -46,8 +48,8 @@ public class RegisterUserDomainCommand : DomainCommand
 ```C#
 public class UserHandler
 {
-	[EventHandler]
-	public Task RegisterUserHandlerAsync(RegisterUserDomainCommand command)
+    [EventHandler]
+    public Task RegisterUserHandlerAsync(RegisterUserDomainCommand command)
     {
         //TODO Registered user business
     }

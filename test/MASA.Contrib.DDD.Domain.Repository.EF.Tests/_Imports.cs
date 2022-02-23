@@ -1,14 +1,16 @@
-global using MASA.BuildingBlocks.Data.Uow;
+global using MASA.BuildingBlocks.Data.UoW;
 global using MASA.BuildingBlocks.DDD.Domain.Entities;
 global using MASA.BuildingBlocks.DDD.Domain.Entities.Auditing;
 global using MASA.BuildingBlocks.DDD.Domain.Repositories;
 global using MASA.BuildingBlocks.DDD.Domain.Values;
 global using MASA.BuildingBlocks.Dispatcher.Events;
-global using MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository.Repositories;
+global using MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeys.Tests;
+global using MASA.Contrib.DDD.Domain.Repository.EF.CombinedKeysNoFind.Tests;
+global using MASA.Contrib.DDD.Domain.Repository.EF.CustomRepository.Tests.Repositories;
+global using MASA.Contrib.DDD.Domain.Repository.EF.Entity.Tests;
 global using MASA.Contrib.DDD.Domain.Repository.EF.Tests.Domain.Entities;
 global using MASA.Contrib.DDD.Domain.Repository.EF.Tests.Domain.Repositories;
 global using MASA.Contrib.DDD.Domain.Repository.EF.Tests.Infrastructure;
-global using MASA.Contrib.DDD.Domain.Repository.EF.Tests.Infrastructure.Options;
 global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
@@ -18,3 +20,4 @@ global using System;
 global using System.Collections.Generic;
 global using System.Linq;
 global using System.Reflection;
+

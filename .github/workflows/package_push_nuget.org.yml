@@ -1,0 +1,42 @@
+name: Package Push Nuget
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  package-build:
+    name: packeg build and push
+    runs-on: ubuntu-latest
+    steps:
+    - name: git pull
+      uses: actions/checkout@v2
+     
+    - name: run a one-line script
+      run: env
+     
+    - name: setting dotnet version 
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        include-prerelease: true
+    - name: dependencies
+    - run: git clone -b main https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks
+       
+    - name: restore
+      run: dotnet restore
+     
+    - name: build
+      run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
+     
+    - name: test
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+     
+    - name: codecov
+      uses: codecov/codecov-action@v1
+     
+    - name: pack
+      run: dotnet pack --include-symbols  -p:PackageVersion=$GITHUB_REF_NAME
+     
+    - name: package push
+      run: dotnet nuget push "**/*.symbols.nupkg" -k  ${{secrets.NUGET_TOKEN}}  -s https://api.nuget.org/v3/index.json
+        

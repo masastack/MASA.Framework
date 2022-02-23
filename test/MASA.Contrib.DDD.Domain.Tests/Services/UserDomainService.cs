@@ -6,11 +6,11 @@ public class UserDomainService : DomainService
     {
     }
 
-    public async Task<string> RegisterUserSucceededAsync(string account)
+    public async Task<string> RegisterUserSucceededAsync(RegisterUserSucceededDomainIntegrationEvent domainIntegrationEvent)
     {
         // TODO Simulate a successful message for registered users
 
-        await EventBus.PublishAsync(new RegisterUserSucceededDomainIntegrationEvent() { Account = account });
+        await EventBus.PublishAsync(domainIntegrationEvent);
         return "succeed";
     }
 }
