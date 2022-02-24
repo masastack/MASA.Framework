@@ -1,10 +1,10 @@
 [中](README.zh-CN.md) | EN
 
-[![codecov](https://codecov.io/gh/masastack/Masa.Contrib/branch/develop/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/Masa.Contrib)
+[![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/develop/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
 
-# Masa.Contrib
+# MASA.Contrib
 
-The purpose of Masa.Contrib is based on [Masa.BuildingBlocks](https://github.com/masastack/Masa.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [Masa Stack](https://github.com/masastack) and [Masa Labs](https://github.com/masalabs) projects.
+The purpose of Masa.Contrib is based on [MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
 
 ## Structure
 
@@ -28,8 +28,8 @@ Masa.Contrib
 │   │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
 │   │   └── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF Cross-process event
 │   ├── ReadWriteSpliting
-│   │   └── CQRS
-│   │   │   └── Masa.Contrib.ReadWriteSpliting.CQRS                CQRS
+│   │   └── Cqrs
+│   │   │   └── Masa.Contrib.ReadWriteSpliting.Cqrs                Cqrs
 │   ├── Service
 │   │   └── Masa.Contrib.Service.MinimalAPIs                       Best practices for [MinimalAPI]
 ├── test
