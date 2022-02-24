@@ -1,0 +1,9 @@
+global using Masa.BuildingBlocks.Data.Contracts;
+global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.Contrib.Data.Contracts.EF.SoftDelete;
+global using Masa.Utils.Data.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using Microsoft.EntityFrameworkCore.Metadata;
+global using Microsoft.Extensions.DependencyInjection;
+global using System.Linq.Expressions;

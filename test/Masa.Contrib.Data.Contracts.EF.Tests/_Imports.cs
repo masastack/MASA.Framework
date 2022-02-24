@@ -1,0 +1,10 @@
+global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
+global using Masa.Contrib.Data.Contracts.EF.Tests.Domain.Entities;
+global using Masa.Utils.Data.EntityFrameworkCore;
+global using Microsoft.Data.Sqlite;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
