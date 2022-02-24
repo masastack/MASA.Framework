@@ -1,15 +1,15 @@
 ﻿中 | [EN](README.md)
 
-[![codecov](https://codecov.io/gh/masastack/Masa.Contrib/branch/develop/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/Masa.Contrib)
+[![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/develop/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
 
-# Masa.Contrib
+# MASA.Contrib
 
-Masa.Contrib是基于[Masa.BuildingBlocks](https://github.com/masastack/Masa.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[Masa Stack](https://github.com/masastack)和[Masa Labs](https://github.com/masalabs)等项目使用。
+MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MaMASAsa Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。
 
 ## 结构
 
 ```c#
-Masa.Contrib
+MASA.Contrib
 ├── solution items
 │   ├── nuget.config
 ├── src
@@ -20,16 +20,16 @@ Masa.Contrib
 │   ├── Data
 │   │   ├── Masa.Contrib.Data.UoW.EF                               工作单元
 │   │   └── Masa.Contrib.Data.Contracts.EF                        规约EF版
-│   ├── DDD
-│   │   ├── Masa.Contrib.DDD.Domain                               进程内、跨进程都支持
-│   │   └── Masa.Contrib.DDD.Domain.Repository.EF
+│   ├── Ddd
+│   │   ├── Masa.Contrib.Ddd.Domain                               进程内、跨进程都支持
+│   │   └── Masa.Contrib.Ddd.Domain.Repository.EF
 │   ├── Dispatcher
 │   │   ├── Masa.Contrib.Dispatcher.Events                         进程内事件
 │   │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
 │   │   └── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF 跨进程事件
 │   ├── ReadWriteSpliting
-│   │   └── CQRS
-│   │   │   └── Masa.Contrib.ReadWriteSpliting.CQRS                CQRS
+│   │   └── Cqrs
+│   │   │   └── Masa.Contrib.ReadWriteSpliting.Cqrs                Cqrs
 │   ├── Service
 │   │   └── Masa.Contrib.Service.MinimalAPIs                       MinimalAPI最佳实践
 ├── test
@@ -44,8 +44,8 @@ Masa.Contrib
 │   │   ├── Masa.Contrib.Dispatcher.Events.Tests
 │   ├── Masa.Contrib.Data.UoW.EF.Tests
 │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
-│   ├── Masa.Contrib.DDD.Domain.Tests
-│   ├── Masa.Contrib.DDD.Domain.Repository.EF.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Repository.EF.Tests
 ```
 
 ## 特性
@@ -79,7 +79,7 @@ Masa.Contrib
 
 ### 3. CQRS
 
-什么是[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[用法介绍](/src/ReadWriteSpliting/CQRS/Masa.Contrib.ReadWriteSpliting.CQRS/README.zh-CN.md)
+什么是[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[用法介绍](/src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.zh-CN.md)
 
 ### 4. IntegrationEventBus
 
@@ -89,7 +89,7 @@ Masa.Contrib
 
 ### 5. DomainEventBus
 
-[用法介绍](/src/DDD/Masa.Contrib.DDD.Domain/README.zh-CN.md)
+[用法介绍](/src/Ddd/Masa.Contrib.Ddd.Domain/README.zh-CN.md)
 
 > 优势：
 >
@@ -140,5 +140,5 @@ builder.Services.AddEventBus(options => {
 
 ## ☀️ 授权协议
 
-[![Masa.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
+[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
 

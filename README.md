@@ -4,12 +4,12 @@
 
 # MASA.Contrib
 
-The purpose of Masa.Contrib is based on [MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
+The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
 
 ## Structure
 
 ```c#
-Masa.Contrib
+MASA.Contrib
 ├── solution items
 │   ├── nuget.config
 ├── src
@@ -20,9 +20,9 @@ Masa.Contrib
 │   ├── Data
 │   │   ├── Masa.Contrib.Data.UoW.EF                               Unit of work
 │   │   └── Masa.Contrib.Data.Contracts.EF                        Protocol EF version
-│   ├── DDD
-│   │   ├── Masa.Contrib.DDD.Domain                               In-process and cross-process support
-│   │   └── Masa.Contrib.DDD.Domain.Repository.EF
+│   ├── Ddd
+│   │   ├── Masa.Contrib.Ddd.Domain                               In-process and cross-process support
+│   │   └── Masa.Contrib.Ddd.Domain.Repository.EF
 │   ├── Dispatcher
 │   │   ├── Masa.Contrib.Dispatcher.Events                         In-process event
 │   │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
@@ -44,8 +44,8 @@ Masa.Contrib
 │   │   ├── Masa.Contrib.Dispatcher.Events.Tests
 │   ├── Masa.Contrib.Data.UoW.EF.Tests
 │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
-│   ├── Masa.Contrib.DDD.Domain.Tests
-│   ├── Masa.Contrib.DDD.Domain.Repository.EF.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Repository.EF.Tests
 ```
 
 ## Feature
@@ -79,7 +79,7 @@ What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-
 
 ### 3. CQRS
 
-what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](/src/ReadWriteSpliting/CQRS/Masa.Contrib.ReadWriteSpliting.CQRS/README.md)
+what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](/src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.md)
 
 ### 4. IntegrationEventBus
 
@@ -89,7 +89,7 @@ Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatche
 
 ### 5. DomainEventBus
 
-[Usage introduction](/src/DDD/Masa.Contrib.DDD.Domain/README.md)
+[Usage introduction](/src/Ddd/Masa.Contrib.Ddd.Domain/README.md)
 
 > Advantage：
 >
