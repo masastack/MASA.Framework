@@ -1,0 +1,15 @@
+global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities;
+global using Masa.BuildingBlocks.Ddd.Domain.Events;
+global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
+global using Masa.BuildingBlocks.Ddd.Domain.Services;
+global using Masa.BuildingBlocks.Dispatcher.Events;
+global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
+global using Masa.Contrib.Ddd.Domain.Internal;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Options;
+global using System.Collections.Concurrent;
+global using System.Linq.Expressions;
+global using System.Reflection;
+global using System.Text.Json.Serialization;

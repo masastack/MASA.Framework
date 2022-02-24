@@ -14,45 +14,45 @@ MASA.Contrib
 │   ├── nuget.config
 ├── src
 │   ├── BasicAbility
-│   │   ├── MASA.Contrib.BasicAbility.Dcc                          ConfigurationAPI
+│   │   ├── Masa.Contrib.BasicAbility.Dcc                          ConfigurationAPI
 │   ├── Configuration
-│   │   ├── MASA.Contrib.Configuration
+│   │   ├── Masa.Contrib.Configuration
 │   ├── Data
-│   │   ├── MASA.Contrib.Data.UoW.EF                               Unit of work
-│   │   └── MASA.Contrib.Data.Contracts.EF                        Protocol EF version
-│   ├── DDD
-│   │   ├── MASA.Contrib.DDD.Domain                               In-process and cross-process support
-│   │   └── MASA.Contrib.DDD.Domain.Repository.EF
+│   │   ├── Masa.Contrib.Data.UoW.EF                               Unit of work
+│   │   └── Masa.Contrib.Data.Contracts.EF                        Protocol EF version
+│   ├── Ddd
+│   │   ├── Masa.Contrib.Ddd.Domain                               In-process and cross-process support
+│   │   └── Masa.Contrib.Ddd.Domain.Repository.EF
 │   ├── Dispatcher
-│   │   ├── MASA.Contrib.Dispatcher.Events                         In-process event
-│   │   ├── MASA.Contrib.Dispatcher.IntegrationEvents.Dapr
-│   │   └── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF Cross-process event
+│   │   ├── Masa.Contrib.Dispatcher.Events                         In-process event
+│   │   ├── Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
+│   │   └── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF Cross-process event
 │   ├── ReadWriteSpliting
-│   │   └── CQRS
-│   │   │   └── MASA.Contrib.ReadWriteSpliting.CQRS                CQRS
+│   │   └── Cqrs
+│   │   │   └── Masa.Contrib.ReadWriteSpliting.Cqrs                Cqrs
 │   ├── Service
-│   │   └── MASA.Contrib.Service.MinimalAPIs                       Best practices for [MinimalAPI]
+│   │   └── Masa.Contrib.Service.MinimalAPIs                       Best practices for [MinimalAPI]
 ├── test
-│   ├── MASA.Contrib.Dispatcher.Events
-│   │   ├── MASA.Contrib.Dispatcher.Events.BenchmarkDotnetTest
-│   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.CheckMethodsType.Tests
-│   │   ├── MASA.Contrib.Dispatcher.Events.Tests
-│   ├── MASA.Contrib.Data.UoW.EF.Tests
-│   ├── MASA.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
-│   ├── MASA.Contrib.DDD.Domain.Tests
-│   ├── MASA.Contrib.DDD.Domain.Repository.EF.Tests
+│   ├── Masa.Contrib.Dispatcher.Events
+│   │   ├── Masa.Contrib.Dispatcher.Events.BenchmarkDotnetTest
+│   │   ├── Masa.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests
+│   │   ├── Masa.Contrib.Dispatcher.Events.Tests
+│   ├── Masa.Contrib.Data.UoW.EF.Tests
+│   ├── Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Tests
+│   ├── Masa.Contrib.Ddd.Domain.Repository.EF.Tests
 ```
 
 ## Feature
 
 ### 1. MinimalAPI
 
-What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[Usage introduction](/src/Service/MASA.Contrib.Service.MinimalAPIs/README.md)
+What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-in-net-6-preview-4/#introducing-minimal-apis)？[Usage introduction](/src/Service/Masa.Contrib.Service.MinimalAPIs/README.md)
 
 >  Advantage：
 >
@@ -60,7 +60,7 @@ What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-
 
 ### 2. EventBus
 
-[Usage introduction](/src/Dispatcher/MASA.Contrib.Dispatcher.Events/README.md)
+[Usage introduction](/src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.md)
 
 > Advantage：
 >
@@ -79,17 +79,17 @@ What is [MinimalAPI](https://devblogs.microsoft.com/aspnet/asp-net-core-updates-
 
 ### 3. CQRS
 
-what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](/src/ReadWriteSpliting/CQRS/MASA.Contrib.ReadWriteSpliting.CQRS/README.md)
+what is[CQRS](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)？[Usage introduction](/src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.md)
 
 ### 4. IntegrationEventBus
 
-Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatcher/MASA.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md)
+Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md)
 
 > Advantage：Use the same transaction to commit the user-defined context and the log to ensure atomicity and consistency
 
 ### 5. DomainEventBus
 
-[Usage introduction](/src/DDD/MASA.Contrib.DDD.Domain/README.md)
+[Usage introduction](/src/Ddd/Masa.Contrib.Ddd.Domain/README.md)
 
 > Advantage：
 >
@@ -105,7 +105,7 @@ Realize cross-process events based on Dapr。[Usage introduction](/src/Dispatche
 
 ### 7. Contracts.EF
 
-Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contrib.Data.Contracts.EF/README.md)
+Protocol based on EF implementation，[Usage introduction](/Data/Masa.Contrib.Data.Contracts.EF/README.md)
 
 > Advantage：
 >
@@ -113,7 +113,7 @@ Protocol based on EF implementation，[Usage introduction](/Data/MASA.Contrib.Da
 > 2. Soft delete
 
 ```C#
-Install-Package MASA.Contrib.Data.Contracts.EF
+Install-Package Masa.Contrib.Data.Contracts.EF
 ```
 
 ```C#
@@ -131,9 +131,9 @@ builder.Services.AddEventBus(options => {
 > Do not query the data marked as soft deleted when querying
 > When combined with EventBus, the transaction is opened after the first CUD, and the transaction rollback is supported when the entire Handler is abnormal.
 
-### 8. MASA.Contrib.Configuration
+### 8. Masa.Contrib.Configuration
 
-Redefine Configuration, support the management of Local and ConfigurationAPI nodes, combine IOptions and IOptionsMonitor to complete configuration acquisition and configuration update subscription [Local Usage introduction](src/Configuration/MASA.Contrib.Configuration/README.md) 、[Dcc Usage introduction](src/BasicAbility/MASA.Contrib.BasicAbility.Dcc/README.md)
+Redefine Configuration, support the management of Local and ConfigurationAPI nodes, combine IOptions and IOptionsMonitor to complete configuration acquisition and configuration update subscription [Local Usage introduction](src/Configuration/Masa.Contrib.Configuration/README.md) 、[Dcc Usage introduction](src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.md)
 
 ## Unit testing rules
 

@@ -1,0 +1,15 @@
+global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities;
+global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
+global using Masa.BuildingBlocks.Dispatcher.Events;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.Internal;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Storage;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
+global using System.Collections.Concurrent;
+global using System.Data.Common;
+global using System.Linq.Expressions;
+global using System.Reflection;
+global using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;

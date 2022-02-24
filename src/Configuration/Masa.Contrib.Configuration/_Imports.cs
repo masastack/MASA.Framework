@@ -1,0 +1,15 @@
+global using Masa.BuildingBlocks.Configuration;
+global using Masa.BuildingBlocks.Configuration.Options;
+global using Microsoft.AspNetCore.Builder;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
+global using Microsoft.Extensions.Primitives;
+global using System;
+global using System.Collections.Concurrent;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Reflection;
+global using System.Text.Json.Serialization;
