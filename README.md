@@ -141,4 +141,4 @@ To ensure the reliability of the entire source code, the unit test coverage is a
 
 ## ☀️ License agreement
 
-[![Masa.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
+[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
