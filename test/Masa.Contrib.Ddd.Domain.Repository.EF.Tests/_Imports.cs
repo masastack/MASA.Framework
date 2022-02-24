@@ -1,0 +1,23 @@
+global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
+global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
+global using Masa.BuildingBlocks.Ddd.Domain.Values;
+global using Masa.BuildingBlocks.Dispatcher.Events;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeys.Tests;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeysNoFind.Tests;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.CustomRepository.Tests.Repositories;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.Entity.Tests;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Domain.Entities;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Domain.Repositories;
+global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Infrastructure;
+global using Microsoft.Data.Sqlite;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Reflection;
+
