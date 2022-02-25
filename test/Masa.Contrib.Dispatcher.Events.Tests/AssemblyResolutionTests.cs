@@ -100,14 +100,12 @@ public class AssemblyResolutionTests
     public void TestAddMultEventBus()
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         var options = new DispatcherOptions(services, assemblies);
         options.UseEventBus().UseEventBus();
 
         Assert.IsTrue(services.BuildServiceProvider().GetServices<IEventBus>().Count() == 1);
-
 
         var services2 = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
