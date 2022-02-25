@@ -2,6 +2,10 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 
 public class DispatcherOptions : IDispatcherOptions
 {
+    public IServiceCollection Services { get; }
+
+    public Assembly[] Assemblies { get; }
+
     private string _pubSubName = "pubsub";
 
     public string PubSubName
@@ -130,29 +134,20 @@ public class DispatcherOptions : IDispatcherOptions
 
     public Func<DateTime>? GetCurrentTime { get; set; } = null;
 
-    public IServiceCollection Services { get; }
+    public List<Type> AllEventTypes { get; }
 
-    private Assembly[] _assemblies = Array.Empty<Assembly>();
+    private DispatcherOptions(IServiceCollection services) => Services = services;
 
-    public Assembly[] Assemblies
+    public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
+        : this(services)
     {
-        get => _assemblies;
-        set
-        {
-            _assemblies = value;
-            if (_assemblies == null || _assemblies.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(_assemblies));
-            }
+        if (assemblies == null || assemblies.Length == 0)
+            throw new ArgumentException(nameof(assemblies));
 
-            AllEventTypes = _assemblies
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
-                .ToList();
-        }
+        Assemblies = assemblies;
+        AllEventTypes = assemblies
+            .SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
+            .ToList();
     }
-
-    public List<Type> AllEventTypes { get; private set; }
-
-    public DispatcherOptions(IServiceCollection services) => Services = services;
 }

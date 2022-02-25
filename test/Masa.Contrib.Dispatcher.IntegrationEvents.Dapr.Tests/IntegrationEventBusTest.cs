@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]
@@ -18,7 +20,9 @@ public class IntegrationEventBusTest
         _options = new();
         _options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
         _dispatcherOptions = new();
-        _dispatcherOptions.Setup(option => option.Value).Returns(() => new DispatcherOptions(_options.Object.Services));
+        _dispatcherOptions
+            .Setup(option => option.Value)
+            .Returns(() => new DispatcherOptions(_options.Object.Services, AppDomain.CurrentDomain.GetAssemblies()));
         _daprClient = new();
         _logger = new();
         _eventLog = new();
@@ -43,27 +47,17 @@ public class IntegrationEventBusTest
         var services = new ServiceCollection();
         DispatcherOptions options;
 
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsException<ArgumentException>(() =>
         {
-            options = new DispatcherOptions(services)
-            {
-                Assemblies = null!
-            };
+            options = new DispatcherOptions(services, null!);
         });
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsException<ArgumentException>(() =>
         {
-            options = new DispatcherOptions(services)
-            {
-                Assemblies = new System.Reflection.Assembly[0]
-            };
+            options = new DispatcherOptions(services, Array.Empty<Assembly>());
         });
-        options = new DispatcherOptions(services)
-        {
-            Assemblies = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly }
-        };
+        options = new DispatcherOptions(services, new[] { typeof(IntegrationEventBusTest).Assembly });
         Assert.IsTrue(options.Services.Equals(services));
-        var allEventTypes = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly }
-        .SelectMany(assembly => assembly.GetTypes())
+        var allEventTypes = new Assembly[1] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
         .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
         Assert.IsTrue(options.AllEventTypes.Count == allEventTypes.Count());
 
@@ -106,9 +100,8 @@ public class IntegrationEventBusTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        services.AddDaprEventBus<IntegrationEventLogService>(option =>
+        services.AddDaprEventBus<IntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
         {
-            option.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
             option.PubSubName = "pubsub";
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -270,10 +263,9 @@ public class IntegrationEventBusTest
     [TestMethod]
     public void TestGetAllEventTypes()
     {
-        _dispatcherOptions.Setup(option => option.Value).Returns(() => new DispatcherOptions(_options.Object.Services)
-        {
-            Assemblies = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly }
-        });
+        _dispatcherOptions
+            .Setup(option => option.Value)
+            .Returns(() => new DispatcherOptions(_options.Object.Services, new[] { typeof(IntegrationEventBusTest).Assembly }));
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _daprClient.Object,
@@ -291,10 +283,9 @@ public class IntegrationEventBusTest
     public void TestUseEventBusGetAllEventTypes()
     {
         var defaultAssembly = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly };
-        _dispatcherOptions.Setup(option => option.Value).Returns(() => new DispatcherOptions(_options.Object.Services)
-        {
-            Assemblies = defaultAssembly
-        });
+        _dispatcherOptions
+            .Setup(option => option.Value)
+            .Returns(() => new DispatcherOptions(_options.Object.Services, defaultAssembly));
         var allEventType = defaultAssembly
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))

@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests;
 
 public class TestBase
@@ -24,7 +26,9 @@ public class TestBase
         action?.Invoke(options);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(() => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes()).Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
+        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(()
+            => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
         services.AddScoped(serviceProvider => integrationEventBus.Object);
         return services.BuildServiceProvider();
     }
@@ -32,10 +36,13 @@ public class TestBase
 
 public class DispatcherOptions : IDispatcherOptions
 {
-    public IServiceCollection Services { get; init; }
+    public IServiceCollection Services { get; }
 
-    public DispatcherOptions(IServiceCollection services)
+    public Assembly[] Assemblies { get; }
+
+    public DispatcherOptions(IServiceCollection services, Assembly[]? assemblies = null)
     {
         this.Services = services;
+        Assemblies = assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
     }
 }
