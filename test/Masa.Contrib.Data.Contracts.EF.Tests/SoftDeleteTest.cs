@@ -62,7 +62,7 @@ public class SoftDeleteTest : IDisposable
 
         Assert.IsTrue(!dbContext.Students.Any());
 
-        student.Delete();
+        student.ChangeEnableState(false);
         dbContext.SaveChanges();
         Assert.IsTrue(dbContext.Students.Count() == 1);
 
