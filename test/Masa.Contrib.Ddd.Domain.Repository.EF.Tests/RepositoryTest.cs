@@ -343,7 +343,7 @@ public class RepositoryTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestNotUseTransactionAsync()
+    public void TestNotUseTransaction()
     {
         var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
         repository.UseTransaction = false;
