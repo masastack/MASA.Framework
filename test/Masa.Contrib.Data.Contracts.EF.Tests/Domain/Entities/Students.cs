@@ -13,4 +13,9 @@ public class Students : AuditAggregateRoot<Guid, Guid>
     public int Age { get; set; }
 
     public DateTime RegisterTime { get; private set; }
+
+    public void Delete()
+    {
+        this.IsDeleted = true;
+    }
 }

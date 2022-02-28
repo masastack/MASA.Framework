@@ -7,8 +7,6 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
-global using Microsoft.Extensions.Logging;
-global using System.Collections.Concurrent;
 global using System.Data.Common;
 global using System.Linq.Expressions;
 global using System.Reflection;

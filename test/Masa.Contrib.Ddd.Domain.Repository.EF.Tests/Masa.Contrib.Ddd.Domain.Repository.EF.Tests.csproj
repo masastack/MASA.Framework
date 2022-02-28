@@ -21,11 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Data\Masa.Contrib.Data.UoW.EF\Masa.Contrib.Data.UoW.EF.csproj" />
     <ProjectReference Include="..\..\src\Ddd\Masa.Contrib.Ddd.Domain.Repository.EF\Masa.Contrib.Ddd.Domain.Repository.EF.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeys.Tests\Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeys.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeysNoFindTests\Masa.Contrib.Ddd.Domain.Repository.EF.CombinedKeysNoFind.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Repository.EF.CustomRepository.Tests\Masa.Contrib.Ddd.Domain.Repository.EF.CustomRepository.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Repository.EF.Entity.Tests\Masa.Contrib.Ddd.Domain.Repository.EF.Entity.Tests.csproj" />
   </ItemGroup>
 
 </Project>

@@ -35,7 +35,7 @@ public class BaseRepositoryTest : TestBase
     public void TestUseCustomRepositoryAndNotImplementation()
     {
         Mock<IUnitOfWork> uoW = new();
-        _services.AddScoped(serviceProvider => uoW.Object);
+        _services.AddScoped(_ => uoW.Object);
 
         Assert.ThrowsException<NotSupportedException>(()
             => _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(TestBase).Assembly, typeof(IUserRepository).Assembly)
@@ -55,7 +55,7 @@ public class BaseRepositoryTest : TestBase
     [TestMethod]
     public void TestNullAssembly()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
+        _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
         _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
 
         Assert.ThrowsException<ArgumentNullException>(() =>
@@ -67,8 +67,8 @@ public class BaseRepositoryTest : TestBase
     [TestMethod]
     public void TestAddMultRepository()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
+        _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
         _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies).UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();

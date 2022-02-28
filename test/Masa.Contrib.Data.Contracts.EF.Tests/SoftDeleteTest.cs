@@ -1,4 +1,3 @@
-using Masa.Contrib.Data.Contracts.EF.Tests.Domain.Entities;
 using Masa.Contrib.Data.Contracts.EF.Tests.Infrastructure;
 
 namespace Masa.Contrib.Data.Contracts.EF.Tests;
@@ -63,7 +62,7 @@ public class SoftDeleteTest : IDisposable
 
         Assert.IsTrue(!dbContext.Students.Any());
 
-        student.IsDeleted = false;
+        student.Delete();
         dbContext.SaveChanges();
         Assert.IsTrue(dbContext.Students.Count() == 1);
 
