@@ -1,6 +1,6 @@
 ﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests.Internal;
 
-internal class IntegrationEventLogService : IIntegrationEventLogService
+internal class CustomizeIntegrationEventLogService : IIntegrationEventLogService
 {
     public Task MarkEventAsFailedAsync(Guid eventId)
     {
@@ -22,8 +22,10 @@ internal class IntegrationEventLogService : IIntegrationEventLogService
         return Task.CompletedTask;
     }
 
-    public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
-        int maxRetryTimes = 10, int minimumRetryInterval = 60)
+    public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
+        int retryBatchSize = 200,
+        int maxRetryTimes = 10,
+        int minimumRetryInterval = 60)
     {
         return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
     }

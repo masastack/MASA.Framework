@@ -1,6 +1,4 @@
-using System.Reflection;
-
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 
 [TestClass]
 public class IntegrationEventBusTest
@@ -39,6 +37,7 @@ public class IntegrationEventBusTest
         _uoW = new();
         _uoW.Setup(uoW => uoW.CommitAsync(default)).Verifiable();
         _uoW.Setup(uoW => uoW.Transaction).Returns(() => null!);
+        _uoW.Setup(uoW => uoW.UseTransaction).Returns(true);
     }
 
     [TestMethod]
@@ -57,17 +56,17 @@ public class IntegrationEventBusTest
         });
         options = new DispatcherOptions(services, new[] { typeof(IntegrationEventBusTest).Assembly });
         Assert.IsTrue(options.Services.Equals(services));
-        var allEventTypes = new Assembly[1] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
-        .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
+        var allEventTypes = new[] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
         Assert.IsTrue(options.AllEventTypes.Count == allEventTypes.Count());
-
     }
 
     [TestMethod]
     public void TestAddMultDaprEventBus()
     {
-        _dispatcherOptions.Object.Value.UseDaprEventBus<IntegrationEventLogService>()
-               .UseDaprEventBus<IntegrationEventLogService>();
+        _dispatcherOptions.Object.Value
+            .UseDaprEventBus<CustomizeIntegrationEventLogService>()
+            .UseDaprEventBus<CustomizeIntegrationEventLogService>();
         var serviceProvider = _dispatcherOptions.Object.Value.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IIntegrationEventBus>().Count() == 1);
     }
@@ -76,31 +75,33 @@ public class IntegrationEventBusTest
     public void TestAddDaprEventBus()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddDaprEventBus<IntegrationEventLogService>();
+        services.AddDaprEventBus<CustomizeIntegrationEventLogService>();
         var serviceProvider = services.BuildServiceProvider();
         var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
         Assert.IsNotNull(integrationEventBus);
     }
 
     [TestMethod]
-    public void TestEmptyPubSub()
+    public void TestNotUseLoggerAndUoW()
     {
         IServiceCollection services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            services.AddDaprEventBus<IntegrationEventLogService>(option =>
-            {
-                option.PubSubName = "";
-            });
-        });
+        services.AddLogging();
+        services
+            .AddDaprEventBus<
+                CustomizeIntegrationEventLogService>(); //The logger cannot be mocked and cannot verify that the logger is executed only once
+
+        var serviceProvider = services.BuildServiceProvider();
+        var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
+        Assert.IsNotNull(integrationEventBus);
     }
 
     [TestMethod]
-    public void TestAddDaprEventBusAndChangeAssemblies()
+    public void TestUseLogger()
     {
         IServiceCollection services = new ServiceCollection();
 
-        services.AddDaprEventBus<IntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
+
+        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
         {
             option.PubSubName = "pubsub";
         });
@@ -113,54 +114,169 @@ public class IntegrationEventBusTest
     public void TestAddDaprEventBusAndNullServicesAsync()
     {
         _options.Setup(option => option.Services).Returns(() => null!);
-        var ex = Assert.ThrowsException<ArgumentNullException>(() => _options.Object.UseDaprEventBus<IntegrationEventLogService>());
-        Assert.IsTrue(ex.Message == $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
+        Assert.ThrowsException<ArgumentNullException>(() =>
+                _options.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>(),
+            $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }
 
     [TestMethod]
     public async Task TestPublishIntegrationEventAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-           _dispatcherOptions.Object,
-           _daprClient.Object,
-           _eventLog.Object,
-           _appConfig.Object,
-           _logger.Object,
-           _eventBus.Object,
-           _uoW.Object);
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            _eventBus.Object,
+            _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
             Account = "lisa",
             Password = "123456"
         };
-        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default)).Verifiable();
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _daprClient.Verify(dapr => dapr.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default), Times.Once);
+        _daprClient.Verify(dapr => dapr.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestNotUseUoWAndLoggerAsync()
+    {
+        var integrationEventBus = new IntegrationEventBus(
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            null,
+            _eventBus.Object);
+        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+        {
+            Account = "lisa",
+            Password = "123456"
+        };
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
+        await integrationEventBus.PublishAsync(@event);
+
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestNotUseTransactionAsync()
+    {
+        _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
+        var integrationEventBus = new IntegrationEventBus(
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            _eventBus.Object,
+            _uoW.Object);
+        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+        {
+            Account = "lisa",
+            Password = "123456"
+        };
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
+        await integrationEventBus.PublishAsync(@event);
+
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestUseTranscationAndNotUseLoggerAsync()
+    {
+        var integrationEventBus = new IntegrationEventBus(
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            null,
+            _eventBus.Object,
+            _uoW.Object);
+        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+        {
+            Account = "lisa",
+            Password = "123456"
+        };
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
+        await integrationEventBus.PublishAsync(@event);
+
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Once);
+        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestSaveEventFailedAndNotUseLoggerAsync()
+    {
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!))
+            .Callback(() => throw new Exception("custom exception"));
+        var integrationEventBus = new IntegrationEventBus(
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            null,
+            _eventBus.Object,
+            _uoW.Object);
+        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+        {
+            Account = "lisa",
+            Password = "123456"
+        };
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
+        await integrationEventBus.PublishAsync(@event);
+
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Once);
     }
 
     [TestMethod]
     public async Task TestPublishIntegrationEventAndFailedAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-           _dispatcherOptions.Object,
-           _daprClient.Object,
-           _eventLog.Object,
-           _appConfig.Object,
-           _logger.Object,
-           _eventBus.Object,
-           _uoW.Object);
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            _eventBus.Object,
+            _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
             Account = "lisa",
             Password = "123456"
         };
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Throws<Exception>();
-        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default)).Verifiable();
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
         _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Once);
-        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default), Times.Once);
+        _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Once);
     }
@@ -169,23 +285,25 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAndNotUoWAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-           _dispatcherOptions.Object,
-           _daprClient.Object,
-           _eventLog.Object,
-           _appConfig.Object,
-           _logger.Object,
-           _eventBus.Object,
-           _uoW.Object);
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            _eventBus.Object,
+            _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
             Account = "lisa",
             Password = "123456",
             UnitOfWork = _uoW.Object
         };
-        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default)).Verifiable();
+        _daprClient.Setup(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default))
+            .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _daprClient.Verify(dapr => dapr.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default), Times.Once);
+        _daprClient.Verify(dapr => dapr.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
+            Times.Once);
     }
 
     [TestMethod]
@@ -193,13 +311,13 @@ public class IntegrationEventBusTest
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>())).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
-           _dispatcherOptions.Object,
-           _daprClient.Object,
-           _eventLog.Object,
-           _appConfig.Object,
-           _logger.Object,
-           _eventBus.Object,
-           _uoW.Object);
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            _eventBus.Object,
+            _uoW.Object);
         CreateUserEvent @event = new CreateUserEvent()
         {
             Name = "Tom"
@@ -208,17 +326,18 @@ public class IntegrationEventBusTest
 
         _eventBus.Verify(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>()), Times.Once);
     }
+
     [TestMethod]
     public async Task TestPublishEventAndNotEventBusAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-           _dispatcherOptions.Object,
-           _daprClient.Object,
-           _eventLog.Object,
-           _appConfig.Object,
-           _logger.Object,
-           null,
-           _uoW.Object);
+            _dispatcherOptions.Object,
+            _daprClient.Object,
+            _eventLog.Object,
+            _appConfig.Object,
+            _logger.Object,
+            null,
+            _uoW.Object);
         CreateUserEvent @event = new CreateUserEvent()
         {
             Name = "Tom"
@@ -302,60 +421,5 @@ public class IntegrationEventBusTest
 
         Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == _dispatcherOptions.Object.Value.AllEventTypes.Count());
         Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == allEventType.Count());
-    }
-
-    [TestMethod]
-    public void TestIntegrationEvent()
-    {
-        DateTime date = DateTime.UtcNow;
-        Guid id = Guid.NewGuid();
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        Assert.IsTrue(@event.CreationTime > date);
-        Assert.IsTrue(@event.Id != default(Guid));
-
-        @event = new RegisterUserIntegrationEvent(id, date)
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        Assert.IsTrue(@event.CreationTime == date);
-        Assert.IsTrue(@event.Id == id);
-    }
-
-    public class IntegrationEventLogService : IIntegrationEventLogService
-    {
-        public Task MarkEventAsFailedAsync(Guid eventId)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = new CancellationToken())
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task MarkEventAsInProgressAsync(Guid eventId)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task MarkEventAsPublishedAsync(Guid eventId)
-        {
-            return Task.CompletedTask;
-        }
-
-        public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
-        {
-            return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
-        }
-
-        public Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

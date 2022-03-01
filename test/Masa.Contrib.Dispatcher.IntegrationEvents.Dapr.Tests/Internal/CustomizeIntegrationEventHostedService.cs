@@ -1,10 +1,10 @@
 ﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests.Internal;
 
-public class IntegrationEventHostedService : Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.IntegrationEventHostedService
+public class CustomizeIntegrationEventHostedService : IntegrationEventHostedService
 {
-    public IntegrationEventHostedService(
-        IProcessingServer processingServer, ILogger<Dapr.IntegrationEventHostedService>? logger = null) :
-        base(processingServer, logger)
+    public CustomizeIntegrationEventHostedService(
+        IProcessingServer processingServer, ILoggerFactory? loggerFactory = null) :
+        base(processingServer, loggerFactory?.CreateLogger<IntegrationEventHostedService>())
     {
     }
 

@@ -58,7 +58,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             @event.UnitOfWork = _unitOfWork;
 
         var topicName = @event.Topic;
-        if (@event.UnitOfWork != null && @event.UnitOfWork.UseTransaction)
+        if (@event.UnitOfWork is { UseTransaction: true })
         {
             try
             {

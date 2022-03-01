@@ -3,14 +3,14 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 public class RetryByLocalQueueProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IOptionsMonitor<AppConfig> _appConfig;
+    private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly IOptions<DispatcherOptions> _options;
     private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
 
     public RetryByLocalQueueProcessor(
         IServiceProvider serviceProvider,
-        IOptionsMonitor<AppConfig> appConfig,
         IOptions<DispatcherOptions> options,
+        IOptionsMonitor<AppConfig>? appConfig = null,
         ILogger<RetryByLocalQueueProcessor>? logger = null)
     {
         _serviceProvider = serviceProvider;
@@ -30,7 +30,9 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             var dapr = _serviceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            var retrieveEventLogs = LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes, _options.Value.RetryBatchSize);
+            var retrieveEventLogs =
+                LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
+                    _options.Value.RetryBatchSize);
 
             foreach (var eventLog in retrieveEventLogs)
             {
@@ -61,7 +63,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
                 {
                     _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                        eventLog.EventId, _appConfig.CurrentValue.AppId, eventLog);
+                        eventLog.EventId, _appConfig?.CurrentValue.AppId ?? string.Empty, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
                 }
             }

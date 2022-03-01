@@ -1,16 +1,16 @@
-﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
 public class RetryByDataProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly IOptionsMonitor<AppConfig> _appConfig;
+    private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly ILogger<RetryByDataProcessor>? _logger;
 
     public RetryByDataProcessor(
         IServiceProvider serviceProvider,
-        IOptionsMonitor<AppConfig> appConfig,
         IOptions<DispatcherOptions> options,
+        IOptionsMonitor<AppConfig>? appConfig = null,
         ILogger<RetryByDataProcessor>? logger = null)
     {
         _serviceProvider = serviceProvider;
@@ -60,13 +60,8 @@ public class RetryByDataProcessor : ProcessorBase
                 {
                     _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                        eventLog.EventId, _appConfig.CurrentValue.AppId, eventLog);
+                        eventLog.EventId, _appConfig?.CurrentValue.AppId ?? string.Empty, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
-                }
-                finally
-                {
-                    if (unitOfWork != null && unitOfWork.TransactionHasBegun)
-                        await unitOfWork.CommitAsync(stoppingToken);
                 }
             }
         }
