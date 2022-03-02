@@ -45,12 +45,12 @@ public class RepositoryTest : TestBase
             new(1)
             {
                 OrderNumber = 9999999,
-                Description = "Apple",
+                Description = "Apple"
             },
             new(2)
             {
                 OrderNumber = 9999999,
-                Description = "HuaWei",
+                Description = "HuaWei"
             }
         };
 
@@ -94,7 +94,7 @@ public class RepositoryTest : TestBase
         var order = await repository.FindAsync(
             new List<KeyValuePair<string, object>>
             {
-                new(nameof(Orders.Description), "Google"),
+                new(nameof(Orders.Description), "Google")
             });
         await repository.RemoveAsync(order!);
         await repository.UnitOfWork.SaveChangesAsync();
@@ -193,9 +193,9 @@ public class RepositoryTest : TestBase
         _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
         var serviceProvider = _services.BuildServiceProvider();
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-        var order = new Orders
+        var order = new Orders(1)
         {
-            OrderNumber = 1,
+            OrderNumber = 1
         };
         await repository.AddAsync(order);
         Assert.IsTrue(await repository.GetCountAsync() == 0);
