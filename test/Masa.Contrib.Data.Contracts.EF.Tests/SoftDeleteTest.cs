@@ -61,43 +61,6 @@ public class SoftDeleteTest : IDisposable
         dbContext.SaveChanges();
 
         Assert.IsTrue(!dbContext.Students.Any());
-
-        student.ChangeEnableState(false);
-        dbContext.SaveChanges();
-        Assert.IsTrue(dbContext.Students.Count() == 1);
-
-        uoW = new();
-        uoW.Setup(u => u.Transaction).Verifiable();
-        uoW.Setup(u => u.UseTransaction).Returns(() => true);
-        services = new ServiceCollection();
-        services.AddScoped(serviceProvider => uoW.Object);
-        services.AddMasaDbContext<CustomDbContext>(option =>
-        {
-            option.UseSqlite(_connection);
-            option.UseSoftDelete(services);
-        });
-
-        serviceProvider = services.BuildServiceProvider();
-        dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-
-        dbContext.Set<Courses>().Add(new Courses()
-        {
-            Name = "Chinese"
-        });
-        dbContext.SaveChanges();
-        Assert.IsTrue(dbContext.Courses.Count() == 1);
-        uoW.Verify(u => u.Transaction, Times.Never);
-
-        var course = dbContext.Set<Courses>().FirstOrDefault(c => c.Name == "Chinese");
-        Assert.IsNotNull(course);
-        dbContext.Set<Courses>().Remove(course);
-        dbContext.SaveChanges();
-        Assert.IsTrue(!dbContext.Courses.Any());
-
-        course.IsDeleted = false;
-        dbContext.SaveChanges();
-        Assert.IsTrue(!dbContext.Courses.Any());
     }
 
     [TestMethod]

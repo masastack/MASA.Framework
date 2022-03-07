@@ -2,7 +2,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public static class DispatcherOptionsExtensions
 {
-    private const string DAPR_PUB_SUBNAME = "pubsub";
+    private const string DAPR_PUBSUB_NAME = "pubsub";
 
     public static IDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
         this IDispatcherOptions options,
@@ -32,7 +32,7 @@ public static class DispatcherOptionsExtensions
 
         options.Services.TryAddDaprEventBus<TIntegrationEventLogService>(options.Assemblies, builder, dispatcherOptions =>
         {
-            dispatcherOptions.PubSubName = DAPR_PUB_SUBNAME;
+            dispatcherOptions.PubSubName = DAPR_PUBSUB_NAME;
             action?.Invoke(dispatcherOptions);
         });
         return options;

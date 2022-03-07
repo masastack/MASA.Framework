@@ -18,7 +18,7 @@ internal static class ServiceCollectionRepositoryExtensions
         {
             var repositoryInterfaceType = typeof(IRepository<>).MakeGenericType(entityType);
             services.TryAddAddDefaultRepository(repositoryInterfaceType, GetRepositoryImplementationType(typeof(TDbContext), entityType));
-            services.TryAddCustomRepository(repositoryInterfaceType, allTypes.ToArray());
+            services.TryAddCustomRepository(repositoryInterfaceType, allTypes);
 
             if (typeof(IEntity<>).IsGenericInterfaceAssignableFrom(entityType))
             {
@@ -26,7 +26,7 @@ internal static class ServiceCollectionRepositoryExtensions
                 repositoryInterfaceType = typeof(IRepository<,>).MakeGenericType(entityType, fieldType);
                 services.TryAddAddDefaultRepository(repositoryInterfaceType,
                     GetRepositoryImplementationType(typeof(TDbContext), entityType, fieldType));
-                services.TryAddCustomRepository(repositoryInterfaceType, allTypes.ToArray());
+                services.TryAddCustomRepository(repositoryInterfaceType, allTypes);
             }
         }
 
@@ -37,7 +37,7 @@ internal static class ServiceCollectionRepositoryExtensions
         => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) && type != typeof(Entity) &&
             typeof(IAggregateRoot).IsAssignableFrom(type);
 
-    private static void TryAddCustomRepository(this IServiceCollection services, Type repositoryInterfaceType, Type[] allTypes)
+    private static void TryAddCustomRepository(this IServiceCollection services, Type repositoryInterfaceType, List<Type> allTypes)
     {
         var customerRepositoryInterfaceTypes = allTypes.Where(type
             => type.GetInterfaces().Any(t => t == repositoryInterfaceType) && type.IsInterface && !type.IsGenericType);
