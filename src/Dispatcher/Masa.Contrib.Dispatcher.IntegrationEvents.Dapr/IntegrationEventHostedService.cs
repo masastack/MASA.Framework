@@ -1,11 +1,11 @@
-﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public class IntegrationEventHostedService : BackgroundService
 {
     private readonly ILogger<IntegrationEventHostedService>? _logger;
     private readonly IProcessingServer _processingServer;
 
-    public IntegrationEventHostedService(IProcessingServer processingServer, ILogger<IntegrationEventHostedService>? logger)
+    public IntegrationEventHostedService(IProcessingServer processingServer, ILogger<IntegrationEventHostedService>? logger = null)
     {
         _logger = logger;
         _processingServer = processingServer;

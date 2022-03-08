@@ -17,16 +17,13 @@ public class DomainIntegrationEventBus
         _integrationEventBus = new();
         _integrationEventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<IIntegrationEvent>())).Verifiable();
         _uoW = new();
-        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection()));
+        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
     }
 
     [TestMethod]
     public async Task PublishQueueAsync()
     {
-        _services.AddEventBus(opt =>
-        {
-            opt.Assemblies = _defaultAssemblies;
-        });
+        _services.AddEventBus(_defaultAssemblies);
         var serviceProvider = _services.BuildServiceProvider();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         var payment = new

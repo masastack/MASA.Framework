@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
 
 public class InfiniteLoopProcessor : ProcessorBase
 {
@@ -20,15 +20,16 @@ public class InfiniteLoopProcessor : ProcessorBase
                 await _processor.ExecuteAsync(stoppingToken);
                 await DelayAsync(((ProcessorBase)_processor).Delay);
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
                 //ignore
+                _logger?.LogWarning("Operation canceled", ex);
             }
             catch (Exception ex)
             {
                 _logger?.LogWarning(ex, "Processor '{ProcessorName}' failed", _processor.ToString());
 
-                Thread.Sleep(TimeSpan.FromSeconds(2));
+                await DelayAsync(2);
             }
         }
     }

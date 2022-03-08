@@ -1,5 +1,3 @@
-using Masa.Contrib.Data.Contracts.EF.Tests.Domain.Entities;
-
 namespace Masa.Contrib.Data.Contracts.EF.Tests.Infrastructure;
 
 public class CustomDbContext : MasaDbContext

@@ -1,6 +1,6 @@
 namespace Masa.Contrib.Data.UoW.EF;
 
-public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
+public class UnitOfWork<TDbContext> : IUnitOfWork
     where TDbContext : MasaDbContext
 {
     public DbTransaction Transaction
@@ -21,9 +21,9 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
 
     public bool DisableRollbackOnFailure { get; set; }
 
-    public EntityState EntityState { get; set; }
+    public EntityState EntityState { get; set; } = EntityState.UnChanged;
 
-    public CommitState CommitState { get; set; }
+    public CommitState CommitState { get; set; } = CommitState.Commited;
 
     public bool UseTransaction { get; set; } = true;
 
@@ -40,7 +40,7 @@ public class UnitOfWork<TDbContext> : IAsyncDisposable, IUnitOfWork
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await _context.SaveChangesAsync(cancellationToken);
-        EntityState = EntityState.Unchanged;
+        EntityState = EntityState.UnChanged;
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)

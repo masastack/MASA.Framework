@@ -5,72 +5,77 @@ public class RepositoryTest : TestBase
 {
     private IServiceCollection _services = default!;
     private Assembly[] _assemblies;
-    private Mock<IUnitOfWork> _uoW;
     private Mock<IDispatcherOptions> _dispatcherOptions = default!;
+    private CustomDbContext _dbContext;
+    private UnitOfWork<CustomDbContext> _uoW;
 
     [TestInitialize]
-    public void Initialize()
+    public async Task InitializeAsync()
+    {
+        await InitializeAsync(null);
+    }
+
+    public async Task InitializeAsync(Action<IServiceCollection>? action)
     {
         _services = new ServiceCollection();
-        _assemblies = new Assembly[1]
+        _assemblies = new[]
         {
             typeof(BaseRepositoryTest).Assembly
         };
-        _uoW = new();
-        _uoW.Setup(uoW => uoW.UseTransaction).Returns(true);
-        _dispatcherOptions = new();
+        _dispatcherOptions = new Mock<IDispatcherOptions>();
         _dispatcherOptions.Setup(options => options.Services).Returns(() => _services);
+        if (action == null)
+            _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        else
+            action.Invoke(_services);
 
+        _dbContext = _services.BuildServiceProvider().GetRequiredService<CustomDbContext>();
+        await _dbContext.Database.EnsureCreatedAsync();
+        _uoW = new UnitOfWork<CustomDbContext>(_dbContext);
+        _dispatcherOptions.Object.UseUoW<CustomDbContext>();
     }
 
-    [TestMethod]
-    public async Task TestAsync()
+    private async Task<IRepository<Orders>> InitDataAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
         _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
 
         var serviceProvider = _services.BuildServiceProvider();
-
-        _uoW.Setup(u => u.SaveChangesAsync(default)).Callback(() =>
+        var orders = new List<Orders>
         {
-            var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-            dbContext.Database.EnsureCreated();
-            dbContext.SaveChanges();
-        });
-        _uoW.Setup(u => u.CommitAsync(default)).Verifiable();
-        var orders = new List<Orders>()
-        {
-            new Orders(1)
+            new(1)
             {
                 OrderNumber = 9999999,
-                Description = "Apple",
+                Description = "Apple"
             },
-            new Orders(2)
+            new(2)
             {
                 OrderNumber = 9999999,
-                Description = "Apple2",
+                Description = "HuaWei"
             }
         };
 
         var repository = serviceProvider.GetRequiredService<IRepository<Orders>>();
         await repository.AddRangeAsync(orders);
         await repository.UnitOfWork.SaveChangesAsync();
+        return repository;
+    }
 
-        var orderList = await repository.GetListAsync(order => order.OrderNumber == 9999999, default);
+    [TestMethod]
+    public async Task TestAddAsync()
+    {
+        var repository = await InitDataAsync();
+
+        var orderList = await repository.GetListAsync(order => order.OrderNumber == 9999999);
         Assert.IsNotNull(orderList);
         Assert.IsTrue(orderList.Count() == 2);
 
-        Assert.IsTrue((await repository.GetListAsync(order => order.Description == "Apple", default)).Count() == 1);
-        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "Apple", default) == 1);
+        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "Apple") == 1);
+    }
 
-        var huaweiOrder = await repository.FindAsync(order => order.Description == "Apple2");
-        huaweiOrder!.Description = "HuaWei";
-        huaweiOrder.OrderNumber = 9999998;
-        await repository.UnitOfWork.SaveChangesAsync(default);
-
-        Assert.IsTrue((await repository.GetListAsync(order => order.Description == "Apple", default)).Count() == 1);
-        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "HuaWei", default) == 1);
+    [TestMethod]
+    public async Task TestRemoveAsync()
+    {
+        var repository = await InitDataAsync();
 
         await repository.AddAsync(new Orders(3)
         {
@@ -82,129 +87,149 @@ public class RepositoryTest : TestBase
             OrderNumber = 9999996,
             Description = "Microsoft"
         });
+        await repository.RemoveAsync(order => order.Description == "Apple");
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync() == 3);
 
-        await repository.RemoveAsync(order => order.Description == "Apple", default);
-        await repository.UnitOfWork.SaveChangesAsync(default);
+        var order = await repository.FindAsync(
+            new List<KeyValuePair<string, object>>
+            {
+                new(nameof(Orders.Description), "Google")
+            });
+        await repository.RemoveAsync(order!);
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "Google") == 0);
+    }
 
-        var list = await repository.GetPaginatedListAsync(0, 10, null, default);
+    [TestMethod]
+    public async Task TestRemoveRangeAsync()
+    {
+        var repository = await InitDataAsync();
 
-        Assert.IsTrue(list.Count == 3);
-        Assert.IsTrue(list[0].Description == "HuaWei");
-        Assert.IsTrue(list[1].Description == "Google");
-        Assert.IsTrue(list[2].Description == "Microsoft");
+        Assert.IsTrue(await repository.GetCountAsync() == 2);
 
-        list = await repository.GetPaginatedListAsync(1, 10, null, default);
-        Assert.IsTrue(list.Count == 2);
-        Assert.IsTrue(list[0].Description == "Google");
-        Assert.IsTrue(list[1].Description == "Microsoft");
-
-        list = await repository.GetPaginatedListAsync(order => order.Description != "Google", 0, 10, null, default);
-        Assert.IsTrue(list.Count == 2);
-        Assert.IsTrue(list[0].Description == "HuaWei");
-
-        var count = await repository.GetCountAsync(default);
-        Assert.IsTrue(count == 3);
-
-        var huaWei = await repository.FindAsync(huaweiOrder.Id, huaweiOrder.OrderNumber);
-        await repository.RemoveAsync(huaWei!, default);
-
-        await repository.UnitOfWork.SaveChangesAsync(default);
-        Assert.IsTrue(await repository.GetCountAsync(default) == 2);
-
-        var remainingOrders = await repository.GetListAsync(default);
+        var remainingOrders = await repository.GetListAsync();
         await repository.RemoveRangeAsync(remainingOrders);
-        await repository.UnitOfWork.SaveChangesAsync(default);
+        await repository.UnitOfWork.SaveChangesAsync();
 
-        Assert.IsTrue(await repository.GetCountAsync(default) == 0);
+        Assert.IsTrue(await repository.GetCountAsync() == 0);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListAsync()
+    {
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        var serviceProvider = _services.BuildServiceProvider();
+        var customizeOrderRepository = serviceProvider.GetRequiredService<ICustomizeOrderRepository>();
+
+        var orders = new List<Orders>
+        {
+            new(1)
+            {
+                Description = "HuaWei",
+                OrderNumber = 20220228
+            },
+            new(2)
+            {
+                Description = "Microsoft",
+                OrderNumber = 20220227
+            },
+            new(3)
+            {
+                Description = "Apple",
+                OrderNumber = 20220227
+            }
+        };
+        await customizeOrderRepository.AddRangeAsync(orders);
+        await customizeOrderRepository.UnitOfWork.SaveChangesAsync();
+
+        var sorting = new Dictionary<string, bool>(
+            new List<KeyValuePair<string, bool>>
+            {
+                new("OrderNumber", true),
+                new("Description", false)
+            });
+        var list = await customizeOrderRepository.GetPaginatedListAsync(
+            0,
+            10,
+            sorting);
+        Assert.IsTrue(list[0].Id == 1);
+        Assert.IsTrue(list[1].Id == 3);
+        Assert.IsTrue(list[2].Id == 2);
+
+        sorting = new Dictionary<string, bool>(
+            new List<KeyValuePair<string, bool>>
+            {
+                new("OrderNumber", false),
+                new("Description", true)
+            });
+        list = await customizeOrderRepository.GetPaginatedListAsync(
+            order => order.Id != 3,
+            0,
+            10,
+            sorting);
+        Assert.IsTrue(list[0].Id == 2);
+        Assert.IsTrue(list[1].Id == 1);
+
+        list = await customizeOrderRepository.GetPaginatedListAsync(
+            order => order.Id != 3,
+            0,
+            10,
+            null);
+        Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
+        Assert.IsTrue(list[1].Id == 2);
+
+        list = await customizeOrderRepository.GetPaginatedListAsync(
+            0,
+            10,
+            null);
+        Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
+        Assert.IsTrue(list[1].Id == 2);
     }
 
     [TestMethod]
     public async Task TestTranscationFailedAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
         _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
-
         var serviceProvider = _services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-        dbContext.Database.BeginTransaction();
-
-        _uoW.Setup(u => u.SaveChangesAsync(default)).Callback(() =>
-        {
-            dbContext.SaveChanges();
-        });
-        _uoW.Setup(u => u.CommitAsync(default)).Callback(() =>
-        {
-            var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-            dbContext.Database.CurrentTransaction!.Commit();
-        });
-        _uoW.Setup(u => u.RollbackAsync(default)).Callback(() =>
-        {
-            var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-            dbContext.Database.CurrentTransaction!.RollbackAsync();
-        });
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-
-        var order = new Orders()
+        var order = new Orders(1)
         {
-            OrderNumber = 1,
+            OrderNumber = 1
         };
         await repository.AddAsync(order);
-        Assert.IsTrue(await repository.GetCountAsync(default) == 0);
+        Assert.IsTrue(await repository.GetCountAsync() == 0);
     }
 
     [TestMethod]
     public async Task TestTranscationSucceededAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
         _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
-
         var serviceProvider = _services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-
-        _uoW.Setup(u => u.SaveChangesAsync(default)).Callback(() =>
-        {
-            dbContext.SaveChanges();
-        });
-        _uoW.Setup(u => u.CommitAsync(default)).Callback(() =>
-        {
-            var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-            dbContext.Database.CurrentTransaction!.Commit();
-        });
-        _uoW.Setup(u => u.RollbackAsync(default)).Callback(() =>
-        {
-            var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-            dbContext.Database.CurrentTransaction!.RollbackAsync();
-        });
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-
         var order = new Orders(1)
         {
             OrderNumber = 1,
             Description = "Apple"
         };
         await repository.AddAsync(order);
-        Assert.IsTrue(await repository.GetCountAsync(default) == 1);
+        Assert.IsTrue(await repository.GetCountAsync() == 1);
     }
 
     [TestMethod]
     public async Task TestUpdateAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        await InitializeAsync(services =>
+            services.AddMasaDbContext<CustomDbContext>(options =>
+            {
+                options.UseSqlite(_connection)
+                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }));
 
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
         var serviceProvider = _services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
 
-        _uoW.Setup(u => u.SaveChangesAsync(default)).Callback(() =>
-        {
-            dbContext.SaveChanges();
-        });
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
 
         var order = new Orders(1)
@@ -213,7 +238,7 @@ public class RepositoryTest : TestBase
             Description = "Apple"
         };
         await repository.AddAsync(order, default);
-        await repository.UnitOfWork.SaveChangesAsync(default);
+        await repository.UnitOfWork.SaveChangesAsync();
         dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
         order = await repository.FindAsync(order => order.Description == "Apple");
@@ -223,16 +248,17 @@ public class RepositoryTest : TestBase
         order = await repository.FindAsync(order => order.Description == "Apple");
         Assert.IsNotNull(order);
 
-        await repository.UpdateAsync(order, default);
+        await repository.UpdateAsync(order);
         await repository.UnitOfWork.SaveChangesAsync();
         dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-        Assert.IsTrue(await repository.GetCountAsync(default) == 1);
+        Assert.IsTrue(await repository.GetCountAsync() == 1);
 
         order = await repository.FindAsync(order => order.Description == "Apple");
         Assert.IsNotNull(order);
 
         order.Description = "Apple Company";
-        await repository.UpdateRangeAsync(new List<Orders>() { order }, default);
+        await repository.UpdateRangeAsync(new List<Orders>
+            { order });
         await repository.UnitOfWork.SaveChangesAsync();
 
         dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
@@ -242,32 +268,114 @@ public class RepositoryTest : TestBase
     }
 
     [TestMethod]
-    public void TestCompositeKeys()
+    public async Task TestFindAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
-        Assert.ThrowsException<ArgumentException>(() =>
+        await InitDataAsync();
+        var repository = _services.BuildServiceProvider()
+            .GetRequiredService<IRepository<Orders, int>>();
+
+        var order = await repository.FindAsync(2);
+        Assert.IsNotNull(order);
+        Assert.IsTrue(order.Description == "HuaWei");
+    }
+
+    [TestMethod]
+    public void TestCustomizeOrderRepository()
+    {
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+
+        var serviceProvider = _services.BuildServiceProvider();
+        var customizeOrderRepository = serviceProvider.GetService<ICustomizeOrderRepository>();
+        Assert.IsNotNull(customizeOrderRepository);
+    }
+
+    [TestMethod]
+    public async Task TestEntityStateAsync()
+    {
+        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
+        Assert.IsTrue(repository.EntityState == Masa.BuildingBlocks.Data.UoW.EntityState.UnChanged);
+
+        await repository.AddAsync(new Orders(9999)
         {
-            _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(BaseRepositoryTest).Assembly, typeof(Students).Assembly);
+            Description = "HuaWei"
         });
+        Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.Changed);
+        await repository.SaveChangesAsync();
+        Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.UnChanged);
     }
 
     [TestMethod]
-    public void TestErrorCompositeKeys()
+    public async Task TestCommitStateAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
-        Assert.ThrowsException<ArgumentException>(() =>
-       {
-           _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(BaseRepositoryTest).Assembly, typeof(Courses).Assembly);
-       });
+        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+
+        await repository.AddAsync(new Orders(9999)
+        {
+            Description = "HuaWei"
+        });
+        Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
+        await repository.SaveChangesAsync();
+        Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
+        await repository.CommitAsync();
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
     }
 
     [TestMethod]
-    public void TestPrivateEntity()
+    public async Task TestCommitStateAndNotUseTransactionAsync()
     {
-        _services.AddScoped(typeof(IUnitOfWork), serviceProvider => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(BaseRepositoryTest).Assembly, typeof(Hobbies).Assembly);
+        _uoW.UseTransaction = false;
+        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+
+        await repository.AddAsync(new Orders(9999)
+        {
+            Description = "HuaWei"
+        });
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+        await repository.SaveChangesAsync();
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        {
+            await repository.CommitAsync();
+        });
+        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+    }
+
+    [TestMethod]
+    public void TestNotUseTransaction()
+    {
+        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
+        repository.UseTransaction = false;
+        Assert.ThrowsException<NotSupportedException>(() => repository.Transaction);
+    }
+
+    [TestMethod]
+    public async Task TestDbTransactionAsync()
+    {
+        var dbTransaction = (await _dbContext.Database.BeginTransactionAsync()).GetDbTransaction();
+        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
+        Assert.IsTrue(repository.Transaction.Equals(dbTransaction));
+    }
+
+    [TestMethod]
+    public async Task TestServiceLifeAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        var serviceProvider = services.BuildServiceProvider();
+
+        await using (var scope = serviceProvider.CreateAsyncScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
+            var uow = new UnitOfWork<CustomDbContext>(dbContext);
+            var repository = new Repository<CustomDbContext, Orders>(dbContext, uow);
+            await repository.AddAsync(new Orders(1)
+            {
+                Description = "HuaWei"
+            });
+            await repository.SaveChangesAsync();
+            Assert.IsTrue(await repository.GetCountAsync() == 1);
+        }
     }
 }

@@ -1,7 +1,8 @@
 namespace Masa.Contrib.Ddd.Domain.Repository.EF;
 
-public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
-    where TEntity : class, IAggregateRoot
+public class Repository<TDbContext, TEntity> :
+    BaseRepository<TEntity>
+    where TEntity : class, IEntity
     where TDbContext : DbContext
 {
     protected readonly TDbContext _context;
@@ -73,19 +74,10 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
     public override void Dispose() => _context.Dispose();
 
     public override Task<TEntity?> FindAsync(
-        object?[]? keyValues,
+        IEnumerable<KeyValuePair<string, object>> keyValues,
         CancellationToken cancellationToken = default)
     {
-        if (keyValues == null)
-            return Task.FromResult(default(TEntity?));
-
-        var keys = GetKeys(typeof(TEntity));
-        Dictionary<string, object> fields = new();
-        for (var i = 0; i < keys.Length; i++)
-        {
-            fields.Add(keys[i], keyValues[i]!);
-        }
-
+        Dictionary<string, object> fields = new(keyValues);
         return _context.Set<TEntity>().IgnoreQueryFilters().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -124,7 +116,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         Dictionary<string, bool>? sorting,
         CancellationToken cancellationToken = default)
     {
-        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
+        sorting ??= new Dictionary<string, bool>();
 
         return _context.Set<TEntity>().OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -145,7 +137,7 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         Dictionary<string, bool>? sorting,
         CancellationToken cancellationToken = default)
     {
-        sorting ??= new Dictionary<string, bool>(GetKeys(typeof(TEntity)).Select(key => new KeyValuePair<string, bool>(key, false)));
+        sorting ??= new Dictionary<string, bool>();
 
         return _context.Set<TEntity>().Where(predicate).OrderBy(sorting).Skip(skip).Take(take).ToListAsync(cancellationToken);
     }
@@ -207,7 +199,19 @@ public class Repository<TDbContext, TEntity> : BaseRepository<TEntity>
         }
         CommitState = CommitState.UnCommited;
     }
+}
 
-    protected string[] GetKeys(Type entityType)
-        => ServiceCollectionRepositoryExtensions.Relations[entityType]!;
+public class Repository<TDbContext, TEntity, TKey> :
+    Repository<TDbContext, TEntity>,
+    IRepository<TEntity, TKey>, IUnitOfWork
+    where TEntity : class, IEntity<TKey>
+    where TDbContext : DbContext
+    where TKey : IComparable
+{
+    public Repository(TDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+    {
+    }
+
+    public Task<TEntity?> FindAsync(TKey id)
+        => _context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id));
 }

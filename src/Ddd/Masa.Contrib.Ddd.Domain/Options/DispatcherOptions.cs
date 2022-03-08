@@ -2,27 +2,13 @@ namespace Masa.Contrib.Ddd.Domain;
 
 public class DispatcherOptions : IDispatcherOptions
 {
-    private Assembly[] _assemblies = new Assembly[0];
+    public IServiceCollection Services { get; }
 
-    public Assembly[] Assemblies
-    {
-        get => _assemblies;
-        set
-        {
-            _assemblies = value;
-            if (_assemblies == null || _assemblies.Length == 0)
-            {
-                throw new ArgumentNullException(nameof(_assemblies));
-            }
-            Types = _assemblies.SelectMany(assembly => assembly.GetTypes());
-            AllEventTypes = GetTypes(typeof(IEvent)).ToList();
-            AllDomainServiceTypes = GetTypes(typeof(DomainService)).ToList();
-            AllAggregateRootTypes = GetTypes(typeof(IAggregateRoot)).Where(type => IsAggregateRootEntity(type)).ToList();
-        }
-    }
+    public Assembly[] Assemblies { get; }
 
     private bool IsAggregateRootEntity(Type type)
-        => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) && typeof(IAggregateRoot).IsAssignableFrom(type);
+        => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) &&
+            typeof(IAggregateRoot).IsAssignableFrom(type);
 
     private IEnumerable<Type> Types { get; set; }
 
@@ -34,7 +20,19 @@ public class DispatcherOptions : IDispatcherOptions
 
     internal List<Type> AllAggregateRootTypes { get; private set; }
 
-    public IServiceCollection Services { get; }
 
-    public DispatcherOptions(IServiceCollection services) => Services = services;
+    private DispatcherOptions(IServiceCollection services) => Services = services;
+
+    public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
+        : this(services)
+    {
+        if (assemblies == null || assemblies.Length == 0)
+            throw new ArgumentException(nameof(assemblies));
+
+        Assemblies = assemblies;
+        Types = assemblies.SelectMany(assembly => assembly.GetTypes());
+        AllEventTypes = GetTypes(typeof(IEvent)).ToList();
+        AllDomainServiceTypes = GetTypes(typeof(DomainService)).ToList();
+        AllAggregateRootTypes = GetTypes(typeof(IAggregateRoot)).Where(IsAggregateRootEntity).ToList();
+    }
 }

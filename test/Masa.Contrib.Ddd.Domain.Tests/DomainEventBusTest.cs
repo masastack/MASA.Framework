@@ -18,7 +18,7 @@ public class DomainEventBusTest
         _eventBus = new();
         _integrationEventBus = new();
         _uoW = new();
-        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection()));
+        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
     }
 
     [TestMethod]
@@ -28,7 +28,6 @@ public class DomainEventBusTest
         var eventTypes = assemblies.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type));
         _eventBus.Setup(eventBus => eventBus.GetAllEventTypes()).Returns(() => eventTypes);
-        _dispatcherOptions.Value.Assemblies = _defaultAssemblies;
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, _uoW.Object, _dispatcherOptions);
 
         Assert.IsTrue(domainEventBus.GetAllEventTypes().Count() == eventTypes.Count(), "");
@@ -93,11 +92,11 @@ public class DomainEventBusTest
     [TestMethod]
     public void TestAddMultDomainEventBusAsync()
     {
-        _services.AddScoped(serviceProvider => _eventBus.Object);
-        _services.AddScoped(serviceProvider => _integrationEventBus.Object);
-        _services.AddScoped(serviceProvider => _uoW.Object);
+        _services.AddScoped(_ => _eventBus.Object);
+        _services.AddScoped(_ => _integrationEventBus.Object);
+        _services.AddScoped(_ => _uoW.Object);
 
-        _services.AddDomainEventBus(options => options.Assemblies = new Assembly[1] { typeof(DomainEventBusTest).Assembly }).AddDomainEventBus();
+        _services.AddDomainEventBus(new[] { typeof(DomainEventBusTest).Assembly }).AddDomainEventBus();
         var serviceProvider = _services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IDomainEventBus>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<IOptions<DispatcherOptions>>().Count() == 1);
@@ -116,11 +115,10 @@ public class DomainEventBusTest
     public void TestNotUseUnitOfWork()
     {
         var eventBus = new Mock<IEventBus>();
-        _services.AddScoped(serviceProvider => eventBus.Object);
+        _services.AddScoped(_ => eventBus.Object);
 
-        var ex = Assert.ThrowsException<Exception>(()
-            => _services.AddDomainEventBus(options => options.Assemblies = new Assembly[1] { typeof(DomainEventBusTest).Assembly })
-        );
+        var ex = Assert.ThrowsException<Exception>(() =>
+            _services.AddDomainEventBus(new Assembly[1] { typeof(DomainEventBusTest).Assembly }));
         Assert.IsTrue(ex.Message == "Please add UoW first.");
     }
 
@@ -130,21 +128,15 @@ public class DomainEventBusTest
         var services = new ServiceCollection();
 
         var eventBus = new Mock<IEventBus>();
-        services.AddScoped(serviceProvider => eventBus.Object);
+        services.AddScoped(_ => eventBus.Object);
 
         var uoW = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uoW.Object);
+        services.AddScoped(_ => uoW.Object);
 
         var ex = Assert.ThrowsException<Exception>(()
-            => services.AddDomainEventBus(options => options.Assemblies = new Assembly[1] { typeof(DomainEventBusTest).Assembly })
+            => services.AddDomainEventBus(new Assembly[1] { typeof(DomainEventBusTest).Assembly })
         );
         Assert.IsTrue(ex.Message == "Please add IntegrationEventBus first.");
-    }
-
-    [TestMethod]
-    public void TestNullAssembly()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => _dispatcherOptions.Value.Assemblies = null!);
     }
 
     [TestMethod]
@@ -153,20 +145,17 @@ public class DomainEventBusTest
         var services = new ServiceCollection();
 
         var eventBus = new Mock<IEventBus>();
-        services.AddScoped(serviceProvider => eventBus.Object);
+        services.AddScoped(_ => eventBus.Object);
 
         var uoW = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uoW.Object);
+        services.AddScoped(_ => uoW.Object);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        services.AddScoped(serviceProvider => integrationEventBus.Object);
+        services.AddScoped(_ => integrationEventBus.Object);
 
         Assert.ThrowsException<NotImplementedException>(() =>
         {
-            services.AddDomainEventBus(options =>
-            {
-                options.Assemblies = new Assembly[1] { typeof(Users).Assembly };
-            });
+            services.AddDomainEventBus(new Assembly[1] { typeof(Users).Assembly });
         });
     }
 
@@ -176,20 +165,17 @@ public class DomainEventBusTest
         var services = new ServiceCollection();
 
         var eventBus = new Mock<IEventBus>();
-        services.AddScoped(serviceProvider => eventBus.Object);
+        services.AddScoped(_ => eventBus.Object);
 
         var uoW = new Mock<IUnitOfWork>();
-        services.AddScoped(serviceProvider => uoW.Object);
+        services.AddScoped(_ => uoW.Object);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
-        services.AddScoped(serviceProvider => integrationEventBus.Object);
+        services.AddScoped(_ => integrationEventBus.Object);
 
         Mock<IRepository<Users>> repository = new();
-        services.AddScoped(serviceProvider => repository.Object);
-        services.AddDomainEventBus(options =>
-        {
-            options.Assemblies = new Assembly[2] { typeof(Users).Assembly, typeof(DomainEventBusTest).Assembly };
-        });
+        services.AddScoped(_ => repository.Object);
+        services.AddDomainEventBus(new[] { typeof(Users).Assembly, typeof(DomainEventBusTest).Assembly });
     }
 
     [TestMethod]
@@ -215,7 +201,7 @@ public class DomainEventBusTest
         var uoW = new Mock<IUnitOfWork>();
         uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
-        var options = Options.Create(new DispatcherOptions(_services) { Assemblies = AppDomain.CurrentDomain.GetAssemblies() });
+        var options = Options.Create(new DispatcherOptions(_services, AppDomain.CurrentDomain.GetAssemblies()));
 
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, uoW.Object, options);
 
@@ -244,7 +230,7 @@ public class DomainEventBusTest
         var uoW = new Mock<IUnitOfWork>();
         uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
-        var options = Options.Create(new DispatcherOptions(services) { Assemblies = AppDomain.CurrentDomain.GetAssemblies() });
+        var options = Options.Create(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
 
         var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uoW.Object, options);
 
@@ -317,13 +303,13 @@ public class DomainEventBusTest
     {
         _integrationEventBus.Setup(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<RegisterUserSucceededDomainIntegrationEvent>())).Verifiable();
 
-        _services.AddDomainEventBus(options =>
-        {
-            options.Assemblies = new Assembly[1] { typeof(DomainEventBusTest).Assembly };
-            options.Services.AddScoped(serviceProvider => _eventBus.Object);
-            options.Services.AddScoped(serviceProvider => _integrationEventBus.Object);
-            options.Services.AddScoped(serviceProvider => _uoW.Object);
-        });
+        _services.AddDomainEventBus(new[] { typeof(DomainEventBusTest).Assembly },
+            options =>
+            {
+                options.Services.AddScoped(_ => _eventBus.Object);
+                options.Services.AddScoped(_ => _integrationEventBus.Object);
+                options.Services.AddScoped(_ => _uoW.Object);
+            });
         var serviceProvider = _services.BuildServiceProvider();
 
         var userDomainService = serviceProvider.GetRequiredService<UserDomainService>();

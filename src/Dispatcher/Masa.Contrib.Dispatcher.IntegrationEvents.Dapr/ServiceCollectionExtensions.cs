@@ -6,10 +6,18 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
-        => services.TryAddDaprEventBus<TIntegrationEventLogService>(null, options);
+        => services.AddDaprEventBus<TIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), options);
+
+    public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
+        this IServiceCollection services,
+        Assembly[] assemblies,
+        Action<DispatcherOptions>? options = null)
+        where TIntegrationEventLogService : class, IIntegrationEventLogService
+        => services.TryAddDaprEventBus<TIntegrationEventLogService>(assemblies, null, options);
 
     internal static IServiceCollection TryAddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
+        Assembly[] assemblies,
         Action<DaprClientBuilder>? builder,
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
@@ -19,11 +27,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
-        var dispatcherOptions = new DispatcherOptions(services);
+        var dispatcherOptions = new DispatcherOptions(services, assemblies);
         options?.Invoke(dispatcherOptions);
-
-        if (dispatcherOptions.Assemblies.Length == 0)
-            dispatcherOptions.Assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
         services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));

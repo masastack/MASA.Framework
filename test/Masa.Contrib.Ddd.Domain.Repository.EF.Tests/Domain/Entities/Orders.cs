@@ -12,15 +12,11 @@ public class Orders : AuditAggregateRoot<int, Guid>
 
     public List<OrderItem> OrderItems { get; set; }
 
-    public Orders()
+    public Orders(int id)
     {
         this.OrderDate = DateTime.UtcNow;
         this.OrderItems = new();
         this.OrderStatus = "Submitted";
-    }
-
-    public Orders(int id) : this()
-    {
         base.Id = id;
     }
 

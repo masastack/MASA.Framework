@@ -10,14 +10,24 @@ public class OrderRepository : Repository<CustomDbContext, Orders>, IOrderReposi
     {
         try
         {
-            var transaction = base.Transaction;
+            if (UnitOfWork.UseTransaction)
+                _ = base.Transaction;
+
             await base.AddAsync(order, default);
             await base.SaveChangesAsync();
             await base.CommitAsync();
         }
         catch (Exception)
         {
-            await base.RollbackAsync();
+            if (UnitOfWork.UseTransaction)
+                await base.RollbackAsync();
         }
+    }
+}
+
+public class CustomizeOrderRepository : Repository<CustomDbContext, Orders, int>, ICustomizeOrderRepository
+{
+    public CustomizeOrderRepository(CustomDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+    {
     }
 }

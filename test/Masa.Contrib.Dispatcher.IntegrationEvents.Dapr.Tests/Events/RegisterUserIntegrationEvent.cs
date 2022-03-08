@@ -1,17 +1,7 @@
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests.Events;
 
 public record RegisterUserIntegrationEvent : IntegrationEvent
 {
-    public RegisterUserIntegrationEvent()
-    {
-
-    }
-
-    public RegisterUserIntegrationEvent(Guid id, DateTime creationTime) : base(id, creationTime)
-    {
-
-    }
-
     public string Account { get; set; }
 
     public string Password { get; set; }

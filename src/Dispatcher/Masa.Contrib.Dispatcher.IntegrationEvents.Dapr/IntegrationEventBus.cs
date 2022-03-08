@@ -58,7 +58,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             @event.UnitOfWork = _unitOfWork;
 
         var topicName = @event.Topic;
-        if (@event.UnitOfWork != null && !@event.UnitOfWork.UseTransaction)
+        if (@event.UnitOfWork is { UseTransaction: true })
         {
             try
             {
@@ -86,6 +86,10 @@ public class IntegrationEventBus : IIntegrationEventBus
         }
         else
         {
+            _logger?.LogDebug(
+                   "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.Id,
+                   _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
+
             await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
         }
     }
