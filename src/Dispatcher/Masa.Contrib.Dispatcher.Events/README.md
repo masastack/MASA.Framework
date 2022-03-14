@@ -166,8 +166,7 @@ public class LoggingMiddleware<TEvent>
 
 
 ```C#
-builder.Services
-	   .AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>))
+builder.Services.AddEventBus(options => options.UseMiddleware(typeof(ValidatorMiddleware<>)));
 ```
 
 4. Support Transaction
