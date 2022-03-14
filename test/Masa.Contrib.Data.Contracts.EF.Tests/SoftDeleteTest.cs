@@ -25,7 +25,7 @@ public class SoftDeleteTest : IDisposable
         services.AddMasaDbContext<CustomDbContext>(option =>
         {
             option.UseSqlite(_connection);
-            Assert.ThrowsException<Exception>(() => option.UseSoftDelete(services), "Please add UoW first.");
+            Assert.ThrowsException<Exception>(option.UseSoftDelete, "Please add UoW first.");
         });
     }
 
@@ -38,8 +38,7 @@ public class SoftDeleteTest : IDisposable
         services.AddScoped(serviceProvider => uoW.Object);
         services.AddMasaDbContext<CustomDbContext>(option =>
         {
-            option.UseSqlite(_connection);
-            option.UseSoftDelete(services);
+            option.UseSoftDelete().UseSqlite(_connection);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -73,7 +72,7 @@ public class SoftDeleteTest : IDisposable
         services.AddMasaDbContext<CustomDbContext>(option =>
         {
             option.UseSqlite(_connection);
-            option.UseSoftDelete(services).UseSoftDelete(services);
+            option.UseSoftDelete().UseSoftDelete();
         });
     }
 }
