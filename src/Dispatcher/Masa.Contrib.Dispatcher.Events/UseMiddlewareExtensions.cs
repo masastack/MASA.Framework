@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Dispatcher.Events;
+namespace Masa.Contrib.Dispatcher.Events;
 
 public static class UseMiddlewareExtensions
 {
@@ -11,7 +11,7 @@ public static class UseMiddlewareExtensions
             throw new ArgumentException($"{middleware.Name} doesn't implement IMiddleware<>");
 
         var descriptor = new ServiceDescriptor(typeof(IMiddleware<>), middleware, middlewareLifetime);
-        eventBusBuilder.Services.Add(descriptor);
+        eventBusBuilder.Services.TryAddEnumerable(descriptor);
         return eventBusBuilder;
     }
 }
