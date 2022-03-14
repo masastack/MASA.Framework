@@ -11,10 +11,7 @@ Install-Package Masa.Contrib.Data.Contracts.EF
 
 ```C#
 builder.Services.AddEventBus(options => {
-    options.UseUoW<CustomDbContext>(dbOptions =>
-    {
-        dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
-    });
+    options.UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"));
 });
 ```
 
