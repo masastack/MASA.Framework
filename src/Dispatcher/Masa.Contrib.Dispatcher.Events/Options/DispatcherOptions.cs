@@ -28,4 +28,11 @@ public class DispatcherOptions : IDispatcherOptions
             .ToList();
         UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
     }
+
+    public DispatcherOptions UseMiddleware(Type middleware, ServiceLifetime middlewareLifetime = ServiceLifetime.Scoped)
+    {
+        var descriptor = new ServiceDescriptor(typeof(IMiddleware<>), middleware, middlewareLifetime);
+        Services.TryAddEnumerable(descriptor);
+        return this;
+    }
 }

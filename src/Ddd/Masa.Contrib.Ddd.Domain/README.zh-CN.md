@@ -21,6 +21,7 @@ Install-Package Masa.Contrib.Data.UoW.EF
 builder.Services
 .AddDomainEventBus(options =>
 {
+    // options.UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)))//使用进程内事件并使用中间件
     options.UseEventBus()//使用进程内事件
         .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
         .UseDaprEventBus<IntegrationEventLogService>()///使用跨进程事件
