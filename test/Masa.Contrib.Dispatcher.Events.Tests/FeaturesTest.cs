@@ -1,9 +1,12 @@
+using Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.Events;
+
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
 public class FeaturesTest : TestBase
 {
     private readonly IEventBus _eventBus;
+
     public FeaturesTest() : base()
     {
         _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
@@ -128,31 +131,6 @@ public class FeaturesTest : TestBase
     }
 
     [TestMethod]
-    public Task TestOrderLessThenZero()
-    {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
-        {
-            try
-            {
-                ResetMemoryEventBus(typeof(OrderStockConfirmedEvent).Assembly);
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                try
-                {
-                    ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
-                }
-                catch (Exception)
-                {
-
-                }
-                throw;
-            }
-        });
-        return Task.CompletedTask;
-    }
-
-    [TestMethod]
     public Task TestOnlyCancelHandler()
     {
         Assert.ThrowsException<NotSupportedException>(() =>
@@ -274,5 +252,133 @@ public class FeaturesTest : TestBase
 
         await eventBus.CommitAsync(default);
         uoW.Verify(u => u.CommitAsync(default), Times.Once);
+    }
+
+    [DataTestMethod]
+    [DataRow(1, 2, -1)]
+    [DataRow(5, 4, 24)]
+    public async Task TestEventBusCancelOrder(int parameterA, int parameterB, int result)
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddTestEventBus(new[] { typeof(CalculateEvent).Assembly }, ServiceLifetime.Scoped);
+        var @event = new CalculateEvent()
+        {
+            ParameterA = parameterA,
+            ParameterB = parameterB
+        };
+        var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
+        await eventBus.PublishAsync(@event);
+        Assert.IsTrue(@event.Result == result);
+    }
+
+    [DataTestMethod]
+    public void TestEventHandler()
+    {
+        var order = 1;
+        bool enableRetry = true;
+        var failureLevels = FailureLevels.ThrowAndCancel;
+        bool isCancel = true;
+        int retryTimes = 5;
+        int defaultRetryTimes = 3;
+
+        var eventAttribute = new EventHandlerAttribute(order);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == false &&
+            eventAttribute.RetryTimes == 0 &&
+            eventAttribute.FailureLevels == FailureLevels.Throw &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, failureLevels);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == false &&
+            eventAttribute.RetryTimes == 0 &&
+            eventAttribute.FailureLevels == failureLevels &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, failureLevels, enableRetry);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == enableRetry &&
+            eventAttribute.RetryTimes == defaultRetryTimes &&
+            eventAttribute.FailureLevels == failureLevels &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, failureLevels, enableRetry, isCancel);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == enableRetry &&
+            eventAttribute.RetryTimes == defaultRetryTimes &&
+            eventAttribute.FailureLevels == failureLevels &&
+            eventAttribute.IsCancel == isCancel
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, failureLevels, enableRetry, retryTimes);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == enableRetry &&
+            eventAttribute.RetryTimes == retryTimes &&
+            eventAttribute.FailureLevels == failureLevels &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, failureLevels, enableRetry, retryTimes, isCancel);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry == enableRetry &&
+            eventAttribute.RetryTimes == retryTimes &&
+            eventAttribute.FailureLevels == failureLevels &&
+            eventAttribute.IsCancel == isCancel
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, enableRetry);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry &&
+            eventAttribute.RetryTimes == defaultRetryTimes &&
+            eventAttribute.FailureLevels == FailureLevels.Throw &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, enableRetry, retryTimes);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry &&
+            eventAttribute.RetryTimes == retryTimes &&
+            eventAttribute.FailureLevels == FailureLevels.Throw &&
+            eventAttribute.IsCancel == false
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, enableRetry, isCancel);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry &&
+            eventAttribute.RetryTimes == defaultRetryTimes &&
+            eventAttribute.FailureLevels == FailureLevels.Throw &&
+            eventAttribute.IsCancel == isCancel
+        );
+
+        eventAttribute = new EventHandlerAttribute(order, enableRetry, isCancel, retryTimes);
+        Assert.IsTrue(
+            eventAttribute.Order == order &&
+            eventAttribute.EnableRetry &&
+            eventAttribute.RetryTimes == retryTimes &&
+            eventAttribute.FailureLevels == FailureLevels.Throw &&
+            eventAttribute.IsCancel == isCancel
+        );
+
+    }
+
+    [TestMethod]
+    public void TestOrderLessThanZero()
+    {
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        {
+            new EventHandlerAttribute(-10);
+        },"The order must be greater than or equal to 0");
     }
 }

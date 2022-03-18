@@ -32,10 +32,9 @@
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests\Masa.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OrderLessThanZeroByFeature.Tests\Masa.Contrib.Dispatcher.Events.OrderLessThanZeroByFeature.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OrderLessThanZeroBySaga.Tests\Masa.Contrib.Dispatcher.Events.OrderLessThanZeroBySaga.Tests.csproj" />
   </ItemGroup>
 
 </Project>

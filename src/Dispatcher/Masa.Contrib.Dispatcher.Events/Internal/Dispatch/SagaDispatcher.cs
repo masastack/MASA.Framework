@@ -6,8 +6,8 @@ internal class SagaDispatcher : DispatcherBase
 
     public SagaDispatcher Build(ServiceLifetime lifetime)
     {
-        AddSagaDispatchRelation(_services, typeof(IEventHandler<>), lifetime);
-        AddSagaDispatchRelation(_services, typeof(ISagaEventHandler<>), lifetime);
+        AddSagaDispatchRelation(Services, typeof(IEventHandler<>), lifetime);
+        AddSagaDispatchRelation(Services, typeof(ISagaEventHandler<>), lifetime);
         return this;
     }
 
@@ -24,12 +24,9 @@ internal class SagaDispatcher : DispatcherBase
     private void AddSagaRelationNetwork(Type eventBusHandlerType)
     {
         var eventHandlers = GetSagaHandlers(eventBusHandlerType);
-        var eventHandler = eventHandlers.Where(x => x.Order != int.MaxValue).FirstOrDefault();
+        var eventHandler = eventHandlers.FirstOrDefault(x => x.Order != int.MaxValue);
         var actualOrder = eventHandler?.Order ?? int.MaxValue;
-        if (actualOrder < 0)
-        {
-            throw new ArgumentOutOfRangeException("The order must be greater than or equal to 0");
-        }
+
         foreach (var handler in eventHandlers)
         {
             if (actualOrder != handler.Order)
@@ -101,7 +98,7 @@ internal class SagaDispatcher : DispatcherBase
     {
         var concretions = new List<Type>();
         var interfaces = new List<Type>();
-        foreach (var type in _assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
+        foreach (var type in Assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
         {
             if (type.IsConcrete())
             {

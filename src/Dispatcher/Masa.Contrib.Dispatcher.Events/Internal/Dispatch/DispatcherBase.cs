@@ -2,39 +2,39 @@ namespace Masa.Contrib.Dispatcher.Events.Internal.Dispatch;
 
 internal class DispatcherBase
 {
-    protected static DispatchRelationNetwork? _sharingRelationNetwork;
+    protected static DispatchRelationNetwork? SharingRelationNetwork;
 
-    protected readonly IServiceCollection _services;
+    protected readonly IServiceCollection Services;
 
-    protected readonly Assembly[] _assemblies;
+    protected readonly Assembly[] Assemblies;
 
-    private readonly ILogger<DispatcherBase>? _logger;
+    protected readonly ILogger<DispatcherBase>? Logger;
 
     public DispatcherBase(IServiceCollection services, Assembly[] assemblies, bool forceInit)
     {
-        _services = services;
-        _assemblies = assemblies;
+        Services = services;
+        Assemblies = assemblies;
         var serviceProvider = services.BuildServiceProvider();
-        if (_sharingRelationNetwork == null || forceInit)
+        if (SharingRelationNetwork == null || forceInit)
         {
-            _sharingRelationNetwork = new DispatchRelationNetwork(serviceProvider.GetService<ILogger<DispatchRelationNetwork>>());
+            SharingRelationNetwork = new DispatchRelationNetwork(serviceProvider.GetService<ILogger<DispatchRelationNetwork>>());
         }
-        _logger = serviceProvider.GetService<ILogger<DispatcherBase>>();
+        Logger = serviceProvider.GetService<ILogger<DispatcherBase>>();
     }
 
     public async Task PublishEventAsync<TEvent>(IServiceProvider serviceProvider, TEvent @event)
         where TEvent : IEvent
     {
         var eventType = typeof(TEvent);
-        if (!_sharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations))
+        if (!SharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations))
         {
             if (@event is IIntegrationEvent)
             {
-                _logger?.LogError($"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
+                Logger?.LogError($"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
                 throw new ArgumentNullException($"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
             }
 
-            _logger?.LogError($"Dispatcher: The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
+            Logger?.LogError($"Dispatcher: The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
             throw new ArgumentNullException($"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
         }
         await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event);
@@ -58,7 +58,7 @@ internal class DispatcherBase
 
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async (@event) =>
             {
-                _logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.Id);
+                Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.Id);
                 await dispatchHandler.ExcuteAction(serviceProvider, @event);
             }, async (@event, ex, failureLevels) =>
             {
@@ -67,7 +67,7 @@ internal class DispatcherBase
                     isCancel = true;
                     if (dispatchRelation.CancelHandlers.Any())
                     {
-                        await ExecuteEventCanceledHandlerAsync(serviceProvider, _logger, executionStrategy, dispatchRelation.CancelHandlers, @event);
+                        await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers, @event);
                     }
                     else
                     {
@@ -76,7 +76,7 @@ internal class DispatcherBase
                 }
                 else
                 {
-                    _logger?.LogWarning("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.Id);
+                    Logger?.LogWarning("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.Id);
                 }
             });
         }
@@ -111,16 +111,16 @@ internal class DispatcherBase
 
     protected void AddRelationNetwork(Type parameterType, EventHandlerAttribute handler)
     {
-        _sharingRelationNetwork!.Add(parameterType, handler);
+        SharingRelationNetwork!.Add(parameterType, handler);
     }
 
-    protected IEnumerable<Type> GetAddServiceTypeList() => _sharingRelationNetwork!.HandlerRelationNetwork
-        .Concat(_sharingRelationNetwork.CancelRelationNetwork)
+    protected IEnumerable<Type> GetAddServiceTypeList() => SharingRelationNetwork!.HandlerRelationNetwork
+        .Concat(SharingRelationNetwork.CancelRelationNetwork)
         .SelectMany(relative => relative.Value)
         .Where(dispatchHandler => dispatchHandler.InvokeDelegate != null)
         .Select(dispatchHandler => dispatchHandler.InstanceType).Distinct();
 
-    protected void Build() => _sharingRelationNetwork!.Build();
+    protected void Build() => SharingRelationNetwork!.Build();
 
     protected bool IsSagaMode(Type handlerType, MethodInfo method) =>
       typeof(IEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) && method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync)) ||

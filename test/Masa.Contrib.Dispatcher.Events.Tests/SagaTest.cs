@@ -49,17 +49,6 @@ public class SagaTest : TestBase
         }
     }
 
-    [TestMethod]
-    public async Task TestEqualMethodsBySaga()
-    {
-        EditUserEvent @event = new EditUserEvent()
-        {
-            UserId = new Random().Next(10, 1000000).ToString(),
-            UserName = "roller"
-        };
-        await _eventBus.PublishAsync(@event);
-    }
-
     [DataTestMethod]
     [DataRow("smith", "alice", "1000", 0)]
     [DataRow("roller", "alice", "1000", 1)]
@@ -99,28 +88,6 @@ public class SagaTest : TestBase
         {
             CategoryId = new Random().Next(100, 10000).ToString(),
             CategoryName = "Name"
-        };
-        if (eventBus != null)
-        {
-            await eventBus.PublishAsync(@event);
-        }
-        ResetMemoryEventBus(false, null!);
-    }
-
-    [TestMethod]
-    public async Task TestLessThenZeroBySaga()
-    {
-        IEventBus? eventBus = null;
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
-        {
-            ResetMemoryEventBus(false, typeof(EditGoodsEvent).Assembly);
-            eventBus = _serviceProvider.GetRequiredService<IEventBus>();
-        });
-        EditGoodsEvent @event = new EditGoodsEvent()
-        {
-            GoodsId = new Random().Next(10, 1000).ToString(),
-            CategoryId = new Random().Next(100, 10000).ToString(),
-            GoodsName = "Name"
         };
         if (eventBus != null)
         {
