@@ -32,7 +32,7 @@ internal class DispatchRelationNetwork
             dispatchRelativeNetwork.Add(keyEventType, new List<EventHandlerAttribute>());
         }
 
-        if (!dispatchRelativeNetwork[keyEventType].Any(x => x.ActionMethodInfo.Equals(handlers.ActionMethodInfo) && x.InstanceType.Equals(handlers.InstanceType)))
+        if (!dispatchRelativeNetwork[keyEventType].Any(x => x.ActionMethodInfo.Equals(handlers.ActionMethodInfo) && x.InstanceType == handlers.InstanceType))
         {
             dispatchRelativeNetwork[keyEventType].Add(handlers);
         }

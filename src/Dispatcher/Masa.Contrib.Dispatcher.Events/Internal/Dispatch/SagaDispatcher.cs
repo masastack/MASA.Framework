@@ -45,19 +45,13 @@ internal class SagaDispatcher : DispatcherBase
         foreach (var method in methods)
         {
             var parameters = method.GetParameters();
-            if (parameters != null && parameters.Length == 1 && parameters.All(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType) && !typeof(IIntegrationEvent).IsAssignableFrom(parameter.ParameterType)) && IsSagaMode(eventBusHandlerType, method))
+            if (parameters.Length == 1 && parameters.All(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType) && !typeof(IIntegrationEvent).IsAssignableFrom(parameter.ParameterType)) && IsSagaMode(eventBusHandlerType, method))
             {
                 var attribute = method.GetCustomAttributes(typeof(EventHandlerAttribute), true).FirstOrDefault();
-                var handler = attribute != null ? attribute as EventHandlerAttribute : null;
-                if (eventType == null)
-                {
-                    eventType = parameters.Select(x => x.ParameterType).FirstOrDefault()!;
-                }
+                var handler = attribute as EventHandlerAttribute;
+                eventType ??= parameters.Select(x => x.ParameterType).FirstOrDefault()!;
 
-                if (handler is null)
-                {
-                    handler = new EventHandlerAttribute();
-                }
+                handler ??= new EventHandlerAttribute();
                 handler.ActionMethodInfo = method;
                 handler.InstanceType = eventBusHandlerType;
                 handler.EventType = eventType;

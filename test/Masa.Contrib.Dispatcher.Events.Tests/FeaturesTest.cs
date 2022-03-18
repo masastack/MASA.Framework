@@ -117,20 +117,6 @@ public class FeaturesTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestThrowException()
-    {
-        ForgotPasswordEvent @event = new ForgotPasswordEvent()
-        {
-            Account = new Random().Next(1000, 9000).ToString(),
-            Email = new Random().Next(100000, 9000000).ToString() + "@qq.com",
-        };
-        await Assert.ThrowsExceptionAsync<Exception>(async () =>
-        {
-            await _eventBus.PublishAsync(@event);
-        });
-    }
-
-    [TestMethod]
     public Task TestOnlyCancelHandler()
     {
         Assert.ThrowsException<NotSupportedException>(() =>
