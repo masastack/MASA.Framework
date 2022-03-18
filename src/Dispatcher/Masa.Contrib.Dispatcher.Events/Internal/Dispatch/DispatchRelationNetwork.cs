@@ -32,7 +32,7 @@ internal class DispatchRelationNetwork
             dispatchRelativeNetwork.Add(keyEventType, new List<EventHandlerAttribute>());
         }
 
-        if (!dispatchRelativeNetwork[keyEventType].Any(x => x.ActionMethodInfo.Equals(handlers.ActionMethodInfo) && x.InstanceType.Equals(handlers.InstanceType)))
+        if (!dispatchRelativeNetwork[keyEventType].Any(x => x.ActionMethodInfo.Equals(handlers.ActionMethodInfo) && x.InstanceType == handlers.InstanceType))
         {
             dispatchRelativeNetwork[keyEventType].Add(handlers);
         }
@@ -51,7 +51,7 @@ internal class DispatchRelationNetwork
             {
                 if (CancelRelationNetwork.TryGetValue(relation.Key, out List<EventHandlerAttribute>? cancelRelations))
                 {
-                    var cancelHandlers = cancelRelations.TakeWhile(handler => relationOption.IsCancelHandler(relationOption.Handler)).Reverse().ToList();
+                    var cancelHandlers = cancelRelations.TakeWhile(cancelHandler => relationOption.IsCancelHandler(cancelHandler)).Reverse().ToList();
                     relationOption.AddCancelHandler(cancelHandlers);
                 }
             }

@@ -6,8 +6,8 @@ internal class SagaDispatcher : DispatcherBase
 
     public SagaDispatcher Build(ServiceLifetime lifetime)
     {
-        AddSagaDispatchRelation(_services, typeof(IEventHandler<>), lifetime);
-        AddSagaDispatchRelation(_services, typeof(ISagaEventHandler<>), lifetime);
+        AddSagaDispatchRelation(Services, typeof(IEventHandler<>), lifetime);
+        AddSagaDispatchRelation(Services, typeof(ISagaEventHandler<>), lifetime);
         return this;
     }
 
@@ -24,12 +24,9 @@ internal class SagaDispatcher : DispatcherBase
     private void AddSagaRelationNetwork(Type eventBusHandlerType)
     {
         var eventHandlers = GetSagaHandlers(eventBusHandlerType);
-        var eventHandler = eventHandlers.Where(x => x.Order != int.MaxValue).FirstOrDefault();
+        var eventHandler = eventHandlers.FirstOrDefault(x => x.Order != int.MaxValue);
         var actualOrder = eventHandler?.Order ?? int.MaxValue;
-        if (actualOrder < 0)
-        {
-            throw new ArgumentOutOfRangeException("The order must be greater than or equal to 0");
-        }
+
         foreach (var handler in eventHandlers)
         {
             if (actualOrder != handler.Order)
@@ -48,19 +45,13 @@ internal class SagaDispatcher : DispatcherBase
         foreach (var method in methods)
         {
             var parameters = method.GetParameters();
-            if (parameters != null && parameters.Length == 1 && parameters.All(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType) && !typeof(IIntegrationEvent).IsAssignableFrom(parameter.ParameterType)) && IsSagaMode(eventBusHandlerType, method))
+            if (parameters.Length == 1 && parameters.All(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType) && !typeof(IIntegrationEvent).IsAssignableFrom(parameter.ParameterType)) && IsSagaMode(eventBusHandlerType, method))
             {
                 var attribute = method.GetCustomAttributes(typeof(EventHandlerAttribute), true).FirstOrDefault();
-                var handler = attribute != null ? attribute as EventHandlerAttribute : null;
-                if (eventType == null)
-                {
-                    eventType = parameters.Select(x => x.ParameterType).FirstOrDefault()!;
-                }
+                var handler = attribute as EventHandlerAttribute;
+                eventType ??= parameters.Select(x => x.ParameterType).FirstOrDefault()!;
 
-                if (handler is null)
-                {
-                    handler = new EventHandlerAttribute();
-                }
+                handler ??= new EventHandlerAttribute();
                 handler.ActionMethodInfo = method;
                 handler.InstanceType = eventBusHandlerType;
                 handler.EventType = eventType;
@@ -101,7 +92,7 @@ internal class SagaDispatcher : DispatcherBase
     {
         var concretions = new List<Type>();
         var interfaces = new List<Type>();
-        foreach (var type in _assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
+        foreach (var type in Assemblies.SelectMany(a => a.DefinedTypes).Where(t => !t.IsGeneric()))
         {
             if (type.IsConcrete())
             {
