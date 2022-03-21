@@ -27,7 +27,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             if (unitOfWork != null)
                 unitOfWork.UseTransaction = false;
 
-            var dapr = _serviceProvider.GetRequiredService<DaprClient>();
+            var dapr = scope.ServiceProvider.GetRequiredService<DaprClient>();
             var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
