@@ -17,15 +17,10 @@ public static class DispatcherOptionsExtensions
 
         options.Services.AddSingleton<UoWProvider>();
 
-        options.Services.AddScoped<IUnitOfWork>(serviceProvider =>
+        options.Services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {
-            var dbContext = serviceProvider.GetRequiredService<TDbContext>();
-            var logger = serviceProvider.GetService<ILogger<UnitOfWork<TDbContext>>>();
-            return new UnitOfWork<TDbContext>(dbContext, logger)
-            {
-                DisableRollbackOnFailure = disableRollbackOnFailure,
-                UseTransaction = useTransaction
-            };
+            DisableRollbackOnFailure = disableRollbackOnFailure,
+            UseTransaction = useTransaction
         });
         if (options.Services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))
             options.Services.AddMasaDbContext<TDbContext>(optionsBuilder);
