@@ -1,5 +1,3 @@
-using Masa.Utils.Data.EntityFrameworkCore.Sqlite;
-
 namespace Masa.Contrib.Data.UoW.EF.Tests;
 
 [TestClass]
