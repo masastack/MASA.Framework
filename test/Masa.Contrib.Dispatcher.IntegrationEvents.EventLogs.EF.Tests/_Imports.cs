@@ -6,10 +6,12 @@ global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Domain
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Events;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Infrastructure;
 global using Masa.Utils.Data.EntityFrameworkCore;
+global using Masa.Utils.Data.EntityFrameworkCore.Sqlite;
 global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Data.Common;
+global using System.Reflection;
 global using System.Text.Json.Serialization;

@@ -2,12 +2,12 @@ namespace Masa.Contrib.Data.UoW.EF.Tests;
 
 public class CustomerDbContext : MasaDbContext
 {
-    public CustomerDbContext()
+    private static readonly Mock<MasaDbContextOptions> masaDbContextOptions = new();
+    public CustomerDbContext() : this(masaDbContextOptions.Object)
     {
-
     }
 
-    public CustomerDbContext(MasaDbContextOptions<CustomerDbContext> options) : base(options) { }
+    public CustomerDbContext(MasaDbContextOptions options) : base(options) { }
 
     public DbSet<Users> User { get; set; }
 

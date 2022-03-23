@@ -1,20 +1,19 @@
-using System.Reflection;
-
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests;
 
-public class TestBase
+public class TestBase : IDisposable
 {
-    protected readonly SqliteConnection _connection;
+    protected readonly string ConnectionString = "DataSource=:memory:";
+    protected readonly SqliteConnection Connection;
 
     protected TestBase()
     {
-        _connection = new SqliteConnection("DataSource=:memory:");
-        _connection.Open();
+        Connection = new SqliteConnection(ConnectionString);
+        Connection.Open();
     }
 
     public void Dispose()
     {
-        _connection.Close();
+        Connection.Close();
     }
 
     protected IServiceProvider CreateDefaultProvider(Action<DispatcherOptions>? action = null)
@@ -22,7 +21,7 @@ public class TestBase
         var services = new ServiceCollection();
         services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
         var options = new DispatcherOptions(services);
-        options.UseEventLog(options => options.UseSqlite(_connection));
+        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseSqlite(ConnectionString));
         action?.Invoke(options);
 
         var integrationEventBus = new Mock<IIntegrationEventBus>();
