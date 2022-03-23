@@ -8,6 +8,7 @@
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //发送跨进程消息
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
 Install-Package Masa.Contrib.Data.UoW.EF //使用工作单元
+Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer // 使用SqlServer
 ```
 
 1. 添加IIntegrationEventBus
@@ -22,7 +23,7 @@ builder.Services
     });
 ```
 
-> CustomerDbContext 需要继承IntegrationEventLogContext
+> CustomerDbContext 需要继承MasaDbContext
 
 2. 自定义 IntegrationEvent
 
@@ -38,7 +39,7 @@ public class DemoIntegrationEvent : IntegrationEvent
 3. 自定义CustomDbContext
 
 ```C#
-public class CustomDbContext : IntegrationEventLogContext
+public class CustomDbContext : MasaDbContext
 {
     public DbSet<User> Users { get; set; } = null!;
 
