@@ -21,4 +21,4 @@ Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
 }
 ```
 
-> 提示：CustomDbContext需要继承IntegrationEventLogContext
+> 提示：CustomDbContext需要继承MasaDbContext

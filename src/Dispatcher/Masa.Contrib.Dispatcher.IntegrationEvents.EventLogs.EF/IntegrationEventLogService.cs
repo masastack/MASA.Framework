@@ -53,12 +53,12 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (transaction == null)
             throw new ArgumentNullException(nameof(transaction));
 
-        if (_eventLogContext.Database.CurrentTransaction == null)
-            await _eventLogContext.Database.UseTransactionAsync(transaction, Guid.NewGuid());
+        if (_eventLogContext.DbContext.Database.CurrentTransaction == null)
+            await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid());
 
-        var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.Database.CurrentTransaction!.TransactionId);
+        var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry);
-        await _eventLogContext.SaveChangesAsync();
+        await _eventLogContext.DbContext.SaveChangesAsync();
 
         CheckAndDetached(eventLogEntry);
     }
@@ -110,13 +110,13 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         var eventLogs = _eventLogContext.EventLogs.Where(e => e.ModificationTime < expiresAt && e.State == IntegrationEventStates.Published)
             .OrderBy(e => e.CreationTime).Take(batchCount);
         _eventLogContext.EventLogs.RemoveRange(eventLogs);
-        await _eventLogContext.SaveChangesAsync(token);
+        await _eventLogContext.DbContext.SaveChangesAsync(token);
 
-        if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
+        if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {
             foreach (var log in eventLogs)
             {
-                _eventLogContext.Entry(log).State = EntityState.Detached;
+                _eventLogContext.DbContext.Entry(log).State = EntityState.Detached;
             }
         }
     }
@@ -138,7 +138,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         try
         {
             _eventLogContext.EventLogs.Update(eventLogEntry);
-            await _eventLogContext.SaveChangesAsync();
+            await _eventLogContext.DbContext.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException ex)
         {
@@ -150,9 +150,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     private void CheckAndDetached(IntegrationEventLog integrationEvent)
     {
-        if (_eventLogContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
+        if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {
-            _eventLogContext.Entry(integrationEvent).State = EntityState.Detached;
+            _eventLogContext.DbContext.Entry(integrationEvent).State = EntityState.Detached;
         }
     }
 }
