@@ -6,7 +6,6 @@ Example：
 
 ```C#
 Install-Package Masa.Contrib.Data.UoW.EF
-Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
