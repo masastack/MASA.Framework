@@ -24,20 +24,22 @@ public class RepositoryTest : TestBase
         };
         _dispatcherOptions = new Mock<IDispatcherOptions>();
         _dispatcherOptions.Setup(options => options.Services).Returns(() => _services);
+        _dispatcherOptions.Setup(options => options.Assemblies).Returns(() => _assemblies);
         if (action == null)
-            _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+            _services.AddMasaDbContext<CustomDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
         else
             action.Invoke(_services);
 
+        var serviceProvider = _services.BuildServiceProvider();
         _dbContext = _services.BuildServiceProvider().GetRequiredService<CustomDbContext>();
         await _dbContext.Database.EnsureCreatedAsync();
-        _uoW = new UnitOfWork<CustomDbContext>(_dbContext);
+        _uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
         _dispatcherOptions.Object.UseUoW<CustomDbContext>();
     }
 
     private async Task<IRepository<Orders>> InitDataAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();
         var orders = new List<Orders>
@@ -118,7 +120,7 @@ public class RepositoryTest : TestBase
     [TestMethod]
     public async Task TestGetPaginatedListAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         var serviceProvider = _services.BuildServiceProvider();
         var customizeOrderRepository = serviceProvider.GetRequiredService<ICustomizeOrderRepository>();
 
@@ -190,7 +192,7 @@ public class RepositoryTest : TestBase
     [TestMethod]
     public async Task TestTranscationFailedAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         var serviceProvider = _services.BuildServiceProvider();
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
         var order = new Orders(1)
@@ -204,7 +206,7 @@ public class RepositoryTest : TestBase
     [TestMethod]
     public async Task TestTranscationSucceededAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         var serviceProvider = _services.BuildServiceProvider();
         var repository = serviceProvider.GetRequiredService<IOrderRepository>();
         var order = new Orders(1)
@@ -222,11 +224,11 @@ public class RepositoryTest : TestBase
         await InitializeAsync(services =>
             services.AddMasaDbContext<CustomDbContext>(options =>
             {
-                options.UseSqlite(_connection)
+                options.DbContextOptionsBuilder.UseSqlite(Connection)
                     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             }));
 
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         var serviceProvider = _services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
 
@@ -282,7 +284,7 @@ public class RepositoryTest : TestBase
     [TestMethod]
     public void TestCustomizeOrderRepository()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();
         var customizeOrderRepository = serviceProvider.GetService<ICustomizeOrderRepository>();
@@ -362,13 +364,13 @@ public class RepositoryTest : TestBase
     public async Task TestServiceLifeAsync()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        services.AddMasaDbContext<CustomDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
         var serviceProvider = services.BuildServiceProvider();
 
         await using (var scope = serviceProvider.CreateAsyncScope())
         {
             var dbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
-            var uow = new UnitOfWork<CustomDbContext>(dbContext);
+            var uow = new UnitOfWork<CustomDbContext>(scope.ServiceProvider);
             var repository = new Repository<CustomDbContext, Orders>(dbContext, uow);
             await repository.AddAsync(new Orders(1)
             {

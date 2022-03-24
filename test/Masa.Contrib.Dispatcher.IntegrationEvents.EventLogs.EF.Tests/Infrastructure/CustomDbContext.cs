@@ -1,6 +1,6 @@
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Infrastructure;
 
-internal class CustomDbContext : IntegrationEventLogContext
+internal class CustomDbContext : MasaDbContext
 {
     public DbSet<User> Users { get; set; } = null!;
 

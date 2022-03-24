@@ -2,16 +2,17 @@ namespace Masa.Contrib.Ddd.Domain.Repository.EF.Tests;
 
 public class TestBase : IDisposable
 {
-    protected readonly SqliteConnection _connection;
+    protected readonly string ConnectionString = "DataSource=:memory:";
+    protected readonly SqliteConnection Connection;
 
     protected TestBase()
     {
-        _connection = new SqliteConnection("DataSource=:memory:");
-        _connection.Open();
+        Connection = new SqliteConnection(ConnectionString);
+        Connection.Open();
     }
 
     public void Dispose()
     {
-        _connection.Close();
+        Connection.Close();
     }
 }

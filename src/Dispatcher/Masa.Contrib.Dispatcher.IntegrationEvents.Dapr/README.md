@@ -8,6 +8,7 @@ Example:
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
 Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
+Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 ```
 
 1. Add IIntegrationEventBus
@@ -22,7 +23,7 @@ builder.Services
     });
 ```
 
-> CustomerDbContext needs to inherit IntegrationEventLogContext
+> CustomerDbContext needs to inherit MasaDbContext
 
 2. Custom IntegrationEvent
 
@@ -38,7 +39,7 @@ public class DemoIntegrationEvent : IntegrationEvent
 3. Custom CustomDbContext
 
 ```C#
-public class CustomDbContext : IntegrationEventLogContext
+public class CustomDbContext : MasaDbContext
 {
     public DbSet<User> Users { get; set; } = null!;
 

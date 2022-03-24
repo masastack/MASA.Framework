@@ -21,4 +21,4 @@ Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
 }
 ```
 
-> Tip: CustomDbContext needs to inherit IntegrationEventLogContext
+> Tip: CustomDbContext needs to inherit MasaDbContext

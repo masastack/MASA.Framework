@@ -3,13 +3,7 @@ namespace Masa.Contrib.Ddd.Domain.Repository.EF;
 public static class DispatcherOptionsExtensions
 {
     public static IDispatcherOptions UseRepository<TDbContext>(
-       this IDispatcherOptions options)
-       where TDbContext : DbContext
-        => options.UseRepository<TDbContext>(AppDomain.CurrentDomain.GetAssemblies());
-
-    public static IDispatcherOptions UseRepository<TDbContext>(
-        this IDispatcherOptions options,
-        params Assembly[] assemblies)
+        this IDispatcherOptions options)
         where TDbContext : DbContext
     {
         if (options.Services == null)
@@ -23,7 +17,7 @@ public static class DispatcherOptionsExtensions
         if (options.Services.All(service => service.ServiceType != typeof(IUnitOfWork)))
             throw new Exception("Please add UoW first.");
 
-        options.Services.TryAddRepository<TDbContext>(assemblies);
+        options.Services.TryAddRepository<TDbContext>(options.Assemblies);
         return options;
     }
 

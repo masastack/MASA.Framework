@@ -37,17 +37,20 @@ public class BaseRepositoryTest : TestBase
         Mock<IUnitOfWork> uoW = new();
         _services.AddScoped(_ => uoW.Object);
 
+        Assembly[] assemblies = { typeof(TestBase).Assembly, typeof(IUserRepository).Assembly };
+        _dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
         Assert.ThrowsException<NotSupportedException>(()
-            => _dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(TestBase).Assembly, typeof(IUserRepository).Assembly)
+            => _dispatcherOptions.Object.UseRepository<CustomDbContext>()
         );
     }
 
     [TestMethod]
     public void TestNullUnitOfWork()
     {
+        _dispatcherOptions.Setup(option => option.Assemblies).Returns(_assemblies).Verifiable();
         var ex = Assert.ThrowsException<Exception>(() =>
         {
-            _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies);
+            _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         });
         Assert.IsTrue(ex.Message == "Please add UoW first.");
     }
@@ -56,20 +59,21 @@ public class BaseRepositoryTest : TestBase
     public void TestNullAssembly()
     {
         _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
-        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
+        _services.AddDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
 
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            _dispatcherOptions.Object.UseRepository<CustomDbContext>(null!);
+            _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         });
     }
 
     [TestMethod]
     public void TestAddMultRepository()
     {
+        _dispatcherOptions.Setup(option => option.Assemblies).Returns(_assemblies).Verifiable();
         _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
-        _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(_connection));
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>(_assemblies).UseRepository<CustomDbContext>();
+        _services.AddMasaDbContext<CustomDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>().UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();
         var repository = serviceProvider.GetServices<IRepository<Orders>>();
