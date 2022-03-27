@@ -4,26 +4,26 @@ public static class DispatcherOptionsExtensions
 {
     private const string DAPR_PUBSUB_NAME = "pubsub";
 
-    public static IDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
-        this IDispatcherOptions options,
-        string daprPubsubName)
+    public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
+        this IDistributedDispatcherOptions options,
+        string daprPubSubName)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
-        => options.UseDaprEventBus<TIntegrationEventLogService>(daprPubsubName, null);
+        => options.UseDaprEventBus<TIntegrationEventLogService>(daprPubSubName, null);
 
-    public static IDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
-        this IDispatcherOptions options,
-        string daprPubsubName,
+    public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
+        this IDistributedDispatcherOptions options,
+        string daprPubSubName,
         Action<DaprClientBuilder>? builder)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
         return options.UseDaprEventBus<TIntegrationEventLogService>(builder, dispatcherOptions =>
         {
-            dispatcherOptions.PubSubName = daprPubsubName;
+            dispatcherOptions.PubSubName = daprPubSubName;
         });
     }
 
-    public static IDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
-        this IDispatcherOptions options,
+    public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
+        this IDistributedDispatcherOptions options,
         Action<DaprClientBuilder>? builder = null,
         Action<DispatcherOptions>? action = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService

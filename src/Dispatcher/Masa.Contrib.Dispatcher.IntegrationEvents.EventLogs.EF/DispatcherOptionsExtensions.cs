@@ -1,8 +1,3 @@
-using Masa.BuildingBlocks.Dispatcher.Events;
-using Masa.Utils.Data.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
 
 public static class DispatcherOptionsExtensions
