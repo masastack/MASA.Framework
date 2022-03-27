@@ -19,7 +19,7 @@ public static class DispatcherOptionsExtensions
     public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
         this IDistributedDispatcherOptions dispatcherOptions,
         Action<DispatcherOptions>? optionAction,
-        Action<DaprClientBuilder>? builder = null)
+        Action<DaprClientBuilder>? builder)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
         ArgumentNullException.ThrowIfNull(dispatcherOptions.Services, nameof(dispatcherOptions.Services));
