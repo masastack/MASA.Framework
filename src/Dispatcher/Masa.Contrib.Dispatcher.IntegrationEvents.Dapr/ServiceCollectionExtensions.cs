@@ -11,15 +11,16 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DispatcherOptions>? options = null)
+        Action<DispatcherOptions>? options = null,
+        Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
-        => services.TryAddDaprEventBus<TIntegrationEventLogService>(assemblies, null, options);
+        => services.TryAddDaprEventBus<TIntegrationEventLogService>(assemblies, options, builder);
 
     internal static IServiceCollection TryAddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DaprClientBuilder>? builder,
-        Action<DispatcherOptions>? options = null)
+        Action<DispatcherOptions>? options,
+        Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
         if (services.Any(service => service.ImplementationType == typeof(IntegrationEventBusProvider)))
