@@ -50,18 +50,6 @@ public class AssemblyResolutionTests
         });
     }
 
-    // [TestMethod]
-    // public void TestEventBusByAddEmptyAssembly()
-    // {
-    //     var services = new ServiceCollection();
-    //     services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-    //     services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-    //     Assert.ThrowsException<ArgumentException>(() =>
-    //     {
-    //         services.AddTestEventBus(Array.Empty<Assembly>(), ServiceLifetime.Scoped);
-    //     });
-    // }
-
     [TestMethod]
     public void TestEventBus()
     {
