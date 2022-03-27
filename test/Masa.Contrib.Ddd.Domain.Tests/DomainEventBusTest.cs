@@ -8,7 +8,7 @@ public class DomainEventBusTest
     private Mock<IEventBus> _eventBus = default!;
     private Mock<IIntegrationEventBus> _integrationEventBus = default!;
     private Mock<IUnitOfWork> _uoW = default!;
-    private IOptions<DispatcherOptions> _dispatcherOptions = default!;
+    private IOptions<Options.DispatcherOptions> _dispatcherOptions = default!;
 
     [TestInitialize]
     public void Initialize()
@@ -18,7 +18,7 @@ public class DomainEventBusTest
         _eventBus = new();
         _integrationEventBus = new();
         _uoW = new();
-        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
+        _dispatcherOptions = Microsoft.Extensions.Options.Options.Create(new Options.DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
     }
 
     [TestMethod]
@@ -99,7 +99,7 @@ public class DomainEventBusTest
         _services.AddDomainEventBus(new[] { typeof(DomainEventBusTest).Assembly }).AddDomainEventBus();
         var serviceProvider = _services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IDomainEventBus>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetServices<IOptions<DispatcherOptions>>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IOptions<Options.DispatcherOptions>>().Count() == 1);
     }
 
     [TestMethod]
@@ -201,7 +201,7 @@ public class DomainEventBusTest
         var uoW = new Mock<IUnitOfWork>();
         uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
-        var options = Options.Create(new DispatcherOptions(_services, AppDomain.CurrentDomain.GetAssemblies()));
+        var options = Microsoft.Extensions.Options.Options.Create(new Options.DispatcherOptions(_services, AppDomain.CurrentDomain.GetAssemblies()));
 
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, uoW.Object, options);
 
@@ -230,7 +230,7 @@ public class DomainEventBusTest
         var uoW = new Mock<IUnitOfWork>();
         uoW.Setup(u => u.CommitAsync(default)).Verifiable();
 
-        var options = Options.Create(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        var options = Microsoft.Extensions.Options.Options.Create(new Options.DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
 
         var domainEventBus = new DomainEventBus(eventBus.Object, integrationEventBus.Object, uoW.Object, options);
 
@@ -246,7 +246,7 @@ public class DomainEventBusTest
         var services = new ServiceCollection();
 
         _uoW.Setup(uow => uow.CommitAsync(CancellationToken.None)).Verifiable();
-        Mock<IOptions<DispatcherOptions>> options = new();
+        Mock<IOptions<Options.DispatcherOptions>> options = new();
 
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, _uoW.Object, options.Object);
         await domainEventBus.CommitAsync(CancellationToken.None);

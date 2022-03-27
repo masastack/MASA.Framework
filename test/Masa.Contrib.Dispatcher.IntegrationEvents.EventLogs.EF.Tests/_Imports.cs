@@ -9,6 +9,7 @@ global using Masa.Utils.Data.EntityFrameworkCore;
 global using Masa.Utils.Data.EntityFrameworkCore.Sqlite;
 global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
