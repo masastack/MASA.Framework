@@ -51,15 +51,16 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        string indexName = option.IndexName ?? throw new ArgumentNullException(nameof(option.IndexName));
+        ArgumentNullException.ThrowIfNull(option.IndexName,nameof(option.IndexName));
+
         services.TryAddSingleton(new AutoCompleteRelationsOptions());
 
-        var autoCompleteRelations = new AutoCompleteRelations(elasticClient, client, indexName, option.Alias, option.IsDefault, option.DefaultOperator, option.DefaultSearchType);
+        var autoCompleteRelations = new AutoCompleteRelations(elasticClient, client, option.IndexName, option.Alias, option.IsDefault, option.DefaultOperator, option.DefaultSearchType);
         services.TryAddAutoCompleteRelation(autoCompleteRelations);
 
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
         services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IAutoCompleteFactory>().CreateClient());
-        client.TryCreateIndexAsync(services.BuildServiceProvider().GetService<ILogger<IAutoCompleteClient>>(), indexName, option);
+        client.TryCreateIndexAsync(services.BuildServiceProvider().GetService<ILogger<IAutoCompleteClient>>(), option);
     }
 
     private static void TryAddAutoCompleteRelation(this IServiceCollection services, AutoCompleteRelations relation)
@@ -79,7 +80,6 @@ public static class ServiceCollectionExtensions
     private static void TryCreateIndexAsync<TDocument, TValue>(
         this IMasaElasticClient client,
         ILogger<IAutoCompleteClient>? logger,
-        string indexName,
         AutoCompleteOptions<TDocument, TValue> option)
         where TDocument : AutoCompleteDocument<TValue>
     {
@@ -90,7 +90,7 @@ public static class ServiceCollectionExtensions
             aliases.Add(option.Alias, new Alias());
         }
 
-        var existsResponse = client.IndexExistAsync(indexName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        var existsResponse = client.IndexExistAsync(option.IndexName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
         if (!existsResponse.IsValid || existsResponse.Exists)
         {
             if (!existsResponse.IsValid)
@@ -99,7 +99,7 @@ public static class ServiceCollectionExtensions
             return;
         }
 
-        client.CreateIndex(logger, indexName, aliases, option);
+        client.CreateIndex(logger, option.IndexName, aliases, option);
     }
 
     private static void CreateIndex<TDocument, TValue>(
