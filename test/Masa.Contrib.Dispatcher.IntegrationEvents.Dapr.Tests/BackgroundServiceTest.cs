@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
+﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 
 [TestClass]
 public class BackgroundServiceTest

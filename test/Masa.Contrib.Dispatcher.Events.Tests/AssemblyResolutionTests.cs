@@ -7,9 +7,9 @@ public class AssemblyResolutionTests
     public void TestResolveEventBus()
     {
         var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-        services.AddEventBus();
+        services
+            .AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingMiddleware<>)))
+            .AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
         Assert.IsNotNull(eventBus, "Event bus injection failed");
@@ -17,20 +17,10 @@ public class AssemblyResolutionTests
     }
 
     [TestMethod]
-    public void TestAddDefaultAssembly()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped);
-    }
-
-    [TestMethod]
     public void TestAddNullAssembly()
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
         Assert.ThrowsException<ArgumentException>(() =>
         {
             Assembly[] assemblies = null;
@@ -43,7 +33,6 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
         Assert.ThrowsException<ArgumentException>(() =>
         {
             services.AddEventBus(Array.Empty<Assembly>());
@@ -55,22 +44,9 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
         Assert.ThrowsException<ArgumentException>(() =>
         {
             services.AddTestEventBus(null, ServiceLifetime.Scoped);
-        });
-    }
-
-    [TestMethod]
-    public void TestEventBusByAddEmptyAssembly()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-        Assert.ThrowsException<ArgumentException>(() =>
-        {
-            services.AddTestEventBus(Array.Empty<Assembly>(), ServiceLifetime.Scoped);
         });
     }
 
@@ -79,19 +55,23 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped);
+        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped,eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingMiddleware<>)));
+        var serviceProvider = services.BuildServiceProvider();
+        var eventBus = serviceProvider.GetService<IEventBus>();
+        Assert.IsNotNull(eventBus, "Event bus injection failed");
+        Assert.IsNotNull(eventBus.GetAllEventTypes());
     }
 
     [TestMethod]
     public void TestUseEventBus()
     {
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
-        var options = new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
-        options.UseEventBus();
-
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
+        dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        dispatcherOptions.Object.UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(LoggingMiddleware<>)));
         var eventBus = services.BuildServiceProvider().GetService<IEventBus>();
         Assert.IsNotNull(eventBus);
     }
@@ -102,23 +82,24 @@ public class AssemblyResolutionTests
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        var options = new DispatcherOptions(services, assemblies);
-        options.UseEventBus().UseEventBus();
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
+        dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        dispatcherOptions.Object
+            .UseEventBus()
+            .UseEventBus();
 
         Assert.IsTrue(services.BuildServiceProvider().GetServices<IEventBus>().Count() == 1);
-
-        var services2 = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services2.AddTestEventBus(assemblies, ServiceLifetime.Scoped)
-            .AddTestEventBus(assemblies, ServiceLifetime.Scoped);
-        var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<IEventBus>().Count() == 1);
     }
 
     [TestMethod]
     public void TestUseEventBusAndNullServices()
     {
-        var options = new DispatcherOptions(null!, AppDomain.CurrentDomain.GetAssemblies());
-        Assert.ThrowsException<ArgumentNullException>(() => options.UseEventBus());
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        IServiceCollection services = null!;
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
+        dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        Assert.ThrowsException<ArgumentNullException>(() => dispatcherOptions.Object.UseEventBus());
     }
 }

@@ -27,11 +27,11 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _logger?.LogWarning("----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.Id);
+                    _logger?.LogError(ex, "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.Id);
                 }
                 else
                 {
-                    _logger?.LogWarning(ex, "----- Error Publishing event {@Event}: after {retries}th executions and we will stop retrying. message id: {messageId} -----", @event, strategyOptions.MaxRetryCount, @event.Id);
+                    _logger?.LogError(ex, "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----", @event, strategyOptions.MaxRetryCount, @event.Id);
                 }
                 exception = ex;
                 retryTimes++;

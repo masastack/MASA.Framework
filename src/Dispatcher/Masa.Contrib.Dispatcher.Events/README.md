@@ -166,7 +166,7 @@ public class LoggingMiddleware<TEvent>
 
 
 ```C#
-builder.Services.AddEventBus(options => options.UseMiddleware(typeof(ValidatorMiddleware<>)));
+builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)));
 ```
 
 4. Support Transaction

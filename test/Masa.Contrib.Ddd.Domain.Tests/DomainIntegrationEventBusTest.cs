@@ -7,7 +7,7 @@ public class DomainIntegrationEventBus
     private IServiceCollection _services = default!;
     private Mock<IIntegrationEventBus> _integrationEventBus = default!;
     private Mock<IUnitOfWork> _uoW = default!;
-    private IOptions<DispatcherOptions> _dispatcherOptions = default!;
+    private IOptions<Options.DispatcherOptions> _dispatcherOptions = default!;
 
     [TestInitialize]
     public void Initialize()
@@ -17,7 +17,7 @@ public class DomainIntegrationEventBus
         _integrationEventBus = new();
         _integrationEventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<IIntegrationEvent>())).Verifiable();
         _uoW = new();
-        _dispatcherOptions = Options.Create(new DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
+        _dispatcherOptions = Microsoft.Extensions.Options.Options.Create(new Options.DispatcherOptions(new ServiceCollection(), _defaultAssemblies));
     }
 
     [TestMethod]

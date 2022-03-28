@@ -115,44 +115,65 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {
             foreach (var log in eventLogs)
-            {
                 _eventLogContext.DbContext.Entry(log).State = EntityState.Detached;
-            }
         }
     }
 
     private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
     {
-        var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
+        var eventLogEntry = _eventLogContext.EventLogs.AsNoTracking().FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
 
         action?.Invoke(eventLogEntry);
 
-
         eventLogEntry.State = status;
         eventLogEntry.ModificationTime = eventLogEntry.GetCurrentTime();
+
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
 
-        try
-        {
-            _eventLogContext.EventLogs.Update(eventLogEntry);
-            await _eventLogContext.DbContext.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            throw new UserFriendlyException(ex.Message);
-        }
-
-        CheckAndDetached(eventLogEntry);
+        await UpdateAsync(eventLogEntry);
     }
 
     private void CheckAndDetached(IntegrationEventLog integrationEvent)
     {
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
-        {
             _eventLogContext.DbContext.Entry(integrationEvent).State = EntityState.Detached;
-        }
+    }
+
+    /// <summary>
+    /// By using SQL statements to handle high concurrency, reduce the dependence on the database
+    /// Turning on a transactional operation makes the operation atomic
+    /// Retrying the task operation in the background will not open the transaction, so that the task will only be executed once in high concurrency scenarios
+    /// </summary>
+    /// <param name="eventLogEntry"></param>
+    private async Task UpdateAsync(IntegrationEventLog eventLogEntry)
+    {
+        string eventIdColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.EventId));
+        string stateColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.State));
+        string modificationTimeColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.ModificationTime));
+        string timesSentColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.TimesSent));
+        string rowVersionColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.RowVersion));
+        string tableName = _eventLogContext.DbContext.GetTableName<IntegrationEventLog>();
+        var newVersion = Guid.NewGuid().ToString();
+
+        string updateSql = $"UPDATE { tableName } set [{ stateColumn }] = {{0}}, [{modificationTimeColumn }] = {{1}}, [{ timesSentColumn }] = {{2}}, [{ rowVersionColumn }] = {{3}} where [{ eventIdColumn }] = {{4}} and [{ rowVersionColumn }] = {{5}};";
+        await ExecuteAsync(updateSql, new object[]
+        {
+            (int)eventLogEntry.State,
+            eventLogEntry.ModificationTime,
+            eventLogEntry.TimesSent,
+            newVersion,
+            eventLogEntry.EventId,
+            eventLogEntry.RowVersion
+        });
+    }
+
+    private async Task ExecuteAsync(string updateSql, params object[] parameters)
+    {
+        var effectRow = await _eventLogContext.DbContext.Database.ExecuteSqlRawAsync(updateSql, parameters);
+        if (effectRow == 0)
+            throw new UserFriendlyException("Concurrency conflict, update exception");
     }
 }

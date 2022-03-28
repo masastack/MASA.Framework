@@ -66,13 +66,9 @@ internal class DispatcherBase
                 {
                     isCancel = true;
                     if (dispatchRelation.CancelHandlers.Any())
-                    {
                         await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers, @event);
-                    }
                     else
-                    {
-                        throw ex;
-                    }
+                        throw new Exception(ex.Message, ex);
                 }
                 else
                 {
