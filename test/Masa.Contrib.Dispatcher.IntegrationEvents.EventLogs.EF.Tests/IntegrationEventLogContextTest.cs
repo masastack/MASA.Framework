@@ -6,7 +6,11 @@ public class IntegrationEventLogContextTest : TestBase
     [TestMethod]
     public void TestCreateDbContext()
     {
-        var serviceProvider = CreateDefaultProvider(option => option.UseEventLog<CustomDbContext>());
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseSqlite(ConnectionString));
+        var distributedDispatcherOptions = CreateDispatcherOptions(services);
+        distributedDispatcherOptions.UseEventLog<CustomDbContext>();
+        var serviceProvider = services.BuildServiceProvider();
 
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var entity = customDbContext.Model.GetEntityTypes()
@@ -42,10 +46,10 @@ public class IntegrationEventLogContextTest : TestBase
     [TestMethod]
     public void TestUseEventLog()
     {
-        var dispatcherOptions = new DispatcherOptions(new ServiceCollection());
-        dispatcherOptions.Services.AddDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
-        dispatcherOptions.UseEventLog<CustomDbContext>();
-        var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
+        var distributedDispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
+        distributedDispatcherOptions.Services.AddDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
+        distributedDispatcherOptions.UseEventLog<CustomDbContext>();
+        var serviceProvider = distributedDispatcherOptions.Services.BuildServiceProvider();
 
         Assert.ThrowsException<InvalidOperationException>(() => serviceProvider.GetService<IntegrationEventLogContext>());
 

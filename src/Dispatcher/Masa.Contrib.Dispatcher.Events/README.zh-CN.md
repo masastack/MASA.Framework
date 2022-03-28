@@ -165,7 +165,7 @@ public class LoggingMiddleware<TEvent>
    2. 启用自定义Middleware
 
 ```C#
-builder.Services.AddEventBus(options => options.UseMiddleware(typeof(ValidatorMiddleware<>)));
+builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)));
 ```
 
 4. 支持Transaction

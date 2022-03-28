@@ -64,10 +64,14 @@ public class IntegrationEventBusTest
     [TestMethod]
     public void TestAddMultDaprEventBus()
     {
-        _dispatcherOptions.Object.Value
+        var services = new ServiceCollection();
+        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
+        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
+        distributedDispatcherOptions.Object
             .UseDaprEventBus<CustomizeIntegrationEventLogService>()
             .UseDaprEventBus<CustomizeIntegrationEventLogService>();
-        var serviceProvider = _dispatcherOptions.Object.Value.Services.BuildServiceProvider();
+        var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IIntegrationEventBus>().Count() == 1);
     }
 
@@ -113,9 +117,12 @@ public class IntegrationEventBusTest
     [TestMethod]
     public void TestAddDaprEventBusAndNullServicesAsync()
     {
-        _options.Setup(option => option.Services).Returns(() => null!);
+        IServiceCollection services = null;
+        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
+        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
         Assert.ThrowsException<ArgumentNullException>(() =>
-                _options.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>(),
+                distributedDispatcherOptions.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>(),
             $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }
 

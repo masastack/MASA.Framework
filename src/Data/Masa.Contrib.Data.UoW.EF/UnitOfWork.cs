@@ -61,7 +61,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
         await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
-    public ValueTask DisposeAsync() => Context.DisposeAsync();
+    public async ValueTask DisposeAsync() => await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
 
-    public void Dispose() => Context.Dispose();
+    public void Dispose() => _context?.Dispose();
 }

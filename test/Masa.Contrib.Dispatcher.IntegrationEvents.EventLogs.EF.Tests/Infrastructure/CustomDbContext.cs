@@ -6,6 +6,5 @@ internal class CustomDbContext : MasaDbContext
 
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
-
     }
 }

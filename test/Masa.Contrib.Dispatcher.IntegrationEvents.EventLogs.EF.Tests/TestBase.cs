@@ -16,32 +16,12 @@ public class TestBase : IDisposable
         Connection.Close();
     }
 
-    protected IServiceProvider CreateDefaultProvider(Action<DispatcherOptions>? action = null)
+    protected IDispatcherOptions CreateDispatcherOptions(IServiceCollection services, Assembly[]? assemblies = null)
     {
-        var services = new ServiceCollection();
-        services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var options = new DispatcherOptions(services);
-        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseSqlite(ConnectionString));
-        action?.Invoke(options);
-
-        var integrationEventBus = new Mock<IIntegrationEventBus>();
-        integrationEventBus.Setup(e => e.GetAllEventTypes()).Returns(()
-            => AppDomain.CurrentDomain.GetAssemblies().SelectMany(assembly => assembly.GetTypes())
-                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type)));
-        services.AddScoped(serviceProvider => integrationEventBus.Object);
-        return services.BuildServiceProvider();
-    }
-}
-
-public class DispatcherOptions : IDispatcherOptions
-{
-    public IServiceCollection Services { get; }
-
-    public Assembly[] Assemblies { get; }
-
-    public DispatcherOptions(IServiceCollection services, Assembly[]? assemblies = null)
-    {
-        this.Services = services;
-        Assemblies = assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies ?? AppDomain.CurrentDomain.GetAssemblies())
+            .Verifiable();
+        return dispatcherOptions.Object;
     }
 }

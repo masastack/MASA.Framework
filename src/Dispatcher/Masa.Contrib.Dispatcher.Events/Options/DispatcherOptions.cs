@@ -1,10 +1,10 @@
 namespace Masa.Contrib.Dispatcher.Events.Options;
 
-public class DispatcherOptions : IDispatcherOptions
+public class DispatcherOptions
 {
-    public IServiceCollection Services { get; }
+    private IServiceCollection Services { get; }
 
-    public Assembly[] Assemblies { get; }
+    private Assembly[] Assemblies { get; }
 
     private bool IsSupportUnitOfWork(Type eventType)
         => typeof(ITransaction).IsAssignableFrom(eventType) && !typeof(IDomainQuery<>).IsGenericInterfaceAssignableFrom(eventType);
@@ -27,12 +27,5 @@ public class DispatcherOptions : IDispatcherOptions
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
             .ToList();
         UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
-    }
-
-    public DispatcherOptions UseMiddleware(Type middleware, ServiceLifetime middlewareLifetime = ServiceLifetime.Scoped)
-    {
-        var descriptor = new ServiceDescriptor(typeof(IMiddleware<>), middleware, middlewareLifetime);
-        Services.TryAddEnumerable(descriptor);
-        return this;
     }
 }

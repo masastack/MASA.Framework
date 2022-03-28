@@ -137,10 +137,17 @@ public class DispatcherOptionTest
     [TestMethod]
     public void UseDaprEventBus()
     {
-        _options.UseDaprEventBus<CustomizeIntegrationEventLogService>("pubsub2");
-        var serviceProvider = _options.Services.BuildServiceProvider();
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        var services = new ServiceCollection();
+        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
+        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
+        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
+        distributedDispatcherOptions.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>("pubsub2");
+        var serviceProvider = services.BuildServiceProvider();
+
         var integrationEventBus = serviceProvider.GetService<IIntegrationEventBus>();
         Assert.IsNotNull(integrationEventBus);
+
         var options = serviceProvider.GetRequiredService<IOptions<DispatcherOptions>>();
         Assert.IsTrue(options.Value.PubSubName == "pubsub2");
     }

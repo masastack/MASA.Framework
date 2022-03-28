@@ -2,8 +2,8 @@ namespace Masa.Contrib.Ddd.Domain;
 
 public class DomainEventBus : IDomainEventBus
 {
-    protected readonly IEventBus _eventBus;
-    protected readonly IIntegrationEventBus _integrationEventBus;
+    private readonly IEventBus _eventBus;
+    private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IUnitOfWork _unitOfWork;
     private readonly DispatcherOptions _options;
 

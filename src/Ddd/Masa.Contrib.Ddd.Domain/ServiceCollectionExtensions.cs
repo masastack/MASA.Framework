@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
 
         var dispatcherOptions = new DispatcherOptions(services, assemblies);
         options?.Invoke(dispatcherOptions);
-        services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Options.Create(dispatcherOptions));
+        services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         if (services.All(service => service.ServiceType != typeof(IEventBus)))
             throw new Exception("Please add EventBus first.");

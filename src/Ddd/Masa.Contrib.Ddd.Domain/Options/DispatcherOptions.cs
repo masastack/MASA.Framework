@@ -1,6 +1,6 @@
-namespace Masa.Contrib.Ddd.Domain;
+namespace Masa.Contrib.Ddd.Domain.Options;
 
-public class DispatcherOptions : IDispatcherOptions
+public class DispatcherOptions : IDistributedDispatcherOptions
 {
     public IServiceCollection Services { get; }
 
