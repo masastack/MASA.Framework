@@ -56,4 +56,5 @@ public async Task<string> GetAsync([FromServices] IAutoCompleteClient client)
 > 默认需要添加的插件：
 >
 > https://github.com/medcl/elasticsearch-analysis-ik
+>
 > https://github.com/medcl/elasticsearch-analysis-pinyin

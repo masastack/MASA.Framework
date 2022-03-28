@@ -56,4 +56,5 @@ public async Task<string> GetAsync([FromServices] IAutoCompleteClient client)
 > Plugins that need to be added by default:
 >
 > https://github.com/medcl/elasticsearch-analysis-ik
+>
 > https://github.com/medcl/elasticsearch-analysis-pinyin
