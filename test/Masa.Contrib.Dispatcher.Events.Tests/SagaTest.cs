@@ -64,10 +64,14 @@ public class SagaTest : TestBase
         };
         if (isError == 1)
         {
-            await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+            try
             {
                 await _eventBus.PublishAsync(@event);
-            });
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.InnerException is NotSupportedException);
+            }
         }
         else
         {

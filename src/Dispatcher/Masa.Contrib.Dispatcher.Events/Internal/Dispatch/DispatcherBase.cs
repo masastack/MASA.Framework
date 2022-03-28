@@ -96,9 +96,8 @@ internal class DispatcherBase
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
-                {
-                    throw ex;
-                }
+                    throw new Exception(ex.Message, ex);
+
                 logger?.LogWarning("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.Id);
                 return Task.CompletedTask;
             });
