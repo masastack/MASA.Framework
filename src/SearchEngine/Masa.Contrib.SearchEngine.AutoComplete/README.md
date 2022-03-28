@@ -21,7 +21,7 @@ builder.Services
         .AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
 ````
 
-##### setting data
+##### Set data
 
 ```` C#
 public async Task<string> SetAsync([FromServices] IAutoCompleteClient client)
@@ -43,7 +43,7 @@ public async Task<string> SetAsync([FromServices] IAutoCompleteClient client)
 ````
 
 
-##### retrieve data
+##### Get data
 
 ```` C#
 public async Task<string> GetAsync([FromServices] IAutoCompleteClient client)
