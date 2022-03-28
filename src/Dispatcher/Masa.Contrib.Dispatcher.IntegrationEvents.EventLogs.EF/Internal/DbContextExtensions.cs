@@ -1,6 +1,6 @@
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Internal;
 
-internal static class EfCommon
+internal static class DbContextExtensions
 {
     private static readonly ConcurrentDictionary<Type, Tables> TableDictionary = new();
 
