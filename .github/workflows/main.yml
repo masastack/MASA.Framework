@@ -1,13 +1,13 @@
-name: codecov
+name: Test
 on:
   push:
     branches:
       - 'main'
   workflow_dispatch:
-
+  
 jobs:
-  codecov:
-    name: packeg build and push
+  test:
+    name: codecov
     runs-on: ubuntu-latest
     steps:
     - name: git pull
@@ -21,16 +21,33 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
-
     - name: dependencies
       run: git clone -b main https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
+
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+
+    - name: Start Elasticsearch
+      uses: everpcpc/elasticsearch-action@v2
+      with:
+        version: 7.6.1
+        plugins: |
+          https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.6.1/elasticsearch-analysis-ik-7.6.1.zip
+          https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.6.1/elasticsearch-analysis-pinyin-7.6.1.zip
+          analysis-icu
+          analysis-smartcn
+          analysis-kuromoji
 
     - name: restore
       run: dotnet restore
 
     - name: build
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
-    
+
     - name: test
       run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
