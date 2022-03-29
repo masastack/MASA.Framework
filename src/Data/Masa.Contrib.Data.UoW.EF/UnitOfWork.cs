@@ -4,9 +4,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 {
     public IServiceProvider ServiceProvider { get; }
 
-    private DbContext? _context;
-
-    protected DbContext Context => _context ??= ServiceProvider.GetRequiredService<TDbContext>();
+    protected DbContext Context;
 
     public DbTransaction Transaction
     {
@@ -35,6 +33,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
     public UnitOfWork(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
+        Context = serviceProvider.GetRequiredService<TDbContext>();
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -60,7 +59,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
-    public async ValueTask DisposeAsync() => await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
+    public async ValueTask DisposeAsync() => await Context.DisposeAsync();
 
-    public void Dispose() => _context?.Dispose();
+    public void Dispose() => Context.Dispose();
 }

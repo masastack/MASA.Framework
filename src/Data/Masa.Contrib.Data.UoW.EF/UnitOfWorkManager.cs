@@ -6,13 +6,21 @@ public class UnitOfWorkManager : IUnitOfWorkManager
 
     public UnitOfWorkManager(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-    public Task<IUnitOfWork> CreateDbContextAsync(Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextOptions dbContextOptions)
+    public Task<IUnitOfWork> CreateDbContextAsync()
     {
-        ArgumentNullException.ThrowIfNull(dbContextOptions, nameof(dbContextOptions));
-        if (dbContextOptions.Connection == null && string.IsNullOrEmpty(dbContextOptions.ConnectionString))
-            throw new ArgumentException($"Invalid {nameof(dbContextOptions)}");
+        var scope = _serviceProvider.CreateAsyncScope();
+        return Task.FromResult(scope.ServiceProvider.GetRequiredService<IUnitOfWork>());
+    }
+
+    public Task<IUnitOfWork> CreateDbContextAsync(MasaDbContextConfigurationOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options, nameof(options));
+        if (string.IsNullOrEmpty(options.ConnectionString))
+            throw new ArgumentException($"Invalid {nameof(options)}");
 
         var scope = _serviceProvider.CreateAsyncScope();
+        var unitOfWorkAccessor = scope.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
+        unitOfWorkAccessor.CurrentDbContextOptions = options;
         return Task.FromResult(scope.ServiceProvider.GetRequiredService<IUnitOfWork>());
     }
 }

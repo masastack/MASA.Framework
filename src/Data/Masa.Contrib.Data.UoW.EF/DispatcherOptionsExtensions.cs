@@ -16,7 +16,9 @@ public static class DispatcherOptionsExtensions
             return options;
 
         options.Services.AddSingleton<UoWProvider>();
+        options.Services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
         options.Services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+        options.Services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         options.Services.TryAddSingleton<IDataConnectionStringProvider, DataConnectionStringProvider>();
 
         options.Services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
