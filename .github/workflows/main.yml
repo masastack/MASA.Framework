@@ -30,6 +30,9 @@ jobs:
 
     - name: build
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
+    
+    - name: test
+      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
       uses: codecov/codecov-action@v1
