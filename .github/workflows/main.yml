@@ -52,6 +52,6 @@ jobs:
       run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
-      uses: codecov/codecov-action@2
+      uses: codecov/codecov-action@v2
 
 
