@@ -76,11 +76,11 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()).Result).Returns(uoW.Object).Verifiable();
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
         Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>
+        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
         }).Verifiable();
@@ -154,11 +154,11 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()).Result).Returns(uoW.Object).Verifiable();
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
         Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>
+        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
         }).Verifiable();
@@ -239,11 +239,11 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()).Result).Returns(uoW.Object).Verifiable();
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
         Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()
+        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()
         {
             new(string.Empty)
         }).Verifiable();
@@ -280,11 +280,11 @@ public class ProcessorTest
         uoW.Setup(uow => uow.ServiceProvider).Returns(_options.Value.Services.BuildServiceProvider()).Verifiable();
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()).Result).Returns(uoW.Object).Verifiable();
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
         Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextOptions>()
+        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()
         {
             new(string.Empty)
         }).Verifiable();

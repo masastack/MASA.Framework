@@ -158,7 +158,7 @@ public class TestUnitOfWork : TestBase
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDataConnectionStringProvider>();
-        Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 && dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == null && option.Connection == null));
+        Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 && dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == null));
     }
 
     [TestMethod]
@@ -172,11 +172,43 @@ public class TestUnitOfWork : TestBase
         var dbContext2 = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(dbContext.Equals(dbContext2));
 
-        var newUnitOfWork = await unitOfWorkManager.CreateDbContextAsync(new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextOptions(Connection));
+        var newUnitOfWork = await unitOfWorkManager.CreateDbContextAsync(new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions(_connectionString));
         Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await unitOfWorkManager.CreateDbContextAsync(new BuildingBlocks.Data.UoW.Options.MasaDbContextOptions("")));
+        await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await unitOfWorkManager.CreateDbContextAsync(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("")));
+    }
+
+    [TestMethod]
+    public async Task TestUnitOfWorkAccessorAsync()
+    {
+        var services = new ServiceCollection();
+        var configurationRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        _options.Setup(option => option.Services).Returns(services).Verifiable();
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
+        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
+        Assert.IsTrue(unitOfWorkAccessor is { CurrentDbContextOptions: null });
+        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+        Assert.IsNotNull(unitOfWork);
+        unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
+        Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null && unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
+
+        var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+        var unitOfWorkNew = await unitOfWorkManager.CreateDbContextAsync();
+        var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
+        Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null && unitOfWorkAccessorNew.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
+
+        var unitOfWorkNew2 = await unitOfWorkManager.CreateDbContextAsync(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("test"));
+        var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
+        Assert.IsTrue(unitOfWorkAccessorNew2!.CurrentDbContextOptions != null && unitOfWorkAccessorNew2.CurrentDbContextOptions.ConnectionString == "test");
+
+        var connectionString = await unitOfWorkNew2.ServiceProvider.GetRequiredService<IConnectionStringProvider>().GetConnectionStringAsync();
+        Assert.IsTrue(connectionString == "test");
     }
 }
