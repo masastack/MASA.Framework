@@ -370,7 +370,7 @@ public class FeaturesTest : TestBase
     public async Task TestEventBusExceptionAsync()
     {
         var services = new ServiceCollection();
-        services.AddEventBus();
+        services.AddTestEventBus(new Assembly[] { typeof(FeaturesTest).Assembly }, ServiceLifetime.Scoped);
         var registerUserEvent = new RegisterUserEvent("Jim");
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
