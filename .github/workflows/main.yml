@@ -1,12 +1,13 @@
-name: Package Push Nuget
+name: codecov
 on:
-  release:
-    types: [ created ]
+  push:
+    branches:
+      - 'main'
   workflow_dispatch:
-
+  
 jobs:
-  package-build:
-    name: package build and push
+  codecov:
+    name: packeg build and push
     runs-on: ubuntu-latest
     steps:
     - name: git pull
@@ -20,6 +21,7 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
+
     - name: dependencies
       run: git clone -b main https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
 
@@ -29,9 +31,7 @@ jobs:
     - name: build
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
 
-    - name: pack
-      run: dotnet pack --include-symbols  -p:PackageVersion=$GITHUB_REF_NAME
+    - name: codecov
+      uses: codecov/codecov-action@v2
 
-    - name: package push
-      run: dotnet nuget push "**/*.symbols.nupkg" -k  ${{secrets.NUGET_TOKEN}}  -s https://api.nuget.org/v3/index.json
 
