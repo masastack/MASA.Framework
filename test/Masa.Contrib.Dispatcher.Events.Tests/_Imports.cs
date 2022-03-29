@@ -6,7 +6,7 @@ global using Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.E
 global using Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.Enums;
-global using Masa.Contrib.Dispatcher.Events.Options;
+global using Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Middleware;
