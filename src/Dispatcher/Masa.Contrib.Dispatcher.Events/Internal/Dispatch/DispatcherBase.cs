@@ -68,11 +68,11 @@ internal class DispatcherBase
                     if (dispatchRelation.CancelHandlers.Any())
                         await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers, @event);
                     else
-                        throw new Exception(ex.Message, ex);
+                        ex.ThrowException();
                 }
                 else
                 {
-                    Logger?.LogWarning("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.Id);
+                    Logger?.LogError("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.Id);
                 }
             });
         }
@@ -96,9 +96,9 @@ internal class DispatcherBase
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
-                    throw new Exception(ex.Message, ex);
+                    ex.ThrowException();
 
-                logger?.LogWarning("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.Id);
+                logger?.LogError("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.Id);
                 return Task.CompletedTask;
             });
         }
