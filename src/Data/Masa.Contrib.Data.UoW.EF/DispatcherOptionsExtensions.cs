@@ -16,6 +16,8 @@ public static class DispatcherOptionsExtensions
             return options;
 
         options.Services.AddSingleton<UoWProvider>();
+        options.Services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+        options.Services.TryAddSingleton<IDataConnectionStringProvider, DataConnectionStringProvider>();
 
         options.Services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {
@@ -35,4 +37,3 @@ public static class DispatcherOptionsExtensions
 
     }
 }
-

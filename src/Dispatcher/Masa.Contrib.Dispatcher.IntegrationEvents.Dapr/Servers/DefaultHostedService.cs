@@ -1,19 +1,22 @@
-﻿namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Servers;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Servers;
 
 public class DefaultHostedService : IProcessingServer
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IEnumerable<IProcessor> _processors;
-    private readonly ILogger<InfiniteLoopProcessor>? _logger;
 
-    public DefaultHostedService(IEnumerable<IProcessor> processors, ILogger<InfiniteLoopProcessor>? logger = null)
+    public DefaultHostedService(IServiceProvider serviceProvider, IEnumerable<IProcessor> processors)
     {
+        _serviceProvider = serviceProvider;
         _processors = processors;
-        _logger = logger;
     }
 
     public Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var processorTasks = _processors.Select(processor => new InfiniteLoopProcessor(processor, _logger))
+        if (_serviceProvider.GetService<IUnitOfWorkManager>() == null)
+            return Task.CompletedTask;
+
+        var processorTasks = _processors.Select(processor => new InfiniteLoopProcessor(_serviceProvider, processor))
             .Select(process => process.ExecuteAsync(stoppingToken));
         return Task.WhenAll(processorTasks);
     }

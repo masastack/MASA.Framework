@@ -4,8 +4,9 @@ global using Masa.Utils.Data.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Logging;
 global using System.Data.Common;
 global using System.Text.Json.Serialization;
 global using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;
-
+global using Microsoft.Extensions.Options;
+global using DbContextOptions = Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextOptions;
+global using Microsoft.Extensions.DependencyInjection.Extensions;

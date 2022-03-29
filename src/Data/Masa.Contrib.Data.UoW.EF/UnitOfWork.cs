@@ -1,13 +1,12 @@
 namespace Masa.Contrib.Data.UoW.EF;
 
-public class UnitOfWork<TDbContext> : IUnitOfWork
-    where TDbContext : MasaDbContext
+public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbContext
 {
-    private readonly IServiceProvider _serviceProvider;
+    public IServiceProvider ServiceProvider { get; }
 
     private DbContext? _context;
 
-    protected DbContext Context => _context ??= _serviceProvider.GetRequiredService<TDbContext>();
+    protected DbContext Context => _context ??= ServiceProvider.GetRequiredService<TDbContext>();
 
     public DbTransaction Transaction
     {
@@ -35,7 +34,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
 
     public UnitOfWork(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
