@@ -32,6 +32,6 @@ jobs:
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
 
     - name: codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v1
 
 
