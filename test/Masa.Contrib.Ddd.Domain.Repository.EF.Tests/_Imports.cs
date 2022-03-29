@@ -10,6 +10,7 @@ global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Domain.Entities;
 global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Domain.Repositories;
 global using Masa.Contrib.Ddd.Domain.Repository.EF.Tests.Infrastructure;
 global using Masa.Utils.Data.EntityFrameworkCore;
+global using Masa.Utils.Data.EntityFrameworkCore.Sqlite;
 global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Storage;

@@ -1,5 +1,3 @@
-using Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.Events;
-
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -365,6 +363,16 @@ public class FeaturesTest : TestBase
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
             new EventHandlerAttribute(-10);
-        },"The order must be greater than or equal to 0");
+        }, "The order must be greater than or equal to 0");
+    }
+
+    [TestMethod]
+    public async Task TestEventBusExceptionAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddEventBus();
+        var registerUserEvent = new RegisterUserEvent("Jim");
+        var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
     }
 }

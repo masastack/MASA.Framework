@@ -58,7 +58,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestUseTranscationAsync()
     {
-        _options.Object.UseUoW<CustomerDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -79,7 +79,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestNotUseTranscationAsync()
     {
-        _options.Object.UseUoW<CustomerDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -108,7 +108,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestCommitAsync()
     {
-        _options.Object.UseUoW<CustomerDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -128,7 +128,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestOpenRollbackAsync()
     {
-        _options.Object.UseUoW<CustomerDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -145,7 +145,7 @@ public class TestUnitOfWork : TestBase
     public async Task TestAddLoggerAndOpenRollbackAsync()
     {
         _options.Object.Services.AddLogging();
-        _options.Object.UseUoW<CustomerDbContext>(options => options.DbContextOptionsBuilder.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomerDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomerDbContext>();
         await dbContext.Database.EnsureCreatedAsync();

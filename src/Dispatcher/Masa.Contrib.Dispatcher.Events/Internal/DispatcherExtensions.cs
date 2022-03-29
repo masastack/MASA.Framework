@@ -21,4 +21,13 @@ internal static class DispatcherExtensions
     public static bool IsGenericInterfaceAssignableFrom(this Type eventHandlerType, Type type) =>
         type.IsConcrete() &&
         type.GetInterfaces().Any(t => t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == eventHandlerType);
+
+    /// <summary>
+    /// Keep the original stack information and throw an exception
+    /// </summary>
+    /// <param name="exception"></param>
+    public static void ThrowException(this Exception exception)
+    {
+        ExceptionDispatchInfo.Capture(exception).Throw();
+    }
 }
