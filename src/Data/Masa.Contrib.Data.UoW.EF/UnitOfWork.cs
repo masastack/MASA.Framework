@@ -1,13 +1,10 @@
 namespace Masa.Contrib.Data.UoW.EF;
 
-public class UnitOfWork<TDbContext> : IUnitOfWork
-    where TDbContext : MasaDbContext
+public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbContext
 {
-    private readonly IServiceProvider _serviceProvider;
+    public IServiceProvider ServiceProvider { get; }
 
-    private DbContext? _context;
-
-    protected DbContext Context => _context ??= _serviceProvider.GetRequiredService<TDbContext>();
+    protected DbContext Context;
 
     public DbTransaction Transaction
     {
@@ -35,7 +32,8 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
 
     public UnitOfWork(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
+        Context = serviceProvider.GetRequiredService<TDbContext>();
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -61,7 +59,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork
         await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
-    public async ValueTask DisposeAsync() => await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
+    public async ValueTask DisposeAsync() => await Context.DisposeAsync();
 
-    public void Dispose() => _context?.Dispose();
+    public void Dispose() => Context.Dispose();
 }

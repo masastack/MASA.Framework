@@ -7,11 +7,13 @@ public class RetryByLocalQueueProcessor : ProcessorBase
     private readonly IOptions<DispatcherOptions> _options;
     private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
 
+    public override int Delay => _options.Value.LocalFailedRetryInterval;
+
     public RetryByLocalQueueProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
         IOptionsMonitor<AppConfig>? appConfig = null,
-        ILogger<RetryByLocalQueueProcessor>? logger = null)
+        ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _appConfig = appConfig;
@@ -19,16 +21,14 @@ public class RetryByLocalQueueProcessor : ProcessorBase
         _logger = logger;
     }
 
-    public override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
     {
-        using (var scope = _serviceProvider.CreateScope())
-        {
-            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+        var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
             if (unitOfWork != null)
                 unitOfWork.UseTransaction = false;
 
-            var dapr = scope.ServiceProvider.GetRequiredService<DaprClient>();
-            var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+            var dapr = serviceProvider.GetRequiredService<DaprClient>();
+            var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
                 LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
@@ -67,8 +67,5 @@ public class RetryByLocalQueueProcessor : ProcessorBase
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
                 }
             }
-        }
     }
-
-    public override int Delay => _options.Value.LocalFailedRetryInterval;
 }

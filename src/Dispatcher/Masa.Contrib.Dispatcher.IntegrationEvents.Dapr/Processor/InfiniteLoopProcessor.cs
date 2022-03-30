@@ -5,10 +5,11 @@ public class InfiniteLoopProcessor : ProcessorBase
     private readonly IProcessor _processor;
     private readonly ILogger<InfiniteLoopProcessor>? _logger;
 
-    public InfiniteLoopProcessor(IProcessor processor, ILogger<InfiniteLoopProcessor>? logger = null)
+    public InfiniteLoopProcessor(IServiceProvider serviceProvider, IProcessor processor)
+        : base(serviceProvider)
     {
         _processor = processor;
-        _logger = logger;
+        _logger = serviceProvider.GetService<ILogger<InfiniteLoopProcessor>>();
     }
 
     public override async Task ExecuteAsync(CancellationToken stoppingToken)
