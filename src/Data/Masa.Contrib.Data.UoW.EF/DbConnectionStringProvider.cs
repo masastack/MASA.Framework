@@ -1,10 +1,10 @@
 ﻿namespace Masa.Contrib.Data.UoW.EF;
 
-public class DataConnectionStringProvider : BaseDataConnectionStringProvider
+public class DbConnectionStringProvider : BaseDbConnectionStringProvider
 {
     private readonly IOptionsMonitor<MasaDbConnectionOptions> _options;
 
-    public DataConnectionStringProvider(IOptionsMonitor<MasaDbConnectionOptions> options) => _options = options;
+    public DbConnectionStringProvider(IOptionsMonitor<MasaDbConnectionOptions> options) => _options = options;
 
     protected override List<DbContextOptions> GetDbContextOptionsList()
     {

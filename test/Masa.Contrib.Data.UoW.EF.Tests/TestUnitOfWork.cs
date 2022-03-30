@@ -157,7 +157,7 @@ public class TestUnitOfWork : TestBase
         _options.Object.Services.AddSingleton(_ => configuration);
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDataConnectionStringProvider>();
+        var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
         Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 && dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == null));
     }
 

@@ -16,7 +16,7 @@ public abstract class ProcessorBase : IProcessor
         if (ServiceProvider != null)
         {
             var unitOfWorkManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
-            var dataConnectionStringProvider = ServiceProvider.GetRequiredService<IDataConnectionStringProvider>();
+            var dataConnectionStringProvider = ServiceProvider.GetRequiredService<IDbConnectionStringProvider>();
             var optionsList = dataConnectionStringProvider.DbContextOptionsList;
             foreach (var option in optionsList)
             {

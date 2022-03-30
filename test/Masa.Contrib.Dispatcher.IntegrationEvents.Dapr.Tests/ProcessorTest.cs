@@ -79,7 +79,7 @@ public class ProcessorTest
         unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
@@ -157,7 +157,7 @@ public class ProcessorTest
         unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
@@ -242,7 +242,7 @@ public class ProcessorTest
         unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()
         {
             new(string.Empty)
@@ -283,7 +283,7 @@ public class ProcessorTest
         unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContextAsync(It.IsAny<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()).Result).Returns(uoW.Object).Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDataConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions>()
         {
             new(string.Empty)
