@@ -20,13 +20,13 @@ public abstract class ProcessorBase : IProcessor
             var optionsList = dataConnectionStringProvider.DbContextOptionsList;
             foreach (var option in optionsList)
             {
-                await using var unitOfWork = await unitOfWorkManager.CreateDbContextAsync(option);
+                await using var unitOfWork = unitOfWorkManager.CreateDbContext(option);
                 await ExecuteAsync(unitOfWork.ServiceProvider, stoppingToken);
             }
         }
         else
         {
-            await ExecutingAsync(stoppingToken);
+            Executing();
         }
     }
 
@@ -39,5 +39,5 @@ public abstract class ProcessorBase : IProcessor
 
     protected virtual Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken) => Task.CompletedTask;
 
-    protected virtual Task ExecutingAsync(CancellationToken stoppingToken) => Task.CompletedTask;
+    protected virtual void Executing() { }
 }

@@ -14,11 +14,9 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase
     /// <summary>
     /// Delete expired events
     /// </summary>
-    /// <param name="stoppingToken"></param>
     /// <returns></returns>
-    protected override Task ExecutingAsync(CancellationToken stoppingToken)
+    protected override void Executing()
     {
         LocalQueueProcessor.Default.Delete(_options.Value.LocalRetryTimes);
-        return Task.CompletedTask;
     }
 }

@@ -172,12 +172,12 @@ public class TestUnitOfWork : TestBase
         var dbContext2 = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(dbContext.Equals(dbContext2));
 
-        var newUnitOfWork = await unitOfWorkManager.CreateDbContextAsync(new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions(_connectionString));
+        var newUnitOfWork = unitOfWorkManager.CreateDbContext(new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions(_connectionString));
         Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await unitOfWorkManager.CreateDbContextAsync(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("")));
+        Assert.ThrowsException<ArgumentException>( () => unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("")));
     }
 
     [TestMethod]
@@ -200,11 +200,11 @@ public class TestUnitOfWork : TestBase
         Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null && unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
-        var unitOfWorkNew = await unitOfWorkManager.CreateDbContextAsync();
+        var unitOfWorkNew = unitOfWorkManager.CreateDbContext();
         var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null && unitOfWorkAccessorNew.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
 
-        var unitOfWorkNew2 = await unitOfWorkManager.CreateDbContextAsync(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("test"));
+        var unitOfWorkNew2 = unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("test"));
         var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew2!.CurrentDbContextOptions != null && unitOfWorkAccessorNew2.CurrentDbContextOptions.ConnectionString == "test");
 

@@ -6,13 +6,13 @@ public class UnitOfWorkManager : IUnitOfWorkManager
 
     public UnitOfWorkManager(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-    public Task<IUnitOfWork> CreateDbContextAsync()
+    public IUnitOfWork CreateDbContext()
     {
         var scope = _serviceProvider.CreateAsyncScope();
-        return Task.FromResult(scope.ServiceProvider.GetRequiredService<IUnitOfWork>());
+        return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 
-    public Task<IUnitOfWork> CreateDbContextAsync(MasaDbContextConfigurationOptions options)
+    public IUnitOfWork CreateDbContext(MasaDbContextConfigurationOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         if (string.IsNullOrEmpty(options.ConnectionString))
@@ -21,6 +21,6 @@ public class UnitOfWorkManager : IUnitOfWorkManager
         var scope = _serviceProvider.CreateAsyncScope();
         var unitOfWorkAccessor = scope.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unitOfWorkAccessor.CurrentDbContextOptions = options;
-        return Task.FromResult(scope.ServiceProvider.GetRequiredService<IUnitOfWork>());
+        return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 }
