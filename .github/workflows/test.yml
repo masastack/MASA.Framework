@@ -7,7 +7,7 @@ on:
   
 jobs:
   test:
-    name: packeg build and push
+    name: test
     runs-on: ubuntu-latest
     steps:
     - name: git pull
