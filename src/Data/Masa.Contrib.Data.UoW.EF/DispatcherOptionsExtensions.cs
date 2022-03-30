@@ -2,6 +2,17 @@ namespace Masa.Contrib.Data.UoW.EF;
 
 public static class DispatcherOptionsExtensions
 {
+    public static IEventBusBuilder UseUoW<TDbContext>(
+        this IEventBusBuilder eventBusBuilder,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext
+    {
+        eventBusBuilder.Services.UseUoW<TDbContext>(nameof(eventBusBuilder.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
+        return eventBusBuilder;
+    }
+
     public static IDispatcherOptions UseUoW<TDbContext>(
         this IDispatcherOptions options,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
@@ -9,33 +20,43 @@ public static class DispatcherOptionsExtensions
         bool useTransaction = true)
         where TDbContext : MasaDbContext
     {
-        if (options.Services == null)
-            throw new ArgumentNullException(nameof(options.Services));
+        options.Services.UseUoW<TDbContext>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
+        return options;
+    }
 
-        if (options.Services.Any(service => service.ImplementationType == typeof(UoWProvider)))
-            return options;
+    private static IServiceCollection UseUoW<TDbContext>(
+        this IServiceCollection services,
+        string paramName,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext
+    {
+        if (services == null)
+            throw new ArgumentNullException(paramName);
 
-        options.Services.AddSingleton<UoWProvider>();
-        options.Services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
-        options.Services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
-        options.Services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
-        options.Services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
+        if (services.Any(service => service.ImplementationType == typeof(UoWProvider)))
+            return services;
 
-        options.Services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
+        services.AddSingleton<UoWProvider>();
+        services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
+        services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+        services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
+        services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
+
+        services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {
             DisableRollbackOnFailure = disableRollbackOnFailure,
             UseTransaction = useTransaction
         });
-        if (options.Services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))
-            options.Services.AddMasaDbContext<TDbContext>(optionsBuilder);
+        if (services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))
+            services.AddMasaDbContext<TDbContext>(optionsBuilder);
 
-        options.Services.AddScoped<ITransaction, Transaction>();
-
-        return options;
+        services.AddScoped<ITransaction, Transaction>();
+        return services;
     }
 
     private class UoWProvider
     {
-
     }
 }

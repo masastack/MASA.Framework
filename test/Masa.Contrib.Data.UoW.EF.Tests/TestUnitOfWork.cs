@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Configuration;
-
 namespace Masa.Contrib.Data.UoW.EF.Tests;
 
 [TestClass]
@@ -210,5 +208,24 @@ public class TestUnitOfWork : TestBase
 
         var connectionString = await unitOfWorkNew2.ServiceProvider.GetRequiredService<IConnectionStringProvider>().GetConnectionStringAsync();
         Assert.IsTrue(connectionString == "test");
+    }
+
+    [TestMethod]
+    public void TestUnitOfWOrkByEventBusBuilder()
+    {
+        var services = new ServiceCollection();
+        var configurationRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        Mock<IEventBusBuilder> eventBuilder = new();
+        eventBuilder.Setup(builder=>builder.Services).Returns(services).Verifiable();
+        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
+
+        var serviecProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkManager>());
+        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkAccessor>());
+        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWork>());
     }
 }
