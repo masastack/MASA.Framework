@@ -97,4 +97,3 @@ builder.Services.AddEventBus(eventBusBuilder =>
         }).UseMultiTenant());// Use tenant isolation
 });
 ````
-````
