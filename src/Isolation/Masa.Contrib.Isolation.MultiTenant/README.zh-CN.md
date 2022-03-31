@@ -6,7 +6,7 @@
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
+Install-Package Masa.Contrib.Isolation.MultiTenant
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
