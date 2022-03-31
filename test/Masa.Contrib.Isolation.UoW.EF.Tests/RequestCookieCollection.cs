@@ -2,5 +2,5 @@
 
 public class RequestCookieCollection : Dictionary<string, string>, IRequestCookieCollection
 {
-    public ICollection<string> Keys { get; }
+    public new ICollection<string> Keys { get; }
 }
