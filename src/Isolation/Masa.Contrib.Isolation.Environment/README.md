@@ -53,9 +53,9 @@ public class CustomDbContext : IsolationDbContext
 }
 ````
 
-4. The class corresponding to the isolated table needs to implement IEnvironment
+4. The class corresponding to the isolated table needs to implement IMultiEnvironment
 
-You can also choose not to implement IEnvironment when using physical isolation
+You can also choose not to implement IMultiEnvironment when using physical isolation
 
 ##### Summarize
 

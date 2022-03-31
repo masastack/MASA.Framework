@@ -61,9 +61,9 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. The class corresponding to the isolated table needs to implement IMultiTenant or IEnvironment
+4. The class corresponding to the isolated table needs to implement IMultiTenant or IMultiEnvironment
 
-Tenant isolation implements IMultiTenant, and environment isolation implements IEnvironment
+Tenant isolation implements IMultiTenant, and environment isolation implements IMultiEnvironment
 
 ##### Summarize
 * When are tenants and environments resolved?

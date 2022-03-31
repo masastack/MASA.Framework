@@ -54,9 +54,9 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. 隔离的表对应的类需要实现IEnvironment
+4. 隔离的表对应的类需要实现IMultiEnvironment
 
-采用物理隔离时也可以选择不实现IEnvironment
+采用物理隔离时也可以选择不实现IMultiEnvironment
 
 ##### 总结
 

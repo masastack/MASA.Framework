@@ -61,9 +61,9 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. 隔离的表对应的类需要实现IMultiTenant或IEnvironment
+4. 隔离的表对应的类需要实现IMultiTenant或IMultiEnvironment
 
-租户隔离实现IMultiTenant、环境隔离实现IEnvironment
+租户隔离实现IMultiTenant、环境隔离实现IMultiEnvironment
 
 ##### 总结
 * 租户与环境什么时候被解析？
