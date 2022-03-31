@@ -14,9 +14,9 @@ public class EnvironmentSaveChangesFilter: ISaveChangesFilter
         changeTracker.DetectChanges();
         foreach (var entity in changeTracker.Entries().Where(entry => entry.State == EntityState.Added))
         {
-            if (entity.Entity is IEnvironment)
+            if (entity.Entity is IMultiEnvironment)
             {
-                entity.CurrentValues[nameof(IEnvironment.Environment)] = _environmentContext.CurrentEnvironment;
+                entity.CurrentValues[nameof(IMultiEnvironment.Environment)] = _environmentContext.CurrentEnvironment;
             }
         }
     }

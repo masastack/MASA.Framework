@@ -6,7 +6,7 @@ Example：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.Environment // Environmental isolation Quote on demand
+Install-Package Masa.Contrib.Isolation.Environment
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -38,14 +38,14 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment());// Use environment isolation
+        isolationBuilder => isolationBuilder.UseEnvironment());
 });
 ````
 
 3. DbContext needs to inherit IsolationDbContext
 
 ```` C#
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -55,7 +55,7 @@ public class CustomDbContext : MasaDbContext
 
 4. The class corresponding to the isolated table needs to implement IEnvironment
 
-You can also choose not to implement IMultiTenant when using physical isolation
+You can also choose not to implement IEnvironment when using physical isolation
 
 ##### Summarize
 

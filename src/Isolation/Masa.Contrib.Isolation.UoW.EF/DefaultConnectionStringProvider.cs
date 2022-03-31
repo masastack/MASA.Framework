@@ -81,8 +81,8 @@ public class DefaultConnectionStringProvider : IConnectionStringProvider
         if (_environmentContext != null)
             stringBuilder.Append($"Environment: [{_environmentContext.CurrentEnvironment}], ");
         if (_tenantContext != null)
-            stringBuilder.Append($"Tenant: [{_tenantContext.CurrentTenant?.Id ?? ""}]");
+            stringBuilder.Append($"Tenant: [{_tenantContext.CurrentTenant?.Id ?? ""}], ");
         var message = stringBuilder.ToString();
-        return message.Substring(0, message.Length - 1);
+        return message.Substring(0, message.Length - 2);
     }
 }

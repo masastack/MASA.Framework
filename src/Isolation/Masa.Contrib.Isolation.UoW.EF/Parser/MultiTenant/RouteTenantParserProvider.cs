@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
+﻿namespace Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenant;
 
 public class RouteTenantParserProvider : ITenantParserProvider
 {

@@ -19,7 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.Environment\Masa.Contrib.Isolation.Environment.csproj" />
-    <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiTenancy\Masa.Contrib.Isolation.MultiTenancy.csproj" />
+    <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,7 @@
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.Environment // 环境隔离 按需引用
+Install-Package Masa.Contrib.Isolation.Environment
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -39,14 +39,14 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment());// 使用环境隔离
+        isolationBuilder => isolationBuilder.UseEnvironment());
 });
 ```
 
 3. DbContext需要继承IsolationDbContext
 
 ``` C#
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -56,7 +56,7 @@ public class CustomDbContext : MasaDbContext
 
 4. 隔离的表对应的类需要实现IEnvironment
 
-采用物理隔离时也可以选择不实现IMultiTenant
+采用物理隔离时也可以选择不实现IEnvironment
 
 ##### 总结
 

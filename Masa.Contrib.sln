@@ -140,7 +140,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF", "src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{0C25062D-60A5-4690-974A-CDA9619866B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiTenancy", "src\Isolation\Masa.Contrib.Isolation.MultiTenancy\Masa.Contrib.Isolation.MultiTenancy.csproj", "{6D9A3F62-8AB6-40AD-B32F-2A435A9D3341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiTenant", "src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj", "{6D9A3F62-8AB6-40AD-B32F-2A435A9D3341}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.Environment", "src\Isolation\Masa.Contrib.Isolation.Environment\Masa.Contrib.Isolation.Environment.csproj", "{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}"
 EndProject

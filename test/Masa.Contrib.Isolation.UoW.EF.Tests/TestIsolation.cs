@@ -1,4 +1,7 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Tests;
+﻿using Masa.Contrib.Isolation.MultiTenant;
+using Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenant;
+
+namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
 public class TestIsolation : TestBase
@@ -91,7 +94,7 @@ public class TestIsolation : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString),
-            isolationBuilder => isolationBuilder.UseMultiTenancy());
+            isolationBuilder => isolationBuilder.UseMultiTenant());
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<ITenantContext>());
@@ -104,7 +107,7 @@ public class TestIsolation : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString),
-            isolationBuilder => isolationBuilder.UseMultiTenancy().UseMultiTenancy());
+            isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiTenant());
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
@@ -122,7 +125,7 @@ public class TestIsolation : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(dbOptionBuilder => dbOptionBuilder.UseSqlite(),
-            isolationBuilder => isolationBuilder.UseMultiTenancy().UseEnvironment());
+            isolationBuilder => isolationBuilder.UseMultiTenant().UseEnvironment());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
@@ -232,7 +235,7 @@ public class TestIsolation : TestBase
     }
 
     [TestMethod]
-    public void TestUseMultiTenancy()
+    public void TestUseMultiTenant()
     {
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
@@ -254,7 +257,7 @@ public class TestIsolation : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(dbOptionBuilder => dbOptionBuilder.UseSqlite(),
-            isolationBuilder => isolationBuilder.UseMultiTenancy<int>());
+            isolationBuilder => isolationBuilder.UseMultiTenant<int>());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();

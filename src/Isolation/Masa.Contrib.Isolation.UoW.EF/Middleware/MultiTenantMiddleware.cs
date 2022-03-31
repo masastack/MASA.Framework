@@ -1,16 +1,16 @@
 ﻿namespace Masa.Contrib.Isolation.UoW.EF.Middleware;
 
-public class TenancyMiddleware : IIsolationMiddleware
+public class MultiTenantMiddleware : IIsolationMiddleware
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<TenancyMiddleware>? _logger;
+    private readonly ILogger<MultiTenantMiddleware>? _logger;
     private readonly ITenantContext _tenantContext;
     private readonly IEnumerable<ITenantParserProvider> _tenantParserProviders;
     private bool _handled;
-    public TenancyMiddleware(IServiceProvider serviceProvider, IEnumerable<ITenantParserProvider> tenantParserProviders)
+    public MultiTenantMiddleware(IServiceProvider serviceProvider, IEnumerable<ITenantParserProvider> tenantParserProviders)
     {
         _serviceProvider = serviceProvider;
-        _logger = _serviceProvider.GetService<ILogger<TenancyMiddleware>>();
+        _logger = _serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
         _tenantContext = _serviceProvider.GetRequiredService<ITenantContext>();
         _tenantParserProviders = tenantParserProviders;
     }

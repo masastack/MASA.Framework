@@ -42,7 +42,7 @@ public class RegisterUserEventHandler
         var user3 = await _customDbContext.Set<Users>().FirstOrDefaultAsync();
         Assert.IsNull(user3);
 
-        using (_dataFilter.Disable<IEnvironment>())
+        using (_dataFilter.Disable<IMultiEnvironment>())
         {
             var user4 = await _customDbContext.Set<Users>().FirstOrDefaultAsync();
             Assert.IsNotNull(user4);

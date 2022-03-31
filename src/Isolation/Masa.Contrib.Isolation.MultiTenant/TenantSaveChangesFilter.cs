@@ -1,11 +1,11 @@
-﻿namespace Masa.Contrib.Isolation.MultiTenancy;
+﻿namespace Masa.Contrib.Isolation.MultiTenant;
 
-public class TenancySaveChangesFilter<TKey> : ISaveChangesFilter where TKey : IComparable
+public class TenantSaveChangesFilter<TKey> : ISaveChangesFilter where TKey : IComparable
 {
     private readonly ITenantContext _tenantContext;
     private readonly IConvertProvider _convertProvider;
 
-    public TenancySaveChangesFilter(ITenantContext tenantContext, IConvertProvider convertProvider)
+    public TenantSaveChangesFilter(ITenantContext tenantContext, IConvertProvider convertProvider)
     {
         _tenantContext = tenantContext;
         _convertProvider = convertProvider;

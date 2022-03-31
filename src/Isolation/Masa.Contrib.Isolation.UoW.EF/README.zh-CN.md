@@ -7,7 +7,7 @@
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
 Install-Package Masa.Contrib.Isolation.Environment // 环境隔离 按需引用
-Install-Package Masa.Contrib.Isolation.MultiTenancy // 多租户隔离 按需引用
+Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -46,14 +46,14 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment().UseMultiTenancy());// 按需选择使用环境或者租户隔离
+        isolationBuilder => isolationBuilder.UseEnvironment().UseMultiTenant());// 按需选择使用环境或者租户隔离
 });
 ```
 
 3. DbContext需要继承IsolationDbContext
 
 ``` C#
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -67,5 +67,5 @@ public class CustomDbContext : MasaDbContext
 
 ##### 总结
 * 租户与环境什么时候被解析？
-  * 在EventHandler中操作DbContext、Repository等可直接使用，无需添加，在Event被Publish会解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析
-  * 直接在控制器或MinimalAPI中操作DbContext、Repository等需要在Program.cs中添加`app.UseIsolation();`，在AspNetCore的中间件中会解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析
+  * 在Event被Publish会通过提供的解析器解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析
+  * 不使用EventBus，直接在控制器或MinimalAPI中操作DbContext、Repository等需要在Program.cs中添加`app.UseIsolation();`，在AspNetCore的中间件中会解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析

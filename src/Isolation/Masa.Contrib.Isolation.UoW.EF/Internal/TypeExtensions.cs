@@ -1,6 +1,6 @@
 ﻿namespace Masa.Contrib.Isolation.UoW.EF.Internal;
 
-internal static class TypeCommon
+internal static class TypeExtensions
 {
     static bool IsConcrete(this Type type) => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface;
 

@@ -1,17 +1,17 @@
 ﻿namespace Masa.Contrib.Isolation.UoW.EF.Middleware;
 
-public class EnvironmentMiddleware : IIsolationMiddleware
+public class MultiEnvironmentMiddleware : IIsolationMiddleware
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<EnvironmentMiddleware>? _logger;
+    private readonly ILogger<MultiEnvironmentMiddleware>? _logger;
     private readonly IEnvironmentContext _environmentContext;
     private readonly IEnumerable<IEnvironmentParserProvider> _environmentParserProviders;
     private bool _handled;
 
-    public EnvironmentMiddleware(IServiceProvider serviceProvider, IEnumerable<IEnvironmentParserProvider> environmentParserProviders)
+    public MultiEnvironmentMiddleware(IServiceProvider serviceProvider, IEnumerable<IEnvironmentParserProvider> environmentParserProviders)
     {
         _serviceProvider = serviceProvider;
-        _logger = _serviceProvider.GetService<ILogger<EnvironmentMiddleware>>();
+        _logger = _serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
         _environmentContext = _serviceProvider.GetRequiredService<IEnvironmentContext>();
         _environmentParserProviders = environmentParserProviders;
     }

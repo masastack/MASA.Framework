@@ -8,6 +8,8 @@ global using Masa.BuildingBlocks.Isolation.Options;
 global using Masa.Contrib.Data.UoW.EF;
 global using Masa.Contrib.Isolation.UoW.EF.Internal;
 global using Masa.Contrib.Isolation.UoW.EF.Middleware;
+global using Masa.Contrib.Isolation.UoW.EF.Parser.Environment;
+global using Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenant;
 global using Masa.Utils.Data.EntityFrameworkCore;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
@@ -20,6 +22,3 @@ global using Microsoft.Extensions.Options;
 global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Text;
-global using Masa.Contrib.Isolation.UoW.EF.Parser.Environment;
-global using Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
-

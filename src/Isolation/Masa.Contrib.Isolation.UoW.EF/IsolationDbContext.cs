@@ -36,10 +36,10 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
             expression = tenantFilter.And(expression != null, expression);
         }
 
-        if (typeof(IEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
+        if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
         {
             Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
-                Microsoft.EntityFrameworkCore.EF.Property<string>(entity, nameof(IEnvironment.Environment))
+                Microsoft.EntityFrameworkCore.EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
                 .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
             expression = envFilter.And(expression != null, expression);
         }
@@ -51,7 +51,7 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
         return expression;
     }
 
-    protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IEnvironment>() ?? false;
+    protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
 
     protected virtual bool IsTenantFilterEnabled => DataFilter?.IsEnabled<IMultiTenant<TKey>>() ?? false;
 }

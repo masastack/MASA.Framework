@@ -54,10 +54,10 @@ public static class DispatcherOptionsExtensions
         services.AddHttpContextAccessor();
 
         if (services.Any(service => service.ServiceType == typeof(ITenantContext)))
-            services.AddScoped<IIsolationMiddleware>(serviceProvider => new TenancyMiddleware(serviceProvider, builder.TenantParsers));
+            services.AddScoped<IIsolationMiddleware>(serviceProvider => new MultiTenantMiddleware(serviceProvider, builder.TenantParsers));
 
         if (services.Any(service => service.ServiceType == typeof(IEnvironmentContext)))
-            services.AddScoped<IIsolationMiddleware>(serviceProvider => new EnvironmentMiddleware(serviceProvider, builder.EnvironmentParsers));
+            services.AddScoped<IIsolationMiddleware>(serviceProvider => new MultiEnvironmentMiddleware(serviceProvider, builder.EnvironmentParsers));
 
         services.AddTransient(typeof(IMiddleware<>), typeof(IsolationMiddleware<>));
         services.TryAddSingleton<IDbConnectionStringProvider, IsolationDbContextProvider>();

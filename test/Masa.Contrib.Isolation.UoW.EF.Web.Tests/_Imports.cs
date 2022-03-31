@@ -2,7 +2,7 @@ global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.Isolation.Environment;
-global using Masa.Contrib.Isolation.MultiTenancy;
+global using Masa.Contrib.Isolation.MultiTenant;
 global using Masa.Contrib.Isolation.UoW.EF.Web.Tests.Events;
 global using Masa.Utils.Data.EntityFrameworkCore;
 global using Masa.Utils.Data.EntityFrameworkCore.Filters;
@@ -18,4 +18,3 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using System;
 global using System.IO;
 global using System.Threading.Tasks;
-

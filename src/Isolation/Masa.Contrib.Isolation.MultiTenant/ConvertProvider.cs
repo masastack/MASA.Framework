@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.MultiTenancy;
+namespace Masa.Contrib.Isolation.MultiTenant;
 
 public class ConvertProvider : IConvertProvider
 {
@@ -11,7 +11,7 @@ public class ConvertProvider : IConvertProvider
         }
         else
         {
-            result= Convert.ChangeType(value, conversionType);
+            result = Convert.ChangeType(value, conversionType);
         }
         return result;
     }

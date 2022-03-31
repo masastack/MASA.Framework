@@ -1,12 +1,12 @@
 中 | [EN](README.md)
 
-## Masa.Contrib.Isolation.MultiTenancy
+## Masa.Contrib.Isolation.MultiTenant
 
 用例：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.MultiTenancy // 多租户隔离 按需引用
+Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -31,6 +31,7 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 
 * 1.1 当前租户为00000000-0000-0000-0000-000000000002时：数据库地址：server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.2 当前租户为00000000-0000-0000-0000-000000000003时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.3 其他租户：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. 使用Isolation.UoW.EF
 ``` C#
@@ -38,14 +39,14 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseMultiTenancy());// 使用租户隔离
+        isolationBuilder => isolationBuilder.UseMultiTenant());// 使用租户隔离
 });
 ```
 
 3. DbContext需要继承IsolationDbContext
 
 ``` C#
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -58,7 +59,7 @@ public class CustomDbContext : MasaDbContext
 采用物理隔离时也可以选择不实现IMultiTenant
 
 > 租户id类型支持自行指定，默认Guid类型
-> * 如：实现IMultiTenant改为实现IMultiTenant<int>，UseMultiTenancy()改为UseMultiTenancy<int>()
+> * 如：实现IMultiTenant改为实现IMultiTenant<int>，UseMultiTenant()改为UseMultiTenant<int>()
 
 ##### 总结
 
@@ -73,7 +74,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetTenantKey("tenant").UseMultiTenancy());// 使用租户隔离
+        isolationBuilder => isolationBuilder.SetTenantKey("tenant").UseMultiTenant());// 使用租户隔离
 });
 ```
 * 如何更改解析器
@@ -86,6 +87,6 @@ builder.Services.AddEventBus(eventBusBuilder =>
         isolationBuilder => isolationBuilder.SetTenantParsers(new List<ITenantParserProvider>()
         {
             new QueryStringTenantParserProvider()
-        }).UseMultiTenancy());// 使用租户隔离
+        }).UseMultiTenant());// 使用租户隔离
 });
 ```
