@@ -1,10 +1,4 @@
-﻿using Masa.Contrib.Isolation.UoW.EF.Parser.Environment;
-using Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Primitives;
-
-namespace Masa.Contrib.Isolation.UoW.EF.Tests;
+﻿namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
 public class TestIsolation : TestBase
@@ -782,6 +776,7 @@ public class TestIsolation : TestBase
         var services = new ServiceCollection();
         Mock<IEnvironmentSetter> environmentSetter = new();
         string environmentKey = "env";
+        System.Environment.SetEnvironmentVariable(environmentKey, "");
         environmentSetter.Setup(setter => setter.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
         services.Configure<IsolationOptions>(option =>
