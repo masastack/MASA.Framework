@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF;
+namespace Masa.Contrib.Isolation.UoW.EF;
 
 public abstract class IsolationDbContext : IsolationDbContext<Guid>
 {
@@ -16,13 +16,11 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
 {
     private readonly IEnvironmentContext? _environmentContext;
     private readonly ITenantContext? _tenantContext;
-    private readonly ILogger<IsolationDbContext<TKey>>? _logger;
 
     public IsolationDbContext(MasaDbContextOptions options) : base(options)
     {
         _environmentContext = options.ServiceProvider.GetService<IEnvironmentContext>();
         _tenantContext = options.ServiceProvider.GetService<ITenantContext>();
-        _logger = options.ServiceProvider.GetService<ILogger<IsolationDbContext<TKey>>>();
     }
 
     protected override Expression<Func<TEntity, bool>>? CreateFilterExpression<TEntity>()
@@ -33,21 +31,16 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
         if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
         {
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
-                _tenantContext.CurrentTenant == null ||
-                _tenantContext.CurrentTenant.Id == string.Empty ||
-                _tenantContext.CurrentTenant.Id == null! ||
-                Microsoft.EntityFrameworkCore.EF.Property<TKey>(entity, nameof(IMultiTenant<TKey>.TenantId)).ToString() ==
-                (_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : default(TKey)!.ToString());
+                Microsoft.EntityFrameworkCore.EF.Property<TKey>(entity, nameof(IMultiTenant<TKey>.TenantId))
+                .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : default(TKey));
             expression = tenantFilter.And(expression != null, expression);
         }
 
         if (typeof(IEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
         {
             Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
-                _environmentContext.CurrentEnvironment == string.Empty ||
-                _environmentContext.CurrentEnvironment == null! ||
                 Microsoft.EntityFrameworkCore.EF.Property<string>(entity, nameof(IEnvironment.Environment))
-                    .Equals(_environmentContext == null ? default : _environmentContext.CurrentEnvironment);
+                .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
             expression = envFilter.And(expression != null, expression);
         }
 

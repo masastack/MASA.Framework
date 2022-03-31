@@ -27,7 +27,7 @@ public class IntegrationEventLogServiceTest : TestBase
     [TestMethod]
     public void TestNullServices()
     {
-        var dispatcherOptions = CreateDispatcherOptions(null);
+        var dispatcherOptions = CreateDispatcherOptions(null!);
 
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
@@ -84,10 +84,10 @@ public class IntegrationEventLogServiceTest : TestBase
         #endregion
 
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = await logService.RetrieveEventLogsFailedToPublishAsync();
-        Assert.IsTrue(list.Count() == 1);
+        var list = (await logService.RetrieveEventLogsFailedToPublishAsync()).ToList();
+        Assert.IsTrue(list.Count == 1);
 
-        var eventLog = list.Select(log => log.Event).FirstOrDefault();
+        var eventLog = list.Select(log => log.Event).FirstOrDefault()!;
         Assert.IsTrue(eventLog.Equals(@event));
     }
 

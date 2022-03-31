@@ -160,7 +160,7 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public async Task TestUnitOfWorkManagerAsync()
+    public void TestUnitOfWorkManager()
     {
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();

@@ -1,10 +1,10 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
+namespace Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
 
 public class CookieTenantParserProvider : ITenantParserProvider
 {
-    public string Name => "Route";
+    public string Name => "Cookie";
 
-    public Task<bool> ExecuteAsync(IServiceProvider serviceProvider)
+    public Task<bool> ResolveAsync(IServiceProvider serviceProvider)
     {
         var httpContext = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
         var tenantSetter = serviceProvider.GetRequiredService<ITenantSetter>();

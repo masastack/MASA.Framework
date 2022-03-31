@@ -130,27 +130,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.SearchE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service.MinimalAPIs", "src\BuildingBlocks\MASA.BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.MinimalAPIs\Masa.BuildingBlocks.Service.MinimalAPIs.csproj", "{E72E105D-B15F-4D69-9A13-CAA49D4889D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests", "test\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj", "{4A052E17-4D9E-41EF-89A5-73B917053F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests", "test\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj", "{4A052E17-4D9E-41EF-89A5-73B917053F8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.SearchEngine.AutoComplete", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Isolation", "src\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj", "{B689E82B-B3E8-4C83-B56C-D4C27206AAC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolation", "src\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj", "{B689E82B-B3E8-4C83-B56C-D4C27206AAC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF", "src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{0C25062D-60A5-4690-974A-CDA9619866B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF", "src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{0C25062D-60A5-4690-974A-CDA9619866B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.MultiTenancy", "src\Isolation\Masa.Contrib.Isolation.MultiTenancy\Masa.Contrib.Isolation.MultiTenancy.csproj", "{6D9A3F62-8AB6-40AD-B32F-2A435A9D3341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiTenancy", "src\Isolation\Masa.Contrib.Isolation.MultiTenancy\Masa.Contrib.Isolation.MultiTenancy.csproj", "{6D9A3F62-8AB6-40AD-B32F-2A435A9D3341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.Environment", "src\Isolation\Masa.Contrib.Isolation.Environment\Masa.Contrib.Isolation.Environment.csproj", "{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.Environment", "src\Isolation\Masa.Contrib.Isolation.Environment\Masa.Contrib.Isolation.Environment.csproj", "{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "temp", "temp", "{03E3863B-452A-4023-BE34-FC84BD5AB04D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Tests\Masa.Contrib.Isolation.UoW.EF.Tests.csproj", "{50551732-AAE0-4F77-B401-9DD02E226CDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "temp\WebApplication1\WebApplication1.csproj", "{B0CF95DC-C094-47A3-B904-475857DA4A4B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Tests\Masa.Contrib.Isolation.UoW.EF.Tests.csproj", "{50551732-AAE0-4F77-B401-9DD02E226CDB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{7CF33D08-9468-464D-B52E-955A5667EE42}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{7CF33D08-9468-464D-B52E-955A5667EE42}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -552,14 +548,6 @@ Global
 		{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}.Release|x64.ActiveCfg = Release|Any CPU
 		{E9A3C62C-EA85-40C3-BB3B-7836D0337F63}.Release|x64.Build.0 = Release|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Debug|x64.Build.0 = Debug|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Release|x64.ActiveCfg = Release|Any CPU
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B}.Release|x64.Build.0 = Release|Any CPU
 		{50551732-AAE0-4F77-B401-9DD02E226CDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{50551732-AAE0-4F77-B401-9DD02E226CDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50551732-AAE0-4F77-B401-9DD02E226CDB}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -647,7 +635,6 @@ Global
 		{0C25062D-60A5-4690-974A-CDA9619866B4} = {022D6FF5-4B65-4213-9A97-C69E2B2F99E1}
 		{6D9A3F62-8AB6-40AD-B32F-2A435A9D3341} = {022D6FF5-4B65-4213-9A97-C69E2B2F99E1}
 		{E9A3C62C-EA85-40C3-BB3B-7836D0337F63} = {022D6FF5-4B65-4213-9A97-C69E2B2F99E1}
-		{B0CF95DC-C094-47A3-B904-475857DA4A4B} = {03E3863B-452A-4023-BE34-FC84BD5AB04D}
 		{50551732-AAE0-4F77-B401-9DD02E226CDB} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 		{7CF33D08-9468-464D-B52E-955A5667EE42} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 	EndGlobalSection

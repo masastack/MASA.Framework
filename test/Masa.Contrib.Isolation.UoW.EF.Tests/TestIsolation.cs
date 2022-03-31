@@ -1,4 +1,10 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Tests;
+﻿using Masa.Contrib.Isolation.UoW.EF.Parser.Environment;
+using Masa.Contrib.Isolation.UoW.EF.Parser.MultiTenancy;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Primitives;
+
+namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
 public class TestIsolation : TestBase
@@ -128,7 +134,7 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         var currentDbContextOptions = unitOfWorkAccessor.CurrentDbContextOptions;
         Assert.IsNotNull(currentDbContextOptions);
-        Assert.IsTrue(currentDbContextOptions.ConnectionString == "test1");
+        Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test1");
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
         var unifOfWorkNew = unitOfWorkManager.CreateDbContext(true);
@@ -149,31 +155,31 @@ public class TestIsolation : TestBase
 
         var dbContext = unifOfWorkNew.ServiceProvider.GetRequiredService<CustomDbContext>();
 
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext) == "test1" &&
-            unitOfWorkAccessorNew.CurrentDbContextOptions!.ConnectionString == "test1");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext) == "data source=test1" &&
+            unitOfWorkAccessorNew.CurrentDbContextOptions!.ConnectionString == "data source=test1");
 
         var unifOfWorkNew2 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "test1" &&
-            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "test1");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test1" &&
+            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test1");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew3.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
         unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "test2" &&
-            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "test2");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test2" &&
+            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test2");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew4.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
         unifOfWorkNew4.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("production");
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "test3" &&
-            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "test3");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test3" &&
+            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test3");
     }
 
     [TestMethod]
@@ -181,17 +187,17 @@ public class TestIsolation : TestBase
     {
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = "test4";
+            option.DefaultConnection = "data source=test4";
             option.Isolations = new List<DbConnectionOptions>()
             {
                 new()
                 {
-                    ConnectionString = "test5",
+                    ConnectionString = "data source=test5",
                     Environment = "dev"
                 },
                 new()
                 {
-                    ConnectionString = "test6",
+                    ConnectionString = "data source=test6",
                     Environment = "pro"
                 }
             };
@@ -205,7 +211,7 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         var currentDbContextOptions = unitOfWorkAccessor.CurrentDbContextOptions;
         Assert.IsNotNull(currentDbContextOptions);
-        Assert.IsTrue(currentDbContextOptions.ConnectionString == "test4");
+        Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test4");
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
 
@@ -213,22 +219,22 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("dev");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "test5" &&
-            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "test5");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test5" &&
+            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test5");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("pro");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "test6" &&
-            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "test6");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test6" &&
+            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test6");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew4.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("staging");
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "test4" &&
-            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "test4");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test4" &&
+            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test4");
     }
 
     [TestMethod]
@@ -236,17 +242,17 @@ public class TestIsolation : TestBase
     {
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = "test7";
+            option.DefaultConnection = "data source=test7";
             option.Isolations = new List<DbConnectionOptions>()
             {
                 new()
                 {
-                    ConnectionString = "test8",
+                    ConnectionString = "data source=test8",
                     TenantId = "1"
                 },
                 new()
                 {
-                    ConnectionString = "test9",
+                    ConnectionString = "data source=test9",
                     TenantId = "2"
                 }
             };
@@ -260,7 +266,7 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         var currentDbContextOptions = unitOfWorkAccessor.CurrentDbContextOptions;
         Assert.IsNotNull(currentDbContextOptions);
-        Assert.IsTrue(currentDbContextOptions.ConnectionString == "test7");
+        Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test7");
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
 
@@ -268,22 +274,22 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew2.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("1"));
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "test8" &&
-            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "test8");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test8" &&
+            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test8");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew3.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("2"));
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "test9" &&
-            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "test9");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test9" &&
+            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test9");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew4.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(null!);
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "test7" &&
-            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "test7");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test7" &&
+            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test7");
     }
 
     [TestMethod]
@@ -302,5 +308,519 @@ public class TestIsolation : TestBase
         Assert.IsTrue(isolationBuilder.SetTenantParsers(new List<ITenantParserProvider>()).EnvironmentParsers.Count == 0);
     }
 
+    [TestMethod]
+    public async Task TestCookieTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Cookies = new RequestCookieCollection
+                {
+                    {
+                        tenantKey, "1"
+                    }
+                }
+            }
+        };
+        var provider = new CookieTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Cookie");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestCookieTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Cookies = new RequestCookieCollection()
+            }
+        };
+        var provider = new CookieTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestCookieTenantParser3Async()
+    {
+        var services = new ServiceCollection();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var provider = new CookieTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestFormTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Form = new FormCollection(new Dictionary<string, StringValues>()
+                    {
+                        { tenantKey, "1" }
+                    }
+                )
+            }
+        };
+        var provider = new FormTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Form");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestFormTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Form = new FormCollection(new Dictionary<string, StringValues>())
+            }
+        };
+        var provider = new FormTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestFormTenantParser3Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                QueryString = QueryString.Create(tenantKey, "1")
+            }
+        };
+        var provider = new FormTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Form");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestHeaderTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers =
+                {
+                    { tenantKey, "1" }
+                }
+            }
+        };
+        var provider = new HeaderTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Header");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestHeaderTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers = { }
+            }
+        };
+        var provider = new HeaderTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestHttpContextItemTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Items = new Dictionary<object, object?>()
+            {
+                { tenantKey, "1" }
+            }
+        };
+        var provider = new HttpContextItemTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Items");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestHttpContextItemTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Items = new Dictionary<object, object?>()
+        };
+        var provider = new HttpContextItemTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestHttpContextItemTenantParser3Async()
+    {
+        var services = new ServiceCollection();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var provider = new HttpContextItemTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestQueryStringTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request = { QueryString = QueryString.Create(tenantKey, "1") }
+        };
+        var provider = new QueryStringTenantParserProvider();
+        Assert.IsTrue(provider.Name == "QueryString");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestQueryStringTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request = { QueryString = new QueryString() }
+        };
+        var provider = new QueryStringTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestQueryStringTenantParser3Async()
+    {
+        var services = new ServiceCollection();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var provider = new QueryStringTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestRouteTenantParserAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                RouteValues = new RouteValueDictionary()
+                {
+                    { tenantKey, "1" }
+                }
+            }
+        };
+        var provider = new RouteTenantParserProvider();
+        Assert.IsTrue(provider.Name == "Route");
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsTrue(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRouteTenantParser2Async()
+    {
+        var services = new ServiceCollection();
+        services.AddHttpContextAccessor();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                RouteValues = new RouteValueDictionary()
+            }
+        };
+        var provider = new RouteTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestRouteTenantParser3Async()
+    {
+        var services = new ServiceCollection();
+        string tenantKey = "tenant";
+        Mock<ITenantSetter> tenantSetter = new();
+        tenantSetter.Setup(setter => setter.SetTenant(It.IsAny<Tenant>())).Verifiable();
+        services.AddScoped(_ => tenantSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.TenantKey = tenantKey;
+        });
+        var provider = new RouteTenantParserProvider();
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider());
+        Assert.IsFalse(handler);
+        tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestEnvironmentVariablesParserAsync()
+    {
+        var services = new ServiceCollection();
+        Mock<IEnvironmentSetter> environmentSetter = new();
+        string environmentKey = "env";
+        environmentSetter.Setup(setter => setter.SetEnvironment(It.IsAny<string>())).Verifiable();
+        services.AddScoped(_ => environmentSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.EnvironmentKey = environmentKey;
+        });
+        System.Environment.SetEnvironmentVariable(environmentKey, "dev");
+        var serviceProvider = services.BuildServiceProvider();
+        var environmentVariablesParserProvider = new EnvironmentVariablesParserProvider();
+        var handler = await environmentVariablesParserProvider.ResolveAsync(serviceProvider);
+        Assert.IsTrue(handler);
+    }
+
+    [TestMethod]
+    public async Task TestEnvironmentVariablesParser2Async()
+    {
+        var services = new ServiceCollection();
+        Mock<IEnvironmentSetter> environmentSetter = new();
+        string environmentKey = "env";
+        environmentSetter.Setup(setter => setter.SetEnvironment(It.IsAny<string>())).Verifiable();
+        services.AddScoped(_ => environmentSetter.Object);
+        services.Configure<IsolationOptions>(option =>
+        {
+            option.EnvironmentKey = environmentKey;
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var environmentVariablesParserProvider = new EnvironmentVariablesParserProvider();
+        var handler = await environmentVariablesParserProvider.ResolveAsync(serviceProvider);
+        Assert.IsFalse(handler);
+    }
+
+    [TestMethod]
+    public void TestGetDbContextOptionsList()
+    {
+        var services = new ServiceCollection();
+        services.Configure<IsolationDbConnectionOptions>(option =>
+        {
+            option.DefaultConnection = "data source=test2";
+            option.Isolations = new()
+            {
+                new()
+                {
+                    Environment = "dev",
+                    ConnectionString = "data source=test3"
+                },
+                new()
+                {
+                    Environment = "pro",
+                    ConnectionString = "data source=test4"
+                }
+            };
+        });
+        services.AddSingleton<IDbConnectionStringProvider, IsolationDbContextProvider>();
+        var serviceProvider = services.BuildServiceProvider();
+        var provider = serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
+        Assert.IsTrue(provider.DbContextOptionsList.Distinct().Count() == 3);
+    }
+
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
+
 }

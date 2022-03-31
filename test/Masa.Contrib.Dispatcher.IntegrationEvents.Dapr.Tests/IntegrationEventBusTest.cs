@@ -117,7 +117,7 @@ public class IntegrationEventBusTest
     [TestMethod]
     public void TestAddDaprEventBusAndNullServicesAsync()
     {
-        IServiceCollection services = null;
+        IServiceCollection services = null!;
         Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
         distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
         distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();

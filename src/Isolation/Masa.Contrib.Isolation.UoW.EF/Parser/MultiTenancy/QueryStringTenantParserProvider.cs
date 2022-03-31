@@ -4,7 +4,7 @@ public class QueryStringTenantParserProvider : ITenantParserProvider
 {
     public string Name => "QueryString";
 
-    public Task<bool> ExecuteAsync(IServiceProvider serviceProvider)
+    public Task<bool> ResolveAsync(IServiceProvider serviceProvider)
     {
         var httpContext = serviceProvider.GetService<IHttpContextAccessor>()?.HttpContext;
         var tenantSetter = serviceProvider.GetRequiredService<ITenantSetter>();
