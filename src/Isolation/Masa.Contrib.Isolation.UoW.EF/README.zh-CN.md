@@ -66,6 +66,10 @@ public class CustomDbContext : IsolationDbContext
 租户隔离实现IMultiTenant、环境隔离实现IMultiEnvironment
 
 ##### 总结
-* 租户与环境什么时候被解析？
-  * 在Event被Publish会通过提供的解析器解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析
-  * 不使用EventBus，直接在控制器或MinimalAPI中操作DbContext、Repository等需要在Program.cs中添加`app.UseIsolation();`，在AspNetCore的中间件中会解析环境、租户信息，如果环境或者租户已经被赋值，则会跳过解析
+* 解析器目前支持几种？
+  * 目前支持两种解析器，一个是[环境解析器](../Masa.Contrib.Isolation.Environment/README.zh-CN.md)、一个是[租户解析器](../Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md)
+* 解析器如何使用？
+  * 通过EventBus发布事件后，EventBus会自动调用解析器中间件，根据隔离性使用情况触发环境、租户解析器进行解析并赋值
+  * 针对未使用EventBus的场景，需要在Program.cs中添加`app.UseIsolation();`，在请求发起后会先经过Isolation提供的AspNetCore中间件，并触发环境、租户解析器进行解析并赋值，当请求到达指定的控制器或者Minimal的方法时已经解析完成
+* 解析器的作用？
+  * 通过解析器获取当前的环境以及租户信息，为隔离提供数据支撑，需要在创建DbContext之前被调用执行

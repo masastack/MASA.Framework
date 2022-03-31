@@ -60,7 +60,7 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 ##### Summarize
 
 * How is the environment resolved in the controller or MinimalAPI?
-    * The environment provides 1 parser by default, and the execution order is: EnvironmentVariablesParserProvider (obtained in the system environment variable, the default environment parameter: ASPNETCORE_ENVIRONMENT)
+    * The environment provides one parser by default, and the execution order is: EnvironmentVariablesParserProvider (gets the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
 * If the parser fails to resolve the environment, what is the last database used?
     * If the parsing environment fails, return DefaultConnection directly
 * How to change the default environment parameter name
@@ -82,7 +82,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
         dbOptions => dbOptions.UseSqlServer(),
         isolationBuilder => isolationBuilder.SetEnvironmentParsers(new List<IEnvironmentParserProvider>()
         {
-            new EnvironmentVariablesParserProvider()
+            new EnvironmentVariablesParserProvider() //By default, environment information in environment isolation is obtained from system environment variables
         }).UseEnvironment());// Use environment isolation
 });
 ````

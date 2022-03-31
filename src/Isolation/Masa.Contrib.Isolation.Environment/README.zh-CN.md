@@ -61,7 +61,7 @@ public class CustomDbContext : IsolationDbContext
 ##### 总结
 
 * 控制器或MinimalAPI中环境如何解析？
-    * 环境默认提供了1个解析器，执行顺序为：EnvironmentVariablesParserProvider (在系统环境变量中获取，环境参数默认：ASPNETCORE_ENVIRONMENT)
+    * 环境默认提供了1个解析器，执行顺序为：EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
 * 如果解析器解析环境失败，那最后使用的数据库是?
     * 若解析环境失败，则直接返回DefaultConnection
 * 如何更改默认环境参数名
@@ -83,7 +83,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
         dbOptions => dbOptions.UseSqlServer(),
         isolationBuilder => isolationBuilder.SetEnvironmentParsers(new List<IEnvironmentParserProvider>()
         {
-            new EnvironmentVariablesParserProvider()
+            new EnvironmentVariablesParserProvider() // 默认从系统环境变量中获取环境隔离中的环境信息
         }).UseEnvironment());// 使用环境隔离
 });
 ```

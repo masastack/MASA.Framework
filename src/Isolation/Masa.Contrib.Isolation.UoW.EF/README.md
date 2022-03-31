@@ -66,6 +66,10 @@ public class CustomDbContext : IsolationDbContext
 Tenant isolation implements IMultiTenant, and environment isolation implements IMultiEnvironment
 
 ##### Summarize
-* When are tenants and environments resolved?
-    * Manipulating DbContext, Repository, etc. in EventHandler can be used directly without any additional operations and no increase in workload. When Event is published, the environment and tenant information will be parsed through the provided parser. If the environment or tenant has been assigned, then will skip parsing
-    * To operate DbContext, Repository, etc. directly in the controller or MinimalAPI, you need to add `app.UseIsolation();` in Program.cs, the environment and tenant information will be parsed in the middleware of AspNetCore, if the environment or tenant has been assigned, will skip parsing
+* How many kinds of parser are currently supported?
+   * Currently two kinds of parsers are supported, one is [Environment Parser](../Masa.Contrib.Isolation.Environment/README.zh-CN.md), the other is [Tenant Parser](../Masa.Contrib .Isolation.MultiTenant/README.zh-CN.md)
+* How is the parser used?
+   * After publishing events through EventBus, EventBus will automatically call the parser middleware to trigger the environment and tenant parser to parse and assign values according to the isolation usage
+   * For scenarios where EventBus is not used, `app.UseIsolation();` needs to be added to Program.cs. After the request is initiated, it will first pass through the AspNetCore middleware provided by Isolation, and trigger the environment and tenant resolvers to parse and assign values. When the request arrives at the specified controller or Minimal method, the parsing is complete
+* What does the parser do?
+   * Obtain the current environment and tenant information through the parser to provide data support for isolation, which needs to be called and executed before creating DbContext
