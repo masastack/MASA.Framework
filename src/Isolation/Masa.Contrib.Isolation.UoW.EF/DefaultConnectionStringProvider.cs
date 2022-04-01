@@ -77,12 +77,11 @@ public class DefaultConnectionStringProvider : IConnectionStringProvider
 
     private string GetMessage()
     {
-        StringBuilder stringBuilder = new StringBuilder();
+        List<string> messages = new List<string>();
         if (_environmentContext != null)
-            stringBuilder.Append($"Environment: [{_environmentContext.CurrentEnvironment}], ");
+            messages.Add($"Environment: [{_environmentContext.CurrentEnvironment ?? ""}]");
         if (_tenantContext != null)
-            stringBuilder.Append($"Tenant: [{_tenantContext.CurrentTenant?.Id ?? ""}], ");
-        var message = stringBuilder.ToString();
-        return message.Substring(0, message.Length - 2);
+            messages.Add($"Tenant: [{_tenantContext.CurrentTenant?.Id ?? ""}]");
+        return string.Join(", ", messages);
     }
 }
