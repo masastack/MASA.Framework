@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Tests;
+﻿namespace Masa.Contrib.Isolation.Tests;
 
 public class RequestCookieCollection : Dictionary<string, string>, IRequestCookieCollection
 {

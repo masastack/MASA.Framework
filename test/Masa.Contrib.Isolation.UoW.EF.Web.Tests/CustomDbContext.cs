@@ -4,33 +4,53 @@ public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions options) : base(options) { }
 
-    public DbSet<Users> User { get; set; }
+    public DbSet<User> User { get; set; }
+
+    public DbSet<Role> Role { get; set; }
 
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
-        builder.Entity<Users>(ConfigureUserEntry);
+        builder.Entity<User>(ConfigureUserEntry);
+        builder.Entity<Role>(ConfigureRoleEntry);
     }
 
-    void ConfigureUserEntry(EntityTypeBuilder<Users> builder)
+    void ConfigureUserEntry(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("Users");
 
-        builder.HasKey(e => e.Id);
+        builder.HasKey(user => user.Id);
+
+        builder.Property(user => user.Id)
+            .IsRequired();
+
+        builder.Property(user => user.Account)
+            .HasMaxLength(20)
+            .IsRequired();
+
+        builder.Property(user => user.Account)
+            .HasMaxLength(50)
+            .IsRequired();
+    }
+
+    void ConfigureRoleEntry(EntityTypeBuilder<Role> builder)
+    {
+        builder.ToTable("Roles");
+
+        builder.HasKey(role => role.Id);
 
         builder.Property(e => e.Id)
             .IsRequired();
 
-        builder.Property(e => e.Account)
+        builder.Property(e => e.Name)
             .HasMaxLength(20)
             .IsRequired();
 
-        builder.Property(e => e.Account)
-            .HasMaxLength(50)
+        builder.Property(e => e.Quantity)
             .IsRequired();
     }
 }
 
-public class Users : IIsolation<int>
+public class User : IIsolation<int>
 {
     public Guid Id { get; private set; }
 
@@ -38,12 +58,32 @@ public class Users : IIsolation<int>
 
     public string Password { get; set; } = default!;
 
-    public Users()
+    public int TenantId { get; set; }
+
+    public string Environment { get; set; }
+
+    public User()
     {
         this.Id = Guid.NewGuid();
     }
+}
+
+public class Role : IIsolation<int>, ISoftDelete
+{
+    public Guid Id { get; private set; }
+
+    public string Name { get; set; }
+
+    public int Quantity { get; set; }
+
+    public bool IsDeleted { get; set; }
 
     public int TenantId { get; set; }
 
     public string Environment { get; set; }
+
+    public Role()
+    {
+        this.Id = Guid.NewGuid();
+    }
 }

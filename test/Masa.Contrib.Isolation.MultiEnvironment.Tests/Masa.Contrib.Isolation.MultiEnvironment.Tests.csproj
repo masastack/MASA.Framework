@@ -17,19 +17,10 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.3" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.3" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Masa.Utils.Data.EntityFrameworkCore.Sqlite" Version="0.4.0-preview.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
-    <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
-    <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
