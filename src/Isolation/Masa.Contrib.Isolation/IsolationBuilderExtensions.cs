@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF;
+namespace Masa.Contrib.Isolation;
 
 public static class IsolationBuilderExtensions
 {

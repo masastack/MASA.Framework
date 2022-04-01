@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Internal;
+﻿namespace Masa.Contrib.Isolation.Internal;
 
 internal class Const
 {

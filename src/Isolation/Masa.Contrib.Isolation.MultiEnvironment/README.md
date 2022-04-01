@@ -37,8 +37,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment());
+        isolationBuilder => isolationBuilder.UseMultiEnvironment(),
+        dbOptions => dbOptions.UseSqlServer());
 });
 ````
 
@@ -60,7 +60,15 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 ##### Summarize
 
 * How is the environment resolved in the controller or MinimalAPI?
-    * The environment provides one parser by default, and the execution order is: EnvironmentVariablesParserProvider (gets the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
+    * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
+        * HttpContextItemParserProvider: Get tenant information through the Items property of the requested HttpContext
+        * QueryStringParserProvider: Get environment information through the requested QueryString
+            * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=dev (environment information is dev)
+        * FormParserProvider: Get environment information through Form form
+        * RouteParserProvider: Get environment information through routing
+        * HeaderParserProvider: Get environment information through request headers
+        * CookieParserProvider: Get environmental information through cookies
+        * EnvironmentVariablesParserProvider: Get environment information through system environment variables
 * If the parser fails to resolve the environment, what is the last database used?
     * If the parsing environment fails, return DefaultConnection directly
 * How to change the default environment parameter name
@@ -69,8 +77,8 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetEnvironmentKey("env").UseEnvironment());// Use environment isolation
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
+        dbOptions => dbOptions.UseSqlServer());// Use environment isolation
 });
 ````
 * How to change the parser
@@ -79,10 +87,10 @@ builder.Services.AddEventBus(eventBusBuilder =>
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetEnvironmentParsers(new List<IEnvironmentParserProvider>()
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env", new List<IEnvironmentParserProvider>()
         {
             new EnvironmentVariablesParserProvider() //By default, environment information in environment isolation is obtained from system environment variables
-        }).UseEnvironment());// Use environment isolation
+        }),
+        dbOptions => dbOptions.UseSqlServer());// Use environment isolation
 });
 ````

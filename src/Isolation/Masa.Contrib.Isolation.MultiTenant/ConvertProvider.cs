@@ -4,15 +4,7 @@ public class ConvertProvider : IConvertProvider
 {
     public object ChangeType(string value, Type conversionType)
     {
-        object result;
-        if (conversionType == typeof(Guid))
-        {
-            result = Guid.Parse(value);
-        }
-        else
-        {
-            result = Convert.ChangeType(value, conversionType);
-        }
+        var result = conversionType == typeof(Guid) ? Guid.Parse(value) : Convert.ChangeType(value, conversionType);
         return result;
     }
 }

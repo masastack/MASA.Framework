@@ -38,8 +38,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment());
+        isolationBuilder => isolationBuilder.UseMultiEnvironment(),
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 
@@ -61,7 +61,15 @@ public class CustomDbContext : IsolationDbContext
 ##### 总结
 
 * 控制器或MinimalAPI中环境如何解析？
-    * 环境默认提供了1个解析器，执行顺序为：EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
+    * 环境默认提供了7个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
+      * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取租户信息
+      * QueryStringParserProvider: 通过请求的QueryString获取环境信息
+          * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=dev (环境信息是dev)
+      * FormParserProvider: 通过Form表单获取环境信息
+      * RouteParserProvider: 通过路由获取环境信息
+      * HeaderParserProvider: 通过请求头获取环境信息
+      * CookieParserProvider: 通过Cookie获取环境信息
+      * EnvironmentVariablesParserProvider: 通过系统环境变量获取环境信息
 * 如果解析器解析环境失败，那最后使用的数据库是?
     * 若解析环境失败，则直接返回DefaultConnection
 * 如何更改默认环境参数名
@@ -70,8 +78,8 @@ public class CustomDbContext : IsolationDbContext
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetEnvironmentKey("env").UseEnvironment());// 使用环境隔离
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
+        dbOptions => dbOptions.UseSqlServer());// 使用环境隔离
 });
 ```
 * 如何更改解析器
@@ -80,10 +88,10 @@ builder.Services.AddEventBus(eventBusBuilder =>
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetEnvironmentParsers(new List<IEnvironmentParserProvider>()
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env", new List<IEnvironmentParserProvider>()
         {
             new EnvironmentVariablesParserProvider() // 默认从系统环境变量中获取环境隔离中的环境信息
-        }).UseEnvironment());// 使用环境隔离
+        }),
+        dbOptions => dbOptions.UseSqlServer());// 使用环境隔离
 });
 ```

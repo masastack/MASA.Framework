@@ -10,8 +10,4 @@
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Masa.Utils.Data.EntityFrameworkCore" Version="0.4.0-preview.2" />
-  </ItemGroup>
-
 </Project>

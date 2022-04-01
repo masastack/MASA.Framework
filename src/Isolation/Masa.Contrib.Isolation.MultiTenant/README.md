@@ -38,8 +38,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseMultiTenant());// Use tenant isolation
+        isolationBuilder => isolationBuilder.UseMultiTenant(),
+        dbOptions => dbOptions.UseSqlServer());// Use tenant isolation
 });
 ````
 
@@ -59,19 +59,19 @@ public class CustomDbContext : IsolationDbContext
 You can also choose not to implement IMultiTenant when using physical isolation
 
 > The tenant id type can be specified by yourself, the default Guid type
-> * For example: Implement IMultiTenant to implement IMultiTenant<int>, UseMultiTenant() to UseMultiTenant<int>()
+> * For example: Implement IMultiTenant to implement IMultiTenant<int>, UseIsolationUoW<CustomDbContext>() to UseIsolationUoW<CustomDbContext, int>()
 
 ##### Summarize
 
 * How to resolve the tenant in the controller or MinimalAPI?
-  * The tenant provides 6 parsers by default, the execution order is: HttpContextItemTenantParserProvider, QueryStringTenantParserProvider, FormTenantParserProvider, RouteTenantParserProvider, HeaderTenantParserProvider, CookieTenantParserProvider (tenant parameter default: __tenant)
-    * HttpContextItemTenantParserProvider: Obtain tenant information through the Items property of the requested HttpContext
-    * QueryStringTenantParserProvider: Get tenant information through the requested QueryString
+  * The tenant provides 6 parsers by default, the execution order is: HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (tenant parameter default: __tenant)
+    * HttpContextItemParserProvider: Obtain tenant information through the Items property of the requested HttpContext
+    * QueryStringParserProvider: Get tenant information through the requested QueryString
       * https://github.com/masastack?__tenant=1 (tenant id is 1)
-    * FormTenantParserProvider: Get tenant information through the Form form
-    * RouteTenantParserProvider: Get tenant information through routing
-    * HeaderTenantParserProvider: Get tenant information through request headers
-    * CookieTenantParserProvider: Get tenant information through cookies
+    * FormParserProvider: Get tenant information through the Form form
+    * RouteParserProvider: Get tenant information through routing
+    * HeaderParserProvider: Get tenant information through request headers
+    * CookieParserProvider: Get tenant information through cookies
 * If the resolver fails to resolve the tenant, what is the last database used?
   * If the resolution of the tenant fails, return the DefaultConnection directly
 * How to change the default tenant parameter name
@@ -80,8 +80,8 @@ You can also choose not to implement IMultiTenant when using physical isolation
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetTenantKey("tenant").UseMultiTenant());// Use tenant isolation
+        isolationBuilder => isolationBuilder.UseMultiTenant("tenant"),
+        dbOptions => dbOptions.UseSqlServer());// Use tenant isolation
 });
 ````
 * The default parser is not easy to use, want to change the default parser?
@@ -90,10 +90,10 @@ builder.Services.AddEventBus(eventBusBuilder =>
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetTenantParsers(new List<ITenantParserProvider>()
+        isolationBuilder => isolationBuilder.UseMultiTenant("tenant", new List<ITenantParserProvider>()
         {
             new QueryStringTenantParserProvider() // only use QueryStringTenantParserProvider, other parsers are removed
-        }).UseMultiTenant());// Use tenant isolation
+        }),
+        dbOptions => dbOptions.UseSqlServer());// Use tenant isolation
 });
 ````

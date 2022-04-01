@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.UoW.EF.Middleware;
+namespace Masa.Contrib.Isolation.Middleware;
 
 public class IsolationMiddleware<TEvent> : IMiddleware<TEvent> where TEvent : IEvent
 {

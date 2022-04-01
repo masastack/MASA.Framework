@@ -45,8 +45,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment().UseMultiTenant());// 按需选择使用环境或者租户隔离
+        isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiTenant(),// 按需选择使用环境或者租户隔离
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 

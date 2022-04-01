@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.Environment;
+namespace Masa.Contrib.Isolation.MultiEnvironment;
 
 public class EnvironmentContext : IEnvironmentContext, IEnvironmentSetter
 {

@@ -38,8 +38,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseMultiTenant());// 使用租户隔离
+        isolationBuilder => isolationBuilder.UseMultiTenant(),// 使用租户隔离
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 
@@ -59,19 +59,19 @@ public class CustomDbContext : IsolationDbContext
 采用物理隔离时也可以选择不实现IMultiTenant
 
 > 租户id类型支持自行指定，默认Guid类型
-> * 如：实现IMultiTenant改为实现IMultiTenant<int>，UseMultiTenant()改为UseMultiTenant<int>()
+> * 如：实现IMultiTenant改为实现IMultiTenant<int>，UseIsolationUoW<CustomDbContext>()改为UseIsolationUoW<CustomDbContext, int>()
 
 ##### 总结
 
 * 控制器或MinimalAPI中租户如何解析？
-  * 租户默认提供了6个解析器，执行顺序分别为：HttpContextItemTenantParserProvider、QueryStringTenantParserProvider、FormTenantParserProvider、RouteTenantParserProvider、HeaderTenantParserProvider、CookieTenantParserProvider (租户参数默认：__tenant)
-    * HttpContextItemTenantParserProvider: 通过请求的HttpContext的Items属性获取租户信息
-    * QueryStringTenantParserProvider: 通过请求的QueryString获取租户信息
+  * 租户默认提供了6个解析器，执行顺序分别为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (租户参数默认：__tenant)
+    * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取租户信息
+    * QueryStringParserProvider: 通过请求的QueryString获取租户信息
       * https://github.com/masastack?__tenant=1 (租户id为1)
-    * FormTenantParserProvider: 通过Form表单获取租户信息
-    * RouteTenantParserProvider: 通过路由获取租户信息
-    * HeaderTenantParserProvider: 通过请求头获取租户信息
-    * CookieTenantParserProvider: 通过Cookie获取租户信息
+    * FormParserProvider: 通过Form表单获取租户信息
+    * RouteParserProvider: 通过路由获取租户信息
+    * HeaderParserProvider: 通过请求头获取租户信息
+    * CookieParserProvider: 通过Cookie获取租户信息
 * 如果解析器解析租户失败，那最后使用的数据库是？
   * 若解析租户失败，则直接返回DefaultConnection
 * 如何更改默认租户参数名
@@ -80,8 +80,8 @@ public class CustomDbContext : IsolationDbContext
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetTenantKey("tenant").UseMultiTenant());// 使用租户隔离
+        isolationBuilder => isolationBuilder.UseMultiTenant("tenant"),
+        dbOptions => dbOptions.UseSqlServer());// 使用租户隔离
 });
 ```
 * 默认解析器不好用，希望更改默认解析器?
@@ -90,11 +90,11 @@ builder.Services.AddEventBus(eventBusBuilder =>
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.SetTenantParsers(new List<ITenantParserProvider>()
+        isolationBuilder => isolationBuilder.UseMultiTenant("tenant", new List<ITenantParserProvider>()
         {
             new QueryStringTenantParserProvider() // 只使用QueryStringTenantParserProvider, 其它解析器移除掉
-        }).UseMultiTenant());// 使用租户隔离
+        }),
+        dbOptions => dbOptions.UseSqlServer());// 使用租户隔离
 });
 ```
 
