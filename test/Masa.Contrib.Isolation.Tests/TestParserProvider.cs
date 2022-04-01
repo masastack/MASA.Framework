@@ -1,5 +1,3 @@
-using Masa.BuildingBlocks.Isolation.Parser;
-
 namespace Masa.Contrib.Isolation.Tests;
 
 [TestClass]

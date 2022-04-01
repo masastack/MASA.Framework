@@ -1,5 +1,3 @@
-﻿using Masa.Contrib.Isolation.MultiEnvironment;
-
 namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
@@ -245,7 +243,7 @@ public class TestIsolation : TestBase
         });
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext,int>(isolationBuilder => isolationBuilder.UseMultiTenant(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiTenant(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();

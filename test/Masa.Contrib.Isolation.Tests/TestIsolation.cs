@@ -1,5 +1,3 @@
-using Masa.Contrib.Isolation.MultiEnvironment;
-
 namespace Masa.Contrib.Isolation.Tests;
 
 [TestClass]
