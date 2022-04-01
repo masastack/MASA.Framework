@@ -80,8 +80,8 @@ public class CustomDbContext : IsolationDbContext
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiTenant("tenant"),
-        dbOptions => dbOptions.UseSqlServer());// 使用租户隔离
+        isolationBuilder => isolationBuilder.UseMultiTenant("tenant"),// 使用租户隔离
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 * 默认解析器不好用，希望更改默认解析器?

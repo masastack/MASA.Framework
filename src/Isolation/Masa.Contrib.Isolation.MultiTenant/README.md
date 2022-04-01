@@ -38,8 +38,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiTenant(),
-        dbOptions => dbOptions.UseSqlServer());// Use tenant isolation
+        isolationBuilder => isolationBuilder.UseMultiTenant(),// Use tenant isolation
+        dbOptions => dbOptions.UseSqlServer());
 });
 ````
 
