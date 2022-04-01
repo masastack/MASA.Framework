@@ -130,11 +130,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.SearchE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service.MinimalAPIs", "src\BuildingBlocks\MASA.BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.MinimalAPIs\Masa.BuildingBlocks.Service.MinimalAPIs.csproj", "{E72E105D-B15F-4D69-9A13-CAA49D4889D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests", "test\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj", "{4A052E17-4D9E-41EF-89A5-73B917053F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests", "test\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj", "{4A052E17-4D9E-41EF-89A5-73B917053F8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.SearchEngine.AutoComplete", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm", "src\BasicAbility\Masa.Contrib.BasicAbility.PM\Masa.Contrib.BasicAbility.Pm.csproj", "{118A91A6-6FBB-431A-B50D-076375AD6A63}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.PM\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.BasicAbility.Pm.Tests", "test\Masa.Contrib.BasicAbility.Pm.Tests\Masa.Contrib.BasicAbility.Pm.Tests.csproj", "{C4DDEA6E-D6AF-4890-9713-C2862403E57C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -504,6 +510,30 @@ Global
 		{31262D61-26A4-4302-968D-52B8DA4558CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31262D61-26A4-4302-968D-52B8DA4558CD}.Release|x64.ActiveCfg = Release|Any CPU
 		{31262D61-26A4-4302-968D-52B8DA4558CD}.Release|x64.Build.0 = Release|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Debug|x64.Build.0 = Debug|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|x64.ActiveCfg = Release|Any CPU
+		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|x64.Build.0 = Release|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|x64.Build.0 = Debug|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Release|x64.ActiveCfg = Release|Any CPU
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Release|x64.Build.0 = Release|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -571,6 +601,9 @@ Global
 		{4A052E17-4D9E-41EF-89A5-73B917053F8E} = {2BE750A5-8AC7-457C-9BB2-6E3D5E2D23B8}
 		{3F8532EF-3DC9-45F8-9562-994ABE066585} = {8C39C640-0E8A-43A7-890C-9742B6B70AA4}
 		{31262D61-26A4-4302-968D-52B8DA4558CD} = {38E6C400-90C0-493E-9266-C1602E229F1B}
+		{118A91A6-6FBB-431A-B50D-076375AD6A63} = {5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}
+		{AB6FAB84-5218-48A8-8F94-03B02ECD098F} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{C4DDEA6E-D6AF-4890-9713-C2862403E57C} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
