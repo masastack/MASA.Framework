@@ -7,7 +7,7 @@ public class Repository<TDbContext, TEntity> :
 {
     protected readonly TDbContext Context;
 
-    public Repository(TDbContext context, IUnitOfWork unitOfWork)
+    public Repository(TDbContext context, IUnitOfWork unitOfWork) : base(unitOfWork.ServiceProvider)
     {
         Context = context;
         UnitOfWork = unitOfWork;

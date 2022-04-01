@@ -31,7 +31,7 @@ public class RepositoryTest : TestBase
             action.Invoke(_services);
 
         var serviceProvider = _services.BuildServiceProvider();
-        _dbContext = _services.BuildServiceProvider().GetRequiredService<CustomDbContext>();
+        _dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await _dbContext.Database.EnsureCreatedAsync();
         _uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
         _dispatcherOptions.Object.UseUoW<CustomDbContext>();

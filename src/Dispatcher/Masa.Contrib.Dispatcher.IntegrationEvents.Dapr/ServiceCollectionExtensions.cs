@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
-            logger?.LogWarning("UoW is not enabled, local messages will not be integrated");
+            logger?.LogDebug("UoW is not enabled or add delay, UoW is not used will affect 100% delivery of the message");
         }
 
         return services;

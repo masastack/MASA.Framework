@@ -1,13 +1,8 @@
-namespace Masa.Contrib.Data.UoW.EF.Tests;
+namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
-public class CustomerDbContext : MasaDbContext
+public class CustomDbContext : MasaDbContext
 {
-    private static readonly Mock<MasaDbContextOptions> masaDbContextOptions = new();
-    public CustomerDbContext() : this(masaDbContextOptions.Object)
-    {
-    }
-
-    public CustomerDbContext(MasaDbContextOptions options) : base(options) { }
+    public CustomDbContext(MasaDbContextOptions options) : base(options) { }
 
     public DbSet<Users> User { get; set; }
 

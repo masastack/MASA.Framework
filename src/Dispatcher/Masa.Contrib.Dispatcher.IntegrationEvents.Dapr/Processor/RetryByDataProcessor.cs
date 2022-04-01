@@ -7,11 +7,13 @@ public class RetryByDataProcessor : ProcessorBase
     private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly ILogger<RetryByDataProcessor>? _logger;
 
+    public override int Delay => _options.Value.FailedRetryInterval;
+
     public RetryByDataProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
         IOptionsMonitor<AppConfig>? appConfig = null,
-        ILogger<RetryByDataProcessor>? logger = null)
+        ILogger<RetryByDataProcessor>? logger = null) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _appConfig = appConfig;
@@ -19,19 +21,18 @@ public class RetryByDataProcessor : ProcessorBase
         _logger = logger;
     }
 
-    public override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
     {
-        using (var scope = _serviceProvider.CreateScope())
-        {
-            var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+        var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
             if (unitOfWork != null)
                 unitOfWork.UseTransaction = false;
 
-            var dapr = scope.ServiceProvider.GetRequiredService<DaprClient>();
-            var eventLogService = scope.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+            var dapr = serviceProvider.GetRequiredService<DaprClient>();
+            var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
-                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes, _options.Value.MinimumRetryInterval);
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes,
+                    _options.Value.MinimumRetryInterval);
 
             foreach (var eventLog in retrieveEventLogs)
             {
@@ -64,8 +65,5 @@ public class RetryByDataProcessor : ProcessorBase
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
                 }
             }
-        }
     }
-
-    public override int Delay => _options.Value.FailedRetryInterval;
 }

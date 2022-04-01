@@ -23,7 +23,7 @@ public class AssemblyResolutionTests
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         Assert.ThrowsException<ArgumentException>(() =>
         {
-            Assembly[] assemblies = null;
+            Assembly[] assemblies = null!;
             services.AddEventBus(assemblies!);
         });
     }
@@ -46,7 +46,7 @@ public class AssemblyResolutionTests
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         Assert.ThrowsException<ArgumentException>(() =>
         {
-            services.AddTestEventBus(null, ServiceLifetime.Scoped);
+            services.AddTestEventBus(null!, ServiceLifetime.Scoped);
         });
     }
 
