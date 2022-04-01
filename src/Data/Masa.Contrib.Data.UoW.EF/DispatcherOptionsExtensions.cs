@@ -40,7 +40,7 @@ public static class DispatcherOptionsExtensions
 
         services.AddSingleton<UoWProvider>();
         services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
-        services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+        services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager<TDbContext>>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
 

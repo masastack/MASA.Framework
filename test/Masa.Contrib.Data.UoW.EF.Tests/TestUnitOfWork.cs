@@ -160,7 +160,7 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public async Task TestUnitOfWorkManagerAsync()
+    public void TestUnitOfWorkManager()
     {
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
@@ -194,11 +194,12 @@ public class TestUnitOfWork : TestBase
         Assert.IsTrue(unitOfWorkAccessor is { CurrentDbContextOptions: null });
         var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
         Assert.IsNotNull(unitOfWork);
+        Assert.IsTrue(!unitOfWork.TransactionHasBegun);
         unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null && unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
-        var unitOfWorkNew = unitOfWorkManager.CreateDbContext();
+        var unitOfWorkNew = unitOfWorkManager.CreateDbContext(false);
         var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null && unitOfWorkAccessorNew.CurrentDbContextOptions.ConnectionString == configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
 
