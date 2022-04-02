@@ -17,68 +17,12 @@ namespace Masa.Contrib.BasicAbility.Pm
     {
         public static void AddPmCaching(this IServiceCollection services, Action<CallerOptions> callerOptions)
         {
-            var options = AppSettings.GetModel<RedisConfigurationOptions>("PmRedisSettings");
-
-            services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, options).AddMasaMemoryCache();
-
             services.AddCaller(options =>
             {
                 callerOptions.Invoke(options);
             });
 
-            services.AddSingleton(serviceProvider =>
-            {
-                var factory = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>();
-                var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-                var client = factory.CreateClient(DEFAULT_CLIENT_NAME);
-                return PmCachingFactory.Create(client, callerFactory);
-            });
-        }
-
-        public static void AddPmCaching(this IServiceCollection services, Action<RedisConfigurationOptions> configureOptions, Action<CallerOptions> callerOptions)
-        {
-            if (configureOptions == null)
-            {
-                throw new ArgumentNullException(nameof(configureOptions));
-            }
-
-            services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, configureOptions).AddMasaMemoryCache();
-
-            services.AddCaller(options =>
-            {
-                callerOptions.Invoke(options);
-            });
-
-            services.AddSingleton(serviceProvider =>
-            {
-                var factory = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>();
-                var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-                var client = factory.CreateClient(DEFAULT_CLIENT_NAME);
-                return PmCachingFactory.Create(client, callerFactory);
-            });
-        }
-
-        public static void AddPmCaching(this IServiceCollection services, RedisConfigurationOptions options, Action<CallerOptions> callerOptions)
-        {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, options).AddMasaMemoryCache();
-
-            services.AddCaller(options =>
-            {
-                callerOptions.Invoke(options);
-            });
-
-            services.AddSingleton(serviceProvider =>
-            {
-                var factory = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>();
-                var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-                var client = factory.CreateClient(DEFAULT_CLIENT_NAME);
-                return PmCachingFactory.Create(client, callerFactory);
-            });
+            services.AddSingleton<IPmCaching>(serviceProvider => new PmCaching(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME)));
         }
     }
 }
