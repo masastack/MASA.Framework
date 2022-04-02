@@ -34,28 +34,20 @@ public class DefaultDbIsolationConnectionStringProvider : IIsolationDbConnection
         if (_tenantContext != null)
         {
             if (_tenantContext.CurrentTenant == null)
-            {
-                _logger?.LogError(
-                    $"Tenant resolution failed, the currently used ConnectionString is [{nameof(_options.Value.DefaultConnection)}]");
-                return SetConnectionString();
-            }
+                _logger?.LogDebug($"Tenant resolution failed, the currently used ConnectionString is [{nameof(_options.Value.DefaultConnection)}]");
 
-            condition = condition.And(option => option.TenantId == "*" || (_tenantContext.CurrentTenant != null &&
-                _tenantContext.CurrentTenant.Id.Equals(option.TenantId, StringComparison.CurrentCultureIgnoreCase)));
+            condition = condition.And(option => option.TenantId == "*" || (_tenantContext.CurrentTenant != null && _tenantContext.CurrentTenant.Id.Equals(option.TenantId, StringComparison.CurrentCultureIgnoreCase)));
         }
 
         if (_environmentContext != null)
         {
             if (string.IsNullOrEmpty(_environmentContext.CurrentEnvironment))
             {
-                _logger?.LogError(
-                    $"Environment resolution failed, the currently used ConnectionString is [{nameof(_options.Value.DefaultConnection)}]");
-                return SetConnectionString();
+                _logger?.LogDebug($"Environment resolution failed, the currently used ConnectionString is [{nameof(_options.Value.DefaultConnection)}]");
             }
 
             condition = condition.And(option
-                => option.Environment == "*" ||
-                option.Environment.Equals(_environmentContext.CurrentEnvironment, StringComparison.CurrentCultureIgnoreCase));
+                => option.Environment == "*" || option.Environment.Equals(_environmentContext.CurrentEnvironment, StringComparison.CurrentCultureIgnoreCase));
         }
 
         string? connectionString;

@@ -31,7 +31,7 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 
 * 1.1 When the current tenant is 00000000-0000-0000-0000-000000000002: database address: server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.2 When the current tenant is 00000000-0000-0000-0000-000000000003: database address: server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 Other tenants: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.3 Other tenants or hosts: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. Using Isolation.UoW.EF
 ```` C#

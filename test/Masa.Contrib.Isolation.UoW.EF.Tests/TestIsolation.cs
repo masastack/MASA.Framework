@@ -151,8 +151,8 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test1" &&
-            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test1");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test2" &&
+            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test2");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();

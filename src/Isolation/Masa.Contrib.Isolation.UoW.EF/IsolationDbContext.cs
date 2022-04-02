@@ -30,9 +30,10 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
 
         if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
         {
+            string defaultTenantId = default(TKey)?.ToString() ?? string.Empty;
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
                 (Microsoft.EntityFrameworkCore.EF.Property<TKey>(entity, nameof(IMultiTenant<TKey>.TenantId)).ToString() ?? string.Empty)
-                .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : default(TKey));
+                .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
             expression = tenantFilter.And(expression != null, expression);
         }
 

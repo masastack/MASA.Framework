@@ -31,7 +31,7 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 
 * 1.1 当前租户为00000000-0000-0000-0000-000000000002时：数据库地址：server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.2 当前租户为00000000-0000-0000-0000-000000000003时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
-* 1.3 其他租户：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
+* 1.3 其他租户或宿主：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. 使用Isolation.UoW.EF
 ``` C#
