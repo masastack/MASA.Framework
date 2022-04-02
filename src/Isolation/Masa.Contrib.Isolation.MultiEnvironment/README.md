@@ -77,8 +77,8 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-        dbOptions => dbOptions.UseSqlServer());// Use environment isolation
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),// Use environment isolation
+        dbOptions => dbOptions.UseSqlServer());
 });
 ````
 * How to change the parser

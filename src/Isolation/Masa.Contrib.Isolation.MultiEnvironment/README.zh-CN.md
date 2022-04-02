@@ -78,8 +78,8 @@ public class CustomDbContext : IsolationDbContext
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),
-        dbOptions => dbOptions.UseSqlServer());// 使用环境隔离
+        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),// 使用环境隔离
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 * 如何更改解析器
