@@ -1,11 +1,11 @@
 
 namespace Masa.Contrib.BasicAbility.Pm
 {
-    public class PmCaching : IPmCaching
+    public class PmClient : IPmClient
     {
         private readonly ICallerProvider _callerProvider;
 
-        public PmCaching(ICallerProvider callerProvider)
+        public PmClient(ICallerProvider callerProvider)
         {
             _callerProvider = callerProvider;
         }

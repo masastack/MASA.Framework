@@ -1,15 +1,3 @@
-using Masa.Utils.Caching.DistributedMemory;
-using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
-using Masa.Utils.Caching.Redis.DependencyInjection;
-using Masa.Utils.Caching.Redis.Models;
-using Masa.Utils.Caller.HttpClient;
-using Masa.Utils.Configuration.Json;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Masa.Contrib.BasicAbility.Pm
 {
@@ -22,10 +10,10 @@ namespace Masa.Contrib.BasicAbility.Pm
                 callerOptions.Invoke(options);
             });
 
-            services.AddSingleton<IPmCaching>(serviceProvider =>
+            services.AddSingleton<IPmClient>(serviceProvider =>
             {
                 var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-                var pmCaching = new PmCaching(callProvider);
+                var pmCaching = new PmClient(callProvider);
                 return pmCaching;
             });
         }

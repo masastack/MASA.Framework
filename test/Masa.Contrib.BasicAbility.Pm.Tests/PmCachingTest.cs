@@ -28,7 +28,7 @@ namespace Masa.Contrib.BasicAbility.Pm.Tests
             var requestUri = $"third-party/api/v1/env/{env}";
             var callerProvider = new Mock<ICallerProvider>();
             callerProvider.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default).Result).Returns(list).Verifiable();
-            var pmCaching = new PmCaching(callerProvider.Object);
+            var pmCaching = new PmClient(callerProvider.Object);
 
             var data = await pmCaching.GetProjectListAsync(env);
             callerProvider.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
@@ -43,7 +43,7 @@ namespace Masa.Contrib.BasicAbility.Pm.Tests
             var requestUri = $"third-party/api/v1/env/{env}";
             var callerProvider = new Mock<ICallerProvider>();
             callerProvider.Setup(provider => provider.GetAsync<List<ProjectModel>>(It.IsAny<string>(), default).Result).Returns(list).Verifiable();
-            var pmCaching = new PmCaching(callerProvider.Object);
+            var pmCaching = new PmClient(callerProvider.Object);
 
             var data = await pmCaching.GetProjectListAsync(env);
             callerProvider.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
