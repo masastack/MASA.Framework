@@ -22,7 +22,12 @@ namespace Masa.Contrib.BasicAbility.Pm
                 callerOptions.Invoke(options);
             });
 
-            services.AddSingleton<IPmCaching>(serviceProvider => new PmCaching(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME)));
+            services.AddSingleton<IPmCaching>(serviceProvider =>
+            {
+                var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+                var pmCaching = new PmCaching(callProvider);
+                return pmCaching;
+            });
         }
     }
 }
