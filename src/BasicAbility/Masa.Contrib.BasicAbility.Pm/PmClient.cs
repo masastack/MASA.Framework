@@ -1,21 +1,24 @@
 
+using Masa.BuildingBlocks.BasicAbility.Pm.Service;
+
 namespace Masa.Contrib.BasicAbility.Pm
 {
     public class PmClient : IPmClient
     {
-        private readonly ICallerProvider _callerProvider;
-
         public PmClient(ICallerProvider callerProvider)
         {
-            _callerProvider = callerProvider;
+            EnvironmentService = new EnvironmentService(callerProvider);
+            ClusterService = new ClusterService(callerProvider);
+            ProjectService = new ProjectService(callerProvider);
+            AppService = new AppService(callerProvider);
         }
 
-        public async Task<List<ProjectModel>> GetProjectListAsync(string envName)
-        {
-            var requestUri = $"third-party/api/v1/env/{envName}";
-            var result = await _callerProvider.GetAsync<List<ProjectModel>>(requestUri);
+        public IProjectService ProjectService { get; init; }
 
-            return result ?? new List<ProjectModel>();
-        }
+        public IEnvironmentService EnvironmentService { get; init; }
+
+        public IClusterService ClusterService { get; init; }
+
+        public IAppService AppService { get; init; }
     }
 }
