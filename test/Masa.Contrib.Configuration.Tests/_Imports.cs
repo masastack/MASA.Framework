@@ -1,4 +1,5 @@
 global using Masa.BuildingBlocks.Configuration;
+global using Masa.Contrib.Configuration.ErrorSectionAutoMap.NoArgumentConstructor.Tests;
 global using Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests;
 global using Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests;
 global using Masa.Contrib.Configuration.Tests.Config;
@@ -7,4 +8,5 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
 global using System.Text.Json.Serialization;

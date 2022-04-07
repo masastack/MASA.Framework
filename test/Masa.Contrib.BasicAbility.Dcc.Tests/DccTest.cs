@@ -1,17 +1,11 @@
-using Masa.Utils.Caching.Core.Interfaces;
-using Masa.Utils.Caching.Core.Models;
-using Masa.Utils.Caching.DistributedMemory.Models;
-using Masa.Utils.Caller.Core;
-using Masa.Utils.Caller.HttpClient;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
+using Masa.Utils.Caching.Redis.Models;
 
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]
 public class DccTest
 {
-    private string DEFAULT_CLIENT_NAME = "masa.plugins.caching.dcc";
+    private string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.dcc";
     private Mock<IMasaConfigurationBuilder> _masaConfigurationBuilder;
     private JsonSerializerOptions _jsonSerializerOptions;
     private IServiceCollection _services;
@@ -26,6 +20,8 @@ public class DccTest
     public void Initialize()
     {
         _masaConfigurationBuilder = new Mock<IMasaConfigurationBuilder>();
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build;
+        _masaConfigurationBuilder.Setup(builder => builder.Configuration).Returns(configuration).Verifiable();
         _memoryCacheClientFactory = new Mock<IMemoryCacheClientFactory>();
         _memoryCache = new Mock<IMemoryCache>();
         _distributedCacheClient = new Mock<IDistributedCacheClient>();
@@ -37,34 +33,30 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestErrorDccSection()
-    {
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(new ServiceCollection()));
-    }
-
-    [TestMethod]
     public void TestTryAddConfigurationApiClient()
     {
         _memoryCacheClientFactory.Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
-        _services.AddSingleton(serviceProvider => _memoryCacheClientFactory.Object);
+        _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(), null!);
-        Assert.IsTrue(_services.Count(service => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
+        Assert.IsTrue(_services.Count(service
+            => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            var clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
+            var _ = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         });
 
         _services = new ServiceCollection();
         _memoryCacheClientFactory
             .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
-            .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object, SubscribeKeyTypes.ValueTypeFullNameAndKey))
+            .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object,
+                SubscribeKeyTypes.ValueTypeFullNameAndKey))
             .Verifiable();
-        _services.AddSingleton(serviceProvider => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(), new JsonSerializerOptions()
-        {
-            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-        });
+        _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+            new JsonSerializerOptions()
+            {
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            });
 
         var clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         Assert.IsTrue(clienties.Count() == 1);
@@ -72,11 +64,14 @@ public class DccTest
         _services = new ServiceCollection();
         _memoryCacheClientFactory
             .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
-                .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object, Utils.Caching.Core.Models.SubscribeKeyTypes.ValueTypeFullNameAndKey))
-                .Verifiable();
-        _services.AddSingleton(serviceProvider => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(), _jsonSerializerOptions);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(), _jsonSerializerOptions);
+            .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object,
+                SubscribeKeyTypes.ValueTypeFullNameAndKey))
+            .Verifiable();
+        _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+            _jsonSerializerOptions);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+            _jsonSerializerOptions);
         clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         Assert.IsTrue(clienties.Count() == 1);
     }
@@ -90,28 +85,21 @@ public class DccTest
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(_services, new DccSectionOptions(), new List<DccSectionOptions>());
         MasaConfigurationExtensions.TryAddConfigurationApiManage(_services, new DccSectionOptions(), new List<DccSectionOptions>());
-        Assert.IsTrue(_services.Count(service => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Singleton) == 1);
+        Assert.IsTrue(_services.Count(service
+            => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         var serviceProvider = _services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IConfigurationApiManage>().Count() == 1);
     }
 
     [TestMethod]
-    public void TestUseDCCAndErrorSection()
-    {
-        _services.AddCaller(options => options.UseHttpClient());
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, "", null, null), "configureOptions");
-    }
-
-    [TestMethod]
-    public void TestUseDCCAndNullDccConfigurationOption()
+    public void TestUseDccAndNullDccConfigurationOption()
     {
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () => null!, option =>
         {
             option.AppId = "Test";
             option.Environment = "Test";
             option.ConfigObjects = new List<string>() { "Te" };
-        }, null), "configureOptions");
+        }, null));
     }
 
     [TestMethod]
@@ -167,7 +155,7 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestUseDCCAndEmptyDccServiceAddress()
+    public void TestUseDccAndEmptyDccServiceAddress()
     {
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
@@ -179,7 +167,7 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestUseDCCAndErrorDccService()
+    public void TestUseDccAndErrorDccService()
     {
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
@@ -218,8 +206,8 @@ public class DccTest
                     {
                         new()
                         {
-                            Host="",
-                            Port=8080
+                            Host = "",
+                            Port = 8080
                         }
                     }
                 }
@@ -238,8 +226,8 @@ public class DccTest
                     {
                         new()
                         {
-                            Host="localhost",
-                            Port=-1
+                            Host = "localhost",
+                            Port = -1
                         }
                     }
                 }
@@ -248,7 +236,7 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestUseDCCAndErrorDefaultSectionOption()
+    public void TestUseDccAndErrorDefaultSectionOption()
     {
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
@@ -369,9 +357,9 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestUseDCCAndErrorExpansionSectionOptions()
+    public void TestUseDccAndErrorExpansionSectionOptions()
     {
-        System.Environment.SetEnvironmentVariable(DefaultEnvironmentName, "Test");
+        Environment.SetEnvironmentVariable(DefaultEnvironmentName, "Test");
 
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(_services, () =>
         {
@@ -440,7 +428,7 @@ public class DccTest
                 new()
                 {
                     AppId = "Test2",
-                    ConfigObjects=new List<string>()
+                    ConfigObjects = new List<string>()
                 }
             };
         }), "ConfigObjects in the extension section cannot be empty");
@@ -477,7 +465,7 @@ public class DccTest
                 new()
                 {
                     AppId = "Test",
-                    ConfigObjects=new List<string>()
+                    ConfigObjects = new List<string>()
                     {
                         "Settings"
                     }
@@ -517,7 +505,7 @@ public class DccTest
                 new()
                 {
                     AppId = "Test2",
-                    ConfigObjects=new List<string>()
+                    ConfigObjects = new List<string>()
                     {
                         "Settings"
                     }
@@ -525,7 +513,7 @@ public class DccTest
                 new()
                 {
                     AppId = "Test2",
-                    ConfigObjects=new List<string>()
+                    ConfigObjects = new List<string>()
                     {
                         "Settings"
                     }
@@ -536,13 +524,13 @@ public class DccTest
 
     [DataTestMethod]
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
-    public void TestUseDCCAndSuccess(string environment, string cluster, string appId, string configObject)
+    public void TestUseDccAndSuccess(string environment, string cluster, string appId, string configObject)
     {
-        System.Environment.SetEnvironmentVariable(DefaultEnvironmentName, "Test");
+        Environment.SetEnvironmentVariable(DefaultEnvironmentName, "Test");
         var brand = new Brands("Microsoft");
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
-            Content = System.Text.Json.JsonSerializer.Serialize(brand),
+            Content = JsonSerializer.Serialize(brand),
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
@@ -586,14 +574,29 @@ public class DccTest
         Assert.IsTrue(option.SubscribeKeyPrefix == DEFAULT_SUBSCRIBE_KEY_PREFIX);
     }
 
+    [TestMethod]
+    public void TestDccConfigurationOptions()
+    {
+        var options = new DccConfigurationOptions
+        {
+            RedisOptions = new RedisConfigurationOptions()
+            {
+                SyncTimeout = 10
+            },
+            ManageServiceAddress = "https://github.com",
+            SubscribeKeyPrefix = "masa.dcc.test:"
+        };
+        Assert.IsTrue(options.SubscribeKeyPrefix == "masa.dcc.test:");
+        Assert.IsTrue(options.ManageServiceAddress == "https://github.com");
+        Assert.IsTrue(options.RedisOptions.SyncTimeout == 10);
+    }
+
     [DataTestMethod]
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestUseDccAndSingleSection(string environment, string cluster, string appId, string configObject)
     {
         CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
         var brand = new Brands("Microsoft");
-        var newBrand = new Brands("Masa");
-
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
@@ -606,15 +609,6 @@ public class DccTest
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        var chainedConfiguration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
         _masaConfigurationBuilder.Object.UseDcc(_services);
         Assert.IsTrue(
             configurationApiClient
@@ -622,142 +616,109 @@ public class DccTest
                 .GetAwaiter()
                 .GetResult().Raw == brand.Serialize(_jsonSerializerOptions));
         trigger.Execute();
+    }
 
-        Initialize();
-
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestUseDccAndSingleSection2(string environment, string cluster, string appId, string configObject)
+    {
+        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
         Dictionary<string, string> masaDic = new Dictionary<string, string>()
         {
             { "Id", Guid.NewGuid().ToString() },
             { "Name", "Masa" }
         };
-        response = JsonSerializer.Serialize(new PublishRelease()
+        var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Json
         });
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
-        configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-           memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        chainedConfiguration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
         _masaConfigurationBuilder.Object.UseDcc(_services);
-        Assert.IsTrue(configurationApiClient.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).Result.Raw == masaDic.Serialize(_jsonSerializerOptions));
+        Assert.IsTrue(
+            configurationApiClient.GetRawAsync(
+                environment,
+                cluster,
+                appId,
+                configObject,
+                It.IsAny<Action<string>>()).Result.Raw == masaDic.Serialize(_jsonSerializerOptions));
+    }
 
-        Initialize();
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestUseDccAndSingleSection3(string environment, string cluster, string appId, string configObject)
+    {
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
 
-        response = JsonSerializer.Serialize(new PublishRelease()
+        var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = "Test",
             ConfigFormat = ConfigFormats.Text
         });
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
-        configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        chainedConfiguration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
         _masaConfigurationBuilder.Object.UseDcc(_services);
-        Assert.IsTrue(configurationApiClient.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == "Test");
+        Assert.IsTrue(configurationApiClient.GetRawAsync(
+                environment,
+                cluster,
+                appId,
+                configObject,
+                It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == "Test");
+    }
 
-        Initialize();
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestUseDccAndSingleSection4(string environment, string cluster, string appId, string configObject)
+    {
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
 
-        response = JsonSerializer.Serialize(new PublishRelease()
+        var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = null,
             ConfigFormat = ConfigFormats.Text
         });
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
-        configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        chainedConfiguration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
         _masaConfigurationBuilder.Object.UseDcc(_services);
-        Assert.IsTrue(configurationApiClient.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == null);
+        Assert.IsTrue(configurationApiClient.GetRawAsync(
+                environment,
+                cluster,
+                appId,
+                configObject,
+                It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == null);
+    }
 
-        Initialize();
-
-        response = JsonSerializer.Serialize(new PublishRelease()
+    [TestMethod]
+    public void TestUseDccAndSingleSection5()
+    {
+        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = "Test",
             ConfigFormat = (ConfigFormats)4
         });
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
-        configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-
-        chainedConfiguration = new ConfigurationBuilder()
-           .SetBasePath(Directory.GetCurrentDirectory())
-           .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-        Assert.ThrowsException<NotSupportedException>(() => _masaConfigurationBuilder.Object.UseDcc(_services));
-    }
-
-    [TestMethod]
-    public void TestUseDccAndExpandSections()
-    {
-        var brand = new Brands("Microsoft");
-        var response = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
-        });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
-
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
             memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        var chainedConfiguration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("expandSections.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
-        _masaConfigurationBuilder.Object.UseDcc(_services);
-
-        var result = configurationApiClient.GetRawAsync("Test", "Default", "DccTest", "Test1", It.IsAny<Action<string>>())
-            .ConfigureAwait(false).GetAwaiter().GetResult();
-        Assert.IsTrue(result.Raw == JsonSerializer.Serialize(brand));
+        Assert.ThrowsException<NotSupportedException>(() => _masaConfigurationBuilder.Object.UseDcc(_services));
     }
 
     [DataTestMethod]
@@ -771,29 +732,21 @@ public class DccTest
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
 
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(), memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
-        var chainedConfiguration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true);
-
-        _masaConfigurationBuilder.Setup(builder => builder.GetSectionRelations()).Returns(new Dictionary<string, IConfiguration>()
-        {
-            { "Appsettings",chainedConfiguration.Build() }
-        }).Verifiable();
-
         _masaConfigurationBuilder.Object.UseDcc(_services).UseDcc(_services);
-        var result = configurationApiClient.GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
-            .ConfigureAwait(false).GetAwaiter().GetResult();
+        var result = configurationApiClient.GetRawAsync(
+                environment,
+                cluster,
+                appId,
+                configObject,
+                It.IsAny<Action<string>>()).ConfigureAwait(false).GetAwaiter().GetResult();
         Assert.IsTrue(result.Raw == JsonSerializer.Serialize(brand));
 
         var httpClient = _services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
         Assert.IsTrue(httpClient.BaseAddress!.ToString() == "http://localhost:6379/");
     }
-
 }

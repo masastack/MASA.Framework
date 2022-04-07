@@ -5,10 +5,11 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Masa.Contrib.Configuration.ErrorSectionAutoMap.NoArgumentConstructor.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BasicAbility\Masa.Contrib.BasicAbility.Dcc\Masa.Contrib.BasicAbility.Dcc.csproj" />
+    <ProjectReference Include="..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
   </ItemGroup>
 
 </Project>

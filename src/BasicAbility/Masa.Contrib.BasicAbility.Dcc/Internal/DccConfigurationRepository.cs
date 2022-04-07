@@ -83,7 +83,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         {
             foreach (var key in item.Value.Keys)
             {
-                properties[key] = item.Value[key] ?? string.Empty;
+                properties[key] = item.Value[key];
             }
         }
         return new Properties(properties);

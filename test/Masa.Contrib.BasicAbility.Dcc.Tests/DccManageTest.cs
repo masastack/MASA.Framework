@@ -1,7 +1,3 @@
-using Masa.Contrib.BasicAbility.Dcc.Internal;
-using Masa.Utils.Caller.Core;
-using System.Net;
-
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]
@@ -144,7 +140,7 @@ public class DccManageTest
     }
 }
 
-public class CustomConfigurationAPI : ConfigurationAPIBase
+public class CustomConfigurationAPI : ConfigurationApiBase
 {
     public CustomConfigurationAPI(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions) : base(defaultSectionOption, expandSectionOptions)
     {

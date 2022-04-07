@@ -385,4 +385,6 @@ public class DccClientTest
         Assert.IsTrue(ret.Id == brand.Where(b => b.Key == "Id").Select(b => b.Value).FirstOrDefault());
         Assert.IsTrue(ret.Name == brand.Where(b => b.Key == "Name").Select(b => b.Value).FirstOrDefault());
     }
+
+    
 }

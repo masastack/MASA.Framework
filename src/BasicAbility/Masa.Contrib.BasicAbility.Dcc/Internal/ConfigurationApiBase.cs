@@ -1,11 +1,11 @@
 namespace Masa.Contrib.BasicAbility.Dcc.Internal;
 
-public class ConfigurationAPIBase
+public class ConfigurationApiBase
 {
     private readonly DccSectionOptions _defaultSectionOption;
     private readonly List<DccSectionOptions> _expandSectionOptions;
 
-    protected ConfigurationAPIBase(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions)
+    protected ConfigurationApiBase(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions)
     {
         _defaultSectionOption = defaultSectionOption;
         _expandSectionOptions = expandSectionOptions ?? new();

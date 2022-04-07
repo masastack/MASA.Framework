@@ -3,104 +3,99 @@ namespace Masa.Contrib.Configuration.Tests;
 [TestClass]
 public class ConfigurationTest
 {
-    private IConfigurationBuilder _configurationBuilder;
-
-    [TestInitialize]
-    public void Initialize()
-    {
-        _configurationBuilder = new ConfigurationBuilder();
-    }
-
     [TestMethod]
-    public void TestAddSection()
-    {
-        var masaConfigurationBuilder = new MasaConfigurationBuilder(_configurationBuilder);
-        Assert.ThrowsException<ArgumentNullException>(() => masaConfigurationBuilder.AddSection(null!));
-
-        Assert.ThrowsException<ArgumentException>(() => masaConfigurationBuilder.AddSection(new ConfigurationBuilder()));
-
-        masaConfigurationBuilder.AddSection(
-            new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true), "appsettings"
-        );
-
-        Assert.IsTrue(masaConfigurationBuilder.GetSectionRelations().Count == 1);
-
-        masaConfigurationBuilder.AddSection(
-            new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("redis.json", true, true)
-        );
-        Assert.IsTrue(masaConfigurationBuilder.GetSectionRelations().Count == 2);
-
-        Assert.ThrowsException<ArgumentException>(() =>
-        {
-            masaConfigurationBuilder.AddSection(
-                new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("rabbitMq.json", true, true)
-            );
-        });
-    }
-
-    [TestMethod]
-    public void TestAddCustomSection()
+    public void TestDefaultMasaConfiguration()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.AddMasaConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(builder.Environment.ContentRootPath)
-                .AddJsonFile("redis.json", true, true), "RedisOptions");
-
-            configurationBuilder.AddSection(
-               new ConfigurationBuilder()
-                   .SetBasePath(builder.Environment.ContentRootPath)
-                   .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-           );
-
-            configurationBuilder.UseMasaOptions(option =>
-            {
-                option.Mapping<RedisOptions>(SectionTypes.Local, "");
-            });
-        });
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        var redisOption = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
-
-        Assert.IsNotNull(configuration);
-        Assert.IsNotNull(redisOption);
-        Assert.IsTrue(redisOption.Value.Ip == "localhost");
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
+        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
+        Assert.IsTrue(!((IConfigurationSection)localConfiguration).Exists());
+        Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
     }
 
     [TestMethod]
     public void TestAddMasaConfiguration()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.AddMasaConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(builder.Environment.ContentRootPath)
-                .AddJsonFile("redis.json", true, true)
-            );
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(builder.Environment.ContentRootPath)
-                .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-            );
-            configurationBuilder.UseMasaOptions(option =>
-                option.Mapping<RedisOptions>(SectionTypes.Local, "", "")
-            );
-        });
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        var redisOption = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
-        Assert.IsTrue(configuration["Local:Ip"] == "localhost");
-        Assert.IsTrue(redisOption.Value.Ip == "localhost");
+        Assert.ThrowsException<Exception>(() => builder.AddMasaConfiguration());
+    }
 
-        var rabbitMqOption = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
-        Assert.IsTrue(configuration["Local:RabbitMqOptions:UserName"] == "admin");
-        Assert.IsTrue(rabbitMqOption.Value.UserName == "admin" && rabbitMqOption.Value.Password == "admin");
+    [TestMethod]
+    public void TestAddMasaConfiguration2()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.AddMasaConfiguration(masaConfigurationBuilder =>
+        {
+            masaConfigurationBuilder.AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true);
+        });
+
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
+        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationAPI);
+        Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());
+        Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
+
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
+        Assert.IsTrue(rabbitMqOptions is
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+
+        var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
+        Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
+
+        var redisOptions = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
+        Assert.IsTrue(redisOptions is { Value.Ip: null, Value.Password: null, Value.Port: 0 });
+    }
+
+    [TestMethod]
+    public void TestAddMasaConfiguration3()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.AddMasaConfiguration(masaConfigurationBuilder =>
+        {
+            masaConfigurationBuilder.AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true);
+            masaConfigurationBuilder.AddJsonFile("redis.json", optional: false, reloadOnChange: true);
+
+            masaConfigurationBuilder.UseMasaOptions(options =>
+            {
+                options.MappingLocal<RedisOptions>();
+            });
+        });
+
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
+        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationAPI);
+        Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());
+        Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
+
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
+        Assert.IsTrue(rabbitMqOptions is
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+
+        var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
+        Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
+
+        var redisOptions = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
+        Assert.IsTrue(redisOptions is { Value.Ip: "localhost", Value.Password: "", Value.Port: 6379 });
+    }
+
+    [TestMethod]
+    public void TestMasaConfigurationBuilder()
+    {
+        var configurationBuilder = new ConfigurationBuilder()
+            .AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("redis.json", optional: false, reloadOnChange: true);
+        var masaConfigurationBuilder = new MasaConfigurationBuilder(configurationBuilder);
+        Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 2);
+
+        var appsettingConfigurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        Assert.IsTrue(appsettingConfigurationBuilder.Sources.Count == 1);
+        masaConfigurationBuilder.Add(appsettingConfigurationBuilder.Sources.FirstOrDefault()!);
+        Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 3);
+
+        Assert.IsTrue(masaConfigurationBuilder.Build()["KafkaOptions:Servers"] == appsettingConfigurationBuilder.Build()["KafkaOptions:Servers"]);
     }
 
     [TestMethod]
@@ -109,59 +104,78 @@ public class ConfigurationTest
         var builder = WebApplication.CreateBuilder();
         builder.AddMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("redis.json", true, true)
-            );
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-            );
+            configurationBuilder.AddJsonFile("redis.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+
             configurationBuilder.UseMasaOptions(option =>
-                option.Mapping<RedisOptions>(SectionTypes.Local, "", "")
+                option.MappingLocal<RedisOptions>("RedisOptions")
             );
         }).AddMasaConfiguration();
         var serviceProvider = builder.Services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var redisOption = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
-        Assert.IsTrue(configuration["Local:Ip"] == "localhost");
+        Assert.IsTrue(configuration["Local:RedisOptions:Ip"] == "localhost");
         Assert.IsTrue(redisOption.Value.Ip == "localhost");
 
         var rabbitMqOption = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
-        Assert.IsTrue(configuration["Local:RabbitMqOptions:UserName"] == "admin");
+        Assert.IsTrue(configuration["Local:RabbitMq:UserName"] == "admin");
         Assert.IsTrue(rabbitMqOption.Value.UserName == "admin" && rabbitMqOption.Value.Password == "admin");
+
+        Assert.IsTrue(serviceProvider.GetServices<IMasaConfiguration>().Count() == 1);
     }
 
     [TestMethod]
     public void TestAutoMapSectionError()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Host.ConfigureAppConfiguration((context, config) => { config.Sources.Clear(); });
+        builder.Host.ConfigureAppConfiguration((_, config) => config.Sources.Clear());
         var chainedConfiguration = new ConfigurationBuilder()
             .SetBasePath(builder.Environment.ContentRootPath)
             .AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddConfiguration(chainedConfiguration.Build());
 
-        Assert.ThrowsException<ArgumentException>(() =>
-            builder.AddMasaConfiguration(configurationBuilder =>
-            {
-            }, "Appsettings", typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly));
+        Assert.ThrowsException<Exception>(() =>
+                builder.AddMasaConfiguration(_ =>
+                {
+                }, typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly)
+            , $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
+    }
+
+    [TestMethod]
+    public void TestAutoMapSectionError2()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Host.ConfigureAppConfiguration((_, config) => config.Sources.Clear());
+        var chainedConfiguration = new ConfigurationBuilder()
+            .SetBasePath(builder.Environment.ContentRootPath)
+            .AddJsonFile("appsettings.json", true, true);
+        builder.Configuration.AddConfiguration(chainedConfiguration.Build());
+        builder.AddMasaConfiguration(_ =>
+        {
+        }, typeof(KafkaOptions).Assembly);
+
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var kafkaOptions = serviceProvider.GetRequiredService<IOptions<KafkaOptions>>();
+        Assert.IsTrue(kafkaOptions is { Value: { Servers: "Kafka Server", ConnectionPoolSize: 10 } });
     }
 
     [TestMethod]
     public void TestAutoMapAndErrorSection()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsException<Exception>(() =>
         {
             return builder.AddMasaConfiguration(configurationBuilder =>
-            {
-                configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("redis.json", true, true)
-                ); //Mount to the Local section
-            }, "Appsettings", typeof(ConfigurationTest).Assembly, typeof(MountSectionRedisOptions).Assembly);
-        });
+                    configurationBuilder.AddJsonFile("redis.json", true, true),
+                typeof(ConfigurationTest).Assembly, typeof(MountSectionRedisOptions).Assembly);
+        }, $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
+    }
+
+    [TestMethod]
+    public void TestAutoMapByNoArgumentConstructor()
+    {
+        var builder = WebApplication.CreateBuilder();
+        Assert.ThrowsException<Exception>(() => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly), $"[{It.IsAny<string>()}] must have a parameterless constructor");
     }
 
     [TestMethod]
@@ -172,21 +186,12 @@ public class ConfigurationTest
         {
             builder.AddMasaConfiguration(configurationBuilder =>
             {
-                configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("redis.json", true, true)
-                );
-                configurationBuilder.AddSection(new ConfigurationBuilder()
-                    .SetBasePath(builder.Environment.ContentRootPath)
-                    .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-                );
-                configurationBuilder.UseMasaOptions(option =>
-                {
-                    option.Mapping<RedisOptions>(SectionTypes.Local, "", "");
-                    option.Mapping<RedisOptions>(SectionTypes.Local, "", "");
-                });
+                configurationBuilder.AddJsonFile("redis.json", true, true)
+                    .AddJsonFile("rabbitMq.json", true, true);
+
+                configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>().MappingLocal<RedisOptions>());
             });
-        });
+        }, "The current section already has a configuration");
     }
 
     [TestMethod]
@@ -195,33 +200,19 @@ public class ConfigurationTest
         var services = new ServiceCollection();
         services.CreateMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddSection(
-                new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("redis.json", true, true)
-            );
-            configurationBuilder.AddSection(
-                new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-            );
-            configurationBuilder.UseMasaOptions(option =>
-                option.Mapping<RedisOptions>(SectionTypes.Local, "", "")
-            );
+            configurationBuilder.AddJsonFile("redis.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+
+            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
         }, new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", true, true), "Appsettings");
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true));
         IServiceProvider serviceProvider = services.BuildServiceProvider();
         var redisOption = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
         Assert.IsTrue(redisOption.Value.Ip == "localhost");
-    }
 
-    [TestMethod]
-    public void TestNullSection()
-    {
-        var services = new ServiceCollection();
-        var ex = Assert.ThrowsException<Exception>(() => services.CreateMasaConfiguration(null));
-        Assert.IsTrue(ex.Message == "Please add the section to be loaded");
+        var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
+        Assert.IsTrue(systemOptions is { Value.Name: null });
     }
 
     [TestMethod]
@@ -232,20 +223,11 @@ public class ConfigurationTest
         var rootPath = builder.Environment.ContentRootPath;
         builder.AddMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(rootPath)
-                .AddJsonFile("redis.json", true, true), "RedisOptions");
+            configurationBuilder.AddJsonFile("redis.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
 
-            configurationBuilder.AddSection(new ConfigurationBuilder()
-                .SetBasePath(rootPath)
-                .AddJsonFile("rabbitMq.json", true, true), "RabbitMqOptions"
-           );
-
-            configurationBuilder.UseMasaOptions(option =>
-            {
-                option.Mapping<RedisOptions>(SectionTypes.Local, "");
-            });
-        }, "Appsettings", typeof(ConfigurationTest).Assembly);
+            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
+        }, typeof(ConfigurationTest).Assembly);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var systemOption = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
@@ -257,7 +239,8 @@ public class ConfigurationTest
         var newRedisOption = systemOption.Value;
         newRedisOption.Name = null;
 
-        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"), System.Text.Json.JsonSerializer.Serialize(new { SystemOptions = newRedisOption }));
+        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"),
+            System.Text.Json.JsonSerializer.Serialize(new { SystemOptions = newRedisOption }));
 
         Thread.Sleep(2000);
         var option = serviceProvider.GetRequiredService<IOptionsMonitor<SystemOptions>>();

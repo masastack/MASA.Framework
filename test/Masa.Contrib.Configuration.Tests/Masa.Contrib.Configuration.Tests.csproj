@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests\Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests\Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests.csproj" />
   </ItemGroup>

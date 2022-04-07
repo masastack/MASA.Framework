@@ -1,6 +1,6 @@
 namespace Masa.Contrib.BasicAbility.Dcc;
 
-public class ConfigurationApiClient : ConfigurationAPIBase, IConfigurationApiClient
+public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCacheClient _client;

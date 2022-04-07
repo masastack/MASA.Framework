@@ -2,7 +2,7 @@ namespace Masa.Contrib.BasicAbility.Dcc.Internal;
 
 internal class Constants
 {
-    internal const string DEFAULT_CLIENT_NAME = "masa.plugins.caching.dcc";
+    internal const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.dcc";
 
     internal const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.dcc:";
 

@@ -21,4 +21,6 @@ global using System.Diagnostics;
 global using System.Dynamic;
 global using System.Text.Json;
 global using static Masa.Contrib.BasicAbility.Dcc.Internal.Constants;
+global using System.Text.Json.Serialization;
+global using Masa.BuildingBlocks.Configuration.Options;
 

@@ -6,25 +6,25 @@ public static class ServiceCollectionExtensions
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate = null)
         => builder.AddMasaConfiguration(configureDelegate,
-            "Appsettings",
             AppDomain.CurrentDomain.GetAssemblies());
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
+        params Assembly[] assemblies)
+        => builder.AddMasaConfiguration(null, assemblies);
+
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        string defaultSectionName = "Appsettings",
         params Assembly[] assemblies)
     {
         var configurationBuilder = GetConfigurationBuilder(builder.Configuration);
 
-        IConfigurationRoot masaConfiguration = builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, defaultSectionName, assemblies);
+        IConfigurationRoot masaConfiguration = builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, assemblies);
         if (!masaConfiguration.Providers.Any())
             return builder;
 
-        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(builder.Host, configBuilder =>
-        {
-            configBuilder.Sources.Clear();
-        });
+        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(builder.Host, configBuilder => configBuilder.Sources.Clear());
         builder.Configuration.AddConfiguration(masaConfiguration);
 
         return builder;
@@ -33,8 +33,7 @@ public static class ServiceCollectionExtensions
     public static IConfigurationRoot CreateMasaConfiguration(
         this IServiceCollection services,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        IConfigurationBuilder? configurationBuilder = null,
-        string defaultSectionName = "Appsettings",
+        IConfigurationBuilder configurationBuilder,
         params Assembly[] assemblies)
     {
         if (services.Any(service => service.ImplementationType == typeof(MasaConfigurationProvider)))
@@ -42,18 +41,12 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<MasaConfigurationProvider>();
         services.AddOptions();
+        services.TryAddSingleton<IMasaConfiguration, DefaultMasaConfiguration>();
 
-        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(new ConfigurationBuilder());
-        if (configurationBuilder != null)
-        {
-            masaConfigurationBuilder.AddSection(configurationBuilder, defaultSectionName);
-        }
+        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(configurationBuilder);
         configureDelegate?.Invoke(masaConfigurationBuilder);
 
-        if (masaConfigurationBuilder.SectionRelations.Count == 0)
-            throw new Exception("Please add the section to be loaded");
-
-        var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.SectionRelations, services.BuildServiceProvider().GetService<ILoggerFactory>());
+        var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.Configuration, services.BuildServiceProvider().GetService<ILoggerFactory>());
         masaConfigurationBuilder.AddRepository(localConfigurationRepository);
 
         var source = new MasaConfigurationSource(masaConfigurationBuilder);
@@ -62,7 +55,7 @@ public static class ServiceCollectionExtensions
         masaConfigurationBuilder.AutoMapping(assemblies);
         masaConfigurationBuilder.Relations.ForEach(relation =>
         {
-            List<string> sectionNames = new List<string>()
+            List<string> sectionNames = new ()
             {
                 relation.SectionType.ToString(),
             };
@@ -71,7 +64,7 @@ public static class ServiceCollectionExtensions
 
             if (relation.Section != "")
             {
-                sectionNames.AddRange(relation.Section.Split(ConfigurationPath.KeyDelimiter));
+                sectionNames.AddRange(relation.Section!.Split(ConfigurationPath.KeyDelimiter));
             }
 
             services.ConfigureOption(configuration, sectionNames, relation.ObjectType);
@@ -90,14 +83,6 @@ public static class ServiceCollectionExtensions
         return configurationBuilder;
     }
 
-    private static void ClearSource(this WebApplicationBuilder builder)
-    {
-        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(builder.Host, configBuilder =>
-        {
-            configBuilder.Sources.Clear();
-        });
-    }
-
     internal static void ConfigureOption(
         this IServiceCollection services,
         IConfiguration configuration,
@@ -112,9 +97,7 @@ public static class ServiceCollectionExtensions
                 configurationSection = configurationSection.GetSection(sectionName);
         }
         if (!configurationSection.Exists())
-        {
-            throw new ArgumentNullException("Section", "Check if the mapping section is correct");
-        }
+            throw new Exception($"Check if the mapping section is correct，section name is [{configurationSection!.Path}]");
 
         var configurationChangeTokenSource =
             Activator.CreateInstance(typeof(ConfigurationChangeTokenSource<>).MakeGenericType(optionType), string.Empty,
