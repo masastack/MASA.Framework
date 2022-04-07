@@ -45,8 +45,8 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        dbOptions => dbOptions.UseSqlServer(),
-        isolationBuilder => isolationBuilder.UseEnvironment().UseMultiTenant());// Select usage environment or tenant isolation as needed
+        isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiTenant(),// Select usage environment or tenant isolation as needed
+        dbOptions => dbOptions.UseSqlServer());
 });
 ```
 
@@ -67,7 +67,7 @@ Tenant isolation implements IMultiTenant, and environment isolation implements I
 
 ##### Summarize
 * How many kinds of parser are currently supported?
-   * Currently two kinds of parsers are supported, one is [Environment Parser](../Masa.Contrib.Isolation.Environment/README.zh-CN.md), the other is [Tenant Parser](../Masa.Contrib .Isolation.MultiTenant/README.zh-CN.md)
+   * Currently two kinds of parsers are supported, one is [Environment Parser](../Masa.Contrib.Isolation.Environment/README.md), the other is [Tenant Parser](../Masa.Contrib.Isolation.MultiTenant/README.md)
 * How is the parser used?
    * After publishing events through EventBus, EventBus will automatically call the parser middleware to trigger the environment and tenant parser to parse and assign values according to the isolation usage
    * For scenarios where EventBus is not used, `app.UseIsolation();` needs to be added to Program.cs. After the request is initiated, it will first pass through the AspNetCore middleware provided by Isolation, and trigger the environment and tenant resolvers to parse and assign values. When the request arrives at the specified controller or Minimal method, the parsing is complete

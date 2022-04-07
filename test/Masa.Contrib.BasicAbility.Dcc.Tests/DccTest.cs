@@ -1,5 +1,3 @@
-using Masa.Utils.Caching.Redis.Models;
-
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]
