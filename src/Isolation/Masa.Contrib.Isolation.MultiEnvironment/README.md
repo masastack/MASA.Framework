@@ -1,12 +1,12 @@
 [中](README.zh-CN.md) | EN
 
-## Masa.Contrib.Isolation.Environment
+## Masa.Contrib.Isolation.MultiEnvironment
 
 Example：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.Environment
+Install-Package Masa.Contrib.Isolation.MultiEnvironment
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -63,7 +63,7 @@ You can also choose not to implement IMultiEnvironment when using physical isola
     * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
         * HttpContextItemParserProvider: Get tenant information through the Items property of the requested HttpContext
         * QueryStringParserProvider: Get environment information through the requested QueryString
-            * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=dev (environment information is dev)
+            * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (environment information is development)
         * FormParserProvider: Get environment information through Form form
         * RouteParserProvider: Get environment information through routing
         * HeaderParserProvider: Get environment information through request headers

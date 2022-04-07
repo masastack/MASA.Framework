@@ -1,12 +1,12 @@
 中 | [EN](README.md)
 
-## Masa.Contrib.Isolation.Environment
+## Masa.Contrib.Isolation.MultiEnvironment
 
 用例：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
-Install-Package Masa.Contrib.Isolation.Environment
+Install-Package Masa.Contrib.Isolation.MultiEnvironment
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
@@ -64,7 +64,7 @@ public class CustomDbContext : IsolationDbContext
     * 环境默认提供了7个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
       * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取租户信息
       * QueryStringParserProvider: 通过请求的QueryString获取环境信息
-          * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=dev (环境信息是dev)
+          * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (环境信息是development)
       * FormParserProvider: 通过Form表单获取环境信息
       * RouteParserProvider: 通过路由获取环境信息
       * HeaderParserProvider: 通过请求头获取环境信息
