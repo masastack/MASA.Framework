@@ -1,8 +1,9 @@
 global using Masa.BuildingBlocks.Isolation;
+global using Masa.BuildingBlocks.Isolation.Middleware;
 global using Masa.BuildingBlocks.Isolation.MultiTenant;
-global using Masa.Utils.Data.EntityFrameworkCore.Filters;
-global using Microsoft.EntityFrameworkCore;
-global using Microsoft.EntityFrameworkCore.ChangeTracking;
+global using Masa.BuildingBlocks.Isolation.Parser;
+global using Masa.Contrib.Isolation.MultiTenant.Middleware;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
 global using System.Linq;

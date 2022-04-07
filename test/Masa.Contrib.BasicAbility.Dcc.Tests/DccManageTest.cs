@@ -1,7 +1,3 @@
-using Masa.Contrib.BasicAbility.Dcc.Internal;
-using Masa.Utils.Caller.Core;
-using System.Net;
-
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]
