@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.Isolation.MultiTenant;
+namespace Masa.Contrib.Isolation.MultiTenant;
 
 public class TenantContext : ITenantContext, ITenantSetter
 {

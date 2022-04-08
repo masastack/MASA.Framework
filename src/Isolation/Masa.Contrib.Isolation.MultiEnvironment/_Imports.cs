@@ -1,0 +1,8 @@
+global using Masa.BuildingBlocks.Isolation;
+global using Masa.BuildingBlocks.Isolation.Environment;
+global using Masa.BuildingBlocks.Isolation.Middleware;
+global using Masa.BuildingBlocks.Isolation.Parser;
+global using Masa.Contrib.Isolation.MultiEnvironment.Middleware;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;

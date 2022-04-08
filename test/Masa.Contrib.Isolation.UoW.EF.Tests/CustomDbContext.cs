@@ -4,14 +4,14 @@ public class CustomDbContext : MasaDbContext
 {
     public CustomDbContext(MasaDbContextOptions options) : base(options) { }
 
-    public DbSet<Users> User { get; set; }
+    public DbSet<User> User { get; set; }
 
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
-        builder.Entity<Users>(ConfigureUserEntry);
+        builder.Entity<User>(ConfigureUserEntry);
     }
 
-    void ConfigureUserEntry(EntityTypeBuilder<Users> builder)
+    void ConfigureUserEntry(EntityTypeBuilder<User> builder)
     {
         builder.ToTable("Users");
 
@@ -26,13 +26,13 @@ public class CustomDbContext : MasaDbContext
     }
 }
 
-public class Users
+public class User
 {
     public Guid Id { get; private set; }
 
     public string Name { get; set; } = default!;
 
-    public Users()
+    public User()
     {
         this.Id = Guid.NewGuid();
     }

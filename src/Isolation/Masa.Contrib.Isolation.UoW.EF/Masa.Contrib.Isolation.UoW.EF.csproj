@@ -10,12 +10,12 @@
     <PackageReference Include="Masa.Utils.Expressions" Version="0.4.0-preview.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
-    <FrameworkReference Include="Microsoft.AspNetCore.App"></FrameworkReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj" />
     <ProjectReference Include="..\..\Data\Masa.Contrib.Data.UoW.EF\Masa.Contrib.Data.UoW.EF.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Isolation\Masa.Contrib.Isolation.csproj" />
   </ItemGroup>
 
 </Project>
