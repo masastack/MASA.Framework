@@ -71,7 +71,7 @@ namespace Masa.Contrib.BasicAbility.Pm.Tests
                 new ProjectModel(1,"","",1,Guid.NewGuid())
             };
             string env = "development";
-            var requestUri = $"api/v1/project-with-apps/{env}";
+            var requestUri = $"api/v1/projectwithapps/{env}";
             var callerProvider = new Mock<ICallerProvider>();
             callerProvider.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default).Result).Returns(list).Verifiable();
             var pmCaching = new PmClient(callerProvider.Object);
@@ -86,7 +86,7 @@ namespace Masa.Contrib.BasicAbility.Pm.Tests
         {
             List<ProjectModel> list = null!;
             string env = "development";
-            var requestUri = $"api/v1/project-with-apps/{env}";
+            var requestUri = $"api/v1/projectwithapps/{env}";
             var callerProvider = new Mock<ICallerProvider>();
             callerProvider.Setup(provider =>(provider.GetAsync<List<ProjectModel>>(It.IsAny<string>(), default))).ReturnsAsync(list).Verifiable();
             var pmCaching = new PmClient(callerProvider.Object);
