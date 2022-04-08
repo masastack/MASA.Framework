@@ -1,21 +1,24 @@
+namespace Masa.Contrib.BasicAbility.Pm;
 
-namespace Masa.Contrib.BasicAbility.Pm
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
-        public static void AddPmCaching(this IServiceCollection services, Action<CallerOptions> callerOptions)
-        {
-            services.AddCaller(options =>
-            {
-                callerOptions.Invoke(options);
-            });
+        if (services.Any(service => service.ServiceType.Equals(typeof(IPmClient))))
+            return services;
 
-            services.AddSingleton<IPmClient>(serviceProvider =>
-            {
-                var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-                var pmCaching = new PmClient(callProvider);
-                return pmCaching;
-            });
-        }
+        services.AddCaller(options =>
+        {
+            callerOptions.Invoke(options);
+        });
+
+        services.AddSingleton<IPmClient>(serviceProvider =>
+        {
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var pmCaching = new PmClient(callProvider);
+            return pmCaching;
+        });
+
+        return services;
     }
 }
