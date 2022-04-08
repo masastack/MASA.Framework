@@ -156,9 +156,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{F4B8D71B-DAE4-4948-A1DC-42B42DE31D4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm", "src\BasicAbility\Masa.Contrib.BasicAbility.PM\Masa.Contrib.BasicAbility.Pm.csproj", "{118A91A6-6FBB-431A-B50D-076375AD6A63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm", "src\BasicAbility\Masa.Contrib.BasicAbility.Pm\Masa.Contrib.BasicAbility.Pm.csproj", "{118A91A6-6FBB-431A-B50D-076375AD6A63}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.PM\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.BasicAbility.Pm.Tests", "test\Masa.Contrib.BasicAbility.Pm.Tests\Masa.Contrib.BasicAbility.Pm.Tests.csproj", "{C4DDEA6E-D6AF-4890-9713-C2862403E57C}"
 EndProject
