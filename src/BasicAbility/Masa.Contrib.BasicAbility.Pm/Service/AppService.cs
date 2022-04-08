@@ -1,12 +1,11 @@
-namespace Masa.Contrib.BasicAbility.Pm.Service
-{
-    public class AppService : IAppService
-    {
-        private readonly ICallerProvider _callerProvider;
+namespace Masa.Contrib.BasicAbility.Pm.Service;
 
-        public AppService(ICallerProvider callerProvider)
-        {
-            _callerProvider = callerProvider;
-        }
+public class AppService : IAppService
+{
+    private readonly ICallerProvider _callerProvider;
+
+    public AppService(ICallerProvider callerProvider)
+    {
+        _callerProvider = callerProvider;
     }
 }

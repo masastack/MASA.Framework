@@ -1,10 +1,10 @@
 namespace Masa.Contrib.BasicAbility.Pm.Service;
 
-public class ClusterService : IClusterService
+public class EnvironmentService : IEnvironmentService
 {
     private readonly ICallerProvider _callerProvider;
 
-    public ClusterService(ICallerProvider callerProvider)
+    public EnvironmentService(ICallerProvider callerProvider)
     {
         _callerProvider = callerProvider;
     }
