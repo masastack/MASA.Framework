@@ -1,6 +1,4 @@
-﻿using Masa.BuildingBlocks.Isolation.Environment;
-
-namespace Masa.Contrib.Isolation.UoW.EF.Web.Tests.EventHandlers;
+﻿namespace Masa.Contrib.Isolation.UoW.EF.Web.Tests.EventHandlers;
 
 public class RegisterUserEventHandler
 {
@@ -23,28 +21,30 @@ public class RegisterUserEventHandler
     {
         await _customDbContext.Database.EnsureCreatedAsync();
         Assert.IsTrue(_customDbContext.Database.GetConnectionString() == "data source=test3");
-        var user = new Users()
+        var user = new User
         {
             Account = @event.Account,
             Password = MD5Utils.Encrypt(@event.Password, @event.Password)
         };
-        await _customDbContext.Set<Users>().AddAsync(user);
+        await _customDbContext.Set<User>().AddAsync(user);
         await _customDbContext.SaveChangesAsync();
 
-        var user2 = await _customDbContext.Set<Users>().FirstOrDefaultAsync();
+        var user2 = await _customDbContext.Set<User>().FirstOrDefaultAsync();
         Assert.IsTrue(user2!.Account == @event.Account);
         Assert.IsTrue(user2.Environment == "pro");
         Assert.IsTrue(user2.TenantId == 2);
 
         _environmentSetter.SetEnvironment("dev"); //In EventHandler, physical isolation is not retriggered if a new DbContext is not recreated, it can only be used to filter changes
         Assert.IsTrue(_environmentContext.CurrentEnvironment == "dev");
+        Assert.IsTrue(_customDbContext.Database.GetConnectionString() == "data source=test3");
 
-        var user3 = await _customDbContext.Set<Users>().FirstOrDefaultAsync();
+        var user3 = await _customDbContext.Set<User>().FirstOrDefaultAsync();
         Assert.IsNull(user3);
 
         using (_dataFilter.Disable<IMultiEnvironment>())
         {
-            var user4 = await _customDbContext.Set<Users>().FirstOrDefaultAsync();
+            Assert.IsTrue(_customDbContext.Database.GetConnectionString() == "data source=test3");
+            var user4 = await _customDbContext.Set<User>().FirstOrDefaultAsync();
             Assert.IsNotNull(user4);
         }
     }

@@ -1,11 +1,3 @@
-using Masa.Utils.Caching.Core.Interfaces;
-using Masa.Utils.Caching.Core.Models;
-using Masa.Utils.Caching.DistributedMemory.Models;
-using Masa.Utils.Caller.Core;
-using Masa.Utils.Caller.HttpClient;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
-
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]
