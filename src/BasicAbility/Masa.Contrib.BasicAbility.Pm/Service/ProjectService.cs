@@ -11,7 +11,7 @@ public class ProjectService : IProjectService
 
     public async Task<List<ProjectModel>> GetProjectListAsync(string envName)
     {
-        var requestUri = $"api/v1/project-with-apps/{envName}";
+        var requestUri = $"api/v1/projectwithapps/{envName}";
         var result = await _callerProvider.GetAsync<List<ProjectModel>>(requestUri);
 
         return result ?? new List<ProjectModel>();
