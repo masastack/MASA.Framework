@@ -7,11 +7,10 @@
 ```c#
 IConfiguration
 ├── Local                                本地节点（固定）
-│   ├── Appsettings                      默认本地节点
-│   ├── ├── Platforms                    自定义配置
-│   ├── ├── ├── Name                     参数
+│   ├── Platforms                    自定义配置
+│   ├── ├── Name                     参数
 ├── ConfigurationAPI                     远程节点（固定）
-│   ├── AppId                            Replace-With-Your-AppId
+│   ├── AppId                            替换为你的AppId
 │   ├── AppId ├── Platforms              自定义节点
 │   ├── AppId ├── Platforms ├── Name     参数
 │   ├── AppId ├── DataDictionary         字典（固定）
@@ -58,25 +57,22 @@ appsettings.json
 /// <summary>
 /// 自动映射节点关系
 /// </summary>
-public class PlatformOptions : MasaConfigurationOptions
+public class PlatformOptions : LocalMasaConfigurationOptions
 {
-    public override SectionTypes SectionType { get; init; } = SectionTypes.Local;
-
-    [JsonIgnore]
-    public override string? ParentSection { get; init; } = "Appsettings";
-
     [JsonIgnore]
     public override string? Section { get; init; } = "Platforms";
 
     public string Name { get; set; }
 }
 
-//使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local:Appsettings节点
+//使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local节点下
 builder.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc(builder.Services);//使用Dcc 扩展Configuration能力，支持远程配置
 });
 ```
+
+> 本地配置需要继承LocalMasaConfigurationOptions
 
 或手动添加映射节点关系：
 
@@ -87,7 +83,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 
     configurationBuilder.UseMasaOptions(options =>
     {
-        options.Mapping<PlatformOptions>(SectionTypes.Local, "Appsettings", "Platforms"); //将PlatformOptions绑定映射到Local:Appsettings:Platforms节点
+        options.MappingLocal<PlatformOptions>("Platforms"); //将PlatformOptions绑定映射到Local:Platforms节点
     });
 });
 ```
@@ -116,7 +112,7 @@ app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option)
 app.Map("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
 {
     //基础
-    return configuration["Local:Appsettings:Platforms:Name"];
+    return configuration["Local:Platforms:Name"];
 });
 
 app.Run();
@@ -125,16 +121,11 @@ app.Run();
 如何接管更多的本地节点？
 
 ```c#
-builder.AddMasaConfiguration(builder =>{
-
-    builder.AddSection(new ConfigurationBuilder()
-                       .SetBasePath(builder.Environment.ContentRootPath)
-                       .AddJsonFile("custom.json", true, true), "Custom");//将custom.json配置挂载到Local:Custom节点下
-});
+builder.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//除了默认的ICongiguration，还将custom.json挂载到新的Configuration中
 ```
 
 提示：
 
-Configuration默认自动获取继承IMasaConfigurationOptions接口的类，并映射节点关系，方便通过IOptions、IOptionsSnapshot、IOptionsMonitor获取配置信息
+Configuration默认自动获取继承LocalMasaConfigurationOptions的类，并映射节点关系，方便通过IOptions、IOptionsSnapshot、IOptionsMonitor获取配置信息
 
 上文Platforms为本地配置，用于演示本地配置挂载到IConfiguration后的效果以及使用用法

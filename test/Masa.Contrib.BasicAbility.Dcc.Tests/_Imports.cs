@@ -11,6 +11,7 @@ global using Masa.Utils.Caching.Core.Models;
 global using Masa.Utils.Caching.DistributedMemory;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.DistributedMemory.Models;
+global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Utils.Caller.Core;
 global using Masa.Utils.Caller.HttpClient;
 global using Microsoft.Extensions.Caching.Memory;
@@ -21,5 +22,6 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Net;
 global using System.Text.Json;
+
 
 

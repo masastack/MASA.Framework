@@ -50,30 +50,29 @@ appsettings.json
 ```
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder =>
-{
-    configurationBuilder.UseDcc(builder.Services);//使用Dcc提供远程配置的能力
-
-    options.Mapping<CustomDccSectionOptions>(SectionTypes.Local, "Appsettings", ""); //将CustomDccSectionOptions映射到Local下的Appsettings节点
-});
+builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(builder.Services));//使用Dcc提供远程配置的能力
 
 /// <summary>
 /// 自动映射节点关系
 /// </summary>
-public class PlatformOptions : MasaConfigurationOptions
+public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
 {
-    public override SectionTypes SectionType { get; init; } = SectionTypes.ConfigurationAPI;
-
+    /// <summary>
+    /// The app id.
+    /// </summary>
     [JsonIgnore]
-    public virtual string? ParentSection { get; init; } = "Replace-With-Your-AppId";
+    public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
+    /// <summary>
+    /// 配置对象名称
+    /// </summary>
     [JsonIgnore]
-    public virtual string? Section { get; init; } = "Platforms";
+    public override string? ObjectName { get; init; } = "Platforms";
 
     public string Name { get; set; }
 }
 
-public class CustomDccSectionOptions
+public class CustomDccSectionOptions : LocalMasaConfigurationOptions
 {
     /// <summary>
     /// The environment name.
@@ -94,6 +93,12 @@ public class CustomDccSectionOptions
     public List<string> ConfigObjects { get; set; } = default!;
 
     public string? Secret { get; set; }
+
+    /// <summary>
+    /// 将CustomDccSectionOptions挂载到根节点下
+    /// </summary>
+    [JsonIgnore]
+    public virtual string? Section => string.Empty;
 }
 ```
 

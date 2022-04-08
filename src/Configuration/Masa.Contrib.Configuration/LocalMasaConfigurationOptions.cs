@@ -8,5 +8,6 @@ public abstract class LocalMasaConfigurationOptions : MasaConfigurationOptions
     [JsonIgnore]
     public sealed override string? ParentSection => null;
 
+    [JsonIgnore]
     public sealed override SectionTypes SectionType => SectionTypes.Local;
 }
