@@ -79,4 +79,17 @@ public class BaseRepositoryTest : TestBase
         var repository = serviceProvider.GetServices<IRepository<Orders>>();
         Assert.IsTrue(repository.Count() == 1);
     }
+
+    [TestMethod]
+    public void TestEntityRepositoryShouldBeExist()
+    {
+        _dispatcherOptions.Setup(option => option.Assemblies).Returns(_assemblies).Verifiable();
+        _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
+        _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>().UseRepository<CustomDbContext>();
+
+        var serviceProvider = _services.BuildServiceProvider();
+        var repository = serviceProvider.GetServices<IRepository<OrderItem>>();
+        Assert.IsTrue(repository.Count() == 1);
+    }
 }
