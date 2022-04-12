@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.4.0-preview.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj" />
+  </ItemGroup>
+
+</Project>
