@@ -17,11 +17,11 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ``` C#
 {
   "Aliyun": {
-    "AccessKeyId": "",
-    "AccessKeySecret": "",
-    "RegionId": "",
-    "RoleArn": "",
-    "RoleSessionName": "",
+    "AccessKeyId": "Replace-With-Your-AccessKeyId",
+    "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
+    "RegionId": "Replace-With-Your-RegionId",
+    "RoleArn": "Replace-With-Your-RoleArn",
+    "RoleSessionName": "Replace-With-Your-RoleSessionName",
     "DurationSeconds": 3600,//选填、默认: 3600s
     "Policy": "",//选填
     "TemporaryCredentialsCacheKey": "Aliyun.TemporaryCredentials"//选填、默认: Aliyun.TemporaryCredentials
