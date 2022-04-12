@@ -8,17 +8,12 @@ public class CustomNullClient : Client
     {
     }
 
-    protected override TemporaryCredentialsResponse? GetTemporaryCredentials(
+    protected override TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
         string accessKey,
         string secretKey,
         string roleArn,
         string roleSessionName,
         string policy,
-        long durationSeconds,
-        Action<string> error)
-    {
-        error.Invoke(Message);
-        return null;
-    }
+        long durationSeconds) => throw new Exception(Message);
 }
