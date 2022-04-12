@@ -4,13 +4,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
-        if (services.Any(service => service.ServiceType.Equals(typeof(IPmClient))))
+        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+
+        if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
-        services.AddCaller(options =>
-        {
-            callerOptions.Invoke(options);
-        });
+        services.AddCaller(callerOptions.Invoke);
 
         services.AddSingleton<IPmClient>(serviceProvider =>
         {
