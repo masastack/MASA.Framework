@@ -4,28 +4,28 @@
 public class TestALiYunStorageOptions
 {
     [DataTestMethod]
-    [DataRow("", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName", "accessKey")]
-    [DataRow("AccessKey", "", "RegionId", "RoleArn", "RoleSessionName", "accessSecret")]
-    [DataRow("AccessKey", "AccessSecret", "", "RoleArn", "RoleSessionName", "regionId")]
-    [DataRow("AccessKey", "AccessSecret", "RegionId", "", "RoleSessionName", "roleArn")]
-    [DataRow("AccessKey", "AccessSecret", "RegionId", "RoleArn", "", "roleSessionName")]
+    [DataRow("", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName", "accessKeyId")]
+    [DataRow("AccessKeyId", "", "RegionId", "RoleArn", "RoleSessionName", "accessKeySecret")]
+    [DataRow("AccessKeyId", "AccessKeySecret", "", "RoleArn", "RoleSessionName", "regionId")]
+    [DataRow("AccessKeyId", "AccessKeySecret", "RegionId", "", "RoleSessionName", "roleArn")]
+    [DataRow("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "", "roleSessionName")]
     public void TestErrorParameterThrowArgumentException(
-        string accessKey,
-        string accessSecret,
+        string accessKeyId,
+        string accessKeySecret,
         string regionId,
         string roleArn,
         string roleSessionName,
         string parameterName)
     {
         Assert.ThrowsException<ArgumentException>(() =>
-                new ALiYunStorageOptions(accessKey, accessSecret, regionId, roleArn, roleSessionName),
+                new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, roleArn, roleSessionName),
             $"{parameterName} cannot be empty");
     }
 
     [TestMethod]
     public void TestDurationSecondsGreaterThan43200ReturnThrowArgumentOutOfRangeException()
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
                 options.SetDurationSeconds(43201),
             "DurationSeconds must be in range of 900-43200");
@@ -34,24 +34,24 @@ public class TestALiYunStorageOptions
     [TestMethod]
     public void TestDurationSecondsLessThan900ReturnThrowArgumentOutOfRangeException()
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
                 options.SetDurationSeconds(899),
             "DurationSeconds must be in range of 900-43200");
     }
 
     [DataTestMethod]
-    [DataRow("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName")]
+    [DataRow("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName")]
     public void TestSuccessParameterReturnInitializationSuccessful(
-        string accessKey,
-        string accessSecret,
+        string accessKeyId,
+        string accessKeySecret,
         string regionId,
         string roleArn,
         string roleSessionName)
     {
-        var options = new ALiYunStorageOptions(accessKey, accessSecret, regionId, roleArn, roleSessionName);
-        Assert.IsTrue(options.AccessKey == accessKey);
-        Assert.IsTrue(options.AccessSecret == accessSecret);
+        var options = new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, roleArn, roleSessionName);
+        Assert.IsTrue(options.AccessKeyId == accessKeyId);
+        Assert.IsTrue(options.AccessKeySecret == accessKeySecret);
         Assert.IsTrue(options.RegionId == regionId);
         Assert.IsTrue(options.RoleArn == roleArn);
         Assert.IsTrue(options.RoleSessionName == roleSessionName);
@@ -65,7 +65,7 @@ public class TestALiYunStorageOptions
     [DataRow(2000)]
     public void TestDurationSecondsLessThan43200AndGreaterThan900ReturnTrue(int durationSeconds)
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         options.SetDurationSeconds(durationSeconds);
         Assert.IsTrue(options.DurationSeconds == durationSeconds);
     }
@@ -77,7 +77,7 @@ public class TestALiYunStorageOptions
         string temporaryCredentialsCacheKey,
         string temporaryCredentialsCacheKeyName)
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         Assert.ThrowsException<ArgumentException>(() =>
                 options.SetTemporaryCredentialsCacheKey(temporaryCredentialsCacheKey),
             $"{temporaryCredentialsCacheKeyName} cannot be empty");
@@ -87,7 +87,7 @@ public class TestALiYunStorageOptions
     [DataRow("Aliyun.TemporaryCredentials")]
     public void TestNotNullTemporaryCredentialsCacheKeyReturnSuccess(string temporaryCredentialsCacheKey)
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         options.SetTemporaryCredentialsCacheKey(temporaryCredentialsCacheKey);
         Assert.IsTrue(options.TemporaryCredentialsCacheKey == temporaryCredentialsCacheKey);
     }
@@ -98,7 +98,7 @@ public class TestALiYunStorageOptions
     [DataRow("Policy")]
     public void TestSetPolicyReturnSuccess(string policy)
     {
-        var options = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
         options.SetPolicy(policy);
         Assert.IsTrue(options.Policy == policy);
     }

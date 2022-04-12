@@ -12,7 +12,7 @@ public class TestStorage
         services.AddAliyunStorage();
         var serviceProvider = services.BuildServiceProvider();
         Assert.ThrowsException<ArgumentException>(() => serviceProvider.GetService<IClient>(),
-            $"Failed to get {nameof(IOptionsMonitor<ALiYunStorageOptions>)}");
+            $"Failed to get {nameof(IOptionsMonitor<AliyunStorageOptions>)}");
     }
 
     [TestMethod]
@@ -40,7 +40,7 @@ public class TestStorage
     public void TestAddAliyunStorageAndNullALiYunStorageOptionsReturnThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        ALiYunStorageOptions aLiYunStorageOptions = null!;
+        AliyunStorageOptions aLiYunStorageOptions = null!;
         Assert.ThrowsException<ArgumentNullException>(() => services.AddAliyunStorage(aLiYunStorageOptions));
     }
 
@@ -48,14 +48,14 @@ public class TestStorage
     public void TestAddAliyunStorageByEmptyALiYunStorageOptionsReturnThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(new ALiYunStorageOptions()));
+        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(new AliyunStorageOptions()));
     }
 
     [TestMethod]
     public void TestAddAliyunStorageByALiYunStorageOptionsReturnClientNotNull()
     {
         var services = new ServiceCollection();
-        services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "AccessSecret", "regionId", "roleArn", "roleSessionName"));
+        services.AddAliyunStorage(new AliyunStorageOptions("accessKeyId", "AccessKeySecret", "regionId", "roleArn", "roleSessionName"));
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
     }
@@ -64,7 +64,7 @@ public class TestStorage
     public void TestAddMultiAliyunStorageReturnClientCountIs1()
     {
         var services = new ServiceCollection();
-        ALiYunStorageOptions options = new ALiYunStorageOptions("accessKey", "accessSecret", "regionId", "roleArn", "roleSessionName");
+        AliyunStorageOptions options = new AliyunStorageOptions("accessKeyId", "accessKeySecret", "regionId", "roleArn", "roleSessionName");
         services.AddAliyunStorage(options).AddAliyunStorage(options);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
@@ -75,7 +75,7 @@ public class TestStorage
     public void TestAddAliyunStorageAndNullALiYunStorageOptionsFuncReturnThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        Func<ALiYunStorageOptions> func = null!;
+        Func<AliyunStorageOptions> func = null!;
         Assert.ThrowsException<ArgumentNullException>(() => services.AddAliyunStorage(func));
     }
 }

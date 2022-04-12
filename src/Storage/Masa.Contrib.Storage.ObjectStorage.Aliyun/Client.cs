@@ -2,11 +2,11 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
 public class Client : IClient
 {
-    private readonly ALiYunStorageOptions _options;
+    private readonly AliyunStorageOptions _options;
     private readonly IMemoryCache _cache;
     private readonly ILogger<Client>? _logger;
 
-    public Client(ALiYunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger)
+    public Client(AliyunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger)
     {
         _options = options;
         _cache = cache;
@@ -23,8 +23,8 @@ public class Client : IClient
         {
             temporaryCredentials = GetTemporaryCredentials(
                 _options.RegionId,
-                _options.AccessKey,
-                _options.AccessSecret,
+                _options.AccessKeyId,
+                _options.AccessKeySecret,
                 _options.RoleArn,
                 _options.RoleSessionName,
                 _options.Policy,
@@ -43,14 +43,14 @@ public class Client : IClient
 
     protected virtual TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
-        string accessKey,
-        string accessSecret,
+        string accessKeyId,
+        string accessKeySecret,
         string roleArn,
         string roleSessionName,
         string policy,
         long durationSeconds)
     {
-        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKey, accessSecret);
+        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKeyId, accessKeySecret);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         var request = new AssumeRoleRequest
         {

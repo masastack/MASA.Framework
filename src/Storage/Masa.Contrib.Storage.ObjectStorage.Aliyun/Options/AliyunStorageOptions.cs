@@ -1,10 +1,10 @@
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
-public class ALiYunStorageOptions
+public class AliyunStorageOptions
 {
-    public string AccessKey { get; set; }
+    public string AccessKeyId { get; set; }
 
-    public string AccessSecret { get; set; }
+    public string AccessKeySecret { get; set; }
 
     public string RegionId { get; set; }
 
@@ -44,30 +44,30 @@ public class ALiYunStorageOptions
         set => _temporaryCredentialsCacheKey = CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
     }
 
-    public ALiYunStorageOptions() { }
+    public AliyunStorageOptions() { }
 
-    public ALiYunStorageOptions(string accessKey, string accessSecret, string regionId, string roleArn, string roleSessionName) : this()
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string roleArn, string roleSessionName) : this()
     {
-        AccessKey = CheckNullOrEmptyAndReturnValue(accessKey, nameof(accessKey));
-        AccessSecret = CheckNullOrEmptyAndReturnValue(accessSecret, nameof(accessSecret));
+        AccessKeyId = CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
+        AccessKeySecret = CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));
         RegionId = CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
         RoleArn = CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
         RoleSessionName = CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
     }
 
-    public ALiYunStorageOptions SetPolicy(string policy)
+    public AliyunStorageOptions SetPolicy(string policy)
     {
         Policy = policy;
         return this;
     }
 
-    public ALiYunStorageOptions SetTemporaryCredentialsCacheKey(string temporaryCredentialsCacheKey)
+    public AliyunStorageOptions SetTemporaryCredentialsCacheKey(string temporaryCredentialsCacheKey)
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
         return this;
     }
 
-    public ALiYunStorageOptions SetDurationSeconds(int durationSeconds)
+    public AliyunStorageOptions SetDurationSeconds(int durationSeconds)
     {
         DurationSeconds = durationSeconds;
         return this;

@@ -3,12 +3,12 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class TestClient
 {
-    private ALiYunStorageOptions _aLiYunStorageOptions;
+    private AliyunStorageOptions _aLiYunStorageOptions;
 
     [TestInitialize]
     public void Initialize()
     {
-        _aLiYunStorageOptions = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
+        _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
     }
 
     [TestMethod]
@@ -111,8 +111,8 @@ public class TestClient
         var client = new CustomClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
         Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
             "cn-shanghai",
-            "accessKey",
-            "accessSecret",
+            "accessKeyId",
+            "accessKeySecret",
             "roleArn",
             "roleSessionName",
             String.Empty,
@@ -129,8 +129,8 @@ public class TestClient
         var client = new CustomClient(_aLiYunStorageOptions, memoryCache, null);
         Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
             "cn-shanghai",
-            "accessKey",
-            "accessSecret",
+            "accessKeyId",
+            "accessKeySecret",
             "roleArn",
             "roleSessionName",
             "policy",

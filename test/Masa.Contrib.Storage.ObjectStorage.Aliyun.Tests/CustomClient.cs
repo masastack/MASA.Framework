@@ -4,7 +4,7 @@ public class CustomClient : Client
 {
     public readonly TemporaryCredentialsResponse TemporaryCredentials;
 
-    public CustomClient(ALiYunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger) : base(options, cache, logger)
+    public CustomClient(AliyunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger) : base(options, cache, logger)
     {
         TemporaryCredentials = new(
             "accessKeyId",
@@ -15,8 +15,8 @@ public class CustomClient : Client
 
     protected override TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
-        string accessKey,
-        string accessSecret,
+        string accessKeyId,
+        string accessKeySecret,
         string roleArn,
         string roleSessionName,
         string policy,
@@ -24,13 +24,13 @@ public class CustomClient : Client
         => TemporaryCredentials;
 
     public TemporaryCredentialsResponse TestGetTemporaryCredentials(string regionId,
-        string accessKey,
-        string accessSecret,
+        string accessKeyId,
+        string accessKeySecret,
         string roleArn,
         string roleSessionName,
         string policy,
         long durationSeconds)
-        => base.GetTemporaryCredentials(regionId, accessKey, accessSecret, roleArn, roleSessionName, policy, durationSeconds);
+        => base.GetTemporaryCredentials(regionId, accessKeyId, accessKeySecret, roleArn, roleSessionName, policy, durationSeconds);
 
     public void TestExpirationTimeLessThan10Second(int durationSeconds)
     {
