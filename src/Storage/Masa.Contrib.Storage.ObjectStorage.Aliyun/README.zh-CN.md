@@ -1,0 +1,56 @@
+中 | [EN](README.md)
+
+## Masa.Contrib.Storage.ObjectStorage.Aliyun
+
+用例：
+
+```C#
+Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
+```
+
+支持：
+* GetSecurityToken 获取安全令牌
+
+### 用法1:
+
+1. 配置appsettings.json
+``` C#
+{
+  "Aliyun": {
+    "AccessKey": "",
+    "SecretKey": "",
+    "RegionId": "",
+    "RoleArn": "",
+    "RoleSessionName": "",
+    "DurationSeconds": 3600,//选填、默认: 3600s
+    "Policy": "",//选填
+    "TemporaryCredentialsCacheKey": "Aliyun.TemporaryCredentials"//选填、默认: Aliyun.TemporaryCredentials
+  }
+}
+```
+
+2. 添加阿里云存储服务
+
+```C#
+builder.Services.AddAliyunStorage();
+```
+
+### 用法2：
+
+1. 添加阿里云存储服务
+
+```C#
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage(new ALiYunStorageOptions(configuration["Aliyun:AccessKey"], configuration["Aliyun:SecretKey"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+```
+
+### 用法3:
+
+1. 添加阿里云存储服务
+
+```C#
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKey"], configuration["Aliyun:SecretKey"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+```
+
+> 与用法2的区别在于配置更新后无需重启项目即可生效
