@@ -24,7 +24,7 @@ public class Client : IClient
             temporaryCredentials = GetTemporaryCredentials(
                 _options.RegionId,
                 _options.AccessKey,
-                _options.SecretKey,
+                _options.AccessSecret,
                 _options.RoleArn,
                 _options.RoleSessionName,
                 _options.Policy,
@@ -44,13 +44,13 @@ public class Client : IClient
     protected virtual TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
         string accessKey,
-        string secretKey,
+        string accessSecret,
         string roleArn,
         string roleSessionName,
         string policy,
         long durationSeconds)
     {
-        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKey, secretKey);
+        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKey, accessSecret);
         DefaultAcsClient client = new DefaultAcsClient(profile);
         var request = new AssumeRoleRequest
         {

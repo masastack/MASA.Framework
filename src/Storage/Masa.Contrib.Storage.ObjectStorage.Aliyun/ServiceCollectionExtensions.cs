@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<IClient>(serviceProvider =>
             {
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ALiYunStorageOptions>>();
-                CheckALiYunStorageOptions(optionsMonitor.CurrentValue, $"Failed to get {nameof(IOptionsMonitor<ALiYunStorageOptions>)}");
+                CheckAliYunStorageOptions(optionsMonitor.CurrentValue, $"Failed to get {nameof(IOptionsMonitor<ALiYunStorageOptions>)}");
                 return new Client(optionsMonitor.CurrentValue, GetMemoryCache(serviceProvider), GetClientLogger(serviceProvider));
             });
         });
@@ -31,7 +31,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        CheckALiYunStorageOptions(options, $"{options.AccessKey}, {options.SecretKey}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty");
+        string message = $"{options.AccessKey}, {options.AccessSecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
+        CheckAliYunStorageOptions(options, message);
 
         return services.AddAliyunStorage(() => options);
     }
@@ -82,19 +83,19 @@ public static class ServiceCollectionExtensions
 
     private static ILogger<Client>? GetClientLogger(IServiceProvider serviceProvider) => serviceProvider.GetService<ILogger<Client>>();
 
-    private static void CheckALiYunStorageOptions(ALiYunStorageOptions options, string? message = default)
+    private static void CheckAliYunStorageOptions(ALiYunStorageOptions options, string? message = default)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
         if (options.AccessKey == null &&
-            options.SecretKey == null &&
+            options.AccessSecret == null &&
             options.RegionId == null &&
             options.RoleArn == null &&
             options.RoleSessionName == null)
             throw new ArgumentException(message);
 
         options.CheckNullOrEmptyAndReturnValue(options.AccessKey, nameof(options.AccessKey));
-        options.CheckNullOrEmptyAndReturnValue(options.SecretKey, nameof(options.SecretKey));
+        options.CheckNullOrEmptyAndReturnValue(options.AccessSecret, nameof(options.AccessSecret));
         options.CheckNullOrEmptyAndReturnValue(options.RegionId, nameof(options.RegionId));
         options.CheckNullOrEmptyAndReturnValue(options.RoleArn, nameof(options.RoleArn));
         options.CheckNullOrEmptyAndReturnValue(options.RoleSessionName, nameof(options.RoleSessionName));

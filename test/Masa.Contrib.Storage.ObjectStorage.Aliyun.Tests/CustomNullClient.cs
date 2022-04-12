@@ -11,7 +11,7 @@ public class CustomNullClient : Client
     protected override TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
         string accessKey,
-        string secretKey,
+        string accessSecret,
         string roleArn,
         string roleSessionName,
         string policy,

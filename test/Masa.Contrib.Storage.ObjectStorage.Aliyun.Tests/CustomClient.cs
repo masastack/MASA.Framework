@@ -16,7 +16,7 @@ public class CustomClient : Client
     protected override TemporaryCredentialsResponse GetTemporaryCredentials(
         string regionId,
         string accessKey,
-        string secretKey,
+        string accessSecret,
         string roleArn,
         string roleSessionName,
         string policy,
@@ -25,12 +25,12 @@ public class CustomClient : Client
 
     public TemporaryCredentialsResponse TestGetTemporaryCredentials(string regionId,
         string accessKey,
-        string secretKey,
+        string accessSecret,
         string roleArn,
         string roleSessionName,
         string policy,
         long durationSeconds)
-        => base.GetTemporaryCredentials(regionId, accessKey, secretKey, roleArn, roleSessionName, policy, durationSeconds);
+        => base.GetTemporaryCredentials(regionId, accessKey, accessSecret, roleArn, roleSessionName, policy, durationSeconds);
 
     public void TestExpirationTimeLessThan10Second(int durationSeconds)
     {

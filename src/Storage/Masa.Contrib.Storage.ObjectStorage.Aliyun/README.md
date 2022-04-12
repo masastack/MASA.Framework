@@ -18,7 +18,7 @@ support:
 {
   "Aliyun": {
     "AccessKey": "",
-    "SecretKey": "",
+    "AccessSecret": "",
     "RegionId": "",
     "RoleArn": "",
     "RoleSessionName": "",
@@ -40,7 +40,7 @@ builder.Services.AddAliyunStorage();
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "secretKey", "regionId", "roleArn", "roleSessionName"));
+builder.Services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "accessSecret", "regionId", "roleArn", "roleSessionName"));
 ````
 
 ### Usage 3:
@@ -48,7 +48,7 @@ builder.Services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "secretK
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKey"], configuration["Aliyun:SecretKey"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration ["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKey"], configuration["Aliyun:AccessSecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration ["Aliyun:RoleSessionName"]));
 ````
 
 > The difference from usage 2 is that the configuration can take effect without restarting the project after the configuration update

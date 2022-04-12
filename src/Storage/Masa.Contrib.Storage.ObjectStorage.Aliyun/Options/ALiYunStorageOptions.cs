@@ -4,7 +4,7 @@ public class ALiYunStorageOptions
 {
     public string AccessKey { get; set; }
 
-    public string SecretKey { get; set; }
+    public string AccessSecret { get; set; }
 
     public string RegionId { get; set; }
 
@@ -46,10 +46,10 @@ public class ALiYunStorageOptions
 
     public ALiYunStorageOptions() { }
 
-    public ALiYunStorageOptions(string accessKey, string secretKey, string regionId, string roleArn, string roleSessionName) : this()
+    public ALiYunStorageOptions(string accessKey, string accessSecret, string regionId, string roleArn, string roleSessionName) : this()
     {
         AccessKey = CheckNullOrEmptyAndReturnValue(accessKey, nameof(accessKey));
-        SecretKey = CheckNullOrEmptyAndReturnValue(secretKey, nameof(secretKey));
+        AccessSecret = CheckNullOrEmptyAndReturnValue(accessSecret, nameof(accessSecret));
         RegionId = CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
         RoleArn = CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
         RoleSessionName = CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));

@@ -8,7 +8,7 @@ public class TestClient
     [TestInitialize]
     public void Initialize()
     {
-        _aLiYunStorageOptions = new ALiYunStorageOptions("AccessKey", "SecretKey", "RegionId", "RoleArn", "RoleSessionName");
+        _aLiYunStorageOptions = new ALiYunStorageOptions("AccessKey", "AccessSecret", "RegionId", "RoleArn", "RoleSessionName");
     }
 
     [TestMethod]

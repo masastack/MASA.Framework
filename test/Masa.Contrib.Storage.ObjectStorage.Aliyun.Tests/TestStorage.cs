@@ -55,7 +55,7 @@ public class TestStorage
     public void TestAddAliyunStorageByALiYunStorageOptionsReturnClientNotNull()
     {
         var services = new ServiceCollection();
-        services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "secretKey", "regionId", "roleArn", "roleSessionName"));
+        services.AddAliyunStorage(new ALiYunStorageOptions("accessKey", "AccessSecret", "regionId", "roleArn", "roleSessionName"));
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
     }
@@ -64,7 +64,7 @@ public class TestStorage
     public void TestAddMultiAliyunStorageReturnClientCountIs1()
     {
         var services = new ServiceCollection();
-        ALiYunStorageOptions options = new ALiYunStorageOptions("accessKey", "secretKey", "regionId", "roleArn", "roleSessionName");
+        ALiYunStorageOptions options = new ALiYunStorageOptions("accessKey", "accessSecret", "regionId", "roleArn", "roleSessionName");
         services.AddAliyunStorage(options).AddAliyunStorage(options);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
