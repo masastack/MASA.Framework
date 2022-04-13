@@ -13,7 +13,6 @@ IConfiguration
 │   ├── AppId                            替换为你的AppId
 │   ├── AppId ├── Platforms              自定义节点
 │   ├── AppId ├── Platforms ├── Name     参数
-│   ├── AppId ├── DataDictionary         字典（固定）
 ```
 
 用例：
@@ -68,7 +67,7 @@ public class PlatformOptions : LocalMasaConfigurationOptions
 //使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local节点下
 builder.AddMasaConfiguration(configurationBuilder =>
 {
-    //configurationBuilder.UseDcc(builder.Services);//使用Dcc 扩展Configuration能力，支持远程配置
+    //configurationBuilder.UseDcc();//使用Dcc 扩展Configuration能力，支持远程配置
 });
 ```
 
@@ -79,7 +78,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 ```C#
 builder.AddMasaConfiguration(configurationBuilder =>
 {
-    //configurationBuilder.UseDcc(builder.Services);//使用Dcc 扩展Configuration能力，支持远程配置
+    //configurationBuilder.UseDcc();//使用Dcc 扩展Configuration能力，支持远程配置
 
     configurationBuilder.UseMasaOptions(options =>
     {

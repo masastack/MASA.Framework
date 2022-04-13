@@ -84,7 +84,7 @@ public class ConfigurationTest
         var configurationBuilder = new ConfigurationBuilder()
             .AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true)
             .AddJsonFile("redis.json", optional: false, reloadOnChange: true);
-        var masaConfigurationBuilder = new MasaConfigurationBuilder(configurationBuilder);
+        var masaConfigurationBuilder = new MasaConfigurationBuilder(new ServiceCollection(), configurationBuilder);
         Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 2);
 
         var appsettingConfigurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
@@ -93,6 +93,8 @@ public class ConfigurationTest
         Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 3);
 
         Assert.IsTrue(masaConfigurationBuilder.Build()["KafkaOptions:Servers"] == appsettingConfigurationBuilder.Build()["KafkaOptions:Servers"]);
+
+        Assert.IsTrue(masaConfigurationBuilder.Properties.Count==configurationBuilder.Properties.Count);
     }
 
     [TestMethod]

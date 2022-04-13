@@ -2,7 +2,7 @@ namespace Masa.Contrib.Configuration;
 
 internal class LocalMasaConfigurationRepository : AbstractConfigurationRepository
 {
-    public override SectionTypes SectionType { get; init; } = SectionTypes.Local;
+    public override SectionTypes SectionType => SectionTypes.Local;
 
     private Properties _data = new();
 

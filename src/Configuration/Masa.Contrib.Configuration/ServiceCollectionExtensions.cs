@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddOptions();
         services.TryAddSingleton<IMasaConfiguration, DefaultMasaConfiguration>();
 
-        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(configurationBuilder);
+        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services, configurationBuilder);
         configureDelegate?.Invoke(masaConfigurationBuilder);
 
         var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.Configuration, services.BuildServiceProvider().GetService<ILoggerFactory>());

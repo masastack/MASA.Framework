@@ -4,6 +4,8 @@ public class MasaConfigurationBuilder : IMasaConfigurationBuilder
 {
     private readonly IConfigurationBuilder _builder;
 
+    public IServiceCollection Services { get; }
+
     public IDictionary<string, object> Properties => _builder.Properties;
 
     public IList<IConfigurationSource> Sources => _builder.Sources;
@@ -16,7 +18,11 @@ public class MasaConfigurationBuilder : IMasaConfigurationBuilder
 
     internal List<ConfigurationRelationOptions> Relations { get; } = new();
 
-    public MasaConfigurationBuilder(IConfigurationBuilder builder) => _builder = builder;
+    public MasaConfigurationBuilder(IServiceCollection services, IConfigurationBuilder builder)
+    {
+        Services = services;
+        _builder = builder;
+    }
 
     public void AddRepository(IConfigurationRepository configurationRepository)
         => Repositories.Add(configurationRepository);

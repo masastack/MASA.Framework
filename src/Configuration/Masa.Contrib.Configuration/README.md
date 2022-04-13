@@ -13,7 +13,6 @@ IConfiguration
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Platforms              Custom node
 │   ├── AppId ├── Platforms ├── Name     Parameter name
-│   ├── AppId ├── DataDictionary         Dictionary (fixed)
 ```
 
 Example：
