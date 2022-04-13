@@ -13,7 +13,6 @@ IConfiguration
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Platforms              自定义节点
 │   ├── AppId ├── Platforms ├── Name     参数
-│   ├── AppId ├── DataDictionary         字典（固定）DCC中类型为Text的挂载到此处
 ```
 
 用例：
@@ -50,7 +49,7 @@ appsettings.json
 ```
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(builder.Services));//使用Dcc提供远程配置的能力
+builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());//使用Dcc提供远程配置的能力
 
 /// <summary>
 /// 自动映射节点关系

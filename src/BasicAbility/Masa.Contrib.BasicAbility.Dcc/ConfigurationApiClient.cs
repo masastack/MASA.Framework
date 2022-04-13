@@ -5,6 +5,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly ILogger<ConfigurationApiClient>? _logger;
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
@@ -20,6 +21,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _serviceProvider = serviceProvider;
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
+        _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId,
@@ -33,7 +35,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
-        var value = await _taskJsonObjects.GetOrAdd(key, (k) => new Lazy<Task<object>>(async () =>
+        var value = await _taskJsonObjects.GetOrAdd(key, k => new Lazy<Task<object>>(async () =>
         {
             var options = new JsonSerializerOptions(_jsonSerializerOptions);
             options.EnableDynamicTypes();
@@ -60,59 +62,55 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return (T)value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
-        Action<dynamic> valueChanged)
+    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic> valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
-        var value = _taskExpandoObjects.GetOrAdd(key, (k) => new Lazy<Task<ExpandoObject>>(async () =>
+        return await GetDynamicAsync(key, (k, value, options) =>
+        {
+            var result = JsonSerializer.Deserialize<ExpandoObject>(value, options);
+            var newValue = new Lazy<Task<ExpandoObject?>>(() => Task.FromResult(result)!);
+            _taskExpandoObjects.AddOrUpdate(k, newValue!, (_, _) => newValue!);
+            valueChanged?.Invoke(result!);
+        });
+    }
+
+    public Task<dynamic> GetDynamicAsync(string key) => GetDynamicAsync(key, null);
+
+    protected virtual async Task<dynamic> GetDynamicAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentNullException(nameof(key));
+
+        var value = _taskExpandoObjects.GetOrAdd(key, k => new Lazy<Task<ExpandoObject>>(async () =>
         {
             var options = new JsonSerializerOptions(_jsonSerializerOptions);
             options.EnableDynamicTypes();
 
-            var raw = await GetRawByKeyAsync(k, (value) =>
+            var raw = await GetRawByKeyAsync(k, value =>
             {
-                var result = JsonSerializer.Deserialize<ExpandoObject>(value, options);
-                var newValue = new Lazy<Task<ExpandoObject?>>(() => Task.FromResult(result)!);
-                _taskExpandoObjects.AddOrUpdate(k, newValue!, (_, _) => newValue!);
-                valueChanged?.Invoke(result!);
+                valueChanged?.Invoke(k, value, options);
             });
-
-            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, options) ?? throw new ArgumentException(nameof(configObject));
+            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, options) ?? throw new ArgumentException(key);
         })).Value;
 
         return await value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string key)
+    protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key, Action<string>? valueChanged)
     {
-        if (string.IsNullOrEmpty(key))
-            throw new ArgumentNullException(nameof(key));
-
-        var configuration = _serviceProvider.GetRequiredService<IConfiguration>();
-        key = key.Replace(".", ConfigurationPath.KeyDelimiter);
-        return await Task.FromResult(Format(configuration.GetSection(key)));
-    }
-
-    private async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key, Action<string> valueChanged)
-    {
-        var raw = await _client.GetAsync<string>(key, (value) =>
+        var raw = await _client.GetAsync<string>(key, value =>
         {
-            var result = FormatRaw(value);
+            var result = FormatRaw(value, key);
             valueChanged?.Invoke(result.Raw);
         });
 
-        return FormatRaw(raw);
+        return FormatRaw(raw, key);
     }
 
-    private (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string? raw)
+    protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string? raw, string paramName)
     {
-        if (raw == null)
-            throw new ArgumentException("configObject invalid");
-
-        var result = JsonSerializer.Deserialize<PublishRelease>(raw, _jsonSerializerOptions);
-        if (result == null || result.ConfigFormat == 0)
-            throw new ArgumentException("configObject invalid");
+        PublishRelease result = GetPublishRelease(raw, paramName);
 
         switch (result.ConfigFormat)
         {
@@ -123,11 +121,17 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 return (result.Content!, ConfigurationTypes.Text);
 
             case ConfigFormats.Properties:
-                var properties = PropertyConfigurationParser.Parse(result.Content!, _jsonSerializerOptions);
-                if (properties == null)
+                try
+                {
+                    var properties = PropertyConfigurationParser.Parse(result.Content!, _jsonSerializerOptions);
+                    return (JsonSerializer.Serialize(properties, _jsonSerializerOptions), ConfigurationTypes.Properties);
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogWarning(exception,
+                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Properties type");
                     throw new ArgumentException("configObject invalid");
-
-                return (JsonSerializer.Serialize(properties, _jsonSerializerOptions), ConfigurationTypes.Properties);
+                }
 
             default:
                 throw new NotSupportedException("Unsupported configuration type");
@@ -137,22 +141,25 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     private string FomartKey(string environment, string cluster, string appId, string configObject)
         => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 
-    private dynamic Format(IConfigurationSection section)
+    private PublishRelease GetPublishRelease(string? raw, string paramName)
     {
-        var childrenSections = section.GetChildren();
-        if (!section.Exists() || !childrenSections.Any())
+        if (raw == null)
+            throw new ArgumentException($"configObject invalid, {paramName} is not null");
+
+        PublishRelease? result;
+        try
         {
-            return section.Value;
+            result = JsonSerializer.Deserialize<PublishRelease>(raw, _jsonSerializerOptions);
         }
-        else
+        catch (Exception exception)
         {
-            var result = new ExpandoObject();
-            var parent = result as IDictionary<string, object>;
-            foreach (var child in childrenSections)
-            {
-                parent[child.Key] = Format(child);
-            }
-            return result;
+            string message = $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid response value";
+            _logger?.LogWarning(exception, message);
+            throw new ArgumentException(message);
         }
+        if (result == null || result.ConfigFormat == 0)
+            throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is an unsupported type");
+
+        return result;
     }
 }

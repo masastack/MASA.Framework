@@ -1,4 +1,4 @@
-﻿namespace Masa.Contrib.BasicAbility.Dcc.Options;
+namespace Masa.Contrib.BasicAbility.Dcc.Options;
 
 public abstract class ConfigurationApiMasaConfigurationOptions : MasaConfigurationOptions
 {

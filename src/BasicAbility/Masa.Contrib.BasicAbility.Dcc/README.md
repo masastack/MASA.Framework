@@ -13,7 +13,6 @@ IConfiguration
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Platforms              Custom node
 │   ├── AppId ├── Platforms ├── Name     Parameter Name
-│   ├── AppId ├── DataDictionary         Dictionary (fixed) The type of Text in DCC is mounted here
 ```
 
 Example：
@@ -50,7 +49,7 @@ appsettings.json
 ```
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc(builder.Services));//Ability to provide remote configuration using Dcc
+builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());//Ability to provide remote configuration using Dcc
 
 /// <summary>
 /// Automatically map node relationships

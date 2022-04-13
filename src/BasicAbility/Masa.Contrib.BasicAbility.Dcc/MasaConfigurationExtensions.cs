@@ -1,12 +1,9 @@
-using Masa.Contrib.BasicAbility.Dcc.Internal.Options;
-
 namespace Masa.Contrib.BasicAbility.Dcc;
 
 public static class MasaConfigurationExtensions
 {
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerOptions>? callerOptions = null)
     {
@@ -20,7 +17,7 @@ public static class MasaConfigurationExtensions
             configurationExpandSection.Bind(expandSections);
         }
 
-        return builder.UseDcc(services, () => dccOptions, option =>
+        return builder.UseDcc(() => dccOptions, option =>
         {
             option.Environment = builder.Configuration["Environment"];
             option.Cluster = builder.Configuration["Cluster"];
@@ -32,7 +29,6 @@ public static class MasaConfigurationExtensions
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
         Func<DccConfigurationOptions> configureOptions,
         Action<DccSectionOptions> defaultSectionOptions,
         Action<DccExpandSectionOptions>? expansionSectionOptions,
@@ -49,19 +45,19 @@ public static class MasaConfigurationExtensions
         var expansionSectionOption = new DccExpandSectionOptions();
         expansionSectionOptions?.Invoke(expansionSectionOption);
 
-        return builder.UseDcc(services, dccConfigurationOptions, defaultSectionOption, expansionSectionOption.ExpandSections,
+        return builder.UseDcc(dccConfigurationOptions, defaultSectionOption, expansionSectionOption.ExpandSections,
             jsonSerializerOptions, callerOptions);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
         DccConfigurationOptions configureOptions,
         DccSectionOptions defaultSectionOptions,
         List<DccSectionOptions>? expansionSectionOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions,
         Action<CallerOptions>? callerOptions)
     {
+        var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
 
