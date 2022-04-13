@@ -1,6 +1,3 @@
-using Masa.Contrib.Configuration;
-using Microsoft.AspNetCore.Builder;
-
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
 [TestClass]

@@ -13,7 +13,7 @@ internal static class ServiceCollectionRepositoryExtensions
         }
 
         var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-        var entityTypes = allTypes.Where(type => type.IsAggregateRootEntity());
+        var entityTypes = allTypes.Where(type => type.IsEntity());
         foreach (var entityType in entityTypes)
         {
             var repositoryInterfaceType = typeof(IRepository<>).MakeGenericType(entityType);
@@ -33,9 +33,8 @@ internal static class ServiceCollectionRepositoryExtensions
         return services;
     }
 
-    private static bool IsAggregateRootEntity(this Type type)
-        => type.IsClass && !type.IsGenericType && !type.IsAbstract && type != typeof(AggregateRoot) && type != typeof(Entity) &&
-            typeof(IAggregateRoot).IsAssignableFrom(type);
+    private static bool IsEntity(this Type type)
+        => type.IsClass && !type.IsGenericType && !type.IsAbstract && typeof(IEntity).IsAssignableFrom(type);
 
     private static void TryAddCustomRepository(this IServiceCollection services, Type repositoryInterfaceType, List<Type> allTypes)
     {
