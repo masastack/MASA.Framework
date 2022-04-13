@@ -138,29 +138,37 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolation", "src\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj", "{B689E82B-B3E8-4C83-B56C-D4C27206AAC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation", "src\Isolation\Masa.Contrib.Isolation\Masa.Contrib.Isolation.csproj", "{F52E5BA6-C2D4-4797-AF71-6389FEC246B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation", "src\Isolation\Masa.Contrib.Isolation\Masa.Contrib.Isolation.csproj", "{F52E5BA6-C2D4-4797-AF71-6389FEC246B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.MultiEnvironment", "src\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj", "{823D2A6E-20AB-45FF-AD07-5E7933FA6DE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiEnvironment", "src\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj", "{823D2A6E-20AB-45FF-AD07-5E7933FA6DE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.MultiTenant", "src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj", "{7C382E43-A515-4C67-9296-FB8A630C4A49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiTenant", "src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj", "{7C382E43-A515-4C67-9296-FB8A630C4A49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF", "src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{95AF448B-F34C-4DF8-9E9B-DF499FABA099}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF", "src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{95AF448B-F34C-4DF8-9E9B-DF499FABA099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.MultiEnvironment.Tests", "test\Masa.Contrib.Isolation.MultiEnvironment.Tests\Masa.Contrib.Isolation.MultiEnvironment.Tests.csproj", "{4C3307D4-2A6B-41E3-BE9E-2FD083578450}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiEnvironment.Tests", "test\Masa.Contrib.Isolation.MultiEnvironment.Tests\Masa.Contrib.Isolation.MultiEnvironment.Tests.csproj", "{4C3307D4-2A6B-41E3-BE9E-2FD083578450}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.MultiTenant.Tests", "test\Masa.Contrib.Isolation.MultiTenant.Tests\Masa.Contrib.Isolation.MultiTenant.Tests.csproj", "{AA1993F7-5BAE-45F8-A8F5-31E88A25ED83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiTenant.Tests", "test\Masa.Contrib.Isolation.MultiTenant.Tests\Masa.Contrib.Isolation.MultiTenant.Tests.csproj", "{AA1993F7-5BAE-45F8-A8F5-31E88A25ED83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.Tests", "test\Masa.Contrib.Isolation.Tests\Masa.Contrib.Isolation.Tests.csproj", "{F1826D84-1A16-41A4-A57B-F0DBB5A18745}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.Tests", "test\Masa.Contrib.Isolation.Tests\Masa.Contrib.Isolation.Tests.csproj", "{F1826D84-1A16-41A4-A57B-F0DBB5A18745}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Tests\Masa.Contrib.Isolation.UoW.EF.Tests.csproj", "{2E1EEC9C-37C9-4C03-A4BC-58306F8B1C38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Tests\Masa.Contrib.Isolation.UoW.EF.Tests.csproj", "{2E1EEC9C-37C9-4C03-A4BC-58306F8B1C38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{F4B8D71B-DAE4-4948-A1DC-42B42DE31D4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "test\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{F4B8D71B-DAE4-4948-A1DC-42B42DE31D4F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm", "src\BasicAbility\Masa.Contrib.BasicAbility.Pm\Masa.Contrib.BasicAbility.Pm.csproj", "{118A91A6-6FBB-431A-B50D-076375AD6A63}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Storage.ObjectStorage", "src\BuildingBlocks\MASA.BuildingBlocks\src\Storage\Masa.BuildingBlocks.Storage.ObjectStorage\Masa.BuildingBlocks.Storage.ObjectStorage.csproj", "{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.BasicAbility.Pm.Tests", "test\Masa.Contrib.BasicAbility.Pm.Tests\Masa.Contrib.BasicAbility.Pm.Tests.csproj", "{C4DDEA6E-D6AF-4890-9713-C2862403E57C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm.Tests", "test\Masa.Contrib.BasicAbility.Pm.Tests\Masa.Contrib.BasicAbility.Pm.Tests.csproj", "{C4DDEA6E-D6AF-4890-9713-C2862403E57C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.ObjectStorage.Aliyun", "src\Storage\Masa.Contrib.Storage.ObjectStorage.Aliyun\Masa.Contrib.Storage.ObjectStorage.Aliyun.csproj", "{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests", "test\Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests\Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests.csproj", "{97532A33-A591-4DF5-A2C0-72527B78ED82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{165391A5-034E-4894-8084-8DF7D4AA7518}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -618,6 +626,14 @@ Global
 		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|Any CPU.Build.0 = Release|Any CPU
 		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|x64.ActiveCfg = Release|Any CPU
 		{118A91A6-6FBB-431A-B50D-076375AD6A63}.Release|x64.Build.0 = Release|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Debug|x64.Build.0 = Debug|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Release|x64.ActiveCfg = Release|Any CPU
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}.Release|x64.Build.0 = Release|Any CPU
 		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB6FAB84-5218-48A8-8F94-03B02ECD098F}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -634,6 +650,22 @@ Global
 		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|x64.ActiveCfg = Release|Any CPU
 		{C4DDEA6E-D6AF-4890-9713-C2862403E57C}.Release|x64.Build.0 = Release|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Debug|x64.Build.0 = Debug|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Release|x64.ActiveCfg = Release|Any CPU
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE}.Release|x64.Build.0 = Release|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Debug|x64.Build.0 = Debug|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Release|x64.ActiveCfg = Release|Any CPU
+		{97532A33-A591-4DF5-A2C0-72527B78ED82}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -712,8 +744,12 @@ Global
 		{2E1EEC9C-37C9-4C03-A4BC-58306F8B1C38} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 		{F4B8D71B-DAE4-4948-A1DC-42B42DE31D4F} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 		{118A91A6-6FBB-431A-B50D-076375AD6A63} = {5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}
+		{74283F68-6B38-4CF4-B0CB-AAD65618ADB8} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
 		{AB6FAB84-5218-48A8-8F94-03B02ECD098F} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
 		{C4DDEA6E-D6AF-4890-9713-C2862403E57C} = {38E6C400-90C0-493E-9266-C1602E229F1B}
+		{86898E0C-D1C5-4A57-B5DD-69A4BC1F4ABE} = {165391A5-034E-4894-8084-8DF7D4AA7518}
+		{97532A33-A591-4DF5-A2C0-72527B78ED82} = {38E6C400-90C0-493E-9266-C1602E229F1B}
+		{165391A5-034E-4894-8084-8DF7D4AA7518} = {42DF7AAC-362C-48F4-B76A-BDEEEFF17CC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
