@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.UoW\Masa.BuildingBlocks.Data.UoW.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Dispatcher\Masa.BuildingBlocks.Dispatcher.Events\Masa.BuildingBlocks.Dispatcher.Events.csproj" />
   </ItemGroup>
