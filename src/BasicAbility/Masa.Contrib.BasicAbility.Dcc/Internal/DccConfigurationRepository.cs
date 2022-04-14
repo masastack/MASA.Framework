@@ -4,7 +4,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
 {
     private readonly IConfigurationApiClient _client;
 
-    public override SectionTypes SectionType { get; init; } = SectionTypes.ConfigurationAPI;
+    public override SectionTypes SectionType => SectionTypes.ConfigurationAPI;
 
     private readonly ConcurrentDictionary<string, IDictionary<string, string>> _dictionaries = new();
 
@@ -56,7 +56,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
             case ConfigurationTypes.Text:
                 return new Dictionary<string, string>()
                 {
-                    { $"{appId}{ConfigurationPath.KeyDelimiter}{DATA_DICTIONARY_SECTION_NAME}{ConfigurationPath.KeyDelimiter}{configObject}" , raw ?? "" }
+                    { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw ?? "" }
                 };
             default:
                 throw new NotSupportedException(nameof(configurationType));
@@ -83,7 +83,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         {
             foreach (var key in item.Value.Keys)
             {
-                properties[key] = item.Value[key] ?? string.Empty;
+                properties[key] = item.Value[key];
             }
         }
         return new Properties(properties);

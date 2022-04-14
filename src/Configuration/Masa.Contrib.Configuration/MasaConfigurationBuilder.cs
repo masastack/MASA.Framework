@@ -4,40 +4,24 @@ public class MasaConfigurationBuilder : IMasaConfigurationBuilder
 {
     private readonly IConfigurationBuilder _builder;
 
+    public IServiceCollection Services { get; }
+
     public IDictionary<string, object> Properties => _builder.Properties;
 
     public IList<IConfigurationSource> Sources => _builder.Sources;
 
-    public Dictionary<string, IConfiguration> GetSectionRelations() => SectionRelations;
+    private IConfiguration? _configuration;
 
-    internal Dictionary<string, IConfiguration> SectionRelations { get; } = new();
+    public IConfiguration Configuration => _configuration ??= _builder.Build();
 
     internal List<IConfigurationRepository> Repositories { get; } = new();
 
     internal List<ConfigurationRelationOptions> Relations { get; } = new();
 
-    public MasaConfigurationBuilder(IConfigurationBuilder builder)
-        => _builder = builder;
-
-    /// <summary>
-    ///
-    /// </summary>
-    /// <param name="configurationBuilder"></param>
-    /// <param name="sectionName">If section is null, it is mounted to the Local section</param>
-    public void AddSection(IConfigurationBuilder configurationBuilder, string? sectionName = null)
+    public MasaConfigurationBuilder(IServiceCollection services, IConfigurationBuilder builder)
     {
-        if (configurationBuilder == null)
-            throw new ArgumentNullException(nameof(configurationBuilder));
-
-        if (configurationBuilder.Sources.Count == 0)
-            throw new ArgumentException("Source cannot be empty");
-
-        sectionName = sectionName ?? "";
-
-        if (SectionRelations.ContainsKey(sectionName))
-            throw new ArgumentException("Section already exists", nameof(sectionName));
-
-        SectionRelations.Add(sectionName, configurationBuilder.Build());
+        Services = services;
+        _builder = builder;
     }
 
     public void AddRepository(IConfigurationRepository configurationRepository)

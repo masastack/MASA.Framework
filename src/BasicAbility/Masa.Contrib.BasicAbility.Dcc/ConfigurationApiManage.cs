@@ -1,6 +1,6 @@
 namespace Masa.Contrib.BasicAbility.Dcc;
 
-public class ConfigurationApiManage : ConfigurationAPIBase, IConfigurationApiManage
+public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
 {
     private readonly ICallerProvider _callerProvider;
 

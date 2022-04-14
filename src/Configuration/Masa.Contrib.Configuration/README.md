@@ -7,14 +7,12 @@ Structure:
 ```c#
 IConfiguration
 ├── Local                                Local node (fixed)
-│   ├── Appsettings                      Default local node
-│   ├── ├── Platforms                    Custom configuration
-│   ├── ├── ├── Name                     Parameter name
+│   ├── Platforms                    Custom configuration
+│   ├── ├── Name                     Parameter name
 ├── ConfigurationAPI                     Remote node (fixed)
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Platforms              Custom node
 │   ├── AppId ├── Platforms ├── Name     Parameter name
-│   ├── AppId ├── DataDictionary         Dictionary (fixed)
 ```
 
 Example：
@@ -52,25 +50,22 @@ Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configura
 Automatically map node relationships：
 
 ```c#
-public class PlatformOptions : MasaConfigurationOptions
+public class PlatformOptions : LocalMasaConfigurationOptions
 {
-    public override SectionTypes SectionType { get; init; } = SectionTypes.Local;
-
-    [JsonIgnore]
-    public override string? ParentSection { get; init; } = "Appsettings";
-
     [JsonIgnore]
     public override string? Section { get; init; } = "Platforms";
 
     public string Name { get; set; }
 }
 
-//Use MasaConfiguration to take over Configuration, and mount the current Configuration to Local:Appsettings section by default
+//Use MasaConfiguration to take over Configuration, and mount the current Configuration to Local section by default
 builder.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc(builder.Services);//Use Dcc to extend Configuration capabilities and support remote configuration
 });
 ```
+
+> Local configuration needs to inherit LocalMasaConfigurationOptions
 
 Or manually map node relationships：
 
@@ -81,7 +76,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 
     configurationBuilder.UseMasaOptions(options =>
     {
-        options.Mapping<PlatformOptions>(SectionTypes.Local, "Appsettings", "Platforms"); //Map the PlatformOptions binding to the Local:Appsettings:Platforms node
+        options.MappingLocal<PlatformOptions>("Platforms"); //Map the PlatformOptions binding to the Local:Platforms node
     });
 });
 ```
@@ -111,7 +106,7 @@ app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option)
 app.Map("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
 {
     //Base
-    return configuration["Local:Appsettings:Platforms:Name"];
+    return configuration["Local:Platforms:Name"];
 });
 
 app.Run();
@@ -120,16 +115,11 @@ app.Run();
 How to take over more local nodes？
 
 ```c#
-builder.AddMasaConfiguration(builder =>{
-
-    builder.AddSection(new ConfigurationBuilder()
-                       .SetBasePath(builder.Environment.ContentRootPath)
-                       .AddJsonFile("custom.json", true, true), "Custom");//Mount the custom.json configuration under the Local:Custom node
-});
+builder.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//In addition to the default ICongiguration, mount custom.json into the new Configuration
 ```
 
 Tip：
 
-Configuration automatically obtains classes that inherit the IMasaConfigurationOptions interface by default, and maps the node relationship to facilitate obtaining configuration information through IOptions, IOptionsSnapshot, and IOptionsMonitor
+Configuration automatically obtains classes that inherit LocalMasaConfigurationOptions by default, and maps node relationships to facilitate obtaining configuration information through IOptions, IOptionsSnapshot, and IOptionsMonitor
 
-The above Platforms is a local configuration, used to demonstrate the effect and usage of the local configuration after being mounted to IConfiguration
+The above Platforms is a local configuration, which is used to demonstrate the effect and usage of the local configuration after it is mounted to IConfiguration

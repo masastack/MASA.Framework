@@ -4,50 +4,60 @@ public static class MasaConfigurationExtensions
 {
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
-        Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptions>? callerOptions = null)
-        => builder.UseDcc(services, "Appsettings", jsonSerializerOptions, callerOptions);
-
-    public static IMasaConfigurationBuilder UseDcc(
-        this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
-        string defaultSectionName,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerOptions>? callerOptions = null)
     {
-        if (!builder.GetSectionRelations().TryGetValue(defaultSectionName, out IConfiguration? configuration))
-            throw new ArgumentNullException("Failed to obtain Dcc configuration, check whether the current section is configured with Dcc");
-
-        var configurationSection = configuration.GetSection("DccOptions");
+        var configurationSection = builder.Configuration.GetSection("DccOptions");
         var dccOptions = configurationSection.Get<DccConfigurationOptions>();
 
         List<DccSectionOptions> expandSections = new();
-        var configurationExpandSection = configuration.GetSection("ExpandSections");
+        var configurationExpandSection = builder.Configuration.GetSection("ExpandSections");
         if (configurationExpandSection.Exists())
         {
             configurationExpandSection.Bind(expandSections);
         }
 
-        return builder.UseDcc(services, () => dccOptions, option =>
+        return builder.UseDcc(() => dccOptions, option =>
         {
-            option.Environment = configuration["Environment"];
-            option.Cluster = configuration["Cluster"];
-            option.AppId = configuration["AppId"];
-            option.ConfigObjects = configuration.GetSection("ConfigObjects").Get<List<string>>();
-            option.Secret = configuration["Sectet"];
+            option.Environment = builder.Configuration["Environment"];
+            option.Cluster = builder.Configuration["Cluster"];
+            option.AppId = builder.Configuration["AppId"];
+            option.ConfigObjects = builder.Configuration.GetSection("ConfigObjects").Get<List<string>>();
+            option.Secret = builder.Configuration["Sectet"];
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
-        IServiceCollection services,
         Func<DccConfigurationOptions> configureOptions,
         Action<DccSectionOptions> defaultSectionOptions,
-        Action<DccExpandSectionOptions>? expansionSectionOptions = null,
+        Action<DccExpandSectionOptions>? expansionSectionOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
         Action<CallerOptions>? callerOptions = null)
     {
+        ArgumentNullException.ThrowIfNull(configureOptions, nameof(configureOptions));
+        DccConfigurationOptions dccConfigurationOptions = configureOptions.Invoke();
+
+        ArgumentNullException.ThrowIfNull(defaultSectionOptions, nameof(defaultSectionOptions));
+        DccSectionOptions defaultSectionOption = new();
+        defaultSectionOptions.Invoke(defaultSectionOption);
+
+        var expansionSectionOption = new DccExpandSectionOptions();
+        expansionSectionOptions?.Invoke(expansionSectionOption);
+
+        return builder.UseDcc(dccConfigurationOptions, defaultSectionOption, expansionSectionOption.ExpandSections,
+            jsonSerializerOptions, callerOptions);
+    }
+
+    public static IMasaConfigurationBuilder UseDcc(
+        this IMasaConfigurationBuilder builder,
+        DccConfigurationOptions configureOptions,
+        DccSectionOptions defaultSectionOptions,
+        List<DccSectionOptions>? expansionSectionOptions,
+        Action<JsonSerializerOptions>? jsonSerializerOptions,
+        Action<CallerOptions>? callerOptions)
+    {
+        var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
 
@@ -65,7 +75,8 @@ public static class MasaConfigurationExtensions
             if (callerOptions == null)
             {
                 options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty, opt => opt.BaseAddress = new Uri(config.DccConfigurationOption.ManageServiceAddress))
+                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty,
+                        opt => opt.BaseAddress = new Uri(config.DccConfigurationOptions.ManageServiceAddress))
                 );
             }
             else
@@ -74,14 +85,15 @@ public static class MasaConfigurationExtensions
             }
         });
 
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOption.RedisOptions).AddSharedMasaMemoryCache(config.DccConfigurationOption.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
+        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, config.DccConfigurationOptions.RedisOptions)
+            .AddSharedMasaMemoryCache(config.DccConfigurationOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
-        TryAddConfigurationApiClient(services, config.DefaultSectionOption, config.ExpansionSectionOptions, jsonSerializerOption);
-        TryAddConfigurationApiManage(services, config.DefaultSectionOption, config.ExpansionSectionOptions);
+        TryAddConfigurationApiClient(services, config.DefaultSectionOptions, config.ExpansionSectionOptions, jsonSerializerOption);
+        TryAddConfigurationApiManage(services, config.DefaultSectionOptions, config.ExpansionSectionOptions);
 
         var sectionOptions = new List<DccSectionOptions>()
         {
-            config.DefaultSectionOption
+            config.DefaultSectionOptions
         }.Concat(config.ExpansionSectionOptions);
 
         var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationApiClient>();
@@ -97,11 +109,9 @@ public static class MasaConfigurationExtensions
     {
         services.TryAddSingleton(serviceProvider =>
         {
-            var client = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>()
-                .CreateClient(DEFAULT_CLIENT_NAME);
+            var client = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
 
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
+            ArgumentNullException.ThrowIfNull(client, nameof(client));
 
             return DccFactory.CreateClient(
                 serviceProvider,
@@ -125,14 +135,12 @@ public static class MasaConfigurationExtensions
         return services;
     }
 
-    private static (DccSectionOptions DefaultSectionOption, List<DccSectionOptions> ExpansionSectionOptions, DccConfigurationOptions DccConfigurationOption) GetDccConfigurationOption(
-        Func<DccConfigurationOptions> configureOptions,
-        Action<DccSectionOptions> defaultSectionOptions,
-        Action<DccExpandSectionOptions>? expansionSectionOptions = null)
+    private static DccOptions GetDccConfigurationOption(
+        DccConfigurationOptions dccConfigurationOption,
+        DccSectionOptions defaultSectionOptions,
+        List<DccSectionOptions>? expansionSectionOptions = null)
     {
-        var dccConfigurationOption = configureOptions();
-        if (dccConfigurationOption == null)
-            throw new ArgumentNullException(nameof(configureOptions));
+        ArgumentNullException.ThrowIfNull(dccConfigurationOption, nameof(dccConfigurationOption));
 
         if (string.IsNullOrEmpty(dccConfigurationOption.ManageServiceAddress))
             throw new ArgumentNullException(nameof(dccConfigurationOption.ManageServiceAddress));
@@ -140,46 +148,41 @@ public static class MasaConfigurationExtensions
         if (dccConfigurationOption.RedisOptions == null)
             throw new ArgumentNullException(nameof(dccConfigurationOption.RedisOptions));
 
-        if (dccConfigurationOption.RedisOptions.Servers == null || dccConfigurationOption.RedisOptions.Servers.Count == 0 || dccConfigurationOption.RedisOptions.Servers.Any(service => string.IsNullOrEmpty(service.Host) || service.Port <= 0))
+        if (dccConfigurationOption.RedisOptions.Servers == null || dccConfigurationOption.RedisOptions.Servers.Count == 0 ||
+            dccConfigurationOption.RedisOptions.Servers.Any(service => string.IsNullOrEmpty(service.Host) || service.Port <= 0))
             throw new ArgumentNullException(nameof(dccConfigurationOption.RedisOptions.Servers));
 
-        if (defaultSectionOptions == null)
-            throw new ArgumentNullException(nameof(defaultSectionOptions));
+        ArgumentNullException.ThrowIfNull(defaultSectionOptions, nameof(defaultSectionOptions));
 
-        var defaultSectionOption = new DccSectionOptions();
-        defaultSectionOptions.Invoke(defaultSectionOption);
-
-        if (string.IsNullOrEmpty(defaultSectionOption.AppId))
+        if (string.IsNullOrEmpty(defaultSectionOptions.AppId))
             throw new ArgumentNullException("AppId cannot be empty");
 
-        if (defaultSectionOption.ConfigObjects == null || !defaultSectionOption.ConfigObjects.Any())
+        if (defaultSectionOptions.ConfigObjects == null || !defaultSectionOptions.ConfigObjects.Any())
             throw new ArgumentNullException("ConfigObjects cannot be empty");
 
-        if (string.IsNullOrEmpty(defaultSectionOption.Cluster))
-            defaultSectionOption.Cluster = "Default";
-        if (string.IsNullOrEmpty(defaultSectionOption.Environment))
-            defaultSectionOption.Environment = GetDefaultEnvironment();
+        if (string.IsNullOrEmpty(defaultSectionOptions.Cluster))
+            defaultSectionOptions.Cluster = "Default";
+        if (string.IsNullOrEmpty(defaultSectionOptions.Environment))
+            defaultSectionOptions.Environment = GetDefaultEnvironment();
 
-        var dccCachingOption = new DccExpandSectionOptions();
-        expansionSectionOptions?.Invoke(dccCachingOption);
         List<DccSectionOptions> expansionOptions = new();
-        foreach (var expansionOption in dccCachingOption.ExpandSections ?? new())
+        foreach (var expansionOption in expansionSectionOptions ?? new())
         {
             if (string.IsNullOrEmpty(expansionOption.Environment))
-                expansionOption.Environment = defaultSectionOption.Environment;
+                expansionOption.Environment = defaultSectionOptions.Environment;
             if (string.IsNullOrEmpty(expansionOption.Cluster))
-                expansionOption.Cluster = defaultSectionOption.Cluster;
+                expansionOption.Cluster = defaultSectionOptions.Cluster;
 
             if (expansionOption.ConfigObjects == null || !expansionOption.ConfigObjects.Any())
                 throw new ArgumentNullException("ConfigObjects in the extension section cannot be empty");
 
-            if (expansionOption.AppId == defaultSectionOption.AppId ||
+            if (expansionOption.AppId == defaultSectionOptions.AppId ||
                 expansionOptions.Any(section => section.AppId == expansionOption.AppId))
                 throw new ArgumentNullException("The current section already exists, no need to mount repeatedly");
 
             expansionOptions.Add(expansionOption);
         }
-        return (defaultSectionOption, expansionOptions, dccConfigurationOption);
+        return new(dccConfigurationOption, defaultSectionOptions, expansionOptions);
     }
 
     private static ICachingBuilder AddSharedMasaMemoryCache(this ICachingBuilder builder, string subscribeKeyPrefix)
@@ -195,7 +198,8 @@ public static class MasaConfigurationExtensions
 
     private static string GetDefaultEnvironment()
         => System.Environment.GetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME) ??
-        throw new ArgumentNullException("Error getting environment information, please make sure the value of ASPNETCORE_ENVIRONMENT has been configured");
+            throw new ArgumentNullException(
+                "Error getting environment information, please make sure the value of ASPNETCORE_ENVIRONMENT has been configured");
 
     private class DccConfigurationProvider
     {

@@ -13,7 +13,6 @@ IConfiguration
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Platforms              Custom node
 │   ├── AppId ├── Platforms ├── Name     Parameter Name
-│   ├── AppId ├── DataDictionary         Dictionary (fixed) The type of Text in DCC is mounted here
 ```
 
 Example：
@@ -50,30 +49,26 @@ appsettings.json
 ```
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder =>
-{
-    configurationBuilder.UseDcc(builder.Services);//Use Dcc
-
-    options.Mapping<CustomDccSectionOptions>(SectionTypes.Local, "Appsettings", ""); //Map CustomDccSectionOptions to the Appsettings node under Local
-});
+builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());//Ability to provide remote configuration using Dcc
 
 /// <summary>
 /// Automatically map node relationships
 /// </summary>
-public class PlatformOptions : MasaConfigurationOptions
+public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
 {
-    public override SectionTypes SectionType { get; init; } = SectionTypes.ConfigurationAPI;
+   /// <summary>
+    /// The app id.
+    /// </summary>
+    [JsonIgnore]
+    public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
     [JsonIgnore]
-    public virtual string? ParentSection { get; init; } = "AppId";
-
-    [JsonIgnore]
-    public virtual string? Section { get; init; } = "Platforms";
+    public override string? ObjectName { get; init; } = "Platforms";
 
     public string Name { get; set; }
 }
 
-public class CustomDccSectionOptions
+public class CustomDccSectionOptions : LocalMasaConfigurationOptions
 {
     /// <summary>
     /// The environment name.
@@ -94,6 +89,12 @@ public class CustomDccSectionOptions
     public List<string> ConfigObjects { get; set; } = default!;
 
     public string? Secret { get; set; }
+
+    /// <summary>
+    /// Mount CustomDccSectionOptions under the root node
+    /// </summary>
+    [JsonIgnore]
+    public virtual string? Section => string.Empty;
 }
 ```
 

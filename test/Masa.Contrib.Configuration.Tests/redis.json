@@ -1,5 +1,7 @@
 {
-  "Ip": "localhost",
-  "Password": "",
-  "Port": 6379
+  "RedisOptions": {
+    "Ip": "localhost",
+    "Password": "",
+    "Port": 6379
+  }
 }

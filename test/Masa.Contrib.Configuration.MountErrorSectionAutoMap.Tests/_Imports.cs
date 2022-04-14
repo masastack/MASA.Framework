@@ -1,2 +1,1 @@
-global using Masa.BuildingBlocks.Configuration;
-global using System.Text.Json.Serialization;
+global using Masa.Contrib.BasicAbility.Dcc.Options;

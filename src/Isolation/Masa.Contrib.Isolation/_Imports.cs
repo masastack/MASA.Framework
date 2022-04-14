@@ -1,3 +1,4 @@
+global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Data.UoW.Options;
 global using Masa.BuildingBlocks.Dispatcher.Events;

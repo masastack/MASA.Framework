@@ -1,6 +1,6 @@
 namespace Masa.Contrib.Configuration.Tests.Config;
 
-public class RabbitMqOptions : MasaConfigurationOptions
+public class RabbitMqOptions : LocalMasaConfigurationOptions
 {
     public string HostName { get; set; }
 
@@ -12,5 +12,9 @@ public class RabbitMqOptions : MasaConfigurationOptions
 
     public string Port { get; set; }
 
-    public override SectionTypes SectionType { get; init; } = SectionTypes.Local;
+    /// <summary>
+    /// The section null means same as the class name, else load from the specify section
+    /// </summary>
+    [JsonIgnore]
+    public override string? Section => "RabbitMq";
 }

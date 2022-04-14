@@ -39,7 +39,8 @@ public static class DispatcherOptionsExtensions
         IsolationBuilder builder = new IsolationBuilder(services);
         isolationBuilder.Invoke(builder);
 
-        if (services.Count(service => service.ServiceType == typeof(ITenantContext) || service.ServiceType == typeof(IEnvironmentContext)) < 1)
+        if (services.Count(service => service.ServiceType == typeof(ITenantContext) || service.ServiceType == typeof(IEnvironmentContext)) <
+            1)
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
         services.AddHttpContextAccessor();
@@ -56,7 +57,9 @@ public static class DispatcherOptionsExtensions
         string sectionName)
         where TOptions : class
     {
-        IConfiguration? configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+        var serviceProvider = services.BuildServiceProvider();
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.GetConfiguration(SectionTypes.Local) ??
+            serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             return services;
 
@@ -65,7 +68,11 @@ public static class DispatcherOptionsExtensions
         var configurationSection = configuration.GetSection(sectionName);
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
             new ConfigurationChangeTokenSource<TOptions>(name, configurationSection));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name, configurationSection, _ => { }));
+        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(
+            name,
+            configurationSection, _ =>
+            {
+            }));
         return services;
     }
 

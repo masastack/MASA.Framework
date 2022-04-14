@@ -140,7 +140,7 @@ public class DccManageTest
     }
 }
 
-public class CustomConfigurationAPI : ConfigurationAPIBase
+public class CustomConfigurationAPI : ConfigurationApiBase
 {
     public CustomConfigurationAPI(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions) : base(defaultSectionOption, expandSectionOptions)
     {

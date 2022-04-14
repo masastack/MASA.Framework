@@ -1,4 +1,4 @@
-namespace Masa.Contrib.BasicAbility.Dcc.Tests.Internal;
+namespace Masa.Contrib.BasicAbility.Dcc.Tests.Internal.Config;
 
 internal class PublishRelease
 {
