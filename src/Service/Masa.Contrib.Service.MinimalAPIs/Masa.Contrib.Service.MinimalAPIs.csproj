@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.Core" Version="0.4.0-preview.2" />
-    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Caching.Core" Version="0.4.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="0.4.0-preview.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 
