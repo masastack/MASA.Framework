@@ -275,5 +275,21 @@ public class TestIsolation : TestBase
             unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test7");
     }
 
+    [TestMethod]
+    public void TestUseMultiTenantAndAddMasaConfiguration()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.AddMasaConfiguration();
+        Mock<IDispatcherOptions> dispatcherOption = new();
+        dispatcherOption.Setup(opt => opt.Services).Returns(builder.Services).Verifiable();
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
+        var currentDbContextOptions = unitOfWorkAccessor.CurrentDbContextOptions;
+        Assert.IsNotNull(currentDbContextOptions);
+        Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test1");
+    }
+
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
 }

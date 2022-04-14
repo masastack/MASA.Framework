@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\..\src\Data\Masa.Contrib.Data.UoW.EF\Masa.Contrib.Data.UoW.EF.csproj" />
   </ItemGroup>
 
