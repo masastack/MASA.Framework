@@ -33,7 +33,7 @@ public class DccManageTest
     public async Task TestUpdateAsync(string environment, string cluster, string appId, string configObject)
     {
         var brand = new Brands("Microsoft");
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), default).Result).Returns(() => new HttpResponseMessage()
+        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent(brand.Serialize(_jsonSerializerOptions))
@@ -49,7 +49,7 @@ public class DccManageTest
     {
         var brand = new Brands("Microsoft");
 
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), default).Result).Returns(() => new HttpResponseMessage()
+        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.ExpectationFailed,
             Content = new StringContent("error")
@@ -64,7 +64,7 @@ public class DccManageTest
     public async Task TestUpdateAsyncAndCustomError(string environment, string cluster, string appId, string configObject)
     {
         var brand = new Brands("Microsoft");
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), default).Result).Returns(() => new HttpResponseMessage()
+        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = (HttpStatusCode)299,
             Content = new StringContent("custom error")

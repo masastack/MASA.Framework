@@ -69,7 +69,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -94,7 +94,7 @@ public class ConfigurationTest
 
         Assert.IsTrue(masaConfigurationBuilder.Build()["KafkaOptions:Servers"] == appsettingConfigurationBuilder.Build()["KafkaOptions:Servers"]);
 
-        Assert.IsTrue(masaConfigurationBuilder.Properties.Count==configurationBuilder.Properties.Count);
+        Assert.IsTrue(masaConfigurationBuilder.Properties.Count == configurationBuilder.Properties.Count);
     }
 
     [TestMethod]
@@ -208,7 +208,7 @@ public class ConfigurationTest
     }
 
     [TestMethod]
-    public void TestConfigurationChangeShouldReturnNameEmpty()
+    public async Task TestConfigurationChangeShouldReturnNameEmpty()
     {
         var builder = WebApplication.CreateBuilder();
 
@@ -231,11 +231,14 @@ public class ConfigurationTest
         var newRedisOption = systemOption.Value;
         newRedisOption.Name = null;
 
-        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"),
+        var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"),
             System.Text.Json.JsonSerializer.Serialize(new { SystemOptions = newRedisOption }));
 
         Thread.Sleep(2000);
         var option = serviceProvider.GetRequiredService<IOptionsMonitor<SystemOptions>>();
         Assert.IsTrue(option.CurrentValue.Name == "");
+
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }
 }

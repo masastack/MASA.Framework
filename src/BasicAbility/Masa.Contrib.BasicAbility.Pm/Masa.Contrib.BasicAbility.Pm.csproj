@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0-preview.2" />
-    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0-preview.2" />
-    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-preview.2" />
-    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.4.0-preview.3" />
   </ItemGroup>
 
   <ItemGroup>

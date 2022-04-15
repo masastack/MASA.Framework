@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Dapr.AspNetCore" Version="1.5.0" />
-    <PackageReference Include="Masa.Utils.Models.Config" Version="0.4.0-preview.2" />
-    <PackageReference Include="Masa.Utils.Exceptions" Version="0.4.0-preview.2" />
+    <PackageReference Include="Masa.Utils.Models.Config" Version="0.4.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Exceptions" Version="0.4.0-preview.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
   </ItemGroup>
