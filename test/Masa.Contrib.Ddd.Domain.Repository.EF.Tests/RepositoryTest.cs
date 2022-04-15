@@ -62,6 +62,31 @@ public class RepositoryTest : TestBase
         return repository;
     }
 
+    private async Task<IRepository<Orders, int>> InitDataAndReturnRepositoryAsync()
+    {
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
+
+        var serviceProvider = _services.BuildServiceProvider();
+        var orders = new List<Orders>
+        {
+            new(1)
+            {
+                OrderNumber = 9999999,
+                Description = "Apple"
+            },
+            new(2)
+            {
+                OrderNumber = 9999999,
+                Description = "HuaWei"
+            }
+        };
+
+        var repository = serviceProvider.GetRequiredService<IRepository<Orders, int>>();
+        await repository.AddRangeAsync(orders);
+        await repository.UnitOfWork.SaveChangesAsync();
+        return repository;
+    }
+
     [TestMethod]
     public async Task TestAddAsync()
     {
@@ -559,5 +584,23 @@ public class RepositoryTest : TestBase
         int pageSize = 20;
         var pageOptions = new PaginatedOptions(page, pageSize, "Id");
         Assert.IsTrue(pageOptions.Page == page && pageOptions.PageSize == pageSize && pageOptions.Sorting!.Count == 1);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveIdEqual1ReturnCountIs1()
+    {
+        var repository = await InitDataAndReturnRepositoryAsync();
+        await repository.RemoveAsync(1);
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync() == 1);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveIdEqual1Or2ReturnCountIs0()
+    {
+        var repository = await InitDataAndReturnRepositoryAsync();
+        await repository.RemoveRangeAsync(new[] { 1, 2 });
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync() == 0);
     }
 }
