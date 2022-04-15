@@ -232,13 +232,13 @@ public class ConfigurationTest
         newRedisOption.Name = null;
 
         var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
-        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"),
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"),
             System.Text.Json.JsonSerializer.Serialize(new { SystemOptions = newRedisOption }));
 
         Thread.Sleep(2000);
         var option = serviceProvider.GetRequiredService<IOptionsMonitor<SystemOptions>>();
         Assert.IsTrue(option.CurrentValue.Name == "");
 
-        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"), oldContent);
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }
 }
