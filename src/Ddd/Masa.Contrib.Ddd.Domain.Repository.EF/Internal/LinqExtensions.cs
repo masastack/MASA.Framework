@@ -41,7 +41,7 @@ internal static class LinqExtensions
         return query;
     }
 
-    private static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, string field, bool desc) where TEntity : class
+    internal static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, string field, bool desc) where TEntity : class
     {
         ParameterExpression parameterExpression = Expression.Parameter(typeof(TEntity));
         Expression key = Expression.Property(parameterExpression, field);
