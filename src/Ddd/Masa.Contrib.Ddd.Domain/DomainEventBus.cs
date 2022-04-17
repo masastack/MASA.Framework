@@ -49,7 +49,7 @@ public class DomainEventBus : IDomainEventBus
         }
     }
 
-    public Task Enqueue<TDomentEvent>(TDomentEvent @event) where TDomentEvent : IDomainEvent
+    public Task Enqueue<TDomainEvent>(TDomainEvent @event) where TDomainEvent : IDomainEvent
     {
         _eventQueue.Enqueue(new KeyValuePair<Type, IDomainEvent>(@event.GetType(), @event));
         return Task.CompletedTask;
