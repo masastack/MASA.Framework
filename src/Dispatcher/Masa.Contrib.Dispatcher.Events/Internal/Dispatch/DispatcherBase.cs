@@ -25,7 +25,8 @@ internal class DispatcherBase
     public async Task PublishEventAsync<TEvent>(IServiceProvider serviceProvider, TEvent @event)
         where TEvent : IEvent
     {
-        var eventType = typeof(TEvent);
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+        var eventType = @event.GetType();
         if (!SharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations))
         {
             if (@event is IIntegrationEvent)
