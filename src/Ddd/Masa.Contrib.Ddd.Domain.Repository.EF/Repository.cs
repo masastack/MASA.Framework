@@ -97,8 +97,8 @@ public class Repository<TDbContext, TEntity> :
     public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().ToListAsync(cancellationToken);
 
-    public override async Task<IEnumerable<TEntity>> GetListAsync(string sorting, bool isDescending = true, CancellationToken cancellationToken = default)
-        => await Context.Set<TEntity>().OrderBy(sorting, isDescending).ToListAsync(cancellationToken);
+    public override async Task<IEnumerable<TEntity>> GetListAsync(string sortField, bool isDescending = true, CancellationToken cancellationToken = default)
+        => await Context.Set<TEntity>().OrderBy(sortField, isDescending).ToListAsync(cancellationToken);
 
     public override async Task<IEnumerable<TEntity>> GetListAsync(
         Expression<Func<TEntity, bool>> predicate,
@@ -107,23 +107,23 @@ public class Repository<TDbContext, TEntity> :
 
     public override async Task<IEnumerable<TEntity>> GetListAsync(
         Expression<Func<TEntity, bool>> predicate,
-        string sorting,
+        string sortField,
         bool isDescending = true,
         CancellationToken cancellationToken = default)
-        => await Context.Set<TEntity>().OrderBy(sorting, isDescending).Where(predicate).ToListAsync(cancellationToken);
+        => await Context.Set<TEntity>().OrderBy(sortField, isDescending).Where(predicate).ToListAsync(cancellationToken);
 
     /// <summary>
     /// Get a paginated list after sorting according to skip and take
     /// </summary>
     /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
     /// <param name="take">The number of elements to return</param>
-    /// <param name="sorting">sort parameters</param>
+    /// <param name="sortField">Sort field name</param>
     /// <param name="isDescending">true descending order, false ascending order, default: true</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sorting, bool isDescending,
+    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending,
         CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().OrderBy(sorting, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+        => Context.Set<TEntity>().OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
 
     /// <summary>
     /// Get a paginated list after sorting according to skip and take
@@ -150,13 +150,13 @@ public class Repository<TDbContext, TEntity> :
     /// <param name="predicate"> A function to test each element for a condition</param>
     /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
     /// <param name="take">The number of elements to return</param>
-    /// <param name="sorting">sort parameters</param>
+    /// <param name="sortField">Sort field name</param>
     /// <param name="isDescending">true descending order, false ascending order, default: true</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string sorting,
+    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string sortField,
         bool isDescending = true, CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().Where(predicate).OrderBy(sorting, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+        => Context.Set<TEntity>().Where(predicate).OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
 
     /// <summary>
     /// Get a paginated list after sorting by condition
