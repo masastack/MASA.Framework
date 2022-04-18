@@ -130,7 +130,7 @@ public class Repository<TDbContext, TEntity> :
     /// </summary>
     /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
     /// <param name="take">The number of elements to return</param>
-    /// <param name="sorting">Key: sort parameters, Value: true descending order, false ascending order</param>
+    /// <param name="sorting">Key: sort field name, Value: true descending order, false ascending order</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(
@@ -164,7 +164,7 @@ public class Repository<TDbContext, TEntity> :
     /// <param name="predicate"> A function to test each element for a condition</param>
     /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
     /// <param name="take">The number of elements to return</param>
-    /// <param name="sorting">Key: sort parameters, Value: true descending order, false ascending order</param>
+    /// <param name="sorting">Key: sort field name, Value: true descending order, false ascending order</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(
