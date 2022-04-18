@@ -22,6 +22,25 @@ public class PmCachingTest
     }
 
     [TestMethod]
+    public void TestAddPmClient1()
+    {
+        var services = new ServiceCollection();
+
+        services.AddPmClient("https://github.com");
+
+        var pmClient = services.BuildServiceProvider().GetRequiredService<IPmClient>();
+        Assert.IsNotNull(pmClient);
+    }
+
+    [TestMethod]
+    public void TestAddPmClientShouldThrowArgumentNullException()
+    {
+        var services = new ServiceCollection();
+
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddPmClient(""));
+    }
+
+    [TestMethod]
     public void TestAddMultiplePmClient()
     {
         var services = new ServiceCollection();
