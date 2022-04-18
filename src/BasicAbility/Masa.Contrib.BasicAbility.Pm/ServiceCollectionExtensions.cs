@@ -2,12 +2,11 @@ namespace Masa.Contrib.BasicAbility.Pm;
 
 public static class ServiceCollectionExtensions
 {
-
-    public static IServiceCollection AddPmClient(this IServiceCollection services, string pmServerBaseAddress)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, string pmServiceBaseAddress)
     {
-        if (string.IsNullOrWhiteSpace(pmServerBaseAddress))
+        if (string.IsNullOrWhiteSpace(pmServiceBaseAddress))
         {
-            throw new ArgumentNullException(nameof(pmServerBaseAddress));
+            throw new ArgumentNullException(nameof(pmServiceBaseAddress));
         }
 
         return services.AddPmClient(callerOptions =>
@@ -15,7 +14,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Name = DEFAULT_CLIENT_NAME;
-                builder.Configure = opt => opt.BaseAddress = new Uri(pmServerBaseAddress);
+                builder.Configure = opt => opt.BaseAddress = new Uri(pmServiceBaseAddress);
             });
         });
     }
