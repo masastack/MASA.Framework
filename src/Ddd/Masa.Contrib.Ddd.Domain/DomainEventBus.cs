@@ -7,7 +7,7 @@ public class DomainEventBus : IDomainEventBus
     private readonly IUnitOfWork _unitOfWork;
     private readonly DispatcherOptions _options;
 
-    private readonly ConcurrentQueue<KeyValuePair<Type, IDomainEvent>> _eventQueue = new();
+    private readonly ConcurrentQueue<IDomainEvent> _eventQueue = new();
 
     public DomainEventBus(
         IEventBus eventBus,
@@ -29,7 +29,8 @@ public class DomainEventBus : IDomainEventBus
         }
         if (@event is IIntegrationEvent integrationEvent)
         {
-            await _integrationEventBus.PublishAsync((TEvent)integrationEvent);
+            integrationEvent.UnitOfWork ??= _unitOfWork;
+            await _integrationEventBus.PublishAsync(integrationEvent);
         }
         else
         {
@@ -51,29 +52,15 @@ public class DomainEventBus : IDomainEventBus
 
     public Task Enqueue<TDomainEvent>(TDomainEvent @event) where TDomainEvent : IDomainEvent
     {
-        _eventQueue.Enqueue(new KeyValuePair<Type, IDomainEvent>(@event.GetType(), @event));
+        _eventQueue.Enqueue(@event);
         return Task.CompletedTask;
     }
 
     public async Task PublishQueueAsync()
     {
-        while (_eventQueue.TryDequeue(out KeyValuePair<Type, IDomainEvent> @event))
+        while (_eventQueue.TryDequeue(out IDomainEvent? @event))
         {
-            await PublishAsync(@event.Key, @event.Value);
-        }
-    }
-
-    private async Task PublishAsync<TEvent>(Type type, TEvent @event) where TEvent : IEvent
-    {
-        if (@event is IIntegrationEvent integrationEvent)
-        {
-            await PublishAsync(integrationEvent);
-        }
-        else
-        {
-            var parameters = Convert.ChangeType(@event, type);
-            var invokeDelegate = InvokeBuilder.Build(_eventBus.GetType(), nameof(_eventBus.PublishAsync), type);
-            await invokeDelegate.Invoke(_eventBus, parameters);
+            await PublishAsync(@event);
         }
     }
 

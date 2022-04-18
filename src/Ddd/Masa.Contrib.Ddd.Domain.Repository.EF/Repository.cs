@@ -97,23 +97,46 @@ public class Repository<TDbContext, TEntity> :
     public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().ToListAsync(cancellationToken);
 
+    public override async Task<IEnumerable<TEntity>> GetListAsync(string sortField, bool isDescending = true, CancellationToken cancellationToken = default)
+        => await Context.Set<TEntity>().OrderBy(sortField, isDescending).ToListAsync(cancellationToken);
+
     public override async Task<IEnumerable<TEntity>> GetListAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().Where(predicate).ToListAsync(cancellationToken);
 
+    public override async Task<IEnumerable<TEntity>> GetListAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        string sortField,
+        bool isDescending = true,
+        CancellationToken cancellationToken = default)
+        => await Context.Set<TEntity>().OrderBy(sortField, isDescending).Where(predicate).ToListAsync(cancellationToken);
+
     /// <summary>
-    ///
+    /// Get a paginated list after sorting according to skip and take
     /// </summary>
-    /// <param name="skip"></param>
-    /// <param name="take"></param>
-    /// <param name="sorting">asc or desc, default asc</param>
+    /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
+    /// <param name="take">The number of elements to return</param>
+    /// <param name="sortField">Sort field name</param>
+    /// <param name="isDescending">true descending order, false ascending order, default: true</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending,
+        CancellationToken cancellationToken = default)
+        => Context.Set<TEntity>().OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+
+    /// <summary>
+    /// Get a paginated list after sorting according to skip and take
+    /// </summary>
+    /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
+    /// <param name="take">The number of elements to return</param>
+    /// <param name="sorting">Key: sort field name, Value: true descending order, false ascending order</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(
         int skip,
         int take,
-        Dictionary<string, bool>? sorting,
+        Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default)
     {
         sorting ??= new Dictionary<string, bool>();
@@ -122,19 +145,33 @@ public class Repository<TDbContext, TEntity> :
     }
 
     /// <summary>
-    ///
+    /// Get a paginated list after sorting by condition
     /// </summary>
-    /// <param name="predicate">condition</param>
-    /// <param name="skip"></param>
-    /// <param name="take"></param>
-    /// <param name="sorting">asc or desc, default asc</param>
+    /// <param name="predicate"> A function to test each element for a condition</param>
+    /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
+    /// <param name="take">The number of elements to return</param>
+    /// <param name="sortField">Sort field name</param>
+    /// <param name="isDescending">true descending order, false ascending order, default: true</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string sortField,
+        bool isDescending = true, CancellationToken cancellationToken = default)
+        => Context.Set<TEntity>().Where(predicate).OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+
+    /// <summary>
+    /// Get a paginated list after sorting by condition
+    /// </summary>
+    /// <param name="predicate"> A function to test each element for a condition</param>
+    /// <param name="skip">The number of elements to skip before returning the remaining elements</param>
+    /// <param name="take">The number of elements to return</param>
+    /// <param name="sorting">Key: sort field name, Value: true descending order, false ascending order</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(
         Expression<Func<TEntity, bool>> predicate,
         int skip,
         int take,
-        Dictionary<string, bool>? sorting,
+        Dictionary<string, bool>? sorting = null,
         CancellationToken cancellationToken = default)
     {
         sorting ??= new Dictionary<string, bool>();
@@ -212,6 +249,12 @@ public class Repository<TDbContext, TEntity, TKey> :
     {
     }
 
-    public Task<TEntity?> FindAsync(TKey id)
-        => Context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id));
+    public virtual Task<TEntity?> FindAsync(TKey id, CancellationToken cancellationToken = default)
+        => Context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
+
+    public virtual Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
+        => base.RemoveAsync(entity => entity.Id.Equals(id), cancellationToken);
+
+    public virtual Task RemoveRangeAsync(IEnumerable<TKey> ids, CancellationToken cancellationToken = default)
+        => base.RemoveAsync(entity => ids.Contains(entity.Id), cancellationToken);
 }

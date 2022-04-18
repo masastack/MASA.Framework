@@ -51,15 +51,15 @@ public class DomainEventBusTest
     public async Task TestPublishIntegrationDomainEventAsync()
     {
         var domainEventBus = new DomainEventBus(_eventBus.Object, _integrationEventBus.Object, _uoW.Object, _dispatcherOptions);
-        _integrationEventBus.Setup(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<PaymentFailedIntegrationDomainEvent>())).Verifiable();
+        _integrationEventBus.Setup(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<IIntegrationEvent>())).Verifiable();
         var integrationDomainEvent = new PaymentFailedIntegrationDomainEvent()
         {
             OrderId = new Random().Next(10000, 1000000).ToString()
         };
         await domainEventBus.PublishAsync(integrationDomainEvent);
 
-        _eventBus.Verify(eventBus => eventBus.PublishAsync(integrationDomainEvent), Times.Never, "eventBus should not be executed");
-        _integrationEventBus.Verify(integrationEventBus => integrationEventBus.PublishAsync(integrationDomainEvent), Times.Once, " PublishAsync is executed multiple times");
+        _eventBus.Verify(eventBus => eventBus.PublishAsync(It.IsAny<IEvent>()), Times.Never, "eventBus should not be executed");
+        _integrationEventBus.Verify(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Once, " PublishAsync is executed multiple times");
     }
 
     [TestMethod]
@@ -301,7 +301,7 @@ public class DomainEventBusTest
     [TestMethod]
     public async Task TestDomainServiceAsync()
     {
-        _integrationEventBus.Setup(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<RegisterUserSucceededDomainIntegrationEvent>())).Verifiable();
+        _integrationEventBus.Setup(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<IIntegrationEvent>())).Verifiable();
 
         _services.AddDomainEventBus(new[] { typeof(DomainEventBusTest).Assembly },
             options =>
@@ -316,7 +316,7 @@ public class DomainEventBusTest
         var domainIntegrationEvent = new RegisterUserSucceededDomainIntegrationEvent() { Account = "Tom" };
         await userDomainService.RegisterUserSucceededAsync(domainIntegrationEvent);
 
-        _integrationEventBus.Verify(integrationEventBus => integrationEventBus.PublishAsync(domainIntegrationEvent), Times.Once);
+        _integrationEventBus.Verify(integrationEventBus => integrationEventBus.PublishAsync(It.IsAny<IIntegrationEvent>()), Times.Once);
     }
 
     [TestMethod]

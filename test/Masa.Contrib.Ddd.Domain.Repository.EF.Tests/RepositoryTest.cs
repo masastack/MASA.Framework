@@ -62,6 +62,31 @@ public class RepositoryTest : TestBase
         return repository;
     }
 
+    private async Task<IRepository<Orders, int>> InitDataAndReturnRepositoryAsync()
+    {
+        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
+
+        var serviceProvider = _services.BuildServiceProvider();
+        var orders = new List<Orders>
+        {
+            new(1)
+            {
+                OrderNumber = 9999999,
+                Description = "Apple"
+            },
+            new(2)
+            {
+                OrderNumber = 9999999,
+                Description = "HuaWei"
+            }
+        };
+
+        var repository = serviceProvider.GetRequiredService<IRepository<Orders, int>>();
+        await repository.AddRangeAsync(orders);
+        await repository.UnitOfWork.SaveChangesAsync();
+        return repository;
+    }
+
     [TestMethod]
     public async Task TestAddAsync()
     {
@@ -176,15 +201,11 @@ public class RepositoryTest : TestBase
         list = await customizeOrderRepository.GetPaginatedListAsync(
             order => order.Id != 3,
             0,
-            10,
-            null);
+            10);
         Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
         Assert.IsTrue(list[1].Id == 2);
 
-        list = await customizeOrderRepository.GetPaginatedListAsync(
-            0,
-            10,
-            null);
+        list = await customizeOrderRepository.GetPaginatedListAsync(0, 10);
         Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
         Assert.IsTrue(list[1].Id == 2);
     }
@@ -379,5 +400,207 @@ public class RepositoryTest : TestBase
             await repository.SaveChangesAsync();
             Assert.IsTrue(await repository.GetCountAsync() == 1);
         }
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByAscAsyncReturnFirstOrderIdIs1()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(0, 2, "Id", false);
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 1);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByDescAsyncReturnFirstOrderIdIs3()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(0, 2, "Id");
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByIdGreatherThan1AndAscAsyncReturnFirstOrderIdIs2()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, 0, 2, "Id", false);
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 2);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByIdGreatherThan1AndDescAsyncReturnFirstOrderIdIs3()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, 0, 2, "Id");
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByOptionsAsyncReturnFirstOrderIdIs1()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(new PaginatedOptions(1, 1, "Id", false));
+        Assert.IsTrue(paginatedList is { Total: 3 } && paginatedList.Result.First().Id == 1);
+    }
+
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByOptionsAndDescAsyncReturnFirstOrderIdIs2()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(new PaginatedOptions(2, 1, "Id", true));
+        Assert.IsTrue(paginatedList is { Total: 3 } && paginatedList.Result.First().Id == 2);
+    }
+
+    [TestMethod]
+    public async Task TestGetPaginatedListByIdGreatherThen2AsyncReturnFirstOrderIdIs2AndCountIs2()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, new PaginatedOptions(2, 1, "Id"));
+        Assert.IsTrue(paginatedList is { Total: 2 } && paginatedList.Result.First().Id == 2);
+    }
+
+    [TestMethod]
+    public async Task TestGetListByDescAsyncReturnFirstOrderIdIs1()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = (await repository.GetListAsync("Id", false)).ToList();
+        Assert.IsTrue(paginatedList.Count == 3 && paginatedList.First().Id == 1);
+    }
+
+    [TestMethod]
+    public async Task TestGetListByAscAsyncReturnFirstOrderIdIs3()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = (await repository.GetListAsync("Id")).ToList();
+        Assert.IsTrue(paginatedList.Count == 3 && paginatedList.First().Id == 3);
+    }
+
+    [TestMethod]
+    public async Task TestGetListByIdGreatherThan1AndAscAsyncReturnFirstOrderIdIs2()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = (await repository.GetListAsync(o => o.Id > 1, "Id", false)).ToList();
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 2);
+    }
+
+    [TestMethod]
+    public async Task TestGetListByGreatherThan1AndDescAsyncReturnFirstOrderIdIs3()
+    {
+        var repository = await InitDataAsync();
+        await repository.AddAsync(new Orders(3)
+        {
+            OrderNumber = 99998,
+            Description = "Microsoft"
+        });
+        await repository.UnitOfWork.SaveChangesAsync();
+
+        var paginatedList = (await repository.GetListAsync(o => o.Id > 1, "Id")).ToList();
+        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
+    }
+
+    [TestMethod]
+    public void TestPaginatedOptionsConstructorAndSortingIsNullReturnSortingIsNull()
+    {
+        int page = 1;
+        int pageSize = 20;
+        var pageOptions = new PaginatedOptions(page, pageSize);
+        Assert.IsTrue(pageOptions.Sorting == null);
+    }
+
+    [TestMethod]
+    public void TestPaginatedOptionsConstructorReturnSortingCountIs1()
+    {
+        int page = 1;
+        int pageSize = 20;
+        var pageOptions = new PaginatedOptions(page, pageSize, "Id");
+        Assert.IsTrue(pageOptions.Page == page && pageOptions.PageSize == pageSize && pageOptions.Sorting!.Count == 1);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveIdEqual1ReturnCountIs1()
+    {
+        var repository = await InitDataAndReturnRepositoryAsync();
+        await repository.RemoveAsync(1);
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync() == 1);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveIdEqual1Or2ReturnCountIs0()
+    {
+        var repository = await InitDataAndReturnRepositoryAsync();
+        await repository.RemoveRangeAsync(new[] { 1, 2 });
+        await repository.UnitOfWork.SaveChangesAsync();
+        Assert.IsTrue(await repository.GetCountAsync() == 0);
     }
 }

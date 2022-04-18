@@ -21,11 +21,8 @@ public class EventBus : IEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
     {
-        var eventType = typeof(TEvent);
-        if (@event is null)
-        {
-            throw new ArgumentNullException(eventType.Name);
-        }
+        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+        var eventType = @event.GetType();
 
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
