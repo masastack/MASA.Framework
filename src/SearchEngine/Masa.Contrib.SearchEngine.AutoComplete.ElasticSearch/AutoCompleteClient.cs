@@ -48,9 +48,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                     .Index(_indexName)
                     .From((newOptions.Page - 1) * newOptions.PageSize)
                     .Size(newOptions.PageSize)
-                    .Query(q => q
-                        .Bool(b => b
-                            .Must(queryContainerDescriptor => queryContainerDescriptor.Term(newOptions.Field, keyword))))
+                    .Query(q => GetQueryDescriptor(q, newOptions.Field, keyword.ToLower()))
                 , cancellationToken
             );
             return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.ServerError?.ToString() ?? "")
@@ -61,6 +59,26 @@ public class AutoCompleteClient : BaseAutoCompleteClient
             };
         }
     }
+
+    private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
+        where T : class
+    {
+        var queryContainer = _defaultOperator == Operator.And ?
+            queryContainerDescriptor.Bool(boolQueryDescriptor => GetBoolQueryDescriptor(boolQueryDescriptor, field, keyword)) :
+            queryContainerDescriptor.Terms(descriptor => descriptor.Field(field).Terms(keyword.Split(' ')));
+        return queryContainer;
+    }
+
+    private BoolQueryDescriptor<T> GetBoolQueryDescriptor<T>(BoolQueryDescriptor<T> boolQueryDescriptor, string field, string keyword)
+        where T : class
+    {
+        foreach (var item in keyword.Split(' '))
+        {
+            boolQueryDescriptor = boolQueryDescriptor.Must(queryContainerDescriptor => queryContainerDescriptor.Term(field, item));
+        }
+        return boolQueryDescriptor;
+    }
+
 
     public override Task<SetResponse> SetMultiAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
         SetOptions? options = null,

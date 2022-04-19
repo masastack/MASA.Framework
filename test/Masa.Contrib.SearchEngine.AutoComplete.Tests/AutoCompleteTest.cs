@@ -269,8 +269,7 @@ public class AutoCompleteTest
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
             .AddAutoComplete<long>(option =>
                 option.UseIndexName(userIndexName)
-                    .UseAlias(userAlias)
-                    .UseDefaultOperator(Operator.And));
+                    .UseAlias(userAlias));
 
         await builder.Client.ClearDocumentAsync(userAlias);
 

@@ -9,7 +9,7 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal bool IsDefault { get; private set; }
 
-    internal SearchType DefaultSearchType { get; private set; } = SearchType.Fuzzy;
+    internal SearchType DefaultSearchType { get; private set; } = SearchType.Precise;
 
     internal Operator DefaultOperator { get; private set; } = Operator.And;
 
