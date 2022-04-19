@@ -48,8 +48,9 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                     .Index(_indexName)
                     .From((newOptions.Page - 1) * newOptions.PageSize)
                     .Size(newOptions.PageSize)
-                    .Query(q => q.MatchPhrase(descriptor
-                        => MatchPhraseQueryDescriptor(descriptor.Field(newOptions.Field), keyword)))
+                    .Query(q => q
+                        .Bool(b => b
+                            .Must(queryContainerDescriptor => queryContainerDescriptor.Term(newOptions.Field, keyword))))
                 , cancellationToken
             );
             return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.ServerError?.ToString() ?? "")
@@ -59,18 +60,6 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                 TotalPages = (int)Math.Ceiling(ret.Total / (decimal)newOptions.PageSize)
             };
         }
-    }
-
-    private MatchPhraseQueryDescriptor<TInferDocument> MatchPhraseQueryDescriptor<TInferDocument>(
-        MatchPhraseQueryDescriptor<TInferDocument> queryContainerDescriptor, string keyWord)
-        where TInferDocument : class
-    {
-        if (keyWord.Length == 1)
-        {
-            return queryContainerDescriptor.Query(keyWord);
-        }
-
-        return queryContainerDescriptor.Query(keyWord);
     }
 
     public override Task<SetResponse> SetMultiAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
@@ -140,7 +129,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         return new DeleteResponse(response.IsValid, response.Message);
     }
 
-    public override async Task<DeleteMultiResponse> DeleteAsync(IEnumerable<string> ids)
+    public override async Task<DeleteMultiResponse> DeleteMultiAsync(IEnumerable<string> ids)
     {
         var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()));
         return new DeleteMultiResponse(response.IsValid, response.Message,

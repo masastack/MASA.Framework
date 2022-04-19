@@ -78,7 +78,8 @@ public class AutoCompleteTest
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
 
-        builder.AddAutoComplete<long>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        builder.AddAutoComplete<long>(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
@@ -268,8 +269,8 @@ public class AutoCompleteTest
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
             .AddAutoComplete<long>(option =>
                 option.UseIndexName(userIndexName)
-                      .UseAlias(userAlias)
-                      .UseDefaultOperator(Operator.And));
+                    .UseAlias(userAlias)
+                    .UseDefaultOperator(Operator.And));
 
         await builder.Client.ClearDocumentAsync(userAlias);
 
@@ -363,5 +364,150 @@ public class AutoCompleteTest
                         )
                     );
             })));
+    }
+
+    [TestMethod]
+    public async Task DeleteAsyncReturnDocumentIsNotExist()
+    {
+        string userIndexName = "user_index_01";
+        string userAlias = "user_index";
+        var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
+        await builder.Client.DeleteIndexAsync(userIndexName);
+
+        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四",
+                Value = 2
+            }
+        });
+        Thread.Sleep(1000);
+
+        var response = await autoCompleteClient.DeleteAsync(10);
+        Assert.IsTrue(!response.IsValid);
+    }
+
+    [TestMethod]
+    public async Task DeleteAsyncReturnDeleteSuccess()
+    {
+        string userIndexName = "user_index_01";
+        string userAlias = "user_index";
+        var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
+        await builder.Client.DeleteIndexAsync(userIndexName);
+
+        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四",
+                Value = 2
+            }
+        });
+        Thread.Sleep(1000);
+
+        var response = await autoCompleteClient.DeleteAsync(1);
+        Assert.IsTrue(response.IsValid);
+    }
+
+    [TestMethod]
+    public async Task DeleteUserReturnEmpty()
+    {
+        string userIndexName = "user_index_01";
+        string userAlias = "user_index";
+
+        var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
+        await builder.Client.DeleteIndexAsync(userIndexName);
+
+        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四",
+                Value = 2
+            }
+        });
+
+        Thread.Sleep(1000);
+
+        var getResponse = await autoCompleteClient.GetAsync<long>("张三");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        var deleteResponse = await autoCompleteClient.DeleteMultiAsync(new[] { 1 });
+        Assert.IsTrue(deleteResponse.IsValid);
+
+        Thread.Sleep(1000);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("张三");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 0);
+    }
+
+    [TestMethod]
+    public async Task DeleteMultiUserReturnEmpty()
+    {
+        string userIndexName = "user_index_01";
+        string userAlias = "user_index";
+
+        var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
+        await builder.Client.DeleteIndexAsync(userIndexName);
+
+        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四",
+                Value = 2
+            }
+        });
+
+        Thread.Sleep(1000);
+
+        var getResponse = await autoCompleteClient.GetAsync<long>("张三");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("李四");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        var deleteMultiResponse = await autoCompleteClient.DeleteMultiAsync(new List<int>() { 1, 2, 3 });
+        // Assert.IsTrue(deleteMultiResponse.IsValid &&
+        //     deleteMultiResponse.Data.Count == 3 &&
+        //     deleteMultiResponse.Data.Count(r => r.IsValid) == 2);//todo: Masa.Utils.Data.Elasticsearch response information error
+
+        Thread.Sleep(1000);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("张三");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 0);
     }
 }

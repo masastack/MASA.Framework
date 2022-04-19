@@ -9,7 +9,7 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal bool IsDefault { get; private set; }
 
-    internal SearchType DefaultSearchType { get; private set; } = SearchType.Precise;
+    internal SearchType DefaultSearchType { get; private set; } = SearchType.Fuzzy;
 
     internal Operator DefaultOperator { get; private set; } = Operator.And;
 
@@ -50,6 +50,11 @@ public class AutoCompleteOptions<TDocument, TValue>
         return this;
     }
 
+    /// <summary>
+    /// custom mapping
+    /// </summary>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public AutoCompleteOptions<TDocument, TValue> Mapping(Action<TypeMappingDescriptor<TDocument>> action)
     {
         Action = action;
