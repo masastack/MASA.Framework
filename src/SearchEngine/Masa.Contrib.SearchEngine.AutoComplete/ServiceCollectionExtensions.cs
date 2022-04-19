@@ -3,15 +3,15 @@ namespace Masa.Contrib.SearchEngine.AutoComplete;
 public static class ServiceCollectionExtensions
 {
     public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder)
-        => builder.AddAutoComplete<long>();
+        => builder.AddAutoComplete<Guid>();
 
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
-        this MasaElasticsearchBuilder builder)
+        this MasaElasticsearchBuilder builder) where TValue : notnull
         => builder.AddAutoComplete<AutoCompleteDocument<TValue>, TValue>();
 
     public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
         this MasaElasticsearchBuilder builder)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
         if (string.IsNullOrEmpty(indexName))
@@ -29,13 +29,13 @@ public static class ServiceCollectionExtensions
 
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder,
-        Action<AutoCompleteOptions<AutoCompleteDocument<TValue>, TValue>>? action)
+        Action<AutoCompleteOptions<AutoCompleteDocument<TValue>, TValue>>? action) where TValue : notnull
         => builder.AddAutoComplete<AutoCompleteDocument<TValue>, TValue>(action);
 
     public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
         this MasaElasticsearchBuilder builder,
         Action<AutoCompleteOptions<TDocument, TValue>>? action)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         AutoCompleteOptions<TDocument, TValue> options = new AutoCompleteOptions<TDocument, TValue>();
         action?.Invoke(options);
@@ -47,15 +47,16 @@ public static class ServiceCollectionExtensions
         IElasticClient elasticClient,
         IMasaElasticClient client,
         AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        ArgumentNullException.ThrowIfNull(option.IndexName,nameof(option.IndexName));
+        ArgumentNullException.ThrowIfNull(option.IndexName, nameof(option.IndexName));
 
         services.TryAddSingleton(new AutoCompleteRelationsOptions());
 
-        var autoCompleteRelations = new AutoCompleteRelations(elasticClient, client, option.IndexName, option.Alias, option.IsDefault, option.DefaultOperator, option.DefaultSearchType);
+        var autoCompleteRelations = new AutoCompleteRelations(elasticClient, client, option.IndexName, option.Alias, option.IsDefault,
+            option.DefaultOperator, option.DefaultSearchType);
         services.TryAddAutoCompleteRelation(autoCompleteRelations);
 
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
@@ -71,8 +72,8 @@ public static class ServiceCollectionExtensions
         if (relationsOptions.Relations.Any(r => r.Alias == relation.Alias || r.IndexName == relation.IndexName))
             throw new ArgumentException($"indexName or alias exists");
 
-        if (relation.IsDefault && relationsOptions.Relations.Any(relation => relation.IsDefault))
-            throw new ArgumentException(nameof(ElasticsearchRelations.IsDefault), "ElasticClient can only have one default");
+        if (relation.IsDefault && relationsOptions.Relations.Any(r => r.IsDefault))
+            throw new ArgumentException("ElasticClient can only have one default", nameof(ElasticsearchRelations.IsDefault));
 
         relationsOptions.AddRelation(relation);
     }
@@ -81,7 +82,7 @@ public static class ServiceCollectionExtensions
         this IMasaElasticClient client,
         ILogger<IAutoCompleteClient>? logger,
         AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         IAliases? aliases = null;
         if (option.Alias != null)
@@ -90,11 +91,12 @@ public static class ServiceCollectionExtensions
             aliases.Add(option.Alias, new Alias());
         }
 
-        var existsResponse = client.IndexExistAsync(option.IndexName, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+        var existsResponse = client.IndexExistAsync(option.IndexName, CancellationToken.None).ConfigureAwait(false).GetAwaiter()
+            .GetResult();
         if (!existsResponse.IsValid || existsResponse.Exists)
         {
             if (!existsResponse.IsValid)
-                logger?.LogError($"AutoComplete: Initialization index is abnormal, {existsResponse.Message}");
+                logger?.LogError("AutoComplete: Initialization index is abnormal, {Message}", existsResponse.Message);
 
             return;
         }
@@ -108,7 +110,7 @@ public static class ServiceCollectionExtensions
         string indexName,
         IAliases? aliases,
         AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         IAnalysis analysis = new AnalysisDescriptor();
         analysis.Analyzers = new Analyzers();
@@ -122,13 +124,12 @@ public static class ServiceCollectionExtensions
             option.IndexSettingAction.Invoke(indexSettings);
         else
         {
-            string defaultAnalyzer = "ik_max_word";
             string pinyinFilter = "pinyin";
             string wordDelimiterFilter = "word_delimiter";
             indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
             {
                 Filter = new[] { pinyinFilter, wordDelimiterFilter },
-                Tokenizer = defaultAnalyzer
+                Tokenizer = "ik_max_word"
             });
             indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
         }
@@ -143,7 +144,6 @@ public static class ServiceCollectionExtensions
                 .Properties(ps =>
                     ps.Text(s =>
                         s.Name(n => n.Id)
-                            .Analyzer(analyzer)
                     )
                 )
                 .Properties(ps =>
@@ -161,6 +161,6 @@ public static class ServiceCollectionExtensions
             IndexSettings = indexSettings
         }).ConfigureAwait(false).GetAwaiter().GetResult();
         if (!createIndexResponse.IsValid)
-            logger?.LogError($"AutoComplete: Initialization index is abnormal, {createIndexResponse.Message}");
+            logger?.LogError("AutoComplete: Initialization index is abnormal, {Message}", createIndexResponse.Message);
     }
 }

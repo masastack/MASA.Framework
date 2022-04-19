@@ -1,7 +1,7 @@
 namespace Masa.Contrib.SearchEngine.AutoComplete.Options;
 
 public class AutoCompleteOptions<TDocument, TValue>
-    where TDocument : AutoCompleteDocument<TValue>
+    where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
 {
     internal string IndexName { get; private set; }
 
@@ -9,9 +9,9 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal bool IsDefault { get; private set; }
 
-    internal SearchType DefaultSearchType { get; private set; } = SearchType.Fuzzy;
+    internal SearchType DefaultSearchType { get; private set; } = SearchType.Precise;
 
-    internal Operator DefaultOperator { get; private set; } = Operator.Or;
+    internal Operator DefaultOperator { get; private set; } = Operator.And;
 
     internal Action<TypeMappingDescriptor<TDocument>>? Action { get; private set; }
 

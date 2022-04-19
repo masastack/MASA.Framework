@@ -1,6 +1,6 @@
 namespace Masa.Contrib.SearchEngine.AutoComplete;
 
-public class AutoCompleteClient : IAutoCompleteClient
+public class AutoCompleteClient : BaseAutoCompleteClient
 {
     private readonly IElasticClient _elasticClient;
     private readonly IMasaElasticClient _client;
@@ -8,7 +8,8 @@ public class AutoCompleteClient : IAutoCompleteClient
     private readonly Operator _defaultOperator;
     private readonly SearchType _defaultSearchType;
 
-    public AutoCompleteClient(IElasticClient elasticClient, IMasaElasticClient client, string indexName, Operator defaultOperator, SearchType defaultSearchType)
+    public AutoCompleteClient(IElasticClient elasticClient, IMasaElasticClient client, string indexName, Operator defaultOperator,
+        SearchType defaultSearchType)
     {
         _elasticClient = elasticClient;
         _client = client;
@@ -17,29 +18,24 @@ public class AutoCompleteClient : IAutoCompleteClient
         _defaultSearchType = defaultSearchType;
     }
 
-    public Task<GetResponse<AutoCompleteDocument<TValue>, TValue>> GetAsync<TValue>(string value,
+    public override async Task<GetResponse<TAudoCompleteDocument, TValue>> GetAsync<TAudoCompleteDocument, TValue>(string keyword,
         AutoCompleteOptions? options = null,
         CancellationToken cancellationToken = default)
-        => GetAsync<AutoCompleteDocument<TValue>, TValue>(value, options, cancellationToken);
-
-    public async Task<GetResponse<TResponse, TValue>> GetAsync<TResponse, TValue>(string value,
-        AutoCompleteOptions? options = null,
-        CancellationToken cancellationToken = default)
-        where TResponse : AutoCompleteDocument<TValue>
     {
-        var newOptions = options ?? new (_defaultSearchType);
-        if (newOptions.SearchType == SearchType.Fuzzy)
+        var newOptions = options ?? new(_defaultSearchType);
+        var searchType = newOptions.SearchType ?? _defaultSearchType;
+        if (searchType == SearchType.Fuzzy)
         {
             var ret = await _client.GetPaginatedListAsync(
-                new PaginatedOptions<TResponse>(
+                new PaginatedOptions<TAudoCompleteDocument>(
                     _indexName,
-                    value,
+                    keyword,
                     newOptions.Field,
                     newOptions.Page,
                     newOptions.PageSize,
                     _defaultOperator)
                 , cancellationToken);
-            return new GetResponse<TResponse, TValue>(ret.IsValid, ret.Message)
+            return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.Message)
             {
                 Total = ret.Total,
                 TotalPages = ret.TotalPages,
@@ -48,16 +44,15 @@ public class AutoCompleteClient : IAutoCompleteClient
         }
         else
         {
-            var ret = await _elasticClient.SearchAsync<TResponse>(s => s
+            var ret = await _elasticClient.SearchAsync<TAudoCompleteDocument>(s => s
                     .Index(_indexName)
                     .From((newOptions.Page - 1) * newOptions.PageSize)
                     .Size(newOptions.PageSize)
-                    .Query(q => q
-                        .Bool(b => b
-                            .Must(queryContainerDescriptor => queryContainerDescriptor.Term(newOptions.Field, value))))
+                    .Query(q => q.MatchPhrase(descriptor
+                        => MatchPhraseQueryDescriptor(descriptor.Field(newOptions.Field), keyword)))
                 , cancellationToken
             );
-            return new GetResponse<TResponse, TValue>(ret.IsValid, ret.ServerError?.ToString() ?? "")
+            return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.ServerError?.ToString() ?? "")
             {
                 Data = ret.Hits.Select(hit => hit.Source).ToList(),
                 Total = ret.Total,
@@ -66,22 +61,27 @@ public class AutoCompleteClient : IAutoCompleteClient
         }
     }
 
-    public Task<SetResponse> SetAsync<TValue>(
-        AutoCompleteDocument<TValue>[] results,
+    private MatchPhraseQueryDescriptor<TInferDocument> MatchPhraseQueryDescriptor<TInferDocument>(
+        MatchPhraseQueryDescriptor<TInferDocument> queryContainerDescriptor, string keyWord)
+        where TInferDocument : class
+    {
+        if (keyWord.Length == 1)
+        {
+            return queryContainerDescriptor.Query(keyWord);
+        }
+
+        return queryContainerDescriptor.Query(keyWord);
+    }
+
+    public override Task<SetResponse> SetMultiAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
         SetOptions? options = null,
         CancellationToken cancellationToken = default)
-        => SetAsync<AutoCompleteDocument<TValue>, TValue>(results, options, cancellationToken);
-
-    public Task<SetResponse> SetAsync<TDocument, TValue>(
-        TDocument[] documents,
-        SetOptions? options = null,
-        CancellationToken cancellationToken = default) where TDocument : AutoCompleteDocument<TValue>
     {
         SetOptions newOptions = options ?? new();
         if (newOptions.IsOverride)
-            return SetAsync<TDocument, TValue>(documents, cancellationToken);
+            return SetMultiAsync<TAudoCompleteDocument, TValue>(documents, cancellationToken);
 
-        return SetByNotOverrideAsync<TDocument, TValue>(documents, cancellationToken);
+        return SetByNotOverrideAsync<TAudoCompleteDocument, TValue>(documents, cancellationToken);
     }
 
     /// <summary>
@@ -93,10 +93,10 @@ public class AutoCompleteClient : IAutoCompleteClient
     /// <typeparam name="TDocument"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    private async Task<SetResponse> SetAsync<TDocument, TValue>(
-        TDocument[] documents,
+    private async Task<SetResponse> SetMultiAsync<TDocument, TValue>(
+        IEnumerable<TDocument> documents,
         CancellationToken cancellationToken = default)
-        where TDocument : AutoCompleteDocument<TValue>
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         var request = new SetDocumentRequest<TDocument>(_indexName);
         foreach (var document in documents)
@@ -119,8 +119,9 @@ public class AutoCompleteClient : IAutoCompleteClient
     /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
     private async Task<SetResponse> SetByNotOverrideAsync<TDocument, TValue>(
-        TDocument[] documents,
-        CancellationToken cancellationToken = default) where TDocument : AutoCompleteDocument<TValue>
+        IEnumerable<TDocument> documents,
+        CancellationToken cancellationToken = default)
+        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         var request = new CreateMultiDocumentRequest<TDocument>(_indexName);
         foreach (var document in documents)
@@ -131,5 +132,18 @@ public class AutoCompleteClient : IAutoCompleteClient
         {
             Items = ret.Items.Select(item => new SetResponseItems(item.Id, item.IsValid, item.Message)).ToList()
         };
+    }
+
+    public override async Task<DeleteResponse> DeleteAsync(string id)
+    {
+        var response = await _client.DeleteDocumentAsync(new DeleteDocumentRequest(_indexName, id));
+        return new DeleteResponse(response.IsValid, response.Message);
+    }
+
+    public override async Task<DeleteMultiResponse> DeleteAsync(IEnumerable<string> ids)
+    {
+        var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()));
+        return new DeleteMultiResponse(response.IsValid, response.Message,
+            response.Data.Select(item => new DeleteRangeResponseItems(item.Id, item.IsValid, item.Message)));
     }
 }

@@ -15,13 +15,13 @@ public class AutoCompleteTest
     public void TestAddAutoCompleteAndNoIndexName()
     {
         var builder = _services.AddElasticsearchClient();
-        Assert.ThrowsException<ArgumentNullException>(() => builder.AddAutoComplete());
+        Assert.ThrowsException<ArgumentNullException>(() => builder.AddAutoComplete<Guid>());
     }
 
     [TestMethod]
     public void TestAddAutoComplete()
     {
-        var builder = _services.AddElasticsearchClient("es", option =>
+        _services.AddElasticsearchClient("es", option =>
         {
             option.UseConnectionSettings(setting =>
             {
@@ -78,53 +78,41 @@ public class AutoCompleteTest
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Fuzzy));
+        builder.AddAutoComplete<long>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
-        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
         {
-            new()
-            {
-                Text = "张三",
-                Value = 1
-            },
-            new()
-            {
-                Text = "李四",
-                Value = 2
-            },
-            new()
-            {
-                Text = "张丽",
-                Value = 3
-            }
+            new("张三", 1),
+            new("李四", 2),
+            new("张丽", 3)
         });
 
         Thread.Sleep(1000);
 
-        var response = await autoCompleteClient.GetAsync<long>("张三", new AutoCompleteOptions(SearchType.Precise));
+        var response = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
-        response = await autoCompleteClient.GetAsync<long>("三", new AutoCompleteOptions(SearchType.Precise));
+        response = await autoCompleteClient.GetAsync<long>("三");
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
-        response = await autoCompleteClient.GetAsync<long>("zs", new AutoCompleteOptions(SearchType.Precise));
+        response = await autoCompleteClient.GetAsync<long>("zs");
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
-        response = await autoCompleteClient.GetAsync<long>("zhang", new AutoCompleteOptions(SearchType.Precise));
+        response = await autoCompleteClient.GetAsync<long>("zhang");
         Assert.IsTrue(response.IsValid && response.Total == 2);
 
-        response = await autoCompleteClient.GetAsync<long>("li", new AutoCompleteOptions(SearchType.Precise));
+        response = await autoCompleteClient.GetAsync<long>("li");
         Assert.IsTrue(response.IsValid && response.Total == 2);
 
-        response = await autoCompleteClient.GetAsync<long>("*si");
+        response = await autoCompleteClient.GetAsync<long>("*si", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
-        response = await autoCompleteClient.GetAsync<long>("zhang*");
+        response = await autoCompleteClient.GetAsync<long>("zhang*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 2);
 
-        response = await autoCompleteClient.GetAsync<long>("*");
+        response = await autoCompleteClient.GetAsync<long>("*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 3);
     }
 
@@ -147,7 +135,6 @@ public class AutoCompleteTest
                     .Properties(ps =>
                         ps.Text(s =>
                             s.Name(n => n.Id)
-                                .Analyzer(analyzer)
                         )
                     )
                     .Properties(ps =>
@@ -166,7 +153,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
-        await employeeClient.SetAsync(new Employee[]
+        await employeeClient.SetMultiAsync(new Employee[]
         {
             new()
             {
@@ -190,39 +177,33 @@ public class AutoCompleteTest
         employeeResponse = await employeeClient.GetAsync<Employee, int>("139");
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 0);
 
-        employeeResponse = await employeeClient.GetAsync<Employee, int>("139*", new AutoCompleteOptions()
+        employeeResponse = await employeeClient.GetAsync<Employee, int>("139*", new AutoCompleteOptions(SearchType.Fuzzy)
         {
             Field = "phone"
         });
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 1);
 
-        employeeResponse = await employeeClient.GetAsync<Employee, int>("*");
-        Assert.IsTrue(employeeResponse.Data.Any(employee => employee.Phone == "13999999999"));
+        employeeResponse = await employeeClient.GetAsync<Employee, int>("*", new AutoCompleteOptions(SearchType.Fuzzy));
+        Assert.IsTrue(employeeResponse.Data.All(employee => employee.Phone == "13999999999" || employee.Phone == "13888888888"));
 
-        await employeeClient.SetAsync(new Employee[]
+        await employeeClient.SetAsync(new Employee
         {
-            new()
-            {
-                Text = "吉姆",
-                Value = 1,
-                Phone = "13777777777"
-            }
+            Text = "吉姆",
+            Value = 1,
+            Phone = "13777777777"
         });
 
         Thread.Sleep(1000);
 
-        employeeResponse = await employeeClient.GetAsync<Employee, int>("*");
+        employeeResponse = await employeeClient.GetAsync<Employee, int>("*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 2);
         Assert.IsTrue(employeeResponse.Data.Any(employee => employee.Phone == "13777777777"));
 
-        await employeeClient.SetAsync(new Employee[]
+        await employeeClient.SetAsync(new Employee
         {
-            new()
-            {
-                Text = "吉姆",
-                Value = 1,
-                Phone = "13999999999"
-            }
+            Text = "吉姆",
+            Value = 1,
+            Phone = "13999999999"
         }, new SetOptions()
         {
             IsOverride = false
@@ -230,7 +211,7 @@ public class AutoCompleteTest
 
         Thread.Sleep(1000);
 
-        employeeResponse = await employeeClient.GetAsync<Employee, int>("*");
+        employeeResponse = await employeeClient.GetAsync<Employee, int>("*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.Data.Any(employee => employee.Phone == "13777777777"));
     }
 
@@ -242,36 +223,13 @@ public class AutoCompleteTest
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200"));
 
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
-        string analyzer = "ik_max_word_pinyin";
         builder.AddAutoComplete<Employee, int>(option => option
             .UseIndexName(employeeIndexName)
-            .UseAlias(employeeAlias)
-            .Mapping(descriptor =>
-            {
-                descriptor.AutoMap<Employee>()
-                    .Properties(ps =>
-                        ps.Text(s =>
-                            s.Name(n => n.Id)
-                                .Analyzer(analyzer)
-                        )
-                    )
-                    .Properties(ps =>
-                        ps.Text(s =>
-                            s.Name(n => n.Text)
-                                .Analyzer(analyzer)
-                        )
-                    )
-                    .Properties(ps =>
-                        ps.Text(s =>
-                            s.Name(n => n.Phone)
-                                .Analyzer(analyzer)
-                        )
-                    );
-            }));
+            .UseAlias(employeeAlias));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
-        await employeeClient.SetAsync(new Employee[]
+        await employeeClient.SetMultiAsync(new Employee[]
         {
             new()
             {
@@ -289,10 +247,10 @@ public class AutoCompleteTest
 
         Thread.Sleep(1000);
 
-        var employeeResponse = await employeeClient.GetAsync<Employee, int>("ji*");
+        var employeeResponse = await employeeClient.GetAsync<Employee, int>("ji*", new(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 1);
 
-        employeeResponse = await employeeClient.GetAsync<Employee, int>("13999999999", new AutoCompleteOptions(SearchType.Precise)
+        employeeResponse = await employeeClient.GetAsync<Employee, int>("13999999999", new()
         {
             Field = "phone"
         });
@@ -308,13 +266,16 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
-            .AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultOperator(Nest.Operator.And));
+            .AddAutoComplete<long>(option =>
+                option.UseIndexName(userIndexName)
+                      .UseAlias(userAlias)
+                      .UseDefaultOperator(Operator.And));
 
         await builder.Client.ClearDocumentAsync(userAlias);
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
-        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -324,7 +285,7 @@ public class AutoCompleteTest
             new()
             {
                 Text = "Edward Jim",
-                Value = 1
+                Value = 2
             }
         });
 
@@ -345,30 +306,14 @@ public class AutoCompleteTest
 
         await builder.Client.DeleteIndexAsync(userIndexName);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias).IndexSettings(setting =>
-        {
-            string analyzer = "ik_max_word_pinyin";
-            IAnalysis analysis = new AnalysisDescriptor();
-            analysis.Analyzers = new Analyzers();
-            analysis.TokenFilters = new TokenFilters();
-            IIndexSettings indexSettings = new IndexSettings()
-            {
-                Analysis = analysis
-            };
-            string defaultAnalyzer = "ik_max_word";
-            string pinyinFilter = "pinyin";
-            string wordDelimiterFilter = "word_delimiter";
-            indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
-            {
-                Filter = new[] { pinyinFilter, wordDelimiterFilter },
-                Tokenizer = defaultAnalyzer
-            });
-            indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
-        }));
+        builder.AddAutoComplete<long>(option =>
+            option.UseIndexName(userIndexName)
+                .UseAlias(userAlias)
+                .UseDefaultOperator(Operator.Or));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
-        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -378,13 +323,13 @@ public class AutoCompleteTest
             new()
             {
                 Text = "Edward Jim",
-                Value = 1
+                Value = 2
             }
         });
 
         Thread.Sleep(1000);
 
-        var response = await autoCompleteClient.GetAsync<long>("Edward Adam Davis");
+        var response = await autoCompleteClient.GetAsync<long>("Edward Adam Davis", new(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 2);
     }
 

@@ -12,4 +12,5 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using Nest;
-
+global using Masa.Utils.Data.Elasticsearch.Options.Document.Delete;
+global using DeleteResponse = Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse;
