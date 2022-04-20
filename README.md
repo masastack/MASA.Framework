@@ -41,7 +41,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 
 
-## How to download
+## How to clone
 ````
 git clone --recursive https://github.com/masastack/MASA.Contrib.git
 ````

@@ -41,7 +41,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 
 
 
-## 如何下载
+## 如何克隆
 ```
 git clone --recursive https://github.com/masastack/MASA.Contrib.git
 ```
