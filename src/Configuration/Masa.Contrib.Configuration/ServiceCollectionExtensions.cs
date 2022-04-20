@@ -46,16 +46,20 @@ public static class ServiceCollectionExtensions
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services, configurationBuilder);
         configureDelegate?.Invoke(masaConfigurationBuilder);
 
+        MasaConfigurationBuilder builder = new(services, new ConfigurationBuilder());
+        builder.AddRelations(masaConfigurationBuilder.Relations.ToArray());
+        masaConfigurationBuilder.Repositories.ForEach(repository => builder.AddRepository(repository));
         var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.Configuration, services.BuildServiceProvider().GetService<ILoggerFactory>());
-        masaConfigurationBuilder.AddRepository(localConfigurationRepository);
+        builder.AddRepository(localConfigurationRepository);
 
-        var source = new MasaConfigurationSource(masaConfigurationBuilder);
-        var configuration = masaConfigurationBuilder.Add(source).Build();
+        var source = new MasaConfigurationSource(builder);
+        var configuration = builder.Add(source).Build();
 
-        masaConfigurationBuilder.AutoMapping(assemblies);
-        masaConfigurationBuilder.Relations.ForEach(relation =>
+        builder.AutoMapping(assemblies);
+
+        builder.Relations.ForEach(relation =>
         {
-            List<string> sectionNames = new ()
+            List<string> sectionNames = new()
             {
                 relation.SectionType.ToString(),
             };

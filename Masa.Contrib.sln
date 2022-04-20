@@ -132,7 +132,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests", "test\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj", "{4A052E17-4D9E-41EF-89A5-73B917053F8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
 EndProject

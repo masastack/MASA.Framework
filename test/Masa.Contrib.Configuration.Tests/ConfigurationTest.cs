@@ -25,7 +25,8 @@ public class ConfigurationTest
     public void TestAddJsonFileShouldReturnRabbitMqOptionAndSystemOptionsExist()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.AddMasaConfiguration(masaConfigurationBuilder => masaConfigurationBuilder.AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true));
+        builder.AddMasaConfiguration(masaConfigurationBuilder
+            => masaConfigurationBuilder.AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true));
 
         var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
@@ -35,7 +36,8 @@ public class ConfigurationTest
 
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
-        Assert.IsTrue(rabbitMqOptions is { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+        Assert.IsTrue(rabbitMqOptions is
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -69,7 +71,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -87,12 +89,14 @@ public class ConfigurationTest
         var masaConfigurationBuilder = new MasaConfigurationBuilder(new ServiceCollection(), configurationBuilder);
         Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 2);
 
-        var appsettingConfigurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+        var appsettingConfigurationBuilder =
+            new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
         Assert.IsTrue(appsettingConfigurationBuilder.Sources.Count == 1);
         masaConfigurationBuilder.Add(appsettingConfigurationBuilder.Sources.FirstOrDefault()!);
         Assert.IsTrue(masaConfigurationBuilder.Sources.Count == 3);
 
-        Assert.IsTrue(masaConfigurationBuilder.Build()["KafkaOptions:Servers"] == appsettingConfigurationBuilder.Build()["KafkaOptions:Servers"]);
+        Assert.IsTrue(masaConfigurationBuilder.Build()["KafkaOptions:Servers"] ==
+            appsettingConfigurationBuilder.Build()["KafkaOptions:Servers"]);
 
         Assert.IsTrue(masaConfigurationBuilder.Properties.Count == configurationBuilder.Properties.Count);
     }
@@ -104,7 +108,7 @@ public class ConfigurationTest
         builder.AddMasaConfiguration(configurationBuilder =>
         {
             configurationBuilder.AddJsonFile("redis.json", true, true)
-                                .AddJsonFile("rabbitMq.json", true, true);
+                .AddJsonFile("rabbitMq.json", true, true);
 
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>("RedisOptions"));
         }).AddMasaConfiguration();
@@ -131,7 +135,8 @@ public class ConfigurationTest
             .AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddConfiguration(chainedConfiguration.Build());
 
-        Assert.ThrowsException<Exception>(() => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly)
+        Assert.ThrowsException<Exception>(()
+                => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly)
             , $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
     }
 
@@ -167,7 +172,9 @@ public class ConfigurationTest
     public void TestNoParameterlessConstructorSpecifyAssembliesShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
-        Assert.ThrowsException<Exception>(() => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly), $"[{It.IsAny<string>()}] must have a parameterless constructor");
+        Assert.ThrowsException<Exception>(
+            () => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly),
+            $"[{It.IsAny<string>()}] must have a parameterless constructor");
     }
 
     [TestMethod]
@@ -179,7 +186,7 @@ public class ConfigurationTest
             builder.AddMasaConfiguration(configurationBuilder =>
             {
                 configurationBuilder.AddJsonFile("redis.json", true, true)
-                                    .AddJsonFile("rabbitMq.json", true, true);
+                    .AddJsonFile("rabbitMq.json", true, true);
 
                 configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>().MappingLocal<RedisOptions>());
             });
@@ -211,34 +218,31 @@ public class ConfigurationTest
     public async Task TestConfigurationChangeShouldReturnNameEmpty()
     {
         var builder = WebApplication.CreateBuilder();
-
         var rootPath = builder.Environment.ContentRootPath;
         builder.AddMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile("redis.json", true, true)
+            configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
-
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
         }, typeof(ConfigurationTest).Assembly);
+
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-        var systemOption = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
+        var redisOptions = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
 
-        Assert.IsNotNull(configuration);
-        Assert.IsNotNull(systemOption);
-        Assert.IsTrue(systemOption.Value.Name == "Masa TEST");
+        Assert.IsNotNull(redisOptions);
+        Assert.IsTrue(redisOptions.Value.Ip == "localhost" && redisOptions.Value.Port == 6379);
 
-        var newRedisOption = systemOption.Value;
-        newRedisOption.Name = null;
+        var newRedisOption = redisOptions.Value;
+        newRedisOption.Ip = String.Empty;
 
-        var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
-        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"),
-            System.Text.Json.JsonSerializer.Serialize(new { SystemOptions = newRedisOption }));
+        var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "customAppConfig.json"));
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "customAppConfig.json"),
+            System.Text.Json.JsonSerializer.Serialize(new { RedisOptions = newRedisOption }));
 
         Thread.Sleep(2000);
-        var option = serviceProvider.GetRequiredService<IOptionsMonitor<SystemOptions>>();
-        Assert.IsTrue(option.CurrentValue.Name == "");
+        var option = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+        Assert.IsTrue(option.CurrentValue.Ip == "" && option.CurrentValue.Port == 6379);
 
-        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "customAppConfig.json"), oldContent);
     }
 }
