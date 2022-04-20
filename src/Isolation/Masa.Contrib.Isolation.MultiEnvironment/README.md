@@ -61,7 +61,7 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 
 * How is the environment resolved in the controller or MinimalAPI?
     * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
-        * HttpContextItemParserProvider: Get tenant information through the Items property of the requested HttpContext
+        * HttpContextItemParserProvider: Get environment information through the Items property of the requested HttpContext
         * QueryStringParserProvider: Get environment information through the requested QueryString
             * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (environment information is development)
         * FormParserProvider: Get environment information through Form form
