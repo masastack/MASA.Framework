@@ -5,7 +5,7 @@
 Example：
 
 ```c#
-Install-Package Masa.Contrib.SearchEngine.AutoComplete
+Install-Package Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch
 ```
 
 Basic usage:
