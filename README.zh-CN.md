@@ -16,7 +16,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 
 ## 特性
 * AutoComplete: 使搜索更简单
-  * [AutoComplete.ElasticSearch](./src/SearchEngine/Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch/README.zh-CN.md)
+  * [ElasticSearch](./src/SearchEngine/Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch/README.zh-CN.md)
 * Configuration: 配置中心
   * [Configuration核心、提供本地配置](./src/Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
   * ConfigurationAPI
@@ -27,9 +27,9 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.zh-CN.md): 进程内事件
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-CN.md): 跨进程事件
 * Isolation: 支持物理隔离、逻辑隔离
-  * [Isolation.UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.zh-CN.md)
-  * [Isolation.MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.zh-CN.md): 多环境
-  * [Isolation.MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md): 多租户
+  * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.zh-CN.md)
+  * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.zh-CN.md): 多环境
+  * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md): 多租户
 * [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.zh-CN.md): 支持类似Controller的API分类聚合
 * UoW: 工作单元
   * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.zh-CN.md)

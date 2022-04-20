@@ -16,7 +16,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 ## Features
 * AutoComplete: make searching easier
-  * [AutoComplete.ElasticSearch](./src/SearchEngine/Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch/README.md)
+  * [ElasticSearch](./src/SearchEngine/Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch/README.md)
 * Configuration: Configuration Center
   * [Configuration core, provide local configuration](./src/Configuration/Masa.Contrib.Configuration/README.md)
   * ConfigurationAPI
@@ -27,9 +27,9 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.md): In-process events
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md): Cross-process events
 * Isolation: Support physical isolation, logical isolation
-  * [Isolation.UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.md)
-  * [Isolation.MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.md): MultiEnvironment
-  * [Isolation.MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.md): Multi-tenancy
+  * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.md)
+  * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.md): MultiEnvironment
+  * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.md): Multi-tenancy
 * [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.md): Support API classification aggregation similar to Controller
 * UoW: unit of work
   * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.md)
