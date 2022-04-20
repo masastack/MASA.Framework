@@ -45,8 +45,8 @@ public class AutoCompleteTest
     [TestMethod]
     public void TestAddMultiAutoComplete()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
@@ -57,8 +57,8 @@ public class AutoCompleteTest
     [TestMethod]
     public void TestAddMultiDefaultAutoComplete()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
@@ -70,8 +70,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestGetAsync()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
@@ -83,7 +83,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
             new("李四", 2),
@@ -120,8 +120,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestCustomModelAsync()
     {
-        string employeeIndexName = "employee_index_01";
-        string employeeAlias = "employee_index";
+        string employeeIndexName = $"employee_index_{Guid.NewGuid()}";
+        string employeeAlias = $"employee_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200"));
 
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
@@ -154,7 +154,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
-        await employeeClient.SetMultiAsync(new Employee[]
+        await employeeClient.SetAsync(new Employee[]
         {
             new()
             {
@@ -219,8 +219,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestPreciseAsync()
     {
-        string employeeIndexName = "employee_index_01";
-        string employeeAlias = "employee_index";
+        string employeeIndexName = $"employee_index_{Guid.NewGuid()}";
+        string employeeAlias = $"employee_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200"));
 
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
@@ -230,7 +230,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
-        await employeeClient.SetMultiAsync(new Employee[]
+        await employeeClient.SetAsync(new Employee[]
         {
             new()
             {
@@ -262,8 +262,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestOperatorAndAsync()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
@@ -275,7 +275,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -298,8 +298,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestOperatorOrAsync()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
@@ -313,7 +313,7 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -368,15 +368,15 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task DeleteAsyncReturnDocumentIsNotExist()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
         builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -398,15 +398,15 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task DeleteAsyncReturnDeleteSuccess()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
         builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -428,8 +428,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task DeleteUserReturnEmpty()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
@@ -437,7 +437,7 @@ public class AutoCompleteTest
         builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -456,7 +456,7 @@ public class AutoCompleteTest
         var getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
 
-        var deleteResponse = await autoCompleteClient.DeleteMultiAsync(new[] { 1 });
+        var deleteResponse = await autoCompleteClient.DeleteAsync(new[] { 1 });
         Assert.IsTrue(deleteResponse.IsValid);
 
         Thread.Sleep(1000);
@@ -468,8 +468,8 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task DeleteMultiUserReturnEmpty()
     {
-        string userIndexName = "user_index_01";
-        string userAlias = "user_index";
+        string userIndexName = $"user_index_{Guid.NewGuid()}";
+        string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
@@ -477,7 +477,7 @@ public class AutoCompleteTest
         builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
-        await autoCompleteClient.SetMultiAsync(new AutoCompleteDocument<long>[]
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
             {
@@ -499,7 +499,7 @@ public class AutoCompleteTest
         getResponse = await autoCompleteClient.GetAsync<long>("李四");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
 
-        var deleteMultiResponse = await autoCompleteClient.DeleteMultiAsync(new List<int>() { 1, 2, 3 });
+        var deleteMultiResponse = await autoCompleteClient.DeleteAsync(new List<int>() { 1, 2, 3 });
         // Assert.IsTrue(deleteMultiResponse.IsValid &&
         //     deleteMultiResponse.Data.Count == 3 &&
         //     deleteMultiResponse.Data.Count(r => r.IsValid) == 2);//todo: Masa.Utils.Data.Elasticsearch response information error

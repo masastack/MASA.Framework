@@ -21,14 +21,12 @@ builder.Services
        .AddAutoComplete<long>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
 ````
 
-##### Setting data
-* SetAsync sets a single document
-* SetMultiAsync set multiple documents
+##### Setting data (SetAsync)
 
 1. Set up a single document:
 
    ```` C#
-   public async Task SetMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task SetAsync([FromServices] IAutoCompleteClient client)
    {
        await client.SetAsync(new AutoCompleteDocument<long>()
        {
@@ -41,9 +39,9 @@ builder.Services
 2. Set up multiple documents:
 
    ```` C#
-   public async Task SetMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task SetAsync([FromServices] IAutoCompleteClient client)
    {
-       await client.SetMultiAsync(new AutoCompleteDocument<long>[]
+       await client.SetAsync(new AutoCompleteDocument<long>[]
        {
            new()
            {
@@ -59,9 +57,7 @@ builder.Services
    }
    ````
 
-##### Retrieve data
-
-* GetAsync
+##### Get data (GetAsync)
 
 1. Search by keyword:
 
@@ -73,10 +69,7 @@ builder.Services
    }
    ````
 
-##### Delete document
-
-* DeleteAsync deletes a single document
-* DeleteMultiAsync deletes multiple documents
+##### Delete document (DeleteAsync)
 
 1. To delete a single document:
 
@@ -91,9 +84,9 @@ builder.Services
 2. To delete multiple documents:
 
    ```` C#
-   public async Task<string> DeleteMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task<string> DeleteAsync([FromServices] IAutoCompleteClient client)
    {
-       var response = await client.DeleteMultiAsync(new long[] { 1, 2 });
+       var response = await client.DeleteAsync(new long[] { 1, 2 });
        return System.Text.Json.JsonSerializer.Serialize(response);
    }
    ````

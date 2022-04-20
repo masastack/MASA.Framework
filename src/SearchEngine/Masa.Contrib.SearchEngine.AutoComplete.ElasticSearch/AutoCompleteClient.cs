@@ -80,7 +80,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     }
 
 
-    public override Task<SetResponse> SetMultiAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
+    public override Task<SetResponse> SetAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
         SetOptions? options = null,
         CancellationToken cancellationToken = default)
     {
@@ -147,7 +147,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         return new DeleteResponse(response.IsValid, response.Message);
     }
 
-    public override async Task<DeleteMultiResponse> DeleteMultiAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)
+    public override async Task<DeleteMultiResponse> DeleteAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)
     {
         var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()), cancellationToken);
         return new DeleteMultiResponse(response.IsValid, response.Message,

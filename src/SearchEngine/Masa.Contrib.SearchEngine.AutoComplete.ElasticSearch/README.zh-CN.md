@@ -21,14 +21,12 @@ builder.Services
        .AddAutoComplete<long>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
 ```
 
-##### 设置数据
-* SetAsync 设置单个文档
-* SetMultiAsync 设置多个文档
+##### 设置数据 (SetAsync)
 
 1. 设置单个文档:
 
    ``` C#
-   public async Task SetMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task SetAsync([FromServices] IAutoCompleteClient client)
    {
        await client.SetAsync(new AutoCompleteDocument<long>()
        {
@@ -41,9 +39,9 @@ builder.Services
 2. 设置多个文档:
 
    ``` C#
-   public async Task SetMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task SetAsync([FromServices] IAutoCompleteClient client)
    {
-       await client.SetMultiAsync(new AutoCompleteDocument<long>[]
+       await client.SetAsync(new AutoCompleteDocument<long>[]
        {
            new()
            {
@@ -59,9 +57,7 @@ builder.Services
    }
    ```
 
-##### 获取数据
-
-* GetAsync
+##### 获取数据 (GetAsync)
 
 1. 根据关键字搜索:
 
@@ -73,10 +69,7 @@ builder.Services
    }
    ```
 
-##### 删除文档
-
-* DeleteAsync 删除单个文档
-* DeleteMultiAsync 删除多个文档
+##### 删除文档 (DeleteAsync)
 
 1. 删除单个文档:
 
@@ -91,9 +84,9 @@ builder.Services
 2. 删除多个文档:
 
    ``` C#
-   public async Task<string> DeleteMultiAsync([FromServices] IAutoCompleteClient client)
+   public async Task<string> DeleteAsync([FromServices] IAutoCompleteClient client)
    {
-       var response = await client.DeleteMultiAsync(new long[] { 1, 2 });
+       var response = await client.DeleteAsync(new long[] { 1, 2 });
        return System.Text.Json.JsonSerializer.Serialize(response);
    }
    ```
