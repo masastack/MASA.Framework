@@ -141,15 +141,15 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         };
     }
 
-    public override async Task<DeleteResponse> DeleteAsync(string id)
+    public override async Task<DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
-        var response = await _client.DeleteDocumentAsync(new DeleteDocumentRequest(_indexName, id));
+        var response = await _client.DeleteDocumentAsync(new DeleteDocumentRequest(_indexName, id), cancellationToken);
         return new DeleteResponse(response.IsValid, response.Message);
     }
 
-    public override async Task<DeleteMultiResponse> DeleteMultiAsync(IEnumerable<string> ids)
+    public override async Task<DeleteMultiResponse> DeleteMultiAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)
     {
-        var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()));
+        var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()), cancellationToken);
         return new DeleteMultiResponse(response.IsValid, response.Message,
             response.Data.Select(item => new DeleteRangeResponseItems(item.Id, item.IsValid, item.Message)));
     }
