@@ -8,7 +8,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 
 
-## route map
+## Roadmap
 * [Release Notes](https://github.com/masastack/MASA.Contrib/releases)
 * [Latest Roadmap](https://github.com/masastack/MASA.Contrib/issues/40)
 
@@ -41,7 +41,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 
 
-## how to download
+## How to download
 ````
 git clone --recursive https://github.com/masastack/MASA.Contrib.git
 ````
@@ -69,7 +69,7 @@ Thanks to all the friends who have contributed to this project.
 
 
 
-## code of conduct
+## Code of conduct
 
 This project adopts the Code of Conduct as defined by the Contributors Covenant to clarify the expected behavior of our community. For more information see [MASA Stack Community Code of Conduct](https://github.com/masastack/community/blob/main/CODE-OF-CONDUCT.md).
 
