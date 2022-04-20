@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete\Masa.Contrib.SearchEngine.AutoComplete.csproj" />
+    <ProjectReference Include="..\..\src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.csproj" />
   </ItemGroup>
 
 </Project>
