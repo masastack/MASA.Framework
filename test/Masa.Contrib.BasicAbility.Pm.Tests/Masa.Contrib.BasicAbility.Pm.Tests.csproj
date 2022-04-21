@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\Masa.Contrib.BasicAbility.Pm.csproj" />
+    <ProjectReference Include="..\..\src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj" />
   </ItemGroup>
 
 </Project>
