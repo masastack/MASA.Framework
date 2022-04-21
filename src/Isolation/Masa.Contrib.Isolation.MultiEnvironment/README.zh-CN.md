@@ -62,7 +62,7 @@ public class CustomDbContext : IsolationDbContext
 
 * 控制器或MinimalAPI中环境如何解析？
     * 环境默认提供了7个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
-      * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取租户信息
+      * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取环境信息
       * QueryStringParserProvider: 通过请求的QueryString获取环境信息
           * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (环境信息是development)
       * FormParserProvider: 通过Form表单获取环境信息
