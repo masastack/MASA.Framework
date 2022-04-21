@@ -134,7 +134,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Eve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch", "src\SearchEngine\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.csproj", "{3F8532EF-3DC9-45F8-9562-994ABE066585}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.Tests\Masa.Contrib.SearchEngine.AutoComplete.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests", "test\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests\Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests.csproj", "{31262D61-26A4-4302-968D-52B8DA4558CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolation", "src\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj", "{B689E82B-B3E8-4C83-B56C-D4C27206AAC6}"
 EndProject
