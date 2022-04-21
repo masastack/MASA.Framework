@@ -1,4 +1,4 @@
-namespace Masa.Contrib.SearchEngine.AutoComplete.Tests;
+namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests;
 
 [TestClass]
 public class AutoCompleteTest
