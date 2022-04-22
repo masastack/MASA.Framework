@@ -8,4 +8,36 @@ public class AppService : IAppService
     {
         _callerProvider = callerProvider;
     }
+
+    public async Task<AppDetailModel> GetAsync(int Id)
+    {
+        var requestUri = $"api/v1/app/{Id}";
+        var result = await _callerProvider.GetAsync<AppDetailModel>(requestUri);
+
+        return result ?? new();
+    }
+
+    public async Task<List<AppDetailModel>> GetListAsync()
+    {
+        var requestUri = $"api/v1/app";
+        var result = await _callerProvider.GetAsync<List<AppDetailModel>>(requestUri);
+
+        return result ?? new();
+    }
+
+    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync(List<int> projectIds)
+    {
+        var requestUri = $"api/v1/projects/app";
+        var result = await _callerProvider.PostAsync<List<int>, List<AppDetailModel>>(requestUri, projectIds);
+
+        return result ?? new();
+    }
+
+    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
+    {
+        var requestUri = $"api/v1/appWhitEnvCluster/{Id}";
+        var result = await _callerProvider.GetAsync<AppDetailModel>(requestUri);
+
+        return result ?? new();
+    }
 }
