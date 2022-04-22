@@ -9,9 +9,9 @@
 ```c#
 IPmClient
 ├── EnvironmentService                  环境服务
-├── ClusterService                     	集群服务
-├── ProjectService                     	项目服务
-├── AppService                     		应用服务
+├── ClusterService                      集群服务
+├── ProjectService                      项目服务
+├── AppService                          应用服务
 ```
 
 用例：
