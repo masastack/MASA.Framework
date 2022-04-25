@@ -176,6 +176,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Opentelemetry", "Openteleme
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Observability.Opentelemetry.Logging", "src\Observability\Opentelemetry\MASA.Utils.Observability.Opentelemetry.Logging\Masa.Contrib.Observability.Opentelemetry.Logging.csproj", "{09768DBB-935C-4E52-8B14-80A0C81E8FFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Observability", "src\BuildingBlocks\MASA.BuildingBlocks\src\Observability\Masa.BuildingBlocks.Observability\Masa.BuildingBlocks.Observability.csproj", "{E4BBDD80-010C-4A4F-8D71-54012C0B237E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -688,6 +690,14 @@ Global
 		{09768DBB-935C-4E52-8B14-80A0C81E8FFF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09768DBB-935C-4E52-8B14-80A0C81E8FFF}.Release|x64.ActiveCfg = Release|Any CPU
 		{09768DBB-935C-4E52-8B14-80A0C81E8FFF}.Release|x64.Build.0 = Release|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Debug|x64.Build.0 = Debug|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Release|x64.ActiveCfg = Release|Any CPU
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -775,6 +785,7 @@ Global
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204} = {9EEE31DA-3165-4CB3-AAE9-27CC3A4DE669}
 		{849271D0-D04C-4A84-ACBC-1EEF829C1BDA} = {75050CBC-A0F2-408A-A582-54EF37450B29}
 		{09768DBB-935C-4E52-8B14-80A0C81E8FFF} = {849271D0-D04C-4A84-ACBC-1EEF829C1BDA}
+		{E4BBDD80-010C-4A4F-8D71-54012C0B237E} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

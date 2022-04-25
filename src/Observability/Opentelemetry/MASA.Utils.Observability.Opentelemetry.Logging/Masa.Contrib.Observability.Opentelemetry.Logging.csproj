@@ -12,4 +12,8 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" Version="1.0.0-rc8" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MASA.BuildingBlocks\src\Observability\Masa.BuildingBlocks.Observability\Masa.BuildingBlocks.Observability.csproj" />
+  </ItemGroup>
+
 </Project>
