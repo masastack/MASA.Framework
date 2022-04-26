@@ -2,6 +2,6 @@ namespace OpenTelemetry.Resources
 {
     internal class MasaResourceSemanticConventions
     {
-        public const string AttributeServiceProjectId = "service.project.id";
+        public const string AttributeServiceProjectName = "service.project.name";
     }
 }

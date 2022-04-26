@@ -17,7 +17,7 @@ namespace OpenTelemetry.Resources
 
             if (!string.IsNullOrEmpty(options.ProjectName))
             {
-                resourceBuilder.AddAttributes(new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(MasaResourceSemanticConventions.AttributeServiceProjectId, options.ProjectName) });
+                resourceBuilder.AddAttributes(new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(MasaResourceSemanticConventions.AttributeServiceProjectName, options.ProjectName) });
             }
             return resourceBuilder;
         }

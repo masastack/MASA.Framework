@@ -8,6 +8,7 @@
 2. 默认添加了[OtlpExporter](https://github.com/open-telemetry/opentelemetry-collector/tree/main/exporter/otlpexporter)导出，并且日志数据默认存储到Elasticsearch，如果需要修改数据存储介质，请参考配置进行修改。
 
 
+
 ```C#
 Install-Package Masa.Contrib.Observability.Opentelemetry.Logging
 ```
