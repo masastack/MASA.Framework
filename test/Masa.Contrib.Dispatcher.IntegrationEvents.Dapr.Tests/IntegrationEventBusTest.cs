@@ -172,11 +172,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
         _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
     }
 
     [TestMethod]
@@ -200,11 +200,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
         _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
     }
 
     [TestMethod]
@@ -227,11 +227,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
         _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
     }
 
     [TestMethod]
@@ -256,11 +256,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
         _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
             Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Once);
     }
 
     [TestMethod]
@@ -284,11 +284,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.Id), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
         _daprClient.Verify(client => client.PublishEventAsync(_dispatcherOptions.Object.Value.PubSubName, @event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.Id), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.Id), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Once);
     }
 
     [TestMethod]

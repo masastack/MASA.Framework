@@ -10,7 +10,7 @@ public class ProductionQueryHandler : QueryHandler<ProductionItemQuery, string>
         if (string.IsNullOrEmpty(@event.ProductionId))
             throw new ArgumentNullException(nameof(@event));
 
-        if (@event.Id == default(Guid) || @event.CreationTime > DateTime.UtcNow)
+        if (@event.GetEventId() == default(Guid) || @event.GetCreationTime() > DateTime.UtcNow)
             throw new ArgumentNullException(nameof(@event));
 
         if (@event.ProductionId == "1")
