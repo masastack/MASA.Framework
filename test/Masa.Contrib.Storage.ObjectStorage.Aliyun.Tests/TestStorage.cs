@@ -1,5 +1,8 @@
 ﻿using Masa.BuildingBlocks.Storage.ObjectStorage;
 
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
 [TestClass]

@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 global using Aliyun.Acs.Core;
 global using Aliyun.Acs.Core.Auth.Sts;
 global using Aliyun.Acs.Core.Profile;
