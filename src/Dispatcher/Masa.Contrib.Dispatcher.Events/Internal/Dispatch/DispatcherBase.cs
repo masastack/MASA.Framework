@@ -62,7 +62,7 @@ internal class DispatcherBase
 
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async (@event) =>
             {
-                Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.Id);
+                Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.GetEventId());
                 await dispatchHandler.ExcuteAction(serviceProvider, @event);
             }, async (@event, ex, failureLevels) =>
             {
@@ -76,7 +76,7 @@ internal class DispatcherBase
                 }
                 else
                 {
-                    Logger?.LogError("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.Id);
+                    Logger?.LogError("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.GetEventId());
                 }
             });
         }
@@ -95,14 +95,14 @@ internal class DispatcherBase
             strategyOptions.SetStrategy(cancelHandler);
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
-                logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event, @event.Id);
+                logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event, @event.GetEventId());
                 await cancelHandler.ExcuteAction(serviceProvider, @event);
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
                     ex.ThrowException();
 
-                logger?.LogError("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.Id);
+                logger?.LogError("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.GetEventId());
                 return Task.CompletedTask;
             });
         }
