@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.ReadWriteSpliting.Cqrs.Tests;
 
 public class ProductionQueryHandler : QueryHandler<ProductionItemQuery, string>
@@ -7,7 +10,7 @@ public class ProductionQueryHandler : QueryHandler<ProductionItemQuery, string>
         if (string.IsNullOrEmpty(@event.ProductionId))
             throw new ArgumentNullException(nameof(@event));
 
-        if (@event.Id == default(Guid) || @event.CreationTime > DateTime.UtcNow)
+        if (@event.GetEventId() == default(Guid) || @event.GetCreationTime() > DateTime.UtcNow)
             throw new ArgumentNullException(nameof(@event));
 
         if (@event.ProductionId == "1")

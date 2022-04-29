@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public class IntegrationEventBus : IIntegrationEventBus
@@ -62,32 +65,32 @@ public class IntegrationEventBus : IIntegrationEventBus
         {
             try
             {
-                _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.Id);
+                _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
                 await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
 
                 _logger?.LogDebug(
-                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.Id,
+                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.GetEventId(),
                     _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
 
-                await _eventLogService.MarkEventAsInProgressAsync(@event.Id);
+                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId());
 
                 _logger?.LogDebug("Publishing event {Event} to {PubsubName}.{TopicName}", @event, _daprPubsubName, topicName);
                 await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
 
-                await _eventLogService.MarkEventAsPublishedAsync(@event.Id);
+                await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId());
             }
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    @event.Id, _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.Id, @event.Topic, @event));
-                await _eventLogService.MarkEventAsFailedAsync(@event.Id);
+                    @event.GetEventId(), _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
+                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.GetEventId(), @event.Topic, @event));
+                await _eventLogService.MarkEventAsFailedAsync(@event.GetEventId());
             }
         }
         else
         {
             _logger?.LogDebug(
-                   "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.Id,
+                   "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.GetEventId(),
                    _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
 
             await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);

@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Ddd.Domain.Tests;
 
 [TestClass]
@@ -261,27 +264,27 @@ public class DomainEventBusTest
         var createTime = DateTime.UtcNow;
 
         var domainCommand = new DomainCommand();
-        Assert.IsTrue(domainCommand.Id != default);
-        Assert.IsTrue(domainCommand.CreationTime != default && domainCommand.CreationTime >= createTime);
+        Assert.IsTrue(domainCommand.GetEventId() != default);
+        Assert.IsTrue(domainCommand.GetCreationTime() != default && domainCommand.GetCreationTime() >= createTime);
 
         domainCommand = new DomainCommand(id, createTime);
-        Assert.IsTrue(domainCommand.Id == id);
-        Assert.IsTrue(domainCommand.CreationTime == createTime);
+        Assert.IsTrue(domainCommand.GetEventId() == id);
+        Assert.IsTrue(domainCommand.GetCreationTime() == createTime);
 
         var domainEvent = new DomainEvent();
-        Assert.IsTrue(domainEvent.Id != default);
-        Assert.IsTrue(domainEvent.CreationTime != default && domainEvent.CreationTime >= createTime);
+        Assert.IsTrue(domainEvent.GetEventId() != default);
+        Assert.IsTrue(domainEvent.GetCreationTime() != default && domainEvent.GetCreationTime() >= createTime);
 
         domainEvent = new DomainEvent(id, createTime);
-        Assert.IsTrue(domainEvent.Id == id);
-        Assert.IsTrue(domainEvent.CreationTime == createTime);
+        Assert.IsTrue(domainEvent.GetEventId() == id);
+        Assert.IsTrue(domainEvent.GetCreationTime() == createTime);
 
         var domainQuery = new ProductItemDomainQuery()
         {
             ProductId = Guid.NewGuid().ToString()
         };
-        Assert.IsTrue(domainQuery.Id != default);
-        Assert.IsTrue(domainQuery.CreationTime != default && domainQuery.CreationTime >= createTime);
+        Assert.IsTrue(domainQuery.GetEventId() != default);
+        Assert.IsTrue(domainQuery.GetCreationTime() != default && domainQuery.GetCreationTime() >= createTime);
     }
 
     [TestMethod]

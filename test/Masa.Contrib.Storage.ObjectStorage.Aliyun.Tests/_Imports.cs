@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 global using Aliyun.Acs.Core.Exceptions;
 global using Masa.BuildingBlocks.Storage.ObjectStorage.Response;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;

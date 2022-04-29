@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests.Events;
 
 public record CreateUserEvent : IEvent
@@ -18,4 +21,12 @@ public record CreateUserEvent : IEvent
     {
         this.Name = name;
     }
+
+    public Guid GetEventId() => Id;
+
+    public void SetEventId(Guid eventId) => Id = eventId;
+
+    public DateTime GetCreationTime() => CreationTime;
+
+    public void SetCreationTime(DateTime creationTime) => CreationTime = creationTime;
 }

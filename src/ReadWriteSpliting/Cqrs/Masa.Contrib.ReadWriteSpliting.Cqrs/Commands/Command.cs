@@ -1,15 +1,29 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
 
-public record Command(Guid Id, DateTime CreationTime) : ICommand
+public record Command : ICommand
 {
-    [JsonIgnore]
-    public Guid Id { get; } = Id;
-
-    [JsonIgnore]
-    public DateTime CreationTime { get; } = CreationTime;
+    private Guid _eventId;
+    private DateTime _creationTime;
 
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 
     public Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+
+    public Command(Guid eventId, DateTime creationTime)
+    {
+        _eventId = eventId;
+        _creationTime = creationTime;
+    }
+
+    public Guid GetEventId() => _eventId;
+
+    public void SetEventId(Guid eventId) => _eventId = eventId;
+
+    public DateTime GetCreationTime() => _creationTime;
+
+    public void SetCreationTime(DateTime creationTime) => _creationTime = creationTime;
 }
