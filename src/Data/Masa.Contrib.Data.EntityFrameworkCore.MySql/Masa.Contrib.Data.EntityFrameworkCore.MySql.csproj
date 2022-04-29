@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Data.EntityFrameworkCore\Masa.Contrib.Data.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
