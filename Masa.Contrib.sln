@@ -170,7 +170,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.Object
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{165391A5-034E-4894-8084-8DF7D4AA7518}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests", "test\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj", "{B8358ED1-C95A-4EC0-9756-FB32C931F204}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests", "test\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj", "{B8358ED1-C95A-4EC0-9756-FB32C931F204}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Observability.Opentelemetry", "src\Observability\Masa.Contrib.Observability.Opentelemetry.Logging\Masa.Contrib.Observability.Opentelemetry.csproj", "{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -676,6 +678,14 @@ Global
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|x64.ActiveCfg = Release|Any CPU
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|x64.Build.0 = Release|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -761,6 +771,7 @@ Global
 		{97532A33-A591-4DF5-A2C0-72527B78ED82} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 		{165391A5-034E-4894-8084-8DF7D4AA7518} = {42DF7AAC-362C-48F4-B76A-BDEEEFF17CC9}
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204} = {9EEE31DA-3165-4CB3-AAE9-27CC3A4DE669}
+		{51B8F2EC-EC53-43B1-A016-F4A84E9F0B5A} = {75050CBC-A0F2-408A-A582-54EF37450B29}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
