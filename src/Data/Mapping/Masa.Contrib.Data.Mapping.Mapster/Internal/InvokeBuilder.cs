@@ -5,14 +5,14 @@ namespace Masa.Contrib.Data.Mapping.Mapster.Internal;
 
 internal class InvokeBuilder
 {
-    private static readonly MethodInfo NewConfigMethodInfo;
-    private static readonly Type TypeAdapterConfigType;
+    private static readonly MethodInfo _newConfigMethodInfo;
+    private static readonly Type _typeAdapterConfigType;
 
     static InvokeBuilder()
     {
         var typeAdapterSetterExpandType = typeof(TypeAdapterSetterExpand);
-        NewConfigMethodInfo = typeAdapterSetterExpandType.GetMethod(nameof(TypeAdapterSetterExpand.NewConfigByConstructor))!;
-        TypeAdapterConfigType = typeof(TypeAdapterConfig);
+        _newConfigMethodInfo = typeAdapterSetterExpandType.GetMethod(nameof(TypeAdapterSetterExpand.NewConfigByConstructor))!;
+        _typeAdapterConfigType = typeof(TypeAdapterConfig);
     }
 
     internal delegate TypeAdapterSetter MethodExecutor(TypeAdapterConfig target, object parameter);
@@ -21,11 +21,11 @@ internal class InvokeBuilder
         Type sourceType,
         Type destinationType)
     {
-        var methodInfo = NewConfigMethodInfo.MakeGenericMethod(sourceType, destinationType);
+        var methodInfo = _newConfigMethodInfo.MakeGenericMethod(sourceType, destinationType);
 
         ParameterExpression[] parameters =
         {
-            Expression.Parameter(TypeAdapterConfigType, "adapterConfigParameter"),
+            Expression.Parameter(_typeAdapterConfigType, "adapterConfigParameter"),
             Expression.Parameter(typeof(object), "constructorInfoParameter")
         };
         var newConfigMethodCall = Expression.Call(

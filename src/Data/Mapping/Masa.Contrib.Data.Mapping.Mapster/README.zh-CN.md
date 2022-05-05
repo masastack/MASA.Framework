@@ -21,14 +21,14 @@ Masa.Contrib.Data.Mapping.Mapster是基于[Mapster](https://github.com/MapsterMa
 3. 映射对象
 
     ```
-    IMapping mapper;// 通过DI获取
+    IMapping mapping;// 通过DI获取
 
     var request = new
     {
         Name = "Teach you to learn Dapr ……",
         OrderItem = new OrderItem("Teach you to learn Dapr hand by hand", 49.9m)
     };
-    var order = mapper.Map<Order>(request);// 将request映射到新的对象
+    var order = mapping.Map<Order>(request);// 将request映射到新的对象, 源对象与目标对象属性名称、类型一致的参数会自动映射、或者目标对象的构造函数参数名称（不区分大小写）、类型与源对象参数一致的，会通过构造函数映射
     ```
 
     映射类`Order`:

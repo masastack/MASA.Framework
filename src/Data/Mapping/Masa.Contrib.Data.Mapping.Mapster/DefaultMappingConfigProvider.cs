@@ -5,8 +5,7 @@ namespace Masa.Contrib.Data.Mapping.Mapster;
 
 public class DefaultMappingConfigProvider : IMappingConfigProvider
 {
-    private readonly ConcurrentDictionary<(Type SourceType, Type DestinationType, MapOptions? mapOptions), TypeAdapterConfig?>
-        _store = new();
+    private readonly ConcurrentDictionary<(Type SourceType, Type DestinationType, MapOptions? MapOptions), TypeAdapterConfig?> _store = new();
 
     private readonly MapOptions _options;
 
@@ -21,15 +20,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
             (sourceType, destinationType, options),
             type => GetAdapterConfig(type.SourceType, type.DestinationType, options));
 
-        if (config == null)
-        {
-            if (IsShare(options))
-                return TypeAdapterConfig.GlobalSettings;
-
-            throw new ArgumentNullException(nameof(config), "Failed to get mapping configuration");
-        }
-
-        return config;
+        return config ?? GetDefaultConfig(options);
     }
 
     protected virtual TypeAdapterConfig? GetAdapterConfig(Type sourceType, Type destinationType, MapOptions? options)
@@ -137,7 +128,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
     protected virtual ConstructorInfo GetBestConstructor(List<ConstructorInfo> destinationConstructors, List<PropertyInfo> sourceProperties)
     {
         if (destinationConstructors.Count <= 1)
-            return destinationConstructors.FirstOrDefault()!;
+            return destinationConstructors.First();
 
         foreach (var constructor in destinationConstructors)
         {
@@ -185,8 +176,12 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
     protected virtual TypeAdapterConfig GetDefaultConfig(MapOptions? options)
     {
         //todo: Other modes are currently not supported, and will be added in the future according to the situation
-        return IsShare(options) ?
-            TypeAdapterConfig.GlobalSettings :
-            throw new ArgumentException("Only shared configuration is supported", nameof(MapOptions.Mode));
+        switch (options?.Mode ?? _options.Mode)
+        {
+            case MapMode.Shared:
+                return TypeAdapterConfig.GlobalSettings;
+            default:
+                throw new ArgumentException("Only shared configuration is supported", nameof(MapOptions.Mode));
+        }
     }
 }
