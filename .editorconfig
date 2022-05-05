@@ -31,5 +31,3 @@ indent_size = 2
 # JSON files
 [*.json]
 indent_size = 2
-
-file_header_template = 添加文件头（add file header）示例程序\n Copyright (c) https://ittranslator.cn/
