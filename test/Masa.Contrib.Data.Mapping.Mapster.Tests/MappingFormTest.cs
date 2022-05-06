@@ -21,7 +21,7 @@ public class MappingFormTest : BaseMappingTest
     public void TestAddMultiMapping()
     {
         _services.AddMapping();
-        var mappings = _services.BuildServiceProvider().GetServices<IMapper>();
-        Assert.IsTrue(mappings.Count() == 1);
+        var mappers = _services.BuildServiceProvider().GetServices<IMapper>();
+        Assert.IsTrue(mappers.Count() == 1);
     }
 }
