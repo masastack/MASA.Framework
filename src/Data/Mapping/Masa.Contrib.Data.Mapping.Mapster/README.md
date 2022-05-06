@@ -29,7 +29,7 @@ Masa.Contrib.Data.Mapping.Mapster is an object-to-object mapper based on [Mapste
 3. Mapping objects
 
     ````
-    IMapping mapper;// Get through DI
+    IMapper mapper;// Get through DI
 
     var request = new
     {
