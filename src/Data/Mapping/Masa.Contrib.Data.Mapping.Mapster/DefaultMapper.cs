@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Data.Mapping.Mapster;
 
-public class DefaultMapping : IMapping
+public class DefaultMapper : IMapper
 {
     private readonly IMappingConfigProvider _provider;
 
-    public DefaultMapping(IMappingConfigProvider provider)
+    public DefaultMapper(IMappingConfigProvider provider)
         => _provider = provider;
 
     public TDestination Map<TSource, TDestination>(TSource source, MapOptions? options = null)

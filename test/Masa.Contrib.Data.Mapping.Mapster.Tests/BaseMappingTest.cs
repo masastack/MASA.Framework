@@ -7,7 +7,7 @@ namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
 public class BaseMappingTest
 {
     protected IServiceCollection _services;
-    protected IMapping _mapper = default!;
+    protected IMapper _mapper = default!;
 
     [TestInitialize]
     public void Initialize()
@@ -15,6 +15,6 @@ public class BaseMappingTest
         _services = new ServiceCollection();
         _services.AddMapping();
         var serviceProvider = _services.BuildServiceProvider();
-        _mapper = serviceProvider.GetRequiredService<IMapping>();
+        _mapper = serviceProvider.GetRequiredService<IMapper>();
     }
 }

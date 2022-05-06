@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<MappingProvider>();
 
         services.TryAddSingleton<IMappingConfigProvider>(_ => new DefaultMappingConfigProvider(mapOptions));
-        services.TryAddSingleton<IMapping, DefaultMapping>();
+        services.TryAddSingleton<IMapper, DefaultMapper>();
         return services;
     }
 
