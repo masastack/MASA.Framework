@@ -4,6 +4,14 @@
 
 Masa.Contrib.Data.Mapping.Mapster是基于[Mapster](https://github.com/MapsterMapper/Mapster)的一个对象到对象的映射器，在原来的基础上增加自动获取并使用最佳构造函数映射，支持嵌套映射，减轻映射的工作量。
 
+## 映射规则
+
+* 目标对象没有构造函数时：使用空构造函数，映射到字段和属性。
+
+* 目标对象存在多个构造函数：获取最佳构造函数映射
+
+    > 最佳构造函数: 目标对象构造函数参数数量从大到小降序查找，参数名称一致（不区分大小写）且参数类型与源对象属性一致
+
 ## 用例:
 
 1. 安装`Masa.Contrib.Data.Mapping.Mapster`
@@ -28,7 +36,8 @@ Masa.Contrib.Data.Mapping.Mapster是基于[Mapster](https://github.com/MapsterMa
         Name = "Teach you to learn Dapr ……",
         OrderItem = new OrderItem("Teach you to learn Dapr hand by hand", 49.9m)
     };
-    var order = mapper.Map<Order>(request);// 将request映射到新的对象, 源对象与目标对象属性名称、类型一致的参数会自动映射、或者目标对象的构造函数参数名称（不区分大小写）、类型与源对象参数一致的，会通过构造函数映射
+    var order = mapper.Map<Order>(request);// 将request映射到新的对象
+
     ```
 
     映射类`Order`:
