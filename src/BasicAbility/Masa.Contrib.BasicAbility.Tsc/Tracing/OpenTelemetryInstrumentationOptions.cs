@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
@@ -76,10 +79,10 @@ public class OpenTelemetryInstrumentationOptions
         options.SetDbStatementForText = true;
     };
 
-    public Action<ElasticsearchClientInstrumentationOptions> ElasticsearchClientInstrumentationOptions { get; set; }= options=>
-    {
-        options.ParseAndFormatRequest = true;            
-    };
+    public Action<ElasticsearchClientInstrumentationOptions> ElasticsearchClientInstrumentationOptions { get; set; } = options =>
+     {
+         options.ParseAndFormatRequest = true;
+     };
 
     public Action<StackExchangeRedisCallsInstrumentationOptions> StackExchangeRedisCallsInstrumentationOptions { get; set; }
 

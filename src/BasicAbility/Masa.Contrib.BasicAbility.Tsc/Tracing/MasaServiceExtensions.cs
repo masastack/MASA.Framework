@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class MasaServiceExtensions
@@ -24,6 +27,8 @@ public static partial class MasaServiceExtensions
                 builder.AddRedisInstrumentation(options.Connection, options.StackExchangeRedisCallsInstrumentationOptions);
 
             options?.BuildTraceCallback?.Invoke(builder);
+
+            builder.AddOtlpExporter();
         });
 
         return services;

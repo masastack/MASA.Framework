@@ -1,4 +1,7 @@
-namespace Masa.Contrib.Observability;
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Contrib.BasicAbility.Tsc;
 
 /// <summary>
 /// Constants for semantic attribute names outlined by the OpenTelemetry specifications.
@@ -123,6 +126,6 @@ public static class OpenTelemetryAttributeName
         /// </summary>
         public const string Name = "service.name";
 
-        public const string ProjectName = MasaResourceSemanticConventions.AttributeServiceProjectName;
+        public const string ProjectName = "service.project.name";
     }
 }
