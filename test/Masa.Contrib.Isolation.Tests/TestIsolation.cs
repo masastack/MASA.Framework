@@ -12,8 +12,11 @@ public class TestIsolation
         var services = new ServiceCollection();
         services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = "data source=test2";
-            option.Isolations = new()
+            option.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = "data source=test2"
+            };
+            option.IsolationConnectionStrings = new()
             {
                 new()
                 {
@@ -107,7 +110,7 @@ public class TestIsolation
         options.Setup(option => option.Services).Returns(services).Verifiable();
         options.Object.UseIsolation(isolationBuilder => isolationBuilder.UseMultiEnvironment());
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationDbConnectionStringProvider)) == 1);
+        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
 
         Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
         Assert.IsTrue(!serviceProvider.GetServices<ITenantContext>().Any());
@@ -123,7 +126,7 @@ public class TestIsolation
         options.Object.UseIsolation(isolationBuilder => isolationBuilder.UseMultiTenant());
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationDbConnectionStringProvider)) == 1);
+        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
 
         Assert.IsTrue(!serviceProvider.GetServices<IEnvironmentContext>().Any());
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
@@ -141,7 +144,7 @@ public class TestIsolation
             => isolationBuilder.UseMultiTenant().UseMultiEnvironment());
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationDbConnectionStringProvider)) == 1);
+        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
 
         Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);

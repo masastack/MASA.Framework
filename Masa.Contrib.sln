@@ -170,7 +170,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{1653
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests", "test\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj", "{B8358ED1-C95A-4EC0-9756-FB32C931F204}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Contracts", "src\Data\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj", "{79D639DC-DDE4-45B1-884D-60B6908F528E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Contracts.EF", "src\Data\Masa.Contrib.Data.Contracts.EF\Masa.Contrib.Data.Contracts.EF.csproj", "{79D639DC-DDE4-45B1-884D-60B6908F528E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data", "src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj", "{C3451307-3743-4911-A401-7F28889703D3}"
 EndProject

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EntityFrameworkCore.Filters;
+namespace Masa.Contrib.Data.Contracts.EF.Filters;
 
 public class SoftDeleteSaveChangesFilter<TDbContext> : ISaveChangesFilter where TDbContext : DbContext
 {
     private readonly TDbContext _context;
-    private readonly MasaDbContextOptions _masaDbContextOptions;
+    private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
 
-    public SoftDeleteSaveChangesFilter(MasaDbContextOptions masaDbContextOptions, TDbContext dbContext)
+    public SoftDeleteSaveChangesFilter(MasaDbContextOptions<TDbContext> masaDbContextOptions, TDbContext dbContext)
     {
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;

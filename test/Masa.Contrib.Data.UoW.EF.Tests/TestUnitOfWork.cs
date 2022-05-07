@@ -160,7 +160,7 @@ public class TestUnitOfWork : TestBase
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
         Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 &&
-            dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == null));
+            dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == _connectionString));
     }
 
     [TestMethod]
@@ -176,13 +176,13 @@ public class TestUnitOfWork : TestBase
 
         var newUnitOfWork =
             unitOfWorkManager.CreateDbContext(
-                new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions(_connectionString));
+                new MasaDbContextConfigurationOptions(_connectionString));
         Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
         Assert.ThrowsException<ArgumentException>(()
-            => unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("")));
+            => unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("")));
     }
 
     [TestMethod]
@@ -214,7 +214,7 @@ public class TestUnitOfWork : TestBase
             configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
 
         var unitOfWorkNew2 =
-            unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("test"));
+            unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("test"));
         var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew2!.CurrentDbContextOptions != null &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions.ConnectionString == "test");

@@ -9,8 +9,15 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
-        var connectionStringProvider = builder.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-        return builder.UseOracle(connectionStringProvider.GetConnectionString(), oracleOptionsAction);
+        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
+        {
+            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+            dbContextOptionsBuilder.UseOracle(
+                connectionStringProvider.GetConnectionString(name),
+                oracleOptionsAction);
+        };
+        return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseOracle(
@@ -18,7 +25,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         string connectionString,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseOracle(connectionString, oracleOptionsAction);
+        builder.UseOracleCore(connectionString);
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseOracle(connectionString, oracleOptionsAction);
         return builder;
     }
 
@@ -27,7 +36,16 @@ public static class MasaDbContextOptionsBuilderExtensions
         DbConnection connection,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseOracle(connection, oracleOptionsAction);
+        builder.UseOracleCore(connection.ConnectionString);
+        builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseOracle(connection, oracleOptionsAction);
+        return builder;
+    }
+
+    private static MasaDbContextOptionsBuilder UseOracleCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    {
+        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }
 }

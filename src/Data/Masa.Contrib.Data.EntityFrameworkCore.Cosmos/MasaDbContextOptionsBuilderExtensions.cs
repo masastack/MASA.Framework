@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Data;
-
 namespace Masa.Contrib.Data.EntityFrameworkCore.Cosmos;
 
 public static class MasaDbContextOptionsBuilderExtensions
@@ -11,20 +9,29 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
-        var connectionStringProvider = builder.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-        var configurationDic = connectionStringProvider.GetConnectionString().ToDictionary();
+        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
+        {
+            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+            var configurationDic = connectionStringProvider.GetConnectionString(name).ToDictionary();
 
-        if (!configurationDic.TryGetValue("Database", out string? databaseName))
-            throw new ArgumentException("Cosmos: Bad database connection string, Failed to get [Database] name");
+            if (!configurationDic.TryGetValue("Database", out string? databaseName))
+                throw new ArgumentException("Cosmos: Bad database connection string, Failed to get [Database] name");
 
-        if (configurationDic.TryGetValue("ConnectionString", out string? connectionString))
-            return builder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
+            if (configurationDic.TryGetValue("ConnectionString", out string? connectionString))
+            {
+                dbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
+                return;
+            }
 
-        if (!configurationDic.TryGetValue("AccountKey", out string? accountKey) ||
-            !configurationDic.TryGetValue("AccountEndpoint", out string? accountEndpoint))
-            throw new ArgumentException("Cosmos: Bad database connection string, Failed to get [AccountKey] name or [AccountEndpoint] name");
+            if (!configurationDic.TryGetValue("AccountKey", out string? accountKey) ||
+                !configurationDic.TryGetValue("AccountEndpoint", out string? accountEndpoint))
+                throw new ArgumentException(
+                    "Cosmos: Bad database connection string, Failed to get [AccountKey] name or [AccountEndpoint] name");
 
-        return builder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
+            dbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
+        };
+        return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseCosmos(
@@ -34,7 +41,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
+        builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};");
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
         return builder;
     }
 
@@ -44,7 +53,17 @@ public static class MasaDbContextOptionsBuilderExtensions
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
+        builder.UseCosmosCore($"{connectionString};Database={databaseName};");
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
+        return builder;
+    }
+
+    private static MasaDbContextOptionsBuilder UseCosmosCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    {
+        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }
 }

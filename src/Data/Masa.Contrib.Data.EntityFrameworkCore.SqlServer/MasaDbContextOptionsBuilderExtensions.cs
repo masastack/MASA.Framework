@@ -9,8 +9,15 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
-        var connectionStringProvider = builder.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-        return builder.UseSqlServer(connectionStringProvider.GetConnectionString(), sqlServerOptionsAction);
+        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
+        {
+            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+            dbContextOptionsBuilder.UseSqlServer(
+                connectionStringProvider.GetConnectionString(name),
+                sqlServerOptionsAction);
+        };
+        return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseSqlServer(
@@ -18,7 +25,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         string connectionString,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
+        builder.UseSqlServerCore(connectionString);
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
         return builder;
     }
 
@@ -27,7 +36,16 @@ public static class MasaDbContextOptionsBuilderExtensions
         DbConnection connection,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
+        builder.UseSqlServerCore(connection.ConnectionString);
+        builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
+        return builder;
+    }
+
+    private static MasaDbContextOptionsBuilder UseSqlServerCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    {
+        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }
 }

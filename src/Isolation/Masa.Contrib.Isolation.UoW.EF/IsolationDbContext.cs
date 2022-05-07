@@ -3,6 +3,24 @@
 
 namespace Masa.Contrib.Isolation.UoW.EF;
 
+/// <summary>
+/// DbContext providing isolation
+/// </summary>
+/// <typeparam name="TKey">tenant id type</typeparam>
+/// <typeparam name="TDbContext"></typeparam>
+public abstract class IsolationDbContext<TDbContext, TKey> : IsolationDbContext<TKey>
+    where TKey : IComparable
+    where TDbContext : DbContext, IMasaDbContext
+{
+    protected IsolationDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    {
+    }
+}
+
+/// <summary>
+/// DbContext providing isolation
+/// </summary>
+/// <typeparam name="TKey">tenant id type</typeparam>
 public abstract class IsolationDbContext : IsolationDbContext<Guid>
 {
     protected IsolationDbContext(MasaDbContextOptions options) : base(options)

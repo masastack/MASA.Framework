@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data;
+
 namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
@@ -178,8 +180,11 @@ public class TestIsolation : TestBase
     {
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = "data source=test4";
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = "data source=test4"
+            };
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -229,8 +234,11 @@ public class TestIsolation : TestBase
     {
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = "data source=test7";
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = "data source=test7"
+            };
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {

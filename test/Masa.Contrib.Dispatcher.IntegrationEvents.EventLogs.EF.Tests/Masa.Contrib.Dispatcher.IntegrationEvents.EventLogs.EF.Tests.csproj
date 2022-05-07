@@ -16,7 +16,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Masa.Utils.Data.EntityFrameworkCore.Sqlite" Version="0.4.0-preview.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
@@ -25,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Data\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.csproj" />
   </ItemGroup>
 

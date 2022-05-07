@@ -9,8 +9,15 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
-        var connectionStringProvider = builder.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-        return builder.UseMySQL(connectionStringProvider.GetConnectionString(), mySqlOptionsAction);
+        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
+        {
+            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+            dbContextOptionsBuilder.UseMySQL(
+                connectionStringProvider.GetConnectionString(name),
+                mySqlOptionsAction);
+        };
+        return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseMySQL(
@@ -18,7 +25,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         string connectionString,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseMySQL(connectionString, mySqlOptionsAction);
+        builder.UseMySQLCore(connectionString);
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseMySQL(connectionString, mySqlOptionsAction);
         return builder;
     }
 
@@ -27,7 +36,16 @@ public static class MasaDbContextOptionsBuilderExtensions
         DbConnection connection,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseMySQL(connection, mySqlOptionsAction);
+        builder.UseMySQLCore(connection.ConnectionString);
+        builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseMySQL(connection, mySqlOptionsAction);
+        return builder;
+    }
+
+    private static MasaDbContextOptionsBuilder UseMySQLCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    {
+        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }
 }

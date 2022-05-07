@@ -1,23 +1,25 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
-public abstract class MasaDbContextOptionsBuilder
+public class MasaDbContextOptionsBuilder
 {
-    public DbContextOptionsBuilder DbContextOptionsBuilder;
+    private IServiceProvider? _serviceProvider;
 
-    public IServiceProvider ServiceProvider { get; }
+    public IServiceProvider ServiceProvider => _serviceProvider ??= Services.BuildServiceProvider();
 
-    internal bool EnableSoftDelete { get; private set; }
+    public IServiceCollection Services { get; }
 
-    protected MasaDbContextOptionsBuilder(IServiceProvider serviceProvider, DbContextOptions options, bool enableSoftDelete)
+    public Type DbContextType { get; }
+
+    public Action<IServiceProvider, DbContextOptionsBuilder> Builder { get; set; } = default!;
+
+    public bool EnableSoftDelete { get; set; }
+
+    public MasaDbContextOptionsBuilder(IServiceCollection services, Type dbContextType)
     {
-        DbContextOptionsBuilder = new DbContextOptionsBuilder(options);
-        ServiceProvider = serviceProvider;
-        EnableSoftDelete = enableSoftDelete;
-    }
-
-    public MasaDbContextOptionsBuilder UseSoftDelete()
-    {
-        EnableSoftDelete = true;
-        return this;
+        Services = services;
+        DbContextType = dbContextType;
     }
 }

@@ -9,8 +9,15 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
     {
-        var connectionStringProvider = builder.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-        return builder.UseInMemoryDatabase(connectionStringProvider.GetConnectionString(), inMemoryOptionsAction);
+        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
+        {
+            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+            dbContextOptionsBuilder.UseInMemoryDatabase(
+                connectionStringProvider.GetConnectionString(name),
+                inMemoryOptionsAction);
+        };
+        return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseInMemoryDatabase(
@@ -18,7 +25,17 @@ public static class MasaDbContextOptionsBuilderExtensions
         string databaseName,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
     {
-        builder.DbContextOptionsBuilder.UseInMemoryDatabase(databaseName, inMemoryOptionsAction);
+        builder.UseInMemoryDatabaseCore(databaseName);
+        builder.Builder = (_, dbContextOptionsBuilder)
+            => dbContextOptionsBuilder.UseInMemoryDatabase(databaseName, inMemoryOptionsAction);
+        return builder;
+    }
+
+    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(this MasaDbContextOptionsBuilder builder, string databaseName)
+    {
+        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        dbConnectionOptions.TryAddConnectionString(name, databaseName);
         return builder;
     }
 }

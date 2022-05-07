@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EF;
 
-public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext
+public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext, IMasaDbContext
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -24,7 +24,7 @@ public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 
-    public IUnitOfWork CreateDbContext(MasaDbContextConfigurationOptions options)
+    public IUnitOfWork CreateDbContext(DbContextOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         if (string.IsNullOrEmpty(options.ConnectionString))

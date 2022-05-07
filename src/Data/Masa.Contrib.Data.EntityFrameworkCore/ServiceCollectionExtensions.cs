@@ -1,42 +1,44 @@
-using Masa.BuildingBlocks.Data;
-
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMasaDbContext<TDbContext>(
+    public static IServiceCollection AddMasaDbContext<TDbContextImplementation>(
         this IServiceCollection services,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContext : MasaDbContext
-        => services.AddMasaDbContext<TDbContext>(
-            (_, masaDbContextOptionsBuilder) => optionsBuilder?.Invoke(masaDbContextOptionsBuilder),
-            contextLifetime,
-            optionsLifetime);
-
-    public static IServiceCollection AddMasaDbContext<TDbContext>(
-        this IServiceCollection services,
-        Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder = null,
-        ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
-        ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContext : MasaDbContext
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
         => services
-            .AddDbContext<TDbContext>(contextLifetime, optionsLifetime)
-            .AddCoreServices<TDbContext>(optionsBuilder, optionsLifetime);
+            .AddDbContext<TDbContextImplementation>(contextLifetime, optionsLifetime)
+            .AddCoreServices<TDbContextImplementation>(optionsBuilder, optionsLifetime);
 
     private static IServiceCollection AddCoreServices<TDbContextImplementation>(
         this IServiceCollection services,
-        Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : MasaDbContext
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
     {
         services.TryAddConfigure<MasaDbConnectionOptions>();
+
+        MasaDbContextOptionsBuilder masaBuilder = new MasaDbContextOptionsBuilder(services, typeof(TDbContextImplementation));
+        optionsBuilder?.Invoke(masaBuilder);
+        return services.AddCoreServices<TDbContextImplementation>((serviceProvider, efDbContextOptionsBuilder) =>
+        {
+            if (masaBuilder.EnableSoftDelete)
+                efDbContextOptionsBuilder.UseSoftDelete();
+
+            masaBuilder.Builder.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
+        }, optionsLifetime);
+    }
+
+    private static IServiceCollection AddCoreServices<TDbContextImplementation>(
+        this IServiceCollection services,
+        Action<IServiceProvider, EFDbContextOptionsBuilder>? optionsBuilder,
+        ServiceLifetime optionsLifetime)
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+    {
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
-        services.TryAddScoped(typeof(DataFilter<>));
-        services.TryAddScoped<IDataFilter, DataFilter>();
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(SoftDeleteSaveChangesFilter<TDbContextImplementation>),
-            ServiceLifetime.Scoped));
+        services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
 
         services.TryAdd(
             new ServiceDescriptor(
@@ -44,7 +46,7 @@ public static class ServiceCollectionExtensions
                 serviceProvider => CreateMasaDbContextOptions<TDbContextImplementation>(serviceProvider, optionsBuilder),
                 optionsLifetime));
 
-        services.Add(
+        services.TryAdd(
             new ServiceDescriptor(
                 typeof(MasaDbContextOptions),
                 serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
@@ -52,43 +54,62 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static MasaDbContextOptions<TDbContext> CreateMasaDbContextOptions<TDbContext>(
+    private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(
         IServiceProvider serviceProvider,
-        Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder)
-        where TDbContext : MasaDbContext
+        Action<IServiceProvider, EFDbContextOptionsBuilder>? optionsBuilder)
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
     {
-        var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContext>(serviceProvider);
-        optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);
+        var efDbContextOptionsBuilder = new EFDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider);
+        optionsBuilder?.Invoke(serviceProvider, efDbContextOptionsBuilder);
 
-        return CreateMasaDbContextOptions<TDbContext>(
+        return CreateMasaDbContextOptions<TDbContextImplementation>(
             serviceProvider,
-            masaDbContextOptionsBuilder.DbContextOptionsBuilder.Options,
-            masaDbContextOptionsBuilder.EnableSoftDelete);
+            efDbContextOptionsBuilder.DbContextOptionsBuilder.Options,
+            efDbContextOptionsBuilder.EnableSoftDelete);
     }
 
-    private static MasaDbContextOptions<TDbContext> CreateMasaDbContextOptions<TDbContext>(IServiceProvider serviceProvider,
-        DbContextOptions options, bool enableSoftDelete) where TDbContext : MasaDbContext => new(serviceProvider, options, enableSoftDelete);
+    private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(
+        IServiceProvider serviceProvider,
+        DbContextOptions options, bool enableSoftDelete)
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        => new(serviceProvider, options, enableSoftDelete);
 
     private static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services)
         where TOptions : class
-        => services.TryAddConfigure<TOptions>(Const.DEFAULT_SECTION);
+        => services.TryAddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION);
 
+    /// <summary>
+    /// Only consider using MasaConfiguration and database configuration using local configuration
+    /// When using MasaConfiguration and the database configuration is stored in ConfigurationAPI, you need to specify the mapping relationship in Configuration by yourself
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="sectionName"></param>
+    /// <typeparam name="TOptions"></typeparam>
+    /// <returns></returns>
     private static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services,
         string sectionName)
         where TOptions : class
     {
-        IConfiguration? configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+        services.AddOptions();
+        var serviceProvider = services.BuildServiceProvider();
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.GetConfiguration(SectionTypes.Local) ??
+            serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             return services;
 
         string name = Options.DefaultName;
-        services.AddOptions();
         var configurationSection = configuration.GetSection(sectionName);
+        if (!configurationSection.Exists())
+            return services;
+
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configurationSection));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name, configurationSection, _ => { }));
+            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
+        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
+            configuration, _ =>
+            {
+            }));
         return services;
     }
 }

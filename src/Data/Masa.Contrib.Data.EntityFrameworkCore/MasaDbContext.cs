@@ -1,6 +1,6 @@
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
-public abstract class MasaDbContext : DbContext
+public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
     protected readonly IDataFilter? DataFilter;
     protected readonly MasaDbContextOptions? Options;
@@ -77,7 +77,8 @@ public abstract class MasaDbContext : DbContext
         return expression;
     }
 
-    protected virtual bool IsSoftDeleteFilterEnabled => (Options?.EnableSoftDelete ?? false) && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
+    protected virtual bool IsSoftDeleteFilterEnabled
+        => (Options?.EnableSoftDelete ?? false) && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
 
     /// <summary>
     /// Automatic soft delete.
@@ -129,5 +130,23 @@ public abstract class MasaDbContext : DbContext
     {
         OnBeforeSaveChanges();
         return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+}
+
+public abstract class MasaDbContext<TDbContext> : MasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
+{
+    public MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
+    {
+        var methodInfo = typeof(MasaDbContext<TDbContext>).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
+
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[] { modelBuilder, entityType });
+        }
     }
 }

@@ -248,8 +248,9 @@ public class RepositoryTest : TestBase
         await InitializeAsync(services =>
             services.AddMasaDbContext<CustomDbContext>(options =>
             {
-                options.DbContextOptionsBuilder.UseSqlite(Connection)
-                    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                options.Builder = (_, dbContextOptionsBuilder)
+                    => dbContextOptionsBuilder.UseSqlite(Connection)
+                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             }));
 
         _dispatcherOptions.Object.UseRepository<CustomDbContext>();

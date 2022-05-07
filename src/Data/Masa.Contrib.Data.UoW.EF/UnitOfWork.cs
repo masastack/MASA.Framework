@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EF;
 
-public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbContext
+public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbContext, IMasaDbContext
 {
     public IServiceProvider ServiceProvider { get; }
 
