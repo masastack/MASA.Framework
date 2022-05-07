@@ -5,7 +5,7 @@ namespace Masa.Contrib.Data.Mapping.Mapster;
 
 public class DefaultMappingConfigProvider : IMappingConfigProvider
 {
-    private readonly ConcurrentDictionary<(Type SourceType, Type DestinationType, MapOptions? MapOptions), TypeAdapterConfig?> _store = new();
+    private readonly MemoryCache<(Type SourceType, Type DestinationType, MapOptions? MapOptions), TypeAdapterConfig?> _cache = new();
 
     private readonly MapOptions _options;
 
@@ -16,7 +16,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
 
     protected virtual TypeAdapterConfig GetConfigByCache(Type sourceType, Type destinationType, MapOptions? options)
     {
-        TypeAdapterConfig? config = _store.GetOrAdd(
+        TypeAdapterConfig? config = _cache.GetOrAdd(
             (sourceType, destinationType, options),
             type => GetAdapterConfig(type.SourceType, type.DestinationType, options));
 
