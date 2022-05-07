@@ -170,12 +170,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{1653
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests", "test\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj", "{B8358ED1-C95A-4EC0-9756-FB32C931F204}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data.Mapping", "src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.Mapping\Masa.BuildingBlocks.Data.Mapping.csproj", "{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Contracts.EF", "src\Data\Masa.Contrib.Data.Contracts.EF\Masa.Contrib.Data.Contracts.EF.csproj", "{79D639DC-DDE4-45B1-884D-60B6908F528E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Mapping.Mapster.Tests", "test\Masa.Contrib.Data.Mapping.Mapster.Tests\Masa.Contrib.Data.Mapping.Mapster.Tests.csproj", "{834A12D0-FBED-45B3-86EA-5EA114C516B5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data", "src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj", "{C3451307-3743-4911-A401-7F28889703D3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mapping", "Mapping", "{4AC23B67-52F9-44E5-9586-79A1DB73E6F7}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore", "src\Data\Masa.Contrib.Data.EntityFrameworkCore\Masa.Contrib.Data.EntityFrameworkCore.csproj", "{87DD354D-4D48-4918-ACDE-A7FF62FA0DD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Mapping.Mapster", "src\Data\Mapping\Masa.Contrib.Data.Mapping.Mapster\Masa.Contrib.Data.Mapping.Mapster.csproj", "{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}"
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.Cosmos", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Cosmos\Masa.Contrib.Data.EntityFrameworkCore.Cosmos.csproj", "{3236F880-3DC0-450F-A14D-8C87525845DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.InMemory", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.InMemory\Masa.Contrib.Data.EntityFrameworkCore.InMemory.csproj", "{7E3FAE39-9CD1-46FA-A389-660008035DFB}"
@@ -688,6 +695,30 @@ Global
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|x64.ActiveCfg = Release|Any CPU
 		{B8358ED1-C95A-4EC0-9756-FB32C931F204}.Release|x64.Build.0 = Release|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Debug|x64.Build.0 = Debug|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Release|x64.ActiveCfg = Release|Any CPU
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}.Release|x64.Build.0 = Release|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5}.Release|x64.Build.0 = Release|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Debug|x64.Build.0 = Debug|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Release|x64.ActiveCfg = Release|Any CPU
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}.Release|x64.Build.0 = Release|Any CPU
 		{79D639DC-DDE4-45B1-884D-60B6908F528E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{79D639DC-DDE4-45B1-884D-60B6908F528E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79D639DC-DDE4-45B1-884D-60B6908F528E}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -864,6 +895,10 @@ Global
 		{C3451307-3743-4911-A401-7F28889703D3} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
 		{87DD354D-4D48-4918-ACDE-A7FF62FA0DD8} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{3236F880-3DC0-450F-A14D-8C87525845DD} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
+		{5A3338F1-9963-4CAC-85A3-7AB263CB15B0} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{834A12D0-FBED-45B3-86EA-5EA114C516B5} = {38E6C400-90C0-493E-9266-C1602E229F1B}
+		{4AC23B67-52F9-44E5-9586-79A1DB73E6F7} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
+		{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145} = {4AC23B67-52F9-44E5-9586-79A1DB73E6F7}
 		{7E3FAE39-9CD1-46FA-A389-660008035DFB} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{3F19EBF9-A52E-4D64-8884-ECB16BE6A12A} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{A42CCFB3-1C30-4A58-AB28-E28736BF5378} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
