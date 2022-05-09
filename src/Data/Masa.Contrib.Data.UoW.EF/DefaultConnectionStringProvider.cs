@@ -31,7 +31,7 @@ public class DefaultConnectionStringProvider : IConnectionStringProvider
         if (string.IsNullOrEmpty(connectionString))
             _logger?.LogError("Failed to get database connection string, please check whether the configuration of IOptionsSnapshot<MasaDbConnectionOptions> is abnormal");
 
-        _unitOfWorkAccessor.CurrentDbContextOptions = new DbContextOptions(connectionString);
+        _unitOfWorkAccessor.CurrentDbContextOptions = new MasaDbContextConfigurationOptions(connectionString);
         return connectionString;
     }
 }

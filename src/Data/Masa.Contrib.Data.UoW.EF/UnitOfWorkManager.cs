@@ -24,7 +24,7 @@ public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 
-    public IUnitOfWork CreateDbContext(DbContextOptions options)
+    public IUnitOfWork CreateDbContext(MasaDbContextConfigurationOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         if (string.IsNullOrEmpty(options.ConnectionString))

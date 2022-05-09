@@ -5,5 +5,5 @@ namespace Masa.Contrib.Data.UoW.EF;
 
 public class UnitOfWorkAccessor : IUnitOfWorkAccessor
 {
-    public DbContextOptions? CurrentDbContextOptions { get; set; }
+    public MasaDbContextConfigurationOptions? CurrentDbContextOptions { get; set; }
 }
