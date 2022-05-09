@@ -5,6 +5,7 @@ global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Environment;
+global using Masa.Contrib.Data.Contracts.EF;
 global using Masa.Contrib.Data.EntityFrameworkCore;
 global using Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
 global using Masa.Contrib.Dispatcher.Events;

@@ -29,7 +29,7 @@ public class RepositoryTest : TestBase
         _dispatcherOptions.Setup(options => options.Services).Returns(() => _services);
         _dispatcherOptions.Setup(options => options.Assemblies).Returns(() => _assemblies);
         if (action == null)
-            _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
+            _services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
         else
             action.Invoke(_services);
 
@@ -389,7 +389,7 @@ public class RepositoryTest : TestBase
     public async Task TestServiceLifeAsync()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = services.BuildServiceProvider();
 
         await using (var scope = serviceProvider.CreateAsyncScope())

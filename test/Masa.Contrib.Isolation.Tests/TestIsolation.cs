@@ -144,7 +144,7 @@ public class TestIsolation
             => isolationBuilder.UseMultiTenant().UseMultiEnvironment());
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
+        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 2);
 
         Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);

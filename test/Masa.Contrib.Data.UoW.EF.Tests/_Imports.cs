@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Data.Options;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.Contrib.Configuration;
@@ -18,4 +19,3 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System;
 global using System.Threading.Tasks;
-global using Masa.BuildingBlocks.Data.Options;
