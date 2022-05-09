@@ -23,11 +23,11 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 2. 使用MasaDbContext
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseSqlServer());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlServer());
 ```
 
 #### 用法2:
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"));
 ```

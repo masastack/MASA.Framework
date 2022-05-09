@@ -23,11 +23,11 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.Oracle
 2. 使用MasaDbContext
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseOracle());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseOracle());
 ```
 
 #### 用法2:
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"));
 ```

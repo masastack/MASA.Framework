@@ -23,11 +23,11 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.Sqlite
 2. Using MasaDbContext
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseSqlite());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite());
 ```
 
 ##### Usage 2:
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseSqlite("Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite("Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"));
 ```

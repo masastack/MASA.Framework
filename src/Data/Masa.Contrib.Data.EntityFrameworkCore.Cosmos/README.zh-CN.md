@@ -23,12 +23,12 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.Cosmos
 2. 使用MasaDbContext
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseCosmos());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseCosmos());
 ```
 
 #### 用法2:
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseCosmos($"{accountEndpoint}",$"{accountKey}",$"{databaseName}"));
-//builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseCosmos($"{connectionString}",$"{databaseName}"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseCosmos($"{accountEndpoint}",$"{accountKey}",$"{databaseName}"));
+//builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseCosmos($"{connectionString}",$"{databaseName}"));
 ```

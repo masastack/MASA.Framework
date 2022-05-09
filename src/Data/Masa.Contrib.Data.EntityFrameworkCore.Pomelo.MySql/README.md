@@ -23,11 +23,11 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql
 2. Using MasaDbContext
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseMySql(Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.28-mysql")));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseMySql(Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.28-mysql")));
 ```
 
 ##### Usage 2:
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseSoftDelete().UseMySql("Server=localhost;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.28-mysql")));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseMySql("Server=localhost;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;", Microsoft.EntityFrameworkCore.ServerVersion.Parse("5.7.28-mysql")));
 ```
