@@ -10,6 +10,17 @@ public static class MasaDbContextOptionsBuilderExtensions
     public static MasaDbContextOptionsBuilder UseFilter(
         this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
         Action<FilterOptions>? options = null)
+        => masaDbContextOptionsBuilder.UseFilterCore(false, options);
+
+    public static MasaDbContextOptionsBuilder UseTestFilter(
+        this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
+        Action<FilterOptions>? options = null)
+        => masaDbContextOptionsBuilder.UseFilterCore(true, options);
+
+    private static MasaDbContextOptionsBuilder UseFilterCore(
+        this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
+        bool isTest,
+        Action<FilterOptions>? options = null)
     {
         var filterOptions = new FilterOptions();
         options?.Invoke(filterOptions);
@@ -17,17 +28,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         masaDbContextOptionsBuilder.Services.TryAddScoped(typeof(DataFilter<>));
         masaDbContextOptionsBuilder.Services.TryAddScoped<IDataFilter, DataFilter>();
 
-        if (filterOptions.EnableSoftDelete) masaDbContextOptionsBuilder.UseSoftDelete();
+        if (filterOptions.EnableSoftDelete) masaDbContextOptionsBuilder.UseSoftDelete(isTest);
 
         return masaDbContextOptionsBuilder;
     }
 
-    private static void UseSoftDelete(this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder)
+    private static void UseSoftDelete(this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder, bool isTest = false)
     {
-        if (_types.Any(type => masaDbContextOptionsBuilder.DbContextType == type))
-            return;
+        if (!isTest)
+        {
+            if (_types.Any(type => masaDbContextOptionsBuilder.DbContextType == type))
+                return;
 
-        _types.Add(masaDbContextOptionsBuilder.DbContextType);
+            _types.Add(masaDbContextOptionsBuilder.DbContextType);
+        }
 
         var masaDbContextOptionsType = typeof(MasaDbContextOptions<>).MakeGenericType(masaDbContextOptionsBuilder.DbContextType);
         var softDeleteSaveChangesFilterType =
@@ -39,7 +53,7 @@ public static class MasaDbContextOptionsBuilderExtensions
             new ServiceDescriptor(typeof(ISaveChangesFilter),
                 serviceProvider =>
                 {
-                    var instance= invokeDelegate.Invoke(
+                    var instance = invokeDelegate.Invoke(
                         serviceProvider.GetRequiredService(masaDbContextOptionsType),
                         serviceProvider.GetRequiredService(masaDbContextOptionsBuilder.DbContextType));
                     return instance;

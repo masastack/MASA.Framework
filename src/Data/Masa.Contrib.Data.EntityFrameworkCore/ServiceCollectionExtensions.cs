@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
@@ -59,7 +62,7 @@ public static class ServiceCollectionExtensions
         Action<IServiceProvider, EFDbContextOptionsBuilder>? optionsBuilder)
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
     {
-        var efDbContextOptionsBuilder = new EFDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider);
+        var efDbContextOptionsBuilder = new EFDbContextOptionsBuilder<TDbContextImplementation>();
         optionsBuilder?.Invoke(serviceProvider, efDbContextOptionsBuilder);
 
         return CreateMasaDbContextOptions<TDbContextImplementation>(

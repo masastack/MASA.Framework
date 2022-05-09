@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public class MasaDbContextOptions<TContext> : MasaDbContextOptions
@@ -16,7 +19,6 @@ public class MasaDbContextOptions<TContext> : MasaDbContextOptions
     /// Can be used to filter data
     /// </summary>
     public override IEnumerable<IModelCreatingProvider> ModelCreatingProviders => _modelCreatingProviders ??= ServiceProvider.GetServices<IModelCreatingProvider>();
-
 
     private IEnumerable<ISaveChangesFilter>? _saveChangesFilters;
 

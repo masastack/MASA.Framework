@@ -23,28 +23,58 @@ public static class MasaDbContextOptionsBuilderExtensions
     public static MasaDbContextOptionsBuilder UseSqlServer(
         this MasaDbContextOptionsBuilder builder,
         string connectionString,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
+        => builder.UseSqlServerCore(connectionString, false, sqlServerOptionsAction);
+
+    public static MasaDbContextOptionsBuilder UseTestSqlServer(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
+        => builder.UseSqlServerCore(connectionString, true, sqlServerOptionsAction);
+
+    private static MasaDbContextOptionsBuilder UseSqlServerCore(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        bool isTest,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
     {
-        builder.UseSqlServerCore(connectionString);
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
-        return builder;
+        return builder.UseSqlServerCore(connectionString, isTest);
     }
 
     public static MasaDbContextOptionsBuilder UseSqlServer(
         this MasaDbContextOptionsBuilder builder,
         DbConnection connection,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
+        => builder.UseSqlServerCore(connection, false, sqlServerOptionsAction);
+
+    public static MasaDbContextOptionsBuilder UseTestSqlServer(
+        this MasaDbContextOptionsBuilder builder,
+        DbConnection connection,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
+        => builder.UseSqlServerCore(connection, true, sqlServerOptionsAction);
+
+    private static MasaDbContextOptionsBuilder UseSqlServerCore(
+        this MasaDbContextOptionsBuilder builder,
+        DbConnection connection,
+        bool isTest,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
-        builder.UseSqlServerCore(connection.ConnectionString);
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
-        return builder;
+        return builder.UseSqlServerCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseSqlServerCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    private static MasaDbContextOptionsBuilder UseSqlServerCore(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        bool isTest = false)
     {
         var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
         var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
+            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
+
         dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }

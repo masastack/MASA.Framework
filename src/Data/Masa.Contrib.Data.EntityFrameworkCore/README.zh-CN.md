@@ -6,6 +6,7 @@
 
 ```c#
 Install-Package Masa.Contrib.Data.EntityFrameworkCore
+Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Microsoft.EntityFrameworkCore.SqlServer//这里以SqlServer举例
 ```
 
@@ -16,7 +17,7 @@ Install-Package Microsoft.EntityFrameworkCore.SqlServer//这里以SqlServer举�
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseSoftDelete();//启用软删除
+    optionsBuilder.UseFilter();//启用过滤
     optionsBuilder.DbContextOptionsBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
 });
 ```

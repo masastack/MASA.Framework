@@ -24,17 +24,35 @@ public static class MasaDbContextOptionsBuilderExtensions
         this MasaDbContextOptionsBuilder builder,
         string databaseName,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
+        => builder.UseInMemoryDatabaseCore(databaseName, false, inMemoryOptionsAction);
+
+    public static MasaDbContextOptionsBuilder UseInMemoryTestDatabase(
+        this MasaDbContextOptionsBuilder builder,
+        string databaseName,
+        Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
+        => builder.UseInMemoryDatabaseCore(databaseName, true, inMemoryOptionsAction);
+
+    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(
+        this MasaDbContextOptionsBuilder builder,
+        string databaseName,
+        bool isTest,
+        Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction)
     {
-        builder.UseInMemoryDatabaseCore(databaseName);
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseInMemoryDatabase(databaseName, inMemoryOptionsAction);
-        return builder;
+        return builder.UseInMemoryDatabaseCore(databaseName, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(this MasaDbContextOptionsBuilder builder, string databaseName)
+    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(
+        this MasaDbContextOptionsBuilder builder,
+        string databaseName,
+        bool isTest = false)
     {
         var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
         var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
+            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
+
         dbConnectionOptions.TryAddConnectionString(name, databaseName);
         return builder;
     }

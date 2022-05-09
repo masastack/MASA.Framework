@@ -40,11 +40,27 @@ public static class MasaDbContextOptionsBuilderExtensions
         string accountKey,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(accountEndpoint, accountKey, databaseName, false, cosmosOptionsAction);
+
+    public static MasaDbContextOptionsBuilder UseTestCosmos(
+        this MasaDbContextOptionsBuilder builder,
+        string accountEndpoint,
+        string accountKey,
+        string databaseName,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(accountEndpoint, accountKey, databaseName, true, cosmosOptionsAction);
+
+    private static MasaDbContextOptionsBuilder UseCosmosCore(
+        this MasaDbContextOptionsBuilder builder,
+        string accountEndpoint,
+        string accountKey,
+        string databaseName,
+        bool isTest,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
-        builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};");
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
-        return builder;
+        return builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};");
     }
 
     public static MasaDbContextOptionsBuilder UseCosmos(
@@ -52,17 +68,37 @@ public static class MasaDbContextOptionsBuilderExtensions
         string connectionString,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(connectionString, databaseName, false, cosmosOptionsAction);
+
+    public static MasaDbContextOptionsBuilder UseTestCosmos(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        string databaseName,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(connectionString, databaseName, true, cosmosOptionsAction);
+
+    private static MasaDbContextOptionsBuilder UseCosmosCore(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        string databaseName,
+        bool isTest,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
-        builder.UseCosmosCore($"{connectionString};Database={databaseName};");
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
-        return builder;
+        return builder.UseCosmosCore($"{connectionString};Database={databaseName};", isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseCosmosCore(this MasaDbContextOptionsBuilder builder, string connectionString)
+    private static MasaDbContextOptionsBuilder UseCosmosCore(
+        this MasaDbContextOptionsBuilder builder,
+        string connectionString,
+        bool isTest = false)
     {
         var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
         var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
+        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
+            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
+
         dbConnectionOptions.TryAddConnectionString(name, connectionString);
         return builder;
     }

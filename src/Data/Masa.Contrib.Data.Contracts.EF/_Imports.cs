@@ -2,11 +2,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
-global using Masa.Contrib.Data.Contracts.EF.Filters;
+global using Masa.Contrib.Data.Contracts.EF.DataFiltering;
 global using Masa.Contrib.Data.Contracts.EF.Internal;
 global using Masa.Contrib.Data.Contracts.EF.Options;
 global using Masa.Contrib.Data.EntityFrameworkCore;
 global using Masa.Contrib.Data.EntityFrameworkCore.Filters;
+global using Masa.Utils.Caching.Memory;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.EntityFrameworkCore.Metadata;

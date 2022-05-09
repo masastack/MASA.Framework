@@ -18,8 +18,4 @@
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="Masa.Utils.Data.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
 </Project>

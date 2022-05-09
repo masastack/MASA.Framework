@@ -6,6 +6,7 @@
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
+Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // 环境隔离 按需引用
 Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
@@ -15,21 +16,21 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
-    "Isolations": [
-      {
-        "TenantId": "*",//匹配所有租户
-        "Environment": "development",
-        "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;",
-        "Score": 99 //当根据条件匹配到多个环境时，根据分值降序选择其中最高的作为当前DbContext的链接地址，Score默认为100
-      },
-      {
-        "TenantId": "00000000-0000-0000-0000-000000000002",
-        "Environment": "development",
-        "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
-      }
-    ]
-  }
+    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+  },
+  "IsolationConnectionStrings": [
+    {
+      "TenantId": "*",//匹配所有租户
+      "Environment": "development",
+      "ConnectionString": "server=localhost,1434;uid=sa;pwd=P@ssw0rd;database=identity;",
+      "Score": 99 //当根据条件匹配到多个环境时，根据分值降序选择其中最高的作为当前DbContext的链接地址，Score默认为100
+    },
+    {
+      "TenantId": "00000000-0000-0000-0000-000000000002",
+      "Environment": "development",
+      "ConnectionString": "server=localhost,1435;uid=sa;pwd=P@ssw0rd;database=identity;"
+    }
+  ]
 }
 ```
 
@@ -46,7 +47,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiTenant(),// 按需选择使用环境或者租户隔离
-        dbOptions => dbOptions.UseSqlServer());
+        dbOptions => dbOptions.UseFilter().UseSqlServer());
 });
 ```
 

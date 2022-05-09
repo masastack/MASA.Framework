@@ -16,7 +16,7 @@ Using MasaDbContext
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseSoftDelete();//enable soft delete
+    optionsBuilder.UseFilter();//enable filtering
     optionsBuilder.DbContextOptionsBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity");
 });
 ```

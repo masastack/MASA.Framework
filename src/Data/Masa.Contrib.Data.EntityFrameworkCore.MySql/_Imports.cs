@@ -4,6 +4,6 @@
 global using Masa.BuildingBlocks.Data;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
 global using MySql.EntityFrameworkCore.Infrastructure;
 global using System.Data.Common;
-global using Microsoft.Extensions.Options;

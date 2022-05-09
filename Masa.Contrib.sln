@@ -183,6 +183,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore", "src\Data\Masa.Contrib.Data.EntityFrameworkCore\Masa.Contrib.Data.EntityFrameworkCore.csproj", "{87DD354D-4D48-4918-ACDE-A7FF62FA0DD8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.Mapping.Mapster", "src\Data\Mapping\Masa.Contrib.Data.Mapping.Mapster\Masa.Contrib.Data.Mapping.Mapster.csproj", "{D5EA7A25-0FD2-4545-9C1C-FF96E5E35145}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.Cosmos", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Cosmos\Masa.Contrib.Data.EntityFrameworkCore.Cosmos.csproj", "{3236F880-3DC0-450F-A14D-8C87525845DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.InMemory", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.InMemory\Masa.Contrib.Data.EntityFrameworkCore.InMemory.csproj", "{7E3FAE39-9CD1-46FA-A389-660008035DFB}"
@@ -198,6 +199,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.Sqlite", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj", "{C8CE5B92-96A6-4FA1-9EEB-43A524DC54AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.SqlServer", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.SqlServer\Masa.Contrib.Data.EntityFrameworkCore.SqlServer.csproj", "{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.Tests", "test\Masa.Contrib.Data.EntityFrameworkCore.Tests\Masa.Contrib.Data.EntityFrameworkCore.Tests.csproj", "{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -807,6 +810,14 @@ Global
 		{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE}.Release|x64.ActiveCfg = Release|Any CPU
 		{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE}.Release|x64.Build.0 = Release|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Debug|x64.Build.0 = Debug|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -906,6 +917,7 @@ Global
 		{A50DC3FB-FD2A-4EF8-8333-4782DFFF0BF1} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{C8CE5B92-96A6-4FA1-9EEB-43A524DC54AA} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
+		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
