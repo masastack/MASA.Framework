@@ -11,12 +11,12 @@ public class IsolationDbContextProvider : BaseDbConnectionStringProvider
 
     protected override List<MasaDbContextConfigurationOptions> GetDbContextOptionsList()
     {
-        var connectionStrings = _options.CurrentValue.Isolations
+        var connectionStrings = _options.CurrentValue.IsolationConnectionStrings
             .Select(connectionString => connectionString.ConnectionString)
             .Distinct()
             .ToList();
-        if (!connectionStrings.Contains(_options.CurrentValue.DefaultConnection))
-            connectionStrings.Add(_options.CurrentValue.DefaultConnection);
+        if (!connectionStrings.Contains(_options.CurrentValue.ConnectionStrings.DefaultConnection))
+            connectionStrings.Add(_options.CurrentValue.ConnectionStrings.DefaultConnection);
 
         return connectionStrings.Select(connectionString => new MasaDbContextConfigurationOptions(connectionString)).ToList();
     }

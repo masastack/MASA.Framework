@@ -6,6 +6,7 @@ Example：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
+Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // Environmental isolation Quote on demand
 Install-Package Masa.Contrib.Isolation.MultiTenant // Multi-tenant isolation On-demand reference
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
@@ -15,21 +16,21 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
-    "Isolations": [
-      {
-        "TenantId": "*",// match all tenants
-        "Environment": "development",
-        "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;",
-        "Score": 99 // When multiple environments are matched according to the conditions, the highest one is selected as the link address of the current DbContext according to the descending order of scores. The default Score is 100.
-      },
-      {
-        "TenantId": "00000000-0000-0000-0000-000000000002",
-        "Environment": "development",
-        "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
-      }
-    ]
-  }
+    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+  },
+  "IsolationConnectionStrings": [
+    {
+      "TenantId": "*",//match all tenants
+      "Environment": "development",
+      "ConnectionString": "server=localhost,1434;uid=sa;pwd=P@ssw0rd;database=identity;",
+      "Score": 99 //When multiple environments are matched according to the conditions, the highest one is selected as the link address of the current DbContext according to the descending order of scores. The default Score is 100.
+    },
+    {
+      "TenantId": "00000000-0000-0000-0000-000000000002",
+      "Environment": "development",
+      "ConnectionString": "server=localhost,1435;uid=sa;pwd=P@ssw0rd;database=identity;"
+    }
+  ]
 }
 ```
 
@@ -46,7 +47,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiTenant(),// Select usage environment or tenant isolation as needed
-        dbOptions => dbOptions.UseSqlServer());
+        dbOptions => dbOptions.UseFilter().UseSqlServer());
 });
 ```
 

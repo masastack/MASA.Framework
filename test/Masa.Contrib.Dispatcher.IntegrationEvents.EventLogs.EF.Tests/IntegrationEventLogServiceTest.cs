@@ -10,7 +10,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestNullDbTransactionAsync()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseSqlite(ConnectionString))
+        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseTestSqlite(ConnectionString))
             .AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
         IDispatcherOptions dispatcherOptions = CreateDispatcherOptions(services);
         dispatcherOptions.UseEventLog<CustomDbContext>();
@@ -53,7 +53,7 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
         dispatcherOptions.UseEventLog<CustomDbContext>();
-        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option => option.UseSqlite(Connection));
+        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
         dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
         var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
         await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
@@ -279,7 +279,7 @@ public class IntegrationEventLogServiceTest : TestBase
         var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
         dispatcherOptions.UseEventLog<CustomDbContext>();
         dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option =>
-            option.UseSqlite(Connection));
+            option.UseTestSqlite(Connection));
         dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
         Mock<IIntegrationEventBus> integrationEventBus = new();
         var types = AppDomain.CurrentDomain.GetAssemblies()
