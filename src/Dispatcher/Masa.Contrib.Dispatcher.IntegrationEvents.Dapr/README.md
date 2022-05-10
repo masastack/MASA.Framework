@@ -19,7 +19,6 @@ builder.Services
     {
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
                .UseEventLog<CatalogDbContext>();
-        )
     });
 ```
 

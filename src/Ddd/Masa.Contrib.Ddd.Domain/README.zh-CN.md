@@ -22,11 +22,10 @@ Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 builder.Services
 .AddDomainEventBus(options =>
 {
-    // options.UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)))//使用进程内事件并使用中间件
-    options.UseEventBus()//使用进程内事件
+    options.UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())//使用跨进程事件
+        // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // 使用进程内事件并使用中间件
+        .UseEventBus()//使用进程内事件
         .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
-        .UseDaprEventBus<IntegrationEventLogService>()///使用跨进程事件
-        .UseEventLog<CustomDbContext>()
         .UseRepository<CustomDbContext>();//使用Repository的EF版实现
 })
 ```
