@@ -6,7 +6,7 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 public interface IModelCreatingProvider
 {
     /// <summary>
-    ///
+    /// For building DbContext models and their mappings
     /// </summary>
     /// <param name="modelBuilder"></param>
     void Configure(ModelBuilder modelBuilder);
