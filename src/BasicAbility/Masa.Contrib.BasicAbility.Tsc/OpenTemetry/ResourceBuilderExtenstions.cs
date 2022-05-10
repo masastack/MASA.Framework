@@ -7,16 +7,25 @@ public static class ResourceBuilderExtenstions
 {
     public static ResourceBuilder AddMasaService(
        this ResourceBuilder resourceBuilder,
-       MasaLoggingOptions options)
+       MasaObservableOptions options, Action<ResourceBuilder>? action = null)
     {
-        ArgumentNullException.ThrowIfNull(resourceBuilder, nameof(resourceBuilder));
+        ArgumentNullException.ThrowIfNull(options, nameof(options));
 
         resourceBuilder = resourceBuilder.AddService(options.ServiceName, options.ServiceNameSpace, options.ServerVersion, true, options.ServiceInstanceId);
 
+        var dic = new Dictionary<string, object>();
+
         if (!string.IsNullOrEmpty(options.ProjectName))
-        {
-            resourceBuilder.AddAttributes(new KeyValuePair<string, object>[] { new KeyValuePair<string, object>(OpenTelemetryAttributeName.Service.ProjectName, options.ProjectName) });
-        }
+            dic.Add(OpenTelemetryAttributeName.Service.ProjectName, options.ProjectName);
+
+        if (dic.Count > 0)
+            resourceBuilder.AddAttributes(dic);
+
+        resourceBuilder.AddTelemetrySdk();
+
+        if (action != null)
+            action.Invoke(resourceBuilder);
+
         return resourceBuilder;
     }
 }

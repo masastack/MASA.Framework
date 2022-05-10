@@ -1,19 +1,19 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.BasicAbility.Tsc;
+namespace Masa.Contrib.Observability;
 
 /// <summary>
 /// Constants for semantic attribute names outlined by the OpenTelemetry specifications.
 /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/README.md"/>.
 /// </summary>
-public static class OpenTelemetryAttributeName
+internal sealed class OpenTelemetryAttributeName
 {
     /// <summary>
     /// Constants for deployment semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/11cc73939a32e3a2e6f11bdeab843c61cf8594e9/specification/resource/semantic_conventions/deployment_environment.md"/>.
     /// </summary>
-    public static class Deployment
+    public class Deployment
     {
         /// <summary>
         /// The name of the deployment environment (aka deployment tier).
@@ -26,7 +26,7 @@ public static class OpenTelemetryAttributeName
     /// Constants for end user semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/span-general.md"/>.
     /// </summary>
-    public static class EndUser
+    public class EndUser
     {
         /// <summary>
         /// Username or client_id extracted from the access token or Authorization header in the inbound request from outside the system.
@@ -46,13 +46,18 @@ public static class OpenTelemetryAttributeName
         /// </summary>
         /// <example>E.g. read:message,write:files.</example>
         public const string Scope = "enduser.scope";
+
+        /// <summary>
+        /// custom attr
+        /// </summary>
+        public const string UserName = "enduser.nick_name";
     }
 
     /// <summary>
     /// Constants for HTTP semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md"/>.
     /// </summary>
-    public static class Http
+    public class Http
     {
         /// <summary>
         /// The URI scheme identifying the used protocol.
@@ -81,6 +86,11 @@ public static class OpenTelemetryAttributeName
         public const string RequestContentLength = "http.request_content_length";
 
         /// <summary>
+        /// custom attr
+        /// </summary>
+        public const string RequestContentBody = "http.request_content_body";
+
+        /// <summary>
         /// The content type of the request body.
         /// </summary>
         /// <example>E.g. application/json.</example>
@@ -99,6 +109,11 @@ public static class OpenTelemetryAttributeName
         /// </summary>
         /// <example>E.g. application/json.</example>
         public const string ResponseContentType = "http.response_content_type";
+
+        /// <summary>
+        /// custom attr
+        /// </summary>
+        public const string ResponseContentBody = "http.response_content_body";
     }
 
     /// <summary>
@@ -119,13 +134,13 @@ public static class OpenTelemetryAttributeName
     /// Constants for service semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/messaging.md"/>.
     /// </summary>
-    public static class Service
+    public class Service
     {
-        /// <summary>
-        /// The name of the service sending messages.
-        /// </summary>
         public const string Name = "service.name";
 
+        /// <summary>
+        /// custom attr
+        /// </summary>
         public const string ProjectName = "service.project.name";
     }
 }

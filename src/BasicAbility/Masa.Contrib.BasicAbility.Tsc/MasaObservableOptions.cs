@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Observability;
 
-public class MasaLoggingOptions
+public class MasaObservableOptions
 {
     public string ProjectName { get; set; }
 

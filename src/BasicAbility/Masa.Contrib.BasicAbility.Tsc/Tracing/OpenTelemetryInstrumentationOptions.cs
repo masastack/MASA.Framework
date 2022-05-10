@@ -16,7 +16,7 @@ public class OpenTelemetryInstrumentationOptions
             {
                 if (rawObject is HttpRequest httpRequest)
                 {
-                    activity.AddMasaSupplement(httpRequest);
+                    await activity.AddMasaSupplement(httpRequest);
                 }
                 else if (rawObject is HttpRequestMessage httpRequestMessage)
                 {
@@ -45,13 +45,13 @@ public class OpenTelemetryInstrumentationOptions
     /// </summary>
     public Action<HttpClientInstrumentationOptions> HttpClientInstrumentationOptions { get; set; } = options =>
     {
-        options.Enrich = (activity, eventName, rawObject) =>
+        options.Enrich = async (activity, eventName, rawObject) =>
         {
             if (eventName.Equals("OnStartActivity"))
             {
                 if (rawObject is HttpRequestMessage httpRequest)
                 {
-                    activity.AddMasaSupplement(httpRequest);
+                   await activity.AddMasaSupplement(httpRequest);
                 }
             }
             else if (eventName.Equals("OnStopActivity"))

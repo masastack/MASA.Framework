@@ -17,28 +17,36 @@ Install-Package Masa.Contrib.BasicAbility.Tsc
 
 ```c#
 
+// create and config ResourceBuilder instance
+var resources = ResourceBuilder.CreateDefault();
+resources.AddMasaService(new MasaObservableOptions
+{
+    ServiceName = "example.api"
+});
+
 //metrics
 builder.Services.AddMasaMetrics(builder => {
+    builder.SetResourceBuilder(resources);
     builder.AddOtlpExporter();
 });
 
 //trcaing
 var ops = new OpenTelemetryInstrumentationOptions();
-//api 排除swagger和healthy
+//api exclude swagger and healthy request
 ops.AspNetCoreInstrumentationOptions.AppendDefaultFilter(ops);
-//blazor 移除blazor常用资源请求路径
+//blazor exclude blazor resources request
 //ops.AspNetCoreInstrumentationOptions.AppendBlazorFilter(ops);
 ops.BuildTraceCallback = builder => {
+    builder.SetResourceBuilder(resources);
     builder.AddOtlpExporter();
 };
 builder.Services.AddMasaTracing(ops);
 
 //logging
-builder.Logging.AddMasaOpenTelemetry(options =>
+builder.Logging.AddMasaOpenTelemetry(builder =>
 {
-    var ops = ResourceBuilder.CreateDefault().AddService(serviceName: "servicename");
-    options.SetResourceBuilder(ops);
-    options.AddOtlpExporter();
+    builder.SetResourceBuilder(resources);
+    builder.AddOtlpExporter();
 });
 
 ```

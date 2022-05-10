@@ -17,9 +17,16 @@ how to use:
 
 
 ```c#
+// create and config ResourceBuilder instance
+var resources = ResourceBuilder.CreateDefault();
+resources.AddMasaService(new MasaObservableOptions
+{
+    ServiceName = "example.api"
+});
 
 //metrics
 builder.Services.AddMasaMetrics(builder => {
+    builder.SetResourceBuilder(resources);
     builder.AddOtlpExporter();
 });
 
@@ -30,16 +37,16 @@ ops.AspNetCoreInstrumentationOptions.AppendDefaultFilter(ops);
 //blazor exclude blazor resources request
 //ops.AspNetCoreInstrumentationOptions.AppendBlazorFilter(ops);
 ops.BuildTraceCallback = builder => {
+    builder.SetResourceBuilder(resources);
     builder.AddOtlpExporter();
 };
 builder.Services.AddMasaTracing(ops);
 
 //logging
-builder.Logging.AddMasaOpenTelemetry(options =>
+builder.Logging.AddMasaOpenTelemetry(builder =>
 {
-    var ops = ResourceBuilder.CreateDefault().AddService(serviceName: "servicename");
-    options.SetResourceBuilder(ops);
-    options.AddOtlpExporter();
+    builder.SetResourceBuilder(resources);
+    builder.AddOtlpExporter();
 });
 
 ```

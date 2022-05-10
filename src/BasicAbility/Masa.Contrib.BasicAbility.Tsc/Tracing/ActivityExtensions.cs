@@ -5,7 +5,7 @@ namespace System.Diagnostics;
 
 public static class ActivityExtension
 {
-    public static Activity AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
+    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
     {
         if (activity is null) return activity;
 
@@ -14,9 +14,31 @@ public static class ActivityExtension
         activity.SetTag(OpenTelemetryAttributeName.Http.ClientIP, httpRequest.HttpContext?.Connection.RemoteIpAddress);
         activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentLength, httpRequest.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentType, httpRequest.ContentType);
+        if (httpRequest.Body != null)
+        {
+            if (!httpRequest.Body.CanSeek)
+                httpRequest.EnableBuffering();
+            activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentBody, await httpRequest.HttpContext.Request.Body.ReadAsStringAsync(GetHttpRequestEncoding(httpRequest)));
+        }
         activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
 
         return activity;
+    }
+
+    private static Encoding GetHttpRequestEncoding(HttpRequest httpRequest)
+    {
+        if (httpRequest.Body != null)
+        {
+            var contentType = httpRequest.HttpContext.Request.ContentType;
+            if (!string.IsNullOrEmpty(contentType))
+            {
+                var attr = MediaTypeHeaderValue.Parse(contentType);
+                if (attr != null && !string.IsNullOrEmpty(attr.CharSet))
+                    return Encoding.GetEncoding(attr.CharSet);
+            }
+        }
+
+        return null;
     }
 
     public static Activity AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
@@ -30,7 +52,7 @@ public static class ActivityExtension
         if ((httpResponse.HttpContext.User?.Claims.Count() ?? 0) > 0)
         {
             activity.AddTag(OpenTelemetryAttributeName.EndUser.Id, httpResponse.HttpContext.User.FindFirst("sub")?.Value ?? string.Empty);
-            activity.AddTag("enduser.nick_name", httpResponse.HttpContext.User.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
+            activity.AddTag(OpenTelemetryAttributeName.EndUser.UserName, httpResponse.HttpContext.User.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
         }
 
         return activity;
@@ -44,9 +66,27 @@ public static class ActivityExtension
         activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
 
         if (httpRequest.Content is not null)
-            activity.SetTag("http.request_content", await httpRequest.Content.ReadAsStringAsync());
+        {
+            var st = await httpRequest.Content.ReadAsStreamAsync();
+            activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentBody, await st.ReadAsStringAsync(GetHttpRequestMessageEncoding(httpRequest)));
+        }
 
         return activity;
+    }
+
+    private static Encoding GetHttpRequestMessageEncoding(HttpRequestMessage httpRequest)
+    {
+        if (httpRequest.Content is not null)
+        {
+            var encodeStr = httpRequest.Content.Headers?.ContentType?.CharSet;
+
+            if (!string.IsNullOrEmpty(encodeStr))
+            {
+                return Encoding.GetEncoding(encodeStr);
+            }
+        }
+
+        return null;
     }
 
     public static Activity AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
@@ -57,4 +97,5 @@ public static class ActivityExtension
 
         return activity;
     }
+
 }
