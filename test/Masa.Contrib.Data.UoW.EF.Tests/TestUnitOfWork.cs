@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Options;
+
 namespace Masa.Contrib.Data.UoW.EF.Tests;
 
 [TestClass]
@@ -25,7 +27,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public void TestAddUoWAndUseSqlLite()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(_connectionString));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetRequiredService<CustomDbContext>());
     }
@@ -34,8 +36,8 @@ public class TestUnitOfWork : TestBase
     public void TestAddMultUoW()
     {
         _options.Object
-            .UseUoW<CustomDbContext>(options => options.UseSqlite(_connectionString))
-            .UseUoW<CustomDbContext>(options => options.UseSqlite(_connectionString));
+            .UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString))
+            .UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
 
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);
@@ -51,7 +53,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestUseTranscationAsync()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -72,7 +74,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestNotUseTranscationAsync()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -90,7 +92,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestNotTransactionCommitAsync()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(_connectionString));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -101,7 +103,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestCommitAsync()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -121,7 +123,7 @@ public class TestUnitOfWork : TestBase
     [TestMethod]
     public async Task TestOpenRollbackAsync()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -138,7 +140,7 @@ public class TestUnitOfWork : TestBase
     public async Task TestAddLoggerAndOpenRollbackAsync()
     {
         _options.Object.Services.AddLogging();
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -156,17 +158,17 @@ public class TestUnitOfWork : TestBase
     {
         IConfiguration configuration = new ConfigurationManager();
         _options.Object.Services.AddSingleton(_ => configuration);
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
         Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 &&
-            dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == null));
+            dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == _connectionString));
     }
 
     [TestMethod]
     public void TestUnitOfWorkManager()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite(Connection));
+        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
         var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
@@ -176,24 +178,26 @@ public class TestUnitOfWork : TestBase
 
         var newUnitOfWork =
             unitOfWorkManager.CreateDbContext(
-                new Masa.BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions(_connectionString));
+                new MasaDbContextConfigurationOptions(_connectionString));
         Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
         Assert.ThrowsException<ArgumentException>(()
-            => unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("")));
+            => unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("")));
     }
 
     [TestMethod]
     public async Task TestUnitOfWorkAccessorAsync()
     {
         var services = new ServiceCollection();
-        var configurationRoot = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true)
-            .Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.Configure<MasaDbConnectionOptions>(options =>
+        {
+            options.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = _connectionString
+            };
+        });
         _options.Setup(option => option.Services).Returns(services).Verifiable();
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
@@ -204,17 +208,17 @@ public class TestUnitOfWork : TestBase
         Assert.IsTrue(!unitOfWork.TransactionHasBegun);
         unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null && unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString ==
-            configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
+            _connectionString);
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
         var unitOfWorkNew = unitOfWorkManager.CreateDbContext(false);
         var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null &&
             unitOfWorkAccessorNew.CurrentDbContextOptions.ConnectionString ==
-            configurationRoot["ConnectionStrings:DefaultConnection"].ToString());
+            _connectionString);
 
         var unitOfWorkNew2 =
-            unitOfWorkManager.CreateDbContext(new BuildingBlocks.Data.UoW.Options.MasaDbContextConfigurationOptions("test"));
+            unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("test"));
         var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(unitOfWorkAccessorNew2!.CurrentDbContextOptions != null &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions.ConnectionString == "test");
@@ -228,11 +232,13 @@ public class TestUnitOfWork : TestBase
     public void TestUnitOfWorkByEventBusBuilder()
     {
         var services = new ServiceCollection();
-        var configurationRoot = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true)
-            .Build();
-        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.Configure<MasaDbConnectionOptions>(options =>
+        {
+            options.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = _connectionString
+            };
+        });
         Mock<IEventBusBuilder> eventBuilder = new();
         eventBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
         eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
@@ -258,7 +264,39 @@ public class TestUnitOfWork : TestBase
         Assert.IsNotNull(serviecProvider.GetService<IUnitOfWork>());
 
         var customDbContext = serviecProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(customDbContext) == serviecProvider.GetRequiredService<IMasaConfiguration>().GetConfiguration(SectionTypes.Local)["ConnectionStrings:DefaultConnection"]);
+        Assert.IsTrue(GetDataBaseConnectionString(customDbContext) ==
+            serviecProvider.GetRequiredService<IMasaConfiguration>().GetConfiguration(SectionTypes.Local)[
+                "ConnectionStrings:DefaultConnection"]);
+    }
+
+    [TestMethod]
+    public async Task TestGetConnectionStringAndCurrentDbContextOptionsAsyncReturnTest1()
+    {
+        Mock<IUnitOfWorkAccessor> unitOfWorkAccessor = new();
+        string connectionString = "Test1";
+        unitOfWorkAccessor.Setup(accessor => accessor.CurrentDbContextOptions)
+            .Returns(new MasaDbContextConfigurationOptions(connectionString));
+        var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object, null!);
+        Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
+    }
+
+    [TestMethod]
+    public async Task TestGetConnectionStringAsyncReturnTest1()
+    {
+        Mock<IUnitOfWorkAccessor> unitOfWorkAccessor = new();
+        string connectionString = "Test1";
+        IServiceCollection services = new ServiceCollection();
+        services.Configure<MasaDbConnectionOptions>(options =>
+        {
+            options.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = connectionString
+            };
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object,
+            serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>());
+        Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
     }
 
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;

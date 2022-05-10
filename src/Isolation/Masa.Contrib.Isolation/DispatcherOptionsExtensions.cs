@@ -42,38 +42,42 @@ public static class DispatcherOptionsExtensions
         IsolationBuilder builder = new IsolationBuilder(services);
         isolationBuilder.Invoke(builder);
 
-        if (services.Count(service => service.ServiceType == typeof(ITenantContext) || service.ServiceType == typeof(IEnvironmentContext)) <
-            1)
+        if (services.Count(service =>
+                service.ServiceType == typeof(ITenantContext) ||
+                service.ServiceType == typeof(IEnvironmentContext)) < 1)
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
         services.AddHttpContextAccessor();
 
         services
-            .TryAddConfigure<IsolationDbConnectionOptions>(Const.DEFAULT_SECTION)
+            .TryAddConfigure<IsolationDbConnectionOptions>()
             .AddTransient(typeof(IMiddleware<>), typeof(IsolationMiddleware<>))
             .TryAddSingleton<IDbConnectionStringProvider, IsolationDbContextProvider>();
-        services.TryAddScoped(typeof(IIsolationDbConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider));
+
+        if (services.Any(service => service.ServiceType == typeof(IConnectionStringProvider)))
+            services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider), ServiceLifetime.Scoped));
+        else
+            services.TryAddScoped<IConnectionStringProvider, DefaultDbIsolationConnectionStringProvider>();
     }
 
     private static IServiceCollection TryAddConfigure<TOptions>(
-        this IServiceCollection services,
-        string sectionName)
+        this IServiceCollection services)
         where TOptions : class
     {
+        services.AddOptions();
         var serviceProvider = services.BuildServiceProvider();
         IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.GetConfiguration(SectionTypes.Local) ??
             serviceProvider.GetService<IConfiguration>();
+
         if (configuration == null)
             return services;
 
         string name = Options.DefaultName;
-        services.AddOptions();
-        var configurationSection = configuration.GetSection(sectionName);
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configurationSection));
+            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
         services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(
             name,
-            configurationSection, _ =>
+            configuration, _ =>
             {
             }));
         return services;

@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Isolation.Internal;
+namespace Masa.Contrib.Data.EntityFrameworkCore.Filters;
 
-internal class Const
+public interface ISaveChangesFilter
 {
-    public const string DEFAULT_SECTION = "ConnectionStrings";
+    void OnExecuting(ChangeTracker changeTracker);
 }

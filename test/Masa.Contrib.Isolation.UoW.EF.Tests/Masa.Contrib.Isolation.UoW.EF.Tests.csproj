@@ -20,11 +20,11 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.2.7" />
     <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="Masa.Utils.Data.EntityFrameworkCore.Sqlite" Version="0.4.0-preview.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
+    <ProjectReference Include="..\..\src\Data\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
     <ProjectReference Include="..\..\src\Isolation\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj" />
