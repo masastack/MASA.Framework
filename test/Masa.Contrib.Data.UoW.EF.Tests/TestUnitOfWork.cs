@@ -309,7 +309,7 @@ public class TestUnitOfWork : TestBase
         services.AddScoped(serviceProvider => domainEventBus.Object);
         Mock<IEventBusBuilder> eventBuilder = new();
         eventBuilder.Setup(eb => eb.Services).Returns(services).Verifiable();
-        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite($"Data Source=test_{Guid.NewGuid()}"));
+        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite($"Data Source=test_{Guid.NewGuid()}"));
 
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
