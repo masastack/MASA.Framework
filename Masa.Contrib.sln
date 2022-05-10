@@ -202,10 +202,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFrameworkCore.PostgreSql", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.PostgreSql\Masa.Contrib.Data.EntityFrameworkCore.PostgreSql.csproj", "{D28C808F-3938-42E4-98F7-800E75F4ED27}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFrameworkCore.Sqlite", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj", "{7F2AE28A-6AD7-45F1-B6E6-532FD7DA94DC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFrameworkCore.SqlServer", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.SqlServer\Masa.Contrib.Data.EntityFrameworkCore.SqlServer.csproj", "{7561B4C2-B511-4C5C-8D54-8F72D35EF500}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.Cosmos", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Cosmos\Masa.Contrib.Data.EntityFrameworkCore.Cosmos.csproj", "{3236F880-3DC0-450F-A14D-8C87525845DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EntityFrameworkCore.InMemory", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.InMemory\Masa.Contrib.Data.EntityFrameworkCore.InMemory.csproj", "{7E3FAE39-9CD1-46FA-A389-660008035DFB}"
@@ -968,8 +964,6 @@ Global
 		{C8CE5B92-96A6-4FA1-9EEB-43A524DC54AA} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{E337EE1A-F6DB-4276-9CD6-DEBF224D7FDE} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{E1096C8E-6EC1-45CB-9CA6-0ADD830CAAA3} = {38E6C400-90C0-493E-9266-C1602E229F1B}
-		{7F2AE28A-6AD7-45F1-B6E6-532FD7DA94DC} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
-		{7561B4C2-B511-4C5C-8D54-8F72D35EF500} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
