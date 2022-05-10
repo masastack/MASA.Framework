@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Ddd.Domain.Events;
 using Microsoft.Extensions.Options;
 
 namespace Masa.Contrib.Data.UoW.EF.Tests;
@@ -297,6 +298,26 @@ public class TestUnitOfWork : TestBase
         var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object,
             serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>());
         Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
+    }
+
+    [TestMethod]
+    public async Task TestCommitReturnPublishQueueIsValid()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Mock<IDomainEventBus> domainEventBus = new();
+        domainEventBus.Setup(eventBus => eventBus.PublishQueueAsync()).Verifiable();
+        services.AddScoped(serviceProvider => domainEventBus.Object);
+        Mock<IEventBusBuilder> eventBuilder = new();
+        eventBuilder.Setup(eb => eb.Services).Returns(services).Verifiable();
+        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite($"Data Source=test_{Guid.NewGuid()}"));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        dbContext.Database.EnsureCreated();
+        var unitOfWork = new UnitOfWork<CustomDbContext>(serviceProvider);
+        var _ = unitOfWork.Transaction;
+        await unitOfWork.CommitAsync();
+        domainEventBus.Verify(eventBus => eventBus.PublishQueueAsync(), Times.Once());
     }
 
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;

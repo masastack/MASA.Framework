@@ -6,14 +6,13 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
     protected readonly IDataFilter? DataFilter;
-    protected readonly MasaDbContextOptions? Options;
-    protected readonly IDomainEventBus? DomainEventBus;
+    protected readonly MasaDbContextOptions Options;
+    protected IDomainEventBus? DomainEventBus => Options.ServiceProvider.GetService<IDomainEventBus>();
 
     public MasaDbContext(MasaDbContextOptions options) : base(options)
     {
         Options = options;
         DataFilter = options.ServiceProvider.GetService<IDataFilter>();
-        DomainEventBus = options.ServiceProvider.GetService<IDomainEventBus>();
     }
 
     /// <summary>
