@@ -122,7 +122,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
             return;
 
         var domainEntities = changeTracker
-            .Entries<IGeneratesDomainEvents>()
+            .Entries<IGenerateDomainEvents>()
             .Where(entry => entry.Entity.GetDomainEvents().Any());
 
         var domainEvents = domainEntities
