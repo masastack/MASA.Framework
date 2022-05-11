@@ -146,4 +146,41 @@ public class ClusterServiceTest
 
         Assert.IsTrue(result.Count == 0);
     }
+
+    [TestMethod]
+    [DataRow(1)]
+    public async Task TestGetEnvironmentClustersByProjectIdAsync(int projectId)
+    {
+        var data = new List<EnvironmentClusterModel>
+        {
+            new EnvironmentClusterModel { Id=1 }
+        };
+
+        var requestUri = $"api/v1/envClusters/{projectId}";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(callerProvider.Object);
+
+        var result = await pmCaching.ClusterService.GetEnvironmentClustersByProjectIdAsync(projectId);
+        callerProvider.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 1);
+    }
+
+    [TestMethod]
+    [DataRow(1)]
+    public async Task TestGetEnvironmentClustersByProjectId1Async(int projectId)
+    {
+        List<EnvironmentClusterModel>? data = null;
+
+        var requestUri = $"api/v1/envClusters/{projectId}";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(callerProvider.Object);
+
+        var result = await pmCaching.ClusterService.GetEnvironmentClustersByProjectIdAsync(projectId);
+        callerProvider.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 0);
+    }
 }

@@ -43,4 +43,12 @@ public class ClusterService : IClusterService
 
         return result ?? new();
     }
+
+    public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersByProjectIdAsync(int projectId)
+    {
+        var requestUri = $"api/v1/envClusters/{projectId}";
+        var result = await _callerProvider.GetAsync<List<EnvironmentClusterModel>>(requestUri);
+
+        return result ?? new();
+    }
 }
