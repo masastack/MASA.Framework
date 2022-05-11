@@ -31,16 +31,20 @@ builder.Services.AddMasaMetrics(builder => {
 });
 
 //trcaing
-var ops = new OpenTelemetryInstrumentationOptions();
-//api exclude swagger and healthy request
-ops.AspNetCoreInstrumentationOptions.AppendDefaultFilter(ops);
-//blazor exclude blazor resources request
-//ops.AspNetCoreInstrumentationOptions.AppendBlazorFilter(ops);
-ops.BuildTraceCallback = builder => {
-    builder.SetResourceBuilder(resources);
-    builder.AddOtlpExporter();
-};
-builder.Services.AddMasaTracing(ops);
+builder.Services.AddMasaTracing(options =>
+{
+    //api exclude swagger and healthy request
+    options.AspNetCoreInstrumentationOptions.AppendDefaultFilter(options);
+
+    //blazor exclude blazor resources request
+    //options.AspNetCoreInstrumentationOptions.AppendBlazorFilter(options);
+
+    options.BuildTraceCallback = builder =>
+     {
+         builder.SetResourceBuilder(resources);
+         builder.AddOtlpExporter();
+     };
+});
 
 //logging
 builder.Logging.AddMasaOpenTelemetry(builder =>

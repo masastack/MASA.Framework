@@ -5,28 +5,31 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class MasaServiceExtensions
 {
-    public static IServiceCollection AddMasaTracing(this IServiceCollection services, OpenTelemetryInstrumentationOptions options)
+    public static IServiceCollection AddMasaTracing(this IServiceCollection services, Action<OpenTelemetryInstrumentationOptions>? configure = null)
     {
         services.AddOpenTelemetryTracing((builder) =>
         {
             builder.SetSampler(new AlwaysOnSampler());
+            var option = new OpenTelemetryInstrumentationOptions();
+            if (configure != null)
+                configure.Invoke(option);
 
-            if (options?.AspNetCoreInstrumentationOptions != null)
-                builder.AddAspNetCoreInstrumentation(options.AspNetCoreInstrumentationOptions);
+            if (option?.AspNetCoreInstrumentationOptions != null)
+                builder.AddAspNetCoreInstrumentation(option.AspNetCoreInstrumentationOptions);
 
-            if (options?.HttpClientInstrumentationOptions != null)
-                builder.AddHttpClientInstrumentation(options.HttpClientInstrumentationOptions);
+            if (option?.HttpClientInstrumentationOptions != null)
+                builder.AddHttpClientInstrumentation(option.HttpClientInstrumentationOptions);
 
-            if (options?.EntityFrameworkInstrumentationOptions != null)
-                builder.AddEntityFrameworkCoreInstrumentation(options.EntityFrameworkInstrumentationOptions);
+            if (option?.EntityFrameworkInstrumentationOptions != null)
+                builder.AddEntityFrameworkCoreInstrumentation(option.EntityFrameworkInstrumentationOptions);
 
-            if (options?.ElasticsearchClientInstrumentationOptions != null)
-                builder.AddElasticsearchClientInstrumentation(options.ElasticsearchClientInstrumentationOptions);
+            if (option?.ElasticsearchClientInstrumentationOptions != null)
+                builder.AddElasticsearchClientInstrumentation(option.ElasticsearchClientInstrumentationOptions);
 
-            if (options?.StackExchangeRedisCallsInstrumentationOptions != null && options?.Connection != null)
-                builder.AddRedisInstrumentation(options.Connection, options.StackExchangeRedisCallsInstrumentationOptions);
+            if (option?.StackExchangeRedisCallsInstrumentationOptions != null && option?.Connection != null)
+                builder.AddRedisInstrumentation(option.Connection, option.StackExchangeRedisCallsInstrumentationOptions);
 
-            options?.BuildTraceCallback?.Invoke(builder);
+            option?.BuildTraceCallback?.Invoke(builder);
 
             builder.AddOtlpExporter();
         });
