@@ -12,6 +12,7 @@ global using Masa.BuildingBlocks.Isolation.Middleware;
 global using Masa.BuildingBlocks.Isolation.MultiTenant;
 global using Masa.BuildingBlocks.Isolation.Options;
 global using Masa.Contrib.Isolation.Middleware;
+global using Masa.Utils.Extensions.Expressions;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;
