@@ -13,13 +13,8 @@ public static class ResourceBuilderExtenstions
 
         resourceBuilder = resourceBuilder.AddService(options.ServiceName, options.ServiceNameSpace, options.ServiceVersion, true, options.ServiceInstanceId);
 
-        var dic = new Dictionary<string, object>();
-
         if (!string.IsNullOrEmpty(options.ProjectName))
-            dic.Add(OpenTelemetryAttributeName.Service.PROJECT_NAME, options.ProjectName);
-
-        if (dic.Count > 0)
-            resourceBuilder.AddAttributes(dic);
+            resourceBuilder.AddAttributes(new Dictionary<string, object> { { OpenTelemetryAttributeName.Service.PROJECT_NAME, options.ProjectName } });
 
         resourceBuilder.AddTelemetrySdk();
 
