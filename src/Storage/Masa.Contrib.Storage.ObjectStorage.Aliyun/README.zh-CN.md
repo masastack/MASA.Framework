@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 1. 配置appsettings.json
 ``` C#
 {
-  "Aliyun": {
+  "AliyunOss": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
     "RegionId": "Replace-With-Your-RegionId",
