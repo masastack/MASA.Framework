@@ -7,6 +7,7 @@ using Masa.Contrib.Ddd.Domain.Integrated.Tests.DomainEvents;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using Masa.Contrib.Ddd.Domain.Entities.Tests;
 
 namespace Masa.Contrib.Ddd.Domain.Integrated.Tests;
 

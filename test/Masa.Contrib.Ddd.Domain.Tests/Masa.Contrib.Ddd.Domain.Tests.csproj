@@ -26,7 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ddd\Masa.Contrib.Ddd.Domain\Masa.Contrib.Ddd.Domain.csproj" />
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
-    <ProjectReference Include="..\Masa.Contribs.Ddd.Domain.Entities.Tests\Masa.Contribs.Ddd.Domain.Entities.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Entities.Tests\Masa.Contrib.Ddd.Domain.Entities.Tests.csproj" />
   </ItemGroup>
 
 </Project>

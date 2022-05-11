@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +29,7 @@
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.csproj" />
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.csproj" />
-    <ProjectReference Include="..\Masa.Contribs.Ddd.Domain.Entities.Tests\Masa.Contribs.Ddd.Domain.Entities.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Ddd.Domain.Entities.Tests\Masa.Contrib.Ddd.Domain.Entities.Tests.csproj" />
   </ItemGroup>
 
 </Project>

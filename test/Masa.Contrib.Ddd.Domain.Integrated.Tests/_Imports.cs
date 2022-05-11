@@ -9,7 +9,6 @@ global using Masa.Contrib.Ddd.Domain.Repository.EF;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF;
-global using Masa.Contribs.Ddd.Domain.Entities.Tests;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -96,7 +96,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Masa.Contrib.Configuration"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Service.MinimalAPIs.Tests", "test\Masa.Contrib.Service.MinimalAPIs.Tests\Masa.Contrib.Service.MinimalAPIs.Tests.csproj", "{A5C1EF6B-A3B5-4D0C-8373-F854EE7EF4AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contribs.Ddd.Domain.Entities.Tests", "test\Masa.Contribs.Ddd.Domain.Entities.Tests\Masa.Contribs.Ddd.Domain.Entities.Tests.csproj", "{B29ABF5D-AFA8-4480-B74E-3ACB6FAAA826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Entities.Tests", "test\Masa.Contrib.Ddd.Domain.Entities.Tests\Masa.Contrib.Ddd.Domain.Entities.Tests.csproj", "{B29ABF5D-AFA8-4480-B74E-3ACB6FAAA826}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EF.Tests", "test\Masa.Contrib.Data.Contracts.EF.Tests\Masa.Contrib.Data.Contracts.EF.Tests.csproj", "{5A163042-B03A-4063-85FF-22D4C5BB5B90}"
 EndProject
@@ -929,6 +929,7 @@ Global
 		{124A4190-6B03-4A1C-B2BE-979DD1FB511F} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{690D8379-B630-41FD-88F0-6D1EBB4BC3D4} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
+		{E868B34E-D1ED-412A-9382-954B84EDE80C} = {13EDB361-AF88-4F89-B4AB-46622BCCBC37}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
