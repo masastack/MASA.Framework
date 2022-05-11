@@ -5,27 +5,27 @@ namespace System.Diagnostics;
 
 public static class ActivityExtension
 {
-    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
+    public static async Task<Activity?> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
     {
-        if (activity is null) return activity;
+        if (activity is null) return null;
 
-        activity.SetTag(OpenTelemetryAttributeName.Http.Flavor, httpRequest.Protocol);
-        activity.SetTag(OpenTelemetryAttributeName.Http.Scheme, httpRequest.Scheme);
-        activity.SetTag(OpenTelemetryAttributeName.Http.ClientIP, httpRequest.HttpContext?.Connection.RemoteIpAddress);
-        activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentLength, httpRequest.ContentLength);
-        activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentType, httpRequest.ContentType);
+        activity.SetTag(OpenTelemetryAttributeName.Http.FLAVOR, httpRequest.Protocol);
+        activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.Scheme);
+        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, httpRequest.HttpContext?.Connection.RemoteIpAddress);
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_LENGTH, httpRequest.ContentLength);
+        activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_TYPE, httpRequest.ContentType);
         if (httpRequest.Body != null)
         {
             if (!httpRequest.Body.CanSeek)
                 httpRequest.EnableBuffering();
-            activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentBody, await httpRequest.HttpContext.Request.Body.ReadAsStringAsync(GetHttpRequestEncoding(httpRequest)));
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY, await httpRequest.Body.ReadAsStringAsync(GetHttpRequestEncoding(httpRequest)));
         }
-        activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
+        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         return activity;
     }
 
-    private static Encoding GetHttpRequestEncoding(HttpRequest httpRequest)
+    private static Encoding? GetHttpRequestEncoding(HttpRequest httpRequest)
     {
         if (httpRequest.Body != null)
         {
@@ -41,40 +41,40 @@ public static class ActivityExtension
         return null;
     }
 
-    public static Activity AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
+    public static Activity? AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
     {
-        if (activity is null) return activity;
+        if (activity is null) return null;
 
-        activity.SetTag(OpenTelemetryAttributeName.Http.ResponseContentLength, httpResponse.ContentLength);
-        activity.SetTag(OpenTelemetryAttributeName.Http.ResponseContentType, httpResponse.ContentType);
-        activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
+        activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_LENGTH, httpResponse.ContentLength);
+        activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_TYPE, httpResponse.ContentType);
+        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         if ((httpResponse.HttpContext.User?.Claims.Count() ?? 0) > 0)
         {
-            activity.AddTag(OpenTelemetryAttributeName.EndUser.Id, httpResponse.HttpContext.User.FindFirst("sub")?.Value ?? string.Empty);
-            activity.AddTag(OpenTelemetryAttributeName.EndUser.UserName, httpResponse.HttpContext.User.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
+            activity.AddTag(OpenTelemetryAttributeName.EndUser.ID, httpResponse.HttpContext.User?.FindFirst("sub")?.Value ?? string.Empty);
+            activity.AddTag(OpenTelemetryAttributeName.EndUser.USER_NICK_NAME, httpResponse.HttpContext.User?.FindFirst("https://masastack.com/security/authentication/MasaNickName")?.Value ?? string.Empty);
         }
 
         return activity;
     }
 
-    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
+    public static async Task<Activity?> AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
     {
-        if (activity is null) return activity;
+        if (activity is null) return null;
 
-        activity.SetTag(OpenTelemetryAttributeName.Http.Scheme, httpRequest.RequestUri.Scheme);
-        activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
+        activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.RequestUri?.Scheme);
+        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         if (httpRequest.Content is not null)
         {
             var st = await httpRequest.Content.ReadAsStreamAsync();
-            activity.SetTag(OpenTelemetryAttributeName.Http.RequestContentBody, await st.ReadAsStringAsync(GetHttpRequestMessageEncoding(httpRequest)));
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY, await st.ReadAsStringAsync(GetHttpRequestMessageEncoding(httpRequest)));
         }
 
         return activity;
     }
 
-    private static Encoding GetHttpRequestMessageEncoding(HttpRequestMessage httpRequest)
+    private static Encoding? GetHttpRequestMessageEncoding(HttpRequestMessage httpRequest)
     {
         if (httpRequest.Content is not null)
         {
@@ -89,11 +89,11 @@ public static class ActivityExtension
         return null;
     }
 
-    public static Activity AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
+    public static Activity? AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
     {
-        if (activity is null) return activity;
+        if (activity is null) return null;
 
-        activity.SetTag(OpenTelemetryAttributeName.Host.Name, Dns.GetHostName());
+        activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         return activity;
     }

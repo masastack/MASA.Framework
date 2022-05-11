@@ -5,13 +5,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class AspNetCoreInstrumentationOptionsExtensions
 {
-    private static List<string> _lstDefaultFilterIgnorePrefix = new List<string>()
+    private static List<string> _lstDefaultFilterIgnorePrefix = new()
     {
         "/swagger",
         "/healthz",
     };
 
-    private static List<string> _lstBlazorFilterIgnorePrefix = new List<string>()
+    private static List<string> _lstBlazorFilterIgnorePrefix = new()
     {
         "/swagger",
         "/healthz",
@@ -19,7 +19,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         "/_content",
     };
 
-    private static List<string> _lstBlazorFilterIgnoreSuffix = new List<string>()
+    private static List<string> _lstBlazorFilterIgnoreSuffix = new()
     {
         ".js",
         ".css",
@@ -40,7 +40,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         {
             opt.Filter = httpContext =>
             {
-                return !_lstDefaultFilterIgnorePrefix.Any(prefix => httpContext.Request.Path.Value.StartsWith(prefix));
+                return !_lstDefaultFilterIgnorePrefix.Any(prefix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.StartsWith(prefix));
             };
         };
 
@@ -58,10 +58,10 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         {
             opt.Filter = httpContext =>
             {
-                if (_lstBlazorFilterIgnorePrefix.Any(prefix => httpContext.Request.Path.Value.StartsWith(prefix)))
+                if (_lstBlazorFilterIgnorePrefix.Any(prefix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.StartsWith(prefix)))
                     return false;
 
-                if (_lstBlazorFilterIgnoreSuffix.Any(suffix => httpContext.Request.Path.Value.EndsWith(suffix)))
+                if (_lstBlazorFilterIgnoreSuffix.Any(suffix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.EndsWith(suffix)))
                     return false;
 
                 return true;

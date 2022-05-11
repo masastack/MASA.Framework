@@ -11,12 +11,12 @@ public static class ResourceBuilderExtenstions
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        resourceBuilder = resourceBuilder.AddService(options.ServiceName, options.ServiceNameSpace, options.ServerVersion, true, options.ServiceInstanceId);
+        resourceBuilder = resourceBuilder.AddService(options.ServiceName, options.ServiceNameSpace, options.ServiceVersion, true, options.ServiceInstanceId);
 
         var dic = new Dictionary<string, object>();
 
         if (!string.IsNullOrEmpty(options.ProjectName))
-            dic.Add(OpenTelemetryAttributeName.Service.ProjectName, options.ProjectName);
+            dic.Add(OpenTelemetryAttributeName.Service.PROJECT_NAME, options.ProjectName);
 
         if (dic.Count > 0)
             resourceBuilder.AddAttributes(dic);

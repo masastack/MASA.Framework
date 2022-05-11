@@ -7,7 +7,7 @@ public static class StreamExtenistions
 {
     private static readonly Encoding _defaultEncoding = Encoding.UTF8;
 
-    public static async Task<string> ReadAsStringAsync(this Stream stream, Encoding? encoding = null)
+    public static async Task<string?> ReadAsStringAsync(this Stream stream, Encoding? encoding = null)
     {
         if (stream == null)
             return null;
@@ -19,7 +19,7 @@ public static class StreamExtenistions
             return "cann't seek";
        
         var start = (int)stream.Position;
-        List<byte> data = new List<byte>();
+        List<byte> data = new();
         var buffer = new byte[1024];
         do
         {

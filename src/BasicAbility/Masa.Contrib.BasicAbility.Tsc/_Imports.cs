@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-global using Masa.Contrib.Observability;
+global using Masa.Contrib.BasicAbility.Tsc;
 global using Microsoft.AspNetCore.Http;
 global using OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient;
 global using OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore;

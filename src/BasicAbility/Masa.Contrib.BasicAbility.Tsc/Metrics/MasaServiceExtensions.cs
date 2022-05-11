@@ -5,20 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class MasaServiceExtensions
 {
-    public static IServiceCollection AddMasaMetrics(this IServiceCollection services, Action<MeterProviderBuilder>? builderConfiger = null)
+    public static IServiceCollection AddMasaMetrics(this IServiceCollection services, Action<MeterProviderBuilder>? configure = null)
     {
         services.AddOpenTelemetryMetrics(builder =>
            {
-               if (builderConfiger != null)
-                   builderConfiger.Invoke(builder);
+               if (configure != null)
+                   configure.Invoke(builder);
 
-               builder
-               .AddRuntimeMetrics()
+               builder.AddRuntimeMetrics()
                .AddAspNetCoreInstrumentation()
                .AddHttpClientInstrumentation();
-           }
-        );
+           });
         return services;
     }
 }
-
