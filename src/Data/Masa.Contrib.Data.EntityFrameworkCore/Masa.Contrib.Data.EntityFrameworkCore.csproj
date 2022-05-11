@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Ddd\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
   </ItemGroup>
 
 </Project>

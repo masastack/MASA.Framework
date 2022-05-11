@@ -6,7 +6,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
     protected readonly IDataFilter? DataFilter;
-    protected readonly MasaDbContextOptions? Options;
+    protected readonly MasaDbContextOptions Options;
+    protected IDomainEventBus? DomainEventBus => Options.ServiceProvider.GetService<IDomainEventBus>();
 
     public MasaDbContext(MasaDbContextOptions options) : base(options)
     {
@@ -108,10 +109,31 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("An error occured when intercept SaveChanges() or SaveChangesAsync()()", ex);
+                    throw new Exception("An error occured when intercept SaveChanges() or SaveChangesAsync()", ex);
                 }
             }
+            DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
         }
+    }
+
+    protected virtual async Task DomainEventEnqueueAsync(ChangeTracker changeTracker)
+    {
+        if (DomainEventBus == null)
+            return;
+
+        var domainEntities = changeTracker
+            .Entries<IGenerateDomainEvents>()
+            .Where(entry => entry.Entity.GetDomainEvents().Any());
+
+        var domainEvents = domainEntities
+            .SelectMany(entry => entry.Entity.GetDomainEvents())
+            .ToList();
+
+        domainEntities.ToList()
+            .ForEach(entity => entity.Entity.ClearDomainEvents());
+
+        foreach (var domainEvent in domainEvents)
+            await DomainEventBus.Enqueue(domainEvent);
     }
 
     /// <summary>
