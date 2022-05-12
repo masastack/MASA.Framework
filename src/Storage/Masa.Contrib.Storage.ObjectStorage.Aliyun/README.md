@@ -16,7 +16,7 @@ support:
 1. Configure appsettings.json
 ```` C#
 {
-  "Aliyun": {
+  "AliyunOss": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
     "RegionId": "Replace-With-Your-RegionId",
@@ -40,7 +40,7 @@ builder.Services.AddAliyunStorage();
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(new ALiYunStorageOptions("AccessKeyId", "AccessKeySecret", "regionId", "roleArn", "roleSessionName"));
+builder.Services.AddAliyunStorage(new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "regionId", "roleArn", "roleSessionName"));
 ````
 
 ### Usage 3:
@@ -48,7 +48,7 @@ builder.Services.AddAliyunStorage(new ALiYunStorageOptions("AccessKeyId", "Acces
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration ["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration ["Aliyun:RoleSessionName"]));
 ````
 
 > The difference from usage 2 is that the configuration can take effect without restarting the project after the configuration update
