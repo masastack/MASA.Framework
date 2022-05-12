@@ -32,7 +32,11 @@ public class Client : BaseClient, IClient
     /// <returns></returns>
     public string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
 
-    public Task GetObjectAsync(string bucketName, string objectName, Action<Stream> callback, CancellationToken cancellationToken = default)
+    public Task GetObjectAsync(
+        string bucketName,
+        string objectName,
+        Action<Stream> callback,
+        CancellationToken cancellationToken = default)
     {
         var client = GetClient();
         var result = client.GetObject(bucketName, objectName);
@@ -40,7 +44,13 @@ public class Client : BaseClient, IClient
         return Task.CompletedTask;
     }
 
-    public Task GetObjectAsync(string bucketName, string objectName, long offset, long length, Action<Stream> callback, CancellationToken cancellationToken = default)
+    public Task GetObjectAsync(
+        string bucketName,
+        string objectName,
+        long offset,
+        long length,
+        Action<Stream> callback,
+        CancellationToken cancellationToken = default)
     {
         if (length < 0 && length != -1)
             throw new ArgumentOutOfRangeException(nameof(length), $"{length} should be greater than 0 or -1");
@@ -53,7 +63,11 @@ public class Client : BaseClient, IClient
         return Task.CompletedTask;
     }
 
-    public Task PutObjectAsync(string bucketName, string objectName, Stream data, CancellationToken cancellationToken = default)
+    public Task PutObjectAsync(
+        string bucketName,
+        string objectName,
+        Stream data,
+        CancellationToken cancellationToken = default)
     {
         var client = GetClient();
         var objectMetadata = _supportCallback ? BuildCallbackMetadata(_options.CallbackUrl, _options.CallbackBody) : null;
@@ -79,14 +93,20 @@ public class Client : BaseClient, IClient
         return metadata;
     }
 
-    public Task<bool> ObjectExistsAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
+    public Task<bool> ObjectExistsAsync(
+        string bucketName,
+        string objectName,
+        CancellationToken cancellationToken = default)
     {
         var client = GetClient();
         var exist = client.DoesObjectExist(bucketName, objectName);
         return Task.FromResult(exist);
     }
 
-    public async Task DeleteObjectAsync(string bucketName, string objectName, CancellationToken cancellationToken = default)
+    public async Task DeleteObjectAsync(
+        string bucketName,
+        string objectName,
+        CancellationToken cancellationToken = default)
     {
         var client = GetClient();
         if (await ObjectExistsAsync(bucketName, objectName, cancellationToken))
@@ -99,7 +119,10 @@ public class Client : BaseClient, IClient
         }
     }
 
-    public Task DeleteObjectAsync(string bucketName, IEnumerable<string> objectNames, CancellationToken cancellationToken = default)
+    public Task DeleteObjectAsync(
+        string bucketName,
+        IEnumerable<string> objectNames,
+        CancellationToken cancellationToken = default)
     {
         var client = GetClient();
         var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), _options.Quiet));
