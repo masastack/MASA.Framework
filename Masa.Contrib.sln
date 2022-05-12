@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{42DF7AAC-362
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{9F6F9899-D5F1-444A-BE56-64F949550D22}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		nuget.config = nuget.config
 	EndProjectSection
 EndProject
@@ -203,6 +204,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFrameworkCore.Sqlite", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj", "{690D8379-B630-41FD-88F0-6D1EBB4BC3D4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EntityFrameworkCore.SqlServer", "src\Data\Masa.Contrib.Data.EntityFrameworkCore.SqlServer\Masa.Contrib.Data.EntityFrameworkCore.SqlServer.csproj", "{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Tsc", "src\BasicAbility\Masa.Contrib.BasicAbility.Tsc\Masa.Contrib.BasicAbility.Tsc.csproj", "{EB0F6BDA-C6AA-4859-834E-5613BB38862B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -828,6 +831,14 @@ Global
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC}.Release|x64.ActiveCfg = Release|Any CPU
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC}.Release|x64.Build.0 = Release|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -930,6 +941,7 @@ Global
 		{690D8379-B630-41FD-88F0-6D1EBB4BC3D4} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{E868B34E-D1ED-412A-9382-954B84EDE80C} = {13EDB361-AF88-4F89-B4AB-46622BCCBC37}
+		{EB0F6BDA-C6AA-4859-834E-5613BB38862B} = {5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
