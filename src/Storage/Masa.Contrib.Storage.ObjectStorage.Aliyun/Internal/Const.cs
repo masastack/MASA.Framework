@@ -7,5 +7,5 @@ internal class Const
 {
     public const string TEMPORARY_CREDENTIALS_CACHEKEY = "Aliyun.TemporaryCredentials";
 
-    public const string DEFAULT_SECTION = "AliyunOss";
+    public const string DEFAULT_SECTION = "Aliyun";
 }

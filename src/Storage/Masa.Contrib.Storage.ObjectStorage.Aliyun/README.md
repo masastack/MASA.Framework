@@ -16,7 +16,7 @@ support:
 1. Configure appsettings.json
 ```` C#
 {
-  "AliyunOss": {
+  "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
     "RegionId": "Replace-With-Your-RegionId",
