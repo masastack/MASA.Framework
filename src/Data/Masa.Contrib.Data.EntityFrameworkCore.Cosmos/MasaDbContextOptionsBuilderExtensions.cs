@@ -60,7 +60,7 @@ public static class MasaDbContextOptionsBuilderExtensions
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
-        return builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};");
+        return builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};", isTest);
     }
 
     public static MasaDbContextOptionsBuilder UseCosmos(

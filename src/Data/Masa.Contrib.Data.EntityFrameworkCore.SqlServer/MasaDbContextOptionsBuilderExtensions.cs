@@ -23,7 +23,7 @@ public static class MasaDbContextOptionsBuilderExtensions
     public static MasaDbContextOptionsBuilder UseSqlServer(
         this MasaDbContextOptionsBuilder builder,
         string connectionString,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
         => builder.UseSqlServerCore(connectionString, false, sqlServerOptionsAction);
 
     public static MasaDbContextOptionsBuilder UseTestSqlServer(
