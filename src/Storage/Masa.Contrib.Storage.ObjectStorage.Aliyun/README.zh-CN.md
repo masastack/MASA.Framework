@@ -41,7 +41,7 @@ builder.Services.AddAliyunStorage();
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(new ALiYunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
 ```
 
 ### 用法3:
@@ -50,7 +50,7 @@ builder.Services.AddAliyunStorage(new ALiYunStorageOptions(configuration["Aliyun
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
 ```
 
 > 与用法2的区别在于配置更新后无需重启项目即可生效
