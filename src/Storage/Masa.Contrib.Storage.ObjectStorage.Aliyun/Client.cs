@@ -6,23 +6,30 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 public class Client : BaseClient, IClient
 {
     private readonly bool _supportCallback;
+    private readonly ILogger<Client>? _logger;
 
-    public Client(AliyunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger)
-        : base(options, cache, logger)
+    public Client(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<Client>? logger)
+        : base(credentialProvider, options)
     {
         _supportCallback = !string.IsNullOrEmpty(options.CallbackBody) && !string.IsNullOrEmpty(options.CallbackUrl);
+        _logger = logger;
+    }
+
+    public Client(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<Client>? logger)
+        : this(credentialProvider, options.CurrentValue, logger)
+    {
     }
 
     /// <summary>
     /// Obtain temporary authorization credentials through STS service
     /// </summary>
     /// <returns></returns>
-    public override TemporaryCredentialsResponse GetSecurityToken()
+    public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!_supportSts)
-            throw new ArgumentNullException($"{nameof(_options.RoleArn)} or {nameof(_options.RoleSessionName)} cannot be empty or null");
+        if (!_credentialProvider.SupportSts)
+            throw new ArgumentException($"{nameof(_options.RoleArn)} or {nameof(_options.RoleSessionName)} cannot be empty or null");
 
-        return base.GetSecurityToken();
+        return _credentialProvider.GetSecurityToken();
     }
 
     /// <summary>
@@ -109,14 +116,14 @@ public class Client : BaseClient, IClient
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        if (await ObjectExistsAsync(bucketName, objectName, cancellationToken))
-        {
-            var result = client.DeleteObject(bucketName, objectName);
-            _logger?.LogDebug("----- Delete {ObjectName} from {BucketName} - ({Result})",
-                objectName,
-                bucketName,
-                result);
-        }
+        if (await ObjectExistsAsync(bucketName, objectName, cancellationToken) == false)
+            return;
+
+        var result = client.DeleteObject(bucketName, objectName);
+        _logger?.LogDebug("----- Delete {ObjectName} from {BucketName} - ({Result})",
+            objectName,
+            bucketName,
+            result);
     }
 
     public Task DeleteObjectAsync(

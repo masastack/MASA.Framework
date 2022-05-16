@@ -19,21 +19,40 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException(sectionName, nameof(sectionName));
 
         services.AddAliyunStorageDepend();
-        services.TryAddConfigure<AliyunStorageOptions>(sectionName);
-        services.TryAddSingleton<IClient>(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
-            CheckAliYunStorageOptions(optionsMonitor.CurrentValue, $"Failed to get {nameof(IOptionsMonitor<AliyunStorageOptions>)}");
-            return new Client(optionsMonitor.CurrentValue, GetMemoryCache(serviceProvider), GetClientLogger(serviceProvider));
-        });
+        services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
+        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
+        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
+            GetOssClientFactory(serviceProvider),
+            GetAliyunStorageConfigurationOption(serviceProvider),
+            GetMemoryCache(serviceProvider),
+            GetDefaultCredentialProviderLogger(serviceProvider)));
+        services.TryAddSingleton<IClient>(serviceProvider => new Client(
+            GetCredentialProvider(serviceProvider),
+            GetAliyunStorageOption(serviceProvider),
+            GetClientLogger(serviceProvider)));
         return services;
+    }
+
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
+        string accessKeyId,
+        string accessKeySecret,
+        string regionId,
+        EndpointMode mode,
+        Action<AliyunStorageOptions>? actions =null)
+    {
+        string endpoint = ObjectStorageExtensions.GetEndpoint(regionId, mode);
+        var aliyunStorageOptions = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint);
+        actions?.Invoke(aliyunStorageOptions);
+        return services.AddAliyunStorage(aliyunStorageOptions);
     }
 
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, AliyunStorageOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        string message = $"{options.AccessKeyId}, {options.AccessKeySecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
+        string message =
+            $"{options.AccessKeyId}, {options.AccessKeySecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
         CheckAliYunStorageOptions(options, message);
 
         return services.AddAliyunStorage(() => options);
@@ -44,8 +63,16 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
         services.AddAliyunStorageDepend();
-        services.TryAddSingleton<IClient>(serviceProvider
-            => new Client(func.Invoke(), GetMemoryCache(serviceProvider), GetClientLogger(serviceProvider)));
+        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
+        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
+            GetOssClientFactory(serviceProvider),
+            GetAliyunStorageConfigurationOption(serviceProvider),
+            GetMemoryCache(serviceProvider),
+            GetDefaultCredentialProviderLogger(serviceProvider)));
+        services.TryAddSingleton<IClient>(serviceProvider => new Client(
+            GetCredentialProvider(serviceProvider),
+            func.Invoke(),
+            GetClientLogger(serviceProvider)));
         return services;
     }
 
@@ -79,25 +106,34 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    private static IOssClientFactory GetOssClientFactory(IServiceProvider serviceProvider)
+        => serviceProvider.GetRequiredService<IOssClientFactory>();
+
+    private static ICredentialProvider GetCredentialProvider(IServiceProvider serviceProvider)
+        => serviceProvider.GetRequiredService<ICredentialProvider>();
+
+    private static IOptionsMonitor<AliyunStorageConfigureOptions> GetAliyunStorageConfigurationOption(IServiceProvider serviceProvider)
+        => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
+
+    private static IOptionsMonitor<AliyunStorageOptions> GetAliyunStorageOption(IServiceProvider serviceProvider)
+    => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
+
     private static IMemoryCache GetMemoryCache(IServiceProvider serviceProvider) => serviceProvider.GetRequiredService<IMemoryCache>();
 
     private static ILogger<Client>? GetClientLogger(IServiceProvider serviceProvider) => serviceProvider.GetService<ILogger<Client>>();
 
-    private static void CheckAliYunStorageOptions(AliyunStorageOptions options, string? message = default)
+    private static ILogger<DefaultCredentialProvider>? GetDefaultCredentialProviderLogger(IServiceProvider serviceProvider)
+        => serviceProvider.GetService<ILogger<DefaultCredentialProvider>>();
+
+    private static void CheckAliYunStorageOptions(AliyunStorageOptions options, string message)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        if (options.AccessKeyId == null &&
-            options.AccessKeySecret == null &&
-            options.RegionId == null &&
-            options.RoleArn == null &&
-            options.RoleSessionName == null)
+        if (options.AccessKeyId == null && options.AccessKeySecret == null && options.RegionId == null)
             throw new ArgumentException(message);
 
-        options.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
-        options.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));
-        options.CheckNullOrEmptyAndReturnValue(options.RegionId, nameof(options.RegionId));
-        options.CheckNullOrEmptyAndReturnValue(options.RoleArn, nameof(options.RoleArn));
-        options.CheckNullOrEmptyAndReturnValue(options.RoleSessionName, nameof(options.RoleSessionName));
+        ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
+        ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));
+        ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.RegionId, nameof(options.RegionId));
     }
 }

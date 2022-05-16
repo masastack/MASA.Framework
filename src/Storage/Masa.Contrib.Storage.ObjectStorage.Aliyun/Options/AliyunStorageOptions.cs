@@ -3,37 +3,14 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
-public class AliyunStorageOptions
+public class AliyunStorageOptions : AliyunOptions
 {
-    public string AccessKeyId { get; set; }
+    private string _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
 
-    public string AccessKeySecret { get; set; }
-
-    public string RegionId { get; set; }
-
-    public string Endpoint { get; set; }
-
-    public string RoleArn { get; set; }
-
-    public string RoleSessionName { get; set; }
-
-    private int _durationSeconds;
-
-    /// <summary>
-    /// Set the validity period of the temporary access credential, the minimum is 900, and the maximum is 43200.
-    /// default: 3600
-    /// unit: second
-    /// </summary>
-    public int DurationSeconds
+    public string TemporaryCredentialsCacheKey
     {
-        get => _durationSeconds;
-        set
-        {
-            if (value < 900 || value > 43200)
-                throw new ArgumentOutOfRangeException(nameof(DurationSeconds), $"{nameof(DurationSeconds)} must be in range of 900-43200");
-
-            _durationSeconds = value;
-        }
+        get => _temporaryCredentialsCacheKey;
+        set => _temporaryCredentialsCacheKey = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
     }
 
     /// <summary>
@@ -41,32 +18,9 @@ public class AliyunStorageOptions
     /// </summary>
     public string Policy { get; set; }
 
-    private string _temporaryCredentialsCacheKey;
+    public string RoleArn { get; set; }
 
-    public string TemporaryCredentialsCacheKey
-    {
-        get => _temporaryCredentialsCacheKey;
-        set => _temporaryCredentialsCacheKey = CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
-    }
-
-    private int _earlyExpires = 10;
-
-    /// <summary>
-    /// Voucher expires early
-    /// default: 10
-    /// unit: second
-    /// </summary>
-    public int EarlyExpires
-    {
-        get => _earlyExpires;
-        set
-        {
-            if (value < 0)
-                throw new ArgumentOutOfRangeException(nameof(EarlyExpires), $"{nameof(EarlyExpires)} must be Greater than 0");
-
-            _earlyExpires = value;
-        }
-    }
+    public string RoleSessionName { get; set; }
 
     /// <summary>
     /// The server address of the callback request
@@ -105,34 +59,25 @@ public class AliyunStorageOptions
 
     public AliyunStorageOptions()
     {
-        _durationSeconds = 3600;
-        _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
         Quiet = true;
+        CallbackUrl = string.Empty;
         CallbackBody = "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}";
         EnableResumableUpload = true;
+        PartSize = null;
         BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
     }
 
     private AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
     {
-        AccessKeyId = CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
-        AccessKeySecret = CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));
+        AccessKeyId = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
+        AccessKeySecret = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint)
         : this(accessKeyId, accessKeySecret)
     {
-        string regionId = GetRegionId(endpoint);
-        RegionId = CheckNullOrEmptyAndReturnValue(regionId,
-            () => throw new ArgumentException("Unrecognized endpoint, failed to get RegionId"));
-        Endpoint = CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
-    }
-
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, EndpointMode mode)
-        : this(accessKeyId, accessKeySecret)
-    {
-        RegionId = CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
-        Endpoint = GetEndpoint(regionId, mode);
+        RegionId = GetRegionId(endpoint);
+        Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint, string roleArn, string roleSessionName)
@@ -140,20 +85,19 @@ public class AliyunStorageOptions
     {
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, EndpointMode mode, string roleArn,
-        string roleSessionName)
-        : this(accessKeyId, accessKeySecret, regionId, GetEndpoint(regionId, mode), roleArn, roleSessionName)
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string endpoint)
+         : this(accessKeyId, accessKeySecret)
     {
+        RegionId = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
+        Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string endpoint, string roleArn,
         string roleSessionName)
-        : this(accessKeyId, accessKeySecret)
+        : this(accessKeyId, accessKeySecret, regionId, endpoint)
     {
-        RegionId = CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
-        Endpoint = endpoint;
-        RoleArn = CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
-        RoleSessionName = CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
+        RoleArn = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
+        RoleSessionName = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
     }
 
     public AliyunStorageOptions SetPolicy(string policy)
@@ -168,7 +112,7 @@ public class AliyunStorageOptions
         return this;
     }
 
-    public AliyunStorageOptions SetDurationSeconds(int durationSeconds)
+    public AliyunStorageOptions SetDurationSeconds(long durationSeconds)
     {
         DurationSeconds = durationSeconds;
         return this;
@@ -178,32 +122,5 @@ public class AliyunStorageOptions
     {
         EarlyExpires = earlyExpires;
         return this;
-    }
-
-    internal string CheckNullOrEmptyAndReturnValue(string? parameter, string parameterName)
-    {
-        if (string.IsNullOrEmpty(parameter))
-            throw new ArgumentException($"{parameterName} cannot be null and empty string");
-
-        return parameter;
-    }
-
-    private string CheckNullOrEmptyAndReturnValue(string? parameter, Action error)
-    {
-        if (string.IsNullOrEmpty(parameter))
-            error.Invoke();
-
-        return parameter!;
-    }
-
-    private static string GetEndpoint(string regionId, EndpointMode mode)
-        => regionId + (mode == EndpointMode.Public ? Const.PUBLIC_ENDPOINT_DOMAIN_SUFFIX : Const.INTERNAL_ENDPOINT_SUFFIX);
-
-    private static string GetRegionId(string endpoint)
-    {
-        if (endpoint.EndsWith(Const.INTERNAL_ENDPOINT_SUFFIX, StringComparison.OrdinalIgnoreCase))
-            return endpoint.Remove(endpoint.Length - Const.INTERNAL_ENDPOINT_SUFFIX.Length);
-
-        return endpoint.Remove(endpoint.Length - Const.PUBLIC_ENDPOINT_DOMAIN_SUFFIX.Length);
     }
 }

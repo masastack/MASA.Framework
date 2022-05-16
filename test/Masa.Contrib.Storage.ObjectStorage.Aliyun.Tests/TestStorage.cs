@@ -1,5 +1,3 @@
-﻿using Masa.BuildingBlocks.Storage.ObjectStorage;
-
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
@@ -8,21 +6,24 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class TestStorage
 {
+    private const string HANG_ZHOUE_REGIONID = "oss-cn-hangzhou";
+
+    private const string HANG_ZHOUE_PUBLIC_ENDPOINT = "oss-cn-hangzhou.aliyuncs.com";
+
     [TestMethod]
-    public void TestAddAliyunStorageReturnThrowArgumentException()
+    public void TestAddAliyunStorageAndNotAddConfigurationReturnClientIsNotNull()
     {
-        var services = new ServiceCollection();
+        IServiceCollection services = new ServiceCollection();
         services.AddAliyunStorage();
         var serviceProvider = services.BuildServiceProvider();
-        Assert.ThrowsException<ArgumentException>(() => serviceProvider.GetService<IClient>(),
-            $"Failed to get {nameof(IOptionsMonitor<AliyunStorageOptions>)}");
+        Assert.IsNotNull(serviceProvider.GetService<IClient>());
     }
 
     [TestMethod]
     public void TestAddAliyunStorageByEmptySectionReturnThrowArgumentException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(String.Empty));
+        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(string.Empty));
     }
 
     [TestMethod]
@@ -48,17 +49,25 @@ public class TestStorage
     }
 
     [TestMethod]
-    public void TestAddAliyunStorageByEmptyALiYunStorageOptionsReturnThrowArgumentNullException()
+    public void TestAddAliyunStorageByEmptyAccessKeyIdReturnThrowArgumentNullException()
     {
-        var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(new AliyunStorageOptions()));
+        Assert.ThrowsException<ArgumentException>(() => new AliyunStorageOptions(null!, null!, null!));
     }
 
     [TestMethod]
     public void TestAddAliyunStorageByALiYunStorageOptionsReturnClientNotNull()
     {
         var services = new ServiceCollection();
-        services.AddAliyunStorage(new AliyunStorageOptions("accessKeyId", "AccessKeySecret", "regionId", "roleArn", "roleSessionName"));
+        services.AddAliyunStorage(new AliyunStorageOptions("accessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT, "roleArn", "roleSessionName"));
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<IClient>());
+    }
+
+    [TestMethod]
+    public void TestAddAliyunStorageByAccessKeyIdAndAccessKeySecretAndRegionIdReturnClientNotNull()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage("accessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
     }
@@ -67,7 +76,7 @@ public class TestStorage
     public void TestAddMultiAliyunStorageReturnClientCountIs1()
     {
         var services = new ServiceCollection();
-        AliyunStorageOptions options = new AliyunStorageOptions("accessKeyId", "accessKeySecret", "regionId", "roleArn", "roleSessionName");
+        AliyunStorageOptions options = new AliyunStorageOptions("accessKeyId", "accessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT, "roleArn", "roleSessionName");
         services.AddAliyunStorage(options).AddAliyunStorage(options);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
