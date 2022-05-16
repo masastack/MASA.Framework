@@ -1,5 +1,15 @@
 <Project>
   <PropertyGroup>
+    <MicrosoftPackageVersion>6.0.0</MicrosoftPackageVersion>
+    <BenchmarkDotNetPackageVersion>0.13.1</BenchmarkDotNetPackageVersion>
+    <MSTestPackageVersion>2.2.3</MSTestPackageVersion>
+    <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
+    <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
+    <MoqPackageVersion>4.16.1</MoqPackageVersion>
+    <MasaUtilsPackageVersion>0.4.0-rc1</MasaUtilsPackageVersion>
+    <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
+    <DaprPackageVersion>1.5.0</DaprPackageVersion>
+	
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>
     <Authors>masastack</Authors>

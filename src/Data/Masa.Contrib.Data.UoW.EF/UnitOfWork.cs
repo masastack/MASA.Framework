@@ -50,6 +50,10 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
         await Context.Database.CommitTransactionAsync(cancellationToken);
         CommitState = CommitState.Commited;
+
+        var domainEventBus = ServiceProvider.GetService<IDomainEventBus>();
+        if (domainEventBus != null)
+            await domainEventBus.PublishQueueAsync();
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)

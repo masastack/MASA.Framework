@@ -55,7 +55,8 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
                 (Microsoft.EntityFrameworkCore.EF.Property<TKey>(entity, nameof(IMultiTenant<TKey>.TenantId)).ToString() ?? string.Empty)
                 .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
-            expression = tenantFilter.And(expression != null, expression);
+
+            expression = ExpressionExtensions.And(tenantFilter, expression != null, expression);
         }
 
         if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
@@ -63,12 +64,12 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
             Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
                 Microsoft.EntityFrameworkCore.EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
                     .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
-            expression = envFilter.And(expression != null, expression);
+            expression = ExpressionExtensions.And(envFilter, expression != null, expression);
         }
 
         var secondExpression = base.CreateFilterExpression<TEntity>();
         if (secondExpression != null)
-            expression = secondExpression.And(expression != null, expression);
+            expression = ExpressionExtensions.And(secondExpression, expression != null, expression);
 
         return expression;
     }
