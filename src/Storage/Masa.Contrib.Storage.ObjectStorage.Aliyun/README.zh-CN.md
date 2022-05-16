@@ -10,7 +10,11 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 
 支持：
 
-* GetSecurityToken 获取安全令牌
+* GetSecurityToken: 获取安全令牌 (需提供RoleArn、RoleSessionName)
+* GetObjectAsync: 获取对象数据的流
+* PutObjectAsync: 通过Stream上传对象
+* ObjectExistsAsync: 判断对象是否存在
+* DeleteObjectAsync: 删除对象
 
 ### 用法1:
 
@@ -18,16 +22,18 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 
 ``` C#
 {
-  "AliyunOss": {
+  "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
     "RegionId": "Replace-With-Your-RegionId",
     "Endpoint": "Replace-With-Your-Endpoint",
-    "RoleArn": "Replace-With-Your-RoleArn",
-    "RoleSessionName": "Replace-With-Your-RoleSessionName",
     "DurationSeconds": 3600,//选填、默认: 3600s
-    "Policy": "",//选填
-    "TemporaryCredentialsCacheKey": "Aliyun.TemporaryCredentials"//选填、默认: Aliyun.TemporaryCredentials
+    "Storage": {
+      "RoleArn": "Replace-With-Your-RoleArn",
+      "RoleSessionName": "Replace-With-Your-RoleSessionName",
+      "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//选填、默认: Aliyun.Storage.TemporaryCredentials
+      "Policy": ""//选填
+    }
   }
 }
 ```
@@ -57,3 +63,16 @@ builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["
 ```
 
 > 与用法2的区别在于配置更新后无需重启项目即可生效
+
+### 用法4:
+
+1. 添加阿里云存储服务
+
+```C#
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public, options =>
+{
+    options.CallbackUrl = "Replace-With-Your-CallbackUrl";
+});
+```
+

@@ -9,22 +9,29 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ````
 
 support:
-* GetSecurityToken to get the security token
+* GetSecurityToken: Gets the security token(RoleArn, RoleSessionName are required)
+* GetObjectAsync: Gets the stream of object data
+* PutObjectAsync: Upload objects via Stream
+* ObjectExistsAsync: Determine whether the object exists
+* DeleteObjectAsync: Delete object
 
 ### Usage 1:
 
 1. Configure appsettings.json
 ```` C#
 {
-  "AliyunOss": {
+  "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
     "RegionId": "Replace-With-Your-RegionId",
-    "RoleArn": "Replace-With-Your-RoleArn",
-    "RoleSessionName": "Replace-With-Your-RoleSessionName",
+    "Endpoint": "Replace-With-Your-Endpoint",
     "DurationSeconds": 3600,//optional, default: 3600s
-    "Policy": "",//optional
-    "TemporaryCredentialsCacheKey": "Aliyun.TemporaryCredentials"//optional, default: Aliyun.TemporaryCredentials
+    "Storage": {
+      "RoleArn": "Replace-With-Your-RoleArn",
+      "RoleSessionName": "Replace-With-Your-RoleSessionName",
+      "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//optional, default: Aliyun.Storage.TemporaryCredentials
+      "Policy": ""//optional
+    }
   }
 }
 ````
@@ -52,3 +59,15 @@ builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["
 ````
 
 > The difference from usage 2 is that the configuration can take effect without restarting the project after the configuration update
+
+### Usage 4:
+
+1. Add Alibaba Cloud Storage Service
+
+````C#
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public, options =>
+{
+     options.CallbackUrl = "Replace-With-Your-CallbackUrl";
+});
+````
