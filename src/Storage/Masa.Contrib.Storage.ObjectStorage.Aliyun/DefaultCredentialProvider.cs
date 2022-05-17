@@ -20,7 +20,9 @@ public class DefaultCredentialProvider : ICredentialProvider
     {
         _ossClientFactory = ossClientFactory;
         _options = options;
-        SupportSts = !string.IsNullOrEmpty(options.RoleArn) && !string.IsNullOrEmpty(options.RoleSessionName);
+        SupportSts = !string.IsNullOrEmpty(options.RegionId) &&
+            !string.IsNullOrEmpty(options.RoleArn) &&
+            !string.IsNullOrEmpty(options.RoleSessionName);
         _cache = cache;
         _logger = logger;
     }
@@ -52,7 +54,7 @@ public class DefaultCredentialProvider : ICredentialProvider
         if (!_cache.TryGetValue(_options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
         {
             temporaryCredentials = GetTemporaryCredentials(
-                _options.RegionId,
+                _options.RegionId!,
                 _options.AccessKeyId,
                 _options.AccessKeySecret,
                 _options.RoleArn,
@@ -84,14 +86,14 @@ public class DefaultCredentialProvider : ICredentialProvider
         if (!string.IsNullOrEmpty(policy))
             request.Policy = policy;
         var response = client.GetAcsResponse(request);
-        if (response.HttpResponse.isSuccess())
-        {
-            return new TemporaryCredentialsResponse(
-                response.Credentials.AccessKeyId,
-                response.Credentials.AccessKeySecret,
-                response.Credentials.SecurityToken,
-                DateTime.Parse(response.Credentials.Expiration));
-        }
+        // if (response.HttpResponse.isSuccess()) //todo: Get Sts response information is null, waiting for repair: https://github.com/aliyun/aliyun-openapi-net-sdk/pull/401
+        // {
+        return new TemporaryCredentialsResponse(
+            response.Credentials.AccessKeyId,
+            response.Credentials.AccessKeySecret,
+            response.Credentials.SecurityToken,
+            DateTime.Parse(response.Credentials.Expiration));
+        // }
 
         string responseContent = Encoding.Default.GetString(response.HttpResponse.Content);
         string message =
@@ -115,7 +117,6 @@ public class DefaultCredentialProvider : ICredentialProvider
         aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId);
         aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret);
         aliyunStorageOptions.RegionId = TryUpdate(options.Storage.RegionId, options.RegionId);
-        aliyunStorageOptions.Endpoint = TryUpdate(options.Storage.Endpoint, options.Endpoint);
         aliyunStorageOptions.DurationSeconds = options.Storage.DurationSeconds ?? options.DurationSeconds ?? options.GetDurationSeconds();
         aliyunStorageOptions.EarlyExpires = options.Storage.EarlyExpires ?? options.EarlyExpires ?? options.GetEarlyExpires();
         return aliyunStorageOptions;
@@ -125,6 +126,7 @@ public class DefaultCredentialProvider : ICredentialProvider
     {
         if (!string.IsNullOrWhiteSpace(source))
             return source;
+
         return destination;
     }
 }

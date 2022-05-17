@@ -33,6 +33,9 @@ internal class UploadObjectResponse
     private string GetCallbackResponse(PutObjectResult putObjectResult)
     {
         using var stream = putObjectResult.ResponseStream;
+        if (stream == null)
+            return string.Empty;
+
         var buffer = new byte[4 * 1024];
         var bytesRead = stream.Read(buffer, 0, buffer.Length);
         string callbackResponse = Encoding.Default.GetString(buffer, 0, bytesRead);

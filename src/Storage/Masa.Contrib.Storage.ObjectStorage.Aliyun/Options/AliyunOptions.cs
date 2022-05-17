@@ -9,15 +9,13 @@ public class AliyunOptions
 
     public string AccessKeySecret { get; set; }
 
-    public string RegionId { get; set; }
-
-    private string _endpoint;
-
-    public string Endpoint
-    {
-        get => _endpoint;
-        set => _endpoint = value?.Trim() ?? string.Empty;
-    }
+    /// <summary>
+    /// sts region id
+    /// If the RegionId is missing, the temporary Sts credential cannot be obtained.
+    /// https://help.aliyun.com/document_detail/371859.html
+    /// https://www.alibabacloud.com/help/en/resource-access-management/latest/endpoints#reference-sdg-3pv-xdb
+    /// </summary>
+    public string? RegionId { get; set; }
 
     private long? _durationSeconds = null;
 
@@ -60,16 +58,4 @@ public class AliyunOptions
     public long GetDurationSeconds() => DurationSeconds ?? Const.DEFAULT_DURATION_SECONDS;
 
     public long GetEarlyExpires() => EarlyExpires ?? Const.DEFAULT_EARLY_EXPIRES;
-
-    internal static string GetRegionId(string endpoint)
-    {
-        endpoint = endpoint.Trim();
-        if (endpoint.EndsWith(Const.INTERNAL_ENDPOINT_SUFFIX, StringComparison.OrdinalIgnoreCase))
-            return endpoint.Remove(endpoint.Length - Const.INTERNAL_ENDPOINT_SUFFIX.Length);
-
-        if (endpoint.EndsWith(Const.PUBLIC_ENDPOINT_DOMAIN_SUFFIX, StringComparison.OrdinalIgnoreCase))
-            return endpoint.Remove(endpoint.Length - Const.PUBLIC_ENDPOINT_DOMAIN_SUFFIX.Length);
-
-        throw new ArgumentException(Const.ERROR_ENDPOINT_MESSAGE);
-    }
 }

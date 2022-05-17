@@ -37,12 +37,11 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string accessKeyId,
         string accessKeySecret,
-        string regionId,
-        EndpointMode mode,
+        string? regionId,
+        string endpoint,
         Action<AliyunStorageOptions>? actions = null)
     {
-        string endpoint = ObjectStorageExtensions.GetEndpoint(regionId, mode);
-        var aliyunStorageOptions = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint);
+        var aliyunStorageOptions = new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, endpoint);
         actions?.Invoke(aliyunStorageOptions);
         return services.AddAliyunStorage(aliyunStorageOptions);
     }
@@ -51,8 +50,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        string message =
-            $"{options.AccessKeyId}, {options.AccessKeySecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
+        string message = $"{options.AccessKeyId}, {options.AccessKeySecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
         CheckAliYunStorageOptions(options, message);
 
         return services.AddAliyunStorage(() => options);
@@ -116,7 +114,7 @@ public static class ServiceCollectionExtensions
         => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
 
     private static IOptionsMonitor<AliyunStorageOptions> GetAliyunStorageOption(IServiceProvider serviceProvider)
-    => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
+        => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
 
     private static IMemoryCache GetMemoryCache(IServiceProvider serviceProvider) => serviceProvider.GetRequiredService<IMemoryCache>();
 
@@ -134,6 +132,5 @@ public static class ServiceCollectionExtensions
 
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));
-        ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.RegionId, nameof(options.RegionId));
     }
 }

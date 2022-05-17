@@ -25,10 +25,10 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
   "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
-    "RegionId": "Replace-With-Your-RegionId",
-    "Endpoint": "Replace-With-Your-Endpoint",
+    "RegionId": "Replace-With-Your-RegionId",//https://help.aliyun.com/document_detail/371859.html
     "DurationSeconds": 3600,//选填、默认: 3600s
     "Storage": {
+      "Endpoint": "Replace-With-Your-Endpoint",//https://help.aliyun.com/document_detail/31837.html
       "RoleArn": "Replace-With-Your-RoleArn",
       "RoleSessionName": "Replace-With-Your-RoleSessionName",
       "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//选填、默认: Aliyun.Storage.TemporaryCredentials

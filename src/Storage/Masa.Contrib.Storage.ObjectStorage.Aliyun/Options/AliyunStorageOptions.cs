@@ -5,12 +5,21 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
 public class AliyunStorageOptions : AliyunOptions
 {
+    private string _endpoint;
+
+    public string Endpoint
+    {
+        get => _endpoint;
+        set => _endpoint = value?.Trim() ?? string.Empty;
+    }
+
     private string _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
 
     public string TemporaryCredentialsCacheKey
     {
         get => _temporaryCredentialsCacheKey;
-        set => _temporaryCredentialsCacheKey = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
+        set => _temporaryCredentialsCacheKey =
+            ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
     }
 
     /// <summary>
@@ -76,23 +85,22 @@ public class AliyunStorageOptions : AliyunOptions
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint)
         : this(accessKeyId, accessKeySecret)
     {
-        RegionId = GetRegionId(endpoint);
         Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint, string roleArn, string roleSessionName)
-        : this(accessKeyId, accessKeySecret, GetRegionId(endpoint), endpoint, roleArn, roleSessionName)
+        : this(accessKeyId, accessKeySecret, null, endpoint, roleArn, roleSessionName)
     {
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string endpoint)
-         : this(accessKeyId, accessKeySecret)
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string? regionId, string endpoint)
+        : this(accessKeyId, accessKeySecret)
     {
-        RegionId = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
+        RegionId = regionId;
         Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string endpoint, string roleArn,
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string? regionId, string endpoint, string roleArn,
         string roleSessionName)
         : this(accessKeyId, accessKeySecret, regionId, endpoint)
     {
