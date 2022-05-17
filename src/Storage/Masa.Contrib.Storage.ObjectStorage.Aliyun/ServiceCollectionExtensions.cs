@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
         string accessKeySecret,
         string regionId,
         EndpointMode mode,
-        Action<AliyunStorageOptions>? actions =null)
+        Action<AliyunStorageOptions>? actions = null)
     {
         string endpoint = ObjectStorageExtensions.GetEndpoint(regionId, mode);
         var aliyunStorageOptions = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint);
@@ -66,7 +66,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
             GetOssClientFactory(serviceProvider),
-            GetAliyunStorageConfigurationOption(serviceProvider),
+            func.Invoke(),
             GetMemoryCache(serviceProvider),
             GetDefaultCredentialProviderLogger(serviceProvider)));
         services.TryAddSingleton<IClient>(serviceProvider => new Client(
