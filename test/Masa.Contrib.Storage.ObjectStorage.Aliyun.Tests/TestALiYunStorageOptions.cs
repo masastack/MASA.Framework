@@ -6,7 +6,6 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class TestALiYunStorageOptions
 {
-    private const string REGION_ID = "oss-cn-hangzhou";
     private const string HANG_ZHOUE_PUBLIC_ENDPOINT = "oss-cn-hangzhou.aliyuncs.com";
     private const string HANG_ZHOUE_INTERNAL_ENDPOINT = "oss-cn-hangzhou-internal.aliyuncs.com";
     private const string TEMPORARY_CREDENTIALS_CACHEKEY = "Aliyun.Storage.TemporaryCredentials";
@@ -49,12 +48,11 @@ public class TestALiYunStorageOptions
     }
 
     [DataTestMethod]
-    [DataRow("AccessKeyId", "AccessKeySecret", REGION_ID, HANG_ZHOUE_PUBLIC_ENDPOINT, "RoleArn", "RoleSessionName")]
-    [DataRow("AccessKeyId", "AccessKeySecret", REGION_ID, HANG_ZHOUE_INTERNAL_ENDPOINT, "RoleArn", "RoleSessionName")]
+    [DataRow("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT, "RoleArn", "RoleSessionName")]
+    [DataRow("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_INTERNAL_ENDPOINT, "RoleArn", "RoleSessionName")]
     public void TestSuccessParameterReturnInitializationSuccessful(
         string accessKeyId,
         string accessKeySecret,
-        string regionId,
         string endpoint,
         string roleArn,
         string roleSessionName)
@@ -62,7 +60,7 @@ public class TestALiYunStorageOptions
         var options = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint, roleArn, roleSessionName);
         Assert.IsTrue(options.AccessKeyId == accessKeyId);
         Assert.IsTrue(options.AccessKeySecret == accessKeySecret);
-        Assert.IsTrue(options.RegionId == regionId);
+        Assert.IsTrue(options.RegionId == null);
         Assert.IsTrue(options.RoleArn == roleArn);
         Assert.IsTrue(options.RoleSessionName == roleSessionName);
     }
@@ -121,7 +119,7 @@ public class TestALiYunStorageOptions
         string endpoint)
     {
         var options = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint);
-        Assert.IsTrue(options.RegionId == REGION_ID);
+        Assert.IsTrue(options.RegionId == null);
         Assert.IsTrue(options.Endpoint == HANG_ZHOUE_PUBLIC_ENDPOINT);
         Assert.IsTrue(options.GetDurationSeconds() == 3600);
         Assert.IsTrue(options.TemporaryCredentialsCacheKey == TEMPORARY_CREDENTIALS_CACHEKEY);
@@ -181,18 +179,6 @@ public class TestALiYunStorageOptions
     //    Assert.IsTrue(options.RoleArn == roleArn);
     //    Assert.IsTrue(options.RoleSessionName == roleSessionName);
     //}
-
-    [DataTestMethod]
-    [DataRow("AccessKeyId", "AccessKeySecret", "Endpoint")]
-    [DataRow("AccessKeyId", "AccessKeySecret", "Endpoint")]
-    [DataRow("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT + ".cn")]
-    public void TestErrorEndpointReturnThrowArgumentException(
-        string accessKeyId,
-        string accessKeySecret,
-        string endpoint)
-    {
-        Assert.ThrowsException<ArgumentException>(() => new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint), "Unrecognized endpoint, failed to get RegionId");
-    }
 
     [TestMethod]
     public void TestEarlyExpireLessThanZeroReturnThrowArgumentOutOfRangeException()

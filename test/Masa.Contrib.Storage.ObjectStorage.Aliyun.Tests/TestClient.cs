@@ -133,7 +133,7 @@ public class TestClient : BaseTest
     [TestMethod]
     public async Task TestDeleteMultiObjectAsyncReturnVerifytOnce()
     {
-        await _client.DeleteObjectAsync("bucketName", new[] { "2.jpg", "1.jog" });
+        await _client.DeleteObjectAsync("bucketName", new[] { "2.jpg", "1.jpg" });
         _client.Oss.Verify(oss => oss.DeleteObjects(It.IsAny<DeleteObjectsRequest>()), Times.Once);
     }
 }

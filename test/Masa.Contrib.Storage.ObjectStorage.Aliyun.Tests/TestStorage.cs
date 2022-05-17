@@ -67,7 +67,7 @@ public class TestStorage
     public void TestAddAliyunStorageByAccessKeyIdAndAccessKeySecretAndRegionIdReturnClientNotNull()
     {
         var services = new ServiceCollection();
-        services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public);
+        services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID,HANG_ZHOUE_PUBLIC_ENDPOINT);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IClient>());
     }
