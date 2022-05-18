@@ -65,19 +65,20 @@ public class Client : IClient
         if (!string.IsNullOrEmpty(policy))
             request.Policy = policy;
         var response = client.GetAcsResponse(request);
-        if (response.HttpResponse.isSuccess())
-        {
-            return new TemporaryCredentialsResponse(
-                response.Credentials.AccessKeyId,
-                response.Credentials.AccessKeySecret,
-                response.Credentials.SecurityToken,
-                DateTime.Parse(response.Credentials.Expiration));
-        }
 
-        string message = $"Aliyun.Client: Failed to obtain temporary credentials, RequestId: {response.RequestId},Status: {response.HttpResponse.Status}, Message: {System.Text.Encoding.Default.GetString(response.HttpResponse.Content)}";
-        _logger?.LogWarning(message);
-
-        throw new Exception(message);
+        // if (response.HttpResponse.isSuccess())
+        // {
+        return new TemporaryCredentialsResponse( //todo: Get Sts response information is null, waiting for repair: https://github.com/aliyun/aliyun-openapi-net-sdk/pull/401
+            response.Credentials.AccessKeyId,
+            response.Credentials.AccessKeySecret,
+            response.Credentials.SecurityToken,
+            DateTime.Parse(response.Credentials.Expiration));
+        // }
+        //
+        // string message = $"Aliyun.Client: Failed to obtain temporary credentials, RequestId: {response.RequestId},Status: {response.HttpResponse.Status}, Message: {System.Text.Encoding.Default.GetString(response.HttpResponse.Content)}";
+        // _logger?.LogWarning(message);
+        //
+        // throw new Exception(message);
     }
 
     protected virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
