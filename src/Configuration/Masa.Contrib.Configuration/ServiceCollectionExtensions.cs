@@ -14,20 +14,41 @@ public static class ServiceCollectionExtensions
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         params Assembly[] assemblies)
-        => builder.AddMasaConfiguration(null, assemblies);
+        => builder.AddMasaConfiguration(null, Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes, assemblies);
+
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
+        List<Type> excludeConfigurationSourceTypes,
+        params Assembly[] assemblies)
+        => builder.AddMasaConfiguration(null, excludeConfigurationSourceTypes, assemblies);
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate,
         params Assembly[] assemblies)
+        => builder.AddMasaConfiguration(
+            configureDelegate,
+            Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes,
+            assemblies);
+
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
+        Action<IMasaConfigurationBuilder>? configureDelegate,
+        List<Type> excludeConfigurationSourceTypes,
+        params Assembly[] assemblies)
     {
+        ArgumentNullException.ThrowIfNull(excludeConfigurationSourceTypes, nameof(excludeConfigurationSourceTypes));
+
         var configurationBuilder = GetConfigurationBuilder(builder.Configuration);
 
-        IConfigurationRoot masaConfiguration = builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, assemblies);
+        IConfigurationRoot masaConfiguration =
+            builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, excludeConfigurationSourceTypes, assemblies);
         if (!masaConfiguration.Providers.Any())
             return builder;
 
-        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(builder.Host, configBuilder => configBuilder.Sources.Clear());
+        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(
+            builder.Host,
+            configBuilder => configBuilder.Sources.Clear());
         builder.Configuration.AddConfiguration(masaConfiguration);
 
         return builder;
@@ -39,6 +60,20 @@ public static class ServiceCollectionExtensions
         IConfigurationBuilder configurationBuilder,
         params Assembly[] assemblies)
     {
+        return services.CreateMasaConfiguration(
+            configureDelegate,
+            configurationBuilder,
+            Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes,
+            assemblies);
+    }
+
+    public static IConfigurationRoot CreateMasaConfiguration(
+        this IServiceCollection services,
+        Action<IMasaConfigurationBuilder>? configureDelegate,
+        IConfigurationBuilder configurationBuilder,
+        List<Type> excludeConfigurationSourceTypes,
+        params Assembly[] assemblies)
+    {
         if (services.Any(service => service.ImplementationType == typeof(MasaConfigurationProvider)))
             return new ConfigurationBuilder().Build();
 
@@ -46,17 +81,23 @@ public static class ServiceCollectionExtensions
         services.AddOptions();
         services.TryAddSingleton<IMasaConfiguration, DefaultMasaConfiguration>();
 
-        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services, configurationBuilder);
+        MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services,
+            GetMigrateConfigurationBuilder(configurationBuilder, excludeConfigurationSourceTypes));
         configureDelegate?.Invoke(masaConfigurationBuilder);
 
         MasaConfigurationBuilder builder = new(services, new ConfigurationBuilder());
         builder.AddRelations(masaConfigurationBuilder.Relations.ToArray());
         masaConfigurationBuilder.Repositories.ForEach(repository => builder.AddRepository(repository));
-        var localConfigurationRepository = new LocalMasaConfigurationRepository(masaConfigurationBuilder.Configuration, services.BuildServiceProvider().GetService<ILoggerFactory>());
+        var localConfigurationRepository = new LocalMasaConfigurationRepository(
+            masaConfigurationBuilder.Configuration,
+            services.BuildServiceProvider().GetService<ILoggerFactory>());
         builder.AddRepository(localConfigurationRepository);
 
         var source = new MasaConfigurationSource(builder);
-        var configuration = builder.Add(source).Build();
+        var configuration = builder
+            .Add(source)
+            .AddRange(configurationBuilder.Sources.Where(s => excludeConfigurationSourceTypes.Contains(s.GetType())))
+            .Build();
 
         builder.AutoMapping(assemblies);
 
@@ -78,6 +119,21 @@ public static class ServiceCollectionExtensions
         });
 
         return configuration;
+    }
+
+    private static IConfigurationBuilder GetMigrateConfigurationBuilder(
+        IConfigurationBuilder sourceConfigurationBuilder,
+        List<Type> configurationSourceTypes)
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        foreach (var configurationSource in sourceConfigurationBuilder.Sources)
+        {
+            if (!configurationSourceTypes.Contains(configurationSource.GetType()))
+            {
+                configurationBuilder.Add(configurationSource);
+            }
+        }
+        return configurationBuilder;
     }
 
     private static IConfigurationBuilder GetConfigurationBuilder(ConfigurationManager configuration)
@@ -112,7 +168,9 @@ public static class ServiceCollectionExtensions
         services.TryAdd(new ServiceDescriptor(typeof(IOptionsChangeTokenSource<>).MakeGenericType(optionType),
             configurationChangeTokenSource));
 
-        Action<BinderOptions> configureBinder = _ => { };
+        Action<BinderOptions> configureBinder = _ =>
+        {
+        };
         var configureOptions =
             Activator.CreateInstance(typeof(NamedConfigureFromConfigurationOptions<>).MakeGenericType(optionType),
                 string.Empty,
