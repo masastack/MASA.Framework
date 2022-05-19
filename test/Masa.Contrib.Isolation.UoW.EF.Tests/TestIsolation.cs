@@ -337,7 +337,7 @@ public class TestIsolation : TestBase
         dispatcherOption.Setup(opt => opt.Services).Returns(services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder =>
                 isolationBuilder.UseMultiTenant(),
-            dbOptionBuilder => dbOptionBuilder.UseSqlite().UseFilter());
+            dbOptionBuilder => dbOptionBuilder.UseSqlite().UseFilter().UseFilter());
 
         var serviceProvider = services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
