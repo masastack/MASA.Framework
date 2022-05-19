@@ -9,6 +9,8 @@ public class CustomDbContext : MasaDbContext
 
     public DbSet<User> User { get; set; }
 
+    public DbSet<Tag> Tag { get; set; }
+
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
         builder.Entity<User>(ConfigureUserEntry);
@@ -36,6 +38,20 @@ public class User
     public string Name { get; set; } = default!;
 
     public User()
+    {
+        this.Id = Guid.NewGuid();
+    }
+}
+
+public class Tag : ISoftDelete
+{
+    public Guid Id { get; private set; }
+
+    public string Name { get; set; } = default!;
+
+    public bool IsDeleted { get; protected set; }
+
+    public Tag()
     {
         this.Id = Guid.NewGuid();
     }

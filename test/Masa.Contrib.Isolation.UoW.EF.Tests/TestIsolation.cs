@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Data;
-
 namespace Masa.Contrib.Isolation.UoW.EF.Tests;
 
 [TestClass]
@@ -36,7 +34,8 @@ public class TestIsolation : TestBase
         eventBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            eventBuilder.Object.UseIsolationUoW<CustomDbContext>(null!, dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            eventBuilder.Object.UseIsolationUoW<CustomDbContext>(null!,
+                dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
         });
     }
 
@@ -69,7 +68,8 @@ public class TestIsolation : TestBase
     {
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment(),
+            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IEnvironmentContext>());
@@ -81,7 +81,9 @@ public class TestIsolation : TestBase
     {
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(
+            isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiEnvironment(),
+            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
@@ -93,7 +95,8 @@ public class TestIsolation : TestBase
     {
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant(), dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant(),
+            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<ITenantContext>());
@@ -105,7 +108,8 @@ public class TestIsolation : TestBase
     {
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiTenant(), dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiTenant(),
+            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
@@ -122,7 +126,8 @@ public class TestIsolation : TestBase
         _services.AddSingleton<IConfiguration>(configurationRoot);
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(
+            isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
@@ -164,7 +169,8 @@ public class TestIsolation : TestBase
         unifOfWorkNew3.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
         unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test2" && unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test2");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test2" &&
+            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test2");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
@@ -200,7 +206,8 @@ public class TestIsolation : TestBase
         });
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment(),
+            dbOptionBuilder => dbOptionBuilder.UseSqlite());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
@@ -214,19 +221,22 @@ public class TestIsolation : TestBase
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("dev");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test5" && unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test5");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test5" &&
+            unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test5");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("pro");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test6" && unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test6");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test6" &&
+            unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test6");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         unifOfWorkNew4.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("staging");
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test4" && unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test4");
+        Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test4" &&
+            unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test4");
     }
 
     [TestMethod]
@@ -254,7 +264,8 @@ public class TestIsolation : TestBase
         });
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiTenant(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiTenant(),
+            dbOptionBuilder => dbOptionBuilder.UseSqlite());
         var serviceProvider = _services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
@@ -293,13 +304,67 @@ public class TestIsolation : TestBase
         builder.AddMasaConfiguration();
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(opt => opt.Services).Returns(builder.Services).Verifiable();
-        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiEnvironment(), dbOptionBuilder => dbOptionBuilder.UseSqlite());
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext, int>(isolationBuilder => isolationBuilder.UseMultiEnvironment(),
+            dbOptionBuilder => dbOptionBuilder.UseSqlite());
         var serviceProvider = builder.Services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
         var currentDbContextOptions = unitOfWorkAccessor.CurrentDbContextOptions;
         Assert.IsNotNull(currentDbContextOptions);
         Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test1");
+    }
+
+    [TestMethod]
+    public async Task TestUseMultiTenantAndUseFilterAsync()
+    {
+        var services = new ServiceCollection();
+        services.Configure<IsolationDbConnectionOptions>(option =>
+        {
+            option.ConnectionStrings = new ConnectionStrings()
+            {
+                DefaultConnection = $"data source=test_{Guid.NewGuid()}"
+            };
+            option.IsolationConnectionStrings = new List<IsolationOptions>
+            {
+                new()
+                {
+                    ConnectionString = $"data source=test_{Guid.NewGuid()}",
+                    TenantId = "1"
+                }
+            };
+        });
+        Mock<IDispatcherOptions> dispatcherOption = new();
+        dispatcherOption.Setup(opt => opt.Services).Returns(services).Verifiable();
+        dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder =>
+                isolationBuilder.UseMultiTenant(),
+            dbOptionBuilder => dbOptionBuilder.UseSqlite().UseFilter());
+
+        var serviceProvider = services.BuildServiceProvider();
+        var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await customDbContext.Database.EnsureCreatedAsync();
+        var tag = new Tag()
+        {
+            Name = "Tom"
+        };
+        await customDbContext.Set<Tag>().AddAsync(tag);
+        await customDbContext.SaveChangesAsync();
+
+        Assert.IsTrue(await customDbContext.Set<Tag>().CountAsync() == 1);
+
+        tag = await customDbContext.Set<Tag>().FirstOrDefaultAsync(t => t.Id == tag.Id);
+        Assert.IsNotNull(tag);
+
+        customDbContext.Set<Tag>().Remove(tag);
+        await customDbContext.SaveChangesAsync();
+        Assert.IsTrue(await customDbContext.Set<Tag>().CountAsync() == 0);
+
+        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
+        using (dataFilter.Disable<ISoftDelete>())
+        {
+            Assert.IsTrue(await customDbContext.Set<Tag>().CountAsync() == 1);
+            tag = await customDbContext.Set<Tag>().FirstOrDefaultAsync(t => t.Id == tag.Id);
+            Assert.IsNotNull(tag);
+        }
     }
 
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
