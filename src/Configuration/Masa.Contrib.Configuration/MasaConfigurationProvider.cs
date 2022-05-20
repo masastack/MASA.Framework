@@ -11,7 +11,7 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
     public MasaConfigurationProvider(MasaConfigurationSource source)
     {
         _data = new();
-        _configurationRepositories = source.Builder.Repositories;
+        _configurationRepositories = source.Builder!.Repositories;
 
         foreach (var configurationRepository in _configurationRepositories)
         {

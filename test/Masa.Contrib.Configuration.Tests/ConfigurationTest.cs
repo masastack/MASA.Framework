@@ -259,9 +259,15 @@ public class ConfigurationTest
             configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
-        }, new List<Type>(), typeof(ConfigurationTest).Assembly);
+        }, options =>
+        {
+            options.Assemblies = new[] { typeof(ConfigurationTest).Assembly };
+            options.ExcludeConfigurationSourceTypes = new List<Type>();
+            options.ExcludeConfigurationProviderTypes = new List<Type>();
+        });
 
         Assert.IsTrue(builder.Configuration[$"{SectionTypes.Local}{ConfigurationPath.KeyDelimiter}project-name"] == "masa-unit-test");
+
     }
 
     [TestMethod]

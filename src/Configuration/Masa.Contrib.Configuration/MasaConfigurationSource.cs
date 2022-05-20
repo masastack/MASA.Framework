@@ -5,9 +5,14 @@ namespace Masa.Contrib.Configuration;
 
 public class MasaConfigurationSource : IConfigurationSource
 {
-    internal readonly MasaConfigurationBuilder Builder;
+    internal readonly MasaConfigurationBuilder? Builder;
+
+    internal readonly IConfigurationProvider? ConfigurationProvider;
 
     public MasaConfigurationSource(MasaConfigurationBuilder builder) => Builder = builder;
 
-    public IConfigurationProvider Build(IConfigurationBuilder builder) => new MasaConfigurationProvider(this);
+    public MasaConfigurationSource(IConfigurationProvider configurationProvider) => ConfigurationProvider = configurationProvider;
+
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+        => Builder != null ? new MasaConfigurationProvider(this) : ConfigurationProvider!;
 }

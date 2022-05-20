@@ -8,19 +8,22 @@ public static class ServiceCollectionExtensions
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate = null)
-        => builder.AddMasaConfiguration(configureDelegate,
-            AppDomain.CurrentDomain.GetAssemblies());
+    {
+        Action<ConfigurationOptions>? action = null;
+        return builder.AddMasaConfiguration(configureDelegate, action);
+    }
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         params Assembly[] assemblies)
-        => builder.AddMasaConfiguration(null, Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes, assemblies);
+        => builder.AddMasaConfiguration(
+            null,
+            options => options.Assemblies = assemblies);
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
-        List<Type> excludeConfigurationSourceTypes,
-        params Assembly[] assemblies)
-        => builder.AddMasaConfiguration(null, excludeConfigurationSourceTypes, assemblies);
+        Action<ConfigurationOptions>? action)
+        => builder.AddMasaConfiguration(null, action);
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
@@ -28,21 +31,19 @@ public static class ServiceCollectionExtensions
         params Assembly[] assemblies)
         => builder.AddMasaConfiguration(
             configureDelegate,
-            Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes,
-            assemblies);
+            options => options.Assemblies = assemblies);
 
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        List<Type> excludeConfigurationSourceTypes,
-        params Assembly[] assemblies)
+        Action<ConfigurationOptions>? action)
     {
-        ArgumentNullException.ThrowIfNull(excludeConfigurationSourceTypes, nameof(excludeConfigurationSourceTypes));
-
-        var configurationBuilder = GetConfigurationBuilder(builder.Configuration);
-
         IConfigurationRoot masaConfiguration =
-            builder.Services.CreateMasaConfiguration(configureDelegate, configurationBuilder, excludeConfigurationSourceTypes, assemblies);
+            builder.Services.CreateMasaConfiguration(
+                configureDelegate,
+                builder.Configuration,
+                action);
+
         if (!masaConfiguration.Providers.Any())
             return builder;
 
@@ -63,26 +64,32 @@ public static class ServiceCollectionExtensions
         return services.CreateMasaConfiguration(
             configureDelegate,
             configurationBuilder,
-            Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes,
-            assemblies);
+            options => options.Assemblies = assemblies);
     }
 
     public static IConfigurationRoot CreateMasaConfiguration(
         this IServiceCollection services,
         Action<IMasaConfigurationBuilder>? configureDelegate,
         IConfigurationBuilder configurationBuilder,
-        List<Type> excludeConfigurationSourceTypes,
-        params Assembly[] assemblies)
+        Action<ConfigurationOptions>? action)
     {
         if (services.Any(service => service.ImplementationType == typeof(MasaConfigurationProvider)))
             return new ConfigurationBuilder().Build();
 
         services.AddSingleton<MasaConfigurationProvider>();
         services.AddOptions();
+        services.TryAddSingleton<IMasaConfigurationSourceProvider, DefaultMasaConfigurationSourceProvider>();
         services.TryAddSingleton<IMasaConfiguration, DefaultMasaConfiguration>();
+        var configurationOptions = new ConfigurationOptions();
+        action?.Invoke(configurationOptions);
+
+        var configurationSourceResult = services
+            .BuildServiceProvider()
+            .GetRequiredService<IMasaConfigurationSourceProvider>()
+            .GetMigrated(configurationBuilder, configurationOptions.ExcludeConfigurationSourceTypes, configurationOptions.ExcludeConfigurationProviderTypes);
 
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services,
-            GetMigrateConfigurationBuilder(configurationBuilder, excludeConfigurationSourceTypes));
+            new ConfigurationBuilder().AddRange(configurationSourceResult.MigrateConfigurationSources));
         configureDelegate?.Invoke(masaConfigurationBuilder);
 
         MasaConfigurationBuilder builder = new(services, new ConfigurationBuilder());
@@ -96,10 +103,10 @@ public static class ServiceCollectionExtensions
         var source = new MasaConfigurationSource(builder);
         var configuration = builder
             .Add(source)
-            .AddRange(configurationBuilder.Sources.Where(s => excludeConfigurationSourceTypes.Contains(s.GetType())))
+            .AddRange(configurationSourceResult.ConfigurationSources)
             .Build();
 
-        builder.AutoMapping(assemblies);
+        builder.AutoMapping(configurationOptions.Assemblies);
 
         builder.Relations.ForEach(relation =>
         {
@@ -121,32 +128,7 @@ public static class ServiceCollectionExtensions
         return configuration;
     }
 
-    private static IConfigurationBuilder GetMigrateConfigurationBuilder(
-        IConfigurationBuilder sourceConfigurationBuilder,
-        List<Type> configurationSourceTypes)
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-        foreach (var configurationSource in sourceConfigurationBuilder.Sources)
-        {
-            if (!configurationSourceTypes.Contains(configurationSource.GetType()))
-            {
-                configurationBuilder.Add(configurationSource);
-            }
-        }
-        return configurationBuilder;
-    }
-
-    private static IConfigurationBuilder GetConfigurationBuilder(ConfigurationManager configuration)
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-        foreach (var source in ((IConfigurationBuilder)configuration).Sources)
-        {
-            configurationBuilder.Add(source);
-        }
-        return configurationBuilder;
-    }
-
-    internal static void ConfigureOption(
+    private static void ConfigureOption(
         this IServiceCollection services,
         IConfiguration configuration,
         List<string> sectionNames, Type optionType)
