@@ -215,6 +215,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Extensions", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.Extensions\Masa.Contrib.Data.IdGenerator.Extensions.csproj", "{2D260E70-5F08-42EF-8859-0D31FEC59488}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.Snowflake\Masa.Contrib.Data.IdGenerator.Snowflake.csproj", "{E7987CBB-8DDD-4AC5-B522-653E2F457C85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -871,6 +873,14 @@ Global
 		{2D260E70-5F08-42EF-8859-0D31FEC59488}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D260E70-5F08-42EF-8859-0D31FEC59488}.Release|x64.ActiveCfg = Release|Any CPU
 		{2D260E70-5F08-42EF-8859-0D31FEC59488}.Release|x64.Build.0 = Release|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Debug|x64.Build.0 = Debug|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Release|x64.ActiveCfg = Release|Any CPU
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -978,6 +988,7 @@ Global
 		{6DB8780E-BA11-47CD-8FAB-D73A1F71B305} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{E3BEE719-E145-4AC5-949C-F05907F12BEF} = {6DB8780E-BA11-47CD-8FAB-D73A1F71B305}
 		{2D260E70-5F08-42EF-8859-0D31FEC59488} = {6DB8780E-BA11-47CD-8FAB-D73A1F71B305}
+		{E7987CBB-8DDD-4AC5-B522-653E2F457C85} = {6DB8780E-BA11-47CD-8FAB-D73A1F71B305}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
