@@ -5,6 +5,14 @@ namespace Masa.Contrib.Configuration.Internal;
 
 internal static class ConfigurationExtensions
 {
+    public static readonly List<Type> DefaultExcludeConfigurationProviderTypes = new()
+    {
+        typeof(EnvironmentVariablesConfigurationProvider),
+        typeof(MemoryConfigurationProvider),
+        typeof(CommandLineConfigurationProvider),
+        typeof(KeyPerFileConfigurationProvider)
+    };
+
     public static readonly List<Type> DefaultExcludeConfigurationSourceTypes = new()
     {
         typeof(CommandLineConfigurationSource),
@@ -17,9 +25,7 @@ internal static class ConfigurationExtensions
         IEnumerable<IConfigurationSource> configurationSources)
     {
         foreach (var configurationSource in configurationSources)
-        {
             configurationBuilder.Add(configurationSource);
-        }
         return configurationBuilder;
     }
 }
