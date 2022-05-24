@@ -29,12 +29,22 @@ public class IdGeneratorOptions
     public bool EnableMachineClock { get; set; } = false;
 
     /// <summary>
+    /// Whether to support distributed id
+    /// </summary>
+    public bool SupportDistributed { get; protected set; } = false;
+
+    /// <summary>
+    /// WorkerId check interval(Suitable for distributed deployment)
+    /// </summary>
+    public int HeartbeatInterval { get; set; } = Const.DEFAULT_HEARTBEAT_INTERVAL;
+
+    /// <summary>
+    /// The maximum expiration time. When the new WorkerId is not obtained after this time, the WorkerId of the current service will be cancelled.
+    /// </summary>
+    public int MaxExpirationTime { get; set; } = Const.DEFAULT_EXPIRATION_TIME;
+
+    /// <summary>
     /// Maximum supported worker machine id
     /// </summary>
     public long MaxWorkerId => ~(-1L << WorkerIdBits);
-
-    /// <summary>
-    /// working machine id (Cannot be used by multiple services at the same time)
-    /// </summary>
-    internal long WorkerId { get; set; }
 }

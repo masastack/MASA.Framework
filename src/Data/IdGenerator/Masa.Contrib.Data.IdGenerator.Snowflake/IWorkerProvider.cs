@@ -5,8 +5,6 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public interface IWorkerProvider
 {
-    bool SupportDistributed { get; }
-
     /// <summary>
     /// Working machine id
     /// </summary>

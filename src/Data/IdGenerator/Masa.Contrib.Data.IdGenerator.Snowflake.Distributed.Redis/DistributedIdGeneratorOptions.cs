@@ -6,21 +6,22 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class DistributedIdGeneratorOptions : IdGeneratorOptions
 {
     /// <summary>
-    /// WorkId allows recycling
-    /// After the circular use is enabled, when the WorkerId is allocated,
-    /// the WorkId that has not been refreshed after the timeout will be checked and reused.
-    /// When a service cannot be connected to redis for a long time, the workId may be used by other applications.
-    /// </summary>
-    public bool EnableRecycle { get; set; }
-
-    /// <summary>
+    /// When there is no available WorkerId, recover the inactive WorkerId for 2 minutes
+    /// default: 120000ms(2min)
     /// unit: ms
     /// </summary>
     /// <returns></returns>
-    public long RecycleTime { get; set; } = 300 * 1000;
+    public long RecycleTime { get; set; } = 2 * 60 * 1000;
+
+    /// <summary>
+    /// Get the minimum interval for WorkerId
+    /// unit: ms
+    /// </summary>
+    public long GetWorkerIdMinInterval { get; set; } = 5 * 1000;
 
     public DistributedIdGeneratorOptions()
     {
+        SupportDistributed = true;
     }
 
     internal DistributedIdGeneratorOptions(IdGeneratorOptions idGeneratorOptions) : this()

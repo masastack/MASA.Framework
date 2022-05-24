@@ -5,14 +5,12 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public sealed class DefaultWorkerProvider : IWorkerProvider
 {
-    public bool SupportDistributed => false;
-
     private readonly long _workerId;
 
     public DefaultWorkerProvider()
     {
         _workerId = EnironmentExtensions.GetEnvironmentVariable(Const.DEFAULT_WORKER_ID_KEY) ??
-            throw new ArgumentNullException(nameof(IdGeneratorOptions.WorkerId));
+            throw new ArgumentNullException("WorkerId");
     }
 
     public Task<long> GetWorkerIdAsync() => Task.FromResult(_workerId);

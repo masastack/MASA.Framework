@@ -9,14 +9,13 @@ public class DefaultIdGenerator : BaseIdGenerator, IIdGenerator
 
     public DefaultIdGenerator(
         ITimeCallbackProvider timeCallbackProvider,
+        IWorkerProvider workerProvider,
         IdGeneratorOptions idGeneratorOptions)
-        : base(idGeneratorOptions)
+        : base(workerProvider, idGeneratorOptions)
     {
         _timeCallbackProvider = timeCallbackProvider;
     }
 
     protected override long NextIdByTimeCallback(long currentTimestamp, long lastTimestamp)
-    {
-        return _timeCallbackProvider.NextId(currentTimestamp, lastTimestamp, TimestampLeftShift, WorkerId, SequenceBits);
-    }
+        => _timeCallbackProvider.NextId(currentTimestamp, lastTimestamp, TimestampLeftShift, GetWorkerId(), SequenceBits);
 }

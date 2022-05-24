@@ -5,28 +5,31 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
 public class DistributedWorkerProvider : IWorkerProvider
 {
-    private long _workerId;
-    private readonly bool _enableRecycle;
+    private long? _workerId;
     private readonly long _recycleTime;
     private readonly long _maxWorkerId;
+    private readonly long _workerIdMinInterval;
     private readonly string _currentWorkerKey;
     private readonly string _inUseWorkerKey;
     private readonly string _logOutWorkerKey;
     private readonly string _getWorkerIdKey;
     private readonly string _token;
     private readonly TimeSpan _timeSpan;
-    public bool SupportDistributed => true;
     private readonly ConnectionMultiplexer _connection;
     private readonly IDatabase _database;
+    private DateTime? _lastTime;
+    private readonly ILogger<DistributedWorkerProvider>? _logger;
+    private readonly object _lock = new();
 
     public DistributedWorkerProvider(DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptionsMonitor<RedisConfigurationOptions> redisOptions)
+        IOptionsMonitor<RedisConfigurationOptions> redisOptions,
+        ILogger<DistributedWorkerProvider>? logger)
     {
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
-        _enableRecycle = distributedIdGeneratorOptions.EnableRecycle;
         _recycleTime = distributedIdGeneratorOptions.RecycleTime;
         _maxWorkerId = distributedIdGeneratorOptions.MaxWorkerId;
+        _workerIdMinInterval = distributedIdGeneratorOptions.GetWorkerIdMinInterval;
         _currentWorkerKey = "snowflake.current.workerid";
         _inUseWorkerKey = "snowflake.inuse.workerid";
         _logOutWorkerKey = "snowflake.logout.workerid";
@@ -36,24 +39,74 @@ public class DistributedWorkerProvider : IWorkerProvider
         var options = GetConfigurationOptions(redisOptions.CurrentValue);
         _connection = ConnectionMultiplexer.Connect(options);
         _database = _connection.GetDatabase(options.DefaultDatabase ?? 0);
+        _logger = logger;
     }
 
-    public async Task<long> GetWorkerIdAsync()
+    public Task<long> GetWorkerIdAsync()
     {
-        _workerId = await _database.StringIncrementAsync(_currentWorkerKey, 1) - 1;
-        if (_workerId > _maxWorkerId)
+        if (_workerId.HasValue)
+            return Task.FromResult(_workerId.Value);
+
+        if (_lastTime != null && (DateTime.UtcNow - _lastTime.Value).TotalMilliseconds < _workerIdMinInterval)
+        {
+            _logger?.LogDebug("Failed to get WorkerId, please rest for a while and try again");
+            throw new MasaException("Failed to get WorkerId, please rest for a while and try again");
+        }
+
+        _lastTime = DateTime.UtcNow;
+        lock (_lock)
+        {
+            if (_workerId.HasValue)
+                return Task.FromResult(_workerId.Value);
+
+            _workerId = GetNextWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            return Task.FromResult(_workerId.Value);
+        }
+    }
+
+    public async Task RefreshAsync()
+    {
+        if (_workerId == null)
+            return;
+
+        await _database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
+    }
+
+    public async Task LogOutAsync()
+    {
+        if (_workerId == null)
+            return;
+
+        var val = _workerId! + "";
+        _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+            _workerId,
+            DateTime.UtcNow);
+
+        _workerId = null;
+        await _database.SortedSetAddAsync(_logOutWorkerKey, val, GetCurrentTimestamp());
+        await _database.SortedSetRemoveAsync(_inUseWorkerKey, val);
+
+        _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+            _workerId,
+            DateTime.UtcNow);
+    }
+
+    private async Task<long> GetNextWorkerIdAsync()
+    {
+        var workerId = await _database.StringIncrementAsync(_currentWorkerKey, 1) - 1;
+        if (workerId > _maxWorkerId)
         {
             var lockdb = _connection.GetDatabase(-1);
-            if (lockdb.LockTake(_getWorkerIdKey, _token, _timeSpan))
+            if (await lockdb.LockTakeAsync(_getWorkerIdKey, _token, _timeSpan))
             {
                 try
                 {
-                    _workerId = await GetNextWorkerIdAsync();
+                    workerId = await GetNextWorkerIdByDistributedLockAsync();
                     await RefreshAsync();
                 }
                 finally
                 {
-                    lockdb.LockRelease(_getWorkerIdKey, _token);
+                    await lockdb.LockReleaseAsync(_getWorkerIdKey, _token);
                 }
             }
         }
@@ -61,26 +114,15 @@ public class DistributedWorkerProvider : IWorkerProvider
         {
             await RefreshAsync();
         }
-        return _workerId;
+
+        return workerId;
     }
 
-    public Task RefreshAsync() =>
-        _database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
-
-    public async Task LogOutAsync()
-    {
-        var val = _workerId + "";
-        await _database.SortedSetAddAsync(_logOutWorkerKey, val, GetCurrentTimestamp());
-        await _database.SortedSetRemoveAsync(_inUseWorkerKey, val);
-    }
-
-    private async Task<long> GetNextWorkerIdAsync()
+    private async Task<long> GetNextWorkerIdByDistributedLockAsync()
     {
         var workerId = await GetWorkerIdByLogOutAsync();
         if (workerId != null)
             return workerId.Value;
-
-        if (!_enableRecycle) throw new MasaException("No WorkerId available");
 
         workerId = await GetWorkerIdByInUseAsync();
         if (workerId != null)

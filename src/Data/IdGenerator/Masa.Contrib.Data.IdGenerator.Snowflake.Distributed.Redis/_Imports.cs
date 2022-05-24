@@ -4,6 +4,7 @@
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Masa.Utils.Caching.Redis.Models;
+global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using StackExchange.Redis;
 global using Masa.Utils.Caching.Core.Interfaces;
