@@ -5,9 +5,13 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 
 internal class Const
 {
-    public const string DEFAULT_WORKERID = "WorkerId";
+    /// <summary>
+    /// Default working cluster idkey
+    /// </summary>
+    public const string DEFAULT_WORKER_ID_KEY = "WORKER_ID";
 
-    public const string DEFAULT_DATACENTER_ID = "DatacenterId";
-
-    public const string DEFAULT_DatacenterIdBits = "DatacenterIdBits";
+    /// <summary>
+    /// By default, the status of the workid is refreshed every 30 seconds to ensure that the workid will not be removed.
+    /// </summary>
+    public const int DEFAULT_HEARTBEATINTERVAL = 30 * 1000;
 }
