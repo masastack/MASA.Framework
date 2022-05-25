@@ -22,32 +22,38 @@ public class TestDbIsolationConnectionStringProvider
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         unitOfWorkAccessor.CurrentDbContextOptions = new MasaDbContextConfigurationOptions(defaultConnectionString);
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, null!);
+
         Assert.IsTrue(await provider.GetConnectionStringAsync() == defaultConnectionString);
     }
 
     [TestMethod]
     public async Task TestGetConnectionString2Async()
     {
-        string defaultConnectionString = "data source=test1;";
-
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
 
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options);
-        Assert.IsTrue(await provider.GetConnectionStringAsync() == defaultConnectionString);
+        Assert.IsTrue(await provider.GetConnectionStringAsync() == connectionStrings.DefaultConnection);
     }
 
     [TestMethod]
     public async Task TestGetConnectionString3Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -72,13 +78,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString4Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -103,13 +112,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString5Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -134,13 +146,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString6Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -165,13 +180,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString7Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -196,13 +214,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString8Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -246,13 +267,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString9Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -296,13 +320,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString10Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -346,13 +373,16 @@ public class TestDbIsolationConnectionStringProvider
     [TestMethod]
     public async Task TestGetConnectionString11Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -388,7 +418,8 @@ public class TestDbIsolationConnectionStringProvider
 
         Mock<ITenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
-        var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
+        var provider =
+            new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test4;");
     }
 
@@ -396,13 +427,16 @@ public class TestDbIsolationConnectionStringProvider
     public async Task TestGetConnectionString12Async()
     {
         _services.AddLogging();
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {
@@ -438,20 +472,24 @@ public class TestDbIsolationConnectionStringProvider
 
         Mock<ITenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
-        var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
+        var provider =
+            new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test4;");
     }
 
     [TestMethod]
     public async Task TestGetConnectionString13Async()
     {
-        string defaultConnectionString = "data source=test1;";
-        _services.Configure<IsolationDbConnectionOptions>(option => option.DefaultConnection = defaultConnectionString);
+        var connectionStrings = new ConnectionStrings()
+        {
+            DefaultConnection = "data source=test1;"
+        };
+        _services.Configure<IsolationDbConnectionOptions>(option => option.ConnectionStrings = connectionStrings);
         var unitOfWorkAccessor = _services.BuildServiceProvider().GetService<IUnitOfWorkAccessor>()!;
         _services.Configure<IsolationDbConnectionOptions>(option =>
         {
-            option.DefaultConnection = defaultConnectionString;
-            option.Isolations = new List<DbConnectionOptions>
+            option.ConnectionStrings = connectionStrings;
+            option.IsolationConnectionStrings = new List<IsolationOptions>
             {
                 new()
                 {

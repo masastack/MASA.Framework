@@ -11,7 +11,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext
+        where TDbContext : MasaDbContext, IMasaDbContext
         => eventBusBuilder.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IEventBusBuilder UseIsolationUoW<TDbContext, TKey>(
@@ -20,7 +20,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext
+        where TDbContext : MasaDbContext, IMasaDbContext
         where TKey : IComparable
     {
         eventBusBuilder.Services.UseIsolationUoW<TKey>();
@@ -34,7 +34,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext
+        where TDbContext : MasaDbContext, IMasaDbContext
         => options.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IDispatcherOptions UseIsolationUoW<TDbContext, TKey>(
@@ -43,7 +43,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext
+        where TDbContext : MasaDbContext, IMasaDbContext
         where TKey : IComparable
     {
         options.Services.UseIsolationUoW<TKey>();
@@ -52,19 +52,5 @@ public static class DispatcherOptionsExtensions
     }
 
     private static void UseIsolationUoW<TKey>(this IServiceCollection services) where TKey : IComparable
-        => services.UseIsolationUoW()
-                   .TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(IsolationSaveChangesFilter<TKey>), ServiceLifetime.Scoped));
-
-    private static IServiceCollection UseIsolationUoW(this IServiceCollection services)
-    {
-        if (services.Any(service => service.ServiceType == typeof(IConnectionStringProvider)))
-            services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultConnectionStringProvider), ServiceLifetime.Scoped));
-        else
-            services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
-        return services;
-    }
-
-    private class IsolationUoWProvider
-    {
-    }
+        => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(IsolationSaveChangesFilter<TKey>), ServiceLifetime.Scoped));
 }

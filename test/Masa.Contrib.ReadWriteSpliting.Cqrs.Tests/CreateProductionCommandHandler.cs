@@ -12,7 +12,7 @@ public class CreateProductionCommandHandler : CommandHandler<CreateProductionCom
         if (string.IsNullOrEmpty(@event.Name))
             throw new ArgumentNullException(nameof(@event));
 
-        if (@event.Id == default(Guid) || @event.CreationTime > DateTime.UtcNow)
+        if (@event.GetEventId() == default(Guid) || @event.GetCreationTime() > DateTime.UtcNow)
             throw new ArgumentNullException(nameof(@event));
 
         return Task.CompletedTask;

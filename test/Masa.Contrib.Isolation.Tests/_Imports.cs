@@ -1,11 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Data.Options;
 global using Masa.BuildingBlocks.Data.UoW;
-global using Masa.BuildingBlocks.Data.UoW.Options;
 global using Masa.BuildingBlocks.Dispatcher.Events;
-global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Environment;
+global using Masa.BuildingBlocks.Isolation.Middleware;
 global using Masa.BuildingBlocks.Isolation.MultiTenant;
 global using Masa.BuildingBlocks.Isolation.Options;
 global using Masa.BuildingBlocks.Isolation.Parser;

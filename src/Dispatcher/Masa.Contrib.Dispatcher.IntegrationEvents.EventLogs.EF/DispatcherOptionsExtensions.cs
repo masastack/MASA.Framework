@@ -13,7 +13,7 @@ public static class DispatcherOptionsExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     public static IDispatcherOptions UseEventLog<TDbContext>(
-        this IDispatcherOptions options) where TDbContext : MasaDbContext
+        this IDispatcherOptions options) where TDbContext : MasaDbContext, IMasaDbContext
     {
         if (options.Services == null)
             throw new ArgumentNullException(nameof(options.Services));

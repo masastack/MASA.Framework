@@ -3,8 +3,13 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
+global using Masa.Contrib.Configuration.Internal;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.Configuration.CommandLine;
+global using Microsoft.Extensions.Configuration.EnvironmentVariables;
+global using Microsoft.Extensions.Configuration.KeyPerFile;
+global using Microsoft.Extensions.Configuration.Memory;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
