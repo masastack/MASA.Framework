@@ -17,11 +17,5 @@ public class AuthClient : IAuthClient
     public ISubjectService SubjectService { get; }
 
     public ITeamService TeamService { get; }
-
-    public List<SubjectModel> GetList(ICallerProvider callerProvider,string requestUri,string filter)
-    {
-        var a = callerProvider.GetAsync<object, List<SubjectModel>>(requestUri, new { filter }).Result;
-        return a ?? new();
-    }
 }
 
