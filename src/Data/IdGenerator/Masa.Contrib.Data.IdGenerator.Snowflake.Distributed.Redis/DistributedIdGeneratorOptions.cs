@@ -24,10 +24,6 @@ public class DistributedIdGeneratorOptions : IdGeneratorOptions
     /// </summary>
     public long RefreshTimestampInterval { get; set; } = 500;
 
-    public DistributedIdGeneratorOptions() : base()
-    {
-    }
-
     internal static void CopyTo(DistributedIdGeneratorOptions distributedIdGeneratorOptions, IdGeneratorOptions idGeneratorOptions)
     {
         idGeneratorOptions.BaseTime = distributedIdGeneratorOptions.BaseTime;
