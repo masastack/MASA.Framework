@@ -6,6 +6,7 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 {
     private long? _workerId;
+    private readonly uint _timestampType;
     private readonly long _recycleTime;
     private readonly long _maxWorkerId;
     private readonly long _workerIdMinInterval;
@@ -25,6 +26,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     {
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
+        _timestampType = distributedIdGeneratorOptions.TimestampType;
         _recycleTime = distributedIdGeneratorOptions.RecycleTime;
         _maxWorkerId = distributedIdGeneratorOptions.MaxWorkerId;
         _workerIdMinInterval = distributedIdGeneratorOptions.GetWorkerIdMinInterval;
@@ -150,5 +152,6 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         return null;
     }
 
-    private long GetCurrentTimestamp(DateTime? dateTime = null) => new DateTimeOffset(dateTime ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
+    private long GetCurrentTimestamp(DateTime? dateTime = null)
+        => new DateTimeOffset(dateTime ?? DateTime.UtcNow).GetTimestamp(_timestampType);
 }

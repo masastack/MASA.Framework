@@ -36,6 +36,7 @@ public class DistributedIdGeneratorOptions : IdGeneratorOptions
         idGeneratorOptions.EnableMachineClock = distributedIdGeneratorOptions.EnableMachineClock;
         idGeneratorOptions.HeartbeatInterval = distributedIdGeneratorOptions.HeartbeatInterval;
         idGeneratorOptions.MaxExpirationTime = distributedIdGeneratorOptions.MaxExpirationTime;
+        idGeneratorOptions.TimestampType = distributedIdGeneratorOptions.TimestampType;
         idGeneratorOptions.EnableSupportDistributed();
     }
 }

@@ -12,6 +12,8 @@ public abstract class BaseIdGenerator
     /// </summary>
     protected readonly long Twepoch;
 
+    private readonly uint _timestampType;
+
     /// <summary>
     /// sequence mask, used to limit the sequence maximum
     /// </summary>
@@ -39,6 +41,7 @@ public abstract class BaseIdGenerator
     public BaseIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
     {
         _workerProvider = workerProvider;
+        _timestampType = idGeneratorOptions.TimestampType;
         Twepoch = new DateTimeOffset(idGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
         SequenceMask = ~(-1 << idGeneratorOptions.SequenceBits);
         SequenceBits = idGeneratorOptions.SequenceBits;
@@ -94,5 +97,5 @@ public abstract class BaseIdGenerator
     protected long GetWorkerId()
         => _workerProvider.GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-    protected long GetCurrentTimestamp() => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+    protected long GetCurrentTimestamp() => new DateTimeOffset(DateTime.UtcNow).GetTimestamp(_timestampType);
 }

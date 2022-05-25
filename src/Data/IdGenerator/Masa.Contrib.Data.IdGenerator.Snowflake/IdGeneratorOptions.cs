@@ -22,6 +22,12 @@ public class IdGeneratorOptions
     public int WorkerIdBits { get; set; } = 10;
 
     /// <summary>
+    /// milliseconds: 1
+    /// seconds: 2
+    /// </summary>
+    public uint TimestampType { get; set; } = 1;
+
+    /// <summary>
     /// When the machine clock is enabled, the timestamp is meaningless
     /// After the machine clock is enabled, the timestamp will be meaningless.
     /// The time when the project first obtains the id is used as the starting time, which is not affected by the clock callback.

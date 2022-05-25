@@ -10,3 +10,5 @@ global using StackExchange.Redis;
 global using Masa.BuildingBlocks.Data;
 global using Masa.Utils.Caching.Core.Interfaces;
 global using Masa.Utils.Caching.Redis;
+global using System.Globalization;
+global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Internal;

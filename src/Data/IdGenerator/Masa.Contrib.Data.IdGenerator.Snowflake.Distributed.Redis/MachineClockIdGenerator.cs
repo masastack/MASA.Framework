@@ -17,7 +17,9 @@ public class MachineClockIdGenerator : Snowflake.MachineClockIdGenerator
         : base(workerProvider, distributedIdGeneratorOptions)
     {
         _redis = new BaseRedis(redisOptions);
-        _refreshTimestampInterval = distributedIdGeneratorOptions.RefreshTimestampInterval;
+        _refreshTimestampInterval = distributedIdGeneratorOptions.TimestampType == 1 ?
+            long.Parse(Math.Ceiling(distributedIdGeneratorOptions.RefreshTimestampInterval / 1000m)
+                .ToString(CultureInfo.InvariantCulture)) : distributedIdGeneratorOptions.RefreshTimestampInterval;
         if (_redis.Database.HashExists(_lastTimestampKey, GetHashField()))
         {
             LastTimestamp = long.Parse(_redis.Database.HashGet(_lastTimestampKey, GetHashField())) + _refreshTimestampInterval;
