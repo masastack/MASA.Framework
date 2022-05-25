@@ -209,11 +209,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service.Contracts", "src\BuildingBlocks\MASA.BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.Contracts\Masa.BuildingBlocks.Service.Contracts.csproj", "{736F69E9-89D0-47E2-99AF-9412AAE1C6BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.BasicAbility.Auth", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth\Masa.BuildingBlocks.BasicAbility.Auth.csproj", "{4B818EE6-8E13-40DA-B99A-218BB228EE91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Auth", "src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth\Masa.BuildingBlocks.BasicAbility.Auth.csproj", "{4B818EE6-8E13-40DA-B99A-218BB228EE91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.BasicAbility.Auth", "src\BasicAbility\Masa.Contrib.BasicAbility.Auth\Masa.Contrib.BasicAbility.Auth.csproj", "{CE1CABB0-B307-4709-84E0-583382FAAA29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Auth", "src\BasicAbility\Masa.Contrib.BasicAbility.Auth\Masa.Contrib.BasicAbility.Auth.csproj", "{CE1CABB0-B307-4709-84E0-583382FAAA29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.BasicAbility.Auth.Tests", "test\Masa.Contrib.BasicAbility.Auth.Tests\Masa.Contrib.BasicAbility.Auth.Tests.csproj", "{2B644A8C-F0EE-4566-AB78-9E1C6D4185A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Auth.Tests", "test\Masa.Contrib.BasicAbility.Auth.Tests\Masa.Contrib.BasicAbility.Auth.Tests.csproj", "{2B644A8C-F0EE-4566-AB78-9E1C6D4185A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -983,6 +983,9 @@ Global
 		{7C7CEBAE-38A4-435D-BEC2-2425D58FABDC} = {E33ADF54-4D35-49B7-BDA6-412587CA39FF}
 		{EB0F6BDA-C6AA-4859-834E-5613BB38862B} = {5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}
 		{736F69E9-89D0-47E2-99AF-9412AAE1C6BB} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{4B818EE6-8E13-40DA-B99A-218BB228EE91} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{CE1CABB0-B307-4709-84E0-583382FAAA29} = {5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}
+		{2B644A8C-F0EE-4566-AB78-9E1C6D4185A3} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
