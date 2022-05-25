@@ -7,5 +7,6 @@ global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using StackExchange.Redis;
+global using Masa.BuildingBlocks.Data;
 global using Masa.Utils.Caching.Core.Interfaces;
 global using Masa.Utils.Caching.Redis;

@@ -8,27 +8,34 @@ public class DistributedIdGeneratorOptions : IdGeneratorOptions
     /// <summary>
     /// When there is no available WorkerId, recover the inactive WorkerId for 2 minutes
     /// default: 120000ms(2min)
-    /// unit: ms
     /// </summary>
     /// <returns></returns>
     public long RecycleTime { get; set; } = 2 * 60 * 1000;
 
     /// <summary>
     /// Get the minimum interval for WorkerId
-    /// unit: ms
+    /// default: 5000ms
     /// </summary>
     public long GetWorkerIdMinInterval { get; set; } = 5 * 1000;
 
-    public DistributedIdGeneratorOptions()
+    /// <summary>
+    /// refresh timestamp period
+    /// default: 500ms
+    /// </summary>
+    public long RefreshTimestampInterval { get; set; } = 500;
+
+    public DistributedIdGeneratorOptions() : base()
     {
-        SupportDistributed = true;
     }
 
-    internal DistributedIdGeneratorOptions(IdGeneratorOptions idGeneratorOptions) : this()
+    internal static void CopyTo(DistributedIdGeneratorOptions distributedIdGeneratorOptions, IdGeneratorOptions idGeneratorOptions)
     {
-        base.BaseTime = idGeneratorOptions.BaseTime;
-        base.SequenceBits = idGeneratorOptions.SequenceBits;
-        base.WorkerIdBits = idGeneratorOptions.WorkerIdBits;
-        base.EnableMachineClock = idGeneratorOptions.EnableMachineClock;
+        idGeneratorOptions.BaseTime = distributedIdGeneratorOptions.BaseTime;
+        idGeneratorOptions.SequenceBits = distributedIdGeneratorOptions.SequenceBits;
+        idGeneratorOptions.WorkerIdBits = distributedIdGeneratorOptions.WorkerIdBits;
+        idGeneratorOptions.EnableMachineClock = distributedIdGeneratorOptions.EnableMachineClock;
+        idGeneratorOptions.HeartbeatInterval = distributedIdGeneratorOptions.HeartbeatInterval;
+        idGeneratorOptions.MaxExpirationTime = distributedIdGeneratorOptions.MaxExpirationTime;
+        idGeneratorOptions.EnableSupportDistributed();
     }
 }

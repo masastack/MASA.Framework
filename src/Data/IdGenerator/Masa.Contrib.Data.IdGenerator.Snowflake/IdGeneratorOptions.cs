@@ -31,7 +31,7 @@ public class IdGeneratorOptions
     /// <summary>
     /// Whether to support distributed id
     /// </summary>
-    public bool SupportDistributed { get; protected set; } = false;
+    public bool SupportDistributed { get; private set; }
 
     /// <summary>
     /// WorkerId check interval(Suitable for distributed deployment)
@@ -47,4 +47,6 @@ public class IdGeneratorOptions
     /// Maximum supported worker machine id
     /// </summary>
     public long MaxWorkerId => ~(-1L << WorkerIdBits);
+
+    public void EnableSupportDistributed() => SupportDistributed = true;
 }

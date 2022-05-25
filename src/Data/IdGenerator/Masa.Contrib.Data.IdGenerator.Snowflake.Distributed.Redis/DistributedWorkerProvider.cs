@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
-public class DistributedWorkerProvider : IWorkerProvider
+public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 {
     private long? _workerId;
     private readonly long _recycleTime;
@@ -15,15 +15,13 @@ public class DistributedWorkerProvider : IWorkerProvider
     private readonly string _getWorkerIdKey;
     private readonly string _token;
     private readonly TimeSpan _timeSpan;
-    private readonly ConnectionMultiplexer _connection;
-    private readonly IDatabase _database;
     private DateTime? _lastTime;
     private readonly ILogger<DistributedWorkerProvider>? _logger;
     private readonly object _lock = new();
 
     public DistributedWorkerProvider(DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptionsMonitor<RedisConfigurationOptions> redisOptions,
-        ILogger<DistributedWorkerProvider>? logger)
+        IOptions<RedisConfigurationOptions> redisOptions,
+        ILogger<DistributedWorkerProvider>? logger) : base(redisOptions)
     {
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
@@ -36,9 +34,7 @@ public class DistributedWorkerProvider : IWorkerProvider
         _getWorkerIdKey = "snowflake.get.workerid";
         _token = Environment.MachineName;
         _timeSpan = TimeSpan.FromSeconds(10);
-        var options = GetConfigurationOptions(redisOptions.CurrentValue);
-        _connection = ConnectionMultiplexer.Connect(options);
-        _database = _connection.GetDatabase(options.DefaultDatabase ?? 0);
+
         _logger = logger;
     }
 
@@ -69,7 +65,7 @@ public class DistributedWorkerProvider : IWorkerProvider
         if (_workerId == null)
             return;
 
-        await _database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
+        await Database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
     }
 
     public async Task LogOutAsync()
@@ -83,8 +79,8 @@ public class DistributedWorkerProvider : IWorkerProvider
             DateTime.UtcNow);
 
         _workerId = null;
-        await _database.SortedSetAddAsync(_logOutWorkerKey, val, GetCurrentTimestamp());
-        await _database.SortedSetRemoveAsync(_inUseWorkerKey, val);
+        await Database.SortedSetAddAsync(_logOutWorkerKey, val, GetCurrentTimestamp());
+        await Database.SortedSetRemoveAsync(_inUseWorkerKey, val);
 
         _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
             _workerId,
@@ -93,10 +89,10 @@ public class DistributedWorkerProvider : IWorkerProvider
 
     private async Task<long> GetNextWorkerIdAsync()
     {
-        var workerId = await _database.StringIncrementAsync(_currentWorkerKey, 1) - 1;
+        var workerId = await Database.StringIncrementAsync(_currentWorkerKey, 1) - 1;
         if (workerId > _maxWorkerId)
         {
-            var lockdb = _connection.GetDatabase(-1);
+            var lockdb = Connection.GetDatabase(-1);
             if (await lockdb.LockTakeAsync(_getWorkerIdKey, _token, _timeSpan))
             {
                 try
@@ -131,18 +127,18 @@ public class DistributedWorkerProvider : IWorkerProvider
         throw new MasaException("No WorkerId available");
     }
 
-    private async Task<long?> GetWorkerIdByLogOutAsync()
+    protected virtual async Task<long?> GetWorkerIdByLogOutAsync()
     {
-        var entries = await _database.SortedSetRangeByScoreWithScoresAsync(_logOutWorkerKey, take: 1);
+        var entries = await Database.SortedSetRangeByScoreWithScoresAsync(_logOutWorkerKey, take: 1);
         if (entries is { Length: > 0 })
             return long.Parse(entries[0].Element);
 
         return null;
     }
 
-    private async Task<long?> GetWorkerIdByInUseAsync()
+    protected virtual async Task<long?> GetWorkerIdByInUseAsync()
     {
-        var entries = await _database.SortedSetRangeByScoreWithScoresAsync(
+        var entries = await Database.SortedSetRangeByScoreWithScoresAsync(
             _inUseWorkerKey,
             0,
             GetCurrentTimestamp(DateTime.UtcNow.AddMilliseconds(-_recycleTime)),
@@ -155,28 +151,4 @@ public class DistributedWorkerProvider : IWorkerProvider
     }
 
     private long GetCurrentTimestamp(DateTime? dateTime = null) => new DateTimeOffset(dateTime ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
-
-    private ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)
-    {
-        var configurationOptions = new ConfigurationOptions
-        {
-            AbortOnConnectFail = redisOptions.AbortOnConnectFail,
-            AllowAdmin = redisOptions.AllowAdmin,
-            ChannelPrefix = redisOptions.ChannelPrefix,
-            ClientName = redisOptions.ClientName,
-            ConnectRetry = redisOptions.ConnectRetry,
-            ConnectTimeout = redisOptions.ConnectTimeout,
-            DefaultDatabase = redisOptions.DefaultDatabase,
-            Password = redisOptions.Password,
-            Proxy = redisOptions.Proxy,
-            Ssl = redisOptions.Ssl,
-            SyncTimeout = redisOptions.SyncTimeout
-        };
-
-        foreach (var server in redisOptions.Servers)
-        {
-            configurationOptions.EndPoints.Add(server.Host, server.Port);
-        }
-        return configurationOptions;
-    }
 }

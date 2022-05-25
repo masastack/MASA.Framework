@@ -9,8 +9,7 @@ public sealed class DefaultWorkerProvider : IWorkerProvider
 
     public DefaultWorkerProvider()
     {
-        _workerId = EnironmentExtensions.GetEnvironmentVariable(Const.DEFAULT_WORKER_ID_KEY) ??
-            throw new ArgumentNullException("WorkerId");
+        _workerId = EnironmentExtensions.GetEnvironmentVariable(Const.DEFAULT_WORKER_ID_KEY) ?? 0;
     }
 
     public Task<long> GetWorkerIdAsync() => Task.FromResult(_workerId);

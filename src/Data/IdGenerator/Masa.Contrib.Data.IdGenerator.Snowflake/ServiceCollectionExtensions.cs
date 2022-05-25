@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public static class ServiceCollectionExtensions
@@ -53,19 +51,19 @@ public static class ServiceCollectionExtensions
 
     private static void CheckIdGeneratorOptions(IdGeneratorOptions generatorOptions, long workerId)
     {
-        if (generatorOptions.BaseTime > DateTime.Now)
+        if (generatorOptions.BaseTime > DateTime.UtcNow)
             throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),
                 $"{nameof(generatorOptions.BaseTime)} must not be greater than the current time");
 
         if (workerId > generatorOptions.MaxWorkerId)
-            throw new ArgumentException(
+            throw new ArgumentOutOfRangeException(
                 $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
 
         if (generatorOptions.SequenceBits + generatorOptions.WorkerIdBits > 22)
-            throw new ArgumentNullException(
+            throw new ArgumentOutOfRangeException(
                 $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than 22");
 
-        if (generatorOptions.SupportDistributed && generatorOptions.HeartbeatInterval < 1000)
-            throw new ArgumentOutOfRangeException($"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 1000");
+        if (generatorOptions.SupportDistributed && generatorOptions.HeartbeatInterval < 100)
+            throw new ArgumentOutOfRangeException($"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 100");
     }
 }

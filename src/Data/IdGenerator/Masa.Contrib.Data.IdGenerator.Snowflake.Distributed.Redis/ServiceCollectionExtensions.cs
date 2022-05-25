@@ -19,13 +19,23 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IWorkerProvider>(serviceProvider
             => new DistributedWorkerProvider(distributedIdGenerators,
-                serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
+                serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
                 serviceProvider.GetService<ILogger<DistributedWorkerProvider>>()));
 
         return services.AddSnowflake(idGeneratorOptions =>
         {
-            var distributedIdGeneratorOption = new DistributedIdGeneratorOptions(idGeneratorOptions);
+            var distributedIdGeneratorOption = new DistributedIdGeneratorOptions();
             options?.Invoke(distributedIdGeneratorOption);
+
+            DistributedIdGeneratorOptions.CopyTo(distributedIdGeneratorOption,idGeneratorOptions);
+
+            if (distributedIdGeneratorOption.EnableMachineClock)
+            {
+                services.TryAddSingleton<IIdGenerator>(serviceProvider
+                    => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
+                        serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
+                        distributedIdGeneratorOption));
+            }
 
             long defaultHeartbeatinterval = 30 * 1000;
             if (distributedIdGeneratorOption.RecycleTime <= defaultHeartbeatinterval)

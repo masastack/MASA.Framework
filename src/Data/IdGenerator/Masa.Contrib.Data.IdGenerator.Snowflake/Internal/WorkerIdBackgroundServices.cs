@@ -10,7 +10,7 @@ internal class WorkerIdBackgroundServices : BackgroundService
     private readonly IWorkerProvider _workerProvider;
     private readonly ILogger<WorkerIdBackgroundServices>? _logger;
     private bool _isAvailable = true;
-    private DateTime? _lastFailedTime;
+    private DateTime? _firstFailedTime;
 
     public WorkerIdBackgroundServices(int heartbeatInterval, int maxExpirationTime, IWorkerProvider workerProvider,
         ILogger<WorkerIdBackgroundServices>? logger)
@@ -38,14 +38,15 @@ internal class WorkerIdBackgroundServices : BackgroundService
                     else
                         await _workerProvider.GetWorkerIdAsync(); //Get new WorkerId
 
-                    _lastFailedTime = null;
+                    _firstFailedTime = null;
                     _isAvailable = true;
                 }
                 catch (Exception ex)
                 {
-                    _lastFailedTime ??= DateTime.UtcNow;
-                    if (_lastFailedTime != null && (DateTime.UtcNow - _lastFailedTime.Value).TotalMilliseconds > _maxExpirationTime)
+                    _firstFailedTime ??= DateTime.UtcNow;
+                    if (_firstFailedTime != null && (DateTime.UtcNow - _firstFailedTime.Value).TotalMilliseconds > _maxExpirationTime)
                     {
+                        _isAvailable = false;
                         _logger?.LogWarning(_isAvailable ?
                                 "----- Logout WorkerId, Failed to refresh WorkerId, error reason: {Error}, current time: {CurrentTime}" :
                                 "----- Logout WorkerId, Failed to get new WorkerId, error reason: {Error}, current time: {CurrentTime}",
@@ -62,8 +63,6 @@ internal class WorkerIdBackgroundServices : BackgroundService
                             ex,
                             DateTime.UtcNow);
                     }
-
-                    _isAvailable = false;
                 }
                 finally
                 {
