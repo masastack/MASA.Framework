@@ -26,10 +26,10 @@ public class Client : BaseClient, IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!_credentialProvider.SupportSts)
-            throw new ArgumentException($"{nameof(_options.RoleArn)} or {nameof(_options.RoleSessionName)} cannot be empty or null");
+        if (!CredentialProvider.SupportSts)
+            throw new ArgumentException($"{nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
 
-        return _credentialProvider.GetSecurityToken();
+        return CredentialProvider.GetSecurityToken();
     }
 
     /// <summary>
@@ -77,12 +77,12 @@ public class Client : BaseClient, IClient
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        var objectMetadata = _supportCallback ? BuildCallbackMetadata(_options.CallbackUrl, _options.CallbackBody) : null;
-        var result = !_options.EnableResumableUpload || _options.BigObjectContentLength > data.Length ?
+        var objectMetadata = _supportCallback ? BuildCallbackMetadata(Options.CallbackUrl, Options.CallbackBody) : null;
+        var result = !Options.EnableResumableUpload || Options.BigObjectContentLength > data.Length ?
             client.PutObject(bucketName, objectName, data, objectMetadata) :
             client.ResumableUploadObject(new UploadObjectRequest(bucketName, objectName, data)
             {
-                PartSize = _options.PartSize,
+                PartSize = Options.PartSize,
                 Metadata = objectMetadata
             });
         _logger?.LogDebug("----- Upload {ObjectName} from {BucketName} - ({Result})",
@@ -132,7 +132,7 @@ public class Client : BaseClient, IClient
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), _options.Quiet));
+        var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), Options.Quiet));
         _logger?.LogDebug("----- Delete {ObjectNames} from {BucketName} - ({Result})",
             objectNames,
             bucketName,

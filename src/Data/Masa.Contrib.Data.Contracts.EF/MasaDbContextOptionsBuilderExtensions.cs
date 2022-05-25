@@ -49,7 +49,7 @@ public static class MasaDbContextOptionsBuilderExtensions
         var constructorInfo = softDeleteSaveChangesFilterType.GetConstructors().FirstOrDefault()!;
         var invokeDelegate = InstanceBuilder.CreateInstanceDelegate(constructorInfo);
 
-        masaDbContextOptionsBuilder.Services.TryAdd(
+        masaDbContextOptionsBuilder.Services.Add(
             new ServiceDescriptor(typeof(ISaveChangesFilter),
                 serviceProvider =>
                 {

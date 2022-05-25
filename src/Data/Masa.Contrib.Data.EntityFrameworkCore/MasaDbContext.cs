@@ -101,18 +101,32 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     {
         if (Options != null)
         {
-            foreach (var filter in Options.SaveChangesFilters)
-            {
-                try
-                {
-                    filter.OnExecuting(ChangeTracker);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("An error occured when intercept SaveChanges() or SaveChangesAsync()", ex);
-                }
-            }
+            OnBeforeSaveChangesByFilters();
             DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+    }
+
+    protected virtual async Task OnBeforeSaveChangesAsync()
+    {
+        if (Options != null)
+        {
+            OnBeforeSaveChangesByFilters();
+            await DomainEventEnqueueAsync(ChangeTracker);
+        }
+    }
+
+    protected virtual void OnBeforeSaveChangesByFilters()
+    {
+        foreach (var filter in Options.SaveChangesFilters)
+        {
+            try
+            {
+                filter.OnExecuting(ChangeTracker);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occured when intercept SaveChanges() or SaveChangesAsync()", ex);
+            }
         }
     }
 
@@ -151,10 +165,10 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     /// <param name="acceptAllChangesOnSuccess"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public sealed override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    public sealed override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
-        OnBeforeSaveChanges();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        await OnBeforeSaveChangesAsync();
+        return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
     }
 }
 
