@@ -5,6 +5,8 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public abstract class BaseIdGenerator
 {
+    private readonly IWorkerProvider _workerProvider;
+
     /// <summary>
     /// initial timestamp
     /// </summary>
@@ -14,8 +16,6 @@ public abstract class BaseIdGenerator
     /// sequence mask, used to limit the sequence maximum
     /// </summary>
     protected readonly long SequenceMask;
-
-    protected readonly long WorkerId;
 
     protected readonly int SequenceBits;
 
@@ -36,11 +36,11 @@ public abstract class BaseIdGenerator
 
     protected readonly object Lock = new();
 
-    public BaseIdGenerator(IdGeneratorOptions idGeneratorOptions)
+    public BaseIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
     {
+        _workerProvider = workerProvider;
         Twepoch = new DateTimeOffset(idGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
         SequenceMask = ~(-1 << idGeneratorOptions.SequenceBits);
-        WorkerId = idGeneratorOptions.WorkerId;
         SequenceBits = idGeneratorOptions.SequenceBits;
         TimestampLeftShift = idGeneratorOptions.SequenceBits + idGeneratorOptions.WorkerIdBits;
     }
@@ -80,7 +80,7 @@ public abstract class BaseIdGenerator
     protected virtual long NextId(long deltaSeconds)
     {
         return (deltaSeconds << TimestampLeftShift)
-            | (WorkerId << SequenceBits)
+            | (GetWorkerId() << SequenceBits)
             | Sequence;
     }
 
@@ -90,6 +90,9 @@ public abstract class BaseIdGenerator
         while (timestamp <= lastTimestamp) timestamp = GetCurrentTimestamp();
         return timestamp;
     }
+
+    protected long GetWorkerId()
+        => _workerProvider.GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
     protected long GetCurrentTimestamp() => new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
 }

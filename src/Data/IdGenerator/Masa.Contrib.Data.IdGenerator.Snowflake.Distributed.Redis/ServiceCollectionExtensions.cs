@@ -17,8 +17,10 @@ public static class ServiceCollectionExtensions
                 service.ImplementationType == typeof(RedisCacheClientFactory)))
             throw new MasaException("Please add first using AddMasaRedisCache");
 
-        services.TryAddSingleton<IWorkerProvider>(serviceProvider => new DistributedWorkerProvider(distributedIdGenerators,
-            serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>()));
+        services.TryAddSingleton<IWorkerProvider>(serviceProvider
+            => new DistributedWorkerProvider(distributedIdGenerators,
+                serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
+                serviceProvider.GetService<ILogger<DistributedWorkerProvider>>()));
 
         return services.AddSnowflake(idGeneratorOptions =>
         {
@@ -26,9 +28,10 @@ public static class ServiceCollectionExtensions
             options?.Invoke(distributedIdGeneratorOption);
 
             long defaultHeartbeatinterval = 30 * 1000;
-            if (distributedIdGeneratorOption.EnableRecycle && distributedIdGeneratorOption.RecycleTime <= defaultHeartbeatinterval)
+            if (distributedIdGeneratorOption.RecycleTime <= defaultHeartbeatinterval)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(distributedIdGenerators.RecycleTime)} RecycleTime must be greater than {defaultHeartbeatinterval}");
+                throw new ArgumentOutOfRangeException(
+                    $"{nameof(distributedIdGenerators.RecycleTime)} RecycleTime must be greater than {defaultHeartbeatinterval}");
             }
 
             distributedIdGenerators = distributedIdGeneratorOption;
