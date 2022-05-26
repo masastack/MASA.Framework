@@ -114,15 +114,15 @@ public class DefaultCredentialProvider : ICredentialProvider
     private static AliyunStorageOptions GetAliyunStorageOptions(AliyunStorageConfigureOptions options)
     {
         AliyunStorageOptions aliyunStorageOptions = options.Storage;
-        aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId);
-        aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret);
+        aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId)!;
+        aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret)!;
         aliyunStorageOptions.RegionId = TryUpdate(options.Storage.RegionId, options.RegionId);
         aliyunStorageOptions.DurationSeconds = options.Storage.DurationSeconds ?? options.DurationSeconds ?? options.GetDurationSeconds();
         aliyunStorageOptions.EarlyExpires = options.Storage.EarlyExpires ?? options.EarlyExpires ?? options.GetEarlyExpires();
         return aliyunStorageOptions;
     }
 
-    private static string TryUpdate(string source, string destination)
+    private static string? TryUpdate(string? source, string? destination)
     {
         if (!string.IsNullOrWhiteSpace(source))
             return source;
