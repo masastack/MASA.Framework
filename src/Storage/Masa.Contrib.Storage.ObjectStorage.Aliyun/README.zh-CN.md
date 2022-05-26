@@ -55,7 +55,10 @@ builder.Services.AddAliyunStorage();
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"])
+{
+  Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
+});
 ```
 
 ### 用法3:
@@ -64,20 +67,11 @@ builder.Services.AddAliyunStorage(new AliyunStorageOptions(configuration["Aliyun
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"])
+{
+  Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
+});
 ```
 
 > 与用法2的区别在于配置更新后无需重启项目即可生效
-
-### 用法4:
-
-1. 添加阿里云存储服务
-
-```C#
-var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public, options =>
-{
-    options.CallbackUrl = "Replace-With-Your-CallbackUrl";
-});
-```
 

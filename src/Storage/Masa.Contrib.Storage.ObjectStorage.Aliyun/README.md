@@ -50,7 +50,11 @@ builder.Services.AddAliyunStorage();
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "regionId", "roleArn", "roleSessionName"));
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage(new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"])
+{
+  Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
+});
 ````
 
 ### Usage 3:
@@ -58,19 +62,11 @@ builder.Services.AddAliyunStorage(new AliyunStorageOptions("AccessKeyId", "Acces
 1. Add Alibaba Cloud Storage Service
 
 ````C#
-builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration ["Aliyun:RoleSessionName"]));
+var configuration = builder.Configuration;
+builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"])
+{
+  Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
+});
 ````
 
 > The difference from usage 2 is that the configuration can take effect without restarting the project after the configuration update
-
-### Usage 4:
-
-1. Add Alibaba Cloud Storage Service
-
-````C#
-var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_REGIONID, Options.Enum.EndpointMode.Public, options =>
-{
-     options.CallbackUrl = "Replace-With-Your-CallbackUrl";
-});
-````
