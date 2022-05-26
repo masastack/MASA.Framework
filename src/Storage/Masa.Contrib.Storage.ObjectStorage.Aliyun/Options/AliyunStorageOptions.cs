@@ -5,6 +5,8 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
 public class AliyunStorageOptions : AliyunOptions
 {
+    public AliyunStsOptions Sts { get; set; } = new();
+
     private string _endpoint;
 
     public string Endpoint
@@ -88,21 +90,35 @@ public class AliyunStorageOptions : AliyunOptions
         Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint, string roleArn, string roleSessionName)
-        : this(accessKeyId, accessKeySecret, null, endpoint, roleArn, roleSessionName)
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        string roleArn,
+        string roleSessionName)
+        : this(accessKeyId, accessKeySecret, endpoint, roleArn, roleSessionName, null)
     {
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string? regionId, string endpoint)
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        AliyunStsOptions? stsOptions)
         : this(accessKeyId, accessKeySecret)
     {
-        RegionId = regionId;
+        Sts = stsOptions ?? new();
         Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
     }
 
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string? regionId, string endpoint, string roleArn,
-        string roleSessionName)
-        : this(accessKeyId, accessKeySecret, regionId, endpoint)
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        string roleArn,
+        string roleSessionName,
+        AliyunStsOptions? stsOptions)
+        : this(accessKeyId, accessKeySecret, endpoint, stsOptions)
     {
         RoleArn = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
         RoleSessionName = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
@@ -117,18 +133,6 @@ public class AliyunStorageOptions : AliyunOptions
     public AliyunStorageOptions SetTemporaryCredentialsCacheKey(string temporaryCredentialsCacheKey)
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
-        return this;
-    }
-
-    public AliyunStorageOptions SetDurationSeconds(long durationSeconds)
-    {
-        DurationSeconds = durationSeconds;
-        return this;
-    }
-
-    public AliyunStorageOptions SetEarlyExpires(int earlyExpires)
-    {
-        EarlyExpires = earlyExpires;
         return this;
     }
 }

@@ -65,7 +65,7 @@ public class TestClient : BaseTest
         {
             Assert.IsTrue(stream == null);
         });
-        _client.Oss.Verify(oss => oss.GetObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.GetObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
@@ -75,7 +75,7 @@ public class TestClient : BaseTest
         {
             Assert.IsTrue(stream == null);
         });
-        _client.Oss.Verify(oss => oss.GetObject(It.IsAny<GetObjectRequest>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.GetObject(It.IsAny<GetObjectRequest>()), Times.Once);
     }
 
     [TestMethod]
@@ -90,7 +90,7 @@ public class TestClient : BaseTest
     {
         string str = "JIm";
         await _client.PutObjectAsync("bucketName", "objectName", new MemoryStream(Encoding.Default.GetBytes(str)));
-        _client.Oss.Verify(oss => oss.PutObject(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<ObjectMetadata>()),
+        _client.Oss!.Verify(oss => oss.PutObject(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<ObjectMetadata>()),
             Times.Once);
     }
 
@@ -100,7 +100,7 @@ public class TestClient : BaseTest
         _aLiYunStorageOptions.BigObjectContentLength = 2;
         string str = "JIm";
         await _client.PutObjectAsync("bucketName", "objectName", new MemoryStream(Encoding.Default.GetBytes(str)));
-        _client.Oss.Verify(oss => oss.ResumableUploadObject(It.IsAny<UploadObjectRequest>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.ResumableUploadObject(It.IsAny<UploadObjectRequest>()), Times.Once);
     }
 
     [TestMethod]
@@ -119,21 +119,21 @@ public class TestClient : BaseTest
     public async Task TestDeleteObjectAsyncReturnVerifytNever()
     {
         await _client.DeleteObjectAsync("bucketName", "1.jpg");
-        _client.Oss.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _client.Oss!.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
 
     [TestMethod]
     public async Task TestDeleteObjectAsyncReturnVerifytOnce()
     {
         await _client.DeleteObjectAsync("bucketName", "2.jpg");
-        _client.Oss.Verify(oss => oss.DoesObjectExist(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        _client.Oss.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.DoesObjectExist(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
     public async Task TestDeleteMultiObjectAsyncReturnVerifytOnce()
     {
         await _client.DeleteObjectAsync("bucketName", new[] { "2.jpg", "1.jpg" });
-        _client.Oss.Verify(oss => oss.DeleteObjects(It.IsAny<DeleteObjectsRequest>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.DeleteObjects(It.IsAny<DeleteObjectsRequest>()), Times.Once);
     }
 }

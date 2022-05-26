@@ -20,7 +20,7 @@ public class DefaultCredentialProvider : ICredentialProvider
     {
         _ossClientFactory = ossClientFactory;
         _options = options;
-        SupportSts = !string.IsNullOrEmpty(options.RegionId) &&
+        SupportSts = !string.IsNullOrEmpty(options.Sts.RegionId) &&
             !string.IsNullOrEmpty(options.RoleArn) &&
             !string.IsNullOrEmpty(options.RoleSessionName);
         _cache = cache;
@@ -54,13 +54,13 @@ public class DefaultCredentialProvider : ICredentialProvider
         if (!_cache.TryGetValue(_options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
         {
             temporaryCredentials = GetTemporaryCredentials(
-                _options.RegionId!,
+                _options.Sts.RegionId!,
                 _options.AccessKeyId,
                 _options.AccessKeySecret,
                 _options.RoleArn,
                 _options.RoleSessionName,
                 _options.Policy,
-                _options.GetDurationSeconds());
+                _options.Sts.GetDurationSeconds());
             SetTemporaryCredentials(temporaryCredentials);
         }
         return temporaryCredentials!;
@@ -95,19 +95,19 @@ public class DefaultCredentialProvider : ICredentialProvider
             DateTime.Parse(response.Credentials.Expiration));
         // }
 
-        string responseContent = Encoding.Default.GetString(response.HttpResponse.Content);
-        string message =
-            $"Aliyun.Client: Failed to obtain temporary credentials, RequestId: {response.RequestId}, Status: {response.HttpResponse.Status}, Message: {responseContent}";
-        _logger?.LogWarning(
-            "Aliyun.Client: Failed to obtain temporary credentials, RequestId: {RequestId}, Status: {Status}, Message: {Message}",
-            response.RequestId, response.HttpResponse.Status, responseContent);
-
-        throw new Exception(message);
+        // string responseContent = Encoding.Default.GetString(response.HttpResponse.Content);
+        // string message =
+        //     $"Aliyun.Client: Failed to obtain temporary credentials, RequestId: {response.RequestId}, Status: {response.HttpResponse.Status}, Message: {responseContent}";
+        // _logger?.LogWarning(
+        //     "Aliyun.Client: Failed to obtain temporary credentials, RequestId: {RequestId}, Status: {Status}, Message: {Message}",
+        //     response.RequestId, response.HttpResponse.Status, responseContent);
+        //
+        // throw new Exception(message);
     }
 
     public virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
     {
-        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - _options.GetEarlyExpires();
+        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - _options.Sts.GetEarlyExpires();
         if (timespan >= 0) _cache.Set(_options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
     }
 
@@ -116,9 +116,9 @@ public class DefaultCredentialProvider : ICredentialProvider
         AliyunStorageOptions aliyunStorageOptions = options.Storage;
         aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId)!;
         aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret)!;
-        aliyunStorageOptions.RegionId = TryUpdate(options.Storage.RegionId, options.RegionId);
-        aliyunStorageOptions.DurationSeconds = options.Storage.DurationSeconds ?? options.DurationSeconds ?? options.GetDurationSeconds();
-        aliyunStorageOptions.EarlyExpires = options.Storage.EarlyExpires ?? options.EarlyExpires ?? options.GetEarlyExpires();
+        aliyunStorageOptions.Sts.RegionId = TryUpdate(options.Storage.Sts.RegionId, options.Sts.RegionId);
+        aliyunStorageOptions.Sts.DurationSeconds = options.Storage.Sts.DurationSeconds ?? options.Sts.DurationSeconds ?? options.Sts.GetDurationSeconds();
+        aliyunStorageOptions.Sts.EarlyExpires = options.Storage.Sts.EarlyExpires ?? options.Sts.EarlyExpires ?? options.Sts.GetEarlyExpires();
         return aliyunStorageOptions;
     }
 

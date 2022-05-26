@@ -33,25 +33,10 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddAliyunStorage(
-        this IServiceCollection services,
-        string accessKeyId,
-        string accessKeySecret,
-        string? regionId,
-        string endpoint,
-        Action<AliyunStorageOptions>? actions = null)
-    {
-        var aliyunStorageOptions = new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, endpoint);
-        actions?.Invoke(aliyunStorageOptions);
-        return services.AddAliyunStorage(aliyunStorageOptions);
-    }
-
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, AliyunStorageOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
-
-        string message = $"{options.AccessKeyId}, {options.AccessKeySecret}, {options.RegionId}, {options.RoleArn}, {options.RoleSessionName} are required and cannot be empty";
-        CheckAliYunStorageOptions(options, message);
+        CheckAliYunStorageOptions(options);
 
         return services.AddAliyunStorage(() => options);
     }
@@ -123,12 +108,12 @@ public static class ServiceCollectionExtensions
     private static ILogger<DefaultCredentialProvider>? GetDefaultCredentialProviderLogger(IServiceProvider serviceProvider)
         => serviceProvider.GetService<ILogger<DefaultCredentialProvider>>();
 
-    private static void CheckAliYunStorageOptions(AliyunStorageOptions options, string message)
+    private static void CheckAliYunStorageOptions(AliyunStorageOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
-        if (options.AccessKeyId == null && options.AccessKeySecret == null && options.RegionId == null)
-            throw new ArgumentException(message);
+        if (options.AccessKeyId == null && options.AccessKeySecret == null)
+            throw new ArgumentException($"{nameof(options.AccessKeyId)}, {nameof(options.AccessKeySecret)} are required and cannot be empty");
 
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));

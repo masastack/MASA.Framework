@@ -23,8 +23,11 @@ support:
   "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
-    "RegionId": "Replace-With-Your-RegionId",//https://www.alibabacloud.com/help/en/resource-access-management/latest/endpoints#reference-sdg-3pv-xdb
-    "DurationSeconds": 3600,//optional, default: 3600s
+    "Sts": :{
+      "RegionId": "Replace-With-Your-RegionId",//https://www.alibabacloud.com/help/en/resource-access-management/latest/endpoints#reference-sdg-3pv-xdb
+      "DurationSeconds": 3600,//Temporary certificate validity period, default: 3600s
+      "EarlyExpires": 10//default: 10s
+    },
     "Storage": {
       "Endpoint": "Replace-With-Your-Endpoint",//https://www.alibabacloud.com/help/en/object-storage-service/latest/regions-and-endpoints#section-plb-2vy-5db
       "RoleArn": "Replace-With-Your-RoleArn",
