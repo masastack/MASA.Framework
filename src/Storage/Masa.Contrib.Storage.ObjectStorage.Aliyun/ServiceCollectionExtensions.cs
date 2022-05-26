@@ -60,22 +60,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<AliyunStorageOptions> func)
-    {
-        ArgumentNullException.ThrowIfNull(func, nameof(func));
-
-        services.AddAliyunStorageDepend();
-        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
-            GetOssClientFactory(serviceProvider),
-            func.Invoke(),
-            GetMemoryCache(serviceProvider),
-            GetDefaultCredentialProviderLogger(serviceProvider)));
-        services.TryAddSingleton<IClient>(serviceProvider => new Client(
-            GetCredentialProvider(serviceProvider),
-            func.Invoke(),
-            GetClientLogger(serviceProvider)));
-        return services;
-    }
+        => services.AddAliyunStorage(_ => func.Invoke());
 
     private static IServiceCollection AddAliyunStorageDepend(this IServiceCollection services)
     {
