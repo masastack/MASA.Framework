@@ -60,7 +60,11 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<AliyunStorageOptions> func)
-        => services.AddAliyunStorage(_ => func.Invoke());
+    {
+        ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+        return services.AddAliyunStorage(_ => func.Invoke());
+    }
 
     private static IServiceCollection AddAliyunStorageDepend(this IServiceCollection services)
     {
