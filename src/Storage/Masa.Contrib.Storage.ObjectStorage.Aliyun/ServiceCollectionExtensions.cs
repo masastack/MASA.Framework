@@ -41,6 +41,24 @@ public static class ServiceCollectionExtensions
         return services.AddAliyunStorage(() => options);
     }
 
+    public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<IServiceProvider, AliyunStorageOptions> func)
+    {
+        ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+        services.AddAliyunStorageDepend();
+        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
+        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
+            GetOssClientFactory(serviceProvider),
+            func.Invoke(serviceProvider),
+            GetMemoryCache(serviceProvider),
+            GetDefaultCredentialProviderLogger(serviceProvider)));
+        services.TryAddSingleton<IClient>(serviceProvider => new Client(
+            GetCredentialProvider(serviceProvider),
+            func.Invoke(serviceProvider),
+            GetClientLogger(serviceProvider)));
+        return services;
+    }
+
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<AliyunStorageOptions> func)
     {
         ArgumentNullException.ThrowIfNull(func, nameof(func));
@@ -113,7 +131,8 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
         if (options.AccessKeyId == null && options.AccessKeySecret == null)
-            throw new ArgumentException($"{nameof(options.AccessKeyId)}, {nameof(options.AccessKeySecret)} are required and cannot be empty");
+            throw new ArgumentException(
+                $"{nameof(options.AccessKeyId)}, {nameof(options.AccessKeySecret)} are required and cannot be empty");
 
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));
