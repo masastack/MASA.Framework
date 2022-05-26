@@ -12,7 +12,7 @@ Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引�
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
-1. 配置appsettings.json
+1. 配置`appsettings.json`
 ``` appsettings.json
 {
   "ConnectionStrings": {

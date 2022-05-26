@@ -40,7 +40,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -74,7 +74,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -247,5 +247,41 @@ public class ConfigurationTest
         Assert.IsTrue(option.CurrentValue.Ip == "" && option.CurrentValue.Port == 6379);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "customAppConfig.json"), oldContent);
+    }
+
+    [TestMethod]
+    public void TestEnvironmentConfigurationMigrated()
+    {
+        var builder = WebApplication.CreateBuilder();
+        Environment.SetEnvironmentVariable("project-name", "masa-unit-test");
+        builder.AddMasaConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
+        }, options =>
+        {
+            options.Assemblies = new[] { typeof(ConfigurationTest).Assembly };
+            options.ExcludeConfigurationSourceTypes = new List<Type>();
+            options.ExcludeConfigurationProviderTypes = new List<Type>();
+        });
+
+        Assert.IsTrue(builder.Configuration[$"{SectionTypes.Local}{ConfigurationPath.KeyDelimiter}project-name"] == "masa-unit-test");
+
+    }
+
+    [TestMethod]
+    public void TestEnvironmentConfigurationNotMigrated()
+    {
+        var builder = WebApplication.CreateBuilder();
+        Environment.SetEnvironmentVariable("project-name", "masa-unit-test");
+        builder.AddMasaConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
+        }, typeof(ConfigurationTest).Assembly);
+
+        Assert.IsTrue(builder.Configuration["project-name"] == "masa-unit-test");
     }
 }
