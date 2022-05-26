@@ -3,17 +3,21 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class Client : IClient
+public class Client : BaseClient, IClient
 {
-    private readonly AliyunStorageOptions _options;
-    private readonly IMemoryCache _cache;
+    private readonly bool _supportCallback;
     private readonly ILogger<Client>? _logger;
 
-    public Client(AliyunStorageOptions options, IMemoryCache cache, ILogger<Client>? logger)
+    public Client(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<Client>? logger)
+        : base(credentialProvider, options)
     {
-        _options = options;
-        _cache = cache;
+        _supportCallback = !string.IsNullOrEmpty(options.CallbackBody) && !string.IsNullOrEmpty(options.CallbackUrl);
         _logger = logger;
+    }
+
+    public Client(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<Client>? logger)
+        : this(credentialProvider, options.CurrentValue, logger)
+    {
     }
 
     /// <summary>
@@ -22,19 +26,10 @@ public class Client : IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!_cache.TryGetValue(_options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
-        {
-            temporaryCredentials = GetTemporaryCredentials(
-                _options.RegionId,
-                _options.AccessKeyId,
-                _options.AccessKeySecret,
-                _options.RoleArn,
-                _options.RoleSessionName,
-                _options.Policy,
-                _options.DurationSeconds);
-            SetTemporaryCredentials(temporaryCredentials);
-        }
-        return temporaryCredentials!;
+        if (!CredentialProvider.SupportSts)
+            throw new ArgumentException($"{nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
+
+        return CredentialProvider.GetSecurityToken();
     }
 
     /// <summary>
@@ -44,47 +39,104 @@ public class Client : IClient
     /// <returns></returns>
     public string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
 
-    protected virtual TemporaryCredentialsResponse GetTemporaryCredentials(
-        string regionId,
-        string accessKeyId,
-        string accessKeySecret,
-        string roleArn,
-        string roleSessionName,
-        string policy,
-        long durationSeconds)
+    public Task GetObjectAsync(
+        string bucketName,
+        string objectName,
+        Action<Stream> callback,
+        CancellationToken cancellationToken = default)
     {
-        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKeyId, accessKeySecret);
-        DefaultAcsClient client = new DefaultAcsClient(profile);
-        var request = new AssumeRoleRequest
-        {
-            ContentType = AliyunFormatType.JSON,
-            RoleArn = roleArn,
-            RoleSessionName = roleSessionName,
-            DurationSeconds = durationSeconds
-        };
-        if (!string.IsNullOrEmpty(policy))
-            request.Policy = policy;
-        var response = client.GetAcsResponse(request);
-
-        // if (response.HttpResponse.isSuccess())
-        // {
-        return new TemporaryCredentialsResponse( //todo: Get Sts response information is null, waiting for repair: https://github.com/aliyun/aliyun-openapi-net-sdk/pull/401
-            response.Credentials.AccessKeyId,
-            response.Credentials.AccessKeySecret,
-            response.Credentials.SecurityToken,
-            DateTime.Parse(response.Credentials.Expiration));
-        // }
-        //
-        // string message = $"Aliyun.Client: Failed to obtain temporary credentials, RequestId: {response.RequestId},Status: {response.HttpResponse.Status}, Message: {System.Text.Encoding.Default.GetString(response.HttpResponse.Content)}";
-        // _logger?.LogWarning(message);
-        //
-        // throw new Exception(message);
+        var client = GetClient();
+        var result = client.GetObject(bucketName, objectName);
+        callback.Invoke(result.Content);
+        return Task.CompletedTask;
     }
 
-    protected virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
+    public Task GetObjectAsync(
+        string bucketName,
+        string objectName,
+        long offset,
+        long length,
+        Action<Stream> callback,
+        CancellationToken cancellationToken = default)
     {
-        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - 10;
-        if (timespan >= 0)
-            _cache.Set(_options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
+        if (length < 0 && length != -1)
+            throw new ArgumentOutOfRangeException(nameof(length), $"{length} should be greater than 0 or -1");
+
+        var client = GetClient();
+        var request = new GetObjectRequest(bucketName, objectName);
+        request.SetRange(offset, length > 0 ? offset + length : length);
+        var result = client.GetObject(request);
+        callback.Invoke(result.Content);
+        return Task.CompletedTask;
+    }
+
+    public Task PutObjectAsync(
+        string bucketName,
+        string objectName,
+        Stream data,
+        CancellationToken cancellationToken = default)
+    {
+        var client = GetClient();
+        var objectMetadata = _supportCallback ? BuildCallbackMetadata(Options.CallbackUrl, Options.CallbackBody) : null;
+        var result = !Options.EnableResumableUpload || Options.BigObjectContentLength > data.Length ?
+            client.PutObject(bucketName, objectName, data, objectMetadata) :
+            client.ResumableUploadObject(new UploadObjectRequest(bucketName, objectName, data)
+            {
+                PartSize = Options.PartSize,
+                Metadata = objectMetadata
+            });
+        _logger?.LogDebug("----- Upload {ObjectName} from {BucketName} - ({Result})",
+            objectName,
+            bucketName,
+            new UploadObjectResponse(result));
+        return Task.CompletedTask;
+    }
+
+    protected virtual ObjectMetadata BuildCallbackMetadata(string callbackUrl, string callbackBody)
+    {
+        string callbackHeaderBuilder = new CallbackHeaderBuilder(callbackUrl, callbackBody).Build();
+        var metadata = new ObjectMetadata();
+        metadata.AddHeader(HttpHeaders.Callback, callbackHeaderBuilder);
+        return metadata;
+    }
+
+    public Task<bool> ObjectExistsAsync(
+        string bucketName,
+        string objectName,
+        CancellationToken cancellationToken = default)
+    {
+        var client = GetClient();
+        var exist = client.DoesObjectExist(bucketName, objectName);
+        return Task.FromResult(exist);
+    }
+
+    public async Task DeleteObjectAsync(
+        string bucketName,
+        string objectName,
+        CancellationToken cancellationToken = default)
+    {
+        var client = GetClient();
+        if (await ObjectExistsAsync(bucketName, objectName, cancellationToken) == false)
+            return;
+
+        var result = client.DeleteObject(bucketName, objectName);
+        _logger?.LogDebug("----- Delete {ObjectName} from {BucketName} - ({Result})",
+            objectName,
+            bucketName,
+            result);
+    }
+
+    public Task DeleteObjectAsync(
+        string bucketName,
+        IEnumerable<string> objectNames,
+        CancellationToken cancellationToken = default)
+    {
+        var client = GetClient();
+        var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), Options.Quiet));
+        _logger?.LogDebug("----- Delete {ObjectNames} from {BucketName} - ({Result})",
+            objectNames,
+            bucketName,
+            result);
+        return Task.CompletedTask;
     }
 }
