@@ -17,8 +17,7 @@ public class AuthClientTest
     public void TestAddAuthClientShouldThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(authServiceBaseAddress: null));
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(authServiceBaseAddress: null!));
     }
 
     [TestMethod]
@@ -26,7 +25,7 @@ public class AuthClientTest
     {
         var services = new ServiceCollection();
 
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(callerOptions: null));
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(callerOptions: null!));
     }
 }
 
