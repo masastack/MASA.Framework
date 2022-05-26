@@ -10,22 +10,22 @@ Install-Package Masa.Contrib.Isolation.MultiEnvironment
 Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
 ```
 
-1. 配置appsettings.json
+1. Configure `appsettings.json`
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
-    "Isolations": [
-      {
-        "Environment": "development",
-        "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
-      },
-      {
-        "Environment": "staging",
-        "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
-      }
-    ]
-  }
+    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+  },
+  "IsolationConnectionStrings": [
+    {
+      "Environment": "development",
+      "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+    },
+    {
+      "Environment": "staging",
+      "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+    }
+  ]
 }
 ```
 * 1.1 When the current environment is development: database address: server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;
