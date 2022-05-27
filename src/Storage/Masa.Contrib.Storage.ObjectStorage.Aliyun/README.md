@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ````
 
 support:
-* GetSecurityToken: Gets the security token(RoleArn, RoleSessionName are required)
+* GetSecurityToken: Gets the security token(Sts RegionId、RoleArn, RoleSessionName are required)
 * GetObjectAsync: Gets the stream of object data
 * PutObjectAsync: Upload objects via Stream
 * ObjectExistsAsync: Determine whether the object exists
@@ -69,4 +69,4 @@ builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["
 });
 ````
 
-> The difference from usage 2 is that the configuration can take effect without restarting the project after the configuration update
+> The difference from usage 2 is to defer getting the configuration

@@ -10,7 +10,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 
 支持：
 
-* GetSecurityToken: 获取安全令牌 (需提供RoleArn、RoleSessionName)
+* GetSecurityToken: 获取安全令牌 (需提供Sts RegionId、RoleArn、RoleSessionName)
 * GetObjectAsync: 获取对象数据的流
 * PutObjectAsync: 通过Stream上传对象
 * ObjectExistsAsync: 判断对象是否存在
@@ -73,5 +73,5 @@ builder.Services.AddAliyunStorage(() => new AliyunStorageOptions(configuration["
 });
 ```
 
-> 与用法2的区别在于配置更新后无需重启项目即可生效
+> 与用法2的区别在于延缓获取配置
 
