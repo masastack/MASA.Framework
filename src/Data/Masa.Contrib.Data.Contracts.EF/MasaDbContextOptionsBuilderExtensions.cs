@@ -45,7 +45,9 @@ public static class MasaDbContextOptionsBuilderExtensions
 
         var masaDbContextOptionsType = typeof(MasaDbContextOptions<>).MakeGenericType(masaDbContextOptionsBuilder.DbContextType);
         var softDeleteSaveChangesFilterType =
-            typeof(SoftDeleteSaveChangesFilter<>).MakeGenericType(masaDbContextOptionsBuilder.DbContextType);
+            typeof(SoftDeleteSaveChangesFilter<,>).MakeGenericType(
+                masaDbContextOptionsBuilder.DbContextType,
+                masaDbContextOptionsBuilder.UserIdType);
         var constructorInfo = softDeleteSaveChangesFilterType.GetConstructors().FirstOrDefault()!;
         var invokeDelegate = InstanceBuilder.CreateInstanceDelegate(constructorInfo);
 

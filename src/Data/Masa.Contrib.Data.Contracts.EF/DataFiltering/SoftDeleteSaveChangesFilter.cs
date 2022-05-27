@@ -3,15 +3,22 @@
 
 namespace Masa.Contrib.Data.Contracts.EF.DataFiltering;
 
-public class SoftDeleteSaveChangesFilter<TDbContext> : ISaveChangesFilter where TDbContext : DbContext
+public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter
+    where TDbContext : DbContext
+    where TUserId : IComparable
 {
+    private readonly IUserContext<TUserId> _userContext;
     private readonly TDbContext _context;
     private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
 
-    public SoftDeleteSaveChangesFilter(MasaDbContextOptions<TDbContext> masaDbContextOptions, TDbContext dbContext)
+    public SoftDeleteSaveChangesFilter(
+        MasaDbContextOptions<TDbContext> masaDbContextOptions,
+        TDbContext dbContext,
+        IUserContext<TUserId> userContext)
     {
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;
+        _userContext = userContext;
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -20,14 +27,19 @@ public class SoftDeleteSaveChangesFilter<TDbContext> : ISaveChangesFilter where 
             return;
 
         changeTracker.DetectChanges();
-        foreach (var entity in changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted))
+        foreach (var entity in changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete))
         {
-            if (entity.Entity is ISoftDelete)
-            {
-                HandleNavigationEntry(entity.Navigations.Where(n => !((IReadOnlyNavigation)n.Metadata).IsOnDependent));
+            HandleNavigationEntry(entity.Navigations.Where(n => !((IReadOnlyNavigation)n.Metadata).IsOnDependent));
 
-                entity.State = EntityState.Modified;
-                entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+            entity.State = EntityState.Modified;
+            entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+
+            if (entity.Entity is IAuditEntity<TUserId> && entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] != default)
+            {
+                var userId = _userContext.GetUserId();
+                if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
+
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] = DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
         }
     }

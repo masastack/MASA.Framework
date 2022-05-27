@@ -15,3 +15,5 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Linq.Expressions;
 global using System.Reflection;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
+global using Masa.BuildingBlocks.Identity;
