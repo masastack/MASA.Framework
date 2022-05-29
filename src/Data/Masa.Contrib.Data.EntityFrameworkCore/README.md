@@ -1,11 +1,11 @@
 [中](README.zh-CN.md) | EN
 
-## Masa.Utils.Data.EntityFrameworkCore
+## Masa.Contrib.Data.EntityFrameworkCore
 
 ## Example:
 
 ```c#
-Install-Package Masa.Utils.Data.EntityFrameworkCore
+Install-Package Masa.Contrib.Data.EntityFrameworkCore
 Install-Package Microsoft.EntityFrameworkCore.SqlServer
 ```
 
@@ -23,14 +23,14 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 
 Recommended usage:
 
-- [SqlServer](../Masa.Utils.Data.EntityFrameworkCore.SqlServer/README.md)
-- [MySql](../Masa.Utils.Data.EntityFrameworkCore.MySql/README.md)
-- [Pomelo.MySql](../Masa.Utils.Data.EntityFrameworkCore.Pomelo.MySql/README.md)
-- [Sqlite](../Masa.Utils.Data.EntityFrameworkCore.Sqlite/README.md)
-- [Cosmos](../Masa.Utils.Data.EntityFrameworkCore.Cosmos/README.md)
-- [InMemory](../Masa.Utils.Data.EntityFrameworkCore.InMemory/README.md)
-- [Oracle](../Masa.Utils.Data.EntityFrameworkCore.Oracle/README.md)
-- [PostgreSql](../Masa.Utils.Data.EntityFrameworkCore.PostgreSql/README.md)
+- [SqlServer](../Masa.Contrib.Data.EntityFrameworkCore.SqlServer/README.md)
+- [MySql](../Masa.Contrib.Data.EntityFrameworkCore.MySql/README.md)
+- [Pomelo.MySql](../Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.md)
+- [Sqlite](../Masa.Contrib.Data.EntityFrameworkCore.Sqlite/README.md)
+- [Cosmos](../Masa.Contrib.Data.EntityFrameworkCore.Cosmos/README.md)
+- [InMemory](../Masa.Contrib.Data.EntityFrameworkCore.InMemory/README.md)
+- [Oracle](../Masa.Contrib.Data.EntityFrameworkCore.Oracle/README.md)
+- [PostgreSql](../Masa.Contrib.Data.EntityFrameworkCore.PostgreSql/README.md)
 
 #### data filter
 

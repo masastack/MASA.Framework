@@ -7,7 +7,7 @@ Example：
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```
 
 1. Configure `appsettings.json`
