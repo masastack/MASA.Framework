@@ -3,19 +3,19 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class Client : BaseClient, IClient
+public class DefaultStorageClient : BaseClient, IClient
 {
     private readonly bool _supportCallback;
-    private readonly ILogger<Client>? _logger;
+    private readonly ILogger<DefaultStorageClient>? _logger;
 
-    public Client(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<Client>? logger)
+    public DefaultStorageClient(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<DefaultStorageClient>? logger)
         : base(credentialProvider, options)
     {
         _supportCallback = !string.IsNullOrEmpty(options.CallbackBody) && !string.IsNullOrEmpty(options.CallbackUrl);
         _logger = logger;
     }
 
-    public Client(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<Client>? logger)
+    public DefaultStorageClient(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<DefaultStorageClient>? logger)
         : this(credentialProvider, options.CurrentValue, logger)
     {
         options.OnChange(aliyunStorageOptions =>
