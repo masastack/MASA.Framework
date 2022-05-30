@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Isolation.UoW.EF
 Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // Environmental isolation Quote on demand
 Install-Package Masa.Contrib.Isolation.MultiTenant // Multi-tenant isolation On-demand reference
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```
 
 1. Configure `appsettings.json`
