@@ -5,7 +5,7 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
 public interface IOssClientFactory
 {
-    IOss GetClient(string AccessKeyId, string AccessKeySecret, string? SecurityToken, string endpoint);
+    IOss GetClient(string accessKeyId, string accessKeySecret, string? securityToken, string endpoint);
 
-    IAcsClient GetAcsClient(string AccessKeyId, string AccessKeySecret, string regionId);
+    IAcsClient GetAcsClient(string accessKeyId, string accessKeySecret, string regionId);
 }
