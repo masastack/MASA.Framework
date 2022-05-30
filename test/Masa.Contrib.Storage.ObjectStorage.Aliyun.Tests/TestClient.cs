@@ -12,7 +12,7 @@ public class TestClient : BaseTest
     public void Initialize()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        credentialProvider.Setup(provider => provider.SupportSts).Returns(false);
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
         _client = new CustomizeClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<Client>.Instance);
     }
 
@@ -42,7 +42,7 @@ public class TestClient : BaseTest
             "sessionToken",
             DateTime.UtcNow.AddHours(-1));
         credentialProvider.Setup(provider => provider.GetSecurityToken()).Returns(temporaryCredentials);
-        credentialProvider.Setup(provider => provider.SupportSts).Returns(true);
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(false);
         var client = new Client(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<Client>.Instance);
         var responseBase = client.GetSecurityToken();
         Assert.IsTrue(responseBase == temporaryCredentials);
@@ -52,7 +52,7 @@ public class TestClient : BaseTest
     public void TestEmptyRoleArnGetSecurityTokenReturnThrowArgumentException()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        credentialProvider.Setup(provider => provider.SupportSts).Returns(false);
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
         _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
         var client = new Client(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<Client>.Instance);
         Assert.ThrowsException<ArgumentException>(() => client.GetSecurityToken());

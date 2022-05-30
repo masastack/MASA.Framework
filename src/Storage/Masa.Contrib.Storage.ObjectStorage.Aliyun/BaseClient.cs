@@ -6,7 +6,7 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 public abstract class BaseClient
 {
     protected readonly ICredentialProvider CredentialProvider;
-    protected readonly AliyunStorageOptions Options;
+    protected AliyunStorageOptions Options;
 
     public BaseClient(ICredentialProvider credentialProvider,
         AliyunStorageOptions options)
@@ -23,7 +23,7 @@ public abstract class BaseClient
 
     public virtual (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
     {
-        if (!CredentialProvider.SupportSts)
+        if (CredentialProvider.IncompleteStsOptions)
             return new(Options.AccessKeyId, Options.AccessKeySecret, null);
 
         var securityToken = CredentialProvider.GetSecurityToken();

@@ -18,6 +18,10 @@ public class Client : BaseClient, IClient
     public Client(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<Client>? logger)
         : this(credentialProvider, options.CurrentValue, logger)
     {
+        options.OnChange(aliyunStorageOptions =>
+        {
+            Options = aliyunStorageOptions;
+        });
     }
 
     /// <summary>
@@ -26,8 +30,8 @@ public class Client : BaseClient, IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!CredentialProvider.SupportSts)
-            throw new ArgumentException($"{nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
+        if (CredentialProvider.IncompleteStsOptions)
+            throw new ArgumentException($"Sts options is imcomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
 
         return CredentialProvider.GetSecurityToken();
     }
