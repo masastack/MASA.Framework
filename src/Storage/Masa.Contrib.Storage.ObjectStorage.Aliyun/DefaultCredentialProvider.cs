@@ -46,9 +46,9 @@ public class DefaultCredentialProvider : ICredentialProvider
         options.OnChange(aliyunStorageConfigureOptions =>
         {
             _options = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
-            IncompleteStsOptions = !string.IsNullOrEmpty(_options.Sts.RegionId) &&
-                !string.IsNullOrEmpty(_options.RoleArn) &&
-                !string.IsNullOrEmpty(_options.RoleSessionName);
+            IncompleteStsOptions = string.IsNullOrEmpty(_options.Sts.RegionId) ||
+                string.IsNullOrEmpty(_options.RoleArn) ||
+                string.IsNullOrEmpty(_options.RoleSessionName);
         });
     }
 
