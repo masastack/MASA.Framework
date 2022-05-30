@@ -23,7 +23,7 @@ public abstract class BaseClient
 
     public virtual (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
     {
-        if (!CredentialProvider.SupportSts)
+        if (CredentialProvider.IncompleteStsOptions)
             return new(Options.AccessKeyId, Options.AccessKeySecret, null);
 
         var securityToken = CredentialProvider.GetSecurityToken();

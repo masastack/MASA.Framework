@@ -30,7 +30,7 @@ public class Client : BaseClient, IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!CredentialProvider.SupportSts)
+        if (CredentialProvider.IncompleteStsOptions)
             throw new ArgumentException($"Sts is not supported, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
 
         return CredentialProvider.GetSecurityToken();

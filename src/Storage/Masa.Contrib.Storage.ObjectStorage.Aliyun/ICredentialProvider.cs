@@ -8,7 +8,7 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 /// </summary>
 public interface ICredentialProvider
 {
-    bool SupportSts { get; }
+    bool IncompleteStsOptions { get; }
 
     TemporaryCredentialsResponse GetSecurityToken();
 }

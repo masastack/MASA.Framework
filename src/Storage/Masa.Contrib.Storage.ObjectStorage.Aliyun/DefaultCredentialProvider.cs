@@ -10,7 +10,7 @@ public class DefaultCredentialProvider : ICredentialProvider
     private readonly IMemoryCache _cache;
     protected readonly ILogger<DefaultCredentialProvider>? _logger;
 
-    public bool SupportSts { get; private set; }
+    public bool IncompleteStsOptions { get; private set; }
 
     public DefaultCredentialProvider(
         IOssClientFactory ossClientFactory,
@@ -20,9 +20,9 @@ public class DefaultCredentialProvider : ICredentialProvider
     {
         _ossClientFactory = ossClientFactory;
         _options = options;
-        SupportSts = !string.IsNullOrEmpty(options.Sts.RegionId) &&
-            !string.IsNullOrEmpty(options.RoleArn) &&
-            !string.IsNullOrEmpty(options.RoleSessionName);
+        IncompleteStsOptions = string.IsNullOrEmpty(options.Sts.RegionId) ||
+            string.IsNullOrEmpty(options.RoleArn) &&
+            string.IsNullOrEmpty(options.RoleSessionName);
         _cache = cache;
         _logger = logger;
     }
@@ -46,7 +46,7 @@ public class DefaultCredentialProvider : ICredentialProvider
         options.OnChange(aliyunStorageConfigureOptions =>
         {
             _options = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
-            SupportSts = !string.IsNullOrEmpty(_options.Sts.RegionId) &&
+            IncompleteStsOptions = !string.IsNullOrEmpty(_options.Sts.RegionId) &&
                 !string.IsNullOrEmpty(_options.RoleArn) &&
                 !string.IsNullOrEmpty(_options.RoleSessionName);
         });
