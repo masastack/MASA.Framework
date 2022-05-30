@@ -21,7 +21,7 @@ public class DefaultCredentialProvider : ICredentialProvider
         _ossClientFactory = ossClientFactory;
         _options = options;
         IncompleteStsOptions = string.IsNullOrEmpty(options.Sts.RegionId) ||
-            string.IsNullOrEmpty(options.RoleArn) &&
+            string.IsNullOrEmpty(options.RoleArn) ||
             string.IsNullOrEmpty(options.RoleSessionName);
         _cache = cache;
         _logger = logger;
