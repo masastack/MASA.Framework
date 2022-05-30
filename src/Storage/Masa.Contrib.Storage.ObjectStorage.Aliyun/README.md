@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ````
 
 support:
-* GetSecurityToken: Gets the security token(Sts RegionId And RoleArn And RoleSessionName are required)
+* GetSecurityToken: Gets the security token(Sts RegionId and RoleArn and RoleSessionName are required)
 * GetObjectAsync: Gets the stream of object data
 * PutObjectAsync: Upload objects via Stream
 * ObjectExistsAsync: Determine whether the object exists
