@@ -10,7 +10,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 
 支持：
 
-* GetSecurityToken: 获取安全令牌 (需提供Sts RegionId、RoleArn、RoleSessionName)
+* GetSecurityToken: 获取安全令牌 (Sts RegionId、RoleArn、RoleSessionName是必须的)
 * GetObjectAsync: 获取对象数据的流
 * PutObjectAsync: 通过Stream上传对象
 * ObjectExistsAsync: 判断对象是否存在
