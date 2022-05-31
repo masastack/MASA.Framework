@@ -7,7 +7,7 @@ Example：
 ```C#
 Install-Package Masa.Contrib.Dispatcher.Events
 Install-Package Masa.Contrib.Data.UoW.EF
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```
 
 1. Configure appsettings.json

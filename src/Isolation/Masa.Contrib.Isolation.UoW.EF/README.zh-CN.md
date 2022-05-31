@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Isolation.UoW.EF
 Install-Package Masa.Contrib.Data.Contracts.EF
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // 环境隔离 按需引用
 Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```
 
 1. 配置`appsettings.json`

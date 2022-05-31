@@ -78,7 +78,7 @@ public class AliyunStorageOptions : AliyunOptions
         BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
     }
 
-    private AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
     {
         AccessKeyId = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
         AccessKeySecret = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));

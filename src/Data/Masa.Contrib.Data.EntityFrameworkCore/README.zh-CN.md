@@ -1,6 +1,6 @@
 中 | [EN](README.md)
 
-## Masa.Utils.Data.EntityFrameworkCore
+## Masa.Contrib.Data.EntityFrameworkCore
 
 ## 用例:
 
@@ -24,14 +24,14 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 
 推荐用法:
 
-- [SqlServer](../Masa.Utils.Data.EntityFrameworkCore.SqlServer/README.zh-CN.md)
-- [MySql](../Masa.Utils.Data.EntityFrameworkCore.MySql/README.zh-CN.md)
-- [Pomelo.MySql](../Masa.Utils.Data.EntityFrameworkCore.Pomelo.MySql/README.zh-CN.md)
-- [Sqlite](../Masa.Utils.Data.EntityFrameworkCore.Sqlite/README.zh-CN.md)
-- [Cosmos](../Masa.Utils.Data.EntityFrameworkCore.Cosmos/README.zh-CN.md)
-- [InMemory](../Masa.Utils.Data.EntityFrameworkCore.InMemory/README.zh-CN.md)
-- [Oracle](../Masa.Utils.Data.EntityFrameworkCore.Oracle/README.zh-CN.md)
-- [PostgreSql](../Masa.Utils.Data.EntityFrameworkCore.PostgreSql/README.zh-CN.md)
+- [SqlServer](../Masa.Contrib.Data.EntityFrameworkCore.SqlServer/README.zh-CN.md)
+- [MySql](../Masa.Contrib.Data.EntityFrameworkCore.MySql/README.zh-CN.md)
+- [Pomelo.MySql](../Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.zh-CN.md)
+- [Sqlite](../Masa.Contrib.Data.EntityFrameworkCore.Sqlite/README.zh-CN.md)
+- [Cosmos](../Masa.Contrib.Data.EntityFrameworkCore.Cosmos/README.zh-CN.md)
+- [InMemory](../Masa.Contrib.Data.EntityFrameworkCore.InMemory/README.zh-CN.md)
+- [Oracle](../Masa.Contrib.Data.EntityFrameworkCore.Oracle/README.zh-CN.md)
+- [PostgreSql](../Masa.Contrib.Data.EntityFrameworkCore.PostgreSql/README.zh-CN.md)
 
 #### 数据过滤器
 
