@@ -227,6 +227,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdGenerator", "IdGenerator"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests", "test\Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests\Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests.csproj", "{D8E85337-A779-48FC-B822-CE8A850661DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data.MappingExtensions", "src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.MappingExtensions\Masa.BuildingBlocks.Data.MappingExtensions.csproj", "{30DC35DF-9D86-443C-B26C-9053E6FCA434}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -923,6 +925,14 @@ Global
 		{D8E85337-A779-48FC-B822-CE8A850661DC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8E85337-A779-48FC-B822-CE8A850661DC}.Release|x64.ActiveCfg = Release|Any CPU
 		{D8E85337-A779-48FC-B822-CE8A850661DC}.Release|x64.Build.0 = Release|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Debug|x64.Build.0 = Debug|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Release|x64.ActiveCfg = Release|Any CPU
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1036,6 +1046,7 @@ Global
 		{E6363F59-2BA4-4AA7-8578-C433A2C2567F} = {38E6C400-90C0-493E-9266-C1602E229F1B}
 		{AD427256-9686-4289-A635-1B387BD56D15} = {E6363F59-2BA4-4AA7-8578-C433A2C2567F}
 		{D8E85337-A779-48FC-B822-CE8A850661DC} = {E6363F59-2BA4-4AA7-8578-C433A2C2567F}
+		{30DC35DF-9D86-443C-B26C-9053E6FCA434} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
