@@ -19,7 +19,7 @@ The upgraded version supports distributed deployment, relies on Redis to provide
     builder.Services.AddDistributedSnowflake();
     ````
 
-> Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
+    > Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
 
 3. Get id
 
