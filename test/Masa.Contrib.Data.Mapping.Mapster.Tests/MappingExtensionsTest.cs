@@ -9,7 +9,7 @@ public class MappingExtensionsTest
     [TestInitialize]
     public void Initialize()
     {
-        MapperConfiguration.Instance.AddMapping().CreateMapper();
+        MapperFactory.Instance.AddMapping().CreateMapper();
     }
 
     [TestMethod]

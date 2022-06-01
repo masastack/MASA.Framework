@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Data.Mapping.Mapster.Internal;
 
-internal class MapsterOptionsExtension : IMapperOptionsExtension
+internal class MapsterExtension : IMapperExtension
 {
     private readonly MapOptions _mapOptions;
 
-    public MapsterOptionsExtension(MapOptions mapOptions) => _mapOptions = mapOptions;
+    public MapsterExtension(MapOptions mapOptions) => _mapOptions = mapOptions;
 
     public void AddService(IServiceCollection services) => services.AddMapping(_mapOptions);
 }
