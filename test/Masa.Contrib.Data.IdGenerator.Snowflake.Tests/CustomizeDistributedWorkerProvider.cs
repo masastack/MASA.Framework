@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 
 public class CustomizeDistributedWorkerProvider : DistributedWorkerProvider
@@ -13,8 +11,8 @@ public class CustomizeDistributedWorkerProvider : DistributedWorkerProvider
     {
     }
 
-    protected override async Task<long?> GetWorkerIdByLogOutAsync()
+    protected override Task<long?> GetWorkerIdByLogOutAsync()
     {
-        return null;
+        return Task.FromResult<long?>(null);
     }
 }

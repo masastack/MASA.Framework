@@ -1,10 +1,3 @@
-using System.Threading.Tasks;
-using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
-using Masa.Utils.Caching.Redis.DependencyInjection;
-using Masa.Utils.Caching.Redis.Models;
-using Microsoft.Extensions.Options;
-using StackExchange.Redis;
-
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 
 [TestClass]

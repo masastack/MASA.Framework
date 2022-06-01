@@ -6,6 +6,7 @@ global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using StackExchange.Redis;

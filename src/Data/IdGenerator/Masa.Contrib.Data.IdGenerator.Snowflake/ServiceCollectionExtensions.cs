@@ -20,14 +20,15 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<ITimeCallbackProvider, EmptyTimeCallbackProvider>();
 
+        services.TryAddSingleton(serviceProvider => (IIdGenerator)serviceProvider.GetRequiredService<IIdGenerator<long>>());
         if (idGeneratorOptions.EnableMachineClock)
         {
-            services.TryAddSingleton<IIdGenerator>(serviceProvider
+            services.TryAddSingleton<IIdGenerator<long>>(serviceProvider
                 => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(), idGeneratorOptions));
         }
         else
         {
-            services.TryAddSingleton<IIdGenerator>(serviceProvider
+            services.TryAddSingleton<IIdGenerator<long>>(serviceProvider
                 => new DefaultIdGenerator(serviceProvider.GetRequiredService<ITimeCallbackProvider>(),
                     serviceProvider.GetRequiredService<IWorkerProvider>(),
                     idGeneratorOptions));
