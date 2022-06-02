@@ -1,14 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Caching.Core.Models;
-
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
 public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 {
     private readonly string _channel = "snowflake.workerid";
-    private long? _workerId;
+    private static long? _workerId;
     private readonly uint _timestampType;
     private readonly long _recycleTime;
     private readonly long _maxWorkerId;
@@ -19,9 +17,10 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly string _getWorkerIdKey;
     private readonly string _token;
     private readonly TimeSpan _timeSpan;
-    private DateTime? _lastTime;
+    private static DateTime? _lastTime;
     private readonly ILogger<DistributedWorkerProvider>? _logger;
     private readonly object _lock = new();
+    private static string? _uniquelyIdentifies;
 
     public DistributedWorkerProvider(
         IDistributedCacheClient distributedCacheClient,
@@ -29,6 +28,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         IOptions<RedisConfigurationOptions> redisOptions,
         ILogger<DistributedWorkerProvider>? logger) : base(distributedCacheClient, redisOptions)
     {
+        _uniquelyIdentifies ??= Guid.NewGuid().ToString();
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
         _timestampType = distributedIdGeneratorOptions.TimestampType;
@@ -45,6 +45,9 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
         DistributedCacheClient.Subscribe<long>(_channel, options =>
         {
+            if (options.Key == _uniquelyIdentifies)
+                return;
+
             if (_workerId.HasValue && _workerId.Value == options.Value)
                 _workerId = null;
         });
@@ -69,9 +72,11 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
             _workerId = GetNextWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
+            RefreshAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+
             DistributedCacheClient.Publish<long>(_channel, options =>
             {
-                options.Key = "workerid";
+                options.Key = _uniquelyIdentifies;
                 options.Value = _workerId.Value;
             });
             return Task.FromResult(_workerId.Value);
@@ -81,7 +86,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     public async Task RefreshAsync()
     {
         if (_workerId == null)
-            return;
+            throw new MasaException("No WorkerId available");
 
         await Database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
     }
@@ -116,7 +121,6 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
                 try
                 {
                     workerId = await GetNextWorkerIdByDistributedLockAsync();
-                    await RefreshAsync();
                 }
                 finally
                 {
@@ -126,7 +130,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         }
         else
         {
-            await RefreshAsync();
+            _workerId = workerId;
         }
 
         return workerId;
