@@ -49,6 +49,8 @@ Masa.Contrib.Data.IdGenerator.Snowflake is an id constructor based on snowflake 
       > Used to periodically check the status of the refresh service to ensure that the WorkerId will not be recycled
     * MaxExpirationTime: Maximum expiration time: Default: 10000ms
       > When the refresh service status fails, check that the time difference between the current time and the first refresh service failure exceeds the maximum expiration time, actively give up the current WorkerId, and refuse to provide the service for generating id until a new WorkerId can be obtained and then provide it again Serve
+    * MaxCallBackTime: maximum callback time, default: 3000 (milliseconds)
+      > When the clock lock is not enabled, if the time callback is less than MaxCallBackTime, the id will be generated again after the waiting time is greater than the last time the id was generated. If it is greater than the maximum callback time, an exception will be thrown
 
 ### Notice:
 

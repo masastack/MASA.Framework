@@ -18,19 +18,17 @@ public static class ServiceCollectionExtensions
         CheckIdGeneratorOptions(idGeneratorOptions,
             services.GetInstance<IWorkerProvider>().GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult());
 
-        services.TryAddSingleton<ITimeCallbackProvider, EmptyTimeCallbackProvider>();
-
-        services.TryAddSingleton(serviceProvider => (IIdGenerator)serviceProvider.GetRequiredService<IIdGenerator<long>>());
+        services.TryAddSingleton<IIdGenerator<System.Snowflake, long>>(serviceProvider
+            => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
         if (idGeneratorOptions.EnableMachineClock)
         {
-            services.TryAddSingleton<IIdGenerator<long>>(serviceProvider
+            services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
                 => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(), idGeneratorOptions));
         }
         else
         {
-            services.TryAddSingleton<IIdGenerator<long>>(serviceProvider
-                => new DefaultIdGenerator(serviceProvider.GetRequiredService<ITimeCallbackProvider>(),
-                    serviceProvider.GetRequiredService<IWorkerProvider>(),
+            services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
+                => new SnowflakeIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
                     idGeneratorOptions));
         }
 
@@ -44,6 +42,7 @@ public static class ServiceCollectionExtensions
                     serviceProvider.GetService<ILogger<WorkerIdBackgroundServices>>()
                 )));
         }
+        IdGeneratorFactory.SetSnowflakeGenerator(services.BuildServiceProvider().GetRequiredService<ISnowflakeGenerator>());
         return services;
     }
 

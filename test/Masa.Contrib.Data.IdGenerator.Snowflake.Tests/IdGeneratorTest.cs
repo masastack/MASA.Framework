@@ -1,3 +1,5 @@
+using Masa.Utils.Caching.Redis;
+
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 
 [TestClass]
@@ -25,12 +27,12 @@ public class IdGeneratorTest
             opt.EnableMachineClock = true;
         });
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         int count = 1;
         List<long> ids = new();
         while (count < 500000)
         {
-            var id = idGenerator.Generate();
+            var id = idGenerator.Create();
             ids.Add(id);
             count++;
         }
@@ -45,12 +47,12 @@ public class IdGeneratorTest
         var services = new ServiceCollection();
         services.AddSnowflake();
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         int count = 1;
         List<long> ids = new();
         while (count < 500000)
         {
-            var id = idGenerator.Generate();
+            var id = idGenerator.Create();
             ids.Add(id);
             count++;
         }
@@ -145,12 +147,12 @@ public class IdGeneratorTest
 
         services.AddDistributedSnowflake();
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake,long>>();
         int count = 1;
         List<long> ids = new();
         while (count < 500000)
         {
-            var id = idGenerator.Generate();
+            var id = idGenerator.Create();
             ids.Add(id);
             count++;
         }
@@ -239,12 +241,12 @@ public class IdGeneratorTest
             distributedIdGeneratorOptions.EnableMachineClock = true;
         });
 
-        var idGenerator = services.BuildServiceProvider().GetRequiredService<IIdGenerator>();
-        var id = idGenerator.Generate();
+        var idGenerator = services.BuildServiceProvider().GetRequiredService<IIdGenerator<System.Snowflake,long>>();
+        var id = idGenerator.Create();
         var maxSequenceBit = ~(-1L << 12);
         for (int i = 1; i < maxSequenceBit; i++)
         {
-            var idTemp = idGenerator.Generate();
+            var idTemp = idGenerator.Create();
             Assert.IsTrue(i + id == idTemp);
         }
     }
@@ -255,7 +257,7 @@ public class IdGeneratorTest
     [TestMethod]
     public async Task TestGetWorkerIdAsync()
     {
-        return;
+        // return;
 
         IServiceCollection services = new ServiceCollection();
         services.Configure<RedisConfigurationOptions>(option =>
@@ -280,7 +282,7 @@ public class IdGeneratorTest
         db.KeyDelete(_inUseWorkerKey);
         db.KeyDelete(_logOutWorkerKey);
         db.KeyDelete(_getWorkerIdKey);
-        var workerIdProvider = new CustomizeDistributedWorkerProvider(distributedIdGeneratorOptions, redisOptions, null);
+        var workerIdProvider = new CustomizeDistributedWorkerProvider(new RedisCacheClient(options),distributedIdGeneratorOptions, redisOptions, null);
 
         List<long> workerIds = new();
         var errCount = 0;

@@ -43,6 +43,8 @@ Masa.Contrib.Data.IdGenerator.Snowflake是基于雪花id的一个id构造器，�
     * TimestampType: 时间戳类型，默认: 1 (毫秒: 1, 秒: 2)
       > TimestampType为1时，SequenceBits + WorkerIdBits 最大长度为22
       > TimestampType为2时，SequenceBits + WorkerIdBits 最大长度为31
+    * MaxCallBackTime: 最大回拨时间，默认: 3000 (毫秒)
+      > 当不启用时钟锁时，如果出现时间回拨小于MaxCallBackTime，则会等待时间大于最后一次生成id的时间后，再次生成id，如果大于最大回拨时间，则会抛出异常
 
 * 分布式部署时
     * SupportDistributed: 支持分布式部署，默认: false (由WorkerId的提供类库赋值)

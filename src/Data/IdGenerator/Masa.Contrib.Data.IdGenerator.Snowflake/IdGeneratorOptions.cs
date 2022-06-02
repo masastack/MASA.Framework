@@ -17,7 +17,7 @@ public class IdGeneratorOptions
     public int SequenceBits { get; set; } = 12;
 
     /// <summary>
-    /// Number of working machines
+    /// The number of digits occupied by the working machines in the id
     /// </summary>
     public int WorkerIdBits { get; set; } = 10;
 
@@ -33,6 +33,11 @@ public class IdGeneratorOptions
     /// The time when the project first obtains the id is used as the starting time, which is not affected by the clock callback.
     /// </summary>
     public bool EnableMachineClock { get; set; } = false;
+
+    /// <summary>
+    /// Maximum acceptable callback duration, default 3000ms(3s)
+    /// </summary>
+    public long MaxCallBackTime { get; set; } = 3000;
 
     /// <summary>
     /// Whether to support distributed id

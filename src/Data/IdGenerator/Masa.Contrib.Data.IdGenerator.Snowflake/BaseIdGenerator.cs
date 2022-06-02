@@ -12,7 +12,13 @@ public abstract class BaseIdGenerator
     /// </summary>
     protected readonly long Twepoch;
 
-    private readonly uint _timestampType;
+    /// <summary>
+    /// milliseconds: 1
+    /// seconds: 2
+    /// </summary>
+    protected readonly uint TimestampType;
+
+    protected readonly long MaxCallBackTime;
 
     /// <summary>
     /// sequence mask, used to limit the sequence maximum
@@ -38,17 +44,18 @@ public abstract class BaseIdGenerator
 
     protected readonly object Lock = new();
 
-    public BaseIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
+    public BaseIdGenerator(IWorkerProvider workerProvider,IdGeneratorOptions idGeneratorOptions)
     {
         _workerProvider = workerProvider;
-        _timestampType = idGeneratorOptions.TimestampType;
+        TimestampType = idGeneratorOptions.TimestampType;
+        MaxCallBackTime = idGeneratorOptions.MaxCallBackTime;
         Twepoch = new DateTimeOffset(idGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
         SequenceMask = ~(-1 << idGeneratorOptions.SequenceBits);
         SequenceBits = idGeneratorOptions.SequenceBits;
         TimestampLeftShift = idGeneratorOptions.SequenceBits + idGeneratorOptions.WorkerIdBits;
     }
 
-    public virtual long Generate()
+    public virtual long Create()
     {
         lock (Lock)
         {
@@ -56,7 +63,12 @@ public abstract class BaseIdGenerator
 
             if (currentTimestamp < LastTimestamp)
             {
-                return NextIdByTimeCallback(currentTimestamp, LastTimestamp);
+                var res = TimeCallBack(currentTimestamp);
+
+                if (res.Support) LastTimestamp = res.LastTimestamp;
+                else
+                    throw new Exception(
+                        $"InvalidSystemClock: Clock moved backwards, Refusing to generate id for {LastTimestamp - currentTimestamp} milliseconds");
             }
 
             if (LastTimestamp == currentTimestamp)
@@ -75,10 +87,7 @@ public abstract class BaseIdGenerator
         }
     }
 
-    protected virtual long NextIdByTimeCallback(long currentTimestamp, long lastTimestamp)
-    {
-        return 0;
-    }
+    protected virtual (bool Support, long LastTimestamp) TimeCallBack(long currentTimestamp) => (false, 0);
 
     protected virtual long NextId(long deltaSeconds)
     {
@@ -94,8 +103,7 @@ public abstract class BaseIdGenerator
         return timestamp;
     }
 
-    protected long GetWorkerId()
-        => _workerProvider.GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+    protected virtual long GetWorkerId() => _workerProvider.GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-    protected long GetCurrentTimestamp() => new DateTimeOffset(DateTime.UtcNow).GetTimestamp(_timestampType);
+    protected long GetCurrentTimestamp() => new DateTimeOffset(DateTime.UtcNow).GetTimestamp(TimestampType);
 }

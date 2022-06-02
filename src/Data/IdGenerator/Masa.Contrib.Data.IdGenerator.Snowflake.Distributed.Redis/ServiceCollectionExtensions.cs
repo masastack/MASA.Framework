@@ -18,7 +18,8 @@ public static class ServiceCollectionExtensions
             throw new MasaException("Please add first using AddMasaRedisCache");
 
         services.TryAddSingleton<IWorkerProvider>(serviceProvider
-            => new DistributedWorkerProvider(distributedIdGenerators,
+            => new DistributedWorkerProvider(serviceProvider.GetRequiredService<IDistributedCacheClient>(),
+                distributedIdGenerators,
                 serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
                 serviceProvider.GetService<ILogger<DistributedWorkerProvider>>()));
 
@@ -27,12 +28,13 @@ public static class ServiceCollectionExtensions
             var distributedIdGeneratorOption = new DistributedIdGeneratorOptions();
             options?.Invoke(distributedIdGeneratorOption);
 
-            DistributedIdGeneratorOptions.CopyTo(distributedIdGeneratorOption,idGeneratorOptions);
+            DistributedIdGeneratorOptions.CopyTo(distributedIdGeneratorOption, idGeneratorOptions);
 
             if (distributedIdGeneratorOption.EnableMachineClock)
             {
-                services.TryAddSingleton<IIdGenerator>(serviceProvider
-                    => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
+                services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
+                    => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IDistributedCacheClient>(),
+                        serviceProvider.GetRequiredService<IWorkerProvider>(),
                         serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
                         distributedIdGeneratorOption));
             }

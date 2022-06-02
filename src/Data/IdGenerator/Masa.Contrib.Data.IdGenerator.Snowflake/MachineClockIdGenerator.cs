@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
-public class MachineClockIdGenerator : BaseIdGenerator, IIdGenerator
+public class MachineClockIdGenerator : BaseIdGenerator, ISnowflakeGenerator
 {
     public MachineClockIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
         : base(workerProvider, idGeneratorOptions)
@@ -11,7 +11,7 @@ public class MachineClockIdGenerator : BaseIdGenerator, IIdGenerator
         LastTimestamp = GetCurrentTimestamp();
     }
 
-    public override long Generate()
+    public override long Create()
     {
         lock (Lock)
         {
