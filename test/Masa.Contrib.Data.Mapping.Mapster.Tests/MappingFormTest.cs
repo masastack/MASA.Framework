@@ -7,14 +7,15 @@ namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
 public class MappingFormTest : BaseMappingTest
 {
     [TestMethod]
-    public void TestUseShareModeReturnMapRuleCountIs1()
+    public void TestUseShareModeReturnMapRuleIsExist()
     {
         var request = new CreateUserRequest()
         {
             Name = "Jim",
         };
         _mapper.Map<CreateUserRequest, User>(request);
-        Assert.IsTrue(TypeAdapterConfig.GlobalSettings.RuleMap.Count == 1);
+        Assert.IsTrue(TypeAdapterConfig.GlobalSettings.RuleMap.Any(r
+            => r.Key.Source == typeof(CreateUserRequest) && r.Key.Destination == typeof(User)));
     }
 
     [TestMethod]
