@@ -8,43 +8,43 @@ public abstract class BaseIdGenerator
     private readonly IWorkerProvider _workerProvider;
 
     /// <summary>
-    /// initial timestamp
+    /// start timestamp
     /// </summary>
-    protected readonly long Twepoch;
+    protected long Twepoch { get; }
 
     /// <summary>
     /// milliseconds: 1
     /// seconds: 2
     /// </summary>
-    protected readonly uint TimestampType;
+    protected uint TimestampType { get; }
 
-    protected readonly long MaxCallBackTime;
+    protected long MaxCallBackTime { get; }
 
     /// <summary>
     /// sequence mask, used to limit the sequence maximum
     /// </summary>
-    protected readonly long SequenceMask;
+    protected long SequenceMask { get; }
 
-    protected readonly int SequenceBits;
+    protected int SequenceBits { get; }
 
     /// <summary>
     /// Timestamp shift offset bits
     /// </summary>
-    protected readonly int TimestampLeftShift;
+    protected int TimestampLeftShift { get; }
 
     /// <summary>
     /// Sequence within milliseconds
     /// </summary>
-    protected long Sequence;
+    protected long Sequence { get; set; }
 
     /// <summary>
     /// The last time the ID was generated
     /// </summary>
-    protected long LastTimestamp = -1L;
+    protected long LastTimestamp { get; set; } = -1L;
 
-    protected readonly object Lock = new();
+    protected object Lock { get; } = new();
 
-    public BaseIdGenerator(IWorkerProvider workerProvider,IdGeneratorOptions idGeneratorOptions)
+    public BaseIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
     {
         _workerProvider = workerProvider;
         TimestampType = idGeneratorOptions.TimestampType;

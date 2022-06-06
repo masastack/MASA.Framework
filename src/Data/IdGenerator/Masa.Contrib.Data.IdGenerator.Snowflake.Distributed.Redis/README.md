@@ -30,7 +30,7 @@ The upgraded version supports distributed deployment, relies on Redis to provide
 
 ### Parameters:
 
-* RecycleTime: Recycle time, default: 120000ms (2min), when there is no available WorkerId, it will try to obtain the WorkerId whose active time exceeds the RecycleTime from the historically used WorkerId collection, and select the one that is farthest away from the current WorkerId for reuse
+* IdleTimeOut: Idle recycling time, default: 120000ms (2min), when there is no available WorkerId, it will try to obtain the WorkerId whose active time exceeds IdleTimeOut from the historically used WorkerId collection, and select the one that is farthest away from the current WorkerId for reuse
 * GetWorkerIdMinInterval: Time interval for getting WorkerId, default: 5000ms (5s)
   > When the current WorkerId is available, the WorkerId will be returned directly without any restrictions
   > When the service fails to refresh the WorkerId and the duration exceeds the specified time, the WorkerId will be automatically released. When a new Id is obtained again, it will try to obtain a new WorkerId again. If the latest WorkerId obtained and the current time are less than GetWorkerIdMinInterval, the Denied service

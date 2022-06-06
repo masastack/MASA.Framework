@@ -29,7 +29,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis是基于`Masa.Contrib.
 
 ### 参数:
 
-* RecycleTime: 回收时间，默认: 120000ms (2min)，当无可用的WorkerId后会尝试从历史使用的WorkerId集合中获取活跃时间超过RecycleTime的WorkerId，并选取距离现在最远的一个WorkerId进行复用
+* IdleTimeOut: 闲置回收时间，默认: 120000ms (2min)，当无可用的WorkerId后会尝试从历史使用的WorkerId集合中获取活跃时间超过IdleTimeOut的WorkerId，并选取距离现在最远的一个WorkerId进行复用
 * GetWorkerIdMinInterval: 获取WorkerId的时间间隔，默认: 5000ms (5s)
   > 当前WorkerId可用时，会将WorkerId直接返回，不会有任何限制
   > 当服务刷新WorkerId失败，并持续时间超过指定时间后，会自动释放WorkerId，当再次获取新的Id时，会尝试重新获取新的WorkerId，若最近一次获取WorkerId时间与当前时间小于GetWorkerIdMinInterval时，会被拒绝提供服务

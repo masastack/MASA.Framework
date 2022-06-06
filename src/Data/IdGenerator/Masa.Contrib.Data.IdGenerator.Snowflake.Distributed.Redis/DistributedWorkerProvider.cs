@@ -8,7 +8,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly string _channel = "snowflake.workerid";
     private static long? _workerId;
     private readonly uint _timestampType;
-    private readonly long _recycleTime;
+    private readonly long _idleTimeOut;
     private readonly long _maxWorkerId;
     private readonly long _workerIdMinInterval;
     private readonly string _currentWorkerKey;
@@ -32,7 +32,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
         _timestampType = distributedIdGeneratorOptions.TimestampType;
-        _recycleTime = distributedIdGeneratorOptions.RecycleTime;
+        _idleTimeOut = distributedIdGeneratorOptions.IdleTimeOut;
         _maxWorkerId = distributedIdGeneratorOptions.MaxWorkerId;
         _workerIdMinInterval = distributedIdGeneratorOptions.GetWorkerIdMinInterval;
         _currentWorkerKey = "snowflake.current.workerid";
@@ -88,7 +88,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         if (_workerId == null)
             throw new MasaException("No WorkerId available");
 
-        await Database.SortedSetAddAsync(_inUseWorkerKey, _workerId + "", GetCurrentTimestamp());
+        await Database.SortedSetAddAsync(_inUseWorkerKey, _workerId, GetCurrentTimestamp());
     }
 
     public async Task LogOutAsync()
@@ -96,14 +96,13 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         if (_workerId == null)
             return;
 
-        var val = _workerId! + "";
         _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
             _workerId,
             DateTime.UtcNow);
 
         _workerId = null;
-        await Database.SortedSetAddAsync(_logOutWorkerKey, val, GetCurrentTimestamp());
-        await Database.SortedSetRemoveAsync(_inUseWorkerKey, val);
+        await Database.SortedSetAddAsync(_logOutWorkerKey, _workerId, GetCurrentTimestamp());
+        await Database.SortedSetRemoveAsync(_inUseWorkerKey, _workerId);
 
         _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
             _workerId,
@@ -115,7 +114,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         var workerId = await DistributedCacheClient.HashIncrementAsync(_currentWorkerKey, 1) - 1;
         if (workerId > _maxWorkerId)
         {
-            var lockdb = Connection.GetDatabase(-1);
+            var lockdb = Connection.GetDatabase();
             if (await lockdb.LockTakeAsync(_getWorkerIdKey, _token, _timeSpan))
             {
                 try
@@ -163,7 +162,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         var entries = await Database.SortedSetRangeByScoreWithScoresAsync(
             _inUseWorkerKey,
             0,
-            GetCurrentTimestamp(DateTime.UtcNow.AddMilliseconds(-_recycleTime)),
+            GetCurrentTimestamp(DateTime.UtcNow.AddMilliseconds(-_idleTimeOut)),
             take: 1);
 
         if (entries is { Length: > 0 })

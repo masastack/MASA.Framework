@@ -5,9 +5,15 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 
 internal static class SnowflakeExtensions
 {
-    public static long GetTimestamp(this DateTimeOffset dateTimeOffset, uint timeType)
+    /// <summary>
+    /// get timestamp
+    /// </summary>
+    /// <param name="dateTimeOffset"></param>
+    /// <param name="timestampType">Timestamp type: milliseconds: 1, seconds: 2</param>
+    /// <returns></returns>
+    public static long GetTimestamp(this DateTimeOffset dateTimeOffset, uint timestampType)
     {
-        if (timeType == 1)
+        if (timestampType == 1)
             return dateTimeOffset.ToUnixTimeMilliseconds();
 
         return dateTimeOffset.ToUnixTimeSeconds();

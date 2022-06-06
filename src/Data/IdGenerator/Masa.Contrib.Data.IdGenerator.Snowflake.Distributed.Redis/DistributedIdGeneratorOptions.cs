@@ -6,11 +6,11 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class DistributedIdGeneratorOptions : IdGeneratorOptions
 {
     /// <summary>
-    /// When there is no available WorkerId, recover the inactive WorkerId for 2 minutes
+    /// When there is no available WorkerId, Recycle idle and unused WorkerIds and recycle them
     /// default: 120000ms(2min)
     /// </summary>
     /// <returns></returns>
-    public long RecycleTime { get; set; } = 2 * 60 * 1000;
+    public long IdleTimeOut { get; set; } = 2 * 60 * 1000;
 
     /// <summary>
     /// Get the minimum interval for WorkerId

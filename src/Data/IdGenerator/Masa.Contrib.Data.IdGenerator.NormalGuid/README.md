@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.IdGenerator.SimpleGuid
 
-Masa.Contrib.Data.IdGenerator.SimpleGuid is a simple id constructor that provides a unique identifier of type Guid
+Masa.Contrib.Data.IdGenerator.SimpleGuid is a simple guid constructor that provides a unique identifier of type Guid
 
 ## Example:
 

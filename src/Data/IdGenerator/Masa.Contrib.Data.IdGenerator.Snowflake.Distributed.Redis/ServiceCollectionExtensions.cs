@@ -39,11 +39,11 @@ public static class ServiceCollectionExtensions
                         distributedIdGeneratorOption));
             }
 
-            long defaultHeartbeatinterval = 30 * 1000;
-            if (distributedIdGeneratorOption.RecycleTime <= defaultHeartbeatinterval)
+            long defaultHeartbeatInterval = distributedIdGeneratorOption.HeartbeatInterval;
+            if (distributedIdGeneratorOption.IdleTimeOut <= defaultHeartbeatInterval)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"{nameof(distributedIdGenerators.RecycleTime)} RecycleTime must be greater than {defaultHeartbeatinterval}");
+                    $"{nameof(distributedIdGenerators.IdleTimeOut)} must be greater than {defaultHeartbeatInterval}");
             }
 
             distributedIdGenerators = distributedIdGeneratorOption;

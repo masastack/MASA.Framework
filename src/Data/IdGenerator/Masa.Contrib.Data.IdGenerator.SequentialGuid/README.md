@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.IdGenerator.SequentialGuid
 
-Masa.Contrib.Data.IdGenerator.SequentialGuid is an ordered id constructor that provides a unique identifier of the Guid type
+Masa.Contrib.Data.IdGenerator.SequentialGuid is an ordered Guid constructor that provides a unique identifier of the Guid type
 
 ## Example:
 
