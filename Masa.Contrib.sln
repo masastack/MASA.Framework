@@ -231,7 +231,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Data.Ma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.SimpleGuid", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.SimpleGuid\Masa.Contrib.Data.IdGenerator.SimpleGuid.csproj", "{24E5BF57-33B6-4D5B-A32F-2F64D1A5954F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.SequentialGuids", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.SequentialGuids\Masa.Contrib.Data.IdGenerator.SequentialGuids.csproj", "{B15F4561-E511-42EA-A02E-F772BAF41E20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.SequentialGuid", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.SequentialGuid\Masa.Contrib.Data.IdGenerator.SequentialGuid.csproj", "{B15F4561-E511-42EA-A02E-F772BAF41E20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

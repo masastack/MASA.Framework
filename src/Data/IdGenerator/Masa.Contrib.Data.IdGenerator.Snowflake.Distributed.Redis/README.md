@@ -24,8 +24,8 @@ The upgraded version supports distributed deployment, relies on Redis to provide
 3. Get id
 
     ````
-    IIdGenerator idGenerator;// Get through DI
-    idGenerator.Generate();//Create a unique id
+    ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
+    generator.Create();//Create a unique id
     ````
 
 ### Parameters:

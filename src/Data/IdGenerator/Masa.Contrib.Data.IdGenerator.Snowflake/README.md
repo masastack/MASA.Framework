@@ -20,11 +20,11 @@ Masa.Contrib.Data.IdGenerator.Snowflake is an id constructor based on snowflake 
 
 3. Set the value of WorkerId for the current service, add the value of the environment variable `WORKER_ID`, the range is: 0-1023 (2^MaxWorkerId-1)
 
-4. Get id
+4. Get Id
 
     ````
-    IIdGenerator idGenerator;// Get through DI
-    idGenerator.Generate();//Create a unique id
+    ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
+    generator.Create();//Create a unique id
     ````
 
 ### Parameters and FAQs:
