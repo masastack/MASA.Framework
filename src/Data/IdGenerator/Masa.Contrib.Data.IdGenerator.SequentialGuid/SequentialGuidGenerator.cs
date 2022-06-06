@@ -3,9 +3,6 @@
 
 namespace Masa.Contrib.Data.IdGenerator.SequentialGuid;
 
-/// <summary>
-/// This code is taken from jhtodd/SequentialGuid https://github.com/jhtodd/SequentialGuid/blob/master/SequentialGuid/Classes/SequentialGuid.cs
-/// </summary>
 public class SequentialGuidGenerator : ISequentialGuidGenerator
 {
     /// <summary>
