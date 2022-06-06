@@ -11,7 +11,7 @@ public class TeamService : ITeamService
 
     public async Task<TeamDetailModel?> GetDetailAsync(Guid id)
     {
-        var requestUri = $"api/team/deatil";
+        var requestUri = $"api/team/getDetailForExternal";
         return await _callerProvider.GetAsync<object, TeamDetailModel>(requestUri, new { id });
     }
 }
