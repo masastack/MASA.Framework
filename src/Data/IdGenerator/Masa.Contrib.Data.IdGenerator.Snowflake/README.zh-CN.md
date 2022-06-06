@@ -56,6 +56,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，�
 ### 性能测试
 
 1. TimestampType为1（毫秒）
+
 `BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
 11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
 .NET SDK=7.0.100-preview.4.22252.9
