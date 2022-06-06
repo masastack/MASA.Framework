@@ -9,7 +9,7 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests;
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
 public class Benchmarks
 {
-    private IIdGenerator<System.Snowflake,long> _idGenerator;
+    private IIdGenerator<System.Snowflake, long> _idGenerator;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -17,12 +17,12 @@ public class Benchmarks
         IServiceCollection services = new ServiceCollection();
         services.AddSnowflake();
         var serviceProvider = services.BuildServiceProvider();
-        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake,long>>();
+        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         _idGenerator.Create();
     }
 
     [Benchmark]
-    public void Generate()
+    public void SnowflakeByMillisecond()
     {
         _idGenerator.Create();
     }
@@ -34,7 +34,7 @@ public class Benchmarks
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
 public class SecondBenchmarks
 {
-    private IIdGenerator<System.Snowflake,long> _idGenerator;
+    private IIdGenerator<System.Snowflake, long> _idGenerator;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -42,12 +42,12 @@ public class SecondBenchmarks
         IServiceCollection services = new ServiceCollection();
         services.AddSnowflake(options => options.TimestampType = 2);
         var serviceProvider = services.BuildServiceProvider();
-        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake,long>>();
+        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         _idGenerator.Create();
     }
 
     [Benchmark]
-    public void GenerateBySecond()
+    public void SnowflakeBySecond()
     {
         _idGenerator.Create();
     }

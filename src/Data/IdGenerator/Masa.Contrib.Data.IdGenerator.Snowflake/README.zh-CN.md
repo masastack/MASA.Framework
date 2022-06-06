@@ -53,6 +53,61 @@ Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，�
     * MaxExpirationTime: 最大过期时间: 默认: 10000ms
       > 当刷新服务状态失败时，检查当前时间与第一次刷新服务失败的时间差超过最大过期时间后，主动放弃当前的WorkerId，并拒绝提供生成id的服务，直到可以获取到新的WokerId后再次提供服务
 
+### 性能测试
+
+1. TimestampType为1（毫秒）
+`BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
+11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=7.0.100-preview.4.22252.9
+[Host]     : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT DEBUG
+Job-JPQDWN : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-BKJUSV : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-UGZQME : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT`
+
+`Runtime=.NET 6.0  RunStrategy=ColdStart`
+
+|                 Method |        Job | IterationCount |       Mean |     Error |     StdDev |     Median |        Min |          Max |
+|----------------------- |----------- |--------------- |-----------:|----------:|-----------:|-----------:|-----------:|-------------:|
+| SnowflakeByMillisecond | Job-JPQDWN |           1000 | 2,096.1 ns | 519.98 ns | 4,982.3 ns | 1,900.0 ns | 1,000.0 ns | 156,600.0 ns |
+| SnowflakeByMillisecond | Job-BKJUSV |          10000 |   934.0 ns |  58.44 ns | 1,775.5 ns |   500.0 ns |   200.0 ns | 161,900.0 ns |
+| SnowflakeByMillisecond | Job-UGZQME |         100000 |   474.6 ns |   5.54 ns |   532.8 ns |   400.0 ns |   200.0 ns | 140,500.0 ns |
+
+2. TimestampType为2（秒）
+
+`BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
+11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=7.0.100-preview.4.22252.9
+[Host]     : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-RVUKKG : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-JAUDMW : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-LOMSTK : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT`
+
+`Runtime=.NET 6.0  RunStrategy=ColdStart`
+
+|            Method |        Job | IterationCount |      Mean |      Error |       StdDev |    Median |       Min |          Max |
+|------------------ |----------- |--------------- |----------:|-----------:|-------------:|----------:|----------:|-------------:|
+| SnowflakeBySecond | Job-RVUKKG |           1000 |  1.882 us |  0.5182 us |     4.965 us | 1.5000 us | 0.9000 us |     158.0 us |
+| SnowflakeBySecond | Job-JAUDMW |          10000 | 11.505 us | 35.1131 us | 1,066.781 us | 0.4000 us | 0.3000 us | 106,678.8 us |
+| SnowflakeBySecond | Job-LOMSTK |         100000 | 22.097 us | 15.0311 us | 1,444.484 us | 0.4000 us | 0.2000 us | 118,139.7 us |
+
+3. TimestampType为1（毫秒）、启用时钟锁
+
+`BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
+11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=7.0.100-preview.4.22252.9
+[Host]     : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-BBZSDR : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-NUSWYF : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT
+Job-FYICRN : .NET 6.0.5 (6.0.522.21309), X64 RyuJIT`
+
+`Runtime=.NET 6.0  RunStrategy=ColdStart`
+
+|                    Method |        Job | IterationCount |       Mean |     Error |     StdDev |     Median |         Min |          Max |
+|-------------------------- |----------- |--------------- |-----------:|----------:|-----------:|-----------:|------------:|-------------:|
+| MachineClockByMillisecond | Job-BBZSDR |           1000 | 1,502.0 ns | 498.35 ns | 4,775.1 ns | 1,100.0 ns | 700.0000 ns | 151,600.0 ns |
+| MachineClockByMillisecond | Job-NUSWYF |          10000 |   602.0 ns |  54.76 ns | 1,663.7 ns |   200.0 ns | 100.0000 ns | 145,400.0 ns |
+| MachineClockByMillisecond | Job-FYICRN |         100000 |   269.8 ns |   5.64 ns |   542.4 ns |   200.0 ns |   0.0000 ns | 140,900.0 ns |
+
 ### 注意：
 
 雪花id算法严重依赖时间，哪怕是启用时钟锁后，项目在启动时仍然需要获取一次当前时间作为基准时间，如果获取到的初始获取时间为已经过期的时间，那生成的id仍然有重复的可能

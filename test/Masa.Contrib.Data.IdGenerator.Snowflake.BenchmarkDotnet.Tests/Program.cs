@@ -8,11 +8,11 @@ class Program
     static void Main(string[] args)
     {
         var config = DefaultConfig.Instance
-                    .AddValidator(ExecutionValidator.FailOnError)
-                    .WithOptions(ConfigOptions.DisableOptimizationsValidator);
+            .AddValidator(ExecutionValidator.FailOnError)
+            .WithOptions(ConfigOptions.DisableOptimizationsValidator);
         // BenchmarkRunner.Run<Benchmarks>(config);
-        BenchmarkRunner.Run<SecondBenchmarks>(config);
-        // BenchmarkRunner.Run<MachineClockBenchmarks>(config);
+        // BenchmarkRunner.Run<SecondBenchmarks>(config);
+        BenchmarkRunner.Run<MachineClockBenchmarks>(config);
         // BenchmarkRunner.Run<DistributedBenchmarks>(config);
         Console.ReadLine();
     }

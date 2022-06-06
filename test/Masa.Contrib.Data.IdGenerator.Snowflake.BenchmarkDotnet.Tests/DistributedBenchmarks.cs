@@ -9,7 +9,7 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests;
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
 public class DistributedBenchmarks
 {
-    private IIdGenerator<System.Snowflake,long> _idGenerator;
+    private IIdGenerator<System.Snowflake, long> _idGenerator;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -26,12 +26,12 @@ public class DistributedBenchmarks
         });
         services.AddDistributedSnowflake(options => options.EnableMachineClock = true);
         var serviceProvider = services.BuildServiceProvider();
-        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake,long>>();
+        _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         _idGenerator.Create();
     }
 
     [Benchmark]
-    public void DistributedGenerate()
+    public void Distributed()
     {
         _idGenerator.Create();
     }
