@@ -126,7 +126,7 @@ public class Repository<TDbContext, TEntity> :
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending,
         CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+        => Context.Set<TEntity>().OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken);
 
     /// <summary>
     /// Get a paginated list after sorting according to skip and take
@@ -159,7 +159,7 @@ public class Repository<TDbContext, TEntity> :
     /// <returns></returns>
     public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string sortField,
         bool isDescending = true, CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().Where(predicate).OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken: cancellationToken);
+        => Context.Set<TEntity>().Where(predicate).OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken);
 
     /// <summary>
     /// Get a paginated list after sorting by condition

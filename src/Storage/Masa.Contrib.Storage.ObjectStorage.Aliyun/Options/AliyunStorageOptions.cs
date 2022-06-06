@@ -3,35 +3,25 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
-public class AliyunStorageOptions
+public class AliyunStorageOptions : AliyunOptions
 {
-    public string AccessKeyId { get; set; }
+    public AliyunStsOptions Sts { get; set; } = new();
 
-    public string AccessKeySecret { get; set; }
+    private string _endpoint;
 
-    public string RegionId { get; set; }
-
-    public string RoleArn { get; set; }
-
-    public string RoleSessionName { get; set; }
-
-    private int _durationSeconds = 3600;
-
-    /// <summary>
-    /// Set the validity period of the temporary access credential, the minimum is 900, and the maximum is 43200.
-    /// default: 3600
-    /// unit: second
-    /// </summary>
-    public int DurationSeconds
+    public string Endpoint
     {
-        get => _durationSeconds;
-        set
-        {
-            if (value < 900 || value > 43200)
-                throw new ArgumentOutOfRangeException(nameof(DurationSeconds), "DurationSeconds must be in range of 900-43200");
+        get => _endpoint;
+        set => _endpoint = value?.Trim() ?? string.Empty;
+    }
 
-            _durationSeconds = value;
-        }
+    private string _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
+
+    public string TemporaryCredentialsCacheKey
+    {
+        get => _temporaryCredentialsCacheKey;
+        set => _temporaryCredentialsCacheKey =
+            ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
     }
 
     /// <summary>
@@ -39,23 +29,99 @@ public class AliyunStorageOptions
     /// </summary>
     public string Policy { get; set; }
 
-    private string _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
+    public string RoleArn { get; set; }
 
-    public string TemporaryCredentialsCacheKey
+    public string RoleSessionName { get; set; }
+
+    /// <summary>
+    /// The server address of the callback request
+    /// </summary>
+    public string CallbackUrl { get; set; }
+
+    /// <summary>
+    /// The value of the request body when the callback is initiated
+    /// </summary>
+    public string CallbackBody { get; set; }
+
+    /// <summary>
+    /// Large files enable resume after power failure
+    /// default: true
+    /// </summary>
+    public bool EnableResumableUpload { get; set; }
+
+    /// <summary>
+    /// large file length
+    /// unit: Byte
+    /// default: 5GB
+    /// </summary>
+    public long BigObjectContentLength { get; set; }
+
+    /// <summary>
+    /// Gets or sets the size of the part.
+    /// </summary>
+    /// <value>The size of the part.</value>
+    public long? PartSize { get; set; }
+
+    /// <summary>
+    /// true: quiet mode; false: detail mode
+    /// default: true
+    /// </summary>
+    public bool Quiet { get; set; }
+
+    public AliyunStorageOptions()
     {
-        get => _temporaryCredentialsCacheKey;
-        set => _temporaryCredentialsCacheKey = CheckNullOrEmptyAndReturnValue(value, nameof(TemporaryCredentialsCacheKey));
+        Quiet = true;
+        CallbackUrl = string.Empty;
+        CallbackBody = "bucket=${bucket}&object=${object}&etag=${etag}&size=${size}&mimeType=${mimeType}";
+        EnableResumableUpload = true;
+        PartSize = null;
+        BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
     }
 
-    public AliyunStorageOptions() { }
-
-    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string regionId, string roleArn, string roleSessionName) : this()
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
     {
-        AccessKeyId = CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
-        AccessKeySecret = CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));
-        RegionId = CheckNullOrEmptyAndReturnValue(regionId, nameof(regionId));
-        RoleArn = CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
-        RoleSessionName = CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
+        AccessKeyId = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeyId, nameof(accessKeyId));
+        AccessKeySecret = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(accessKeySecret, nameof(accessKeySecret));
+    }
+
+    public AliyunStorageOptions(string accessKeyId, string accessKeySecret, string endpoint)
+        : this(accessKeyId, accessKeySecret)
+    {
+        Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
+    }
+
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        string roleArn,
+        string roleSessionName)
+        : this(accessKeyId, accessKeySecret, endpoint, roleArn, roleSessionName, null)
+    {
+    }
+
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        AliyunStsOptions? stsOptions)
+        : this(accessKeyId, accessKeySecret)
+    {
+        Sts = stsOptions ?? new();
+        Endpoint = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(endpoint, nameof(endpoint));
+    }
+
+    public AliyunStorageOptions(
+        string accessKeyId,
+        string accessKeySecret,
+        string endpoint,
+        string roleArn,
+        string roleSessionName,
+        AliyunStsOptions? stsOptions)
+        : this(accessKeyId, accessKeySecret, endpoint, stsOptions)
+    {
+        RoleArn = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleArn, nameof(roleArn));
+        RoleSessionName = ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(roleSessionName, nameof(roleSessionName));
     }
 
     public AliyunStorageOptions SetPolicy(string policy)
@@ -68,19 +134,5 @@ public class AliyunStorageOptions
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
         return this;
-    }
-
-    public AliyunStorageOptions SetDurationSeconds(int durationSeconds)
-    {
-        DurationSeconds = durationSeconds;
-        return this;
-    }
-
-    internal string CheckNullOrEmptyAndReturnValue(string? parameter, string parameterName)
-    {
-        if (string.IsNullOrEmpty(parameter))
-            throw new ArgumentException($"{parameterName} cannot be null and empty string");
-
-        return parameter;
     }
 }

@@ -37,8 +37,8 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
   * [阿里云存储](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.zh-CN.md)
 * 业务能力
   * 项目管理
-    * PM
-
+    * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md)
+    * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.zh-CN.md)
 
 
 ## 如何克隆

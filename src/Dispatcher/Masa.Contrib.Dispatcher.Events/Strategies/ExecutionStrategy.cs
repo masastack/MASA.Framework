@@ -21,7 +21,7 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _logger?.LogWarning("----- Error Publishing event {@Event} start: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.Id);
+                    _logger?.LogWarning("----- Error Publishing event {@Event} start: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.GetEventId());
                 }
                 await func.Invoke(@event);
                 return;
@@ -30,11 +30,11 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _logger?.LogError(ex, "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.Id);
+                    _logger?.LogError(ex, "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.GetEventId());
                 }
                 else
                 {
-                    _logger?.LogError(ex, "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----", @event, strategyOptions.MaxRetryCount, @event.Id);
+                    _logger?.LogError(ex, "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----", @event, strategyOptions.MaxRetryCount, @event.GetEventId());
                 }
                 exception = ex;
                 retryTimes++;

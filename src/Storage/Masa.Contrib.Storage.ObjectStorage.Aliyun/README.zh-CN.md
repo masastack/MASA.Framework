@@ -9,22 +9,36 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ```
 
 支持：
-* GetSecurityToken 获取安全令牌
+
+* GetSecurityToken: 获取安全令牌 (Sts RegionId、RoleArn、RoleSessionName是必须的)
+* GetObjectAsync: 获取对象数据的流
+* PutObjectAsync: 通过Stream上传对象
+* ObjectExistsAsync: 判断对象是否存在
+* DeleteObjectAsync: 删除对象
 
 ### 用法1:
 
 1. 配置appsettings.json
+
 ``` C#
 {
   "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
-    "RegionId": "Replace-With-Your-RegionId",
-    "RoleArn": "Replace-With-Your-RoleArn",
-    "RoleSessionName": "Replace-With-Your-RoleSessionName",
+    "Sts": :{
+      "RegionId":"Replace-With-Your-Sts-RegionId",//https://help.aliyun.com/document_detail/371859.html
+      "DurationSeconds":3600,//临时证书有效期, default: 3600秒
+      "EarlyExpires":10//default: 10秒
+    },
+    "RegionId": "Replace-With-Your-RegionId",//https://help.aliyun.com/document_detail/371859.html
     "DurationSeconds": 3600,//选填、默认: 3600s
-    "Policy": "",//选填
-    "TemporaryCredentialsCacheKey": "Aliyun.TemporaryCredentials"//选填、默认: Aliyun.TemporaryCredentials
+    "Storage": {
+      "Endpoint": "Replace-With-Your-Endpoint",//https://help.aliyun.com/document_detail/31837.html
+      "RoleArn": "Replace-With-Your-RoleArn",
+      "RoleSessionName": "Replace-With-Your-RoleSessionName",
+      "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//选填、默认: Aliyun.Storage.TemporaryCredentials
+      "Policy": ""//选填
+    }
   }
 }
 ```
@@ -35,14 +49,33 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 builder.Services.AddAliyunStorage();
 ```
 
+3. 从DI获取`IClient`
+
+    ``` C#
+    //上传文件
+    var fileStream = File.OpenRead("D://favicon.png");//更换本地文件路径
+    await serviceProvider.GetService<IClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
+    ```
+
 ### 用法2：
 
 1. 添加阿里云存储服务
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(new ALiYunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+var aliyunStorageOptions = new AliyunStorageOptions(
+    configuration["Aliyun:AccessKeyId"],
+    configuration["Aliyun:AccessKeySecret"],
+    configuration["Aliyun:Endpoint"],
+    configuration["Aliyun:RoleArn"],
+    configuration["Aliyun:RoleSessionName"])
+{
+    Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
+};
+builder.Services.AddAliyunStorage(aliyunStorageOptions);
 ```
+
+2. 从DI获取`IClient`，并使用相应的方法
 
 ### 用法3:
 
@@ -50,7 +83,46 @@ builder.Services.AddAliyunStorage(new ALiYunStorageOptions(configuration["Aliyun
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(() => new ALiYunStorageOptions(configuration["Aliyun:AccessKeyId"], configuration["Aliyun:AccessKeySecret"], configuration["Aliyun:RegionId"], configuration["Aliyun:RoleArn"], configuration["Aliyun:RoleSessionName"]));
+builder.Services.AddAliyunStorage(() =>
+{
+    return new AliyunStorageOptions(
+        configuration["Aliyun:AccessKeyId"],
+        configuration["Aliyun:AccessKeySecret"],
+        configuration["Aliyun:Endpoint"],
+        configuration["Aliyun:RoleArn"],
+        configuration["Aliyun:RoleSessionName"])
+    {
+        Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
+    };
+});
 ```
 
-> 与用法2的区别在于配置更新后无需重启项目即可生效
+2. 从DI获取`IClient`，并使用相应的方法
+
+> 与用法2的区别在于延缓获取配置
+
+### 用法4:
+
+1. 添加阿里云存储服务
+
+```C#
+builder.Services.AddAliyunStorage((serviceProvider) =>
+{
+    var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    return new AliyunStorageOptions(
+        configuration["Aliyun:AccessKeyId"],
+        configuration["Aliyun:AccessKeySecret"],
+        configuration["Aliyun:Endpoint"],
+        configuration["Aliyun:RoleArn"],
+        configuration["Aliyun:RoleSessionName"])
+    {
+        Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
+    };
+});
+```
+
+2. 从DI获取`IClient`，并使用相应的方法
+
+> 与用法3的区别在于可以通过serviceProvider获取配置所需要的服务，最后返回配置对象
+
+> 如果不需要使用临时凭证，可不配置Sts、RoleArn、RoleSessionName参数

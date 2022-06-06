@@ -1,4 +1,5 @@
 ﻿[*.cs]
+file_header_template = Copyright (c) MASA Stack All rights reserved.\nLicensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 # CS8618: 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
 dotnet_diagnostic.CS8618.severity = none
@@ -18,6 +19,16 @@ max_line_length = 140
 indent_size = 4
 insert_final_newline = true
 charset = utf-8
+
+# Use Upper Case for constant fields
+dotnet_naming_style.upper_case_style.capitalization = all_upper
+dotnet_naming_style.upper_case_style.word_separator = _
+dotnet_naming_rule.constant_fields_should_be_upper_case.severity = warning
+dotnet_naming_rule.constant_fields_should_be_upper_case.symbols  = constant_fields
+dotnet_naming_rule.constant_fields_should_be_upper_case.style    = upper_case_style
+dotnet_naming_symbols.constant_fields.applicable_kinds            = field
+dotnet_naming_symbols.constant_fields.applicable_accessibilities  = *
+dotnet_naming_symbols.constant_fields.required_modifiers          = const
 
 # Xml project files
 [*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,projitems,shproj}]

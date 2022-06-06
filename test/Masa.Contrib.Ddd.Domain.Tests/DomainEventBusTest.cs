@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Ddd.Domain.Entities.Tests;
+
 namespace Masa.Contrib.Ddd.Domain.Tests;
 
 [TestClass]
@@ -73,12 +75,12 @@ public class DomainEventBusTest
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateProductDomainCommand>()))
             .Callback<CreateProductDomainCommand>((domainEvent) =>
             {
-                Mock<IRepository<Users>> userRepository = new();
-                var user = new Users()
+                Mock<IRepository<User>> userRepository = new();
+                var user = new User()
                 {
                     Name = "Jim"
                 };
-                userRepository.Setup(repository => repository.AddAsync(It.IsAny<Users>(), CancellationToken.None)).Verifiable();
+                userRepository.Setup(repository => repository.AddAsync(It.IsAny<User>(), CancellationToken.None)).Verifiable();
                 domainEvent.UnitOfWork!.CommitAsync();
             });
 
@@ -158,7 +160,7 @@ public class DomainEventBusTest
 
         Assert.ThrowsException<NotImplementedException>(() =>
         {
-            services.AddDomainEventBus(new Assembly[1] { typeof(Users).Assembly });
+            services.AddDomainEventBus(new Assembly[1] { typeof(User).Assembly });
         });
     }
 
@@ -176,9 +178,9 @@ public class DomainEventBusTest
         var integrationEventBus = new Mock<IIntegrationEventBus>();
         services.AddScoped(_ => integrationEventBus.Object);
 
-        Mock<IRepository<Users>> repository = new();
+        Mock<IRepository<User>> repository = new();
         services.AddScoped(_ => repository.Object);
-        services.AddDomainEventBus(new[] { typeof(Users).Assembly, typeof(DomainEventBusTest).Assembly });
+        services.AddDomainEventBus(new[] { typeof(User).Assembly, typeof(DomainEventBusTest).Assembly });
     }
 
     [TestMethod]
@@ -264,27 +266,27 @@ public class DomainEventBusTest
         var createTime = DateTime.UtcNow;
 
         var domainCommand = new DomainCommand();
-        Assert.IsTrue(domainCommand.Id != default);
-        Assert.IsTrue(domainCommand.CreationTime != default && domainCommand.CreationTime >= createTime);
+        Assert.IsTrue(domainCommand.GetEventId() != default);
+        Assert.IsTrue(domainCommand.GetCreationTime() != default && domainCommand.GetCreationTime() >= createTime);
 
         domainCommand = new DomainCommand(id, createTime);
-        Assert.IsTrue(domainCommand.Id == id);
-        Assert.IsTrue(domainCommand.CreationTime == createTime);
+        Assert.IsTrue(domainCommand.GetEventId() == id);
+        Assert.IsTrue(domainCommand.GetCreationTime() == createTime);
 
         var domainEvent = new DomainEvent();
-        Assert.IsTrue(domainEvent.Id != default);
-        Assert.IsTrue(domainEvent.CreationTime != default && domainEvent.CreationTime >= createTime);
+        Assert.IsTrue(domainEvent.GetEventId() != default);
+        Assert.IsTrue(domainEvent.GetCreationTime() != default && domainEvent.GetCreationTime() >= createTime);
 
         domainEvent = new DomainEvent(id, createTime);
-        Assert.IsTrue(domainEvent.Id == id);
-        Assert.IsTrue(domainEvent.CreationTime == createTime);
+        Assert.IsTrue(domainEvent.GetEventId() == id);
+        Assert.IsTrue(domainEvent.GetCreationTime() == createTime);
 
         var domainQuery = new ProductItemDomainQuery()
         {
             ProductId = Guid.NewGuid().ToString()
         };
-        Assert.IsTrue(domainQuery.Id != default);
-        Assert.IsTrue(domainQuery.CreationTime != default && domainQuery.CreationTime >= createTime);
+        Assert.IsTrue(domainQuery.GetEventId() != default);
+        Assert.IsTrue(domainQuery.GetCreationTime() != default && domainQuery.GetCreationTime() >= createTime);
     }
 
     [TestMethod]

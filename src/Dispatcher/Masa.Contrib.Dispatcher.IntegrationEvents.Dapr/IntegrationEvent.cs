@@ -3,13 +3,10 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
-public abstract record IntegrationEvent(Guid Id, DateTime CreationTime) : IIntegrationEvent
+public abstract record IntegrationEvent : IIntegrationEvent
 {
-    [JsonIgnore]
-    public Guid Id { get; } = Id;
-
-    [JsonIgnore]
-    public DateTime CreationTime { get; } = CreationTime;
+    private Guid _eventId;
+    private DateTime _creationTime;
 
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
@@ -18,4 +15,18 @@ public abstract record IntegrationEvent(Guid Id, DateTime CreationTime) : IInteg
     public abstract string Topic { get; set; }
 
     public IntegrationEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+
+    protected IntegrationEvent(Guid eventId, DateTime creationTime)
+    {
+        _eventId = eventId;
+        _creationTime = creationTime;
+    }
+
+    public Guid GetEventId() => _eventId;
+
+    public void SetEventId(Guid eventId) => _eventId = eventId;
+
+    public DateTime GetCreationTime() => _creationTime;
+
+    public void SetCreationTime(DateTime creationTime) => _creationTime = creationTime;
 }

@@ -374,23 +374,4 @@ public class TestParserProvider
         Assert.IsTrue(environmentVariablesParserProvider.Name == "EnvironmentVariables");
         Assert.IsTrue(handler);
     }
-
-    [TestMethod]
-    public async Task TestEnvironmentVariablesParser2Async()
-    {
-        var services = new ServiceCollection();
-        Mock<IEnvironmentSetter> environmentSetter = new();
-        string environmentKey = "env";
-        System.Environment.SetEnvironmentVariable(environmentKey, "");
-        environmentSetter.Setup(setter => setter.SetEnvironment(It.IsAny<string>())).Verifiable();
-        services.AddScoped(_ => environmentSetter.Object);
-        services.Configure<IsolationOptions>(option =>
-        {
-            option.EnvironmentKey = environmentKey;
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var environmentVariablesParserProvider = new EnvironmentVariablesParserProvider();
-        var handler = await environmentVariablesParserProvider.ResolveAsync(serviceProvider, environmentKey, _ => { });
-        Assert.IsFalse(handler);
-    }
 }

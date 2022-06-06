@@ -8,7 +8,7 @@ Example:
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
 Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer // Use SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 ```
 
 1. Add IIntegrationEventBus
@@ -19,7 +19,6 @@ builder.Services
     {
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
                .UseEventLog<CatalogDbContext>();
-        )
     });
 ```
 

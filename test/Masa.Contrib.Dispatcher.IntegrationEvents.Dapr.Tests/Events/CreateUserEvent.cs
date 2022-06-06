@@ -21,4 +21,12 @@ public record CreateUserEvent : IEvent
     {
         this.Name = name;
     }
+
+    public Guid GetEventId() => Id;
+
+    public void SetEventId(Guid eventId) => Id = eventId;
+
+    public DateTime GetCreationTime() => CreationTime;
+
+    public void SetCreationTime(DateTime creationTime) => CreationTime = creationTime;
 }

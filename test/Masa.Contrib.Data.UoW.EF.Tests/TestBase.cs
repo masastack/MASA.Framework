@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EF.Tests;
 
-public class TestBase : IDisposable
+public class TestBase 
 {
     protected readonly string _connectionString = "DataSource=:memory:";
     protected readonly SqliteConnection Connection;

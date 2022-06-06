@@ -7,25 +7,25 @@
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EF
 Install-Package Masa.Contrib.Isolation.MultiTenant
-Install-Package Masa.Utils.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```
 
-1. 配置appsettings.json
+1. 配置`appsettings.json`
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
-    "Isolations": [
-      {
-        "TenantId": "00000000-0000-0000-0000-000000000002",
-        "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
-      },
-      {
-        "TenantId": "00000000-0000-0000-0000-000000000003",
-        "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
-      }
-    ]
-  }
+    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
+  },
+  "IsolationConnectionStrings": [
+    {
+      "TenantId": "00000000-0000-0000-0000-000000000002",
+      "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+    },
+    {
+      "TenantId": "00000000-0000-0000-0000-000000000003",
+      "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+    }
+  ]
 }
 ```
 

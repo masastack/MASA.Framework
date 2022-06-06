@@ -4,139 +4,136 @@
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
 [TestClass]
-public class TestClient
+public class TestClient : BaseTest
 {
-    private AliyunStorageOptions _aLiYunStorageOptions;
+    private CustomizeClient _client;
 
     [TestInitialize]
     public void Initialize()
     {
-        _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", "RegionId", "RoleArn", "RoleSessionName");
+        Mock<ICredentialProvider> credentialProvider = new();
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
+        _client = new CustomizeClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
     }
 
     [TestMethod]
     public void TestGetTokenAndNullLoggerReturnFalse()
     {
-        Mock<IMemoryCache> memoryCache = new();
-        var client = new Client(_aLiYunStorageOptions, memoryCache.Object, null);
+        Mock<ICredentialProvider> credentialProvider = new();
+        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, null);
         Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
     [TestMethod]
     public void TestGetTokenAndNotNullLoggerReturnFalse()
     {
-        Mock<IMemoryCache> memoryCache = new();
-        var client = new Client(_aLiYunStorageOptions, memoryCache.Object, NullLogger<Client>.Instance);
+        Mock<ICredentialProvider> credentialProvider = new();
+        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
         Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
     [TestMethod]
     public void TestGetSecurityTokenByCacheReturnSuccess()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+        Mock<ICredentialProvider> credentialProvider = new();
         TemporaryCredentialsResponse temporaryCredentials = new(
             "accessKeyId",
             "secretAccessKey",
             "sessionToken",
             DateTime.UtcNow.AddHours(-1));
-        memoryCache.Set(_aLiYunStorageOptions.TemporaryCredentialsCacheKey, temporaryCredentials);
-        var client = new Client(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
+        credentialProvider.Setup(provider => provider.GetSecurityToken()).Returns(temporaryCredentials);
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(false);
+        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
         var responseBase = client.GetSecurityToken();
         Assert.IsTrue(responseBase == temporaryCredentials);
     }
 
     [TestMethod]
-    public void TestGetSecurityTokenByCacheNotFoundReturnSuccess()
+    public void TestEmptyRoleArnGetSecurityTokenReturnThrowArgumentException()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
-        var securityToken = client.GetSecurityToken();
-
-        Assert.IsTrue(securityToken.Expiration == client.TemporaryCredentials.Expiration &&
-            securityToken.AccessKeyId == client.TemporaryCredentials.AccessKeyId &&
-            securityToken.AccessKeySecret == client.TemporaryCredentials.AccessKeySecret &&
-            securityToken.SessionToken == client.TemporaryCredentials.SessionToken);
-        Assert.IsNotNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
+        Mock<ICredentialProvider> credentialProvider = new();
+        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
+        _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
+        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
+        Assert.ThrowsException<ArgumentException>(() => client.GetSecurityToken());
     }
 
     [TestMethod]
-    public void TestGetSecurityTokenByCacheNotFoundAndGetTemporaryCredentialsIsNullReturnError()
+    public async Task TestGetObjectAsyncReturnGetObjecVerifytOnce()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomNullClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
-        Assert.ThrowsException<Exception>(() => client.GetSecurityToken(), client.Message);
-        Assert.IsNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
+        await _client.GetObjectAsync("bucketName", "objectName", stream =>
+        {
+            Assert.IsTrue(stream == null);
+        });
+        _client.Oss!.Verify(oss => oss.GetObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 
     [TestMethod]
-    public void TestSetTemporaryCredentialsAndExpirationLessThan10SecondsReturnSkip()
+    public async Task TestGetObjectAsyncByOffsetReturnGetObjecVerifytOnce()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
-        client.TestExpirationTimeLessThan10Second(5);
-        Assert.IsNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
-    }
-
-    [DataTestMethod]
-    [DataRow(15)]
-    [DataRow(20)]
-    public void TestSetTemporaryCredentialsAndExpirationGreatherThanOrEqual10SecondsReturnSkip(int durationSeconds)
-    {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
-        client.TestExpirationTimeLessThan10Second(durationSeconds);
-        var res = memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey);
-        Assert.IsNotNull(res);
+        await _client.GetObjectAsync("bucketName", "objectName", 1, 2, stream =>
+        {
+            Assert.IsTrue(stream == null);
+        });
+        _client.Oss!.Verify(oss => oss.GetObject(It.IsAny<GetObjectRequest>()), Times.Once);
     }
 
     [TestMethod]
-    public void TestGetTemporaryCredentialsReturnNull()
+    public async Task TestGetObjectAsyncByLengthLessThan0AndNotEqualMinus1ReturnThrowArgumentOutOfRangeException()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomClient(_aLiYunStorageOptions, memoryCache, NullLogger<Client>.Instance);
-        Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
-            "cn-shanghai",
-            "accessKeyId",
-            "accessKeySecret",
-            "roleArn",
-            "roleSessionName",
-            String.Empty,
-            3600));
+        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async ()
+            => await _client.GetObjectAsync("bucketName", "objectName", 1, -2, null!));
     }
 
     [TestMethod]
-    public void TestGetTemporaryCredentialsAndNullLoggerReturnThrowException()
+    public async Task TestPutObjectAsyncReturnPutObjectVerifytOnce()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomClient(_aLiYunStorageOptions, memoryCache, null);
-        Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
-            "cn-shanghai",
-            "accessKeyId",
-            "accessKeySecret",
-            "roleArn",
-            "roleSessionName",
-            "policy",
-            3600));
+        string str = "JIm";
+        await _client.PutObjectAsync("bucketName", "objectName", new MemoryStream(Encoding.Default.GetBytes(str)));
+        _client.Oss!.Verify(oss => oss.PutObject(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(), It.IsAny<ObjectMetadata>()),
+            Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestPutObjectAsyncReturnResumableUploadObjectVerifytOnce()
+    {
+        _aLiYunStorageOptions.BigObjectContentLength = 2;
+        string str = "JIm";
+        await _client.PutObjectAsync("bucketName", "objectName", new MemoryStream(Encoding.Default.GetBytes(str)));
+        _client.Oss!.Verify(oss => oss.ResumableUploadObject(It.IsAny<UploadObjectRequest>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestObjectExistsAsyncReturnNotFound()
+    {
+        Assert.IsFalse(await _client.ObjectExistsAsync("bucketName", "1.jpg"));
+    }
+
+    [TestMethod]
+    public async Task TestObjectExistsAsyncReturnExist()
+    {
+        Assert.IsTrue(await _client.ObjectExistsAsync("bucketName", "2.jpg"));
+    }
+
+    [TestMethod]
+    public async Task TestDeleteObjectAsyncReturnVerifytNever()
+    {
+        await _client.DeleteObjectAsync("bucketName", "1.jpg");
+        _client.Oss!.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [TestMethod]
+    public async Task TestDeleteObjectAsyncReturnVerifytOnce()
+    {
+        await _client.DeleteObjectAsync("bucketName", "2.jpg");
+        _client.Oss!.Verify(oss => oss.DoesObjectExist(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _client.Oss!.Verify(oss => oss.DeleteObject(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestDeleteMultiObjectAsyncReturnVerifytOnce()
+    {
+        await _client.DeleteObjectAsync("bucketName", new[] { "2.jpg", "1.jpg" });
+        _client.Oss!.Verify(oss => oss.DeleteObjects(It.IsAny<DeleteObjectsRequest>()), Times.Once);
     }
 }

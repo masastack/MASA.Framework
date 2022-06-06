@@ -88,7 +88,7 @@ public class BaseRepositoryTest : TestBase
     {
         _dispatcherOptions.Setup(option => option.Assemblies).Returns(_assemblies).Verifiable();
         _services.AddScoped(typeof(IUnitOfWork), _ => _uoW.Object);
-        _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
+        _services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
         _dispatcherOptions.Object.UseRepository<CustomDbContext>().UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();
