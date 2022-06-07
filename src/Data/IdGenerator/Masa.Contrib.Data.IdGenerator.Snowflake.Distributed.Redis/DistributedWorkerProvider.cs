@@ -76,7 +76,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
             DistributedCacheClient.Publish<long>(_channel, options =>
             {
-                options.Key = _uniquelyIdentifies;
+                options.Key = _uniquelyIdentifies!;
                 options.Value = _workerId.Value;
             });
             return Task.FromResult(_workerId.Value);
