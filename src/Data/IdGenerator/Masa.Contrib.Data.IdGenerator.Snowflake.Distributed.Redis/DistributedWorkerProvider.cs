@@ -7,7 +7,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 {
     private readonly string _channel = "snowflake.workerid";
     private static long? _workerId;
-    private readonly uint _timestampType;
+    private readonly TimestampType _timestampType;
     private readonly long _idleTimeOut;
     private readonly long _maxWorkerId;
     private readonly long _workerIdMinInterval;

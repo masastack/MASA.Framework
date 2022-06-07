@@ -11,9 +11,9 @@ internal static class SnowflakeExtensions
     /// <param name="dateTimeOffset"></param>
     /// <param name="timestampType">Timestamp type: milliseconds: 1, seconds: 2</param>
     /// <returns></returns>
-    public static long GetTimestamp(this DateTimeOffset dateTimeOffset, uint timestampType)
+    public static long GetTimestamp(this DateTimeOffset dateTimeOffset, TimestampType timestampType)
     {
-        if (timestampType == 1)
+        if (timestampType == TimestampType.Milliseconds)
             return dateTimeOffset.ToUnixTimeMilliseconds();
 
         return dateTimeOffset.ToUnixTimeSeconds();

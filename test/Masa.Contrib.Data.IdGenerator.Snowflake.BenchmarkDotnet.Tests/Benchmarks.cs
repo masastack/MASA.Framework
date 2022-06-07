@@ -40,7 +40,7 @@ public class SecondBenchmarks
     public void GlobalSetup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddSnowflake(options => options.TimestampType = 2);
+        services.AddSnowflake(options => options.TimestampType = TimestampType.Seconds);
         var serviceProvider = services.BuildServiceProvider();
         _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         _idGenerator.Create();

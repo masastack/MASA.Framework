@@ -40,9 +40,10 @@ Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，�
       > 启用时钟锁后，生成的id不再与当前时间有绝对关系，生成的id以项目启动时的时间作为初始时间，项目运行后时钟回拨不会影响id的生成
     * WorkerId的值默认从环境变量`WORKER_ID`中获取，如未设置则会返回0
       > 多机部署时请确保每个服务的WorkerId是唯一的
-    * TimestampType: 时间戳类型，默认: 1 (毫秒: 1, 秒: 2)
-      > TimestampType为1时，SequenceBits + WorkerIdBits 最大长度为22
-      > TimestampType为2时，SequenceBits + WorkerIdBits 最大长度为31
+    * TimestampType: 时间戳类型，默认: 1 (毫秒: Milliseconds, 秒: Seconds)
+      > TimestampType为Milliseconds时，SequenceBits + WorkerIdBits 最大长度为22
+      >
+      > TimestampType为Seconds时，SequenceBits + WorkerIdBits 最大长度为31
     * MaxCallBackTime: 最大回拨时间，默认: 3000 (毫秒)
       > 当不启用时钟锁时，如果出现时间回拨小于MaxCallBackTime，则会等待时间大于最后一次生成id的时间后，再次生成id，如果大于最大回拨时间，则会抛出异常
 

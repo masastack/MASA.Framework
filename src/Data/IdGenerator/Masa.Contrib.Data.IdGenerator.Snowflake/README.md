@@ -40,9 +40,10 @@ Masa.Contrib.Data.IdGenerator.Snowflake is an id constructor based on snowflake 
       > After enabling the clock lock, the generated id no longer has an absolute relationship with the current time. The generated id takes the time when the project was started as the initial time, and the clock callback after the project runs will not affect the generation of the id
     * The value of WorkerId is obtained from the environment variable `WORKER_ID` by default, if not set, it will return 0
       > When deploying on multiple machines, please ensure that the WorkerId of each service is unique
-    * TimestampType: timestamp type, default: 1 (milliseconds: 1, seconds: 2)
-      > When TimestampType is 1, the maximum length of SequenceBits + WorkerIdBits is 22
-      > When TimestampType is 2, the maximum length of SequenceBits + WorkerIdBits is 31
+    * TimestampType: Timestamp type, default: 1 (milliseconds: Milliseconds, seconds: Seconds)
+      > When TimestampType is Milliseconds, the maximum length of SequenceBits + WorkerIdBits is 22
+      >
+      > When TimestampType is Seconds, the maximum length of SequenceBits + WorkerIdBits is 31
 * When distributed deployment
     * SupportDistributed: supports distributed deployment, default: false (assigned by the class library provided by WorkerId)
     * HeartbeatInterval: Heartbeat interval, default: 3000ms

@@ -59,7 +59,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentOutOfRangeException(
                 $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
 
-        var maxLength = generatorOptions.TimestampType == 1 ? 22 : 31;
+        var maxLength = generatorOptions.TimestampType == TimestampType.Milliseconds ? 22 : 31;
         if (generatorOptions.SequenceBits + generatorOptions.WorkerIdBits > maxLength)
             throw new ArgumentOutOfRangeException(
                 $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {maxLength}");

@@ -12,8 +12,8 @@ public class SnowflakeIdGenerator : BaseIdGenerator, ISnowflakeGenerator
 
     protected override (bool Support, long LastTimestamp) TimeCallBack(long currentTimestamp)
     {
-        if ((TimestampType == 1 && LastTimestamp - currentTimestamp <= MaxCallBackTime) ||
-            (TimestampType == 2 && LastTimestamp - currentTimestamp <= Math.Floor(MaxCallBackTime / 1000m)))
+        if ((TimestampType == TimestampType.Milliseconds && LastTimestamp - currentTimestamp <= MaxCallBackTime) ||
+            (TimestampType == TimestampType.Seconds && LastTimestamp - currentTimestamp <= Math.Floor(MaxCallBackTime / 1000m)))
             return (true, TilNextMillis(LastTimestamp));
 
         return (false, 0);

@@ -21,11 +21,7 @@ public class IdGeneratorOptions
     /// </summary>
     public int WorkerIdBits { get; set; } = 10;
 
-    /// <summary>
-    /// milliseconds: 1
-    /// seconds: 2
-    /// </summary>
-    public uint TimestampType { get; set; } = 1;
+    public TimestampType TimestampType { get; set; } = TimestampType.Milliseconds;
 
     /// <summary>
     /// When the machine clock is enabled, the timestamp is meaningless

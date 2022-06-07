@@ -16,7 +16,7 @@ public abstract class BaseIdGenerator
     /// milliseconds: 1
     /// seconds: 2
     /// </summary>
-    protected uint TimestampType { get; }
+    protected TimestampType TimestampType { get; }
 
     protected long MaxCallBackTime { get; }
 
