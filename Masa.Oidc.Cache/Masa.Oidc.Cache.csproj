@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Cache\Masa.BuildingBlocks.Oidc.Cache.csproj" />
+  </ItemGroup>
+
 </Project>

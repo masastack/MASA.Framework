@@ -9,6 +9,11 @@ public class IdentityResourceRepository : Repository<OidcDbContext, IdentityReso
     {
     }
 
+    public override async ValueTask<IdentityResource> AddAsync(IdentityResource entity, CancellationToken cancellationToken = default)
+    {
+        return await base.AddAsync(entity, cancellationToken);
+    }
+
     public async Task<IdentityResource?> GetDetailAsync(int id)
     {
         var idrs = await Context.Set<IdentityResource>()

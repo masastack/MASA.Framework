@@ -3,5 +3,7 @@
 
 global using Masa.BuildingBlocks.Oidc.Storage.Stores;
 global using Masa.BuildingBlocks.Oidc.Storage.Models;
-global using Masa.Oidc.Cache.Storage.Model;
+global using Masa.Oidc.Cache.Models;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
+global using Microsoft.Extensions.DependencyInjection;
+global using Masa.Oidc.Cache.Storage.Stores;
