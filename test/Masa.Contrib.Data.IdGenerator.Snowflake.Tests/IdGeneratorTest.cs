@@ -6,18 +6,18 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 [TestClass]
 public class IdGeneratorTest
 {
-    private readonly string _currentWorkerKey;
-    private readonly string _inUseWorkerKey;
-    private readonly string _logOutWorkerKey;
-    private readonly string _getWorkerIdKey;
-
-    public IdGeneratorTest()
-    {
-        _currentWorkerKey = "snowflake.current.workerid";
-        _inUseWorkerKey = "snowflake.inuse.workerid";
-        _logOutWorkerKey = "snowflake.logout.workerid";
-        _getWorkerIdKey = "snowflake.get.workerid";
-    }
+    // private readonly string _currentWorkerKey;
+    // private readonly string _inUseWorkerKey;
+    // private readonly string _logOutWorkerKey;
+    // private readonly string _getWorkerIdKey;
+    //
+    // public IdGeneratorTest()
+    // {
+    //     _currentWorkerKey = "snowflake.current.workerid";
+    //     _inUseWorkerKey = "snowflake.inuse.workerid";
+    //     _logOutWorkerKey = "snowflake.logout.workerid";
+    //     _getWorkerIdKey = "snowflake.get.workerid";
+    // }
 
     [TestMethod]
     public void TestEnableMachineClock()
