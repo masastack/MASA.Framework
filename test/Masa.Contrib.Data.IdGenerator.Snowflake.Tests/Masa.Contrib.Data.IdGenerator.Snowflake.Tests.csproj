@@ -1,9 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -12,12 +11,11 @@
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.MappingExtensions\Masa.BuildingBlocks.Data.MappingExtensions.csproj" />
-    <ProjectReference Include="..\..\src\Data\Mapping\Masa.Contrib.Data.Mapping.Mapster\Masa.Contrib.Data.Mapping.Mapster.csproj" />
+    <ProjectReference Include="..\..\src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.csproj" />
+    <ProjectReference Include="..\..\src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.Snowflake\Masa.Contrib.Data.IdGenerator.Snowflake.csproj" />
   </ItemGroup>
 
 </Project>
