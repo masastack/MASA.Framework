@@ -3,10 +3,10 @@
 
 namespace Masa.Contrib.BasicAbility.Auth;
 
-internal class Constants
+public class EnvironmentProvider : IEnvironmentProvider
 {
-    public const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.auth";
-
-    public const string ENVIRONMENT_KEY = "env_key";
+    public string GetEnvironment()
+    {
+        return "development";
+    }
 }
-
