@@ -16,7 +16,6 @@ public class ClientStore : IClientStore
     {
         ArgumentNullException.ThrowIfNull(clientId);
 
-        var clients = await _clientCache.GetListAsync();
-        return clients.FirstOrDefault(client => client.ClientId == clientId);
+        return await _clientCache.GetAsync(clientId);
     }
 }

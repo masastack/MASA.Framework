@@ -20,8 +20,8 @@ public class ResourceStore : IResourceStore
     {
         ArgumentNullException.ThrowIfNull(apiResourceNames);
 
-        var apiResources = await _apiResourceCache.GetListAsync();
-        return apiResources.Where(apiResource => apiResourceNames.Contains(apiResource.Name));
+        var apiResources = await _apiResourceCache.GetListAsync(apiResourceNames);
+        return apiResources;
     }
 
     public async Task<IEnumerable<ApiResourceModel>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
@@ -36,16 +36,16 @@ public class ResourceStore : IResourceStore
     {
         ArgumentNullException.ThrowIfNull(scopeNames);
 
-        var apiScopes = await _apiScopeCache.GetListAsync();
-        return apiScopes.Where(apiScope => scopeNames.Contains(apiScope.Name));
+        var apiScopes = await _apiScopeCache.GetListAsync(scopeNames);
+        return apiScopes;
     }
 
     public async Task<IEnumerable<IdentityResourceModel>> FindIdentityResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
     {
         ArgumentNullException.ThrowIfNull(scopeNames);
 
-        var identityResources = await _identityResourceCache.GetListAsync();
-        return identityResources.Where(identityResource => scopeNames.Contains(identityResource.Name));
+        var identityResources = await _identityResourceCache.GetListAsync(scopeNames);
+        return identityResources;
     }
 
     public async Task<ResourcesModel> GetAllResourcesAsync()

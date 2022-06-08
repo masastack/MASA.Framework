@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Oidc.Models.Models;
+
 namespace Masa.Oidc.Cache.Caches;
 
 public class ApiResourceCache : IApiResourceCache
@@ -12,15 +14,22 @@ public class ApiResourceCache : IApiResourceCache
         _memoryCacheClient = memoryCacheClient;
     }
 
+    public async Task<List<ApiResourceModel>> GetListAsync(IEnumerable<string> names)
+    {
+        var keys = names.Select(name => $"{CacheKeyConstants.API_RESOURCE_KEY}_{name}");
+        var apiResources = await _memoryCacheClient.GetListAsync<ApiResourceModel>(keys.ToArray()) ?? new List<ApiResourceModel>();
+        return apiResources.Where(i => i is not null).ToList()!;
+    }
+
     public async Task<List<ApiResourceModel>> GetListAsync()
     {
-        var ApiResources = await _memoryCacheClient.GetAsync<List<ApiResourceModel>>(CacheKeyConstants.IDENTITY_RESOURCE_KEY) ?? new();
-        return ApiResources;
+        var apiResources = await _memoryCacheClient.GetAsync<List<ApiResourceModel>>(CacheKeyConstants.API_RESOURCE_KEY) ?? new();
+        return apiResources;
     }
 
     public async Task AddOrUpdateAsync(ApiResource apiResource)
     {
-        string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{apiResource.Id}";
+        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Id}";
         await _memoryCacheClient.SetAsync(key, new ApiResourceModel(apiResource.Name, apiResource.DisplayName, apiResource.UserClaims.Select(uc => uc.UserClaim.Name).ToList())
         {
             Scopes = apiResource.ApiScopes.Select(a => a.ApiScope.Name).ToList(),
@@ -48,7 +57,7 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
-        string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{apiResource.Id}";
+        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Id}";
         await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
     }
 }

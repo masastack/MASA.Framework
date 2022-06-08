@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Oidc.Models.Enums;
+using Masa.BuildingBlocks.Oidc.Models.Models;
+
 namespace Masa.Oidc.Cache.Caches;
 
 public class ClientCache : IClientCache
@@ -10,6 +13,12 @@ public class ClientCache : IClientCache
     public ClientCache(IMemoryCacheClient memoryCacheClient)
     {
         _memoryCacheClient = memoryCacheClient;
+    }
+
+    public async Task<ClientModel?> GetAsync(string id)
+    {
+        string key = $"{CacheKeyConstants.CLIENT_KEY}_{id}";
+        return await _memoryCacheClient.GetAsync<ClientModel>(key);
     }
 
     public async Task<List<ClientModel>> GetListAsync()
