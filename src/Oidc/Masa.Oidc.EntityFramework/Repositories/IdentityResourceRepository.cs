@@ -3,24 +3,57 @@
 
 namespace Masa.Oidc.EntityFramework.Repositories;
 
-public class IdentityResourceRepository : Repository<OidcDbContext, IdentityResource, int>, IIdentityResourceRepository
+public class IdentityResourceRepository : IIdentityResourceRepository
 {
-    public IdentityResourceRepository(OidcDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+    IIdentityResourceCache _cache;   
+    IRepository<IdentityResource> _repository;
+    OidcDbContext _context;
+
+    public IdentityResourceRepository(IIdentityResourceCache cache, IRepository<IdentityResource> repository, OidcDbContext context)
     {
+        _cache = cache;
+        _repository = repository;
+        _context = context;
     }
 
-    public override async ValueTask<IdentityResource> AddAsync(IdentityResource entity, CancellationToken cancellationToken = default)
+    public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(Expression<Func<IdentityResource, bool>> condition, PaginatedOptions options)
     {
-        return await base.AddAsync(entity, cancellationToken);
+        return await _repository.GetPaginatedListAsync(condition, options);
     }
 
     public async Task<IdentityResource?> GetDetailAsync(int id)
     {
-        var idrs = await Context.Set<IdentityResource>()
+        var identityResources = await _context.Set<IdentityResource>()
                                 .Include(idrs => idrs.UserClaims)
                                 .Include(idrs => idrs.Properties)
                                 .FirstOrDefaultAsync(idrs => idrs.Id == id);
 
-        return idrs;
+        return identityResources;
+    }
+
+    public async Task<List<IdentityResource>> GetListAsync()
+    {
+        var identityResources = await _repository.GetListAsync();
+        return identityResources.ToList();
+    }
+
+    public async ValueTask<IdentityResource> AddAsync(IdentityResource identityResource)
+    {
+        var newIdentityResource = await _repository.AddAsync(identityResource);
+        await _cache.AddOrUpdateAsync(newIdentityResource);
+        return identityResource;
+    }
+
+    public async Task<IdentityResource> UpdateAsync(IdentityResource identityResource)
+    {
+        var newIdentityResource = await _repository.UpdateAsync(identityResource);
+        await _cache.AddOrUpdateAsync(newIdentityResource);
+        return identityResource;
+    }
+
+    public async Task RemoveAsync(IdentityResource identityResource)
+    {
+        await _repository.RemoveAsync(identityResource);
+        await _cache.RemoveAsync(identityResource);
     }
 }

@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Masa.Oidc.Cache\Masa.Oidc.Cache.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Cache\Masa.BuildingBlocks.Oidc.Cache.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc\Masa.BuildingBlocks.Oidc.Storage.csproj" />
   </ItemGroup>
 

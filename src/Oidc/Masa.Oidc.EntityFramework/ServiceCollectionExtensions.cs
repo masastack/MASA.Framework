@@ -11,9 +11,4 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
-    public static IDispatcherOptions UseOidcRepository(this IDispatcherOptions options)
-    {
-        return options.UseRepository<OidcDbContext>();
-    }
 }

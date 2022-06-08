@@ -9,6 +9,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<IClientStore, ClientStore>();
         services.AddSingleton<IResourceStore, ResourceStore>();
+        services.AddSingleton<IPersistedGrantStore, PersistedGrantStore>();
+        services.AddSingleton<IDeviceFlowStore, DeviceFlowStore>();
 
         return services;
     }

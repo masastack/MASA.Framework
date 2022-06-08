@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Masa.Oidc.Cache\Masa.Oidc.Cache.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Ddd\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Cache\Masa.BuildingBlocks.Oidc.Cache.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Domain\Masa.BuildingBlocks.Oidc.Domain.csproj" />
-    <ProjectReference Include="..\..\Ddd\Masa.Contrib.Ddd.Domain.Repository.EF\Masa.Contrib.Ddd.Domain.Repository.EF.csproj" />
   </ItemGroup>
 
 </Project>

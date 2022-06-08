@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddOidcCache(this IServiceCollection services)
     {
-        services.AddSingleton<IClientCache,ClientCache>();
+        services.AddSingleton<IClientCache, ClientCache>();
         services.AddSingleton<IApiScopeCache, ApiScopeCache>();
         services.AddSingleton<IApiResourceCache, ApiResourceCache>();
         services.AddSingleton<IIdentityResourceCache, IdentityResourceCache>();
