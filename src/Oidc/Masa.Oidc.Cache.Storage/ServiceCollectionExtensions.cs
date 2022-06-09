@@ -5,8 +5,9 @@ namespace Masa.Oidc.Cache.Storage;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOidcCache(this IServiceCollection services)
+    public static IServiceCollection AddOidcCacheStorage(this IServiceCollection services)
     {
+        services.AddOidcCache();
         services.AddSingleton<IClientStore, ClientStore>();
         services.AddSingleton<IResourceStore, ResourceStore>();
         services.AddSingleton<IPersistedGrantStore, PersistedGrantStore>();
