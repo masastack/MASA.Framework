@@ -1,3 +1,6 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Contrib.BasicAbility.Auth.Service;
 
 public class UserService : IUserService
@@ -31,6 +34,18 @@ public class UserService : IUserService
     {
         var requestUri = $"api/staff/getListByTeam";
         return await _callerProvider.GetAsync<object, List<StaffModel>>(requestUri, new { id = teamId }) ?? new();
+    }
+
+    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password)
+    {
+        var requestUri = $"api/user/validateByAccount";
+        return await _callerProvider.PostAsync<object, bool>(requestUri, new { account = account, password = password });
+    }
+
+    public async Task<UserModel> FindByAccountAsync(string account)
+    {
+        var requestUri = $"api/user/findByAccount";
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account = account }) ?? new();
     }
 }
 

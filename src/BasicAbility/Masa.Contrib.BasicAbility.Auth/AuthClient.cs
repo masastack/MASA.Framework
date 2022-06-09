@@ -10,6 +10,7 @@ public class AuthClient : IAuthClient
         UserService = new UserService(callerProvider);
         SubjectService = new SubjectService(callerProvider);
         TeamService = new TeamService(callerProvider);
+        PermissionService = new PermissionService(callerProvider);
     }
 
     public IUserService UserService { get; }
@@ -17,5 +18,7 @@ public class AuthClient : IAuthClient
     public ISubjectService SubjectService { get; }
 
     public ITeamService TeamService { get; }
+
+    public IPermissionService PermissionService { get; }
 }
 
