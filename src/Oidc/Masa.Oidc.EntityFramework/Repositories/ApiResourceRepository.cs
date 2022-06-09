@@ -6,19 +6,28 @@ namespace Masa.Oidc.EntityFramework.Repositories;
 public class ApiResourceRepository : IApiResourceRepository
 {
     IApiResourceCache _cache;
-    IRepository<ApiResource> _repository;
     OidcDbContext _context;
 
-    public ApiResourceRepository(IApiResourceCache cache, IRepository<ApiResource> repository, OidcDbContext context)
+    public ApiResourceRepository(IApiResourceCache cache, OidcDbContext context)
     {
         _cache = cache;
-        _repository = repository;
         _context = context;
     }
 
-    public async Task<PaginatedList<ApiResource>> GetPaginatedListAsync(Expression<Func<ApiResource, bool>> condition, PaginatedOptions options)
+    public async Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize)
     {
-        return await _repository.GetPaginatedListAsync(condition, options);
+        var total = await _context.Set<ApiResource>().LongCountAsync();
+        var apiResources = await _context.Set<ApiResource>()
+                                               .OrderByDescending(s => s.ModificationTime)
+                                               .ThenByDescending(s => s.CreationTime)
+                                               .Skip((page - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+        return new PaginatedList<ApiResource>()
+        {
+            Total = total,
+            Result = apiResources
+        };
     }
 
     public async Task<ApiResource?> GetDetailAsync(int id)
@@ -34,32 +43,36 @@ public class ApiResourceRepository : IApiResourceRepository
 
     public async Task<List<ApiResource>> GetListAsync()
     {
-        var apiResources = await _repository.GetListAsync();
-        return apiResources.ToList();
+        var apiResources = await _context.Set<ApiResource>().ToListAsync();
+        return apiResources;
     }
 
     public async ValueTask<ApiResource> AddAsync(ApiResource apiResource)
     {
-        var newApiResource = await _repository.AddAsync(apiResource);
-        await _cache.AddOrUpdateAsync(newApiResource);
+        var newApiResource = await _context.AddAsync(apiResource);
+        await _cache.AddOrUpdateAsync(newApiResource.Entity);
+        await UpdateCacheAsync();
         return apiResource;
     }
 
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
-        var newApiResource = await _repository.UpdateAsync(apiResource);
-        await _cache.AddOrUpdateAsync(newApiResource);
+        var newApiResource = _context.Update(apiResource);
+        await _cache.AddOrUpdateAsync(newApiResource.Entity);
+        await UpdateCacheAsync();
         return apiResource;
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
-        await _repository.RemoveAsync(apiResource);
+        _context.Remove(apiResource);        
         await _cache.RemoveAsync(apiResource);
+        await UpdateCacheAsync();
     }
 
-    public Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize)
+    private async Task UpdateCacheAsync()
     {
-        throw new NotImplementedException();
+        var apiScopes = await GetListAsync();
+        await _cache.AddAllAsync(apiScopes);
     }
 }

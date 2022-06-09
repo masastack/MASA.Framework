@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Cache\Masa.BuildingBlocks.Oidc.Cache.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Oidc\Masa.BuildingBlocks.Oidc.Cache\Masa.BuildingBlocks.Oidc.Cache.csproj" />
   </ItemGroup>
 
 </Project>

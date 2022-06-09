@@ -50,7 +50,7 @@ public class ApiScopeRepository : IApiScopeRepository
     {
         var newApiScope = await _context.AddAsync(apiScope);
         await _cache.AddOrUpdateAsync(newApiScope.Entity);
-        await UpdateCache();
+        await UpdateCacheAsync();
         return apiScope;
     }
 
@@ -59,7 +59,7 @@ public class ApiScopeRepository : IApiScopeRepository
         var newApiScope = _context.Update(apiScope);
         await _context.SaveChangesAsync();
         await _cache.AddOrUpdateAsync(newApiScope.Entity);
-        await UpdateCache();
+        await UpdateCacheAsync();
         return apiScope;
     }
 
@@ -67,10 +67,10 @@ public class ApiScopeRepository : IApiScopeRepository
     {
         _context.Remove(apiScope);
         await _cache.RemoveAsync(apiScope);
-        await UpdateCache();
+        await UpdateCacheAsync();
     }
 
-    private async Task UpdateCache()
+    private async Task UpdateCacheAsync()
     {
         var apiScopes = await GetListAsync();
         await _cache.AddAllAsync(apiScopes);
