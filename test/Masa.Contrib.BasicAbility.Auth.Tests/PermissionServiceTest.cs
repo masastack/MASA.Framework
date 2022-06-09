@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.BasicAbility.Auth.Infrastructure;
-using Microsoft.Extensions.Caching.Memory;
-
 namespace Masa.Contrib.BasicAbility.Auth.Tests;
 
 [TestClass]
@@ -21,26 +18,6 @@ public class PermissionServiceTest : BaseAuthTest
         var result = await authClient.PermissionService.GetMenusAsync(appId, Guid.Parse(userId));
         callerProvider.Verify(provider => provider.GetAsync<List<MenuModel>>(It.IsAny<string>(), default), Times.Once);
         Assert.IsTrue(result is not null);
-    }
-
-    [TestMethod]
-    [DataRow("app-cache", "A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1")]
-    public async Task TestGetMenusFromCacheAsync(string appId, string userId)
-    {
-        var data = new List<MenuModel>() {
-            new MenuModel{
-                Name ="Menu",
-                Code = "Code",
-                Icon="Icon",
-                Id = Guid.NewGuid()
-            }
-        };
-        var memoryCache = Singleton<IServiceProvider>.Instance.GetRequiredService<IMemoryCache>();
-        memoryCache.Set($"app:{appId}::user:{userId.ToLower()}", data);
-        var callerProvider = new Mock<ICallerProvider>();
-        var authClient = new AuthClient(callerProvider.Object);
-        var result = await authClient.PermissionService.GetMenusAsync(appId, Guid.Parse(userId));
-        Assert.IsTrue(result.Any());
     }
 
     [TestMethod]
