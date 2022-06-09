@@ -14,15 +14,16 @@ public class IdentityResourceRepository : IIdentityResourceRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(int page, int pageSize)
+    public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<IdentityResource, bool>>? condition = null)
     {
-        var total = await _context.Set<IdentityResource>().LongCountAsync();
-        var identityResources = await _context.Set<IdentityResource>()
-                                               .OrderByDescending(s => s.ModificationTime)
-                                               .ThenByDescending(s => s.CreationTime)
-                                               .Skip((page - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
+        condition ??= userClaim => true;
+        var query = _context.Set<IdentityResource>().Where(condition);
+        var total = await query.LongCountAsync();
+        var identityResources = await query.OrderByDescending(s => s.ModificationTime)
+                                            .ThenByDescending(s => s.CreationTime)
+                                            .Skip((page - 1) * pageSize)
+                                            .Take(pageSize)
+                                            .ToListAsync();
         return new PaginatedList<IdentityResource>()
         {
             Total = total,
@@ -39,16 +40,28 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     {
         var identityResources = await _context.Set<IdentityResource>()
                                 .Include(idrs => idrs.UserClaims)
+                                .ThenInclude(uc => uc.UserClaim)
                                 .Include(idrs => idrs.Properties)
                                 .FirstOrDefaultAsync(idrs => idrs.Id == id);
 
         return identityResources;
     }
 
+    public async Task<IdentityResource?> FindAsync(Expression<Func<IdentityResource, bool>> predicate)
+    {
+        return await _context.Set<IdentityResource>().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<long> GetCountAsync(Expression<Func<IdentityResource, bool>> predicate)
+    {
+        return await _context.Set<IdentityResource>().Where(predicate).CountAsync();
+    }
+
     public async ValueTask<IdentityResource> AddAsync(IdentityResource identityResource)
     {
         var newIdentityResource = await _context.AddAsync(identityResource);
-        await _cache.AddOrUpdateAsync(newIdentityResource.Entity);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(identityResource.Id));
         await UpdateCacheAsync();
         return newIdentityResource.Entity;
     }
@@ -57,7 +70,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     {
         var newIdentityResource = _context.Update(identityResource);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(newIdentityResource.Entity);
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(identityResource.Id));
         await UpdateCacheAsync();
 
         return identityResource;
@@ -75,5 +88,27 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     {
         var identityResources = await GetListAsync();
         await _cache.AddAllAsync(identityResources);
+    }
+
+    public async Task AddStandardIdentityResourcesAsync()
+    {
+        var userClaims = await _context.Set<UserClaim>().ToListAsync();
+        foreach (var identityResource in StandardIdentityResources.IdentityResources)
+        {
+            var userClaimIds = userClaims.Where(uc => identityResource.UserClaims.Contains(uc.Name)).Select(uc => uc.Id);
+            var existData = await FindAsync(idrs => idrs.Name == identityResource.Name);
+            if (existData is not null)
+            {
+                existData.Update(identityResource.DisplayName, identityResource.Description ?? "", true, identityResource.Required, identityResource.Emphasize, identityResource.ShowInDiscoveryDocument, true);
+                existData.BindUserClaims(userClaimIds);
+                await UpdateAsync(existData);
+            }
+            else
+            {
+                var idrs = new IdentityResource(identityResource.Name, identityResource.DisplayName, identityResource.Description ?? "", true, identityResource.Required, identityResource.Enabled, identityResource.ShowInDiscoveryDocument, true);
+                idrs.BindUserClaims(userClaimIds);
+                await AddAsync(idrs);
+            }
+        }
     }
 }

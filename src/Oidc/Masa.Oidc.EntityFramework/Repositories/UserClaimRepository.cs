@@ -12,15 +12,16 @@ public class UserClaimRepository : IUserClaimRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<UserClaim>> GetPaginatedListAsync(int page, int pageSize)
+    public async Task<PaginatedList<UserClaim>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<UserClaim, bool>>? condition = null)
     {
-        var total = await _context.Set<UserClaim>().LongCountAsync();
-        var userClaims = await _context.Set<UserClaim>()
-                                               .OrderByDescending(s => s.ModificationTime)
-                                               .ThenByDescending(s => s.CreationTime)
-                                               .Skip((page - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
+        condition ??= userClaim => true;
+        var query = _context.Set<UserClaim>().Where(condition);
+        var total = await query.LongCountAsync();
+        var userClaims = await query.OrderByDescending(s => s.ModificationTime)
+                                    .ThenByDescending(s => s.CreationTime)
+                                    .Skip((page - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToListAsync();
         return new PaginatedList<UserClaim>()
         {
             Total = total,
@@ -42,9 +43,20 @@ public class UserClaimRepository : IUserClaimRepository
         return userClaims;
     }
 
+    public async Task<UserClaim?> FindAsync(Expression<Func<UserClaim, bool>> predicate)
+    {
+        return await _context.Set<UserClaim>().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<long> GetCountAsync(Expression<Func<UserClaim, bool>> predicate)
+    {
+        return await _context.Set<UserClaim>().Where(predicate).CountAsync();
+    }
+
     public async ValueTask<UserClaim> AddAsync(UserClaim userClaim)
     {
         var newUserClaim = await _context.AddAsync(userClaim);
+        await _context.SaveChangesAsync();
         return newUserClaim.Entity;
     }
 
@@ -59,5 +71,18 @@ public class UserClaimRepository : IUserClaimRepository
     {
         _context.Remove(userClaim);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task AddStandardUserClaimsAsync()
+    {
+        var userClaims = new List<UserClaim>();
+        foreach (var claim in StandardUserClaims.Claims)
+        {
+            var exist = await GetCountAsync(userClaim => userClaim.Name == claim.Key) > 0;
+            if (exist) continue;
+
+            userClaims.Add(new UserClaim(claim.Key, claim.Value));
+        }
+        await _context.AddRangeAsync(userClaims);
     }
 }

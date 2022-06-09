@@ -14,15 +14,16 @@ public class ClientRepository : IClientRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<Client>> GetPaginatedListAsync(int page, int pageSize)
+    public async Task<PaginatedList<Client>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<Client, bool>>? condition = null)
     {
-        var total = await _context.Set<Client>().LongCountAsync();
-        var clients = await _context.Set<Client>()
-                                               .OrderByDescending(s => s.ModificationTime)
-                                               .ThenByDescending(s => s.CreationTime)
-                                               .Skip((page - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
+        condition ??= userClaim => true;
+        var query = _context.Set<Client>().Where(condition);
+        var total = await query.LongCountAsync();
+        var clients = await query.OrderByDescending(s => s.ModificationTime)
+                                .ThenByDescending(s => s.CreationTime)
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
         return new PaginatedList<Client>()
         {
             Total = total,
@@ -52,11 +53,21 @@ public class ClientRepository : IClientRepository
         return clients;
     }
 
+    public async Task<Client?> FindAsync(Expression<Func<Client, bool>> predicate)
+    {
+        return await _context.Set<Client>().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<long> GetCountAsync(Expression<Func<Client, bool>> predicate)
+    {
+        return await _context.Set<Client>().Where(predicate).CountAsync();
+    }
+
     public async ValueTask<Client> AddAsync(Client client)
     {
         var newClient = await _context.AddAsync(client);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(newClient.Entity);
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(client.Id));
         return newClient.Entity;
     }
 
@@ -64,7 +75,7 @@ public class ClientRepository : IClientRepository
     {
         var newClient = _context.Update(client);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(newClient.Entity);
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(client.Id));
         return newClient.Entity;
     }
 

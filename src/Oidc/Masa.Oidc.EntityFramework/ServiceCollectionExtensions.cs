@@ -8,6 +8,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddOidcDbContext(this IServiceCollection services,Action<DbContextOptionsBuilder> optionsAction)
     {
         services.AddDbContext<OidcDbContext>(optionsAction);
+        services.AddScoped<IUserClaimRepository, UserClaimRepository>();
+        services.AddScoped<IIdentityResourceRepository, IdentityResourceRepository>();
+        services.AddScoped<IClientRepository, ClientRepository>();
+        services.AddScoped<IApiScopeRepository, ApiScopeRepository>();
+        services.AddScoped<IApiResourceRepository, ApiResourceRepository>();
 
         return services;
     }

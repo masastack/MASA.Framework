@@ -14,15 +14,16 @@ public class ApiResourceRepository : IApiResourceRepository
         _context = context;
     }
 
-    public async Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize)
+    public async Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<ApiResource, bool>>? condition = null)
     {
-        var total = await _context.Set<ApiResource>().LongCountAsync();
-        var apiResources = await _context.Set<ApiResource>()
-                                               .OrderByDescending(s => s.ModificationTime)
-                                               .ThenByDescending(s => s.CreationTime)
-                                               .Skip((page - 1) * pageSize)
-                                               .Take(pageSize)
-                                               .ToListAsync();
+        condition ??= userClaim => true;
+        var query = _context.Set<ApiResource>().Where(condition);
+        var total = await query.LongCountAsync();
+        var apiResources = await query.OrderByDescending(s => s.ModificationTime)
+                                    .ThenByDescending(s => s.CreationTime)
+                                    .Skip((page - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToListAsync();
         return new PaginatedList<ApiResource>()
         {
             Total = total,
@@ -47,10 +48,21 @@ public class ApiResourceRepository : IApiResourceRepository
         return apiResources;
     }
 
+    public async Task<ApiResource?> FindAsync(Expression<Func<ApiResource, bool>> predicate)
+    {
+        return await _context.Set<ApiResource>().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<long> GetCountAsync(Expression<Func<ApiResource, bool>> predicate)
+    {
+        return await _context.Set<ApiResource>().Where(predicate).CountAsync();
+    }
+
     public async ValueTask<ApiResource> AddAsync(ApiResource apiResource)
     {
         var newApiResource = await _context.AddAsync(apiResource);
-        await _cache.AddOrUpdateAsync(newApiResource.Entity);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiResource.Id));
         await UpdateCacheAsync();
         return apiResource;
     }
@@ -58,7 +70,7 @@ public class ApiResourceRepository : IApiResourceRepository
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
         var newApiResource = _context.Update(apiResource);
-        await _cache.AddOrUpdateAsync(newApiResource.Entity);
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiResource.Id));
         await UpdateCacheAsync();
         return apiResource;
     }
