@@ -6,19 +6,28 @@ namespace Masa.Oidc.EntityFramework.Repositories;
 public class ClientRepository : IClientRepository
 {
     IClientCache _cache;
-    IRepository<Client> _repository;
     OidcDbContext _context;
 
-    public ClientRepository(IClientCache cache, IRepository<Client> repository, OidcDbContext context)
+    public ClientRepository(IClientCache cache, OidcDbContext context)
     {
         _cache = cache;
-        _repository = repository;
         _context = context;
     }
 
-    public async Task<PaginatedList<Client>> GetPaginatedListAsync(Expression<Func<Client, bool>> condition, PaginatedOptions options)
+    public async Task<PaginatedList<Client>> GetPaginatedListAsync(int page, int pageSize)
     {
-        return await _repository.GetPaginatedListAsync(condition, options);
+        var total = await _context.Set<Client>().LongCountAsync();
+        var clients = await _context.Set<Client>()
+                                               .OrderByDescending(s => s.ModificationTime)
+                                               .ThenByDescending(s => s.CreationTime)
+                                               .Skip((page - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+        return new PaginatedList<Client>()
+        {
+            Total = total,
+            Result = clients
+        };
     }
 
     public async Task<Client?> GetDetailAsync(int id)
@@ -39,27 +48,30 @@ public class ClientRepository : IClientRepository
 
     public async Task<List<Client>> GetListAsync()
     {
-        var clients = await _repository.GetListAsync();
-        return clients.ToList();
+        var clients = await _context.Set<Client>().ToListAsync();
+        return clients;
     }
 
     public async ValueTask<Client> AddAsync(Client client)
     {
-        var newClient = await _repository.AddAsync(client);
-        await _cache.AddOrUpdateAsync(newClient);
-        return newClient;
+        var newClient = await _context.AddAsync(client);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(newClient.Entity);
+        return newClient.Entity;
     }
 
     public async Task<Client> UpdateAsync(Client client)
     {
-        var newClient = await _repository.UpdateAsync(client);
-        await _cache.AddOrUpdateAsync(newClient);
-        return newClient;
+        var newClient = _context.Update(client);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(newClient.Entity);
+        return newClient.Entity;
     }
 
     public async Task RemoveAsync(Client client)
     {
-        await _repository.RemoveAsync(client);
+        _context.Remove(client);
+        await _context.SaveChangesAsync();
         await _cache.RemoveAsync(client);
     }
 }

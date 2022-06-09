@@ -6,19 +6,28 @@ namespace Masa.Oidc.EntityFramework.Repositories;
 public class ApiScopeRepository : IApiScopeRepository
 {
     IApiScopeCache _cache;
-    IRepository<ApiScope> _repository;
     OidcDbContext _context;
 
-    public ApiScopeRepository(IApiScopeCache cache, IRepository<ApiScope> repository, OidcDbContext context)
+    public ApiScopeRepository(IApiScopeCache cache, OidcDbContext context)
     {
         _cache = cache;
-        _repository = repository;
         _context = context;
     }
 
-    public async Task<PaginatedList<ApiScope>> GetPaginatedListAsync(Expression<Func<ApiScope, bool>> condition, PaginatedOptions options)
+    public async Task<PaginatedList<ApiScope>> GetPaginatedListAsync(int page, int pageSize)
     {
-        return await _repository.GetPaginatedListAsync(condition, options);
+        var total = await _context.Set<ApiScope>().LongCountAsync();
+        var apiScopes = await _context.Set<ApiScope>()
+                                               .OrderByDescending(s => s.ModificationTime)
+                                               .ThenByDescending(s => s.CreationTime)
+                                               .Skip((page - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+        return new PaginatedList<ApiScope>()
+        {
+            Total = total,
+            Result = apiScopes
+        };
     }
 
     public async Task<ApiScope?> GetDetailAsync(int id)
@@ -33,27 +42,37 @@ public class ApiScopeRepository : IApiScopeRepository
 
     public async Task<List<ApiScope>> GetListAsync()
     {
-        var apiScopes = await _repository.GetListAsync();
-        return apiScopes.ToList();
+        var apiScopes = await _context.Set<ApiScope>().ToListAsync();
+        return apiScopes;
     }
 
     public async ValueTask<ApiScope> AddAsync(ApiScope apiScope)
     {
-        var newApiScope = await _repository.AddAsync(apiScope);
-        await _cache.AddOrUpdateAsync(newApiScope);
+        var newApiScope = await _context.AddAsync(apiScope);
+        await _cache.AddOrUpdateAsync(newApiScope.Entity);
+        await UpdateCache();
         return apiScope;
     }
 
     public async Task<ApiScope> UpdateAsync(ApiScope apiScope)
     {
-        var newApiScope = await _repository.UpdateAsync(apiScope);
-        await _cache.AddOrUpdateAsync(newApiScope);
+        var newApiScope = _context.Update(apiScope);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(newApiScope.Entity);
+        await UpdateCache();
         return apiScope;
     }
 
     public async Task RemoveAsync(ApiScope apiScope)
     {
-        await _repository.RemoveAsync(apiScope);
+        _context.Remove(apiScope);
         await _cache.RemoveAsync(apiScope);
+        await UpdateCache();
+    }
+
+    private async Task UpdateCache()
+    {
+        var apiScopes = await GetListAsync();
+        await _cache.AddAllAsync(apiScopes);
     }
 }

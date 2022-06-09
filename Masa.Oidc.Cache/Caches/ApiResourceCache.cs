@@ -60,4 +60,9 @@ public class ApiResourceCache : IApiResourceCache
         string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Id}";
         await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
     }
+
+    public async Task AddAllAsync(List<ApiResource> apiResources)
+    {
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, apiResources);
+    }
 }

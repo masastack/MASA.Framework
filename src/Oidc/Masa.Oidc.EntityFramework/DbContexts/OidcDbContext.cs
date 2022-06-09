@@ -11,6 +11,7 @@ public class OidcDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("oidc");
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OidcDbContext).Assembly);
     }
 }

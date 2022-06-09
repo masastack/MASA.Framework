@@ -57,4 +57,9 @@ public class ApiResourceRepository : IApiResourceRepository
         await _repository.RemoveAsync(apiResource);
         await _cache.RemoveAsync(apiResource);
     }
+
+    public Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize)
+    {
+        throw new NotImplementedException();
+    }
 }

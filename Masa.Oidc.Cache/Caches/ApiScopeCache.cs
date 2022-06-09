@@ -45,4 +45,9 @@ public class ApiScopeCache : IApiScopeCache
         string key = $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Id}";
         await _memoryCacheClient.RemoveAsync<ApiScopeModel>(key);
     }
+
+    public async Task AddAllAsync(List<ApiScope> apiScopes)
+    {
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_SCOPE_KEY, apiScopes);
+    }
 }

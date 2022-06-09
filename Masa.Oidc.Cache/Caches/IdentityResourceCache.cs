@@ -45,4 +45,9 @@ public class IdentityResourceCache : IIdentityResourceCache
         string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
         await _memoryCacheClient.RemoveAsync<IdentityResourceModel>(key);
     }
+
+    public async Task AddAllAsync(List<IdentityResource> identityResources)
+    {
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, identityResources);
+    }
 }

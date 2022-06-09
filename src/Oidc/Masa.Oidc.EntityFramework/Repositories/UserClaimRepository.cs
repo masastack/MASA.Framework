@@ -5,18 +5,27 @@ namespace Masa.Oidc.EntityFramework.Repositories;
 
 public class UserClaimRepository : IUserClaimRepository
 {
-    IRepository<UserClaim> _repository;
     OidcDbContext _context;
 
-    public UserClaimRepository(IRepository<UserClaim> repository, OidcDbContext context)
+    public UserClaimRepository(OidcDbContext context)
     {
-        _repository = repository;
         _context = context;
     }
 
-    public async Task<PaginatedList<UserClaim>> GetPaginatedListAsync(Expression<Func<UserClaim, bool>> condition, PaginatedOptions options)
+    public async Task<PaginatedList<UserClaim>> GetPaginatedListAsync(int page, int pageSize)
     {
-        return await _repository.GetPaginatedListAsync(condition, options);
+        var total = await _context.Set<UserClaim>().LongCountAsync();
+        var userClaims = await _context.Set<UserClaim>()
+                                               .OrderByDescending(s => s.ModificationTime)
+                                               .ThenByDescending(s => s.CreationTime)
+                                               .Skip((page - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+        return new PaginatedList<UserClaim>()
+        {
+            Total = total,
+            Result = userClaims
+        };
     }
 
     public async Task<UserClaim?> GetDetailAsync(int id)
@@ -29,24 +38,26 @@ public class UserClaimRepository : IUserClaimRepository
 
     public async Task<List<UserClaim>> GetListAsync()
     {
-        var userClaims = await _repository.GetListAsync();
-        return userClaims.ToList();
+        var userClaims = await _context.Set<UserClaim>().ToListAsync();
+        return userClaims;
     }
 
     public async ValueTask<UserClaim> AddAsync(UserClaim userClaim)
     {
-        var newUserClaim = await _repository.AddAsync(userClaim);
-        return userClaim;
+        var newUserClaim = await _context.AddAsync(userClaim);
+        return newUserClaim.Entity;
     }
 
     public async Task<UserClaim> UpdateAsync(UserClaim userClaim)
     {
-        var newUserClaim = await _repository.UpdateAsync(userClaim);
+        var newUserClaim = _context.Update(userClaim);
+        await _context.SaveChangesAsync();
         return userClaim;
     }
 
     public async Task RemoveAsync(UserClaim userClaim)
     {
-        await _repository.RemoveAsync(userClaim);
+        _context.Remove(userClaim);
+        await _context.SaveChangesAsync();
     }
 }

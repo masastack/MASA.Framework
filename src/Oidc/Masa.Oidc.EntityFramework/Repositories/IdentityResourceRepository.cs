@@ -1,24 +1,38 @@
 // Copyright (c) MASA Stack All rights reserved.
-// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Oidc.EntityFramework.Repositories;
 
 public class IdentityResourceRepository : IIdentityResourceRepository
 {
-    IIdentityResourceCache _cache;   
-    IRepository<IdentityResource> _repository;
+    IIdentityResourceCache _cache;
     OidcDbContext _context;
 
-    public IdentityResourceRepository(IIdentityResourceCache cache, IRepository<IdentityResource> repository, OidcDbContext context)
+    public IdentityResourceRepository(IIdentityResourceCache cache, OidcDbContext context)
     {
         _cache = cache;
-        _repository = repository;
         _context = context;
     }
 
-    public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(Expression<Func<IdentityResource, bool>> condition, PaginatedOptions options)
+    public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(int page, int pageSize)
     {
-        return await _repository.GetPaginatedListAsync(condition, options);
+        var total = await _context.Set<IdentityResource>().LongCountAsync();
+        var identityResources = await _context.Set<IdentityResource>()
+                                               .OrderByDescending(s => s.ModificationTime)
+                                               .ThenByDescending(s => s.CreationTime)
+                                               .Skip((page - 1) * pageSize)
+                                               .Take(pageSize)
+                                               .ToListAsync();
+        return new PaginatedList<IdentityResource>()
+        {
+            Total = total,
+            Result = identityResources
+        };
+    }
+
+    public async Task<List<IdentityResource>> GetListAsync()
+    {
+        return await _context.Set<IdentityResource>().ToListAsync();
     }
 
     public async Task<IdentityResource?> GetDetailAsync(int id)
@@ -31,29 +45,35 @@ public class IdentityResourceRepository : IIdentityResourceRepository
         return identityResources;
     }
 
-    public async Task<List<IdentityResource>> GetListAsync()
-    {
-        var identityResources = await _repository.GetListAsync();
-        return identityResources.ToList();
-    }
-
     public async ValueTask<IdentityResource> AddAsync(IdentityResource identityResource)
     {
-        var newIdentityResource = await _repository.AddAsync(identityResource);
-        await _cache.AddOrUpdateAsync(newIdentityResource);
-        return identityResource;
+        var newIdentityResource = await _context.AddAsync(identityResource);
+        await _cache.AddOrUpdateAsync(newIdentityResource.Entity);
+        await UpdateCacheAsync();
+        return newIdentityResource.Entity;
     }
 
     public async Task<IdentityResource> UpdateAsync(IdentityResource identityResource)
     {
-        var newIdentityResource = await _repository.UpdateAsync(identityResource);
-        await _cache.AddOrUpdateAsync(newIdentityResource);
+        var newIdentityResource = _context.Update(identityResource);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(newIdentityResource.Entity);
+        await UpdateCacheAsync();
+
         return identityResource;
     }
 
     public async Task RemoveAsync(IdentityResource identityResource)
     {
-        await _repository.RemoveAsync(identityResource);
+        _context.Remove(identityResource);
+        await _context.SaveChangesAsync();
         await _cache.RemoveAsync(identityResource);
+        await UpdateCacheAsync();
+    }
+
+    private async Task UpdateCacheAsync()
+    {
+        var identityResources = await GetListAsync();
+        await _cache.AddAllAsync(identityResources);
     }
 }
