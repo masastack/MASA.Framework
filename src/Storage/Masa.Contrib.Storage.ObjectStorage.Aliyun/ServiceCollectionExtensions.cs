@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
             GetAliyunStorageConfigurationOption(serviceProvider),
             GetMemoryCache(serviceProvider),
             GetDefaultCredentialProviderLogger(serviceProvider)));
-        services.TryAddSingleton<IClient>(serviceProvider => new Client(
+        services.TryAddSingleton<IClient>(serviceProvider => new DefaultStorageClient(
             GetCredentialProvider(serviceProvider),
             GetAliyunStorageOption(serviceProvider),
             GetClientLogger(serviceProvider)));
@@ -52,7 +52,7 @@ public static class ServiceCollectionExtensions
             func.Invoke(serviceProvider),
             GetMemoryCache(serviceProvider),
             GetDefaultCredentialProviderLogger(serviceProvider)));
-        services.TryAddSingleton<IClient>(serviceProvider => new Client(
+        services.TryAddSingleton<IClient>(serviceProvider => new DefaultStorageClient(
             GetCredentialProvider(serviceProvider),
             func.Invoke(serviceProvider),
             GetClientLogger(serviceProvider)));
@@ -110,7 +110,7 @@ public static class ServiceCollectionExtensions
 
     private static IMemoryCache GetMemoryCache(IServiceProvider serviceProvider) => serviceProvider.GetRequiredService<IMemoryCache>();
 
-    private static ILogger<Client>? GetClientLogger(IServiceProvider serviceProvider) => serviceProvider.GetService<ILogger<Client>>();
+    private static ILogger<DefaultStorageClient>? GetClientLogger(IServiceProvider serviceProvider) => serviceProvider.GetService<ILogger<DefaultStorageClient>>();
 
     private static ILogger<DefaultCredentialProvider>? GetDefaultCredentialProviderLogger(IServiceProvider serviceProvider)
         => serviceProvider.GetService<ILogger<DefaultCredentialProvider>>();

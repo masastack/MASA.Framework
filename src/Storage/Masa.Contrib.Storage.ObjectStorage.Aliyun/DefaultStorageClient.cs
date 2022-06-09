@@ -3,21 +3,25 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class Client : BaseClient, IClient
+public class DefaultStorageClient : BaseClient, IClient
 {
     private readonly bool _supportCallback;
-    private readonly ILogger<Client>? _logger;
+    private readonly ILogger<DefaultStorageClient>? _logger;
 
-    public Client(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<Client>? logger)
+    public DefaultStorageClient(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<DefaultStorageClient>? logger)
         : base(credentialProvider, options)
     {
         _supportCallback = !string.IsNullOrEmpty(options.CallbackBody) && !string.IsNullOrEmpty(options.CallbackUrl);
         _logger = logger;
     }
 
-    public Client(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<Client>? logger)
+    public DefaultStorageClient(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<DefaultStorageClient>? logger)
         : this(credentialProvider, options.CurrentValue, logger)
     {
+        options.OnChange(aliyunStorageOptions =>
+        {
+            Options = aliyunStorageOptions;
+        });
     }
 
     /// <summary>
@@ -26,8 +30,8 @@ public class Client : BaseClient, IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!CredentialProvider.SupportSts)
-            throw new ArgumentException($"{nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
+        if (CredentialProvider.IncompleteStsOptions)
+            throw new ArgumentException($"Sts options is imcomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
 
         return CredentialProvider.GetSecurityToken();
     }

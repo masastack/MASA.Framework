@@ -10,7 +10,6 @@ global using Masa.Contrib.Data.EntityFrameworkCore;
 global using Masa.Contrib.Data.EntityFrameworkCore.Filters;
 global using Masa.Contrib.Data.UoW.EF;
 global using Masa.Contrib.Isolation.UoW.EF.Internal;
-global using Masa.Utils.Extensions.Expressions;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.Extensions.DependencyInjection;

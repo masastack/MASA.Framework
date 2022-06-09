@@ -73,7 +73,7 @@ public class EventHandlerAttribute : Attribute
     private int _order;
 
     /// <summary>
-    /// Used to control the order in which methods are executed, in ascending order. default is 100
+    /// Used to control the order in which methods are executed, in ascending order. default is int.MaxValue
     /// Must be greater than or equal to 0
     /// </summary>
     public int Order
