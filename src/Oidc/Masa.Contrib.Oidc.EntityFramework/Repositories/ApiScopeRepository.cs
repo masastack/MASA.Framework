@@ -1,0 +1,90 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Contrib.Oidc.EntityFramework.Repositories;
+
+public class ApiScopeRepository : IApiScopeRepository
+{
+    IApiScopeCache _cache;
+    OidcDbContext _context;
+
+    public ApiScopeRepository(IApiScopeCache cache, OidcDbContext context)
+    {
+        _cache = cache;
+        _context = context;
+    }
+
+    public async Task<PaginatedList<ApiScope>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<ApiScope, bool>>? condition = null)
+    {
+        condition ??= userClaim => true;
+        var query = _context.Set<ApiScope>().Where(condition);
+        var total = await query.LongCountAsync();
+        var apiScopes = await query.OrderByDescending(s => s.ModificationTime)
+                                    .ThenByDescending(s => s.CreationTime)
+                                    .Skip((page - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToListAsync();
+        return new PaginatedList<ApiScope>()
+        {
+            Total = total,
+            Result = apiScopes
+        };
+    }
+
+    public async Task<ApiScope?> GetDetailAsync(int id)
+    {
+        var apiScope = await _context.Set<ApiScope>()
+                         .Include(apiScope => apiScope.UserClaims)
+                         .Include(apiScope => apiScope.Properties)
+                         .FirstOrDefaultAsync(apiScope => apiScope.Id == id);
+
+        return apiScope;
+    }
+
+    public async Task<List<ApiScope>> GetListAsync()
+    {
+        var apiScopes = await _context.Set<ApiScope>().ToListAsync();
+        return apiScopes;
+    }
+
+    public async Task<ApiScope?> FindAsync(Expression<Func<ApiScope, bool>> predicate)
+    {
+        return await _context.Set<ApiScope>().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<long> GetCountAsync(Expression<Func<ApiScope, bool>> predicate)
+    {
+        return await _context.Set<ApiScope>().Where(predicate).CountAsync();
+    }
+
+    public async ValueTask<ApiScope> AddAsync(ApiScope apiScope)
+    {
+        var newApiScope = await _context.AddAsync(apiScope);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiScope.Id));
+        await UpdateCacheAsync();
+        return apiScope;
+    }
+
+    public async Task<ApiScope> UpdateAsync(ApiScope apiScope)
+    {
+        var newApiScope = _context.Update(apiScope);
+        await _context.SaveChangesAsync();
+        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiScope.Id));
+        await UpdateCacheAsync();
+        return apiScope;
+    }
+
+    public async Task RemoveAsync(ApiScope apiScope)
+    {
+        _context.Remove(apiScope);
+        await _cache.RemoveAsync(apiScope);
+        await UpdateCacheAsync();
+    }
+
+    private async Task UpdateCacheAsync()
+    {
+        var apiScopes = await GetListAsync();
+        await _cache.AddAllAsync(apiScopes);
+    }
+}
