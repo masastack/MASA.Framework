@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Oidc.Models.Enums;
-
 namespace Masa.Contrib.Oidc.Cache.Caches;
 
 public class ClientCache : IClientCache
@@ -67,6 +65,8 @@ public class ClientCache : IClientCache
             ClientClaimsPrefix = client.ClientClaimsPrefix,
             PairWiseSubjectSalt = client.PairWiseSubjectSalt,
             UserCodeType = client.UserCodeType,
+            ClientSecrets = client.ClientSecrets.Select(s => new SecretModel(s.Type, s.Value)).ToList(),
+            AllowedIdentityTokenSigningAlgorithms = client.AllowedIdentityTokenSigningAlgorithms.Split(",").ToList(),
         });
     }
 
