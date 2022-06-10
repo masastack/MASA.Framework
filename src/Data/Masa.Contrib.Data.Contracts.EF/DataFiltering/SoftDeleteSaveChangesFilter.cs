@@ -7,14 +7,14 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
     where TDbContext : DbContext
     where TUserId : IComparable
 {
-    private readonly IUserContext<TUserId> _userContext;
+    private readonly IUserContext _userContext;
     private readonly TDbContext _context;
     private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
 
     public SoftDeleteSaveChangesFilter(
         MasaDbContextOptions<TDbContext> masaDbContextOptions,
         TDbContext dbContext,
-        IUserContext<TUserId> userContext)
+        IUserContext userContext)
     {
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;
@@ -36,10 +36,11 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
 
             if (entity.Entity is IAuditEntity<TUserId> && entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] != default)
             {
-                var userId = _userContext.GetUserId();
+                var userId = _userContext.UserId;
                 if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
 
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] = DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
+                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
         }
     }

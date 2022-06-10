@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.IdentityModel\Masa.BuildingBlocks.IdentityModel.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj" />
   </ItemGroup>
 

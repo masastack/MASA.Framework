@@ -4,6 +4,6 @@
 global using Masa.BuildingBlocks.IdentityModel;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using System.Security.Claims;

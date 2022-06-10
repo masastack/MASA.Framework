@@ -10,10 +10,12 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly IEnvironmentContext _environmentContext;
     private readonly IEnvironmentSetter _environmentSetter;
+    private readonly IUserContext? _userContext;
     private readonly string _environmentKey;
     private bool _handled;
 
-    public MultiEnvironmentMiddleware(IServiceProvider serviceProvider, string environmentKey, IEnumerable<IParserProvider>? parserProviders)
+    public MultiEnvironmentMiddleware(IServiceProvider serviceProvider, string environmentKey,
+        IEnumerable<IParserProvider>? parserProviders)
     {
         _serviceProvider = serviceProvider;
         _environmentKey = environmentKey;
@@ -21,6 +23,7 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
         _logger = _serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
         _environmentContext = _serviceProvider.GetRequiredService<IEnvironmentContext>();
         _environmentSetter = _serviceProvider.GetRequiredService<IEnvironmentSetter>();
+        _userContext = _serviceProvider.GetService<IUserContext>();
     }
 
     public async Task HandleAsync()
@@ -34,11 +37,18 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
             return;
         }
 
+        if (_userContext is { IsAuthenticated: true, Environment: { } })
+        {
+            _environmentSetter.SetEnvironment(_userContext.Environment);
+            return;
+        }
+
         List<string> parsers = new();
         foreach (var environmentParserProvider in _parserProviders)
         {
             parsers.Add(environmentParserProvider.Name);
-            if (await environmentParserProvider.ResolveAsync(_serviceProvider, _environmentKey, environment => _environmentSetter.SetEnvironment(environment)))
+            if (await environmentParserProvider.ResolveAsync(_serviceProvider, _environmentKey,
+                    environment => _environmentSetter.SetEnvironment(environment)))
             {
                 _logger?.LogDebug("The environment is successfully resolved, and the resolver is: {Resolvers}", string.Join("、 ", parsers));
                 _handled = true;
