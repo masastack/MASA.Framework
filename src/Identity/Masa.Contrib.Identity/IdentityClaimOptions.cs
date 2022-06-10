@@ -15,9 +15,9 @@ public class IdentityClaimOptions
 
     public IdentityClaimOptions()
     {
-        UserId = ClaimTypes.NameIdentifier;
-        UserName = ClaimTypes.Name;
-        TenantId = "tenantid";
+        UserId = "sub";
+        UserName = "given_name";
+        TenantId = "tenant_id";
         Environment = "environment";
     }
 }

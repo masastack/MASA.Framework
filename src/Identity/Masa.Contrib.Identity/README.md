@@ -23,11 +23,11 @@ userContext.User;//Get user information
 
 > The default user information is obtained from HttpContext.User
 >
-> UserId: ClaimTypes.NameIdentifier
+> UserId: sub
 >
-> UserName: ClaimTypes.Name
+> UserName: given_name
 >
-> TenantId: tenantid
+> TenantId: tenant_id
 >
 > Environment: environment
 

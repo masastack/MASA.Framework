@@ -23,11 +23,11 @@ userContext.User;//获取用户信息
 
 > 默认用户信息从HttpContext.User中获取
 >
-> UserId: ClaimTypes.NameIdentifier
+> UserId: sub
 >
-> UserName: ClaimTypes.Name
+> UserName: given_name
 >
-> TenantId: tenantid
+> TenantId: tenant_id
 >
 > Environment: environment
 

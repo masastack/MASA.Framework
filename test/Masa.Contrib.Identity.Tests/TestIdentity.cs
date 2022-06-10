@@ -44,8 +44,8 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new(ClaimTypes.NameIdentifier, "1"),
-                    new(ClaimTypes.Name, "Jim"),
+                    new("sub", "1"),
+                    new("given_name", "Jim"),
                     new("tenantid", "1")
                 })
             })
@@ -71,8 +71,8 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new(ClaimTypes.NameIdentifier, "1"),
-                    new(ClaimTypes.Name, "Jim"),
+                    new("sub", "1"),
+                    new("given_name", "Jim"),
                     new("tenantid", "1")
                 })
             })
