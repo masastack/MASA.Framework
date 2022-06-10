@@ -80,13 +80,14 @@ public class TestIdentity
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
         var userSetter = serviceProvider.GetRequiredService<IUserSetter>();
 
-        using (userSetter.Change(new IdentityUser()
-               {
-                   Id = "2",
-                   UserName = "Tom",
-                   Environment = "Production",
-                   TenantId = "2"
-               }))
+        var user = new IdentityUser()
+        {
+            Id = "2",
+            UserName = "Tom",
+            Environment = "Production",
+            TenantId = "2"
+        };
+        using (userSetter.Change(user))
         {
             Assert.IsTrue(userContext.IsAuthenticated);
             Assert.IsTrue(userContext.UserId == "2");
