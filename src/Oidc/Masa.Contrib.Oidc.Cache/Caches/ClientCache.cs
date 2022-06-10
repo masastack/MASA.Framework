@@ -28,8 +28,8 @@ public class ClientCache : IClientCache
 
     public async Task AddOrUpdateAsync(Client client)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.Id}";
-        await _memoryCacheClient.SetAsync(key, new ClientModel(client.Id.ToString(), client.ClientName, client.Description, client.ClientUri, client.LogoUri, client.RedirectUris.Select(r => r.RedirectUri), client.PostLogoutRedirectUris.Select(p => p.PostLogoutRedirectUri), client.AllowedGrantTypes.Select(a => a.GrantType), client.AllowedScopes.Select(a => a.Scope))
+        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
+        await _memoryCacheClient.SetAsync(key, new ClientModel(client.ClientId.ToString(), client.ClientName, client.Description, client.ClientUri, client.LogoUri, client.RedirectUris.Select(r => r.RedirectUri), client.PostLogoutRedirectUris.Select(p => p.PostLogoutRedirectUri), client.AllowedGrantTypes.Select(a => a.GrantType), client.AllowedScopes.Select(a => a.Scope))
         {
             Enabled = client.Enabled,
             ProtocolType = client.ProtocolType,
