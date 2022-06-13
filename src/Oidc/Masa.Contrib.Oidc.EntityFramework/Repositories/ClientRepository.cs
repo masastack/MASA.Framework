@@ -67,7 +67,7 @@ public class ClientRepository : IClientRepository
     {
         var newClient = await _context.AddAsync(client);
         await _context.SaveChangesAsync();
-        var detail = await GetDetailAsync(newClient.Entity.Id);
+        var detail = await GetDetailAsync(client.Id);
         await _cache.SetAsync(detail!);
         return newClient.Entity;
     }

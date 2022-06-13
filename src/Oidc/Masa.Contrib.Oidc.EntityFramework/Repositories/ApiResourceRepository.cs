@@ -5,10 +5,10 @@ namespace Masa.Contrib.Oidc.EntityFramework.Repositories;
 
 public class ApiResourceRepository : IApiResourceRepository
 {
-    IApiResourceCache _cache;
+    SyncCache _cache;
     OidcDbContext _context;
 
-    public ApiResourceRepository(IApiResourceCache cache, OidcDbContext context)
+    public ApiResourceRepository(SyncCache cache, OidcDbContext context)
     {
         _cache = cache;
         _context = context;
@@ -68,36 +68,22 @@ public class ApiResourceRepository : IApiResourceRepository
 
         var newApiResource = await _context.AddAsync(apiResource);
         await _context.SaveChangesAsync();
-        await _cache.SetAsync(newApiResource.Entity);
-        await SyncAllCacheAsync();
-        return apiResource;
+        await _cache.SyncApiResourceCacheAsync(apiResource.Id);
+        return newApiResource.Entity;
     }
 
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
         var newApiResource = _context.Update(apiResource);
-        await _cache.SetAsync(newApiResource.Entity);
-        await SyncAllCacheAsync();
-        return apiResource;
+        await _context.SaveChangesAsync();
+        await _cache.SyncApiResourceCacheAsync(apiResource.Id);
+        return newApiResource.Entity;
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
         _context.Remove(apiResource);
-        await _cache.RemoveAsync(apiResource);
-        await SyncAllCacheAsync();
-    }
-
-    private async Task SyncAllCacheAsync()
-    {
-        var apiResource = await _context.Set<ApiResource>()
-                        .Include(apiResource => apiResource.UserClaims)
-                        .ThenInclude(userClaim => userClaim.UserClaim)
-                        .Include(apiResource => apiResource.Properties)
-                        .Include(apiResource => apiResource.ApiScopes)
-                        .ThenInclude(apiScope => apiScope.ApiScope)
-                        .AsSplitQuery()
-                        .ToListAsync();
-        await _cache.AddAllAsync(apiResource);
+        await _context.SaveChangesAsync();
+        await _cache.RemoveApiResourceCacheAsync(apiResource);
     }
 }

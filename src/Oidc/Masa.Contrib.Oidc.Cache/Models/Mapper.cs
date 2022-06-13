@@ -99,7 +99,7 @@ public static class Mapper
             PairWiseSubjectSalt = client.PairWiseSubjectSalt,
             UserCodeType = client.UserCodeType,
             ClientSecrets = client.ClientSecrets.Select(s => new SecretModel(s.Type, s.Value)).ToList(),
-            AllowedIdentityTokenSigningAlgorithms = client.AllowedIdentityTokenSigningAlgorithms.Split(",").ToList(),
+            AllowedIdentityTokenSigningAlgorithms = client.AllowedIdentityTokenSigningAlgorithms.Split(",", StringSplitOptions.RemoveEmptyEntries).ToList(),
         };
     }
 }

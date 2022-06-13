@@ -5,10 +5,10 @@ namespace Masa.Contrib.Oidc.EntityFramework.Repositories;
 
 public class ApiScopeRepository : IApiScopeRepository
 {
-    IApiScopeCache _cache;
+    SyncCache _cache;
     OidcDbContext _context;
 
-    public ApiScopeRepository(IApiScopeCache cache, OidcDbContext context)
+    public ApiScopeRepository(SyncCache cache, OidcDbContext context)
     {
         _cache = cache;
         _context = context;
@@ -66,23 +66,22 @@ public class ApiScopeRepository : IApiScopeRepository
 
         var newApiScope = await _context.AddAsync(apiScope);
         await _context.SaveChangesAsync();
-        var detail = await GetDetailAsync(apiScope.Id);
-        await _cache.SetAsync(detail!);
-        return apiScope;
+        await _cache.SyncApiScopeCacheAsync(apiScope.Id);
+        return newApiScope.Entity;
     }
 
     public async Task<ApiScope> UpdateAsync(ApiScope apiScope)
     {
         var newApiScope = _context.Update(apiScope);
         await _context.SaveChangesAsync();
-        var detail = await GetDetailAsync(apiScope.Id);
-        await _cache.SetAsync(detail!);
-        return apiScope;
+        await _cache.SyncApiScopeCacheAsync(apiScope.Id);
+        return newApiScope.Entity;
     }
 
     public async Task RemoveAsync(ApiScope apiScope)
     {
         _context.Remove(apiScope);
-        await _cache.RemoveAsync(apiScope);
+        await _context.SaveChangesAsync();
+        await _cache.RemoveApiScopeCacheAsync(apiScope);
     }
 }
