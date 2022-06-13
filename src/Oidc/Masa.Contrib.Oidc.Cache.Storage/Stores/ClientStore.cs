@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Oidc.Models.Enums;
+
 namespace Masa.Contrib.Oidc.Cache.Storage.Stores;
 
 public class ClientStore : IClientStore
@@ -16,6 +18,7 @@ public class ClientStore : IClientStore
     {
         ArgumentNullException.ThrowIfNull(clientId);
 
-        return await _clientCache.GetAsync(clientId);
+        var client = await _clientCache.GetAsync(clientId);
+        return client;
     }
 }

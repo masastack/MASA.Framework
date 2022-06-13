@@ -15,7 +15,7 @@ public class IdentityResourceCache : IIdentityResourceCache
     public async Task<List<IdentityResourceModel>> GetListAsync(IEnumerable<string> names)
     {
         var keys = names.Select(name => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{name}");
-        var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys.ToArray()) ?? new List<IdentityResourceModel>();
+        var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys.ToArray());
         return identityResources.Where(i => i is not null).ToList()!;
     }
 

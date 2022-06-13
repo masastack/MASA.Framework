@@ -12,9 +12,9 @@ public class ClientCache : IClientCache
         _memoryCacheClient = memoryCacheClient;
     }
 
-    public async Task<ClientModel?> GetAsync(string id)
+    public async Task<ClientModel?> GetAsync(string clientId)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{id}";
+        string key = $"{CacheKeyConstants.CLIENT_KEY}_{clientId}";
         return await _memoryCacheClient.GetAsync<ClientModel>(key);
     }
 
@@ -72,7 +72,7 @@ public class ClientCache : IClientCache
 
     public async Task RemoveAsync(Client client)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.Id}";
+        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
         await _memoryCacheClient.RemoveAsync<ClientModel>(key);
     }
 }

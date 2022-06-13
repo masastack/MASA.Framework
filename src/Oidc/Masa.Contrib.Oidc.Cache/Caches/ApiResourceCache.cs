@@ -15,7 +15,7 @@ public class ApiResourceCache : IApiResourceCache
     public async Task<List<ApiResourceModel>> GetListAsync(IEnumerable<string> names)
     {
         var keys = names.Select(name => $"{CacheKeyConstants.API_RESOURCE_KEY}_{name}");
-        var apiResources = await _memoryCacheClient.GetListAsync<ApiResourceModel>(keys.ToArray()) ?? new List<ApiResourceModel>();
+        var apiResources = await _memoryCacheClient.GetListAsync<ApiResourceModel>(keys.ToArray());
         return apiResources.Where(i => i is not null).ToList()!;
     }
 
@@ -27,7 +27,7 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task AddOrUpdateAsync(ApiResource apiResource)
     {
-        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Id}";
+        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
         await _memoryCacheClient.SetAsync(key, new ApiResourceModel(apiResource.Name, apiResource.DisplayName, apiResource.UserClaims.Select(uc => uc.UserClaim.Name).ToList())
         {
             Scopes = apiResource.ApiScopes.Select(a => a.ApiScope.Name).ToList(),
@@ -55,7 +55,7 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
-        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Id}";
+        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
         await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
     }
 

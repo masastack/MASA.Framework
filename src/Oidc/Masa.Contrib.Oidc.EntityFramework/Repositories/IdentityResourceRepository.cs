@@ -40,6 +40,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     {
         var identityResources = await _context.Set<IdentityResource>()
                                 .Include(idrs => idrs.UserClaims)
+                                .ThenInclude(uc => uc.UserClaim)
                                 .Include(idrs => idrs.Properties)
                                 .FirstOrDefaultAsync(idrs => idrs.Id == id);
 

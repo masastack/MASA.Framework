@@ -20,8 +20,7 @@ public class ResourceStore : IResourceStore
     {
         ArgumentNullException.ThrowIfNull(apiResourceNames);
 
-        var apiResources = await _apiResourceCache.GetListAsync(apiResourceNames);
-        return apiResources;
+        return await _apiResourceCache.GetListAsync(apiResourceNames);
     }
 
     public async Task<IEnumerable<ApiResourceModel>> FindApiResourcesByScopeNameAsync(IEnumerable<string> scopeNames)
