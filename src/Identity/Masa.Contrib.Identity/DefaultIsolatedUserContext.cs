@@ -3,17 +3,17 @@
 
 namespace Masa.Contrib.Identity;
 
-public sealed class DefaultIsolationUserContext : UserContext, IIsolationUserContext
+public sealed class DefaultIsolatedUserContext : UserContext, IIsolatedUserContext
 {
-    public string? TenantId => GetUser<IdentityIsolationUser>()?.TenantId;
+    public string? TenantId => GetUser<IsolatedIdentityUser>()?.TenantId;
 
-    public string? Environment => GetUser<IdentityIsolationUser>()?.Environment;
+    public string? Environment => GetUser<IsolatedIdentityUser>()?.Environment;
 
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
-    public DefaultIsolationUserContext(
+    public DefaultIsolatedUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
         IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
@@ -32,7 +32,7 @@ public sealed class DefaultIsolationUserContext : UserContext, IIsolationUserCon
         return TypeConvertProvider.ConvertTo<TTenantId>(tenantId);
     }
 
-    protected override IdentityIsolationUser? GetUser()
+    protected override IsolatedIdentityUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -42,7 +42,7 @@ public sealed class DefaultIsolationUserContext : UserContext, IIsolationUserCon
         if (userId == null)
             return null;
 
-        return new IdentityIsolationUser
+        return new IsolatedIdentityUser
         {
             Id = userId,
             UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),

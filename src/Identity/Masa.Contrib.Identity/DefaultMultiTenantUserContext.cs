@@ -5,7 +5,7 @@ namespace Masa.Contrib.Identity;
 
 public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContext
 {
-    public string? TenantId => GetUser<IdentityMultiTenantUser>()?.TenantId;
+    public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
 
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
@@ -30,7 +30,7 @@ public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContex
         return TypeConvertProvider.ConvertTo<TTenantId>(tenantId);
     }
 
-    protected override IdentityMultiTenantUser? GetUser()
+    protected override MultiTenantIdentityUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -40,7 +40,7 @@ public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContex
         if (userId == null)
             return null;
 
-        return new IdentityMultiTenantUser
+        return new MultiTenantIdentityUser
         {
             Id = userId,
             UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),

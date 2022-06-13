@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaIdentity(
         this IServiceCollection services,
-        IdentityType identityType = IdentityType.Simple)
+        IdentityType identityType = IdentityType.Basic)
         => services.AddMasaIdentity(identityType, _ =>
         {
         });
@@ -29,22 +29,22 @@ public static class ServiceCollectionExtensions
 
         services.Configure(configureOptions);
 
-        switch (identityType)
-        {
-            case IdentityType.Simple:
-                return services.AddMasaIdentityBySimple();
-            case IdentityType.MultiTenant:
-                return services.AddMasaIdentityByMultiTenant();
-            case IdentityType.MultiEnvironment:
-                return services.AddMasaIdentityByMultiEnvironment();
-            case IdentityType.Isolation:
-                return services.AddMasaIdentityByIsolation();
-            default:
-                throw new NotSupportedException(nameof(identityType));
-        }
+        if (identityType.HasFlag(IdentityType.MultiTenant) && identityType.HasFlag(IdentityType.MultiEnvironment))
+            return services.AddMasaIdentityByIsolation();
+
+        if (identityType.HasFlag(IdentityType.MultiTenant))
+            return services.AddMasaIdentityByMultiTenant();
+
+        if (identityType.HasFlag(IdentityType.MultiEnvironment))
+            return services.AddMasaIdentityByMultiEnvironment();
+
+        if ((identityType & IdentityType.Basic) != 0)
+            return services.AddMasaIdentityByBasic();
+
+        throw new NotSupportedException(nameof(identityType));
     }
 
-    private static IServiceCollection AddMasaIdentityBySimple(this IServiceCollection services)
+    private static IServiceCollection AddMasaIdentityByBasic(this IServiceCollection services)
     {
         services.TryAddScoped<DefaultUserContext>();
         services.TryAddScoped<IUserSetter>(serviceProvider
@@ -80,17 +80,17 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddMasaIdentityByIsolation(this IServiceCollection services)
     {
-        services.TryAddScoped<DefaultIsolationUserContext>();
+        services.TryAddScoped<DefaultIsolatedUserContext>();
         services.TryAddScoped<IUserSetter>(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultIsolationUserContext>());
+            => serviceProvider.GetRequiredService<DefaultIsolatedUserContext>());
         services.TryAddScoped<IUserContext>(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultIsolationUserContext>());
-        services.TryAddScoped<IIsolationUserContext>(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultIsolationUserContext>());
+            => serviceProvider.GetRequiredService<DefaultIsolatedUserContext>());
+        services.TryAddScoped<IIsolatedUserContext>(serviceProvider
+            => serviceProvider.GetRequiredService<DefaultIsolatedUserContext>());
         services.TryAddScoped<IMultiTenantUserContext>(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultIsolationUserContext>());
+            => serviceProvider.GetRequiredService<DefaultIsolatedUserContext>());
         services.TryAddScoped<IMultiEnvironmentUserContext>(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultIsolationUserContext>());
+            => serviceProvider.GetRequiredService<DefaultIsolatedUserContext>());
         return services;
     }
 

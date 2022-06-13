@@ -10,7 +10,7 @@ public class TestIdentity
     public void TestIdentityClaimOptionsReturnTenantIdEqualTenantId()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Isolation, identityClaimOptions =>
+        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment, identityClaimOptions =>
         {
             identityClaimOptions.TenantId = "TenantId";
         });
@@ -18,6 +18,53 @@ public class TestIdentity
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>();
         Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == "TenantId");
         Assert.IsTrue(optionsMonitor.CurrentValue.Environment == "environment");
+    }
+
+    [TestMethod]
+    public void TestIdentityType()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.Basic);
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.MultiTenant);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.MultiEnvironment);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiEnvironment);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.MultiTenant | IdentityType.MultiEnvironment);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
+
+        services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
+        serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IIsolatedUserContext>());
     }
 
     [TestMethod]
@@ -35,7 +82,7 @@ public class TestIdentity
     public void TestAddIsolationIdentityReturnUserIdEqual1AndTenantIdEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Isolation);
+        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext()
@@ -66,7 +113,7 @@ public class TestIdentity
 
         Assert.IsTrue(multiEnvironmentUserContext.Environment == "dev");
 
-        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
         Assert.IsNotNull(isolationUserContext);
 
         Assert.IsTrue(isolationUserContext.IsAuthenticated);
@@ -107,7 +154,7 @@ public class TestIdentity
         var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
         Assert.IsNull(multiEnvironmentUserContext);
 
-        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
         Assert.IsNull(isolationUserContext);
     }
 
@@ -143,7 +190,7 @@ public class TestIdentity
         var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
         Assert.IsNull(multiEnvironmentUserContext);
 
-        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
         Assert.IsNull(isolationUserContext);
     }
 

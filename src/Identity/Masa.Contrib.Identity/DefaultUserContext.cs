@@ -19,7 +19,7 @@ public sealed class DefaultUserContext : UserContext
         _optionsMonitor = optionsMonitor;
     }
 
-    protected override IdentityIsolationUser? GetUser()
+    protected override IsolatedIdentityUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -29,7 +29,7 @@ public sealed class DefaultUserContext : UserContext
         if (userId == null)
             return null;
 
-        return new IdentityIsolationUser
+        return new IsolatedIdentityUser
         {
             Id = userId,
             UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName)
