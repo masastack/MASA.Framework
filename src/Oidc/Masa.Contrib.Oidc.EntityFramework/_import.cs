@@ -14,3 +14,4 @@ global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using System.Linq.Expressions;
 global using Masa.Contrib.Oidc.EntityFramework.Repositories;
 global using Masa.BuildingBlocks.Oidc.Models.Constans;
+global using Masa.Contrib.Oidc.EntityFramework.Caches;

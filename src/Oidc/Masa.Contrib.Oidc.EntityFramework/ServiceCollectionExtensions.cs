@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IClientRepository, ClientRepository>();
         services.AddScoped<IApiScopeRepository, ApiScopeRepository>();
         services.AddScoped<IApiResourceRepository, ApiResourceRepository>();
+        services.AddScoped<SyncCache>();
 
         return services;
     }

@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Masa.Utils.Exceptions" Version="0.5.0-preview.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.5" />
   </ItemGroup>
 

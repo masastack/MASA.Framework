@@ -25,7 +25,7 @@ public class ApiResourceCache : IApiResourceCache
         return apiResources;
     }
 
-    public async Task AddOrUpdateAsync(ApiResource apiResource)
+    public async Task SetAsync(ApiResource apiResource)
     {
         string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
         await _memoryCacheClient.SetAsync(key, apiResource.ToModel());
@@ -37,8 +37,14 @@ public class ApiResourceCache : IApiResourceCache
         await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
     }
 
-    public async Task AddAllAsync(List<ApiResource> apiResources)
+    public async Task AddAllAsync(IEnumerable<ApiResource> apiResources)
     {
         await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, apiResources.Select(apiResource => apiResource.ToModel()));
+    }
+
+    public async Task SetRangeAsync(IEnumerable<ApiResource> apiResources)
+    {
+        var data = apiResources.ToDictionary(apiResource => $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}", apiResource => apiResource.ToModel());
+        await _memoryCacheClient.SetListAsync(data);
     }
 }

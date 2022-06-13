@@ -35,6 +35,7 @@ public class ApiScopeRepository : IApiScopeRepository
     {
         var apiScope = await _context.Set<ApiScope>()
                          .Include(apiScope => apiScope.UserClaims)
+                         .ThenInclude(apiScope => apiScope.UserClaim)
                          .Include(apiScope => apiScope.Properties)
                          .FirstOrDefaultAsync(apiScope => apiScope.Id == id);
 
@@ -59,10 +60,14 @@ public class ApiScopeRepository : IApiScopeRepository
 
     public async ValueTask<ApiScope> AddAsync(ApiScope apiScope)
     {
+        var exist = await _context.Set<ApiScope>().CountAsync(a => a.Name == apiScope.Name) > 0;
+        if (exist)
+            throw new UserFriendlyException($"ApiScope with name {apiScope.Name} already exists");
+
         var newApiScope = await _context.AddAsync(apiScope);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiScope.Id));
-        await UpdateCacheAsync();
+        var detail = await GetDetailAsync(apiScope.Id);
+        await _cache.SetAsync(detail!);
         return apiScope;
     }
 
@@ -70,8 +75,8 @@ public class ApiScopeRepository : IApiScopeRepository
     {
         var newApiScope = _context.Update(apiScope);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiScope.Id));
-        await UpdateCacheAsync();
+        var detail = await GetDetailAsync(apiScope.Id);
+        await _cache.SetAsync(detail!);
         return apiScope;
     }
 
@@ -79,12 +84,5 @@ public class ApiScopeRepository : IApiScopeRepository
     {
         _context.Remove(apiScope);
         await _cache.RemoveAsync(apiScope);
-        await UpdateCacheAsync();
-    }
-
-    private async Task UpdateCacheAsync()
-    {
-        var apiScopes = await GetListAsync();
-        await _cache.AddAllAsync(apiScopes);
     }
 }

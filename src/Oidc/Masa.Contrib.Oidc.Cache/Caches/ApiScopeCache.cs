@@ -25,7 +25,7 @@ public class ApiScopeCache : IApiScopeCache
         return ApiScopes;
     }
 
-    public async Task AddOrUpdateAsync(ApiScope apiScope)
+    public async Task SetAsync(ApiScope apiScope)
     {
         string key = $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Name}";
         await _memoryCacheClient.SetAsync(key, apiScope.ToModel());
@@ -37,8 +37,14 @@ public class ApiScopeCache : IApiScopeCache
         await _memoryCacheClient.RemoveAsync<ApiScopeModel>(key);
     }
 
-    public async Task AddAllAsync(List<ApiScope> apiScopes)
+    public async Task AddAllAsync(IEnumerable<ApiScope> apiScopes)
     {
         await _memoryCacheClient.SetAsync(CacheKeyConstants.API_SCOPE_KEY, apiScopes.Select(apiScope => apiScope.ToModel()));
+    }
+
+    public async Task SetRangeAsync(IEnumerable<ApiScope> apiScopes)
+    {
+        var data = apiScopes.ToDictionary(apiScope => $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Name}", apiScope => apiScope.ToModel());
+        await _memoryCacheClient.SetListAsync(data);
     }
 }

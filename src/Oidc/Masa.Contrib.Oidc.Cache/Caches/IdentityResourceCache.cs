@@ -25,7 +25,7 @@ public class IdentityResourceCache : IIdentityResourceCache
         return identityResources;
     }
 
-    public async Task AddOrUpdateAsync(IdentityResource identityResource)
+    public async Task SetAsync(IdentityResource identityResource)
     {
         string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
         await _memoryCacheClient.SetAsync(key, identityResource.ToModel());
@@ -37,8 +37,14 @@ public class IdentityResourceCache : IIdentityResourceCache
         await _memoryCacheClient.RemoveAsync<IdentityResourceModel>(key);
     }
 
-    public async Task AddAllAsync(List<IdentityResource> identityResources)
+    public async Task AddAllAsync(IEnumerable<IdentityResource> identityResources)
     {
         await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, identityResources.Select(identityResource => identityResource.ToModel()));
+    }
+
+    public async Task SetRangeAsync(IEnumerable<IdentityResource> identityResources)
+    {
+        var data = identityResources.ToDictionary(idrs => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{idrs.Name}", idrs => idrs.ToModel());
+        await _memoryCacheClient.SetListAsync(data);
     }
 }

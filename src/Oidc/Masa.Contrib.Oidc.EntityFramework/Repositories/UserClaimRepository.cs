@@ -55,6 +55,10 @@ public class UserClaimRepository : IUserClaimRepository
 
     public async ValueTask<UserClaim> AddAsync(UserClaim userClaim)
     {
+        var exist = await _context.Set<UserClaim>().CountAsync(uc => uc.Name == userClaim.Name) > 0;
+        if (exist)
+            throw new UserFriendlyException($"UserClaim with name {userClaim.Name} already exists");
+
         var newUserClaim = await _context.AddAsync(userClaim);
         await _context.SaveChangesAsync();
         return newUserClaim.Entity;

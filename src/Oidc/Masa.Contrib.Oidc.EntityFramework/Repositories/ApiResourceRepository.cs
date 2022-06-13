@@ -35,8 +35,10 @@ public class ApiResourceRepository : IApiResourceRepository
     {
         var apiResource = await _context.Set<ApiResource>()
                         .Include(apiResource => apiResource.UserClaims)
+                        .ThenInclude(userClaim => userClaim.UserClaim)
                         .Include(apiResource => apiResource.Properties)
                         .Include(apiResource => apiResource.ApiScopes)
+                        .ThenInclude(apiScope => apiScope.ApiScope)
                         .FirstOrDefaultAsync(apiResource => apiResource.Id == id);
 
         return apiResource;
@@ -60,18 +62,22 @@ public class ApiResourceRepository : IApiResourceRepository
 
     public async ValueTask<ApiResource> AddAsync(ApiResource apiResource)
     {
+        var exist = await _context.Set<ApiResource>().CountAsync(a => a.Name == apiResource.Name) > 0;
+        if (exist)
+            throw new UserFriendlyException($"ApiResource with name {apiResource.Name} already exists");
+
         var newApiResource = await _context.AddAsync(apiResource);
         await _context.SaveChangesAsync();
-        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiResource.Id));
-        await UpdateCacheAsync();
+        await _cache.SetAsync(newApiResource.Entity);
+        await SyncAllCacheAsync();
         return apiResource;
     }
 
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
         var newApiResource = _context.Update(apiResource);
-        await _cache.AddOrUpdateAsync(await GetDetailAsync(apiResource.Id));
-        await UpdateCacheAsync();
+        await _cache.SetAsync(newApiResource.Entity);
+        await SyncAllCacheAsync();
         return apiResource;
     }
 
@@ -79,12 +85,19 @@ public class ApiResourceRepository : IApiResourceRepository
     {
         _context.Remove(apiResource);
         await _cache.RemoveAsync(apiResource);
-        await UpdateCacheAsync();
+        await SyncAllCacheAsync();
     }
 
-    private async Task UpdateCacheAsync()
+    private async Task SyncAllCacheAsync()
     {
-        var apiScopes = await GetListAsync();
-        await _cache.AddAllAsync(apiScopes);
+        var apiResource = await _context.Set<ApiResource>()
+                        .Include(apiResource => apiResource.UserClaims)
+                        .ThenInclude(userClaim => userClaim.UserClaim)
+                        .Include(apiResource => apiResource.Properties)
+                        .Include(apiResource => apiResource.ApiScopes)
+                        .ThenInclude(apiScope => apiScope.ApiScope)
+                        .AsSplitQuery()
+                        .ToListAsync();
+        await _cache.AddAllAsync(apiResource);
     }
 }

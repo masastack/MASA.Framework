@@ -18,7 +18,7 @@ public class ClientCache : IClientCache
         return await _memoryCacheClient.GetAsync<ClientModel>(key);
     }
 
-    public async Task AddOrUpdateAsync(Client client)
+    public async Task SetAsync(Client client)
     {
         string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
         await _memoryCacheClient.SetAsync(key, client.ToModel());
@@ -28,5 +28,11 @@ public class ClientCache : IClientCache
     {
         string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
         await _memoryCacheClient.RemoveAsync<ClientModel>(key);
+    }
+
+    public async Task SetRangeAsync(IEnumerable<Client> clients)
+    {
+        var data = clients.ToDictionary(client => $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}", client => client.ToModel());
+        await _memoryCacheClient.SetListAsync(data);
     }
 }
