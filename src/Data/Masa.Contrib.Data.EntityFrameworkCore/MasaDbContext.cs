@@ -8,6 +8,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     protected readonly IDataFilter? DataFilter;
     protected readonly MasaDbContextOptions Options;
     protected IDomainEventBus? DomainEventBus => Options.ServiceProvider.GetService<IDomainEventBus>();
+    private IConcurrencyStampProvider _concurrencyStampProvider => Options.ServiceProvider.GetRequiredService<IConcurrencyStampProvider>();
 
     public MasaDbContext(MasaDbContextOptions options) : base(options)
     {
@@ -101,6 +102,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     {
         if (Options != null)
         {
+            UpdateRowVesion(ChangeTracker);
             OnBeforeSaveChangesByFilters();
             DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
         }
@@ -110,6 +112,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     {
         if (Options != null)
         {
+            UpdateRowVesion(ChangeTracker);
             OnBeforeSaveChangesByFilters();
             await DomainEventEnqueueAsync(ChangeTracker);
         }
@@ -150,6 +153,17 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
             await DomainEventBus.Enqueue(domainEvent);
     }
 
+    protected virtual void UpdateRowVesion(ChangeTracker changeTracker)
+    {
+        var entries = changeTracker.Entries().Where(entry
+            => (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.State == EntityState.Deleted) &&
+            entry.Entity is IHasConcurrencyStamp);
+        foreach (var entity in entries)
+        {
+            entity.CurrentValues[nameof(IHasConcurrencyStamp.RowVersion)] = _concurrencyStampProvider.GetRowVersion();
+        }
+    }
+
     /// <summary>
     /// Automatic soft delete.
     /// <inheritdoc/>
@@ -181,7 +195,8 @@ public abstract class MasaDbContext<TDbContext> : MasaDbContext
 
     protected override void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
     {
-        var methodInfo = typeof(MasaDbContext<TDbContext>).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
+        var methodInfo =
+            typeof(MasaDbContext<TDbContext>).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         ServiceLifetime optionsLifetime)
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
     {
+        services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
 
