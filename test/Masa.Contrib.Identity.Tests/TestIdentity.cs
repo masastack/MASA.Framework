@@ -10,7 +10,7 @@ public class TestIdentity
     public void TestIdentityClaimOptionsReturnTenantIdEqualTenantId()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(identityClaimOptions =>
+        services.AddMasaIdentity(IdentityType.Isolation, identityClaimOptions =>
         {
             identityClaimOptions.TenantId = "TenantId";
         });
@@ -32,7 +32,52 @@ public class TestIdentity
     }
 
     [TestMethod]
-    public void TestReturnUserIdEqual1()
+    public void TestAddIsolationIdentityReturnUserIdEqual1AndTenantIdEqual1()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.Isolation);
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new List<ClaimsIdentity>()
+            {
+                new(new List<Claim>()
+                {
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new(ClaimType.DEFAULT_TENANT_ID, "1"),
+                    new(ClaimType.DEFAULT_ENVIRONMENT, "dev")
+                })
+            })
+        };
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+
+        Assert.IsTrue(userContext.UserId == "1");
+
+        var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
+        Assert.IsNotNull(multiTenantUserContext);
+
+        Assert.IsTrue(multiTenantUserContext.TenantId == "1");
+
+        var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
+        Assert.IsNotNull(multiEnvironmentUserContext);
+
+        Assert.IsTrue(multiEnvironmentUserContext.Environment == "dev");
+
+        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        Assert.IsNotNull(isolationUserContext);
+
+        Assert.IsTrue(isolationUserContext.IsAuthenticated);
+        Assert.IsTrue(isolationUserContext.UserId == "1");
+        Assert.IsTrue(isolationUserContext.UserName == "Jim");
+        Assert.IsTrue(isolationUserContext.TenantId == "1");
+        Assert.IsTrue(isolationUserContext.Environment == "dev");
+    }
+
+    [TestMethod]
+    public void TestAddSimpleIdentityReturnUserIdEqual1()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentity();
@@ -44,18 +89,62 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new("sub", "1"),
-                    new("given_name", "Jim"),
-                    new("tenant_id", "1")
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new(ClaimType.DEFAULT_TENANT_ID, "1")
                 })
             })
         };
-        var userContext = serviceProvider.GetRequiredService<IUserContext>();
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
         Assert.IsTrue(userContext.IsAuthenticated);
         Assert.IsTrue(userContext.UserId == "1");
         Assert.IsTrue(userContext.UserName == "Jim");
-        Assert.IsTrue(userContext.TenantId == "1");
-        Assert.IsNull(userContext.Environment);
+
+        var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
+        Assert.IsNull(multiTenantUserContext);
+
+        var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
+        Assert.IsNull(multiEnvironmentUserContext);
+
+        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        Assert.IsNull(isolationUserContext);
+    }
+
+    [TestMethod]
+    public void TestAddMultiTenantIdentityReturnTenantIdIs1()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentity(IdentityType.MultiTenant);
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new List<ClaimsIdentity>()
+            {
+                new(new List<Claim>()
+                {
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new(ClaimType.DEFAULT_TENANT_ID, "1")
+                })
+            })
+        };
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+        Assert.IsTrue(userContext.IsAuthenticated);
+        Assert.IsTrue(userContext.UserId == "1");
+        Assert.IsTrue(userContext.UserName == "Jim");
+
+        var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
+        Assert.IsNotNull(multiTenantUserContext);
+        Assert.IsTrue(multiTenantUserContext.TenantId == "1");
+
+        var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
+        Assert.IsNull(multiEnvironmentUserContext);
+
+        var isolationUserContext = serviceProvider.GetService<IIsolationUserContext>();
+        Assert.IsNull(isolationUserContext);
     }
 
     [TestMethod]
@@ -71,9 +160,8 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new("sub", "1"),
-                    new("given_name", "Jim"),
-                    new("tenant_id", "1")
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim")
                 })
             })
         };
@@ -83,23 +171,17 @@ public class TestIdentity
         var user = new IdentityUser()
         {
             Id = "2",
-            UserName = "Tom",
-            Environment = "Production",
-            TenantId = "2"
+            UserName = "Tom"
         };
         using (userSetter.Change(user))
         {
             Assert.IsTrue(userContext.IsAuthenticated);
             Assert.IsTrue(userContext.UserId == "2");
             Assert.IsTrue(userContext.UserName == "Tom");
-            Assert.IsTrue(userContext.TenantId == "2");
-            Assert.IsTrue(userContext.Environment == "Production");
         }
 
         Assert.IsTrue(userContext.IsAuthenticated);
         Assert.IsTrue(userContext.UserId == "1");
         Assert.IsTrue(userContext.UserName == "Jim");
-        Assert.IsTrue(userContext.TenantId == "1");
-        Assert.IsNull(userContext.Environment);
     }
 }

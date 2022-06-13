@@ -15,9 +15,9 @@ public class IdentityClaimOptions
 
     public IdentityClaimOptions()
     {
-        UserId = "sub";
-        UserName = "given_name";
-        TenantId = "tenant_id";
-        Environment = "environment";
+        UserId = ClaimType.DEFAULT_USER_ID;
+        UserName = ClaimType.DEFAULT_USER_NAME;
+        TenantId = ClaimType.DEFAULT_TENANT_ID;
+        Environment = ClaimType.DEFAULT_ENVIRONMENT;
     }
 }
