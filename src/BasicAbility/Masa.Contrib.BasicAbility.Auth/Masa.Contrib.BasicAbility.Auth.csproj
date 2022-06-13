@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Masa.Utils.Configuration.Json" Version="$(MasaUtilsPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.1" />
+    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="$(MasaUtilsPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
