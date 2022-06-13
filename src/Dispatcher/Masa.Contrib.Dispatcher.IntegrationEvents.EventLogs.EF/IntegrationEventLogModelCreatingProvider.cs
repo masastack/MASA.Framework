@@ -34,9 +34,10 @@ public class IntegrationEventLogModelCreatingProvider : IModelCreatingProvider
         builder.Property(e => e.TimesSent)
             .IsRequired();
 
-        builder.Property(e => e.RowVersion)
+        builder.Property(nameof(IHasConcurrencyStamp.RowVersion))
+            .IsConcurrencyToken()
             .HasMaxLength(36)
-            .IsRequired();
+            .HasColumnName(nameof(IHasConcurrencyStamp.RowVersion));
 
         builder.Property(e => e.EventTypeName)
             .IsRequired();

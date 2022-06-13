@@ -20,7 +20,8 @@ public class SoftDeleteSaveChangesFilter<TDbContext> : ISaveChangesFilter where 
             return;
 
         changeTracker.DetectChanges();
-        foreach (var entity in changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted))
+        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted);
+        foreach (var entity in entries)
         {
             if (entity.Entity is ISoftDelete)
             {

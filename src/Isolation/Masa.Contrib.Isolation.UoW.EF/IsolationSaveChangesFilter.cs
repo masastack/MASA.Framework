@@ -19,7 +19,8 @@ public class IsolationSaveChangesFilter<TKey> : ISaveChangesFilter where TKey : 
     public void OnExecuting(ChangeTracker changeTracker)
     {
         changeTracker.DetectChanges();
-        foreach (var entity in changeTracker.Entries().Where(entry => entry.State == EntityState.Added))
+        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Added);
+        foreach (var entity in entries)
         {
             if (entity.Entity is IMultiTenant<TKey> && _tenantContext != null)
             {
