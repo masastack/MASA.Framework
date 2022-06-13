@@ -10,7 +10,7 @@ public class MultiTenantMiddleware : IIsolationMiddleware
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly ITenantContext _tenantContext;
     private readonly ITenantSetter _tenantSetter;
-    private readonly IUserContext? _userContext;
+    private readonly IMultiTenantUserContext? _tenantUserContext;
     private readonly string _tenantKey;
     private bool _handled;
 
@@ -22,7 +22,7 @@ public class MultiTenantMiddleware : IIsolationMiddleware
         _logger = _serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
         _tenantContext = _serviceProvider.GetRequiredService<ITenantContext>();
         _tenantSetter = _serviceProvider.GetRequiredService<ITenantSetter>();
-        _userContext = _serviceProvider.GetService<IUserContext>();
+        _tenantUserContext = _serviceProvider.GetService<IMultiTenantUserContext>();
     }
 
     public async Task HandleAsync()
@@ -36,9 +36,9 @@ public class MultiTenantMiddleware : IIsolationMiddleware
             return;
         }
 
-        if (_userContext is { IsAuthenticated: true, TenantId: { } })
+        if (_tenantUserContext is { IsAuthenticated: true, TenantId: { } })
         {
-            var tenant = new Tenant(_userContext.TenantId);
+            var tenant = new Tenant(_tenantUserContext.TenantId);
             _tenantSetter.SetTenant(tenant);
             return;
         }

@@ -3,13 +3,15 @@
 
 namespace Masa.Contrib.Identity;
 
-public sealed class DefaultUserContext : UserContext
+public sealed class DefaultMultiEnvironmentUserContext: UserContext, IMultiEnvironmentUserContext
 {
+    public string? Environment => GetUser<IdentityMultiEnvironmentUser>()?.Environment;
+
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
-    public DefaultUserContext(
+    public DefaultMultiEnvironmentUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
         IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
@@ -19,7 +21,7 @@ public sealed class DefaultUserContext : UserContext
         _optionsMonitor = optionsMonitor;
     }
 
-    protected override IdentityIsolationUser? GetUser()
+    protected override IdentityMultiEnvironmentUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -29,10 +31,11 @@ public sealed class DefaultUserContext : UserContext
         if (userId == null)
             return null;
 
-        return new IdentityIsolationUser
+        return new IdentityMultiEnvironmentUser
         {
             Id = userId,
-            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName)
+            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
+            Environment = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.Environment),
         };
     }
 }

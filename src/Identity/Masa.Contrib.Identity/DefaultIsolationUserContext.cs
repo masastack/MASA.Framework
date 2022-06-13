@@ -3,13 +3,17 @@
 
 namespace Masa.Contrib.Identity;
 
-public sealed class DefaultUserContext : UserContext
+public sealed class DefaultIsolationUserContext : UserContext, IIsolationUserContext
 {
+    public string? TenantId => GetUser<IdentityIsolationUser>()?.TenantId;
+
+    public string? Environment => GetUser<IdentityIsolationUser>()?.Environment;
+
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
-    public DefaultUserContext(
+    public DefaultIsolationUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
         IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
@@ -17,6 +21,15 @@ public sealed class DefaultUserContext : UserContext
     {
         _currentPrincipalAccessor = currentPrincipalAccessor;
         _optionsMonitor = optionsMonitor;
+    }
+
+    public TTenantId? GetTenantId<TTenantId>()
+    {
+        var tenantId = TenantId;
+        if (tenantId == null)
+            return default;
+
+        return TypeConvertProvider.ConvertTo<TTenantId>(tenantId);
     }
 
     protected override IdentityIsolationUser? GetUser()
@@ -32,7 +45,9 @@ public sealed class DefaultUserContext : UserContext
         return new IdentityIsolationUser
         {
             Id = userId,
-            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName)
+            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
+            TenantId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
+            Environment = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.Environment),
         };
     }
 }
