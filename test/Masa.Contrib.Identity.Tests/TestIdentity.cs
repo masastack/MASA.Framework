@@ -27,7 +27,7 @@ public class TestIdentity
         services.AddMasaIdentity();
         var serviceProvider = services.BuildServiceProvider();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>();
-        Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == "tenantid");
+        Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == "tenant_id");
         Assert.IsTrue(optionsMonitor.CurrentValue.Environment == "environment");
     }
 
@@ -44,9 +44,9 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new(ClaimTypes.NameIdentifier, "1"),
-                    new(ClaimTypes.Name, "Jim"),
-                    new("tenantid", "1")
+                    new("sub", "1"),
+                    new("given_name", "Jim"),
+                    new("tenant_id", "1")
                 })
             })
         };
@@ -71,9 +71,9 @@ public class TestIdentity
             {
                 new(new List<Claim>()
                 {
-                    new(ClaimTypes.NameIdentifier, "1"),
-                    new(ClaimTypes.Name, "Jim"),
-                    new("tenantid", "1")
+                    new("sub", "1"),
+                    new("given_name", "Jim"),
+                    new("tenant_id", "1")
                 })
             })
         };
