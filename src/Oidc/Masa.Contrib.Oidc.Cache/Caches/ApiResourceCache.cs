@@ -28,29 +28,7 @@ public class ApiResourceCache : IApiResourceCache
     public async Task AddOrUpdateAsync(ApiResource apiResource)
     {
         string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
-        await _memoryCacheClient.SetAsync(key, new ApiResourceModel(apiResource.Name, apiResource.DisplayName, apiResource.UserClaims.Select(uc => uc.UserClaim.Name).ToList())
-        {
-            Scopes = apiResource.ApiScopes.Select(a => a.ApiScope.Name).ToList(),
-            ApiSecrets = apiResource.Secrets.Select(s => new SecretModel(s.Value, s.Description, s.Expiration)).ToList(),
-            AllowedAccessTokenSigningAlgorithms = Convert(apiResource.AllowedAccessTokenSigningAlgorithms),
-            Enabled = apiResource.Enabled,
-            Description = apiResource.Description,
-            ShowInDiscoveryDocument = apiResource.ShowInDiscoveryDocument,
-        });
-
-        ICollection<string> Convert(string sourceMember)
-        {
-            var list = new HashSet<string>();
-            if (!string.IsNullOrWhiteSpace(sourceMember))
-            {
-                sourceMember = sourceMember.Trim();
-                foreach (var item in sourceMember.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Distinct())
-                {
-                    list.Add(item);
-                }
-            }
-            return list;
-        }
+        await _memoryCacheClient.SetAsync(key, apiResource.ToModel());
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
@@ -61,6 +39,6 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task AddAllAsync(List<ApiResource> apiResources)
     {
-        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, apiResources);
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, apiResources.Select(apiResource => apiResource.ToModel()));
     }
 }

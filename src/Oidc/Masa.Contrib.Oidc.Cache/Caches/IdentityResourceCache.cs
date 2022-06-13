@@ -28,14 +28,7 @@ public class IdentityResourceCache : IIdentityResourceCache
     public async Task AddOrUpdateAsync(IdentityResource identityResource)
     {
         string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
-        await _memoryCacheClient.SetAsync(key, new IdentityResourceModel(identityResource.Name, identityResource.DisplayName, identityResource.UserClaims.Select(uc => uc.UserClaim.Name).ToList())
-        {
-            Required = identityResource.Required,
-            Emphasize = identityResource.Emphasize,
-            Enabled = identityResource.Enabled,
-            Description = identityResource.Description,
-            ShowInDiscoveryDocument = identityResource.ShowInDiscoveryDocument,
-        });
+        await _memoryCacheClient.SetAsync(key, identityResource.ToModel());
     }
 
     public async Task RemoveAsync(IdentityResource identityResource)
@@ -46,6 +39,6 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task AddAllAsync(List<IdentityResource> identityResources)
     {
-        await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, identityResources);
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, identityResources.Select(identityResource => identityResource.ToModel()));
     }
 }
