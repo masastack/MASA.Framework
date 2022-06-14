@@ -23,7 +23,7 @@ Masa.Contrib.Data.Mapping.Mapster is an object-to-object mapper based on [Mapste
 2. Using `Mapping`
 
     ```` C#
-    builder.Services.AddMapping();
+    builder.Services.AddMapster();
     ````
 
 3. Mapping objects

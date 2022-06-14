@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EntityFrameworkCore;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -116,7 +116,7 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             return services;
 
-        string name = Options.DefaultName;
+        string name = Microsoft.Extensions.Options.Options.DefaultName;
         var configurationSection = configuration.GetSection(sectionName);
         if (!configurationSection.Exists())
             return services;

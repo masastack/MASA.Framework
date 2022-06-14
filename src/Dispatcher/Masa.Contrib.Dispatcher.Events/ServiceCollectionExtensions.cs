@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, assemblies).Build(lifetime));
-        services.AddSingleton(new Internal.Dispatch.Dispatcher(services, assemblies).Build(lifetime));
+        services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, assemblies, true).Build(lifetime));
-        services.AddSingleton(new Internal.Dispatch.Dispatcher(services, assemblies).Build(lifetime));
+        services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
