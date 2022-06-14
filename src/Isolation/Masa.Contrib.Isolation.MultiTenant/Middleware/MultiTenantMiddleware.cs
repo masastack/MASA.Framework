@@ -14,7 +14,10 @@ public class MultiTenantMiddleware : IIsolationMiddleware
     private readonly string _tenantKey;
     private bool _handled;
 
-    public MultiTenantMiddleware(IServiceProvider serviceProvider, string tenantKey, IEnumerable<IParserProvider>? parserProviders)
+    public MultiTenantMiddleware(
+        IServiceProvider serviceProvider,
+        string tenantKey,
+        IEnumerable<IParserProvider>? parserProviders)
     {
         _serviceProvider = serviceProvider;
         _tenantKey = tenantKey;

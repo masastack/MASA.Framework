@@ -14,7 +14,9 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
     private readonly string _environmentKey;
     private bool _handled;
 
-    public MultiEnvironmentMiddleware(IServiceProvider serviceProvider, string environmentKey,
+    public MultiEnvironmentMiddleware(
+        IServiceProvider serviceProvider,
+        string environmentKey,
         IEnumerable<IParserProvider>? parserProviders)
     {
         _serviceProvider = serviceProvider;
