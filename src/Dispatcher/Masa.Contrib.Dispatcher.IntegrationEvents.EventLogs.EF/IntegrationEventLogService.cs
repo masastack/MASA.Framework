@@ -27,7 +27,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">default: 60s</param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
+        int maxRetryTimes = 10, int minimumRetryInterval = 60)
     {
         //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
         var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
@@ -75,7 +76,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.Published, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.Published}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                throw new UserFriendlyException(
+                    $"Failed to modify the state of the local message table to {IntegrationEventStates.Published}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
@@ -89,7 +91,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                throw new UserFriendlyException(
+                    $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
@@ -103,7 +106,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
                     IntegrationEventStates.PublishedFailed, eventLog.State, eventLog.Id);
-                throw new UserFriendlyException($"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
+                throw new UserFriendlyException(
+                    $"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
         });
     }
@@ -124,7 +128,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
     private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
     {
-        var eventLogEntry = _eventLogContext.EventLogs.AsNoTracking().FirstOrDefault(e => e.EventId == eventId);
+        var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
             throw new ArgumentException(nameof(eventId));
 
@@ -136,47 +140,27 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (status == IntegrationEventStates.InProgress)
             eventLogEntry.TimesSent++;
 
-        await UpdateAsync(eventLogEntry);
+        _eventLogContext.EventLogs.Update(eventLogEntry);
+
+        try
+        {
+            await _eventLogContext.DbContext.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger?.LogWarning(
+                ex,
+                "Concurrency error, Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
+                status, eventLogEntry.State, eventLogEntry.Id);
+            throw new UserFriendlyException("Concurrency conflict, update exception");
+        }
+
+        CheckAndDetached(eventLogEntry);
     }
 
     private void CheckAndDetached(IntegrationEventLog integrationEvent)
     {
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
             _eventLogContext.DbContext.Entry(integrationEvent).State = EntityState.Detached;
-    }
-
-    /// <summary>
-    /// By using SQL statements to handle high concurrency, reduce the dependence on the database
-    /// Turning on a transactional operation makes the operation atomic
-    /// Retrying the task operation in the background will not open the transaction, so that the task will only be executed once in high concurrency scenarios
-    /// </summary>
-    /// <param name="eventLogEntry"></param>
-    private async Task UpdateAsync(IntegrationEventLog eventLogEntry)
-    {
-        string eventIdColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.EventId));
-        string stateColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.State));
-        string modificationTimeColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.ModificationTime));
-        string timesSentColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.TimesSent));
-        string rowVersionColumn = _eventLogContext.DbContext.GetPropertyName<IntegrationEventLog>(nameof(IntegrationEventLog.RowVersion));
-        string tableName = _eventLogContext.DbContext.GetTableName<IntegrationEventLog>();
-        var newVersion = Guid.NewGuid().ToString();
-
-        string updateSql = $"UPDATE { tableName } set [{ stateColumn }] = {{0}}, [{modificationTimeColumn }] = {{1}}, [{ timesSentColumn }] = {{2}}, [{ rowVersionColumn }] = {{3}} where [{ eventIdColumn }] = {{4}} and [{ rowVersionColumn }] = {{5}};";
-        await ExecuteAsync(updateSql, new object[]
-        {
-            (int)eventLogEntry.State,
-            eventLogEntry.ModificationTime,
-            eventLogEntry.TimesSent,
-            newVersion,
-            eventLogEntry.EventId,
-            eventLogEntry.RowVersion
-        });
-    }
-
-    private async Task ExecuteAsync(string updateSql, params object[] parameters)
-    {
-        var effectRow = await _eventLogContext.DbContext.Database.ExecuteSqlRawAsync(updateSql, parameters);
-        if (effectRow == 0)
-            throw new UserFriendlyException("Concurrency conflict, update exception");
     }
 }
