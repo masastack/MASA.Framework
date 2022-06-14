@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation.UoW.EF;
 
-public class IsolationSaveChangesFilter<TKey> : ISaveChangesFilter where TKey : IComparable
+public class IsolationSaveChangesFilter<TTenantId> : ISaveChangesFilter where TTenantId : IComparable
 {
     private readonly ITenantContext? _tenantContext;
     private readonly IConvertProvider? _convertProvider;
@@ -22,17 +22,17 @@ public class IsolationSaveChangesFilter<TKey> : ISaveChangesFilter where TKey : 
         var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Added);
         foreach (var entity in entries)
         {
-            if (entity.Entity is IMultiTenant<TKey> && _tenantContext != null)
+            if (entity.Entity is IMultiTenant<TTenantId> && _tenantContext != null)
             {
                 if (_tenantContext.CurrentTenant != null && !string.IsNullOrEmpty(_tenantContext.CurrentTenant.Id))
                 {
                     ArgumentNullException.ThrowIfNull(_convertProvider, nameof(_convertProvider));
-                    object tenantId = _convertProvider.ChangeType(_tenantContext.CurrentTenant.Id, typeof(TKey));
-                    entity.CurrentValues[nameof(IMultiTenant<TKey>.TenantId)] = tenantId;
+                    object tenantId = _convertProvider.ChangeType(_tenantContext.CurrentTenant.Id, typeof(TTenantId));
+                    entity.CurrentValues[nameof(IMultiTenant<TTenantId>.TenantId)] = tenantId;
                 }
                 else
                 {
-                    entity.CurrentValues[nameof(IMultiTenant<TKey>.TenantId)] = default(TKey);
+                    entity.CurrentValues[nameof(IMultiTenant<TTenantId>.TenantId)] = default(TTenantId);
                 }
             }
 

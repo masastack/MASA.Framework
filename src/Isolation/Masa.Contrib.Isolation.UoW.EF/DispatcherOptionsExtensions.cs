@@ -14,18 +14,30 @@ public static class DispatcherOptionsExtensions
         where TDbContext : MasaDbContext, IMasaDbContext
         => eventBusBuilder.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
-    public static IEventBusBuilder UseIsolationUoW<TDbContext, TKey>(
+    public static IEventBusBuilder UseIsolationUoW<TDbContext, TTenantId>(
         this IEventBusBuilder eventBusBuilder,
         Action<IsolationBuilder> isolationBuilder,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
-        where TKey : IComparable
+        where TTenantId : IComparable
+        => eventBusBuilder.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(isolationBuilder, optionsBuilder, disableRollbackOnFailure,
+            useTransaction);
+
+    public static IEventBusBuilder UseIsolationUoW<TDbContext, TTenantId, TUserId>(
+        this IEventBusBuilder eventBusBuilder,
+        Action<IsolationBuilder> isolationBuilder,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext, IMasaDbContext
+        where TTenantId : IComparable
+        where TUserId : IComparable
     {
-        eventBusBuilder.Services.UseIsolationUoW<TKey>();
+        eventBusBuilder.Services.UseIsolationUoW<TTenantId>();
         return eventBusBuilder.UseIsolation(isolationBuilder)
-                              .UseUoW<TDbContext>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+            .UseUoW<TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
     }
 
     public static IDispatcherOptions UseIsolationUoW<TDbContext>(
@@ -37,20 +49,33 @@ public static class DispatcherOptionsExtensions
         where TDbContext : MasaDbContext, IMasaDbContext
         => options.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
-    public static IDispatcherOptions UseIsolationUoW<TDbContext, TKey>(
+    public static IDispatcherOptions UseIsolationUoW<TDbContext, TTenantId>(
         this IDispatcherOptions options,
         Action<IsolationBuilder> isolationBuilder,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
-        where TKey : IComparable
+        where TTenantId : IComparable
+        => options.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(isolationBuilder, optionsBuilder, disableRollbackOnFailure,
+            useTransaction);
+
+    public static IDispatcherOptions UseIsolationUoW<TDbContext, TTenantId, TUserId>(
+        this IDispatcherOptions options,
+        Action<IsolationBuilder> isolationBuilder,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext, IMasaDbContext
+        where TTenantId : IComparable
+        where TUserId : IComparable
     {
-        options.Services.UseIsolationUoW<TKey>();
+        options.Services.UseIsolationUoW<TTenantId>();
         return options.UseIsolation(isolationBuilder)
-                      .UseUoW<TDbContext>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+            .UseUoW<TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
     }
 
-    private static void UseIsolationUoW<TKey>(this IServiceCollection services) where TKey : IComparable
-        => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(IsolationSaveChangesFilter<TKey>), ServiceLifetime.Scoped));
+    private static void UseIsolationUoW<TTenantId>(this IServiceCollection services) where TTenantId : IComparable
+        => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(IsolationSaveChangesFilter<TTenantId>),
+            ServiceLifetime.Scoped));
 }

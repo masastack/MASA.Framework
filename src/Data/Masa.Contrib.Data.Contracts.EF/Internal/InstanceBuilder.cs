@@ -5,7 +5,7 @@ namespace Masa.Contrib.Data.Contracts.EF.Internal;
 
 internal class InstanceBuilder
 {
-    internal delegate object InvokeDelegate(params object[] parameters);
+    internal delegate object InvokeDelegate(params object?[] parameters);
 
     public static InvokeDelegate CreateInstanceDelegate(ConstructorInfo constructorInfo)
     {
