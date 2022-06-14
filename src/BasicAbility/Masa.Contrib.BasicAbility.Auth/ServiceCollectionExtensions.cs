@@ -30,7 +30,6 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
-            Singleton<IServiceProvider>.Instance = serviceProvider;
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
             var authClient = new AuthClient(callProvider);
             return authClient;
