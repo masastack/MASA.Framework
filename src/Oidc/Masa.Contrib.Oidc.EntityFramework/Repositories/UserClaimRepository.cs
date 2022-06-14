@@ -68,7 +68,7 @@ public class UserClaimRepository : IUserClaimRepository
     {
         var newUserClaim = _context.Update(userClaim);
         await _context.SaveChangesAsync();
-        return userClaim;
+        return newUserClaim.Entity;
     }
 
     public async Task RemoveAsync(UserClaim userClaim)

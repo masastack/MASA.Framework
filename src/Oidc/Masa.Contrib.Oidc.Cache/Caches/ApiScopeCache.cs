@@ -28,23 +28,45 @@ public class ApiScopeCache : IApiScopeCache
     public async Task SetAsync(ApiScope apiScope)
     {
         string key = $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Name}";
-        await _memoryCacheClient.SetAsync(key, apiScope.ToModel());
+        var model = apiScope.ToModel();
+        await _memoryCacheClient.SetAsync(key, model);
+        // update list cache
+        var list = await GetListAsync();
+        list.Set(model, item => item.Name);
+        await UpdateListAsync(list);
+    }
+
+    public async Task SetRangeAsync(IEnumerable<ApiScope> apiScopes)
+    {
+        var models = apiScopes.Select(apiScope => apiScope.ToModel());
+        var data = models.ToDictionary(model => $"{CacheKeyConstants.API_SCOPE_KEY}_{model.Name}", model => model);
+        await _memoryCacheClient.SetListAsync(data);
+        // update list cache
+        var list = await GetListAsync();
+        list.SetRange(models, item => item.Name);
+        await UpdateListAsync(list);
     }
 
     public async Task RemoveAsync(ApiScope apiScope)
     {
         string key = $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Name}";
         await _memoryCacheClient.RemoveAsync<ApiScopeModel>(key);
+        // update list cache
+        var list = await GetListAsync();
+        list.Remove(item => item.Name == apiScope.Name);
+        await UpdateListAsync(list);
     }
 
-    public async Task AddAllAsync(IEnumerable<ApiScope> apiScopes)
+    public async Task ResetAsync(IEnumerable<ApiScope> apiScopes)
     {
-        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_SCOPE_KEY, apiScopes.Select(apiScope => apiScope.ToModel()));
+        var models = apiScopes.Select(apiScope => apiScope.ToModel());
+        await UpdateListAsync(models);
+        var map = models.ToDictionary(model => $"{CacheKeyConstants.API_SCOPE_KEY}_{model.Name}", model => model);
+        await _memoryCacheClient.SetListAsync(map);
     }
 
-    public async Task SetRangeAsync(IEnumerable<ApiScope> apiScopes)
+    private async Task UpdateListAsync(IEnumerable<ApiScopeModel> models)
     {
-        var data = apiScopes.ToDictionary(apiScope => $"{CacheKeyConstants.API_SCOPE_KEY}_{apiScope.Name}", apiScope => apiScope.ToModel());
-        await _memoryCacheClient.SetListAsync(data);
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_SCOPE_KEY, models);
     }
 }

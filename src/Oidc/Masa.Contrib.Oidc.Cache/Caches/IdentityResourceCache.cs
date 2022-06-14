@@ -16,7 +16,7 @@ public class IdentityResourceCache : IIdentityResourceCache
     {
         var keys = names.Select(name => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{name}");
         var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys.ToArray());
-        return identityResources.Where(i => i is not null).ToList()!;
+        return identityResources.Where(identityResource => identityResource is not null).ToList()!;
     }
 
     public async Task<List<IdentityResourceModel>> GetListAsync()
@@ -28,23 +28,45 @@ public class IdentityResourceCache : IIdentityResourceCache
     public async Task SetAsync(IdentityResource identityResource)
     {
         string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
-        await _memoryCacheClient.SetAsync(key, identityResource.ToModel());
+        var model = identityResource.ToModel();
+        await _memoryCacheClient.SetAsync(key, model);
+        // update list cache
+        var list = await GetListAsync();
+        list.Set(model, item => item.Name);
+        await UpdateListAsync(list);
+    }
+
+    public async Task SetRangeAsync(IEnumerable<IdentityResource> identityResources)
+    {
+        var models = identityResources.Select(identityResource => identityResource.ToModel());
+        var map = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.Name}", model => model);
+        await _memoryCacheClient.SetListAsync(map);
+        // update list cache
+        var list = await GetListAsync();
+        list.SetRange(models, item => item.Name);
+        await UpdateListAsync(list);
     }
 
     public async Task RemoveAsync(IdentityResource identityResource)
     {
         string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
         await _memoryCacheClient.RemoveAsync<IdentityResourceModel>(key);
+        // update list cache
+        var list = await GetListAsync();
+        list.Remove(item => item.Name == identityResource.Name);
+        await UpdateListAsync(list);
     }
 
-    public async Task AddAllAsync(IEnumerable<IdentityResource> identityResources)
+    public async Task ResetAsync(IEnumerable<IdentityResource> identityResources)
     {
-        await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, identityResources.Select(identityResource => identityResource.ToModel()));
-    }
-
-    public async Task SetRangeAsync(IEnumerable<IdentityResource> identityResources)
-    {
-        var data = identityResources.ToDictionary(idrs => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{idrs.Name}", idrs => idrs.ToModel());
+        var models = identityResources.Select(identityResource => identityResource.ToModel());
+        await UpdateListAsync(models);
+        var data = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.Name}", model => model);
         await _memoryCacheClient.SetListAsync(data);
+    }
+
+    private async Task UpdateListAsync(IEnumerable<IdentityResourceModel> models)
+    {
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, models);
     }
 }

@@ -27,24 +27,46 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task SetAsync(ApiResource apiResource)
     {
+        var model = apiResource.ToModel();
         string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
-        await _memoryCacheClient.SetAsync(key, apiResource.ToModel());
+        await _memoryCacheClient.SetAsync(key, model);
+        // update list cache
+        var list = await GetListAsync();
+        list.Set(model, item => item.Name);
+        await UpdateListAsync(list);
+    }
+
+    public async Task SetRangeAsync(IEnumerable<ApiResource> apiResources)
+    {
+        var models = apiResources.Select(apiScope => apiScope.ToModel());
+        var map = models.ToDictionary(model => $"{CacheKeyConstants.API_RESOURCE_KEY}_{model.Name}", model => model);
+        await _memoryCacheClient.SetListAsync(map);
+        // update list cache
+        var list = await GetListAsync();
+        list.SetRange(models, item => item.Name);
+        await UpdateListAsync(list);
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
         string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
         await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
+        // update list cache
+        var list = await GetListAsync();
+        list.Remove(item => item.Name == apiResource.Name);
+        await UpdateListAsync(list);
     }
 
-    public async Task AddAllAsync(IEnumerable<ApiResource> apiResources)
+    public async Task ResetAsync(IEnumerable<ApiResource> apiResources)
     {
-        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, apiResources.Select(apiResource => apiResource.ToModel()));
+        var models = apiResources.Select(apiScope => apiScope.ToModel());
+        await UpdateListAsync(models);
+        var map = models.ToDictionary(model => $"{CacheKeyConstants.API_RESOURCE_KEY}_{model.Name}", model => model);
+        await _memoryCacheClient.SetListAsync(map);
     }
 
-    public async Task SetRangeAsync(IEnumerable<ApiResource> apiResources)
+    private async Task UpdateListAsync(IEnumerable<ApiResourceModel> models)
     {
-        var data = apiResources.ToDictionary(apiResource => $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}", apiResource => apiResource.ToModel());
-        await _memoryCacheClient.SetListAsync(data);
+        await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, models);
     }
 }

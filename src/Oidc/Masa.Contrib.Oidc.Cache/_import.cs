@@ -11,3 +11,4 @@ global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection;
+global using Masa.Contrib.Oidc.Cache.Utils;

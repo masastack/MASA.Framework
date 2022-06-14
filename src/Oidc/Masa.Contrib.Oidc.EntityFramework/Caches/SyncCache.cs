@@ -25,7 +25,6 @@ public class SyncCache
         var apiResource = await ApiResourceQuery().FirstOrDefaultAsync(apiResource => apiResource.Id == id);
         if (apiResource is null) return;
         await _apiResourceCache.SetAsync(apiResource);
-        await SyncAllApiResourceCacheAsync();
     }
 
     internal async Task SyncApiScopeCacheAsync(int id)
@@ -33,7 +32,6 @@ public class SyncCache
         var apiScope = await ApiScopeQuery().FirstOrDefaultAsync(apiScope => apiScope.Id == id);
         if (apiScope is null) return;
         await _apiScopeCache.SetAsync(apiScope);
-        await SyncAllApiScopeCacheAsync();
     }
 
     internal async Task SyncIdentityResourceCacheAsync(params int[] ids)
@@ -41,89 +39,21 @@ public class SyncCache
         var identityResources = await IdentityResourceQuery().Where(idrs => ids.Contains(idrs.Id)).ToListAsync();
         if (identityResources.Count < 0) return;
         await _identityResourceCache.SetRangeAsync(identityResources);
-        await SyncAllIdentityResourceAsync();
     }
 
     internal async Task RemoveApiResourceCacheAsync(ApiResource apiResource)
     {
         await _apiResourceCache.RemoveAsync(apiResource);
-        await SyncAllApiResourceCacheAsync();
     }
 
     internal async Task RemoveApiScopeCacheAsync(ApiScope apiScope)
     {
         await _apiScopeCache.RemoveAsync(apiScope);
-        await SyncAllApiScopeCacheAsync();
     }
 
     internal async Task RemoveIdentityResourceCacheAsync(IdentityResource identityResource)
     {
         await _identityResourceCache.RemoveAsync(identityResource);
-        await SyncAllIdentityResourceAsync();
-    }
-
-    internal async Task<List<ApiResource>> SyncAllApiResourceCacheAsync()
-    {
-        var apiResources = await ApiResourceQuery().AsSplitQuery().ToListAsync();
-        await _apiResourceCache.AddAllAsync(apiResources);
-
-        return apiResources;
-    }
-
-    internal async Task<List<ApiScope>> SyncAllApiScopeCacheAsync()
-    {
-        var apiScopes = await ApiScopeQuery().AsSplitQuery().ToListAsync();
-        await _apiScopeCache.AddAllAsync(apiScopes);
-        return apiScopes;
-    }
-
-    internal async Task<List<IdentityResource>> SyncAllIdentityResourceAsync()
-    {
-        var identityResources = await IdentityResourceQuery().AsSplitQuery().ToListAsync();
-        await _identityResourceCache.AddAllAsync(identityResources);
-        return identityResources;
-    }
-
-    public async Task InitializeAsync()
-    {
-        var apiResources = await SyncAllApiResourceCacheAsync();
-        var apiScopes = await SyncAllApiScopeCacheAsync();
-        var identityResources = await SyncAllIdentityResourceAsync();
-
-        await _apiResourceCache.SetRangeAsync(apiResources);
-        await _apiScopeCache.SetRangeAsync(apiScopes);
-        await _identityResourceCache.SetRangeAsync(identityResources);
-
-        var clients = await ClientQuery().ToListAsync();
-        await _clientCache.SetRangeAsync(clients);
-    }
-
-    internal async Task RefreshCacheWithRemoveUserClaimAsync(int userClaimId)
-    {
-        var apiResources = await ApiResourceQuery().Where(apiResource => apiResource.UserClaims.Any(userClaim => userClaim.UserClaimId == userClaimId))
-                                                  .AsSplitQuery()
-                                                  .ToListAsync();
-        var apiScopes = await ApiScopeQuery().Where(apiScope => apiScope.UserClaims.Any(userClaim => userClaim.UserClaimId == userClaimId))
-                                            .AsSplitQuery()
-                                            .ToListAsync();
-        var identityResources = await IdentityResourceQuery().Where(identityResource => identityResource.UserClaims.Any(userClaim => userClaim.UserClaimId == userClaimId))
-                                            .AsSplitQuery()
-                                            .ToListAsync();
-        if (apiResources.Count > 0)
-        {
-            await _apiResourceCache.SetRangeAsync(apiResources);
-            await SyncAllApiResourceCacheAsync();
-        }
-        if (apiScopes.Count > 0)
-        {
-            await _apiScopeCache.SetRangeAsync(apiScopes);
-            await SyncAllApiResourceCacheAsync();
-        }
-        if (identityResources.Count > 0)
-        {
-            await _identityResourceCache.SetRangeAsync(identityResources);
-            await SyncAllApiResourceCacheAsync();
-        }
     }
 
     private IQueryable<Client> ClientQuery()
