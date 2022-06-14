@@ -1,20 +1,20 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.Mapping.Mapster;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMapping(this IServiceCollection services)
-        => services.AddMapping(MapMode.Shared);
+    public static IServiceCollection AddMapster(this IServiceCollection services)
+        => services.AddMapster(MapMode.Shared);
 
-    public static IServiceCollection AddMapping(this IServiceCollection services, MapMode mode)
-        => services.AddMapping(new MapOptions()
+    public static IServiceCollection AddMapster(this IServiceCollection services, MapMode mode)
+        => services.AddMapster(new MapOptions()
         {
             Mode = mode
         });
 
-    public static IServiceCollection AddMapping(this IServiceCollection services, MapOptions mapOptions)
+    public static IServiceCollection AddMapster(this IServiceCollection services, MapOptions mapOptions)
     {
         if (services.Any(service => service.ImplementationType == typeof(MappingProvider)))
             return services;
@@ -25,9 +25,20 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IMapper, DefaultMapper>();
 
         Mapper.Instance = new Mapper(services);
-
         return services;
     }
+
+    [Obsolete("Use AddMapster instead")]
+    public static IServiceCollection AddMapping(this IServiceCollection services)
+        => services.AddMapster(MapMode.Shared);
+
+    [Obsolete("Use AddMapster instead")]
+    public static IServiceCollection AddMapping(this IServiceCollection services, MapMode mode)
+        => services.AddMapster(mode);
+
+    [Obsolete("Use AddMapster instead")]
+    public static IServiceCollection AddMapping(this IServiceCollection services, MapOptions mapOptions)
+        => services.AddMapster(mapOptions);
 
     private class MappingProvider
     {
