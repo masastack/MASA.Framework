@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Identity.IdentityModel;
-
 namespace Masa.Contrib.Data.Contracts.EF;
 
 public static class MasaDbContextOptionsBuilderExtensions
