@@ -241,7 +241,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.SequentialGuid.Tests", "test\Masa.Contrib.Data.IdGenerator.SequentialGuid.Tests\Masa.Contrib.Data.IdGenerator.SequentialGuid.Tests.csproj", "{32488758-25C9-4257-9B98-DAA034C19909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.IdentityModel.Tests", "test\Masa.Contrib.IdentityModel.Tests\Masa.Contrib.IdentityModel.Tests.csproj", "{E08AF686-91D4-48B4-B5DF-90474D18E984}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Identity.IdentityModel.Tests", "test\Masa.Contrib.Identity.IdentityModel.Tests\Masa.Contrib.Identity.IdentityModel.Tests.csproj", "{E08AF686-91D4-48B4-B5DF-90474D18E984}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
