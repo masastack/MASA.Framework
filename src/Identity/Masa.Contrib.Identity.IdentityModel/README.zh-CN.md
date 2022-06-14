@@ -11,7 +11,7 @@ Install-Package Masa.Contrib.Identity
 1. 修改`Program.cs`
 
 ``` C#
-builder.Services.AddMasaIdentity();
+builder.Services.AddMasaIdentityModel();
 ```
 
 2. 获取用户信息

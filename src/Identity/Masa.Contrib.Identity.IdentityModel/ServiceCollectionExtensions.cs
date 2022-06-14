@@ -5,14 +5,14 @@ namespace Masa.Contrib.Identity.IdentityModel;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMasaIdentity(
+    public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
         IdentityType identityType = IdentityType.Basic)
-        => services.AddMasaIdentity(identityType, _ =>
+        => services.AddMasaIdentityModel(identityType, _ =>
         {
         });
 
-    public static IServiceCollection AddMasaIdentity(
+    public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
         IdentityType identityType,
         Action<IdentityClaimOptions> configureOptions)

@@ -10,7 +10,7 @@ public class TestIdentity
     public void TestIdentityClaimOptionsReturnTenantIdEqualTenantId()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment, identityClaimOptions =>
+        services.AddMasaIdentityModel(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment, identityClaimOptions =>
         {
             identityClaimOptions.TenantId = "TenantId";
         });
@@ -24,43 +24,43 @@ public class TestIdentity
     public void TestIdentityType()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic);
+        services.AddMasaIdentityModel(IdentityType.Basic);
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.MultiTenant);
+        services.AddMasaIdentityModel(IdentityType.MultiTenant);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant);
+        services.AddMasaIdentityModel(IdentityType.Basic | IdentityType.MultiTenant);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNull(serviceProvider.GetService<IMultiEnvironmentIdentityUser>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.MultiEnvironment);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.Basic | IdentityType.MultiEnvironment);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.MultiTenant | IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.MultiTenant | IdentityType.MultiEnvironment);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
 
         services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
         serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiTenantUserContext>());
         Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentUserContext>());
@@ -71,7 +71,7 @@ public class TestIdentity
     public void TestDefaultIdentityReturnTenantIdEqualtenantid()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity();
+        services.AddMasaIdentityModel();
         var serviceProvider = services.BuildServiceProvider();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>();
         Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == ClaimType.DEFAULT_TENANT_ID);
@@ -82,7 +82,7 @@ public class TestIdentity
     public void TestAddIsolationIdentityReturnUserIdEqual1AndTenantIdEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.Basic | IdentityType.MultiTenant | IdentityType.MultiEnvironment);
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext()
@@ -127,7 +127,7 @@ public class TestIdentity
     public void TestAddSimpleIdentityReturnUserIdEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity();
+        services.AddMasaIdentityModel();
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext()
@@ -162,7 +162,7 @@ public class TestIdentity
     public void TestAddMultiTenantIdentityReturnTenantIdIs1()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(IdentityType.MultiTenant);
+        services.AddMasaIdentityModel(IdentityType.MultiTenant);
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext()
@@ -198,7 +198,7 @@ public class TestIdentity
     public void TestTemporarilyUserReturnUserIdEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity();
+        services.AddMasaIdentityModel();
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext()
