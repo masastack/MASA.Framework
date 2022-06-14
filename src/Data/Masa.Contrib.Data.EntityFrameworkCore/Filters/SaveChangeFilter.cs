@@ -6,9 +6,9 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.Filters;
 public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
     where TDbContext : DbContext
 {
-    private readonly IUserContext _userContext;
+    private readonly IUserContext? _userContext;
 
-    public SaveChangeFilter(IUserContext userContext)
+    public SaveChangeFilter(IUserContext? userContext = null)
     {
         _userContext = userContext;
     }
@@ -21,7 +21,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
                      .Where(entry => entry.Entity is IAuditEntity<TUserId> &&
                          (entry.State == EntityState.Added || entry.State == EntityState.Modified)))
         {
-            var userId = _userContext.UserId;
+            var userId = _userContext?.UserId;
             if (entity.State == EntityState.Added)
             {
                 if (userId != null)

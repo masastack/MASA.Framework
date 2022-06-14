@@ -57,7 +57,8 @@ public static class MasaDbContextOptionsBuilderExtensions
                 {
                     var instance = invokeDelegate.Invoke(
                         serviceProvider.GetRequiredService(masaDbContextOptionsType),
-                        serviceProvider.GetRequiredService(masaDbContextOptionsBuilder.DbContextType));
+                        serviceProvider.GetRequiredService(masaDbContextOptionsBuilder.DbContextType),
+                        serviceProvider.GetService<IUserContext>());
                     return instance;
                 },
                 ServiceLifetime.Scoped));
