@@ -1,15 +1,17 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Identity;
+namespace Masa.Contrib.IdentityModel;
 
-public sealed class DefaultUserContext : UserContext
+public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContext
 {
+    public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
+
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
-    public DefaultUserContext(
+    public DefaultMultiTenantUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
         IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
@@ -19,7 +21,16 @@ public sealed class DefaultUserContext : UserContext
         _optionsMonitor = optionsMonitor;
     }
 
-    protected override IsolatedIdentityUser? GetUser()
+    public virtual TTenantId? GetTenantId<TTenantId>()
+    {
+        var tenantId = TenantId;
+        if (tenantId == null)
+            return default;
+
+        return TypeConvertProvider.ConvertTo<TTenantId>(tenantId);
+    }
+
+    protected override MultiTenantIdentityUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -29,10 +40,11 @@ public sealed class DefaultUserContext : UserContext
         if (userId == null)
             return null;
 
-        return new IsolatedIdentityUser
+        return new MultiTenantIdentityUser
         {
             Id = userId,
-            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName)
+            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
+            TenantId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
         };
     }
 }

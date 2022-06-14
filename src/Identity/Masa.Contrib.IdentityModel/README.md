@@ -23,13 +23,13 @@ userContext.User;//Get user information
 
 > The default user information is obtained from HttpContext.User
 >
-> UserId: sub
+> UserId: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_USER_ID
 >
-> UserName: given_name
+> UserName: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_USER_NAME
 >
-> TenantId: tenant_id
+> TenantId: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_TENANT_ID
 >
-> Environment: environment
+> Environment: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_ENVIRONMENT
 
 3. Temporarily change the current login user information
 

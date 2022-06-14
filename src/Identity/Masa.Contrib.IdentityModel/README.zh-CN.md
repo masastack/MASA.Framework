@@ -23,13 +23,13 @@ userContext.User;//获取用户信息
 
 > 默认用户信息从HttpContext.User中获取
 >
-> UserId: sub
+> UserId: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_USER_ID
 >
-> UserName: given_name
+> UserName: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_USER_NAME
 >
-> TenantId: tenant_id
+> TenantId: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_TENANT_ID
 >
-> Environment: environment
+> Environment: Masa.Contrib.IdentityModel.Const.ClaimType.DEFAULT_ENVIRONMENT
 
 3. 临时更改当前登录用户信息
 

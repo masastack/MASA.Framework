@@ -1,17 +1,17 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Identity;
+namespace Masa.Contrib.IdentityModel;
 
-public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContext
+public sealed class DefaultMultiEnvironmentUserContext: UserContext, IMultiEnvironmentUserContext
 {
-    public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
+    public string? Environment => GetUser<MultiEnvironmentIdentityUser>()?.Environment;
 
     private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
-    public DefaultMultiTenantUserContext(
+    public DefaultMultiEnvironmentUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
         IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
@@ -21,16 +21,7 @@ public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContex
         _optionsMonitor = optionsMonitor;
     }
 
-    public virtual TTenantId? GetTenantId<TTenantId>()
-    {
-        var tenantId = TenantId;
-        if (tenantId == null)
-            return default;
-
-        return TypeConvertProvider.ConvertTo<TTenantId>(tenantId);
-    }
-
-    protected override MultiTenantIdentityUser? GetUser()
+    protected override MultiEnvironmentIdentityUser? GetUser()
     {
         var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
         if (claimsPrincipal == null)
@@ -40,11 +31,11 @@ public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContex
         if (userId == null)
             return null;
 
-        return new MultiTenantIdentityUser
+        return new MultiEnvironmentIdentityUser
         {
             Id = userId,
             UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
-            TenantId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
+            Environment = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.Environment),
         };
     }
 }

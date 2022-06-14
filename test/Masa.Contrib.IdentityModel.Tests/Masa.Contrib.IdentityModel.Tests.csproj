@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Identity\Masa.Contrib.Identity\Masa.Contrib.Identity.csproj" />
+    <ProjectReference Include="..\..\src\Identity\Masa.Contrib.IdentityModel\Masa.Contrib.IdentityModel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Identity.Tests;
+namespace Masa.Contrib.IdentityModel.Tests;
 
 [TestClass]
 public class TestIdentity
@@ -17,7 +17,7 @@ public class TestIdentity
         var serviceProvider = services.BuildServiceProvider();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>();
         Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == "TenantId");
-        Assert.IsTrue(optionsMonitor.CurrentValue.Environment == "environment");
+        Assert.IsTrue(optionsMonitor.CurrentValue.Environment == ClaimType.DEFAULT_ENVIRONMENT);
     }
 
     [TestMethod]
@@ -74,8 +74,8 @@ public class TestIdentity
         services.AddMasaIdentity();
         var serviceProvider = services.BuildServiceProvider();
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>();
-        Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == "tenant_id");
-        Assert.IsTrue(optionsMonitor.CurrentValue.Environment == "environment");
+        Assert.IsTrue(optionsMonitor.CurrentValue.TenantId == ClaimType.DEFAULT_TENANT_ID);
+        Assert.IsTrue(optionsMonitor.CurrentValue.Environment == ClaimType.DEFAULT_ENVIRONMENT);
     }
 
     [TestMethod]
