@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.IdentityModel\Masa.BuildingBlocks.IdentityModel.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,7 +8,6 @@ global using Masa.BuildingBlocks.Data.Options;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;
-global using Masa.BuildingBlocks.IdentityModel;
 global using Masa.Contrib.Data.EntityFrameworkCore.Filters;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;

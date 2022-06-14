@@ -223,7 +223,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis", "src\Data\IdGenerator\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.csproj", "{DC50078D-D706-4CB9-A301-F47CB3F46007}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.IdentityModel", "src\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.IdentityModel\Masa.BuildingBlocks.IdentityModel.csproj", "{2FD02408-DF1D-48E0-94F2-9910E76D8B6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Identity.IdentityModel", "src\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj", "{2FD02408-DF1D-48E0-94F2-9910E76D8B6E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdGenerator", "IdGenerator", "{E6363F59-2BA4-4AA7-8578-C433A2C2567F}"
 EndProject
@@ -231,7 +231,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{8E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests", "test\Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests\Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests.csproj", "{D8E85337-A779-48FC-B822-CE8A850661DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.IdentityModel", "src\Identity\Masa.Contrib.IdentityModel\Masa.Contrib.IdentityModel.csproj", "{A0185D9A-69AB-4668-97F6-132C7D0947AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Identity.IdentityModel", "src\Identity\Masa.Contrib.Identity.IdentityModel\Masa.Contrib.Identity.IdentityModel.csproj", "{A0185D9A-69AB-4668-97F6-132C7D0947AA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Data.MappingExtensions", "src\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.MappingExtensions\Masa.BuildingBlocks.Data.MappingExtensions.csproj", "{30DC35DF-9D86-443C-B26C-9053E6FCA434}"
 EndProject

@@ -14,7 +14,7 @@ Install-Package Masa.Contrib.Identity
 builder.Services.AddMasaIdentity();
 ````
 
-2. Obtain user information
+2. Get user information
 
 ```` C#
 IUserContext userContext;//Get IUserContext from DI
