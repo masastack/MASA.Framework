@@ -130,8 +130,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
             else
             {
                 _logger?.LogDebug(
-                    "----- Failed to obtain WorkerId, failed to obtain distributed lock, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-                    _workerId,
+                    "----- Failed to obtain WorkerId, failed to obtain distributed lock, the currentTime: {CurrentTime}",
                     DateTime.UtcNow);
                 throw new MasaException("----- Failed to get WorkerId, please try again later");
             }
