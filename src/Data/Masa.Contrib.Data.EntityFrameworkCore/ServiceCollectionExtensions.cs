@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EntityFrameworkCore;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -11,21 +11,31 @@ public static class ServiceCollectionExtensions
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        => services.AddMasaDbContext<TDbContextImplementation, Guid>(optionsBuilder, contextLifetime, optionsLifetime);
+
+    public static IServiceCollection AddMasaDbContext<TDbContextImplementation, TUserId>(
+        this IServiceCollection services,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
+        ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
+        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
         => services
             .AddDbContext<TDbContextImplementation>(contextLifetime, optionsLifetime)
-            .AddCoreServices<TDbContextImplementation>(optionsBuilder, optionsLifetime);
+            .AddCoreServices<TDbContextImplementation, TUserId>(optionsBuilder, optionsLifetime);
 
-    private static IServiceCollection AddCoreServices<TDbContextImplementation>(
+    private static IServiceCollection AddCoreServices<TDbContextImplementation, TUserId>(
         this IServiceCollection services,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder,
         ServiceLifetime optionsLifetime)
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
     {
         services.TryAddConfigure<MasaDbConnectionOptions>();
 
-        MasaDbContextOptionsBuilder masaBuilder = new MasaDbContextOptionsBuilder(services, typeof(TDbContextImplementation));
+        MasaDbContextOptionsBuilder masaBuilder = new(services, typeof(TDbContextImplementation), typeof(TUserId));
         optionsBuilder?.Invoke(masaBuilder);
-        return services.AddCoreServices<TDbContextImplementation>((serviceProvider, efDbContextOptionsBuilder) =>
+        return services.AddCoreServices<TDbContextImplementation, TUserId>((serviceProvider, efDbContextOptionsBuilder) =>
         {
             if (masaBuilder.EnableSoftDelete)
                 efDbContextOptionsBuilder.UseSoftDelete();
@@ -34,12 +44,14 @@ public static class ServiceCollectionExtensions
         }, optionsLifetime);
     }
 
-    private static IServiceCollection AddCoreServices<TDbContextImplementation>(
+    private static IServiceCollection AddCoreServices<TDbContextImplementation, TUserId>(
         this IServiceCollection services,
         Action<IServiceProvider, EFDbContextOptionsBuilder>? optionsBuilder,
         ServiceLifetime optionsLifetime)
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
     {
+        services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
 
@@ -54,6 +66,8 @@ public static class ServiceCollectionExtensions
                 typeof(MasaDbContextOptions),
                 serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
                 optionsLifetime));
+
+        services.TryAdd(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(SaveChangeFilter<TDbContextImplementation, TUserId>), ServiceLifetime.Scoped));
         return services;
     }
 
@@ -102,7 +116,7 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             return services;
 
-        string name = Options.DefaultName;
+        string name = Microsoft.Extensions.Options.Options.DefaultName;
         var configurationSection = configuration.GetSection(sectionName);
         if (!configurationSection.Exists())
             return services;

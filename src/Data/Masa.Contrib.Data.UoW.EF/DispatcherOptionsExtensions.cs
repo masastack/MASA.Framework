@@ -11,8 +11,17 @@ public static class DispatcherOptionsExtensions
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
+        => eventBusBuilder.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+
+    public static IEventBusBuilder UseUoW<TDbContext, TUserId>(
+        this IEventBusBuilder eventBusBuilder,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
     {
-        eventBusBuilder.Services.UseUoW<TDbContext>(nameof(eventBusBuilder.Services), optionsBuilder, disableRollbackOnFailure,
+        eventBusBuilder.Services.UseUoW<TDbContext, TUserId>(nameof(eventBusBuilder.Services), optionsBuilder, disableRollbackOnFailure,
             useTransaction);
         return eventBusBuilder;
     }
@@ -23,18 +32,28 @@ public static class DispatcherOptionsExtensions
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
+        => options.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+
+    public static IDispatcherOptions UseUoW<TDbContext, TUserId>(
+        this IDispatcherOptions options,
+        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        bool disableRollbackOnFailure = false,
+        bool useTransaction = true)
+        where TDbContext : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
     {
-        options.Services.UseUoW<TDbContext>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
+        options.Services.UseUoW<TDbContext, TUserId>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
         return options;
     }
 
-    private static IServiceCollection UseUoW<TDbContext>(
+    private static IServiceCollection UseUoW<TDbContext, TUserId>(
         this IServiceCollection services,
         string paramName,
         Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
+        where TUserId : IComparable
     {
         if (services == null)
             throw new ArgumentNullException(paramName);
@@ -53,7 +72,7 @@ public static class DispatcherOptionsExtensions
             UseTransaction = useTransaction
         });
         if (services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))
-            services.AddMasaDbContext<TDbContext>(optionsBuilder);
+            services.AddMasaDbContext<TDbContext, TUserId>(optionsBuilder);
 
         services.AddScoped<ITransaction, Transaction>();
         return services;

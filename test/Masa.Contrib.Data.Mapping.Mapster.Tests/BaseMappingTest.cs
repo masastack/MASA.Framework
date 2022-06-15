@@ -13,7 +13,7 @@ public class BaseMappingTest
     public void Initialize()
     {
         _services = new ServiceCollection();
-        _services.AddMapping();
+        _services.AddMapster();
         var serviceProvider = _services.BuildServiceProvider();
         _mapper = serviceProvider.GetRequiredService<IMapper>();
     }

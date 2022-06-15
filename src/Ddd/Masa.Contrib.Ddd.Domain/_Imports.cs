@@ -8,6 +8,7 @@ global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Ddd.Domain.Services;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
+global using Masa.Contrib.Ddd.Domain;
 global using Masa.Contrib.Ddd.Domain.Options;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

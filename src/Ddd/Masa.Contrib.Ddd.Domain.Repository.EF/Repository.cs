@@ -8,7 +8,7 @@ public class Repository<TDbContext, TEntity> :
     where TEntity : class, IEntity
     where TDbContext : DbContext
 {
-    protected readonly TDbContext Context;
+    protected TDbContext Context { get; }
 
     public Repository(TDbContext context, IUnitOfWork unitOfWork) : base(unitOfWork.ServiceProvider)
     {
@@ -100,7 +100,8 @@ public class Repository<TDbContext, TEntity> :
     public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().ToListAsync(cancellationToken);
 
-    public override async Task<IEnumerable<TEntity>> GetListAsync(string sortField, bool isDescending = true, CancellationToken cancellationToken = default)
+    public override async Task<IEnumerable<TEntity>> GetListAsync(string sortField, bool isDescending = true,
+        CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().OrderBy(sortField, isDescending).ToListAsync(cancellationToken);
 
     public override async Task<IEnumerable<TEntity>> GetListAsync(
@@ -157,7 +158,8 @@ public class Repository<TDbContext, TEntity> :
     /// <param name="isDescending">true descending order, false ascending order, default: true</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take, string sortField,
+    public override Task<List<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, int skip, int take,
+        string sortField,
         bool isDescending = true, CancellationToken cancellationToken = default)
         => Context.Set<TEntity>().Where(predicate).OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken);
 

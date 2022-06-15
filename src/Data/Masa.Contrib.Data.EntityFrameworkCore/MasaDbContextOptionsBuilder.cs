@@ -13,13 +13,16 @@ public class MasaDbContextOptionsBuilder
 
     public Type DbContextType { get; }
 
+    public Type UserIdType { get; }
+
     public Action<IServiceProvider, DbContextOptionsBuilder> Builder { get; set; } = default!;
 
     public bool EnableSoftDelete { get; set; }
 
-    public MasaDbContextOptionsBuilder(IServiceCollection services, Type dbContextType)
+    public MasaDbContextOptionsBuilder(IServiceCollection services, Type dbContextType, Type userIdType)
     {
         Services = services;
         DbContextType = dbContextType;
+        UserIdType = userIdType;
     }
 }

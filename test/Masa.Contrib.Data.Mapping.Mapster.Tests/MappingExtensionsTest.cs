@@ -10,7 +10,7 @@ public class MappingExtensionsTest
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddMapping();
+        services.AddMapster();
     }
 
     [TestMethod]

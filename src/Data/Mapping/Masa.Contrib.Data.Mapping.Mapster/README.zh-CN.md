@@ -23,7 +23,7 @@ Masa.Contrib.Data.Mapping.Mapster是基于[Mapster](https://github.com/MapsterMa
 2. 使用`Mapping`
 
     ``` C#
-    builder.Services.AddMapping();
+    builder.Services.AddMapster();
     ```
 
 3. 映射对象

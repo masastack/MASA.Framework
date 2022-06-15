@@ -10,10 +10,14 @@ public class MultiTenantMiddleware : IIsolationMiddleware
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly ITenantContext _tenantContext;
     private readonly ITenantSetter _tenantSetter;
+    private readonly IMultiTenantUserContext? _tenantUserContext;
     private readonly string _tenantKey;
     private bool _handled;
 
-    public MultiTenantMiddleware(IServiceProvider serviceProvider, string tenantKey, IEnumerable<IParserProvider>? parserProviders)
+    public MultiTenantMiddleware(
+        IServiceProvider serviceProvider,
+        string tenantKey,
+        IEnumerable<IParserProvider>? parserProviders)
     {
         _serviceProvider = serviceProvider;
         _tenantKey = tenantKey;
@@ -21,6 +25,7 @@ public class MultiTenantMiddleware : IIsolationMiddleware
         _logger = _serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
         _tenantContext = _serviceProvider.GetRequiredService<ITenantContext>();
         _tenantSetter = _serviceProvider.GetRequiredService<ITenantSetter>();
+        _tenantUserContext = _serviceProvider.GetService<IMultiTenantUserContext>();
     }
 
     public async Task HandleAsync()
@@ -34,11 +39,19 @@ public class MultiTenantMiddleware : IIsolationMiddleware
             return;
         }
 
+        if (_tenantUserContext is { IsAuthenticated: true, TenantId: { } })
+        {
+            var tenant = new Tenant(_tenantUserContext.TenantId);
+            _tenantSetter.SetTenant(tenant);
+            return;
+        }
+
         List<string> parsers = new();
         foreach (var tenantParserProvider in _parserProviders)
         {
             parsers.Add(tenantParserProvider.Name);
-            if (await tenantParserProvider.ResolveAsync(_serviceProvider, _tenantKey, tenantId => _tenantSetter.SetTenant(new Tenant(tenantId))))
+            if (await tenantParserProvider.ResolveAsync(_serviceProvider, _tenantKey,
+                    tenantId => _tenantSetter.SetTenant(new Tenant(tenantId))))
             {
                 _logger?.LogDebug("The tenant is successfully resolved, and the resolver is: {Resolvers}", string.Join("、 ", parsers));
                 _handled = true;

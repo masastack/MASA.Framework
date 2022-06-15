@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.BasicAbility.Auth;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -30,7 +30,6 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
-            Singleton<IServiceProvider>.Instance = serviceProvider;
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
             var authClient = new AuthClient(callProvider);
             return authClient;

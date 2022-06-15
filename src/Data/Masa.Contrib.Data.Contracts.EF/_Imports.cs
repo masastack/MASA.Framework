@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
+global using Masa.BuildingBlocks.Identity.IdentityModel;
 global using Masa.Contrib.Data.Contracts.EF.DataFiltering;
 global using Masa.Contrib.Data.Contracts.EF.Internal;
 global using Masa.Contrib.Data.Contracts.EF.Options;
