@@ -96,17 +96,18 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         if (_workerId == null)
             return;
 
-        _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            _workerId,
-            DateTime.UtcNow);
-
-        await Database.SortedSetAddAsync(_logOutWorkerKey, _workerId, GetCurrentTimestamp());
-        await Database.SortedSetRemoveAsync(_inUseWorkerKey, _workerId);
-
+        var workerId = _workerId;
         _workerId = null;
 
+        _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
+            workerId,
+            DateTime.UtcNow);
+
+        await Database.SortedSetAddAsync(_logOutWorkerKey, workerId, GetCurrentTimestamp());
+        await Database.SortedSetRemoveAsync(_inUseWorkerKey, workerId);
+
         _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            _workerId,
+            workerId,
             DateTime.UtcNow);
     }
 
