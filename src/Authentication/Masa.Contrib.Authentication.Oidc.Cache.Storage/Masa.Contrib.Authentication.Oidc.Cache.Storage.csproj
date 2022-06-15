@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0" />
-    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.4.0" />
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="$(MasaUtilsPackageVersion)" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="$(MasaUtilsPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
