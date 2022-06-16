@@ -22,11 +22,15 @@ public static class MasaConfigurationExtensions
 
         return builder.UseDcc(() => dccOptions, option =>
         {
-            option.Environment = builder.Configuration["Environment"];
-            option.Cluster = builder.Configuration["Cluster"];
-            option.AppId = builder.Configuration["AppId"];
-            option.ConfigObjects = builder.Configuration.GetSection("ConfigObjects").Get<List<string>>();
-            option.Secret = builder.Configuration["Sectet"];
+            option.Environment = builder.Configuration[nameof(DccSectionOptions.Environment)];
+            option.Cluster = builder.Configuration[nameof(DccSectionOptions.Cluster)];
+            option.AppId = builder.Configuration[nameof(DccSectionOptions.AppId)];
+            option.ConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
+            option.Secret = builder.Configuration[nameof(DccSectionOptions.Secret)];
+            option.BizId = builder.Configuration[nameof(DccSectionOptions.BizId)];
+            option.BizConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.BizConfigObjects)).Get<List<string>>();
+            option.PublicId = builder.Configuration[nameof(DccSectionOptions.PublicId)] ?? "public-$Config";
+            option.PublicConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.PublicConfigObjects)).Get<List<string>>();
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 

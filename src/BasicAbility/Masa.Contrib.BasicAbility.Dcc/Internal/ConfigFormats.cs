@@ -6,6 +6,8 @@ namespace Masa.Contrib.BasicAbility.Dcc.Internal;
 internal enum ConfigFormats
 {
     Properties = 1,
-    Text,
-    Json
+    Raw,
+    Json,
+    Yaml,
+    Xml
 }

@@ -1,11 +1,33 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.BasicAbility.Dcc.Internal.Model;
 
 internal class PublishRelease
 {
-    public ConfigFormats ConfigFormat { get; set; }
+    private ConfigFormats _configFormat;
+    public ConfigFormats ConfigFormat
+    {
+        get
+        {
+            try
+            {
+                _configFormat = (ConfigFormats)Enum.Parse(typeof(ConfigFormats), FormatLabelCode);
+            }
+            catch (Exception ex)
+            {
+                throw new NotSupportedException("Unsupported configuration type", ex);
+            }
+
+            return _configFormat;
+        }
+        set
+        {
+            _configFormat = value;
+        }
+    }
+
+    public string FormatLabelCode { get; set; } = null!;
 
     public string? Content { get; set; }
 }

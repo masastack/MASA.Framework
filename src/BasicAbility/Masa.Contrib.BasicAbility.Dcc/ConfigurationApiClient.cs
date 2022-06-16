@@ -120,7 +120,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             case ConfigFormats.Json:
                 return (result.Content!, ConfigurationTypes.Json);
 
-            case ConfigFormats.Text:
+            case ConfigFormats.Raw:
                 return (result.Content!, ConfigurationTypes.Text);
 
             case ConfigFormats.Properties:
