@@ -35,6 +35,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BasicAbility\Masa.Contrib.BasicAbility.Dcc\Masa.Contrib.BasicAbility.Dcc.csproj" />
     <ProjectReference Include="..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj" />
   </ItemGroup>
 
 </Project>

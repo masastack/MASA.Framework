@@ -22,11 +22,11 @@ public static class MasaConfigurationExtensions
 
         return builder.UseDcc(() => dccOptions, option =>
         {
-            option.Environment = builder.Configuration["Environment"];
-            option.Cluster = builder.Configuration["Cluster"];
-            option.AppId = builder.Configuration["AppId"];
-            option.ConfigObjects = builder.Configuration.GetSection("ConfigObjects").Get<List<string>>();
-            option.Secret = builder.Configuration["Sectet"];
+            option.Environment = builder.Configuration[nameof(DccSectionOptions.Environment)];
+            option.Cluster = builder.Configuration[nameof(DccSectionOptions.Cluster)];
+            option.AppId = builder.Configuration[nameof(DccSectionOptions.AppId)];
+            option.ConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
+            option.Secret = builder.Configuration[nameof(DccSectionOptions.Secret)];
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
