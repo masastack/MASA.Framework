@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
 
-        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
