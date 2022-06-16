@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
 
+        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
@@ -23,15 +24,21 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
+        if (!services.Any(service => service.ServiceType == typeof(IUserContext)))
+        {
+            throw new Exception("Please add IUserContext first.");
+        }
+
         services.AddHttpContextAccessor();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
-        services.AddSingleton<IEnvironmentProvider, EnvironmentProvider>();
+        services.AddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddCaller(callerOptions);
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
+            var userContext = serviceProvider.GetRequiredService<IUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-            var authClient = new AuthClient(callProvider);
+            var authClient = new AuthClient(callProvider, userContext);
             return authClient;
         });
 
