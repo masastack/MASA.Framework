@@ -11,13 +11,11 @@ public class CustomizeCredentialProvider : DefaultCredentialProvider
         "sessionToken",
         DateTime.UtcNow.AddHours(-1));
 
-    public CustomizeCredentialProvider(IOssClientFactory ossClientFactory, AliyunStorageOptions options, IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger) : base(ossClientFactory, options, cache, logger)
-    {
-    }
-
-    public CustomizeCredentialProvider(IOssClientFactory ossClientFactory, IOptionsMonitor<AliyunStorageOptions> options, IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger) : base(ossClientFactory, options, cache, logger)
+    public CustomizeCredentialProvider(IOssClientFactory ossClientFactory,
+        IAliyunStorageOptionProvider optionProvider,
+        IMemoryCache cache,
+        ILogger<DefaultCredentialProvider>? logger)
+        : base(ossClientFactory, optionProvider, cache, logger)
     {
     }
 

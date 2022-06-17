@@ -16,7 +16,7 @@ public class TestCredentialProvider : BaseTest
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
         var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            _aLiYunStorageOptions,
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         var securityToken = client.GetSecurityToken();
@@ -35,8 +35,8 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeNullClient(serviceProvider.GetRequiredService<IOssClientFactory>()
-            , _aLiYunStorageOptions,
+        var client = new CustomizeNullClient(serviceProvider.GetRequiredService<IOssClientFactory>(),
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         Assert.ThrowsException<Exception>(() => client.GetSecurityToken(), client.Message);
@@ -52,7 +52,7 @@ public class TestCredentialProvider : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            _aLiYunStorageOptions,
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         client.TestExpirationTimeLessThan10Second(5);
@@ -70,7 +70,7 @@ public class TestCredentialProvider : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            _aLiYunStorageOptions,
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         client.TestExpirationTimeLessThan10Second(durationSeconds);
@@ -87,7 +87,7 @@ public class TestCredentialProvider : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            _aLiYunStorageOptions,
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
@@ -109,7 +109,7 @@ public class TestCredentialProvider : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            _aLiYunStorageOptions,
+            MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
         Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
