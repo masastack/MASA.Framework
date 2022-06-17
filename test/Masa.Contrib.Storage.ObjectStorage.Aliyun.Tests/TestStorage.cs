@@ -254,4 +254,15 @@ public class TestStorage : BaseTest
         Func<AliyunStorageOptions> func = null!;
         Assert.ThrowsException<ArgumentNullException>(() => services.AddAliyunStorage(func));
     }
+
+    [TestMethod]
+    public void TestDefaultBucketNameReturnDefaultBucketNameEqualTest()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions, "Test");
+        var serviceProvider = services.BuildServiceProvider();
+        var clientContainer = serviceProvider.GetRequiredService<IClientContainer>();
+        var field = typeof(DefaultClientContainer).GetField("_bucketName", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsTrue((string)field!.GetValue(clientContainer)! == "Test");
+    }
 }

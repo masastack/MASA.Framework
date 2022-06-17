@@ -11,9 +11,13 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="sectionName">node name, defaults to Aliyun</param>
+    /// <param name="defaultBucketName">Default BucketName</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static IServiceCollection AddAliyunStorage(this IServiceCollection services, string sectionName = Const.DEFAULT_SECTION)
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
+        string sectionName = Const.DEFAULT_SECTION,
+        string? defaultBucketName = null)
     {
         if (string.IsNullOrEmpty(sectionName))
             throw new ArgumentException(sectionName, nameof(sectionName));
@@ -21,39 +25,53 @@ public static class ServiceCollectionExtensions
         services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
         services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
             => new DefaultAliyunStorageOptionProvider(GetAliyunStorageConfigurationOption(serviceProvider)));
-        return services.AddAliyunStorageCore();
+        return services.AddAliyunStorageCore(defaultBucketName);
     }
 
-    public static IServiceCollection AddAliyunStorage(this IServiceCollection services, AliyunStorageOptions options)
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
+        AliyunStorageOptions options,
+        string? defaultBucketName = null)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
         CheckAliYunStorageOptions(options);
 
-        return services.AddAliyunStorage(() => options);
+        return services.AddAliyunStorage(() => options, defaultBucketName);
     }
 
-    public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<IServiceProvider, AliyunStorageOptions> func)
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
+        Func<IServiceProvider, AliyunStorageOptions> func,
+        string? defaultBucketName = null)
     {
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
         services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
             => new DefaultAliyunStorageOptionProvider(func.Invoke(serviceProvider)));
-        return services.AddAliyunStorageCore();
+        return services.AddAliyunStorageCore(defaultBucketName);
     }
 
-    public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<AliyunStorageOptions> func)
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
+        Func<AliyunStorageOptions> func,
+        string? defaultBucketName = null)
     {
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
-        return services.AddAliyunStorage(_ => func.Invoke());
+        return services.AddAliyunStorage(_ => func.Invoke(), defaultBucketName);
     }
 
-    private static IServiceCollection AddAliyunStorageCore(this IServiceCollection services)
+    private static IServiceCollection AddAliyunStorageCore(this IServiceCollection services, string? defaultBucketName = null)
     {
         services.AddMemoryCache();
         services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         services.TryAddSingleton<ICredentialProvider, DefaultCredentialProvider>();
         services.TryAddSingleton<IClient, DefaultStorageClient>();
+        if (defaultBucketName != null)
+            services.TryAddSingleton<IClientContainer>(serviceProvider
+                => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(), defaultBucketName));
+        services.TryAddSingleton(typeof(IClientContainer<>), typeof(DefaultClientContainer<>));
+        services.TryAddSingleton<IClientFactory, DefaultClientFactory>();
         return services;
     }
 
