@@ -24,7 +24,7 @@ public class AuthClientTest
     {
         var services = new ServiceCollection();
         Assert.ThrowsException<Exception>(() => services.AddAuthClient("https://localhost:18102"),
-            "Please add IUserContext first.");
+            "Please add IMultiEnvironmentUserContext first.");
     }
 
     [TestMethod]

@@ -27,7 +27,6 @@ public class PermissionService : IPermissionService
     public async Task<List<MenuModel>> GetMenusAsync(string appId)
     {
         var userId = _userContext.GetUserId<Guid>();
-        //var userId = Guid.Parse("D7A85879-8229-4297-861E-08DA4EB68F74");
         var requestUri = $"{PARTY}menus?appId={appId}&userId={userId}";
         return await _callerProvider.GetAsync<List<MenuModel>>(requestUri, default) ?? new();
     }
@@ -37,5 +36,40 @@ public class PermissionService : IPermissionService
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"{PARTY}element-permissions?appId={appId}&userId={userId}";
         return await _callerProvider.GetAsync<List<string>>(requestUri, default) ?? new();
+    }
+
+    public async Task<bool> CollectMenuAsync(Guid menuId)
+    {
+        try
+        {
+            var userId = _userContext.GetUserId<Guid>();
+            await _callerProvider.PutAsync($"{PARTY}Collect?permissionId={menuId}&userId={userId}", null);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> UnCollectMenuAsync(Guid menuId)
+    {
+        try
+        {
+            var userId = _userContext.GetUserId<Guid>();
+            await _callerProvider.PutAsync($"{PARTY}UnCollect?permissionId={menuId}&userId={userId}", null);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<List<CollectMenuModel>> GetCollectMenuListAsync()
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"{PARTY}collect-list?userId={userId}";
+        return await _callerProvider.GetAsync<List<CollectMenuModel>>(requestUri, default) ?? new();
     }
 }

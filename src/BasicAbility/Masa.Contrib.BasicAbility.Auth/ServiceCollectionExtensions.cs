@@ -8,7 +8,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress)
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
-
+#warning modify
+        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
@@ -23,9 +24,9 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
-        if (!services.Any(service => service.ServiceType == typeof(IUserContext)))
+        if (!services.Any(service => service.ServiceType == typeof(IMultiEnvironmentUserContext)))
         {
-            throw new Exception("Please add IUserContext first.");
+            throw new Exception("Please add IMultiEnvironmentUserContext first.");
         }
 
         services.AddHttpContextAccessor();
@@ -35,7 +36,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
-            var userContext = serviceProvider.GetRequiredService<IUserContext>();
+            var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
             var authClient = new AuthClient(callProvider, userContext);
             return authClient;
