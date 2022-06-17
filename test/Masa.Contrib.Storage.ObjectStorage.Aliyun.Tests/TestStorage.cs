@@ -265,4 +265,37 @@ public class TestStorage : BaseTest
         var field = typeof(DefaultClientContainer).GetField("_bucketName", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.IsTrue((string)field!.GetValue(clientContainer)! == "Test");
     }
+
+    [TestMethod]
+    public void TestClientContainer()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions);
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultClientContainer = serviceProvider.GetService<IClientContainer>();
+        Assert.IsNull(defaultClientContainer);
+
+        var clientContainer = serviceProvider.GetService<IClientContainer<StorageContainer>>();
+
+        var field = typeof(DefaultClientContainer).GetField("_bucketName", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsTrue((string)field!.GetValue(clientContainer)! == "test-bucket");
+    }
+
+    [TestMethod]
+    public void TestClientFactory()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions);
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultClientContainer = serviceProvider.GetService<IClientContainer>();
+        Assert.IsNull(defaultClientContainer);
+
+        var clientFactory = serviceProvider.GetService<IClientFactory>();
+        Assert.IsNotNull(clientFactory);
+
+        var clientContainer = clientFactory.Create("test-bucket2");
+
+        var field = typeof(DefaultClientContainer).GetField("_bucketName", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsTrue((string)field!.GetValue(clientContainer)! == "test-bucket2");
+    }
 }
