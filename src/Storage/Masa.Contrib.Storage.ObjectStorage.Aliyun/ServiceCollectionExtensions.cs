@@ -68,8 +68,13 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICredentialProvider, DefaultCredentialProvider>();
         services.TryAddSingleton<IClient, DefaultStorageClient>();
         if (defaultBucketName != null)
+        {
+            services.TryAddSingleton<IBucketNameProvider>(_ => new DefaultBucketNameProvider(defaultBucketName));
             services.TryAddSingleton<IClientContainer>(serviceProvider
-                => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(), defaultBucketName));
+                => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(), serviceProvider.GetRequiredService<IBucketNameProvider>()));
+        }
+
+        services.TryAddSingleton(typeof(IBucketNameProvider<>), typeof(DefaultBucketNameProvider<>));
         services.TryAddSingleton(typeof(IClientContainer<>), typeof(DefaultClientContainer<>));
         services.TryAddSingleton<IClientFactory, DefaultClientFactory>();
         return services;
