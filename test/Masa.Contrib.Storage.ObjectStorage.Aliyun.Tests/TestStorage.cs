@@ -35,6 +35,12 @@ public class TestStorage : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetService<IClient>();
         Assert.IsNotNull(client);
+
+        var bucketProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketProvider);
+
+        Assert.IsTrue(bucketProvider.GetBucketName() == "test-storage");
+        Assert.IsTrue(bucketProvider.GetBucketName<StorageContainer>() == "test-storage2");
     }
 
     [TestMethod]
@@ -261,7 +267,7 @@ public class TestStorage : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
         Assert.IsNotNull(bucketNameProvider);
-        Assert.IsTrue(bucketNameProvider.BucketName == "Test");
+        Assert.IsTrue(bucketNameProvider.GetBucketName() == "Test");
     }
 
     [TestMethod]
@@ -269,13 +275,20 @@ public class TestStorage : BaseTest
     {
         var services = new ServiceCollection();
         services.AddAliyunStorage(_aLiYunStorageOptions);
+        services.Configure<StorageOptions>(option =>
+        {
+            option.BucketNames = new BucketNames(new List<KeyValuePair<string, string>>()
+            {
+                new("test-bucket", "test")
+            });
+        });
         var serviceProvider = services.BuildServiceProvider();
         var defaultClientContainer = serviceProvider.GetService<IClientContainer>();
         Assert.IsNull(defaultClientContainer);
 
-        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider<StorageContainer>>();
+        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
         Assert.IsNotNull(bucketNameProvider);
-        Assert.IsTrue(bucketNameProvider.BucketName == "test-bucket");
+        Assert.IsTrue(bucketNameProvider.GetBucketName<StorageContainer>() == "test");
     }
 
     [TestMethod]
@@ -293,10 +306,10 @@ public class TestStorage : BaseTest
         var clientContainer = clientFactory.Create("test-bucket2");
 
         var fieldInfo =
-            typeof(DefaultClientContainer).GetField("_bucketNameProvider",
+            typeof(DefaultClientContainer).GetField("_bucketName",
                 BindingFlags.Instance | BindingFlags.NonPublic);
-        var bucketNameProvider = fieldInfo!.GetValue(clientContainer) as IBucketNameProvider;
-        Assert.IsNotNull(bucketNameProvider);
-        Assert.IsTrue(bucketNameProvider.BucketName == "test-bucket2");
+        var bucketName = fieldInfo!.GetValue(clientContainer);
+        Assert.IsNotNull(bucketName);
+        Assert.IsTrue(bucketName.ToString() == "test-bucket2");
     }
 }

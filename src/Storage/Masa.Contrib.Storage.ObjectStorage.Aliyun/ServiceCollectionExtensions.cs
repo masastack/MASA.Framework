@@ -11,21 +11,23 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="sectionName">node name, defaults to Aliyun</param>
-    /// <param name="defaultBucketName">Default BucketName</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
     public static IServiceCollection AddAliyunStorage(
         this IServiceCollection services,
-        string sectionName = Const.DEFAULT_SECTION,
-        string? defaultBucketName = null)
+        string sectionName = Const.DEFAULT_SECTION)
     {
         if (string.IsNullOrEmpty(sectionName))
             throw new ArgumentException(sectionName, nameof(sectionName));
 
+        services.TryAddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
         services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
         services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
             => new DefaultAliyunStorageOptionProvider(GetAliyunStorageConfigurationOption(serviceProvider)));
-        return services.AddAliyunStorageCore(defaultBucketName);
+        services.TryAddSingleton<IClientContainer>(serviceProvider
+            => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(),
+                serviceProvider.GetRequiredService<IBucketNameProvider>().GetBucketName()));
+        return services.AddAliyunStorageCore();
     }
 
     public static IServiceCollection AddAliyunStorage(
@@ -69,12 +71,19 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IClient, DefaultStorageClient>();
         if (defaultBucketName != null)
         {
-            services.TryAddSingleton<IBucketNameProvider>(_ => new DefaultBucketNameProvider(defaultBucketName));
+            services.Configure<StorageOptions>(option =>
+            {
+                option.BucketNames = new BucketNames(new List<KeyValuePair<string, string>>()
+                {
+                    new(BucketNames.DEFAULT_BUCKET_NAME, defaultBucketName)
+                });
+            });
             services.TryAddSingleton<IClientContainer>(serviceProvider
-                => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(), serviceProvider.GetRequiredService<IBucketNameProvider>()));
+                => new DefaultClientContainer(serviceProvider.GetRequiredService<IClient>(), defaultBucketName));
         }
 
-        services.TryAddSingleton(typeof(IBucketNameProvider<>), typeof(DefaultBucketNameProvider<>));
+
+        services.TryAddSingleton<IBucketNameProvider, BucketNameProvider>();
         services.TryAddSingleton(typeof(IClientContainer<>), typeof(DefaultClientContainer<>));
         services.TryAddSingleton<IClientFactory, DefaultClientFactory>();
         return services;
@@ -104,28 +113,8 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IOssClientFactory GetOssClientFactory(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IOssClientFactory>();
-
-    private static ICredentialProvider GetCredentialProvider(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<ICredentialProvider>();
-
     private static IOptionsMonitor<AliyunStorageConfigureOptions> GetAliyunStorageConfigurationOption(IServiceProvider serviceProvider)
         => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
-
-    private static IOptionsMonitor<AliyunStorageOptions> GetAliyunStorageOption(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
-
-    private static IAliyunStorageOptionProvider GetAliyunStorageOptionProvider(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IAliyunStorageOptionProvider>();
-
-    private static IMemoryCache GetMemoryCache(IServiceProvider serviceProvider) => serviceProvider.GetRequiredService<IMemoryCache>();
-
-    private static ILogger<DefaultStorageClient>? GetClientLogger(IServiceProvider serviceProvider)
-        => serviceProvider.GetService<ILogger<DefaultStorageClient>>();
-
-    private static ILogger<DefaultCredentialProvider>? GetDefaultCredentialProviderLogger(IServiceProvider serviceProvider)
-        => serviceProvider.GetService<ILogger<DefaultCredentialProvider>>();
 
     private static void CheckAliYunStorageOptions(AliyunStorageOptions options)
     {
