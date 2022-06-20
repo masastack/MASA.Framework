@@ -6,50 +6,22 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 public class DefaultCredentialProvider : ICredentialProvider
 {
     private readonly IOssClientFactory _ossClientFactory;
-    protected AliyunStorageOptions _options;
+    private readonly IAliyunStorageOptionProvider _optionProvider;
     private readonly IMemoryCache _cache;
     protected readonly ILogger<DefaultCredentialProvider>? _logger;
 
-    public bool IncompleteStsOptions { get; private set; }
+    private AliyunStorageOptions Options => _optionProvider.GetOptions();
 
     public DefaultCredentialProvider(
         IOssClientFactory ossClientFactory,
-        AliyunStorageOptions options,
+        IAliyunStorageOptionProvider optionProvider,
         IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger)
+        ILogger<DefaultCredentialProvider>? logger = null)
     {
         _ossClientFactory = ossClientFactory;
-        _options = options;
-        IncompleteStsOptions = string.IsNullOrEmpty(options.Sts.RegionId) ||
-            string.IsNullOrEmpty(options.RoleArn) ||
-            string.IsNullOrEmpty(options.RoleSessionName);
+        _optionProvider = optionProvider;
         _cache = cache;
         _logger = logger;
-    }
-
-    public DefaultCredentialProvider(
-        IOssClientFactory ossClientFactory,
-        IOptionsMonitor<AliyunStorageOptions> options,
-        IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger)
-        : this(ossClientFactory, options.CurrentValue, cache, logger)
-    {
-    }
-
-    public DefaultCredentialProvider(
-        IOssClientFactory ossClientFactory,
-        IOptionsMonitor<AliyunStorageConfigureOptions> options,
-        IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger)
-        : this(ossClientFactory, GetAliyunStorageOptions(options.CurrentValue), cache, logger)
-    {
-        options.OnChange(aliyunStorageConfigureOptions =>
-        {
-            _options = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
-            IncompleteStsOptions = string.IsNullOrEmpty(_options.Sts.RegionId) ||
-                string.IsNullOrEmpty(_options.RoleArn) ||
-                string.IsNullOrEmpty(_options.RoleSessionName);
-        });
     }
 
     /// <summary>
@@ -58,16 +30,16 @@ public class DefaultCredentialProvider : ICredentialProvider
     /// <returns></returns>
     public virtual TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!_cache.TryGetValue(_options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
+        if (!_cache.TryGetValue(Options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
         {
             temporaryCredentials = GetTemporaryCredentials(
-                _options.Sts.RegionId!,
-                _options.AccessKeyId,
-                _options.AccessKeySecret,
-                _options.RoleArn,
-                _options.RoleSessionName,
-                _options.Policy,
-                _options.Sts.GetDurationSeconds());
+                Options.Sts.RegionId!,
+                Options.AccessKeyId,
+                Options.AccessKeySecret,
+                Options.RoleArn,
+                Options.RoleSessionName,
+                Options.Policy,
+                Options.Sts.GetDurationSeconds());
             SetTemporaryCredentials(temporaryCredentials);
         }
         return temporaryCredentials!;
@@ -114,28 +86,7 @@ public class DefaultCredentialProvider : ICredentialProvider
 
     public virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
     {
-        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - _options.Sts.GetEarlyExpires();
-        if (timespan >= 0) _cache.Set(_options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
-    }
-
-    private static AliyunStorageOptions GetAliyunStorageOptions(AliyunStorageConfigureOptions options)
-    {
-        AliyunStorageOptions aliyunStorageOptions = options.Storage;
-        aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId)!;
-        aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret)!;
-        aliyunStorageOptions.Sts.RegionId = TryUpdate(options.Storage.Sts.RegionId, options.Sts.RegionId);
-        aliyunStorageOptions.Sts.DurationSeconds =
-            options.Storage.Sts.DurationSeconds ?? options.Sts.DurationSeconds ?? options.Sts.GetDurationSeconds();
-        aliyunStorageOptions.Sts.EarlyExpires =
-            options.Storage.Sts.EarlyExpires ?? options.Sts.EarlyExpires ?? options.Sts.GetEarlyExpires();
-        return aliyunStorageOptions;
-    }
-
-    private static string? TryUpdate(string? source, string? destination)
-    {
-        if (!string.IsNullOrWhiteSpace(source))
-            return source;
-
-        return destination;
+        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - Options.Sts.GetEarlyExpires();
+        if (timespan >= 0) _cache.Set(Options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
     }
 }

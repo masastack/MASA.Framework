@@ -18,19 +18,10 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrEmpty(sectionName))
             throw new ArgumentException(sectionName, nameof(sectionName));
 
-        services.AddAliyunStorageDepend();
         services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
-        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
-            GetOssClientFactory(serviceProvider),
-            GetAliyunStorageConfigurationOption(serviceProvider),
-            GetMemoryCache(serviceProvider),
-            GetDefaultCredentialProviderLogger(serviceProvider)));
-        services.TryAddSingleton<IClient>(serviceProvider => new DefaultStorageClient(
-            GetCredentialProvider(serviceProvider),
-            GetAliyunStorageOption(serviceProvider),
-            GetClientLogger(serviceProvider)));
-        return services;
+        services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
+            => new DefaultAliyunStorageOptionProvider(GetAliyunStorageConfigurationOption(serviceProvider)));
+        return services.AddAliyunStorageCore();
     }
 
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, AliyunStorageOptions options)
@@ -45,18 +36,9 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(func, nameof(func));
 
-        services.AddAliyunStorageDepend();
-        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        services.TryAddSingleton<ICredentialProvider>(serviceProvider => new DefaultCredentialProvider(
-            GetOssClientFactory(serviceProvider),
-            func.Invoke(serviceProvider),
-            GetMemoryCache(serviceProvider),
-            GetDefaultCredentialProviderLogger(serviceProvider)));
-        services.TryAddSingleton<IClient>(serviceProvider => new DefaultStorageClient(
-            GetCredentialProvider(serviceProvider),
-            func.Invoke(serviceProvider),
-            GetClientLogger(serviceProvider)));
-        return services;
+        services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
+            => new DefaultAliyunStorageOptionProvider(func.Invoke(serviceProvider)));
+        return services.AddAliyunStorageCore();
     }
 
     public static IServiceCollection AddAliyunStorage(this IServiceCollection services, Func<AliyunStorageOptions> func)
@@ -66,9 +48,12 @@ public static class ServiceCollectionExtensions
         return services.AddAliyunStorage(_ => func.Invoke());
     }
 
-    private static IServiceCollection AddAliyunStorageDepend(this IServiceCollection services)
+    private static IServiceCollection AddAliyunStorageCore(this IServiceCollection services)
     {
         services.AddMemoryCache();
+        services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
+        services.TryAddSingleton<ICredentialProvider, DefaultCredentialProvider>();
+        services.TryAddSingleton<IClient, DefaultStorageClient>();
         return services;
     }
 
@@ -108,9 +93,13 @@ public static class ServiceCollectionExtensions
     private static IOptionsMonitor<AliyunStorageOptions> GetAliyunStorageOption(IServiceProvider serviceProvider)
         => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageOptions>>();
 
+    private static IAliyunStorageOptionProvider GetAliyunStorageOptionProvider(IServiceProvider serviceProvider)
+        => serviceProvider.GetRequiredService<IAliyunStorageOptionProvider>();
+
     private static IMemoryCache GetMemoryCache(IServiceProvider serviceProvider) => serviceProvider.GetRequiredService<IMemoryCache>();
 
-    private static ILogger<DefaultStorageClient>? GetClientLogger(IServiceProvider serviceProvider) => serviceProvider.GetService<ILogger<DefaultStorageClient>>();
+    private static ILogger<DefaultStorageClient>? GetClientLogger(IServiceProvider serviceProvider)
+        => serviceProvider.GetService<ILogger<DefaultStorageClient>>();
 
     private static ILogger<DefaultCredentialProvider>? GetDefaultCredentialProviderLogger(IServiceProvider serviceProvider)
         => serviceProvider.GetService<ILogger<DefaultCredentialProvider>>();

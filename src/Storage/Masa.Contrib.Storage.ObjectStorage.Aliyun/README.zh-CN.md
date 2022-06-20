@@ -30,8 +30,6 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
       "DurationSeconds":3600,//临时证书有效期, default: 3600秒
       "EarlyExpires":10//default: 10秒
     },
-    "RegionId": "Replace-With-Your-RegionId",//https://help.aliyun.com/document_detail/371859.html
-    "DurationSeconds": 3600,//选填、默认: 3600s
     "Storage": {
       "Endpoint": "Replace-With-Your-Endpoint",//https://help.aliyun.com/document_detail/31837.html
       "RoleArn": "Replace-With-Your-RoleArn",

@@ -11,16 +11,16 @@ public class TestClient : BaseTest
     [TestInitialize]
     public void Initialize()
     {
-        Mock<ICredentialProvider> credentialProvider = new();
-        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
-        _client = new CustomizeClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
+        Mock<ICredentialProvider> credentialProvider = new Mock<ICredentialProvider>();
+        Mock<IAliyunStorageOptionProvider> optionProvider = MockOptionProvider(true);
+        _client = new CustomizeClient(credentialProvider.Object, optionProvider.Object, NullLogger<DefaultStorageClient>.Instance);
     }
 
     [TestMethod]
     public void TestGetTokenAndNullLoggerReturnFalse()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, null);
+        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(false).Object, null);
         Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
@@ -28,7 +28,7 @@ public class TestClient : BaseTest
     public void TestGetTokenAndNotNullLoggerReturnFalse()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
+        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider().Object, NullLogger<DefaultStorageClient>.Instance);
         Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
@@ -42,8 +42,7 @@ public class TestClient : BaseTest
             "sessionToken",
             DateTime.UtcNow.AddHours(-1));
         credentialProvider.Setup(provider => provider.GetSecurityToken()).Returns(temporaryCredentials);
-        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(false);
-        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
+        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(false).Object, NullLogger<DefaultStorageClient>.Instance);
         var responseBase = client.GetSecurityToken();
         Assert.IsTrue(responseBase == temporaryCredentials);
     }
@@ -52,9 +51,8 @@ public class TestClient : BaseTest
     public void TestEmptyRoleArnGetSecurityTokenReturnThrowArgumentException()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        credentialProvider.Setup(provider => provider.IncompleteStsOptions).Returns(true);
         _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
-        var client = new DefaultStorageClient(credentialProvider.Object, _aLiYunStorageOptions, NullLogger<DefaultStorageClient>.Instance);
+        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(true).Object, NullLogger<DefaultStorageClient>.Instance);
         Assert.ThrowsException<ArgumentException>(() => client.GetSecurityToken());
     }
 
