@@ -15,8 +15,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IWorkerProvider, DefaultWorkerProvider>();
 
-        CheckIdGeneratorOptions(idGeneratorOptions,
-            services.GetInstance<IWorkerProvider>().GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult());
+        CheckIdGeneratorOptions(services, idGeneratorOptions);
 
         services.TryAddSingleton<IIdGenerator<System.Snowflake, long>>(serviceProvider
             => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
@@ -49,22 +48,28 @@ public static class ServiceCollectionExtensions
     private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
         services.BuildServiceProvider().GetRequiredService<TService>();
 
-    private static void CheckIdGeneratorOptions(IdGeneratorOptions generatorOptions, long workerId)
+    private static void CheckIdGeneratorOptions(IServiceCollection services, IdGeneratorOptions generatorOptions)
     {
         if (generatorOptions.BaseTime > DateTime.UtcNow)
             throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),
                 $"{nameof(generatorOptions.BaseTime)} must not be greater than the current time");
 
-        if (workerId > generatorOptions.MaxWorkerId)
-            throw new ArgumentOutOfRangeException(
-                $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
+        if (generatorOptions.SupportDistributed)
+        {
+            if (generatorOptions.HeartbeatInterval < 100)
+                throw new ArgumentOutOfRangeException($"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 100");
+        }
+        else
+        {
+            long workerId = GetInstance<IWorkerProvider>(services).GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            if (workerId > generatorOptions.MaxWorkerId)
+                throw new ArgumentOutOfRangeException(
+                    $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
+        }
 
         var maxLength = generatorOptions.TimestampType == TimestampType.Milliseconds ? 22 : 31;
         if (generatorOptions.SequenceBits + generatorOptions.WorkerIdBits > maxLength)
             throw new ArgumentOutOfRangeException(
                 $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {maxLength}");
-
-        if (generatorOptions.SupportDistributed && generatorOptions.HeartbeatInterval < 100)
-            throw new ArgumentOutOfRangeException($"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 100");
     }
 }

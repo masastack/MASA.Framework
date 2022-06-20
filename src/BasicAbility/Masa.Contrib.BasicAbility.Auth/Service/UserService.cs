@@ -6,10 +6,12 @@ namespace Masa.Contrib.BasicAbility.Auth.Service;
 public class UserService : IUserService
 {
     readonly ICallerProvider _callerProvider;
+    readonly IUserContext _userContext;
 
-    public UserService(ICallerProvider callerProvider)
+    public UserService(ICallerProvider callerProvider, IUserContext userContext)
     {
         _callerProvider = callerProvider;
+        _userContext = userContext;
     }
 
     public async Task<UserModel?> AddAsync(AddUserModel user)
@@ -46,6 +48,20 @@ public class UserService : IUserService
     {
         var requestUri = $"api/user/findByAccount";
         return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account = account }) ?? new();
+    }
+
+    public async Task VisitedAsync(string url)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/user/visit";
+        await _callerProvider.PostAsync<object>(requestUri, new { UserId = userId, Url = url }, true);
+    }
+
+    public async Task<List<UserVisitedModel>> GetUserVisitedListAsync()
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/user/visitedList";
+        return (await _callerProvider.GetAsync<object, List<UserVisitedModel>>(requestUri, new { userId = userId })) ?? new();
     }
 }
 
