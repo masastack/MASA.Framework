@@ -8,7 +8,7 @@ public class PermissionService : IPermissionService
     readonly ICallerProvider _callerProvider;
     readonly IUserContext _userContext;
 
-    const string PARTY = "api/permission/";
+    const string PART = "api/permission/";
 
     public PermissionService(ICallerProvider callerProvider, IUserContext userContext)
     {
@@ -20,21 +20,21 @@ public class PermissionService : IPermissionService
     public async Task<bool> AuthorizedAsync(string appId, string code)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"{PARTY}authorized?appId={appId}&code={code}&userId={userId}";
+        var requestUri = $"{PART}authorized?appId={appId}&code={code}&userId={userId}";
         return await _callerProvider.GetAsync<bool>(requestUri);
     }
 
     public async Task<List<MenuModel>> GetMenusAsync(string appId)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"{PARTY}menus?appId={appId}&userId={userId}";
+        var requestUri = $"{PART}menus?appId={appId}&userId={userId}";
         return await _callerProvider.GetAsync<List<MenuModel>>(requestUri, default) ?? new();
     }
 
     public async Task<List<string>> GetElementPermissionsAsync(string appId)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"{PARTY}element-permissions?appId={appId}&userId={userId}";
+        var requestUri = $"{PART}element-permissions?appId={appId}&userId={userId}";
         return await _callerProvider.GetAsync<List<string>>(requestUri, default) ?? new();
     }
 
@@ -43,7 +43,7 @@ public class PermissionService : IPermissionService
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PARTY}addFavoriteMenu?permissionId={menuId}&userId={userId}", null);
+            await _callerProvider.PutAsync($"{PART}addFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -57,7 +57,7 @@ public class PermissionService : IPermissionService
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PARTY}removeFavoriteMenu?permissionId={menuId}&userId={userId}", null);
+            await _callerProvider.PutAsync($"{PART}removeFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -69,7 +69,7 @@ public class PermissionService : IPermissionService
     public async Task<List<CollectMenuModel>> GetFavoriteMenuListAsync()
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"{PARTY}menu-favorite-list?userId={userId}";
+        var requestUri = $"{PART}menu-favorite-list?userId={userId}";
         return await _callerProvider.GetAsync<List<CollectMenuModel>>(requestUri, default) ?? new();
     }
 }
