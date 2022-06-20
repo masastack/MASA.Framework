@@ -8,7 +8,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress)
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
-
+#warning modify
+        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
@@ -23,15 +24,21 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
+        if (!services.Any(service => service.ServiceType == typeof(IMultiEnvironmentUserContext)))
+        {
+            throw new Exception("Please add IMultiEnvironmentUserContext first.");
+        }
+
         services.AddHttpContextAccessor();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
-        services.AddSingleton<IEnvironmentProvider, EnvironmentProvider>();
+        services.AddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddCaller(callerOptions);
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
+            var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-            var authClient = new AuthClient(callProvider);
+            var authClient = new AuthClient(callProvider, userContext);
             return authClient;
         });
 
