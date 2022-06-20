@@ -16,11 +16,12 @@ public class CustomizeNullClient : DefaultCredentialProvider
         string policy,
         long durationSeconds) => throw new Exception(Message);
 
-    public CustomizeNullClient(IOssClientFactory ossClientFactory, AliyunStorageOptions options, IMemoryCache cache, ILogger<DefaultCredentialProvider>? logger) : base(ossClientFactory, options, cache, logger)
-    {
-    }
 
-    public CustomizeNullClient(IOssClientFactory ossClientFactory, IOptionsMonitor<AliyunStorageOptions> options, IMemoryCache cache, ILogger<DefaultCredentialProvider>? logger) : base(ossClientFactory, options, cache, logger)
+    public CustomizeNullClient(IOssClientFactory ossClientFactory,
+        IAliyunStorageOptionProvider optionProvider,
+        IMemoryCache cache,
+        ILogger<DefaultCredentialProvider>? logger = null)
+        : base(ossClientFactory, optionProvider, cache, logger)
     {
     }
 }

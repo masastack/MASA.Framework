@@ -5,24 +5,12 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
 public class DefaultStorageClient : BaseClient, IClient
 {
-    private readonly bool _supportCallback;
     private readonly ILogger<DefaultStorageClient>? _logger;
 
-    public DefaultStorageClient(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<DefaultStorageClient>? logger)
-        : base(credentialProvider, options)
-    {
-        _supportCallback = !string.IsNullOrEmpty(options.CallbackBody) && !string.IsNullOrEmpty(options.CallbackUrl);
-        _logger = logger;
-    }
-
-    public DefaultStorageClient(ICredentialProvider credentialProvider, IOptionsMonitor<AliyunStorageOptions> options, ILogger<DefaultStorageClient>? logger)
-        : this(credentialProvider, options.CurrentValue, logger)
-    {
-        options.OnChange(aliyunStorageOptions =>
-        {
-            Options = aliyunStorageOptions;
-        });
-    }
+    public DefaultStorageClient(ICredentialProvider credentialProvider,
+        IAliyunStorageOptionProvider optionProvider,
+        ILogger<DefaultStorageClient>? logger = null)
+        : base(credentialProvider, optionProvider) => _logger = logger;
 
     /// <summary>
     /// Obtain temporary authorization credentials through STS service
@@ -30,8 +18,9 @@ public class DefaultStorageClient : BaseClient, IClient
     /// <returns></returns>
     public TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (CredentialProvider.IncompleteStsOptions)
-            throw new ArgumentException($"Sts options is imcomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
+        if (OptionProvider.IncompleteStsOptions)
+            throw new ArgumentException(
+                $"Sts options is imcomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
 
         return CredentialProvider.GetSecurityToken();
     }
@@ -81,7 +70,7 @@ public class DefaultStorageClient : BaseClient, IClient
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        var objectMetadata = _supportCallback ? BuildCallbackMetadata(Options.CallbackUrl, Options.CallbackBody) : null;
+        var objectMetadata = OptionProvider.SupportCallback ? BuildCallbackMetadata(Options.CallbackUrl, Options.CallbackBody) : null;
         var result = !Options.EnableResumableUpload || Options.BigObjectContentLength > data.Length ?
             client.PutObject(bucketName, objectName, data, objectMetadata) :
             client.ResumableUploadObject(new UploadObjectRequest(bucketName, objectName, data)

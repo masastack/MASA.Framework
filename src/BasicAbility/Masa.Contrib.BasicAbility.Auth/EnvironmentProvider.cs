@@ -5,8 +5,15 @@ namespace Masa.Contrib.BasicAbility.Auth;
 
 public class EnvironmentProvider : IEnvironmentProvider
 {
+    readonly IMultiEnvironmentUserContext _multiEnvironmentUserContext;
+
+    public EnvironmentProvider(IMultiEnvironmentUserContext multiEnvironmentUserContext)
+    {
+        _multiEnvironmentUserContext = multiEnvironmentUserContext;
+    }
+
     public string GetEnvironment()
     {
-        return "development";
+        return _multiEnvironmentUserContext.Environment ?? "";
     }
 }
