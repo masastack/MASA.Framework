@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DistributedLock.MySql" Version="1.0.0"/>
+    <PackageReference Include="DistributedLock.MySql" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Masa.Contrib.Data.DistributedLocking.Medallion\Masa.Contrib.Data.DistributedLocking.Medallion.csproj"/>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.UoW\Masa.BuildingBlocks.Data.UoW.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Data.DistributedLocking.Medallion\Masa.Contrib.Data.DistributedLocking.Medallion.csproj" />
   </ItemGroup>
   
 </Project>

@@ -5,13 +5,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="DistributedLock.Oracle" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\MASA.BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.UoW\Masa.BuildingBlocks.Data.UoW.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Data.DistributedLocking.Medallion\Masa.Contrib.Data.DistributedLocking.Medallion.csproj" />
   </ItemGroup>
-  
+
 </Project>

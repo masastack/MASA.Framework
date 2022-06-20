@@ -13,22 +13,23 @@ public static class MedallionBuilderExtensions
             => new PostgresDistributedSynchronizationProvider(connectionString, options));
     }
 
-    // /// <summary>
-    // /// todo: only use a fixed database link string, waiting for Isolation to support temporary changes to multi-environment and multi-tenancy
-    // /// </summary>
-    // /// <param name="medallionBuilder"></param>
-    // /// <param name="options"></param>
-    // /// <typeparam name="TDbContextType"></typeparam>
-    // public static void UseNpgsql<TDbContextType>(this MedallionBuilder medallionBuilder,
-    //     Action<PostgresConnectionOptionsBuilder>? options = null)
-    // {
-    //     medallionBuilder.Services.AddSingleton<IDistributedLockProvider>(serviceProvider
-    //         =>
-    //     {
-    //         var name = ConnectionStringNameAttribute.GetConnStringName(typeof(TDbContextType));
-    //         var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
-    //         var connectionString = connectionStringProvider.GetConnectionString(name);
-    //         return new PostgresDistributedSynchronizationProvider(connectionString, options);
-    //     });
-    // }
+    public static void UseNpgsql<TDbContextType>(this MedallionBuilder medallionBuilder,
+        Action<PostgresConnectionOptionsBuilder>? options = null)
+    {
+        medallionBuilder.Services.AddSingleton<IDistributedLockProvider>(serviceProvider
+            =>
+        {
+            var unitOfWorkManager = serviceProvider.GetService<IUnitOfWorkManager>();
+            if (unitOfWorkManager == null)
+                throw new NotSupportedException("UoW is not supported");
+
+            using (var unitOfWork = unitOfWorkManager.CreateDbContext())
+            {
+                var name = ConnectionStringNameAttribute.GetConnStringName(typeof(TDbContextType));
+                var connectionStringProvider = unitOfWork.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
+                var connectionString = connectionStringProvider.GetConnectionString(name);
+                return new PostgresDistributedSynchronizationProvider(connectionString, options);
+            }
+        });
+    }
 }
