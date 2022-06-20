@@ -38,12 +38,12 @@ public class PermissionService : IPermissionService
         return await _callerProvider.GetAsync<List<string>>(requestUri, default) ?? new();
     }
 
-    public async Task<bool> CollectMenuAsync(Guid menuId)
+    public async Task<bool> AddFavoriteMenuAsync(Guid menuId)
     {
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PARTY}Collect?permissionId={menuId}&userId={userId}", null);
+            await _callerProvider.PutAsync($"{PARTY}addFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -52,12 +52,12 @@ public class PermissionService : IPermissionService
         }
     }
 
-    public async Task<bool> UnCollectMenuAsync(Guid menuId)
+    public async Task<bool> RemoveFavoriteMenuAsync(Guid menuId)
     {
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PARTY}UnCollect?permissionId={menuId}&userId={userId}", null);
+            await _callerProvider.PutAsync($"{PARTY}removeFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -66,10 +66,10 @@ public class PermissionService : IPermissionService
         }
     }
 
-    public async Task<List<CollectMenuModel>> GetCollectMenuListAsync()
+    public async Task<List<CollectMenuModel>> GetFavoriteMenuListAsync()
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"{PARTY}collect-list?userId={userId}";
+        var requestUri = $"{PARTY}menu-favorite-list?userId={userId}";
         return await _callerProvider.GetAsync<List<CollectMenuModel>>(requestUri, default) ?? new();
     }
 }

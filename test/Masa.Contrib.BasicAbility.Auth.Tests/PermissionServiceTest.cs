@@ -61,49 +61,49 @@ public class PermissionServiceTest : BaseAuthTest
 
     [TestMethod]
     [DataRow("225082D3-CC88-48D2-3C27-08DA3ED8F4B7")]
-    public async Task TestGetCollectMenuListAsync(string menuId)
+    public async Task TestGetFavoriteMenuListAsync(string menuId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new List<CollectMenuModel>();
-        var requestUri = $"api/permission/collect-list?userId={userId}";
+        var requestUri = $"api/permission/menu-favorite-list?userId={userId}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<List<CollectMenuModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var permissionService = new PermissionService(callerProvider.Object, userContext.Object);
-        var result = await permissionService.GetCollectMenuListAsync();
+        var result = await permissionService.GetFavoriteMenuListAsync();
         callerProvider.Verify(provider => provider.GetAsync<List<CollectMenuModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
     [TestMethod]
     [DataRow("225082D3-CC88-48D2-3C27-08DA3ED8F4B7")]
-    public async Task TestCollectMenuAsync(string menuId)
+    public async Task TestAddFavoriteMenuAsync(string menuId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var requestUri = $"api/permission/Collect?permissionId={Guid.Parse(menuId)}&userId={userId}";
+        var requestUri = $"api/permission/addFavoriteMenu?permissionId={Guid.Parse(menuId)}&userId={userId}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.PutAsync(requestUri, null, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var permissionService = new PermissionService(callerProvider.Object, userContext.Object);
-        var result = await permissionService.CollectMenuAsync(Guid.Parse(menuId));
+        var result = await permissionService.AddFavoriteMenuAsync(Guid.Parse(menuId));
         callerProvider.Verify(provider => provider.PutAsync(requestUri, null, true, default), Times.Once);
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     [DataRow("225082D3-CC88-48D2-3C27-08DA3ED8F4B7")]
-    public async Task TestUnCollectMenuAsync(string menuId)
+    public async Task TestRemoveFavoriteMenuAsync(string menuId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var requestUri = $"api/permission/UnCollect?permissionId={Guid.Parse(menuId)}&userId={userId}";
+        var requestUri = $"api/permission/removeFavoriteMenu?permissionId={Guid.Parse(menuId)}&userId={userId}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.PutAsync(requestUri, null, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var permissionService = new PermissionService(callerProvider.Object, userContext.Object);
-        var result = await permissionService.UnCollectMenuAsync(Guid.Parse(menuId));
+        var result = await permissionService.RemoveFavoriteMenuAsync(Guid.Parse(menuId));
         callerProvider.Verify(provider => provider.PutAsync(requestUri, null, true, default), Times.Once);
         Assert.IsTrue(result);
     }

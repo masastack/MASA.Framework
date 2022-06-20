@@ -128,7 +128,7 @@ public class UserServiceTest : BaseAuthTest
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new List<UserVisitedModel>();
-        var requestUri = $"api/user/visitList";
+        var requestUri = $"api/user/visitedList";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, new { userId = userId }, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
