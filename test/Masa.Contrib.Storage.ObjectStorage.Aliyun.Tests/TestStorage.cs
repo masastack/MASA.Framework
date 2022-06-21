@@ -6,8 +6,6 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class TestStorage : BaseTest
 {
-    private const string HANG_ZHOUE_REGIONID = "oss-cn-hangzhou";
-
     [TestMethod]
     public void TestAddAliyunStorageAndNotAddConfigurationReturnClientIsNotNull()
     {
@@ -37,6 +35,12 @@ public class TestStorage : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var client = serviceProvider.GetService<IClient>();
         Assert.IsNotNull(client);
+
+        var bucketProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketProvider);
+
+        Assert.IsTrue(bucketProvider.GetBucketName() == "test-storage");
+        Assert.IsTrue(bucketProvider.GetBucketName<StorageContainer>() == "test-storage2");
     }
 
     [TestMethod]
@@ -253,5 +257,59 @@ public class TestStorage : BaseTest
         var services = new ServiceCollection();
         Func<AliyunStorageOptions> func = null!;
         Assert.ThrowsException<ArgumentNullException>(() => services.AddAliyunStorage(func));
+    }
+
+    [TestMethod]
+    public void TestDefaultBucketNameReturnDefaultBucketNameEqualTest()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions, "Test");
+        var serviceProvider = services.BuildServiceProvider();
+        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketNameProvider);
+        Assert.IsTrue(bucketNameProvider.GetBucketName() == "Test");
+    }
+
+    [TestMethod]
+    public void TestClientContainer()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions);
+        services.Configure<StorageOptions>(option =>
+        {
+            option.BucketNames = new BucketNames(new List<KeyValuePair<string, string>>()
+            {
+                new("test-bucket", "test")
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultClientContainer = serviceProvider.GetService<IClientContainer>();
+        Assert.IsNull(defaultClientContainer);
+
+        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketNameProvider);
+        Assert.IsTrue(bucketNameProvider.GetBucketName<StorageContainer>() == "test");
+    }
+
+    [TestMethod]
+    public void TestClientFactory()
+    {
+        var services = new ServiceCollection();
+        services.AddAliyunStorage(_aLiYunStorageOptions);
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultClientContainer = serviceProvider.GetService<IClientContainer>();
+        Assert.IsNull(defaultClientContainer);
+
+        var clientFactory = serviceProvider.GetService<IClientFactory>();
+        Assert.IsNotNull(clientFactory);
+
+        var clientContainer = clientFactory.Create("test-bucket2");
+
+        var fieldInfo =
+            typeof(DefaultClientContainer).GetField("_bucketName",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+        var bucketName = fieldInfo!.GetValue(clientContainer);
+        Assert.IsNotNull(bucketName);
+        Assert.IsTrue(bucketName.ToString() == "test-bucket2");
     }
 }

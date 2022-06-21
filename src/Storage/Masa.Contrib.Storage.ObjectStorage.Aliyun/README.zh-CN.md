@@ -35,7 +35,10 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
       "RoleArn": "Replace-With-Your-RoleArn",
       "RoleSessionName": "Replace-With-Your-RoleSessionName",
       "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//选填、默认: Aliyun.Storage.TemporaryCredentials
-      "Policy": ""//选填
+      "Policy": "",//选填
+      "BucketNames" : {
+        "DefaultBucketName" : ""
+      }
     }
   }
 }
