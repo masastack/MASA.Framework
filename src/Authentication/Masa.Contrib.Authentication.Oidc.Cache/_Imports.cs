@@ -10,6 +10,5 @@ global using Masa.Contrib.Authentication.Oidc.Cache.Models;
 global using Masa.Contrib.Authentication.Oidc.Cache.Utils;
 global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
-global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.DependencyInjection;
