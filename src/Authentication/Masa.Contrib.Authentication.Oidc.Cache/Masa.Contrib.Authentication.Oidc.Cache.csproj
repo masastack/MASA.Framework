@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="$(MasaUtilsPackageVersion)" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="$(MasaUtilsPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Authentication\Masa.BuildingBlocks.Authentication.Oidc.Cache\Masa.BuildingBlocks.Authentication.Oidc.Cache.csproj" />
+  </ItemGroup>
+
+</Project>
