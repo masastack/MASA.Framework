@@ -12,7 +12,6 @@ global using Masa.Utils.Caching.Core.DependencyInjection;
 global using Masa.Utils.Caching.Core.Models;
 global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
-global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Extensions;
 global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Utils.Caller.Core;
