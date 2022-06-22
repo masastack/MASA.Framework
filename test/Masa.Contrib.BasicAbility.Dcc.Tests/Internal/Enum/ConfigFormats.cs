@@ -7,5 +7,7 @@ internal enum ConfigFormats
 {
     Properties = 1,
     Text,
-    Json
+    Json,
+    Yaml,
+    Xml
 }

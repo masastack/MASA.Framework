@@ -1,7 +1,9 @@
-using System.Dynamic;
-
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using System.Dynamic;
+using System.Xml.Linq;
+using YamlDotNet.Serialization;
 
 namespace Masa.Contrib.BasicAbility.Dcc.Tests;
 
@@ -36,6 +38,31 @@ public class DccClientTest
             Secret = ""
         };
         _trigger = new CustomTrigger(_jsonSerializerOptions);
+    }
+
+    [TestMethod]
+    public void TestFormatCodeErrorRawReturnThrowNotSupportedException()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = "",
+            FormatLabelCode = "json",
+        }, _jsonSerializerOptions);
+        Assert.ThrowsException<NotSupportedException>(() => client.TestFormatRaw(raw, "DccObjectName"), "configObject invalid");
+    }
+
+    [TestMethod]
+    public void TestJsonFormatCodeRawReturnConfigurationTypeIsJson()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = "",
+            FormatLabelCode = "Json",
+        }, _jsonSerializerOptions);
+        var result = client.TestFormatRaw(raw, "DccObjectName");
+        Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Json);
     }
 
     [TestMethod]
@@ -131,6 +158,91 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.Properties
         }, _jsonSerializerOptions);
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+    }
+
+    [TestMethod]
+    public void TestFormatRawByXmlAndContentIsErrorReturnThrowArgumentException()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string xml = @"<?xxx version='1.0' xx='no'?>
+                    <root>
+                      <name1>blazor</name>
+                      <url>https://blazor.masastack.com/</url>
+                      </person>
+                    </root>";
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = xml,
+            ConfigFormat = ConfigFormats.Xml
+        }, _jsonSerializerOptions);
+        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+    }
+
+    [TestMethod]
+    public void TestFormatRawByXmlReturnConfigurationTypeIsXml()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string xml = @"<?xml version='1.0' standalone='no'?>
+                    <root>
+                      <person id='1'>
+                      <name>blazor</name>
+                      <url>https://blazor.masastack.com/</url>
+                      </person>
+                    </root>";
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = xml,
+            ConfigFormat = ConfigFormats.Xml
+        }, _jsonSerializerOptions);
+        var result = client.TestFormatRaw(raw, "DccObjectName");
+
+        var doc = XDocument.Parse(xml);
+        var json = Newtonsoft.Json.JsonConvert.SerializeXNode(doc);
+
+        Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Xml);
+    }
+
+    [TestMethod]
+    public void TestFormatRawByYamlAndContentIsErrorReturnThrowArgumentException()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string yaml = @"
+name： Masa,
+age: 1.5
+addresses:
+home:
+    city: hangzhou";
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = yaml,
+            ConfigFormat = ConfigFormats.Yaml
+        }, _jsonSerializerOptions);
+        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+    }
+
+    [TestMethod]
+    public void TestFormatRawByYamlReturnConfigurationTypeIsXml()
+    {
+        var client = new CustomConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        string yaml = @"
+name: Masa
+age: 1.5
+addresses:
+  home:
+    city: hangzhou";
+        var deserializer = new DeserializerBuilder().Build();
+        var yamlObject = deserializer.Deserialize<object>(yaml);
+
+        var serializer = new SerializerBuilder().JsonCompatible().Build();
+        var json = serializer.Serialize(yamlObject);
+        string raw = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = yaml,
+            ConfigFormat = ConfigFormats.Yaml
+        }, _jsonSerializerOptions);
+        var result = client.TestFormatRaw(raw, "DccObjectName");
+
+        Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Yaml);
     }
 
     [TestMethod]

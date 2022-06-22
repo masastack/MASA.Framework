@@ -12,7 +12,8 @@ internal class PublishRelease
         {
             try
             {
-                _configFormat = (ConfigFormats)Enum.Parse(typeof(ConfigFormats), FormatLabelCode);
+                if (_configFormat == 0 && !string.IsNullOrWhiteSpace(FormatLabelCode))
+                    _configFormat = (ConfigFormats)Enum.Parse(typeof(ConfigFormats), FormatLabelCode);
             }
             catch (Exception ex)
             {
@@ -27,7 +28,7 @@ internal class PublishRelease
         }
     }
 
-    public string FormatLabelCode { get; set; } = null!;
+    public string? FormatLabelCode { get; set; }
 
     public string? Content { get; set; }
 }

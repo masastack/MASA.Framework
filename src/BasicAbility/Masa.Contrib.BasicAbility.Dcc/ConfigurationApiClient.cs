@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Xml.Linq;
+using YamlDotNet.Serialization;
+
 namespace Masa.Contrib.BasicAbility.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
@@ -133,6 +136,37 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 {
                     _logger?.LogWarning(exception,
                         $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Properties type");
+                    throw new ArgumentException("configObject invalid");
+                }
+
+            case ConfigFormats.Xml:
+                try
+                {
+                    var doc = XDocument.Parse(result.Content!);
+                    var json = Newtonsoft.Json.JsonConvert.SerializeXNode(doc);
+                    return (json, ConfigurationTypes.Xml);
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogWarning(exception,
+                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Xml type");
+                    throw new ArgumentException("configObject invalid");
+                }
+
+            case ConfigFormats.Yaml:
+                try
+                {
+                    var deserializer = new DeserializerBuilder().Build();
+                    var yamlObject = deserializer.Deserialize<object>(result.Content!);
+
+                    var serializer = new SerializerBuilder().JsonCompatible().Build();
+                    var json = serializer.Serialize(yamlObject);
+                    return (json, ConfigurationTypes.Yaml);
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogWarning(exception,
+                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Yaml type");
                     throw new ArgumentException("configObject invalid");
                 }
 
