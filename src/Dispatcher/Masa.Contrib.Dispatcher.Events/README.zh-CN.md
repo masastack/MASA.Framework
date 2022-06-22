@@ -172,7 +172,7 @@ builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(ty
 
 > 配合MASA.Contrib.Ddd.Domain.Repository.EF.Repository、UnitOfWork使用，当Event实现了ITransaction，会在执行Add、Update、Delete方法时自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
 
-### 性能测试
+##### 性能测试
 
 BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
 11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores

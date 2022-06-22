@@ -173,7 +173,7 @@ builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(ty
 
 > Used in conjunction with Contracts.EF and UnitOfWork, when Event implements ITransaction, the transaction will be automatically opened after the first CUD is executed, and the transaction will be submitted after all Handlers are executed. When an exception occurs in the transaction, the transaction will be automatically rolled back.
 
-### Performance Testing
+##### Performance Testing
 
 BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
 11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
