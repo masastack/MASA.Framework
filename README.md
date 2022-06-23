@@ -20,7 +20,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 * Configuration: Configuration Center
   * [Configuration core, provide local configuration](./src/Configuration/Masa.Contrib.Configuration/README.md)
   * ConfigurationAPI
-    * [Dcc](./src/Configuration/Masa.Contrib.Configuration/README.md)
+    * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
 * [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.md)
 * [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.md)
 * Dispatcher
