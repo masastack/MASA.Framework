@@ -66,6 +66,7 @@ public static class Mapper
             ProtocolType = client.ProtocolType,
             RequireConsent = client.RequireConsent,
             AllowRememberConsent = client.AllowRememberConsent,
+            RequireClientSecret = client.RequireClientSecret,
             AlwaysIncludeUserClaimsInIdToken = client.AlwaysIncludeUserClaimsInIdToken,
             AllowPlainTextPkce = client.AllowPlainTextPkce,
             RequireRequestObject = client.RequireRequestObject,
