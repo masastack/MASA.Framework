@@ -22,14 +22,14 @@ public class DefaultMedallionDistributedLockTest
     [TestMethod]
     public void TestDistributedLock()
     {
-        using var obj = DistributedLock.TryGet("test");
+        using var obj = DistributedLock.TryGet("test", TimeSpan.FromSeconds(1));
         Assert.IsNotNull(obj);
     }
 
     [TestMethod]
     public async Task TestDistributedLockAsync()
     {
-        await using var obj = await DistributedLock.TryGetAsync("test");
+        await using var obj = await DistributedLock.TryGetAsync("test", TimeSpan.FromSeconds(1));
         Assert.IsNotNull(obj);
     }
 }
