@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MedallionBuilderExtensions
 {
-    public static void UseRedis(MedallionBuilder medallionBuilder,
+    public static void UseRedis(this MedallionBuilder medallionBuilder,
         string connectionString,
         Action<RedisDistributedSynchronizationOptionsBuilder>? options = null)
     {
@@ -17,7 +17,7 @@ public static class MedallionBuilderExtensions
         });
     }
 
-    public static void UseRedis(MedallionBuilder medallionBuilder,
+    public static void UseRedis(this MedallionBuilder medallionBuilder,
         IDatabase database,
         Action<RedisDistributedSynchronizationOptionsBuilder>? options = null)
     {
@@ -25,7 +25,7 @@ public static class MedallionBuilderExtensions
             => new RedisDistributedSynchronizationProvider(database, options));
     }
 
-    public static void UseRedis(MedallionBuilder medallionBuilder,
+    public static void UseRedis(this MedallionBuilder medallionBuilder,
         IEnumerable<IDatabase> databases,
         Action<RedisDistributedSynchronizationOptionsBuilder>? options = null)
     {
@@ -33,7 +33,7 @@ public static class MedallionBuilderExtensions
             => new RedisDistributedSynchronizationProvider(databases, options));
     }
 
-    public static void UseRedis(MedallionBuilder medallionBuilder,
+    public static void UseRedis(this MedallionBuilder medallionBuilder,
         Action<RedisDistributedSynchronizationOptionsBuilder>? options = null)
     {
         medallionBuilder.Services.AddSingleton<IDistributedLockProvider>(serviceProvider

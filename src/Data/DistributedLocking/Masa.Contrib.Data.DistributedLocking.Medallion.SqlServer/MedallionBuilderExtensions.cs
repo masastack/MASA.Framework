@@ -23,13 +23,12 @@ public static class MedallionBuilderExtensions
             if (unitOfWorkManager == null)
                 throw new NotSupportedException("UoW is not supported");
 
-            using (var unitOfWork = unitOfWorkManager.CreateDbContext())
-            {
-                var name = ConnectionStringNameAttribute.GetConnStringName(typeof(TDbContextType));
-                var connectionStringProvider = unitOfWork.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
-                var connectionString = connectionStringProvider.GetConnectionString(name);
-                return new SqlDistributedSynchronizationProvider(connectionString, options);
-            }
+            using var unitOfWork = unitOfWorkManager.CreateDbContext();
+            var name = ConnectionStringNameAttribute.GetConnStringName(typeof(TDbContextType));
+            var connectionStringProvider = unitOfWork.ServiceProvider.GetRequiredService<IConnectionStringProvider>();
+            var connectionString = connectionStringProvider.GetConnectionString(name);
+            return new SqlDistributedSynchronizationProvider(connectionString, options);
+
         });
     }
 }
