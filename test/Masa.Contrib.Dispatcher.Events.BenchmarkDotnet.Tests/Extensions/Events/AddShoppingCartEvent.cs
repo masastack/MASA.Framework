@@ -1,11 +1,11 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.Events;
 
-public record ForgetPasswordEvent : Event
+public record AddShoppingCartEvent : Event, IRequest
 {
-    public string Name { get; set; }
+    public string GoodsId { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public int Count { get; set; }
 }

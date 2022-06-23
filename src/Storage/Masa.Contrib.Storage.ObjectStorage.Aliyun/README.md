@@ -33,7 +33,10 @@ support:
       "RoleArn": "Replace-With-Your-RoleArn",
       "RoleSessionName": "Replace-With-Your-RoleSessionName",
       "TemporaryCredentialsCacheKey": "Aliyun.Storage.TemporaryCredentials",//optional, default: Aliyun.Storage.TemporaryCredentials
-      "Policy": ""//optional
+      "Policy": "",//optional
+      "BucketNames" : {
+        "DefaultBucketName" : ""
+      }
     }
   }
 }

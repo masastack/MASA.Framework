@@ -11,8 +11,8 @@ global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.EventHandlers;
 global using Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests.Extensions.Events;
 global using Masa.Contrib.Dispatcher.Events.Enums;
+global using MediatR;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using System;
 global using System.Threading.Tasks;
-

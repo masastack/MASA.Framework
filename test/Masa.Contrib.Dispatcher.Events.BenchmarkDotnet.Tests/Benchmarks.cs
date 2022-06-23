@@ -8,57 +8,56 @@ namespace Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests;
 public class Benchmarks
 {
     private RegisterUserEvent _userEvent;
-    private ForgetPasswordEvent _forgetPasswordEvent;
+    private AddShoppingCartEvent _shoppingCartEvent;
     private IServiceProvider _serviceProvider;
     private IEventBus _eventBus;
+    private IMediator _mediator;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         IServiceCollection services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
+        services.AddMediatR(typeof(Benchmarks));
         services.AddEventBus();
         _serviceProvider = services.BuildServiceProvider();
         _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _mediator = _serviceProvider.GetRequiredService<IMediator>();
         _userEvent = new RegisterUserEvent()
         {
             Name = "tom",
             PhoneNumber = "18888888888"
         };
-        _forgetPasswordEvent = new ForgetPasswordEvent()
+        _shoppingCartEvent = new AddShoppingCartEvent()
         {
-            Name = "lisa",
-            PhoneNumber = "19999999999"
+            Count = 1,
+            GoodsId = "Microsoft"
         };
     }
 
     [Benchmark]
-    public async Task Direct()
+    public async Task SendCouponByDirect()
     {
         var _couponHandler = new CouponHandler(_serviceProvider);
         await _couponHandler.SendCoupon(_userEvent);
+        await _couponHandler.SendNotice(_userEvent);
     }
 
     [Benchmark]
-    public async Task LambdaTree()
+    public async Task SendCouponByEventBus()
     {
         await _eventBus.PublishAsync(_userEvent);
     }
 
     [Benchmark]
-    public async Task SendForgetPasseordByDirect()
+    public async Task AddShoppingCartByEventBusAsync()
     {
-        var emailNoticeHandler = new NoticeEmailHandler(_serviceProvider);
-        var smsNoticeHandler = new NoticeSmsHandler(_serviceProvider);
-        var sendCouponHandler = new SendCouponHandler(_serviceProvider);
-        await emailNoticeHandler.HandleAsync(_forgetPasswordEvent);
-        await smsNoticeHandler.HandleAsync(_forgetPasswordEvent);
-        await sendCouponHandler.HandleAsync(_forgetPasswordEvent);
+        await _eventBus.PublishAsync(_shoppingCartEvent);
     }
 
     [Benchmark]
-    public async Task SendForgetPasseordByInterfaces()
+    public async Task AddShoppingCartByMediatRAsync()
     {
-        await _eventBus.PublishAsync(_forgetPasswordEvent);
+        await _mediator.Send(_shoppingCartEvent);
     }
 }

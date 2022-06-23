@@ -18,4 +18,13 @@ public class BaseTest
             "RoleArn",
             "RoleSessionName");
     }
+
+    protected Mock<IAliyunStorageOptionProvider> MockOptionProvider(bool? incompleteStsOptions = null)
+    {
+        Mock<IAliyunStorageOptionProvider> optionProvider = new();
+        if (incompleteStsOptions != null)
+            optionProvider.Setup(provider => provider.IncompleteStsOptions).Returns(incompleteStsOptions.Value);
+        optionProvider.Setup(provider => provider.GetOptions()).Returns(_aLiYunStorageOptions);
+        return optionProvider;
+    }
 }

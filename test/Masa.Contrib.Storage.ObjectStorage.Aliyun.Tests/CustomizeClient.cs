@@ -5,10 +5,12 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
 public class CustomizeClient : DefaultStorageClient
 {
-    public Mock<IOss>?  Oss;
+    public Mock<IOss>? Oss;
 
-    public CustomizeClient(ICredentialProvider credentialProvider, AliyunStorageOptions options, ILogger<DefaultStorageClient>? logger) : base(
-        credentialProvider, options, logger)
+    public CustomizeClient(ICredentialProvider credentialProvider,
+        IAliyunStorageOptionProvider optionProvider,
+        ILogger<DefaultStorageClient>? logger)
+        : base(credentialProvider, optionProvider, logger)
     {
     }
 

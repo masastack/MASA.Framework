@@ -6,7 +6,7 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 {
     private readonly string _channel = "snowflake.workerid";
-    private static long? _workerId;
+    private long? _workerId;
     private readonly TimestampType _timestampType;
     private readonly long _idleTimeOut;
     private readonly long _maxWorkerId;
@@ -17,10 +17,10 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly string _getWorkerIdKey;
     private readonly string _token;
     private readonly TimeSpan _timeSpan;
-    private static DateTime? _lastTime;
+    private DateTime? _lastTime;
     private readonly ILogger<DistributedWorkerProvider>? _logger;
     private readonly object _lock = new();
-    private static string? _uniquelyIdentifies;
+    private readonly string? _uniquelyIdentifies;
 
     public DistributedWorkerProvider(
         IDistributedCacheClient distributedCacheClient,
@@ -96,16 +96,18 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         if (_workerId == null)
             return;
 
+        var workerId = _workerId;
+        _workerId = null;
+
         _logger?.LogDebug("----- Logout WorkerId, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            _workerId,
+            workerId,
             DateTime.UtcNow);
 
-        _workerId = null;
-        await Database.SortedSetAddAsync(_logOutWorkerKey, _workerId, GetCurrentTimestamp());
-        await Database.SortedSetRemoveAsync(_inUseWorkerKey, _workerId);
+        await Database.SortedSetAddAsync(_logOutWorkerKey, workerId, GetCurrentTimestamp());
+        await Database.SortedSetRemoveAsync(_inUseWorkerKey, workerId);
 
         _logger?.LogDebug("----- Logout WorkerId succeeded, the current WorkerId: {WorkerId}, currentTime: {CurrentTime}",
-            _workerId,
+            workerId,
             DateTime.UtcNow);
     }
 
@@ -125,6 +127,13 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
                 {
                     await lockdb.LockReleaseAsync(_getWorkerIdKey, _token);
                 }
+            }
+            else
+            {
+                _logger?.LogDebug(
+                    "----- Failed to obtain WorkerId, failed to obtain distributed lock, the currentTime: {CurrentTime}",
+                    DateTime.UtcNow);
+                throw new MasaException("----- Failed to get WorkerId, please try again later");
             }
         }
         else

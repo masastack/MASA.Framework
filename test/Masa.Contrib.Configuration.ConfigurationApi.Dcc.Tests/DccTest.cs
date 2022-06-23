@@ -803,4 +803,31 @@ public class DccTest
 
         Assert.IsTrue(configuration["WebApplication1:Brand:Name"] == "Apple");
     }
+
+    [TestMethod]
+    public void TestGetSecretRenturnSecretEqualSecret()
+    {
+        var builder = WebApplication.CreateBuilder();
+        var brand = new Brands("Apple");
+        builder.Services.AddMemoryCache();
+        string key = "Development-Default-WebApplication1-Brand".ToLower();
+        builder.Services.AddSingleton<IMemoryCacheClientFactory>(serviceProvider =>
+        {
+            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
+            string value = new PublishRelease()
+            {
+                Content = brand.Serialize(_jsonSerializerOptions),
+                ConfigFormat = ConfigFormats.Json
+            }.Serialize(_jsonSerializerOptions);
+            memoryCache.Set($"{key}String", value);
+            return new CustomMemoryCacheClientFactory(memoryCache);
+        });
+        builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());
+
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+        var field = typeof(ConfigurationApiBase).GetField("_defaultSectionOption", BindingFlags.Instance | BindingFlags.NonPublic);
+        var option = field!.GetValue(configurationApiClient);
+        Assert.IsTrue(((DccSectionOptions)option!).Secret == "Secret");
+    }
 }

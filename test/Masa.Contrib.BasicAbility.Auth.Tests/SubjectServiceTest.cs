@@ -4,7 +4,7 @@
 namespace Masa.Contrib.BasicAbility.Auth.Tests;
 
 [TestClass]
-public class SubjectServiceTest : BaseAuthTest
+public class SubjectServiceTest
 {
     [TestMethod]
     public async Task TestGetListAsync()
@@ -17,8 +17,8 @@ public class SubjectServiceTest : BaseAuthTest
         var requestUri = $"api/subject/list";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var authClient = new AuthClient(callerProvider.Object);
-        var result = await authClient.SubjectService.GetListAsync(filter);
+        var subjectService = new Mock<SubjectService>(callerProvider.Object);
+        var result = await subjectService.Object.GetListAsync(filter);
         callerProvider.Verify(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }

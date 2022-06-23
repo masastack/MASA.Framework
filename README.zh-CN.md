@@ -10,7 +10,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 
 ## 路线图
 * [发行说明](https://github.com/masastack/MASA.Contrib/releases)
-* [最新路线图](https://github.com/masastack/MASA.Contrib/issues/40)
+* [最新路线图](https://github.com/masastack/MASA.Contrib/issues/42)
 
 
 
@@ -26,11 +26,18 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 * Dispatcher
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.zh-CN.md): 进程内事件
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-CN.md): 跨进程事件
+* IdGenerator: 唯一ID生成器
+  * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): 普通的Guid
+  * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): 有序的Guid
+  * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): 雪花id
+  * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): 雪花id(支持分布式)
 * Isolation: 支持物理隔离、逻辑隔离
   * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.zh-CN.md)
   * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.zh-CN.md): 多环境
   * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md): 多租户
 * [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.zh-CN.md): 支持类似Controller的API分类聚合
+* Mapping: 对象映射
+  * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
 * UoW: 工作单元
   * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.zh-CN.md)
 * Storage: 云存储

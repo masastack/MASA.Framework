@@ -1,4 +1,4 @@
-﻿Medium | [EN](README.md)
+﻿[中](README.zh-CN.md) | EN
 
 ## Masa.Contrib.Data.IdGenerator.SequentialGuid
 

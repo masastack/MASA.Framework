@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\BasicAbility\Masa.Contrib.BasicAbility.Auth\Masa.Contrib.BasicAbility.Auth.csproj" />
     <ProjectReference Include="..\..\src\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth\Masa.BuildingBlocks.BasicAbility.Auth.csproj" />
+    <ProjectReference Include="..\..\src\Identity\Masa.Contrib.Identity.IdentityModel\Masa.Contrib.Identity.IdentityModel.csproj" />
   </ItemGroup>
 
 </Project>

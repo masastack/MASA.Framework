@@ -5,12 +5,13 @@ namespace Masa.Contrib.BasicAbility.Auth;
 
 public class AuthClient : IAuthClient
 {
-    public AuthClient(ICallerProvider callerProvider)
+    public AuthClient(ICallerProvider callerProvider, IMultiEnvironmentUserContext userContext)
     {
-        UserService = new UserService(callerProvider);
+        UserService = new UserService(callerProvider, userContext);
         SubjectService = new SubjectService(callerProvider);
         TeamService = new TeamService(callerProvider);
-        PermissionService = new PermissionService(callerProvider);
+        ProjectService = new ProjectService(callerProvider, userContext);
+        PermissionService = new PermissionService(callerProvider, userContext);
     }
 
     public IUserService UserService { get; }
@@ -20,5 +21,7 @@ public class AuthClient : IAuthClient
     public ITeamService TeamService { get; }
 
     public IPermissionService PermissionService { get; }
+
+    public IProjectService ProjectService { get; }
 }
 

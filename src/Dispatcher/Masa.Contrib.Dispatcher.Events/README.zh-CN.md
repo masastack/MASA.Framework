@@ -172,6 +172,23 @@ builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(ty
 
 > 配合MASA.Contrib.Ddd.Domain.Repository.EF.Repository、UnitOfWork使用，当Event实现了ITransaction，会在执行Add、Update、Delete方法时自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
 
+##### 性能测试
+
+BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
+11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK=7.0.100-preview.4.22252.9
+  [Host]     : .NET 6.0.6 (6.0.622.26707), X64 RyuJIT DEBUG
+  Job-MHJZJL : .NET 6.0.6 (6.0.622.26707), X64 RyuJIT
+
+Runtime=.NET 6.0  IterationCount=100  RunStrategy=ColdStart
+
+|                         Method |      Mean |     Error |      StdDev |   Median |      Min |         Max |
+|------------------------------- |----------:|----------:|------------:|---------:|---------:|------------:|
+|             SendCouponByDirect |  18.10 us |  47.19 us |   139.13 us | 3.600 us | 3.000 us |  1,395.4 us |
+|           SendCouponByEventBus | 126.16 us | 374.20 us | 1,103.33 us | 9.950 us | 8.100 us | 11,043.7 us |
+| AddShoppingCartByEventBusAsync | 124.80 us | 346.93 us | 1,022.94 us | 8.650 us | 6.500 us | 10,202.4 us |
+|  AddShoppingCartByMediatRAsync | 110.57 us | 306.47 us |   903.64 us | 7.500 us | 5.300 us |  9,000.1 us |
+
 ##### 总结
 
 IEventBus是事件总线的核心，配合Cqrs、Uow、Masa.Contrib.Ddd.Domain.Repository.EF使用，可实现自动执行SaveChange（启用UoW）与Commit（启用UoW且无关闭事务）操作，并支持出现异常后，回滚事务

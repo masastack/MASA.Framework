@@ -10,7 +10,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 ## Roadmap
 * [Release Notes](https://github.com/masastack/MASA.Contrib/releases)
-* [Latest Roadmap](https://github.com/masastack/MASA.Contrib/issues/40)
+* [Latest Roadmap](https://github.com/masastack/MASA.Contrib/issues/42)
 
 
 
@@ -26,6 +26,13 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 * Dispatcher
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.md): In-process events
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md): Cross-process events
+* IdGenerator: Unique ID generator
+   * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): normal Guid
+   * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): Sequential Guid
+   * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): Snowflake id
+   * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): Snowflake id (support distributed)
+* Mapping: object mapping
+   * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
 * Isolation: Support physical isolation, logical isolation
   * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.md)
   * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.md): MultiEnvironment
