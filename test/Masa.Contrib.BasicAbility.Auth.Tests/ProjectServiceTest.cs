@@ -1,13 +1,10 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Identity.IdentityModel;
-using Masa.Contrib.BasicAbility.Auth.Service;
-
 namespace Masa.Contrib.BasicAbility.Auth.Tests;
 
 [TestClass]
-public class ProjectServiceTest : BaseAuthTest
+public class ProjectServiceTest
 {
     [TestMethod]
     public async Task TestGetGlobalNavigationsAsync()
