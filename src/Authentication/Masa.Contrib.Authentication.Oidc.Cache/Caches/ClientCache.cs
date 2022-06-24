@@ -35,4 +35,11 @@ public class ClientCache : IClientCache
         var data = clients.ToDictionary(client => $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}", client => client.ToModel());
         await _memoryCacheClient.SetListAsync(data);
     }
+
+    public async Task ResetAsync(IEnumerable<Client> clients)
+    {
+        var models = clients.Select(client => client.ToModel());
+        var data = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.ClientId}", model => model);
+        await _memoryCacheClient.SetListAsync(data);
+    }
 }
