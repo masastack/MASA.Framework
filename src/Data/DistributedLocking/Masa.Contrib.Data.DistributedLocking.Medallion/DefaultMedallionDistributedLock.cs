@@ -10,25 +10,22 @@ public class DefaultMedallionDistributedLock : IMasaDistributedLock
     public DefaultMedallionDistributedLock(IDistributedLockProvider distributedLockProvider)
         => _distributedLockProvider = distributedLockProvider;
 
-    public IDisposable? TryGet(string key, TimeSpan timeout)
+    public IDisposable? TryGet(string key, TimeSpan timeout = default)
     {
         ArgumentNullOrWhiteSpaceException.ThrowIfNullOrWhiteSpace(key);
         var handle = _distributedLockProvider.TryAcquireLock(key, timeout);
         if (handle == null)
-        {
             return null;
-        }
+
         return new DisposeAction(handle);
     }
 
-    public async Task<IAsyncDisposable?> TryGetAsync(string key, TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<IAsyncDisposable?> TryGetAsync(string key, TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
         ArgumentNullOrWhiteSpaceException.ThrowIfNullOrWhiteSpace(key);
         var handle = await _distributedLockProvider.TryAcquireLockAsync(key, timeout, cancellationToken);
         if (handle == null)
-        {
             return null;
-        }
 
         return new DisposeAction(handle);
     }

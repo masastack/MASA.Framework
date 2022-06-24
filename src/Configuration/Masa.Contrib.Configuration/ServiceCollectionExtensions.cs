@@ -131,7 +131,8 @@ public static class ServiceCollectionExtensions
     private static void ConfigureOption(
         this IServiceCollection services,
         IConfiguration configuration,
-        List<string> sectionNames, Type optionType)
+        List<string> sectionNames,
+        Type optionType)
     {
         IConfigurationSection? configurationSection = null;
         foreach (var sectionName in sectionNames)
