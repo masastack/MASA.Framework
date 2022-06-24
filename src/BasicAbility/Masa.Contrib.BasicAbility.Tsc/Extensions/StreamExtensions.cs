@@ -3,7 +3,7 @@
 
 namespace System.IO;
 
-public static class StreamExtenistions
+public static class StreamExtensions
 {
     private static readonly Encoding _defaultEncoding = Encoding.UTF8;
 

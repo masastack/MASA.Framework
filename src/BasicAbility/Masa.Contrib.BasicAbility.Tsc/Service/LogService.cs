@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.BasicAbility.Tsc.Model;
-using Masa.Utils.Caller.Core;
-
 namespace Masa.Contrib.BasicAbility.Tsc.Service;
 
 public class LogService : ILogService
@@ -18,7 +15,7 @@ public class LogService : ILogService
         _caller = caller;
     }
 
-    public async Task<IEnumerable<KeyValuePair<string, string>>> GetAggregationAsync(RequestLogAggregationModel query)
+    public async Task<IEnumerable<KeyValuePair<string, string>>> GetAggregationAsync(LogAggregationRequest query)
     {
         return (await _caller.GetAsync<IEnumerable<KeyValuePair<string, string>>>(AGGREGATION_URI, query)) ?? default!;
     }
@@ -28,7 +25,7 @@ public class LogService : ILogService
         return (await _caller.GetAsync<IEnumerable<string>>(FIELD_URI)) ?? default!;
     }
 
-    public async Task<object> GetLatestAsync(RequestLogAggregationModel query)
+    public async Task<object> GetLatestAsync(LogAggregationRequest query)
     {
         return (await _caller.GetAsync<object>(LATEST_URI, query)) ?? default!;
     }
