@@ -54,18 +54,25 @@ builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc
 /// <summary>
 /// Automatically map node relationships
 /// </summary>
-public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
+public class RedisOptions : ConfigurationApiMasaConfigurationOptions
 {
-   /// <summary>
+    /// <summary>
     /// The app id.
     /// </summary>
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
+    /// <summary>
+    /// 配置对象名称
+    /// </summary>
     [JsonIgnore]
-    public override string? ObjectName { get; init; } = "Platforms";
+    public override string? ObjectName { get; init; } = "Redis";
 
-    public string Name { get; set; }
+    public string Host { get; set; }
+    
+    public int Port { get; set; }
+    
+    public int DefaultDatabase { get; set; }
 }
 
 public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
@@ -121,7 +128,8 @@ app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOpti
 
 app.MapGet("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
 {
-    //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your Node Path>:<parameter name>
+    //Obtain the configuration value of the Name of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
+    //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter name>
     return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Platforms:Name"];
 });
 

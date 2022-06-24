@@ -54,7 +54,7 @@ builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc
 /// <summary>
 /// 自动映射节点关系
 /// </summary>
-public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
+public class RedisOptions : ConfigurationApiMasaConfigurationOptions
 {
     /// <summary>
     /// The app id.
@@ -66,9 +66,13 @@ public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
     /// 配置对象名称
     /// </summary>
     [JsonIgnore]
-    public override string? ObjectName { get; init; } = "Platforms";
+    public override string? ObjectName { get; init; } = "Redis";
 
-    public string Name { get; set; }
+    public string Host { get; set; }
+    
+    public int Port { get; set; }
+    
+    public int DefaultDatabase { get; set; }
 }
 
 public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
@@ -124,7 +128,8 @@ app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOpti
 
 app.MapGet("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
 {
-    //格式：ConfigurationAPI:<Replace-With-Your-AppId>:<Your Node Path>:<parameter name>
+    //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Name的配置值
+    //格式：ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter name>
     return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Platforms:Name"];
 });
 
