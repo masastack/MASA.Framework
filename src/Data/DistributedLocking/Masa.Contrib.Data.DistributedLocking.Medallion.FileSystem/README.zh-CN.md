@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.FileSystem
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseFileSystem("replace you directory path");
+    medallionBuilder.UseFileSystem("Replace your directory path");
 });
 ```
 

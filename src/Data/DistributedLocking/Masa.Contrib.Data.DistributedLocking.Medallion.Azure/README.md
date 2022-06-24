@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.Azure
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseAzure("replace you connectionString", "replace you blobContainerName");
+    medallionBuilder.UseAzure("Replace Your connectionString", "Replace your blobContainerName");
 });
 ```
 

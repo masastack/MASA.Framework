@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.ZooKeeper
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
 {
-    medallionBuilder.UseZooKeeper("replace you ZooKeeper connectionString");
+    medallionBuilder.UseZooKeeper("Replace your ZooKeeper connectionString");
 });
 ```
 
