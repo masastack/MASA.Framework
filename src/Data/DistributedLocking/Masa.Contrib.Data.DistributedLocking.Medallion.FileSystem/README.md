@@ -8,7 +8,7 @@
 Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.FileSystem
 ```
 
-1. 修改类`Program`
+1. Modify `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,11 +17,11 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. 使用分布式锁
+2. Use distributed locks
 
 ``` C#
 IDistributedLock distributedLock;//从DI获取`IDistributedLock`
-using (var lockObj = distributedLock.TryGet("Replace You Lock Name"))
+using (var lockObj = distributedLock.TryGet("Replace Your Lock Name"))
 {
     if (lockObj != null)
     {
