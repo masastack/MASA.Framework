@@ -20,7 +20,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 2. Use distributed locks
 
 ``` C#
-IDistributedLock distributedLock;//从DI获取`IDistributedLock`
+IDistributedLock distributedLock;//Get `IDistributedLock` from DI
 using (var lockObj = distributedLock.TryGet("Replace Your Lock Name"))
 {
     if (lockObj != null)
