@@ -12,6 +12,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
+    private readonly IDeserializer _deserializer = new DeserializerBuilder().Build();
 
     public ConfigurationApiClient(
         IServiceProvider serviceProvider,
@@ -153,8 +154,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             case ConfigFormats.Yaml:
                 try
                 {
-                    var deserializer = new DeserializerBuilder().Build();
-                    var yamlObject = deserializer.Deserialize<object>(result.Content!);
+                    var yamlObject = _deserializer.Deserialize<object>(result.Content!);
 
                     var serializer = new SerializerBuilder().JsonCompatible().Build();
                     var json = serializer.Serialize(yamlObject);

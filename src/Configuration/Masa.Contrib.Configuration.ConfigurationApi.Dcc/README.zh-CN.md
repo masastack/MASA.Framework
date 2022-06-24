@@ -71,8 +71,14 @@ public class PlatformOptions : ConfigurationApiMasaConfigurationOptions
     public string Name { get; set; }
 }
 
-public class CustomDccSectionOptions : LocalMasaConfigurationOptions
+public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
 {
+    /// <summary>
+    /// The app id.
+    /// </summary>
+    [JsonIgnore]
+    public override string AppId { get; set; } = "Replace-With-Your-AppId";
+    
     /// <summary>
     /// The environment name.
     /// Get from the environment variable ASPNETCORE_ENVIRONMENT when Environment is null or empty
@@ -83,11 +89,6 @@ public class CustomDccSectionOptions : LocalMasaConfigurationOptions
     /// The cluster name.
     /// </summary>
     public string? Cluster { get; set; }
-
-    /// <summary>
-    /// The app id.
-    /// </summary>
-    public string AppId { get; set; } = default!;
 
     public List<string> ConfigObjects { get; set; } = default!;
 
