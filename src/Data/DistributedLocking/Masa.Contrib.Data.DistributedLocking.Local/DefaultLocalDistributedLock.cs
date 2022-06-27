@@ -7,7 +7,7 @@ public class DefaultLocalDistributedLock : IDistributedLock
 {
     private readonly MemoryCache<string, SemaphoreSlim> _localObjects = new();
 
-    public IDisposable? TryGet(string key, TimeSpan timeout)
+    public IDisposable? TryGet(string key, TimeSpan timeout = default)
     {
         var semaphore = GetSemaphoreSlim(key);
 
@@ -19,7 +19,7 @@ public class DefaultLocalDistributedLock : IDistributedLock
         return new DisposeAction(semaphore);
     }
 
-    public async Task<IAsyncDisposable?> TryGetAsync(string key, TimeSpan timeout, CancellationToken cancellationToken = default)
+    public async Task<IAsyncDisposable?> TryGetAsync(string key, TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
         var semaphore = GetSemaphoreSlim(key);
 
