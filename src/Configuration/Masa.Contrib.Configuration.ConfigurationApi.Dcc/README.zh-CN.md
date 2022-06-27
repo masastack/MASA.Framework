@@ -12,7 +12,7 @@ IConfiguration
 ├── ConfigurationAPI                     远程节点（固定 Dcc扩展其能力）
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  自定义节点
-│   ├── AppId ├── Redis ├── Name         参数
+│   ├── AppId ├── Redis ├── Host         参数
 ```
 
 用例：

@@ -8,11 +8,11 @@ Structure:
 IConfiguration
 ├── Local                                Local node (fixed)
 │   ├── Redis                            Custom configuration
-│   ├── ├── Name                         Parameter name
+│   ├── ├── Host                         Parameter
 ├── ConfigurationAPI                     Remote node (fixed)
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  Custom node
-│   ├── AppId ├── Redis ├── Name         Parameter name
+│   ├── AppId ├── Redis ├── Host         Parameter
 ```
 
 Example：
@@ -55,7 +55,7 @@ public class RedisOptions : LocalMasaConfigurationOptions
     [JsonIgnore]
     public override string? Section { get; init; } = "Redis";
 
-    public string Name { get; set; }
+    public string Host { get; set; }
 }
 
 //Use MasaConfiguration to take over Configuration, and mount the current Configuration to Local section by default
@@ -103,10 +103,10 @@ app.Map("/GetRedis", ([FromServices] IOptionsMonitor<RedisOptions> option) =>
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
 
-app.Map("/GetRedisName", ([FromServices] IConfiguration configuration) =>
+app.Map("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
     //Base
-    return configuration["Local:Redis:Name"];
+    return configuration["Local:Redis:Host"];
 });
 
 app.Run();

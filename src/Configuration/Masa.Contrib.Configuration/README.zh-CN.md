@@ -8,11 +8,11 @@
 IConfiguration
 ├── Local                           本地节点（固定）
 │   ├── Redis                       自定义配置
-│   ├── ├── Name                    参数
+│   ├── ├── Host                    参数
 ├── ConfigurationAPI                远程节点（固定）
 │   ├── AppId                       替换为你的AppId
 │   ├── AppId ├── Redis             自定义节点
-│   ├── AppId ├── Redis ├── Name    参数
+│   ├── AppId ├── Redis ├── Host    参数
 ```
 
 用例：
@@ -61,7 +61,7 @@ public class RedisOptions : LocalMasaConfigurationOptions
     [JsonIgnore]
     public override string? Section { get; init; } = "Redis";
 
-    public string Name { get; set; }
+    public string Host { get; set; }
 }
 
 //使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local节点下
@@ -108,10 +108,10 @@ app.Map("/GetRedis", ([FromServices] IOptionsMonitor<RedisOptions> option) =>
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });//推荐（需要自动或手动映射节点关系后才能使用）
 
-app.Map("/GetRedisformName", ([FromServices] IConfiguration configuration) =>
+app.Map("/GetRedisformHost", ([FromServices] IConfiguration configuration) =>
 {
     //基础
-    return configuration["Local:Redis:Name"];
+    return configuration["Local:Redis:Host"];
 });
 
 app.Run();

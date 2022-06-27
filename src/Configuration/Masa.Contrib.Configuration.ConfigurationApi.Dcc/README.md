@@ -12,7 +12,7 @@ IConfiguration
 ├── ConfigurationAPI                     Remote node (fixed Dcc to expand its capacity)
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  Custom node
-│   ├── AppId ├── Redis ├── Name         Parameter Name
+│   ├── AppId ├── Redis ├── Host         Parameter
 ```
 
 Example：
