@@ -14,8 +14,8 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task<List<IdentityResourceModel>> GetListAsync(IEnumerable<string> names)
     {
-        var keys = names.Select(name => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{name}");
-        var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys.ToArray());
+        var keys = names.Select(name => FormatKey(name)).ToArray();
+        var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys);
         return identityResources.Where(identityResource => identityResource is not null).ToList()!;
     }
 
@@ -27,9 +27,8 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task SetAsync(IdentityResource identityResource)
     {
-        string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
         var model = identityResource.ToModel();
-        await _memoryCacheClient.SetAsync(key, model);
+        await _memoryCacheClient.SetAsync(FormatKey(identityResource), model);
         // update list cache
         var list = await GetListAsync();
         list.Set(model, item => item.Name);
@@ -38,19 +37,17 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task SetRangeAsync(IEnumerable<IdentityResource> identityResources)
     {
-        var models = identityResources.Select(identityResource => identityResource.ToModel());
-        var map = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.Name}", model => model);
+        var map = identityResources.ToDictionary(identityResource => FormatKey(identityResource), identityResource => identityResource.ToModel());
         await _memoryCacheClient.SetListAsync(map);
         // update list cache
         var list = await GetListAsync();
-        list.SetRange(models, item => item.Name);
+        list.SetRange(map.Values, item => item.Name);
         await UpdateListAsync(list);
     }
 
     public async Task RemoveAsync(IdentityResource identityResource)
     {
-        string key = $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{identityResource.Name}";
-        await _memoryCacheClient.RemoveAsync<IdentityResourceModel>(key);
+        await _memoryCacheClient.RemoveAsync<IdentityResourceModel>(FormatKey(identityResource));
         // update list cache
         var list = await GetListAsync();
         list.Remove(item => item.Name == identityResource.Name);
@@ -59,14 +56,23 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task ResetAsync(IEnumerable<IdentityResource> identityResources)
     {
-        var models = identityResources.Select(identityResource => identityResource.ToModel());
-        await UpdateListAsync(models);
-        var data = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.Name}", model => model);
-        await _memoryCacheClient.SetListAsync(data);
+        var map = identityResources.ToDictionary(identityResource => FormatKey(identityResource), identityResource => identityResource.ToModel());
+        await _memoryCacheClient.SetListAsync(map);        
+        await UpdateListAsync(map.Values);
     }
 
     private async Task UpdateListAsync(IEnumerable<IdentityResourceModel> models)
     {
         await _memoryCacheClient.SetAsync(CacheKeyConstants.IDENTITY_RESOURCE_KEY, models);
+    }
+
+    private string FormatKey(IdentityResource identityResources)
+    {
+        return FormatKey(identityResources.Name);
+    }
+
+    private string FormatKey(string name)
+    {
+        return $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{name}";
     }
 }

@@ -14,32 +14,38 @@ public class ClientCache : IClientCache
 
     public async Task<ClientModel?> GetAsync(string clientId)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{clientId}";
-        return await _memoryCacheClient.GetAsync<ClientModel>(key);
+        return await _memoryCacheClient.GetAsync<ClientModel>(FormatKey(clientId));
     }
 
     public async Task SetAsync(Client client)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
-        await _memoryCacheClient.SetAsync(key, client.ToModel());
+        await _memoryCacheClient.SetAsync(FormatKey(client), client.ToModel());
     }
 
     public async Task RemoveAsync(Client client)
     {
-        string key = $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}";
-        await _memoryCacheClient.RemoveAsync<ClientModel>(key);
+        await _memoryCacheClient.RemoveAsync<ClientModel>(FormatKey(client));
     }
 
     public async Task SetRangeAsync(IEnumerable<Client> clients)
     {
-        var data = clients.ToDictionary(client => $"{CacheKeyConstants.CLIENT_KEY}_{client.ClientId}", client => client.ToModel());
+        var data = clients.ToDictionary(client => FormatKey(client), client => client.ToModel());
         await _memoryCacheClient.SetListAsync(data);
     }
 
     public async Task ResetAsync(IEnumerable<Client> clients)
     {
-        var models = clients.Select(client => client.ToModel());
-        var data = models.ToDictionary(model => $"{CacheKeyConstants.IDENTITY_RESOURCE_KEY}_{model.ClientId}", model => model);
+        var data = clients.ToDictionary(client => FormatKey(client), client => client.ToModel());
         await _memoryCacheClient.SetListAsync(data);
+    }
+
+    private string FormatKey(Client client)
+    {
+        return FormatKey(client.ClientId);
+    }
+
+    private string FormatKey(string clientId)
+    {
+        return $"{CacheKeyConstants.CLIENT_KEY}_{clientId}";
     }
 }
