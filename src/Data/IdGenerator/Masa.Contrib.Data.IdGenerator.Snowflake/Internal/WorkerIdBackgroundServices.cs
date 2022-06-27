@@ -9,7 +9,7 @@ internal class WorkerIdBackgroundServices : BackgroundService
     private readonly int _maxExpirationTime;
     private readonly IWorkerProvider _workerProvider;
     private readonly ILogger<WorkerIdBackgroundServices>? _logger;
-    private bool _isAvailable = true;
+    private bool _isAvailable;
     private DateTime? _firstFailedTime;
 
     public WorkerIdBackgroundServices(int heartbeatInterval, int maxExpirationTime, IWorkerProvider workerProvider,
