@@ -20,9 +20,9 @@ internal class XmlConfigurationParser
         try
         {
             var ds = new DataSet();
-            using var xmlSR = new StringReader(xmlStr);
+            using var xmlStringReader = new StringReader(xmlStr);
 
-            ds.ReadXml(xmlSR);
+            ds.ReadXml(xmlStringReader);
 
             return ds;
         }
@@ -49,35 +49,35 @@ internal class XmlConfigurationParser
 
     public static string DataTableToJson(DataTable table)
     {
-        var JsonString = new StringBuilder();
+        var jsonStringBuilder = new StringBuilder();
         if (table.Rows.Count > 0)
         {
-            JsonString.Append('[');
+            jsonStringBuilder.Append('[');
             for (int i = 0; i < table.Rows.Count; i++)
             {
-                JsonString.Append('{');
+                jsonStringBuilder.Append('{');
                 for (int j = 0; j < table.Columns.Count; j++)
                 {
                     if (j < table.Columns.Count - 1)
                     {
-                        JsonString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\",");
+                        jsonStringBuilder.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\",");
                     }
                     else if (j == table.Columns.Count - 1)
                     {
-                        JsonString.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\"");
+                        jsonStringBuilder.Append("\"" + table.Columns[j].ColumnName.ToString() + "\":" + "\"" + table.Rows[i][j].ToString() + "\"");
                     }
                 }
                 if (i == table.Rows.Count - 1)
                 {
-                    JsonString.Append("}");
+                    jsonStringBuilder.Append('}');
                 }
                 else
                 {
-                    JsonString.Append("},");
+                    jsonStringBuilder.Append("},");
                 }
             }
-            JsonString.Append(']');
+            jsonStringBuilder.Append(']');
         }
-        return JsonString.ToString();
+        return jsonStringBuilder.ToString();
     }
 }

@@ -126,8 +126,8 @@ app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> o
 app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
     //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Host的配置值
-    //格式：ConfigurationAPI:<自定义AppId>:<自定义的ConfigObject>:<参数名Name>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Name"];
+    //格式：ConfigurationAPI:<自定义AppId>:<自定义的ConfigObject>:<参数名Host>
+    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Host"];
 });
 
 app.Run();

@@ -126,8 +126,8 @@ app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> o
 app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
     //Obtain the configuration value of the Host of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
-    //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter name>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Name"];
+    //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter Host>
+    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Host"];
 });
 
 app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
