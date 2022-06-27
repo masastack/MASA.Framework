@@ -6,13 +6,13 @@
 
 ```c#
 IConfiguration
-├── Local                                本地节点（固定）
-│   ├── Platforms                    自定义配置
-│   ├── ├── Name                     参数
-├── ConfigurationAPI                     远程节点（固定）
-│   ├── AppId                            替换为你的AppId
-│   ├── AppId ├── Platforms              自定义节点
-│   ├── AppId ├── Platforms ├── Name     参数
+├── Local                           本地节点（固定）
+│   ├── Redis                       自定义配置
+│   ├── ├── Host                    参数
+├── ConfigurationAPI                远程节点（固定）
+│   ├── AppId                       替换为你的AppId
+│   ├── AppId ├── Redis             自定义节点
+│   ├── AppId ├── Redis ├── Host    参数
 ```
 
 用例：
@@ -26,8 +26,8 @@ appsettings.json
 ```json
 {
   //自定义配置
-  "Platforms": {
-    "Name": "Masa.Demo"
+  "Redis": {
+    "Host": "localhost"
   },
   //Dcc配置，扩展Configuration能力，支持远程配置
   "DccOptions": {
@@ -44,7 +44,7 @@ appsettings.json
     }
   },
   "AppId": "Replace-With-Your-AppId",
-  "ConfigObjects": [ "Platforms" ], // 要挂载的对象名称,此处会将Platforms配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
+  "ConfigObjects": [ "Redis" ], // 要挂载的对象名称,此处会将Redis配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
   "Secret": "", //Dcc App 秘钥
   "Cluster": "Default"
 }
@@ -56,12 +56,12 @@ appsettings.json
 /// <summary>
 /// 自动映射节点关系
 /// </summary>
-public class PlatformOptions : LocalMasaConfigurationOptions
+public class RedisOptions : LocalMasaConfigurationOptions
 {
     [JsonIgnore]
-    public override string? Section { get; init; } = "Platforms";
+    public override string? Section { get; init; } = "Redis";
 
-    public string Name { get; set; }
+    public string Host { get; set; }
 }
 
 //使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local节点下
@@ -82,7 +82,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 
     configurationBuilder.UseMasaOptions(options =>
     {
-        options.MappingLocal<PlatformOptions>("Platforms"); //将PlatformOptions绑定映射到Local:Platforms节点
+        options.MappingLocal<RedisOptions>("Redis"); //将RedisOptions绑定映射到Local:Redis节点
     });
 });
 ```
@@ -92,13 +92,13 @@ builder.AddMasaConfiguration(configurationBuilder =>
 ```c#
 var app = builder.Build();
 
-app.Map("/GetPlatform", ([FromServices] IOptions<PlatformOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //推荐（需要自动或手动映射节点关系后才能使用）
     return System.Text.Json.JsonSerializer.Serialize(option.Value);
 });
 
-app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptionsMonitor<RedisOptions> option) =>
 {
     options.OnChange(option =>
     {
@@ -108,10 +108,10 @@ app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option)
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });//推荐（需要自动或手动映射节点关系后才能使用）
 
-app.Map("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
+app.Map("/GetRedisformHost", ([FromServices] IConfiguration configuration) =>
 {
     //基础
-    return configuration["Local:Platforms:Name"];
+    return configuration["Local:Redis:Host"];
 });
 
 app.Run();
@@ -127,4 +127,5 @@ builder.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true,
 
 Configuration默认自动获取继承LocalMasaConfigurationOptions的类，并映射节点关系，方便通过IOptions、IOptionsSnapshot、IOptionsMonitor获取配置信息
 
-上文Platforms为本地配置，用于演示本地配置挂载到IConfiguration后的效果以及使用用法
+上文Redis为本地配置，用于演示本地配置挂载到IConfiguration后的效果以及使用用法
+

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,16 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Caching.Redis" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="$(MicrosoftPackageVersion)" />
+    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.5.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Caching.Redis" Version="0.5.0-preview.3" />
+    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.5.0-preview.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Dcc\Masa.BuildingBlocks.BasicAbility.Dcc.csproj" />
   </ItemGroup>
 
 </Project>

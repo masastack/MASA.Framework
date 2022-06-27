@@ -20,7 +20,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 * Configuration: 配置中心
   * [Configuration核心、提供本地配置](./src/Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
   * ConfigurationAPI
-    * [Dcc](./src/Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
+    * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
 * [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.zh-CN.md)
 * [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.zh-CN.md)
 * Dispatcher
