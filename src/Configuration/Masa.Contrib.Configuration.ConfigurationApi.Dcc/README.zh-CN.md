@@ -11,8 +11,8 @@ IConfiguration
 ├── Local                                本地节点（固定）
 ├── ConfigurationAPI                     远程节点（固定 Dcc扩展其能力）
 │   ├── AppId                            Replace-With-Your-AppId
-│   ├── AppId ├── Platforms              自定义节点
-│   ├── AppId ├── Platforms ├── Name     参数
+│   ├── AppId ├── Redis                  自定义节点
+│   ├── AppId ├── Redis ├── Name         参数
 ```
 
 用例：
@@ -41,7 +41,7 @@ appsettings.json
   },
   "AppId": "Replace-With-Your-AppId",
   "Environment": "Development",
-  "ConfigObjects": [ "Platforms" ], //待挂载的对象名, 此处会将Platforms配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
+  "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
   "Secret": "", //Dcc App 秘钥
   "Cluster": "Default"
 }
@@ -62,9 +62,6 @@ public class RedisOptions : ConfigurationApiMasaConfigurationOptions
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
-    /// <summary>
-    /// 配置对象名称
-    /// </summary>
     [JsonIgnore]
     public override string? ObjectName { get; init; } = "Redis";
 
@@ -111,13 +108,13 @@ public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
 ```c#
 var app = builder.Build();
 
-app.MapGet("/GetPlatform", ([FromServices] IOptions<PlatformOptions> option) =>
+app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //推荐
     return System.Text.Json.JsonSerializer.Serialize(option.Value);
 });
 
-app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOptions> options) =>
+app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> options) =>
 {
     options.OnChange(option =>
     {
@@ -126,11 +123,11 @@ app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOpti
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
 
-app.MapGet("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
+app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
-    //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Name的配置值
-    //格式：ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter name>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Platforms:Name"];
+    //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Host的配置值
+    //格式：ConfigurationAPI:<自定义AppId>:<自定义的ConfigObject>:<参数名Name>
+    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Name"];
 });
 
 app.Run();
@@ -142,17 +139,17 @@ app.Run();
 ```c#
 var app = builder.Build();
 
-app.MapPut("/UpdatePlatform", ([FromServices] IConfigurationAPIManage configurationAPIManage,
+app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
                                [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               PlatformOptions newPlatform) =>
+                               RedisOptions newRedis) =>
 {
     //修改Dcc配置
     return configurationAPIManage.UpdateAsync(option.Value.Environment,
                                               option.Value.Cluster,
                                               option.Value.AppId,
-                                              "<Replace-With-Your-ConfigObject>"
-                                              ,newPlatform);
-                                              //此处Replace-With-Your-ConfigObject是Platforms
+                                              "<自定义-ConfigObject>"
+                                              ,newRedis);
+                                              //此处<自定义-ConfigObject>是Redis
 });
 
 app.Run();
@@ -162,4 +159,4 @@ app.Run();
 
 Dcc为IConfiguration提供了远程配置的管理以及查看能力，IConfiguration完整的能力请查看[文档](../../Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
 
-此处Platforms为远程配置，介绍的是远程配置挂载到IConfiguration之后的效果以及用法，此配置与MASA.Contrib.Configuration中Platforms的毫无关系，仅仅是展示同一个配置信息在两个源的使用方式以及映射节点关系的差别
+此处Redis为远程配置，介绍的是远程配置挂载到IConfiguration之后的效果以及用法，此配置与MASA.Contrib.Configuration中Redis的毫无关系，仅仅是展示同一个配置信息在两个源的使用方式以及映射节点关系的差别

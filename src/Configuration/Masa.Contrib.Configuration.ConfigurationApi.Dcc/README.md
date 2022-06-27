@@ -11,8 +11,8 @@ IConfiguration
 ├── Local                                Local node (fixed)
 ├── ConfigurationAPI                     Remote node (fixed Dcc to expand its capacity)
 │   ├── AppId                            Replace-With-Your-AppId
-│   ├── AppId ├── Platforms              Custom node
-│   ├── AppId ├── Platforms ├── Name     Parameter Name
+│   ├── AppId ├── Redis                  Custom node
+│   ├── AppId ├── Redis ├── Name         Parameter Name
 ```
 
 Example：
@@ -41,7 +41,7 @@ appsettings.json
   },
   "AppId": "Replace-With-Your-AppId",
   "Environment": "Development",
-  "ConfigObjects": [ "Platforms" ], //The name of the object to be mounted, the Platforms configuration will be mounted here under the ConfigurationAPI:<Replace-With-Your-AppId> node
+  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationAPI:<Replace-With-Your-AppId> node
   "Secret": "", //Dcc App key
   "Cluster": "Default"
 }
@@ -62,9 +62,6 @@ public class RedisOptions : ConfigurationApiMasaConfigurationOptions
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
-    /// <summary>
-    /// 配置对象名称
-    /// </summary>
     [JsonIgnore]
     public override string? ObjectName { get; init; } = "Redis";
 
@@ -111,13 +108,13 @@ How to use configuration：
 ```c#
 var app = builder.Build();
 
-app.MapGet("/GetPlatform", ([FromServices] IOptions<PlatformOptions> option) =>
+app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //recommend
     return System.Text.Json.JsonSerializer.Serialize(option.Value);//Or use IOptionsMonitor to support monitoring changes
 });
 
-app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOptions> options) =>
+app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> options) =>
 {
     options.OnChange(option =>
     {
@@ -126,22 +123,22 @@ app.MapGet("/GetPlatformByMonitor", ([FromServices] IOptionsMonitor<PlatformOpti
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
 
-app.MapGet("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
+app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
-    //Obtain the configuration value of the Name of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
+    //Obtain the configuration value of the Host of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
     //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter name>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Platforms:Name"];
+    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Name"];
 });
 
-app.MapPut("/UpdatePlatform", ([FromServices] IConfigurationAPIManage configurationAPIManage,
+app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
                                [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               PlatformOptions newPlatform) =>
+                               RedisOptions newRedis) =>
 {
     //Modify Dcc configuration
     return configurationAPIManage.UpdateAsync(option.Value.Environment,
                                               option.Value.Cluster,
                                               option.Value.AppId,
-                                              "<Replace-With-Your-ConfigObject>",newPlatform);//Here Replace-With-Your-ConfigObject is Platforms
+                                              "<Replace-With-Your-ConfigObject>",newRedis);//Here Replace-With-Your-ConfigObject is Redis
 });
 app.Run();
 ```
@@ -151,17 +148,17 @@ How to update the configuration:
 ```c#
 var app = builder.Build();
 
-app.MapPut("/UpdatePlatform", ([FromServices] IConfigurationAPIManage configurationAPIManage,
+app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
                                [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               PlatformOptions newPlatform) =>
+                               RedisOptions newRedis) =>
 {
     //Modify Dcc configuration
     return configurationAPIManage.UpdateAsync(option.Value.Environment,
                                               option.Value.Cluster,
                                               option.Value.AppId,
                                               "<Replace-With-Your-ConfigObject>"
-                                              ,newPlatform);
-                                              //Here Replace-With-Your-ConfigObject is Platforms
+                                              ,newRedis);
+                                              //Here Replace-With-Your-ConfigObject is Redis
 });
 
 app.Run();
@@ -171,4 +168,4 @@ Summarize：
 
 Dcc provides remote configuration management and viewing capabilities for IConfiguration. For the complete capabilities of IConfiguration, please refer to the [document](../../Configuration/Masa.Contrib.Configuration/README.md)
 
-Platforms here is remote configuration, which introduces the effect and usage of remote configuration after mounting to IConfiguration. This configuration has nothing to do with Platforms in Masa.Contrib.Configuration. It just shows the use of the same configuration information in two sources. Ways and differences in mapping node relationships
+Redis here is remote configuration, which introduces the effect and usage of remote configuration after mounting to IConfiguration. This configuration has nothing to do with Redis in Masa.Contrib.Configuration. It just shows the use of the same configuration information in two sources. Ways and differences in mapping node relationships

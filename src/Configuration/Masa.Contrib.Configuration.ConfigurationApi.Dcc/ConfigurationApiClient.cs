@@ -140,8 +140,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             case ConfigFormats.Xml:
                 try
                 {
-                    var doc = XDocument.Parse(result.Content!);
-                    var json = Newtonsoft.Json.JsonConvert.SerializeXNode(doc);
+                    var json = XmlConfigurationParser.XmlToJson(result.Content!);
                     return (json, ConfigurationTypes.Xml);
                 }
                 catch (Exception exception)

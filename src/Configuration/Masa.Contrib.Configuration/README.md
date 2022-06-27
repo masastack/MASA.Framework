@@ -7,12 +7,12 @@ Structure:
 ```c#
 IConfiguration
 ├── Local                                Local node (fixed)
-│   ├── Platforms                    Custom configuration
-│   ├── ├── Name                     Parameter name
+│   ├── Redis                            Custom configuration
+│   ├── ├── Name                         Parameter name
 ├── ConfigurationAPI                     Remote node (fixed)
 │   ├── AppId                            Replace-With-Your-AppId
-│   ├── AppId ├── Platforms              Custom node
-│   ├── AppId ├── Platforms ├── Name     Parameter name
+│   ├── AppId ├── Redis                  Custom node
+│   ├── AppId ├── Redis ├── Name         Parameter name
 ```
 
 Example：
@@ -20,11 +20,11 @@ Example：
 ```C#
 Install-Package Masa.Contrib.Configuration
 Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configuration capabilities
-```json
+​```json
 {
   //Custom configuration
-  "Platforms": {
-    "Name": "Masa.Demo"
+  "Redis": {
+    "Host": "localhost"
   },
   //Dcc configuration, extended Configuration capabilities, support remote configuration
   "DccOptions": {
@@ -41,7 +41,7 @@ Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configura
     }
   },
   "AppId": "Replace-With-Your-AppId",
-  "ConfigObjects": [ "Platforms" ], //The name of the object to be mounted. Here, the Platforms configuration will be mounted under the ConfigurationAPI: <Replace-With-Your-AppId> node
+  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted. Here, the Redis configuration will be mounted under the ConfigurationAPI: <Replace-With-Your-AppId> node
   "Secret": "", //Dcc App key
   "Cluster": "Default"
 }
@@ -50,10 +50,10 @@ Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configura
 Automatically map node relationships：
 
 ```c#
-public class PlatformOptions : LocalMasaConfigurationOptions
+public class RedisOptions : LocalMasaConfigurationOptions
 {
     [JsonIgnore]
-    public override string? Section { get; init; } = "Platforms";
+    public override string? Section { get; init; } = "Redis";
 
     public string Name { get; set; }
 }
@@ -76,7 +76,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 
     configurationBuilder.UseMasaOptions(options =>
     {
-        options.MappingLocal<PlatformOptions>("Platforms"); //Map the PlatformOptions binding to the Local:Platforms node
+        options.MappingLocal<RedisOptions>("Redis"); //Map the RedisOptions binding to the Local:Redis node
     });
 });
 ```
@@ -86,13 +86,13 @@ how to use：
 ```c#
 var app = builder.Build();
 
-app.Map("/GetPlatform", ([FromServices] IOptions<PlatformOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //Recommended (need to automatically or manually map the node relationship before it can be used)
     return System.Text.Json.JsonSerializer.Serialize(option.Value);
 });
 
-app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptionsMonitor<RedisOptions> option) =>
 {
     //Recommended (need to automatically or manually map the node relationship before it can be used)
     options.OnChange(option =>
@@ -103,10 +103,10 @@ app.Map("/GetPlatform", ([FromServices] IOptionsMonitor<PlatformOptions> option)
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
 
-app.Map("/GetPlatformName", ([FromServices] IConfiguration configuration) =>
+app.Map("/GetRedisName", ([FromServices] IConfiguration configuration) =>
 {
     //Base
-    return configuration["Local:Platforms:Name"];
+    return configuration["Local:Redis:Name"];
 });
 
 app.Run();
@@ -122,4 +122,4 @@ Tip：
 
 Configuration automatically obtains classes that inherit LocalMasaConfigurationOptions by default, and maps node relationships to facilitate obtaining configuration information through IOptions, IOptionsSnapshot, and IOptionsMonitor
 
-The above Platforms is a local configuration, which is used to demonstrate the effect and usage of the local configuration after it is mounted to IConfiguration
+The above Redis is a local configuration, which is used to demonstrate the effect and usage of the local configuration after it is mounted to IConfiguration

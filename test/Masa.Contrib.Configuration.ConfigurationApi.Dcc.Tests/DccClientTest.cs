@@ -1,10 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Dynamic;
-using System.Xml.Linq;
-using YamlDotNet.Serialization;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
 [TestClass]
@@ -175,6 +171,7 @@ public class DccClientTest
             Content = xml,
             ConfigFormat = ConfigFormats.Xml
         }, _jsonSerializerOptions);
+
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
@@ -185,8 +182,8 @@ public class DccClientTest
         string xml = @"<?xml version='1.0' standalone='no'?>
                     <root>
                       <person id='1'>
-                      <name>blazor</name>
-                      <url>https://blazor.masastack.com/</url>
+                          <name>blazor</name>
+                          <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
         string raw = JsonSerializer.Serialize(new PublishRelease()
@@ -196,10 +193,7 @@ public class DccClientTest
         }, _jsonSerializerOptions);
         var result = client.TestFormatRaw(raw, "DccObjectName");
 
-        var doc = XDocument.Parse(xml);
-        var json = Newtonsoft.Json.JsonConvert.SerializeXNode(doc);
-
-        Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Xml);
+        Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Xml);
     }
 
     [TestMethod]
