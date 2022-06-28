@@ -155,7 +155,7 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomizeDbContext>(opt =>
         {
-            opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
+            opt.UseTestSqlite(Guid.NewGuid().ToString()).UseFilter();
         });
 
         var serviceProvider = services.BuildServiceProvider();
