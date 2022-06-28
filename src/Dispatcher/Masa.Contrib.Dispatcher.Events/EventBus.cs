@@ -13,7 +13,7 @@ public class EventBus : IEventBus
 
     private IUnitOfWork? _unitOfWork;
 
-    private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/develop/docs/LoadEvent.md";
+    private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
 
     public EventBus(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options)
     {
