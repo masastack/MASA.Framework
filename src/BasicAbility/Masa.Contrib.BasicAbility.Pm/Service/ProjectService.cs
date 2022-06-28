@@ -20,9 +20,9 @@ public class ProjectService : IProjectService
         return result ?? new();
     }
 
-    public async Task<ProjectDetailModel> GetAsync(int Id)
+    public async Task<ProjectDetailModel> GetAsync(int id)
     {
-        var requestUri = $"api/v1/project/{Id}";
+        var requestUri = $"api/v1/project/{id}";
         var result = await _callerProvider.GetAsync<ProjectDetailModel>(requestUri);
 
         return result ?? new();

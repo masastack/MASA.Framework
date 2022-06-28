@@ -8,16 +8,16 @@ public class EnvironmentServiceTest
 {
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetAsync(int Id)
+    public async Task TestGetAsync(int id)
     {
         var data = new EnvironmentDetailModel();
 
-        var requestUri = $"api/v1/env/{Id}";
+        var requestUri = $"api/v1/env/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<EnvironmentDetailModel>(requestUri, default).Result).Returns(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.EnvironmentService.GetAsync(Id);
+        var result = await pmCaching.EnvironmentService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<EnvironmentDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -25,16 +25,16 @@ public class EnvironmentServiceTest
 
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGet1Async(int Id)
+    public async Task TestGet1Async(int id)
     {
         EnvironmentDetailModel? data = null;
 
-        var requestUri = $"api/v1/env/{Id}";
+        var requestUri = $"api/v1/env/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<EnvironmentDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.EnvironmentService.GetAsync(Id);
+        var result = await pmCaching.EnvironmentService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<EnvironmentDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
