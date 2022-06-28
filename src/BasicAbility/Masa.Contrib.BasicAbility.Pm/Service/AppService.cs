@@ -12,9 +12,9 @@ public class AppService : IAppService
         _callerProvider = callerProvider;
     }
 
-    public async Task<AppDetailModel> GetAsync(int Id)
+    public async Task<AppDetailModel> GetAsync(int id)
     {
-        var requestUri = $"api/v1/app/{Id}";
+        var requestUri = $"api/v1/app/{id}";
         var result = await _callerProvider.GetAsync<AppDetailModel>(requestUri);
 
         return result ?? new();
@@ -36,9 +36,9 @@ public class AppService : IAppService
         return result ?? new();
     }
 
-    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
+    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int id)
     {
-        var requestUri = $"api/v1/appWhitEnvCluster/{Id}";
+        var requestUri = $"api/v1/appWhitEnvCluster/{id}";
         var result = await _callerProvider.GetAsync<AppDetailModel>(requestUri);
 
         return result ?? new();

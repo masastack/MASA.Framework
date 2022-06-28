@@ -8,16 +8,16 @@ public class ClusterServiceTest
 {
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetAsync(int Id)
+    public async Task TestGetAsync(int id)
     {
         var data = new ClusterDetailModel();
 
-        var requestUri = $"api/v1/cluster/{Id}";
+        var requestUri = $"api/v1/cluster/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.ClusterService.GetAsync(Id);
+        var result = await pmCaching.ClusterService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -25,16 +25,16 @@ public class ClusterServiceTest
 
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetAsync1(int Id)
+    public async Task TestGetAsync1(int id)
     {
         ClusterDetailModel? data = null;
 
-        var requestUri = $"api/v1/cluster/{Id}";
+        var requestUri = $"api/v1/cluster/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<ClusterDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.ClusterService.GetAsync(Id);
+        var result = await pmCaching.ClusterService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -45,7 +45,7 @@ public class ClusterServiceTest
     {
         var data = new List<EnvironmentClusterModel>
         {
-            new EnvironmentClusterModel { Id=1 }
+            new EnvironmentClusterModel { Id = 1 }
         };
 
         var requestUri = $"api/v1/envClusters";
@@ -80,7 +80,7 @@ public class ClusterServiceTest
     {
         var data = new List<ClusterModel>
         {
-            new ClusterModel { Id=1 }
+            new ClusterModel { Id = 1 }
         };
 
         var requestUri = $"api/v1/cluster";
@@ -116,7 +116,7 @@ public class ClusterServiceTest
     {
         var data = new List<ClusterModel>
         {
-            new ClusterModel { Id=1 }
+            new ClusterModel { Id = 1 }
         };
 
         var requestUri = $"api/v1/{envId}/cluster";

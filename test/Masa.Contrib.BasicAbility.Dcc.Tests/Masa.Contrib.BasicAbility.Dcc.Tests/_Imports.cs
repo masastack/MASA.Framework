@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.BasicAbility.Dcc;
+global using Masa.BuildingBlocks.BasicAbility.Dcc.Model;
 global using Masa.Utils.Caching.Core.Interfaces;
 global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Utils.Configuration.Json;
