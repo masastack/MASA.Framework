@@ -139,6 +139,32 @@ public class DbContextTest : TestBase
     }
 
     [TestMethod]
+    public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual1()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomizeDbContext>()
+            .AddMasaDbContext<CustomizeDbContext>();
+
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter>().Count() == 1);
+    }
+
+    [TestMethod]
+    public void TestAddMasaDbContextReturnSaveChangeFilterEqual2()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomizeDbContext>(opt =>
+        {
+            opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var filters = serviceProvider.GetServices<ISaveChangesFilter>();
+        Assert.IsTrue(filters.Count() == 2);
+    }
+
+    [TestMethod]
     public async Task TestGetPaginatedListAsyncReturnCountEqualResultCount()
     {
         Services.Configure<MasaDbConnectionOptions>(options =>
