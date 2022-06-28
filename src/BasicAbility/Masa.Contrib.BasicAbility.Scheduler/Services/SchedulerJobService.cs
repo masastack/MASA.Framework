@@ -19,7 +19,7 @@ public class SchedulerJobService : ISchedulerJobService
         _logger = _loggerFactory.CreateLogger<SchedulerJobService>();
     }
 
-    public async Task<Guid> AddSchedulerJobAsync(AddSchedulerJobRequest request)
+    public async Task<Guid> AddbAsync(AddSchedulerJobRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
         {
@@ -52,7 +52,7 @@ public class SchedulerJobService : ISchedulerJobService
 
     }
 
-    public async Task<bool> DisableSchedulerJob(BaseSchedulerJobRequest request)
+    public async Task<bool> DisableAsync(BaseSchedulerJobRequest request)
     {
         try
         {
@@ -73,7 +73,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
     }
 
-    public async Task<bool> EnableSchedulerJob(BaseSchedulerJobRequest request)
+    public async Task<bool> EnableAsync(BaseSchedulerJobRequest request)
     {
         try
         {
@@ -94,7 +94,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
     }
 
-    public async Task<bool> RemoveSchedulerJobAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> RemoveAsync(BaseSchedulerJobRequest request)
     {
         try
         {
@@ -109,7 +109,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
     }
 
-    public async Task<bool> StartSchedulerJobAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> StartAsync(BaseSchedulerJobRequest request)
     {
         try
         {

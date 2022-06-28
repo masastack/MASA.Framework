@@ -49,7 +49,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData);
+        var result = await schedulerClient.SchedulerJobService.AddbAsync(requestData);
         callerProvider.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
@@ -88,7 +88,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData);
+        var result = await schedulerClient.SchedulerJobService.AddbAsync(requestData);
         callerProvider.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
@@ -126,7 +126,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData);
+        var result = await schedulerClient.SchedulerJobService.AddbAsync(requestData);
         callerProvider.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
@@ -164,7 +164,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddbAsync(requestData));
     }
 
     [TestMethod]
@@ -183,7 +183,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddbAsync(requestData));
     }
 
     [TestMethod]
@@ -202,7 +202,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddbAsync(requestData));
     }
 
     [TestMethod]
@@ -221,7 +221,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddSchedulerJobAsync(requestData));
+        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddbAsync(requestData));
     }
 
     [TestMethod]
@@ -237,7 +237,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.RemoveSchedulerJobAsync(requestData);
+        var result = await schedulerClient.SchedulerJobService.RemoveAsync(requestData);
         callerProvider.Verify(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default), Times.Once);
 
         Assert.IsTrue(result);
@@ -257,7 +257,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.StartSchedulerJobAsync(requestData);
+        var result = await schedulerClient.SchedulerJobService.StartAsync(requestData);
         callerProvider.Verify(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
     }
@@ -276,7 +276,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.EnableSchedulerJob(requestData);
+        var result = await schedulerClient.SchedulerJobService.EnableAsync(requestData);
         callerProvider.Verify(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
     }
@@ -295,7 +295,7 @@ public class SchedulerJobServiceTest
         var loggerFactory = new Mock<ILoggerFactory>();
         callerProvider.Setup(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
-        var result = await schedulerClient.SchedulerJobService.DisableSchedulerJob(requestData);
+        var result = await schedulerClient.SchedulerJobService.DisableAsync(requestData);
         callerProvider.Verify(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
     }

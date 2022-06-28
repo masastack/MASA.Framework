@@ -18,7 +18,7 @@ public class SchedulerTaskService : ISchedulerTaskService
         _logger = _loggerFactory.CreateLogger<SchedulerTaskService>();
     }
 
-    public async Task<bool> StopSchedulerTaskAsync(BaseSchedulerTaskRequest request)
+    public async Task<bool> StopAsync(BaseSchedulerTaskRequest request)
     {
         try
         {
@@ -33,7 +33,7 @@ public class SchedulerTaskService : ISchedulerTaskService
         }
     }
 
-    public async Task<bool> StartSchedulerTaskAsync(BaseSchedulerTaskRequest request)
+    public async Task<bool> StartAsync(BaseSchedulerTaskRequest request)
     {
         try
         {
