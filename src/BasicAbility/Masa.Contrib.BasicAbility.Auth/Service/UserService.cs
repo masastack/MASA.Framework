@@ -50,6 +50,12 @@ public class UserService : IUserService
         return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account = account }) ?? new();
     }
 
+    public async Task<UserModel> FindByIdAsync(Guid id)
+    {
+        var requestUri = $"api/user/findById";
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { id }) ?? new();
+    }
+
     public async Task VisitedAsync(string url)
     {
         var userId = _userContext.GetUserId<Guid>();

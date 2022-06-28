@@ -14,7 +14,7 @@ public class SubjectService : ISubjectService
 
     public async Task<List<SubjectModel>> GetListAsync(string filter)
     {
-        var requestUri = $"api/subject/list";
+        var requestUri = $"api/subject/getList";
         return await _callerProvider.GetAsync<object, List<SubjectModel>>(requestUri, new { filter }) ?? new();
     }
 }

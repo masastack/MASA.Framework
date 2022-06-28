@@ -56,6 +56,19 @@ public class SyncCache
         await _identityResourceCache.RemoveAsync(identityResource);
     }
 
+    private async Task ResetAsync()
+    {
+        var clients = await ClientQuery().ToListAsync();
+        var apiScopes = await ApiScopeQuery().ToListAsync();
+        var apiResources = await ApiResourceQuery().ToListAsync();
+        var identityResource = await IdentityResourceQuery().ToListAsync();
+
+        await _clientCache.ResetAsync(clients);
+        await _apiScopeCache.ResetAsync(apiScopes);
+        await _apiResourceCache.ResetAsync(apiResources);
+        await _identityResourceCache.ResetAsync(identityResource);
+    }
+
     private IQueryable<Client> ClientQuery()
     {
         return _context.Set<Client>()
