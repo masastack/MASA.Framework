@@ -20,7 +20,7 @@ public class SchedulerClientTest
             });
         });
 
-        var schedulerClient = services.BuildServiceProvider().GetRequiredService<ISchedulerClient>();
+        var schedulerClient = services.BuildServiceProvider().GetService<ISchedulerClient>();
         Assert.IsNotNull(schedulerClient);
     }
 
@@ -29,7 +29,7 @@ public class SchedulerClientTest
     {
         var services = new ServiceCollection();
         services.AddSchedulerClient("https://github.com");
-        var schedulerClient = services.BuildServiceProvider().GetRequiredService<ISchedulerClient>();
+        var schedulerClient = services.BuildServiceProvider().GetService<ISchedulerClient>();
         Assert.IsNotNull(schedulerClient);
     }
 

@@ -8,15 +8,12 @@ public class SchedulerJobService : ISchedulerJobService
     const string API = "/api/scheduler-job";
 
     readonly ICallerProvider _callerProvider;
-    readonly IMultiEnvironmentUserContext _multiEnvironmentUserContext;
-    readonly ILogger<SchedulerJobService> _logger;
-    readonly ILoggerFactory _loggerFactory;
+    readonly ILogger<SchedulerJobService>? _logger;
 
-    public SchedulerJobService(ICallerProvider callerProvider, ILoggerFactory loggerFactory)
+    public SchedulerJobService(ICallerProvider callerProvider, ILoggerFactory? loggerFactory = null)
     {
         _callerProvider = callerProvider;
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory.CreateLogger<SchedulerJobService>();
+        _logger = loggerFactory?.CreateLogger<SchedulerJobService>();
     }
 
     public async Task<Guid> AddbAsync(AddSchedulerJobRequest request)
@@ -46,7 +43,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "AddSchedulerJobAsync Error");
+            _logger?.LogError(ex, "AddSchedulerJobAsync Error");
             return Guid.Empty;
         }
 
@@ -68,7 +65,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "DisableSchedulerJob Error");
+            _logger?.LogError(ex, "DisableSchedulerJob Error");
             return false;
         }
     }
@@ -89,7 +86,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "EnableSchedulerJob Error");
+            _logger?.LogError(ex, "EnableSchedulerJob Error");
             return false;
         }
     }
@@ -104,7 +101,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "RemoveSchedulerJobAsync Error");
+            _logger?.LogError(ex, "RemoveSchedulerJobAsync Error");
             return false;
         }
     }
@@ -119,7 +116,7 @@ public class SchedulerJobService : ISchedulerJobService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "StartSchedulerJobAsync Error");
+            _logger?.LogError(ex, "StartSchedulerJobAsync Error");
             return false;
         }
     }

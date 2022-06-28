@@ -27,17 +27,25 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
+        if (services.Any(service => service.ImplementationType == typeof(SchedulerProvider)))
+            return services;
+
+        services.AddSingleton<SchedulerProvider>();
         services.AddHttpContextAccessor();
         services.AddCaller(callerOptions);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-            var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
             var schedulerClient = new SchedulerClient(callProvider, loggerFactory);
             return schedulerClient;
         });
 
         return services;
+    }
+
+    private class SchedulerProvider
+    {
     }
 }

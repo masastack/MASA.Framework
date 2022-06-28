@@ -8,14 +8,12 @@ public class SchedulerTaskService : ISchedulerTaskService
     const string API = "/api/scheduler-task";
 
     readonly ICallerProvider _callerProvider;
-    readonly ILogger<SchedulerTaskService> _logger;
-    readonly ILoggerFactory _loggerFactory;
+    readonly ILogger<SchedulerTaskService>? _logger;
 
-    public SchedulerTaskService(ICallerProvider callerProvider, ILoggerFactory loggerFactory)
+    public SchedulerTaskService(ICallerProvider callerProvider, ILoggerFactory? loggerFactory)
     {
         _callerProvider = callerProvider;
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory.CreateLogger<SchedulerTaskService>();
+        _logger = loggerFactory?.CreateLogger<SchedulerTaskService>();
     }
 
     public async Task<bool> StopAsync(BaseSchedulerTaskRequest request)
@@ -28,7 +26,7 @@ public class SchedulerTaskService : ISchedulerTaskService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "StopSchedulerTaskAsync Error");
+            _logger?.LogError(ex, "StopSchedulerTaskAsync Error");
             return false;
         }
     }
@@ -50,7 +48,7 @@ public class SchedulerTaskService : ISchedulerTaskService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "StopSchedulerTaskAsync Error");
+            _logger?.LogError(ex, "StopSchedulerTaskAsync Error");
             return false;
         }
     }
