@@ -7,6 +7,7 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
     where TDbContext : DbContext
     where TUserId : IComparable
 {
+    private readonly Type _userIdType;
     private readonly IUserContext? _userContext;
     private readonly TDbContext _context;
     private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
@@ -16,6 +17,7 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
         TDbContext dbContext,
         IUserContext? userContext = null)
     {
+        _userIdType = typeof(TUserId);
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;
         _userContext = userContext;
@@ -38,7 +40,7 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
             if (_userContext != null && entity.Entity is IAuditEntity<TUserId> &&
                 entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] != default)
             {
-                var userId = _userContext.UserId;
+                var userId = GetUserId(_userContext.UserId);
                 if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
 
                 entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
@@ -76,5 +78,16 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
 
         if (entityEntry.Entity is ISoftDelete)
             entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+    }
+
+    private object? GetUserId(string? userId)
+    {
+        if (userId == null)
+            return null;
+
+        if (_userIdType == typeof(Guid))
+            return Guid.Parse(userId);
+
+        return Convert.ChangeType(userId, _userIdType);
     }
 }
