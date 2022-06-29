@@ -14,7 +14,7 @@ public class SubjectServiceTest
             new SubjectModel()
         };
         string filter = "test";
-        var requestUri = $"api/subject/list";
+        var requestUri = $"api/subject/getList";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var subjectService = new Mock<SubjectService>(callerProvider.Object);

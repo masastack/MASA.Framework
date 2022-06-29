@@ -8,16 +8,16 @@ public class AppServiceTest
 {
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetAsync(int Id)
+    public async Task TestGetAsync(int id)
     {
         var data = new AppDetailModel();
 
-        var requestUri = $"api/v1/app/{Id}";
+        var requestUri = $"api/v1/app/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.AppService.GetAsync(Id);
+        var result = await pmCaching.AppService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -25,16 +25,16 @@ public class AppServiceTest
 
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGet1Async(int Id)
+    public async Task TestGet1Async(int id)
     {
         AppDetailModel? data = null;
 
-        var requestUri = $"api/v1/app/{Id}";
+        var requestUri = $"api/v1/app/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.AppService.GetAsync(Id);
+        var result = await pmCaching.AppService.GetAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -114,16 +114,16 @@ public class AppServiceTest
 
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetWithEnvironmentClusterAsync(int Id)
+    public async Task TestGetWithEnvironmentClusterAsync(int id)
     {
         var data = new AppDetailModel();
 
-        var requestUri = $"api/v1/appWhitEnvCluster/{Id}";
+        var requestUri = $"api/v1/appWhitEnvCluster/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.AppService.GetWithEnvironmentClusterAsync(Id);
+        var result = await pmCaching.AppService.GetWithEnvironmentClusterAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
@@ -131,16 +131,16 @@ public class AppServiceTest
 
     [TestMethod]
     [DataRow(1)]
-    public async Task TestGetWithEnvironmentCluster1Async(int Id)
+    public async Task TestGetWithEnvironmentCluster1Async(int id)
     {
         AppDetailModel? data = null;
 
-        var requestUri = $"api/v1/appWhitEnvCluster/{Id}";
+        var requestUri = $"api/v1/appWhitEnvCluster/{id}";
         var callerProvider = new Mock<ICallerProvider>();
         callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(callerProvider.Object);
 
-        var result = await pmCaching.AppService.GetWithEnvironmentClusterAsync(Id);
+        var result = await pmCaching.AppService.GetWithEnvironmentClusterAsync(id);
         callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);

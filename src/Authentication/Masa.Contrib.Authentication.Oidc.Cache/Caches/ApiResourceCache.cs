@@ -14,9 +14,9 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task<List<ApiResourceModel>> GetListAsync(IEnumerable<string> names)
     {
-        var keys = names.Select(name => $"{CacheKeyConstants.API_RESOURCE_KEY}_{name}");
+        var keys = names.Select(name => FormatKey(name));
         var apiResources = await _memoryCacheClient.GetListAsync<ApiResourceModel>(keys.ToArray());
-        return apiResources.Where(i => i is not null).ToList()!;
+        return apiResources.Where(apiResource => apiResource is not null).ToList()!;
     }
 
     public async Task<List<ApiResourceModel>> GetListAsync()
@@ -28,8 +28,7 @@ public class ApiResourceCache : IApiResourceCache
     public async Task SetAsync(ApiResource apiResource)
     {
         var model = apiResource.ToModel();
-        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
-        await _memoryCacheClient.SetAsync(key, model);
+        await _memoryCacheClient.SetAsync(FormatKey(apiResource), model);
         // update list cache
         var list = await GetListAsync();
         list.Set(model, item => item.Name);
@@ -38,19 +37,17 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task SetRangeAsync(IEnumerable<ApiResource> apiResources)
     {
-        var models = apiResources.Select(apiScope => apiScope.ToModel());
-        var map = models.ToDictionary(model => $"{CacheKeyConstants.API_RESOURCE_KEY}_{model.Name}", model => model);
+        var map = apiResources.ToDictionary(apiResource => FormatKey(apiResource), apiResource => apiResource.ToModel());
         await _memoryCacheClient.SetListAsync(map);
         // update list cache
         var list = await GetListAsync();
-        list.SetRange(models, item => item.Name);
+        list.SetRange(map.Values, item => item.Name);
         await UpdateListAsync(list);
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
-        string key = $"{CacheKeyConstants.API_RESOURCE_KEY}_{apiResource.Name}";
-        await _memoryCacheClient.RemoveAsync<ApiResourceModel>(key);
+        await _memoryCacheClient.RemoveAsync<ApiResourceModel>(FormatKey(apiResource));
         // update list cache
         var list = await GetListAsync();
         list.Remove(item => item.Name == apiResource.Name);
@@ -59,14 +56,23 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task ResetAsync(IEnumerable<ApiResource> apiResources)
     {
-        var models = apiResources.Select(apiScope => apiScope.ToModel());
-        await UpdateListAsync(models);
-        var map = models.ToDictionary(model => $"{CacheKeyConstants.API_RESOURCE_KEY}_{model.Name}", model => model);
+        var map = apiResources.ToDictionary(apiResource => FormatKey(apiResource), apiResource => apiResource.ToModel());
         await _memoryCacheClient.SetListAsync(map);
+        await UpdateListAsync(map.Values);
     }
 
     private async Task UpdateListAsync(IEnumerable<ApiResourceModel> models)
     {
         await _memoryCacheClient.SetAsync(CacheKeyConstants.API_RESOURCE_KEY, models);
+    }
+
+    private string FormatKey(ApiResource apiResources)
+    {
+        return FormatKey(apiResources.Name);
+    }
+
+    private string FormatKey(string name)
+    {
+        return $"{CacheKeyConstants.API_RESOURCE_KEY}_{name}";
     }
 }

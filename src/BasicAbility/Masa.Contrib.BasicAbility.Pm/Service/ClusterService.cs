@@ -12,9 +12,9 @@ public class ClusterService : IClusterService
         _callerProvider = callerProvider;
     }
 
-    public async Task<ClusterDetailModel> GetAsync(int Id)
+    public async Task<ClusterDetailModel> GetAsync(int id)
     {
-        var requestUri = $"api/v1/cluster/{Id}";
+        var requestUri = $"api/v1/cluster/{id}";
         var result = await _callerProvider.GetAsync<ClusterDetailModel>(requestUri);
 
         return result ?? new();
