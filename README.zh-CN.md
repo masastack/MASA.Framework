@@ -46,8 +46,6 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
   * 项目管理
     * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md)
     * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.zh-CN.md)
-  * 调度中心
-    * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.zh-CN.md)
 
 
 ## 如何克隆
