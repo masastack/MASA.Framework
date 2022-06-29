@@ -17,6 +17,13 @@ public class ClientCache : IClientCache
         return await _memoryCacheClient.GetAsync<ClientModel>(FormatKey(clientId));
     }
 
+    public async Task<List<ClientModel>> GetListAsync(IEnumerable<string> clientIds)
+    {
+        var keys = clientIds.Select(clientId => FormatKey(clientId)).ToArray();
+        var clients = await _memoryCacheClient.GetListAsync<ClientModel>(keys);
+        return clients.Where(client => client is not null).ToList()!;
+    }
+
     public async Task SetAsync(Client client)
     {
         await _memoryCacheClient.SetAsync(FormatKey(client), client.ToModel());
