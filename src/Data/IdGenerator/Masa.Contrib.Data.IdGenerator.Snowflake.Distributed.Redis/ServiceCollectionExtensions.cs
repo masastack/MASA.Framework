@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
             var distributedIdGeneratorOption = new DistributedIdGeneratorOptions();
             options?.Invoke(distributedIdGeneratorOption);
 
-            DistributedIdGeneratorOptions.CopyTo(distributedIdGeneratorOption, idGeneratorOptions);
+            distributedIdGeneratorOption.CopyTo(idGeneratorOptions);
 
             if (distributedIdGeneratorOption.EnableMachineClock)
             {

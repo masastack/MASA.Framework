@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Internal;
 
 /// <summary>
 /// Use the local queue to retry sending failed messages
@@ -16,9 +16,9 @@ internal class IntegrationEventLogItem
 
     public int RetryCount { get; private set; }
 
-    public object Event { get; }
+    public IIntegrationEvent Event { get; private set; }
 
-    public IntegrationEventLogItem(Guid eventId, string topic, object @event)
+    public IntegrationEventLogItem(Guid eventId, string topic, IIntegrationEvent @event)
     {
         EventId = eventId;
         Topic = topic;

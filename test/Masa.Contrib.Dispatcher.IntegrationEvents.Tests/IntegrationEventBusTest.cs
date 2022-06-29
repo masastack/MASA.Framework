@@ -1,7 +1,10 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
+using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
+using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
+
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]
 public class IntegrationEventBusTest
@@ -62,71 +65,6 @@ public class IntegrationEventBusTest
         var allEventTypes = new[] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
         Assert.IsTrue(options.AllEventTypes.Count == allEventTypes.Count());
-    }
-
-    [TestMethod]
-    public void TestAddMultDaprEventBus()
-    {
-        var services = new ServiceCollection();
-        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
-        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
-        distributedDispatcherOptions.Object
-            .UseDaprEventBus<CustomizeIntegrationEventLogService>()
-            .UseDaprEventBus<CustomizeIntegrationEventLogService>();
-        var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<IIntegrationEventBus>().Count() == 1);
-    }
-
-    [TestMethod]
-    public void TestAddDaprEventBus()
-    {
-        IServiceCollection services = new ServiceCollection();
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>();
-        var serviceProvider = services.BuildServiceProvider();
-        var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
-        Assert.IsNotNull(integrationEventBus);
-    }
-
-    [TestMethod]
-    public void TestNotUseLoggerAndUoW()
-    {
-        IServiceCollection services = new ServiceCollection();
-        services.AddLogging();
-        services
-            .AddDaprEventBus<
-                CustomizeIntegrationEventLogService>(); //The logger cannot be mocked and cannot verify that the logger is executed only once
-
-        var serviceProvider = services.BuildServiceProvider();
-        var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
-        Assert.IsNotNull(integrationEventBus);
-    }
-
-    [TestMethod]
-    public void TestUseLogger()
-    {
-        IServiceCollection services = new ServiceCollection();
-
-
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
-        {
-            option.PubSubName = "pubsub";
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
-        Assert.IsNotNull(integrationEventBus);
-    }
-
-    [TestMethod]
-    public void TestAddDaprEventBusAndNullServicesAsync()
-    {
-        IServiceCollection services = null!;
-        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
-        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() =>
-                distributedDispatcherOptions.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>(),
-            $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }
 
     [TestMethod]

@@ -1,21 +1,20 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
     private readonly DispatcherOptions _dispatcherOptions;
-    private readonly DaprClient _dapr;
+    private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService _eventLogService;
     private readonly IOptionsMonitor<AppConfig>? _appConfig;
-    private readonly string _daprPubsubName;
     private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
     public IntegrationEventBus(IOptions<DispatcherOptions> options,
-        DaprClient dapr,
+        IPublisher publisher,
         IIntegrationEventLogService eventLogService,
         IOptionsMonitor<AppConfig>? appConfig = null,
         ILogger<IntegrationEventBus>? logger = null,
@@ -23,11 +22,10 @@ public class IntegrationEventBus : IIntegrationEventBus
         IUnitOfWork? unitOfWork = null)
     {
         _dispatcherOptions = options.Value;
-        _dapr = dapr;
+        _publisher = publisher;
         _eventLogService = eventLogService;
         _appConfig = appConfig;
         _logger = logger;
-        _daprPubsubName = options.Value.PubSubName;
         _eventBus = eventBus;
         _unitOfWork = unitOfWork;
     }
@@ -69,13 +67,14 @@ public class IntegrationEventBus : IIntegrationEventBus
                 await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
 
                 _logger?.LogDebug(
-                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.GetEventId(),
+                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
+                    @event.GetEventId(),
                     _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
 
                 await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId());
 
-                _logger?.LogDebug("Publishing event {Event} to {PubsubName}.{TopicName}", @event, _daprPubsubName, topicName);
-                await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
+                _logger?.LogDebug("Publishing event {Event} to {TopicName}", @event, topicName);
+                await _publisher.PublishAsync(topicName, (dynamic)@event);
 
                 await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId());
             }
@@ -90,10 +89,11 @@ public class IntegrationEventBus : IIntegrationEventBus
         else
         {
             _logger?.LogDebug(
-                   "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})", @event.GetEventId(),
-                   _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
+                "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
+                @event.GetEventId(),
+                _appConfig?.CurrentValue.AppId ?? string.Empty, @event);
 
-            await _dapr.PublishEventAsync(_daprPubsubName, topicName, (dynamic)@event);
+            await _publisher.PublishAsync(topicName, (dynamic)@event);
         }
     }
 

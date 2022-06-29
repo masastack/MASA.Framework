@@ -31,29 +31,19 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
-        var dispatcherOptions = new DispatcherOptions(services, assemblies);
-        options?.Invoke(dispatcherOptions);
-
-        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
-            serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-
-        LocalQueueProcessor.SetLogger(services);
+        services.TryAddSingleton<IPublisher, Publisher>();
         services.AddDaprClient(builder);
-        services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
-        services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-        services.AddSingleton<IProcessor, RetryByDataProcessor>();
-        services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
-        services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
-        services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
-        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
-        services.AddHostedService<IntegrationEventHostedService>();
-        if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
-        {
-            var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
-            logger?.LogDebug("UoW is not enabled or add delay, UoW is not used will affect 100% delivery of the message");
-        }
 
-        return services;
+        return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
+        {
+            DispatcherOptions daprDispatcherOptions = new DispatcherOptions(opt.Services, opt.Assemblies);
+            options?.Invoke(daprDispatcherOptions);
+
+            services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
+                serviceProvider => Microsoft.Extensions.Options.Options.Create(daprDispatcherOptions));
+
+            daprDispatcherOptions.CopyTo(opt);
+        });
     }
 
     private class IntegrationEventBusProvider

@@ -1,22 +1,22 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
-public class RetryByLocalQueueProcessor : ProcessorBase
+public class RetryByDataProcessor : ProcessorBase
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
+    private readonly IOptionsMonitor<AppConfig>? _appConfig;
+    private readonly ILogger<RetryByDataProcessor>? _logger;
 
-    public override int Delay => _options.Value.LocalFailedRetryInterval;
+    public override int Delay => _options.Value.FailedRetryInterval;
 
-    public RetryByLocalQueueProcessor(
+    public RetryByDataProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
         IOptionsMonitor<AppConfig>? appConfig = null,
-        ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
+        ILogger<RetryByDataProcessor>? logger = null) : base(serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _appConfig = appConfig;
@@ -30,37 +30,35 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             if (unitOfWork != null)
                 unitOfWork.UseTransaction = false;
 
-            var dapr = serviceProvider.GetRequiredService<DaprClient>();
+            var publisher = serviceProvider.GetRequiredService<IPublisher>();
             var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
             var retrieveEventLogs =
-                LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
-                    _options.Value.RetryBatchSize);
+                await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes,
+                    _options.Value.MinimumRetryInterval);
 
             foreach (var eventLog in retrieveEventLogs)
             {
                 try
                 {
-                    LocalQueueProcessor.Default.RetryJobs(eventLog.EventId);
+                    if (LocalQueueProcessor.Default.IsExist(eventLog.EventId))
+                        continue; // The local queue is retrying, no need to retry
 
                     await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
 
-                    _logger?.LogDebug(
-                        "Publishing integration event {Event} to {PubsubName}.{TopicName}",
+                    _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                         eventLog,
-                        _options.Value.PubSubName,
-                        eventLog.Topic);
+                        eventLog.Event.Topic);
 
-                    await dapr.PublishEventAsync(_options.Value.PubSubName, eventLog.Topic, eventLog.Event, stoppingToken);
-
-                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
+                    await publisher.PublishAsync(eventLog.Event.Topic, eventLog.Event, stoppingToken);
 
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+
+                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
                 }
                 catch (UserFriendlyException)
                 {
-                    //Update state due to multitasking contention
-                    LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+                    //Update state due to multitasking contention, no processing required
                 }
                 catch (Exception ex)
                 {

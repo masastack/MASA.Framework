@@ -24,15 +24,15 @@ public class DistributedIdGeneratorOptions : IdGeneratorOptions
     /// </summary>
     public long RefreshTimestampInterval { get; set; } = 500;
 
-    internal static void CopyTo(DistributedIdGeneratorOptions distributedIdGeneratorOptions, IdGeneratorOptions idGeneratorOptions)
+    internal void CopyTo(IdGeneratorOptions idGeneratorOptions)
     {
-        idGeneratorOptions.BaseTime = distributedIdGeneratorOptions.BaseTime;
-        idGeneratorOptions.SequenceBits = distributedIdGeneratorOptions.SequenceBits;
-        idGeneratorOptions.WorkerIdBits = distributedIdGeneratorOptions.WorkerIdBits;
-        idGeneratorOptions.EnableMachineClock = distributedIdGeneratorOptions.EnableMachineClock;
-        idGeneratorOptions.HeartbeatInterval = distributedIdGeneratorOptions.HeartbeatInterval;
-        idGeneratorOptions.MaxExpirationTime = distributedIdGeneratorOptions.MaxExpirationTime;
-        idGeneratorOptions.TimestampType = distributedIdGeneratorOptions.TimestampType;
+        idGeneratorOptions.BaseTime = BaseTime;
+        idGeneratorOptions.SequenceBits = SequenceBits;
+        idGeneratorOptions.WorkerIdBits = WorkerIdBits;
+        idGeneratorOptions.EnableMachineClock = EnableMachineClock;
+        idGeneratorOptions.HeartbeatInterval = HeartbeatInterval;
+        idGeneratorOptions.MaxExpirationTime = MaxExpirationTime;
+        idGeneratorOptions.TimestampType = TimestampType;
         idGeneratorOptions.EnableSupportDistributed();
     }
 }

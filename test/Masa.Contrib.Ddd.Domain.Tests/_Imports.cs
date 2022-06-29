@@ -6,7 +6,6 @@ global using Masa.BuildingBlocks.Ddd.Domain.Events;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
-global using Masa.Contrib.Ddd.Domain.Events;
 global using Masa.Contrib.Ddd.Domain.Tests.Events;
 global using Masa.Contrib.Ddd.Domain.Tests.Services;
 global using Microsoft.Extensions.DependencyInjection;
