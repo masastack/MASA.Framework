@@ -22,30 +22,42 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
   * ConfigurationAPI
     * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
 * [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.md)
+* Data:
+  * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EntityFrameworkCore/README.md)
+    * [SqlServer](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.SqlServer/README.md)
+    * [Pomelo.MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.md)
+    * [Sqlite](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Sqlite/README.md)
+    * [Cosmos](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Cosmos/README.md)
+    * [InMemory](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.InMemory/README.md)
+    * [Oracle](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Oracle/README.md)
+    * [PostgreSql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.PostgreSql/README.md)
+  * [Data.Contracts.EF](./src/Data/Masa.Contrib.Data.Contracts.EF/): data protocol
+  * UoW: unit of work
+    * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.md)
+  * IdGenerator: Unique ID generator
+     * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.md): normal Guid
+     * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.md): Sequential Guid
+     * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.md): Snowflake id
+     * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.md): Distributed snowflake id
+  * Mapping: object mapping
+     * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.md)
 * [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.md)
+  * [Ddd.Domain.Repository.EF](./src/Ddd/Masa.Contrib.Ddd.Domain.Repository.EF/README.md): Provide warehousing services
 * Dispatcher
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.md): In-process events
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md): Cross-process events
-* IdGenerator: Unique ID generator
-   * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): normal Guid
-   * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): Sequential Guid
-   * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): Snowflake id
-   * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): Snowflake id (support distributed)
-* Mapping: object mapping
-   * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
+    * [IntegrationEvents.EventLogs.EF](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF/README.md): Provides message management services for cross-process events
 * Isolation: Support physical isolation, logical isolation
   * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.md)
   * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.md): MultiEnvironment
   * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.md): Multi-tenancy
 * [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.md): Support API classification aggregation similar to Controller
-* UoW: unit of work
-  * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.md)
 * Storage: cloud storage
   * [Aliyun Storage](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.md)
 * Operational capacity
-  * Project management
-    * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.md)
-    * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.md)
+  * [Dcc](./src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.md)
+  * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.md)
+  * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.md)
 
 
 
