@@ -24,13 +24,13 @@ public class WebsiteMessageServiceTest
     public async Task TestGetListAsync()
     {
         var options = new GetWebsiteMessageModel();
-        var data = new PaginatedList<WebsiteMessageModel>();
+        var data = new PaginatedListModel<WebsiteMessageModel>();
         var requestUri = $"api/website-message";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedList<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
         var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
         var result = await websiteMessageService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedList<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
+        callerProvider.Verify(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 

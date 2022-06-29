@@ -24,13 +24,13 @@ public class ChannelServiceTest
     public async Task TestGetListAsync()
     {
         var options = new GetChannelModel();
-        var data = new PaginatedList<ChannelModel>();
+        var data = new PaginatedListModel<ChannelModel>();
         var requestUri = $"api/channel";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetChannelModel, PaginatedList<ChannelModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
         var channelService = new Mock<ChannelService>(callerProvider.Object);
         var result = await channelService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetChannelModel, PaginatedList<ChannelModel>>(requestUri, options, default), Times.Once);
+        callerProvider.Verify(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

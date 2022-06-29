@@ -34,10 +34,10 @@ public class WebsiteMessageService : IWebsiteMessageService
         return await _callerProvider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri)??new();
     }
 
-    public async Task<PaginatedList<WebsiteMessageModel>> GetListAsync(GetWebsiteMessageModel options)
+    public async Task<PaginatedListModel<WebsiteMessageModel>> GetListAsync(GetWebsiteMessageModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetWebsiteMessageModel, PaginatedList<WebsiteMessageModel>>(requestUri, options) ?? new();
+        return await _callerProvider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options) ?? new();
     }
 
     public async Task<List<WebsiteMessageModel>> GetNoticeListAsync(GetNoticeListModel options)

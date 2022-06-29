@@ -19,9 +19,9 @@ public class MessageTemplateService : IMessageTemplateService
         return await _callerProvider.GetAsync<MessageTemplateModel>(requestUri);
     }
 
-    public async Task<PaginatedList<MessageTemplateModel>> GetListAsync(GetMessageTemplateModel options)
+    public async Task<PaginatedListModel<MessageTemplateModel>> GetListAsync(GetMessageTemplateModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetMessageTemplateModel, PaginatedList<MessageTemplateModel>>(requestUri, options) ?? new();
+        return await _callerProvider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options) ?? new();
     }
 }

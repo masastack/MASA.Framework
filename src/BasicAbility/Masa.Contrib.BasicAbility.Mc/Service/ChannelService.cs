@@ -19,9 +19,9 @@ public class ChannelService : IChannelService
         return await _callerProvider.GetAsync<ChannelModel>(requestUri);
     }
 
-    public async Task<PaginatedList<ChannelModel>> GetListAsync(GetChannelModel options)
+    public async Task<PaginatedListModel<ChannelModel>> GetListAsync(GetChannelModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetChannelModel, PaginatedList<ChannelModel>>(requestUri, options) ?? new();
+        return await _callerProvider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options) ?? new();
     }
 }

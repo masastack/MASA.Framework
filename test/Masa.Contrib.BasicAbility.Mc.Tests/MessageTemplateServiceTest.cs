@@ -24,13 +24,13 @@ public class MessageTemplateServiceTest
     public async Task TestGetListAsync()
     {
         var options = new GetMessageTemplateModel();
-        var data = new PaginatedList<MessageTemplateModel>();
+        var data = new PaginatedListModel<MessageTemplateModel>();
         var requestUri = $"api/message-template";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedList<MessageTemplateModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
         var messageTemplateService = new Mock<MessageTemplateService>(callerProvider.Object);
         var result = await messageTemplateService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedList<MessageTemplateModel>>(requestUri, options, default), Times.Once);
+        callerProvider.Verify(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

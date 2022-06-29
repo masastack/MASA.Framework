@@ -24,13 +24,13 @@ public class ReceiverGroupServiceTest
     public async Task TestGetListAsync()
     {
         var options = new GetReceiverGroupModel();
-        var data = new PaginatedList<ReceiverGroupModel>();
+        var data = new PaginatedListModel<ReceiverGroupModel>();
         var requestUri = $"api/receiver-group";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedList<ReceiverGroupModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
         var receiverGroupService = new Mock<ReceiverGroupService>(callerProvider.Object);
         var result = await receiverGroupService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedList<ReceiverGroupModel>>(requestUri, options, default), Times.Once);
+        callerProvider.Verify(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

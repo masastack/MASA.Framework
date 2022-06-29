@@ -19,9 +19,9 @@ public class ReceiverGroupService : IReceiverGroupService
         return await _callerProvider.GetAsync<ReceiverGroupModel>(requestUri);
     }
 
-    public async Task<PaginatedList<ReceiverGroupModel>> GetListAsync(GetReceiverGroupModel options)
+    public async Task<PaginatedListModel<ReceiverGroupModel>> GetListAsync(GetReceiverGroupModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetReceiverGroupModel, PaginatedList<ReceiverGroupModel>>(requestUri, options) ?? new();
+        return await _callerProvider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options) ?? new();
     }
 }
