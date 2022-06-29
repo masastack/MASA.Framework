@@ -22,30 +22,44 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
   * ConfigurationAPI
     * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
 * [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.zh-CN.md)
+* Data:
+  * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EntityFrameworkCore/README.zh-CN.md)
+    * [SqlServer](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.SqlServer/README.zh-CN.md)
+    * [Pomelo.MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.zh-CN.md): 推荐
+    * [MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.MySql/README.zh-CN.md)
+    * [Sqlite](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Sqlite/README.zh-CN.md)
+    * [Cosmos](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Cosmos/README.zh-CN.md)
+    * [InMemory](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.InMemory/README.zh-CN.md)
+    * [Oracle](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Oracle/README.zh-CN.md)
+    * [PostgreSql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.PostgreSql/README.zh-CN.md)
+  * [Data.Contracts.EF](./src/Data/Masa.Contrib.Data.Contracts.EF/): 数据规约
+  * UoW: 工作单元
+    * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.zh-CN.md)
+  * IdGenerator: 唯一ID生成器
+    * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): 普通的Guid
+    * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): 有序的Guid
+    * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): Single version snowflake id
+    * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): 分布式雪花id
+  * Mapping: 对象映射
+    * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
 * [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.zh-CN.md)
+  * [Ddd.Domain.Repository.EF](./src/Ddd/Masa.Contrib.Ddd.Domain.Repository.EF/README.zh-CN.md): 提供仓储服务
 * Dispatcher
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.zh-CN.md): 进程内事件
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-CN.md): 跨进程事件
-* IdGenerator: 唯一ID生成器
-  * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): 普通的Guid
-  * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): 有序的Guid
-  * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): 雪花id
-  * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): 雪花id(支持分布式)
+    * [IntegrationEvents.EventLogs.EF](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF/README.zh-CN.md): 为跨进程事件提供消息管理服务
 * Isolation: 支持物理隔离、逻辑隔离
   * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.zh-CN.md)
   * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.zh-CN.md): 多环境
   * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md): 多租户
 * [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.zh-CN.md): 支持类似Controller的API分类聚合
-* Mapping: 对象映射
-  * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
-* UoW: 工作单元
-  * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.zh-CN.md)
 * Storage: 云存储
   * [阿里云存储](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.zh-CN.md)
 * 业务能力
-  * 项目管理
-    * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md)
-    * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.zh-CN.md)
+  * [Dcc](./src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.zh-CN.md): 分布式配置中心
+  * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md): 项目管理
+  * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.zh-CN.md): 分布式调度中心
+  * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.zh-CN.md): 故障排除平台
 
 
 ## 如何克隆
