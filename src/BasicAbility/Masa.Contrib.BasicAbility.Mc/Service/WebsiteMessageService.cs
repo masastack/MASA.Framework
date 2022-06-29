@@ -22,6 +22,12 @@ public class WebsiteMessageService : IWebsiteMessageService
         await _callerProvider.DeleteAsync(requestUri, null);
     }
 
+    public async Task<WebsiteMessageModel?> GetAsync(Guid id)
+    {
+        var requestUri = $"{_party}/{id}";
+        return await _callerProvider.GetAsync<WebsiteMessageModel>(requestUri);
+    }
+
     public async Task<List<WebsiteMessageChannelModel>> GetChannelListAsync()
     {
         var requestUri = $"{_party}/GetChannelList";
