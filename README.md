@@ -46,6 +46,8 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
   * Project management
     * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.md)
     * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.md)
+  * Scheduler
+    * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.md)
 
 
 
