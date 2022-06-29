@@ -25,7 +25,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 * Data:
   * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EntityFrameworkCore/README.md)
     * [SqlServer](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.SqlServer/README.md)
-    * [Pomelo.MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.md)
+    * [Pomelo.MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Pomelo.MySql/README.md): Recommend
     * [MySql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.MySql/README.md)
     * [Sqlite](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Sqlite/README.md)
     * [Cosmos](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Cosmos/README.md)
@@ -36,7 +36,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
   * UoW: unit of work
     * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.md)
   * IdGenerator: Unique ID generator
-     * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.md): normal Guid
+     * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.md): Normal Guid
      * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.md): Sequential Guid
      * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.md): Snowflake id
      * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.md): Distributed snowflake id
