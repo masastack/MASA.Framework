@@ -18,14 +18,16 @@ public class MasaDbContextOptions<TContext> : MasaDbContextOptions
     /// <summary>
     /// Can be used to filter data
     /// </summary>
-    public override IEnumerable<IModelCreatingProvider> ModelCreatingProviders => _modelCreatingProviders ??= ServiceProvider.GetServices<IModelCreatingProvider>();
+    public override IEnumerable<IModelCreatingProvider> ModelCreatingProviders
+        => _modelCreatingProviders ??= ServiceProvider.GetServices<IModelCreatingProvider>();
 
     private IEnumerable<ISaveChangesFilter>? _saveChangesFilters;
 
     /// <summary>
     /// Can be used to intercept SaveChanges(Async) method
     /// </summary>
-    public override IEnumerable<ISaveChangesFilter> SaveChangesFilters => _saveChangesFilters ??= ServiceProvider.GetServices<ISaveChangesFilter>();
+    public override IEnumerable<ISaveChangesFilter> SaveChangesFilters
+        => _saveChangesFilters ??= ServiceProvider.GetServices<ISaveChangesFilter>();
 
     /// <summary>
     /// <inheritdoc/>
@@ -49,27 +51,15 @@ public class MasaDbContextOptions<TContext> : MasaDbContextOptions
     /// <param name="extension"></param>
     /// <returns></returns>
     public override DbContextOptions WithExtension<TExtension>(TExtension extension)
-    {
-        return _originOptions.WithExtension(extension);
-    }
+        => _originOptions.WithExtension(extension);
+
+    public override TExtension? FindExtension<TExtension>() where TExtension : class
+        => _originOptions.FindExtension<TExtension>();
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    /// <typeparam name="TExtension"></typeparam>
-    /// <returns></returns>
-    public override TExtension FindExtension<TExtension>()
-    {
-        return _originOptions.GetExtension<TExtension>();
-    }
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override void Freeze()
-    {
-        _originOptions.Freeze();
-    }
+    public override void Freeze() => _originOptions.Freeze();
 
     /// <summary>
     /// <inheritdoc/>
@@ -77,7 +67,5 @@ public class MasaDbContextOptions<TContext> : MasaDbContextOptions
     /// <typeparam name="TExtension"></typeparam>
     /// <returns></returns>
     public override TExtension GetExtension<TExtension>()
-    {
-        return _originOptions.GetExtension<TExtension>();
-    }
+        => _originOptions.GetExtension<TExtension>();
 }
