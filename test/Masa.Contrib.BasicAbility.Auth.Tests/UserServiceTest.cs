@@ -106,6 +106,22 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestGetCurrentUserAsync()
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var data = new UserModel();
+        var requestUri = $"api/user/findById";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetCurrentUserAsync();
+        callerProvider.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     [DataRow("https://www.baidu.com/")]
     public async Task TestVisitedAsync(string url)
     {
