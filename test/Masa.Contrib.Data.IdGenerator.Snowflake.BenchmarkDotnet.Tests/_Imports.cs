@@ -8,5 +8,6 @@ global using BenchmarkDotNet.Jobs;
 global using BenchmarkDotNet.Running;
 global using BenchmarkDotNet.Validators;
 global using Masa.BuildingBlocks.Data;
+global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.DependencyInjection;

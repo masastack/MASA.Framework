@@ -10,7 +10,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddSnowflake(this IServiceCollection services, Action<IdGeneratorOptions>? options)
     {
-        var idGeneratorOptions = new IdGeneratorOptions();
+        var idGeneratorOptions = new IdGeneratorOptions(services);
         options?.Invoke(idGeneratorOptions);
 
         services.TryAddSingleton<IWorkerProvider, DefaultWorkerProvider>();

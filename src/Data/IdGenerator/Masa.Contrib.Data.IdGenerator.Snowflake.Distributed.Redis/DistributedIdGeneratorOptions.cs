@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
-public class DistributedIdGeneratorOptions : IdGeneratorOptions
+public class DistributedIdGeneratorOptions
 {
     /// <summary>
     /// When there is no available WorkerId, Recycle idle and unused WorkerIds and recycle them
@@ -24,15 +24,8 @@ public class DistributedIdGeneratorOptions : IdGeneratorOptions
     /// </summary>
     public long RefreshTimestampInterval { get; set; } = 500;
 
-    internal void CopyTo(IdGeneratorOptions idGeneratorOptions)
-    {
-        idGeneratorOptions.BaseTime = BaseTime;
-        idGeneratorOptions.SequenceBits = SequenceBits;
-        idGeneratorOptions.WorkerIdBits = WorkerIdBits;
-        idGeneratorOptions.EnableMachineClock = EnableMachineClock;
-        idGeneratorOptions.HeartbeatInterval = HeartbeatInterval;
-        idGeneratorOptions.MaxExpirationTime = MaxExpirationTime;
-        idGeneratorOptions.TimestampType = TimestampType;
-        idGeneratorOptions.EnableSupportDistributed();
-    }
+    public IdGeneratorOptions IdGeneratorOptions { get; }
+
+    public DistributedIdGeneratorOptions(IdGeneratorOptions idGeneratorOptions)
+        => IdGeneratorOptions = idGeneratorOptions;
 }

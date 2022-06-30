@@ -16,7 +16,7 @@ The upgraded version supports distributed deployment, relies on Redis to provide
 2. Use `Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`
 
     ```` C#
-    builder.Services.AddDistributedSnowflake();
+    builder.Services.AddSnowflake(option => option.UseRedis());
     ````
 
     > Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
