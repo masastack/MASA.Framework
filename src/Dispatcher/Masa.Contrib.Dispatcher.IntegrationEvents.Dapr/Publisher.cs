@@ -8,16 +8,16 @@ public class Publisher : IPublisher
     private readonly IServiceProvider _serviceProvider;
     private DaprClient? _daprClient;
     public DaprClient DaprClient => _daprClient ??= _serviceProvider.GetRequiredService<DaprClient>();
-    private readonly DispatcherOptions _dispatcherOptions;
+    private readonly string _pubSubName;
 
-    public Publisher(IServiceProvider serviceProvider, DispatcherOptions dispatcherOptions)
+    public Publisher(IServiceProvider serviceProvider, string pubSubName)
     {
         _serviceProvider = serviceProvider;
-        _dispatcherOptions = dispatcherOptions;
+        _pubSubName = pubSubName;
     }
 
     public async Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
     {
-        await DaprClient.PublishEventAsync(_dispatcherOptions.PubSubName, topicName, @event, stoppingToken);
+        await DaprClient.PublishEventAsync(_pubSubName, topicName, @event, stoppingToken);
     }
 }

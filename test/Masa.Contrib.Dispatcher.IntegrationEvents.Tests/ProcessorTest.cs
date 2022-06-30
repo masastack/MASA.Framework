@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
+using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 

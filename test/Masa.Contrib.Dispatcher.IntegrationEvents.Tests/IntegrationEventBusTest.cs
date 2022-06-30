@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
+using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
@@ -87,7 +88,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _publisher.Verify(dapr => dapr.PublishAsync(@event.Topic, @event, default),
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default),
             Times.Once);
     }
 
@@ -250,7 +251,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _publisher.Verify(dapr => dapr.PublishAsync(@event.Topic, @event, default),
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default),
             Times.Once);
     }
 
@@ -345,7 +346,6 @@ public class IntegrationEventBusTest
         Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == _dispatcherOptions.Object.Value.AllEventTypes.Count());
     }
 
-
     [TestMethod]
     public void TestUseEventBusGetAllEventTypes()
     {
@@ -369,5 +369,30 @@ public class IntegrationEventBusTest
 
         Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == _dispatcherOptions.Object.Value.AllEventTypes.Count());
         Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == allEventType.Count());
+    }
+
+    [TestMethod]
+    public void TestAddIntegrationEventBusReturnThrowNoImplementing()
+    {
+        var services = new ServiceCollection();
+        Assert.ThrowsException<NotSupportedException>(() => services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>());
+    }
+
+    [TestMethod]
+    public void TestAddMultiIntegrationEventBusReturnIntegrationEventBusCountEqual1()
+    {
+        var services = new ServiceCollection();
+        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>(dispatcherOptions =>
+        {
+            Mock<IPublisher> publisher = new();
+            dispatcherOptions.Services.TryAddSingleton(publisher.Object);
+        }).AddIntegrationEventBus<CustomizeIntegrationEventLogService>(dispatcherOptions =>
+        {
+            Mock<IPublisher> publisher = new();
+            dispatcherOptions.Services.TryAddSingleton(publisher.Object);
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var integrationEventBuses = serviceProvider.GetServices<IIntegrationEventBus>();
+        Assert.IsTrue(integrationEventBuses.Count() == 1);
     }
 }

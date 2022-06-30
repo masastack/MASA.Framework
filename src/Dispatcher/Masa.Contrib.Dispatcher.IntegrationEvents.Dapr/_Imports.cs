@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Dapr.Client;
+global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
 global using Masa.Contrib.Dispatcher.IntegrationEvents;

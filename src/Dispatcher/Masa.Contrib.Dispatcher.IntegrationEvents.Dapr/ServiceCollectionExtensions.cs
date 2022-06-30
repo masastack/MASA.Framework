@@ -5,12 +5,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    #region Obsolete
+
+    [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.AddDaprEventBus<TIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), options);
 
+    [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
@@ -31,16 +35,13 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
-        services.TryAddSingleton<IPublisher, Publisher>();
         services.AddDaprClient(builder);
 
         return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
         {
             DispatcherOptions daprDispatcherOptions = new DispatcherOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
-
-            services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
-                serviceProvider => Microsoft.Extensions.Options.Options.Create(daprDispatcherOptions));
+            services.TryAddSingleton<IPublisher>(serviceProvider=> new Publisher(serviceProvider,daprDispatcherOptions.PubSubName));
 
             daprDispatcherOptions.CopyTo(opt);
         });
@@ -49,4 +50,6 @@ public static class ServiceCollectionExtensions
     private class IntegrationEventBusProvider
     {
     }
+
+    #endregion
 }

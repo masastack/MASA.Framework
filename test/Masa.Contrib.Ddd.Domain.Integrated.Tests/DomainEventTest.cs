@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using Masa.Contrib.Ddd.Domain.Entities.Tests;
+using Masa.Contrib.Dispatcher.IntegrationEvents;
 
 namespace Masa.Contrib.Ddd.Domain.Integrated.Tests;
 
@@ -30,7 +31,7 @@ public class DomainEventTest
         services.AddDomainEventBus(dispatchOptions =>
         {
             dispatchOptions
-            .UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomizeDbContext>())
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomizeDbContext>())
             .UseEventBus()
             .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlite())
             .UseRepository<CustomizeDbContext>();

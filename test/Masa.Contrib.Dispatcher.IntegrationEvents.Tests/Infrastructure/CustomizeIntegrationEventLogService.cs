@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 
-internal class CustomizeIntegrationEventLogService : IIntegrationEventLogService
+public class CustomizeIntegrationEventLogService : IIntegrationEventLogService
 {
     public Task MarkEventAsFailedAsync(Guid eventId)
     {

@@ -1,11 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 
 public class CustomizeProcessor : ProcessorBase
 {
-    internal static int Times = 0;
+    public static int Times = 0;
 
     public override int Delay => 2;
 

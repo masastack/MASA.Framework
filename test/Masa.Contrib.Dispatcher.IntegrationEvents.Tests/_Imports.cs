@@ -9,7 +9,6 @@ global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.Options;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
-global using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Internal;
 global using Masa.Utils.Models.Config;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

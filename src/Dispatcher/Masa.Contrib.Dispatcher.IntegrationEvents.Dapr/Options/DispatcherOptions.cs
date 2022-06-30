@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 
+[Obsolete("Later versions will be changed to Internal")]
 public class DispatcherOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Options.DispatcherOptions
 {
     private string _pubSubName = "pubsub";
@@ -24,6 +25,7 @@ public class DispatcherOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Optio
     {
     }
 
+    [Obsolete("Later versions will be deleted")]
     internal void CopyTo(Masa.Contrib.Dispatcher.IntegrationEvents.Options.DispatcherOptions dispatcherOptions)
     {
         dispatcherOptions.LocalRetryTimes = LocalRetryTimes;

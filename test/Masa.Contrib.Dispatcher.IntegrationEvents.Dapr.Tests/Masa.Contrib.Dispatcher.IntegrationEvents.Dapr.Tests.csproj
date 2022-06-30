@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Dispatcher\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.IntegrationEvents.Tests\Masa.Contrib.Dispatcher.IntegrationEvents.Tests.csproj" />
   </ItemGroup>
 
 </Project>
