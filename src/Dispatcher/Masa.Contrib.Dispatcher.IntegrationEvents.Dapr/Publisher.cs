@@ -5,8 +5,19 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 public class Publisher : IPublisher
 {
-    public Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
+    private readonly IServiceProvider _serviceProvider;
+    private DaprClient? _daprClient;
+    public DaprClient DaprClient => _daprClient ??= _serviceProvider.GetRequiredService<DaprClient>();
+    private readonly DispatcherOptions _dispatcherOptions;
+
+    public Publisher(IServiceProvider serviceProvider, DispatcherOptions dispatcherOptions)
     {
-        throw new NotImplementedException();
+        _serviceProvider = serviceProvider;
+        _dispatcherOptions = dispatcherOptions;
+    }
+
+    public async Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
+    {
+        await DaprClient.PublishEventAsync(_dispatcherOptions.PubSubName, topicName, @event, stoppingToken);
     }
 }
