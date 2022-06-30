@@ -7,28 +7,28 @@ public static class TypeHelper
 {
     private static readonly HashSet<Type> FloatingTypes = new HashSet<Type>
     {
-            typeof(float),
-            typeof(double),
-            typeof(decimal)
+        typeof(float),
+        typeof(double),
+        typeof(decimal)
     };
 
     private static readonly HashSet<Type> NonNullablePrimitiveTypes = new HashSet<Type>
     {
-            typeof(byte),
-            typeof(short),
-            typeof(int),
-            typeof(long),
-            typeof(sbyte),
-            typeof(ushort),
-            typeof(uint),
-            typeof(ulong),
-            typeof(bool),
-            typeof(float),
-            typeof(decimal),
-            typeof(DateTime),
-            typeof(DateTimeOffset),
-            typeof(TimeSpan),
-            typeof(Guid)
+        typeof(byte),
+        typeof(short),
+        typeof(int),
+        typeof(long),
+        typeof(sbyte),
+        typeof(ushort),
+        typeof(uint),
+        typeof(ulong),
+        typeof(bool),
+        typeof(float),
+        typeof(decimal),
+        typeof(DateTime),
+        typeof(DateTimeOffset),
+        typeof(TimeSpan),
+        typeof(Guid)
     };
 
     public static bool IsNonNullablePrimitiveType(Type type)
