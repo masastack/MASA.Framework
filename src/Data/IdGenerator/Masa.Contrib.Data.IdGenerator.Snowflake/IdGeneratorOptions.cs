@@ -5,6 +5,8 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public class IdGeneratorOptions
 {
+    public IServiceCollection Services { get;}
+
     /// <summary>
     /// Baseline time, it is not recommended to change after use to avoid duplicate ids
     /// </summary>
@@ -56,4 +58,9 @@ public class IdGeneratorOptions
     public long MaxWorkerId => ~(-1L << WorkerIdBits);
 
     public void EnableSupportDistributed() => SupportDistributed = true;
+
+    public IdGeneratorOptions(IServiceCollection services)
+    {
+        Services = services;
+    }
 }

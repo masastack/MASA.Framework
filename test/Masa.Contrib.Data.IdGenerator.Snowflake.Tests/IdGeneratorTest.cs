@@ -137,8 +137,9 @@ public class IdGeneratorTest
         });
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
-            services.AddDistributedSnowflake(options =>
+            services.AddSnowflake(options =>
             {
+                options.UseRedis();
                 options.HeartbeatInterval = 99;
             });
         });
@@ -294,7 +295,7 @@ public class IdGeneratorTest
         // {
         //     Parallel.For(0, maxWorkerId * 2, i =>
         //     {
-        //         tasks.Add(GetWorkerIdAsync(workerIdBits));
+        //         tasks.Add(GetWorkerIdAsync(null, workerIdBits));
         //     });
         //     await Task.WhenAll(tasks);
         // }
@@ -310,13 +311,17 @@ public class IdGeneratorTest
         return Task.CompletedTask;
     }
 
-    private Task<long> GetWorkerIdAsync(int workerIdBits) => GetWorkerProvider(workerIdBits).GetWorkerIdAsync();
+    private Task<long> GetWorkerIdAsync(IServiceCollection? services, int workerIdBits)
+        => GetWorkerProvider(services, workerIdBits).GetWorkerIdAsync();
 
-    private IWorkerProvider GetWorkerProvider(int workerIdBits = 10)
+    private IWorkerProvider GetWorkerProvider(IServiceCollection? services, int workerIdBits = 10)
     {
-        DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions()
+        var idGeneratorOptions = new IdGeneratorOptions(services ?? new ServiceCollection())
         {
-            WorkerIdBits = workerIdBits,
+            WorkerIdBits = workerIdBits
+        };
+        DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(idGeneratorOptions)
+        {
             GetWorkerIdMinInterval = 0
         };
         return new CustomizeDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
