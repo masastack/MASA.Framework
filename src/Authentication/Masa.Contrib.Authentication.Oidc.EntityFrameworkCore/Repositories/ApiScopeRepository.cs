@@ -67,6 +67,7 @@ public class ApiScopeRepository : IApiScopeRepository
             throw new UserFriendlyException($"ApiScope with name {apiScope.Name} already exists");
 
         var newApiScope = await _repository.AddAsync(apiScope);
+        await _context.SaveChangesAsync();
         await _cache.SyncApiScopeCacheAsync(apiScope.Id);
         return newApiScope;
     }
@@ -74,6 +75,7 @@ public class ApiScopeRepository : IApiScopeRepository
     public async Task<ApiScope> UpdateAsync(ApiScope apiScope)
     {
         var newApiScope = await _repository.UpdateAsync(apiScope);
+        await _context.SaveChangesAsync();
         await _cache.SyncApiScopeCacheAsync(apiScope.Id);
         return newApiScope;
     }
@@ -81,6 +83,7 @@ public class ApiScopeRepository : IApiScopeRepository
     public async Task RemoveAsync(ApiScope apiScope)
     {
         await _repository.RemoveAsync(apiScope);
+        await _context.SaveChangesAsync();
         await _cache.RemoveApiScopeCacheAsync(apiScope);
     }
 }

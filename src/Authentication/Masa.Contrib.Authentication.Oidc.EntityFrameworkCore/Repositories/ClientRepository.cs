@@ -68,6 +68,7 @@ public class ClientRepository : IClientRepository
     public async ValueTask<Client> AddAsync(Client client)
     {
         var newClient = await _repository.AddAsync(client);
+        await _context.SaveChangesAsync();
         var detail = await GetDetailAsync(client.Id);
         await _cache.SetAsync(detail!);
         return newClient;
@@ -76,6 +77,7 @@ public class ClientRepository : IClientRepository
     public async Task<Client> UpdateAsync(Client client)
     {
         var newClient = await _repository.UpdateAsync(client);
+        await _context.SaveChangesAsync();
         var detail = await GetDetailAsync(client.Id);
         await _cache.SetAsync(detail!);
         return newClient;
@@ -84,6 +86,7 @@ public class ClientRepository : IClientRepository
     public async Task RemoveAsync(Client client)
     {
         await _repository.RemoveAsync(client);
+        await _context.SaveChangesAsync();
         await _cache.RemoveAsync(client);
     }
 }

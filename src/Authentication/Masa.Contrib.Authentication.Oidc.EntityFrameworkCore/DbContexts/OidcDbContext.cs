@@ -11,4 +11,9 @@ public class OidcDbContext
     {
         Dbcontext = dbcontext;
     }
+
+    public static implicit operator DbContext(OidcDbContext context)
+    {
+        return context.Dbcontext;
+    }
 }

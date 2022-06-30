@@ -65,6 +65,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
             throw new UserFriendlyException($"IdentityResource with name {identityResource.Name} already exists");
 
         var newIdentityResource = await _repository.AddAsync(identityResource);
+        await _context.SaveChangesAsync();
         await _cache.SyncIdentityResourceCacheAsync(identityResource.Id);
         return newIdentityResource;
     }
@@ -72,6 +73,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     public async Task<IdentityResource> UpdateAsync(IdentityResource identityResource)
     {
         var newIdentityResource = await _repository.UpdateAsync(identityResource);
+        await _context.SaveChangesAsync();
         await _cache.SyncIdentityResourceCacheAsync(identityResource.Id);
 
         return newIdentityResource;
@@ -80,6 +82,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
     public async Task RemoveAsync(IdentityResource identityResource)
     {
         await _repository.RemoveAsync(identityResource);
+        await _context.SaveChangesAsync();
         await _cache.RemoveIdentityResourceCacheAsync(identityResource);
     }
 
@@ -105,6 +108,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
             }
             syncIdentityResources.Add(existData);
         }
+        await _context.SaveChangesAsync();
         await _cache.SyncIdentityResourceCacheAsync(syncIdentityResources.Select(idrs => idrs.Id).ToArray());
     }
 }

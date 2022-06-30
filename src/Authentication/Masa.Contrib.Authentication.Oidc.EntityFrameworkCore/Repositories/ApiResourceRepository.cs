@@ -69,6 +69,7 @@ public class ApiResourceRepository : IApiResourceRepository
             throw new UserFriendlyException($"ApiResource with name {apiResource.Name} already exists");
 
         var newApiResource = await _repository.AddAsync(apiResource);
+        await _context.SaveChangesAsync();
         await _cache.SyncApiResourceCacheAsync(apiResource.Id);
         return newApiResource;
     }
@@ -76,6 +77,7 @@ public class ApiResourceRepository : IApiResourceRepository
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
         var newApiResource = await _repository.UpdateAsync(apiResource);
+        await _context.SaveChangesAsync();
         await _cache.SyncApiResourceCacheAsync(apiResource.Id);
         return newApiResource;
     }
@@ -83,6 +85,7 @@ public class ApiResourceRepository : IApiResourceRepository
     public async Task RemoveAsync(ApiResource apiResource)
     {
         await _repository.RemoveAsync(apiResource);
+        await _context.SaveChangesAsync();
         await _cache.RemoveApiResourceCacheAsync(apiResource);
     }
 }
