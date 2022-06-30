@@ -4,7 +4,7 @@
 
 Effect:
 
-Manipulate resources and client-related data through a level 2 cache
+Use the second level cache to operate resources and client data.
 
 ```c#
 ├── ApiResourceCache

@@ -4,7 +4,7 @@
 
 Effect:
 
-Oidc Resource and Client data are provided through the IClientStore and IResourceStore
+Use IClientStore and IResourceStore get oidc resources and client data.
 
 ```c#
 ├── IClientStore
