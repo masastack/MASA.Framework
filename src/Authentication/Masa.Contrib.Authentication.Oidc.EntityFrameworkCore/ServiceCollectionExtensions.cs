@@ -21,14 +21,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection SeedClientData(this IServiceCollection services, List<Client> clients)
     {
         var clientRepository = services.BuildServiceProvider().GetRequiredService<IClientRepository>();
-        var apiScopeRepository = services.BuildServiceProvider().GetRequiredService<IApiScopeRepository>();
+        var identityResourceRepository = services.BuildServiceProvider().GetRequiredService<IIdentityResourceRepository>();
 
         var scopes = clients.SelectMany(c => c.AllowedScopes);
         foreach (var scope in scopes)
         {
-            if (apiScopeRepository.FindAsync(s => s.Name == scope.Scope).Result == null)
+            if (identityResourceRepository.FindAsync(s => s.Name == scope.Scope).Result == null)
             {
-                _ = apiScopeRepository.AddAsync(new ApiScope(scope.Scope)).Result;
+                _ = identityResourceRepository.AddAsync(new IdentityResource(scope.Scope, scope.Scope, "",
+                        true, true, true, true, true)).Result;
             }
         }
         foreach (var client in clients)
