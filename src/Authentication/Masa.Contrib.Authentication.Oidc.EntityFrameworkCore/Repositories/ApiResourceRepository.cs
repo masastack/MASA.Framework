@@ -6,12 +6,14 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Repositories;
 public class ApiResourceRepository : IApiResourceRepository
 {
     SyncCache _cache;
-    OidcDbContext _context;
+    DbContext _context;
+    IRepository<ApiResource> _repository;
 
-    public ApiResourceRepository(SyncCache cache, OidcDbContext context)
+    public ApiResourceRepository(SyncCache cache, OidcDbContext context, IRepository<ApiResource> repository)
     {
         _cache = cache;
         _context = context;
+        _repository = repository;
     }
 
     public async Task<PaginatedList<ApiResource>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<ApiResource, bool>>? condition = null)
@@ -66,23 +68,23 @@ public class ApiResourceRepository : IApiResourceRepository
         if (exist)
             throw new UserFriendlyException($"ApiResource with name {apiResource.Name} already exists");
 
-        var newApiResource = await _context.AddAsync(apiResource);
+        var newApiResource = await _repository.AddAsync(apiResource);
         await _context.SaveChangesAsync();
         await _cache.SyncApiResourceCacheAsync(apiResource.Id);
-        return newApiResource.Entity;
+        return newApiResource;
     }
 
     public async Task<ApiResource> UpdateAsync(ApiResource apiResource)
     {
-        var newApiResource = _context.Update(apiResource);
+        var newApiResource = await _repository.UpdateAsync(apiResource);
         await _context.SaveChangesAsync();
         await _cache.SyncApiResourceCacheAsync(apiResource.Id);
-        return newApiResource.Entity;
+        return newApiResource;
     }
 
     public async Task RemoveAsync(ApiResource apiResource)
     {
-        _context.Remove(apiResource);
+        await _repository.RemoveAsync(apiResource);
         await _context.SaveChangesAsync();
         await _cache.RemoveApiResourceCacheAsync(apiResource);
     }

@@ -9,7 +9,7 @@ public class SyncCache
     IApiResourceCache _apiResourceCache;
     IApiScopeCache _apiScopeCache;
     IIdentityResourceCache _identityResourceCache;
-    OidcDbContext _context;
+    DbContext _context;
 
     public SyncCache(IClientCache clientCache, IApiResourceCache apiResourceCache, IApiScopeCache apiScopeCache, IIdentityResourceCache identityResourceCache, OidcDbContext context)
     {
@@ -17,7 +17,7 @@ public class SyncCache
         _apiResourceCache = apiResourceCache;
         _apiScopeCache = apiScopeCache;
         _identityResourceCache = identityResourceCache;
-        _context = context;
+        _context = context.Dbcontext;
     }
 
     internal async Task SyncApiResourceCacheAsync(int id)
@@ -56,7 +56,7 @@ public class SyncCache
         await _identityResourceCache.RemoveAsync(identityResource);
     }
 
-    private async Task ResetAsync()
+    public async Task ResetAsync()
     {
         var clients = await ClientQuery().ToListAsync();
         var apiScopes = await ApiScopeQuery().ToListAsync();
