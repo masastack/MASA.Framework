@@ -31,7 +31,11 @@ public class DomainEventTest
         services.AddDomainEventBus(dispatchOptions =>
         {
             dispatchOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomizeDbContext>())
+            .UseIntegrationEventBus<IntegrationEventLogService>(options =>
+            {
+                options.UseDapr();
+                options.UseEventLog<CustomizeDbContext>();
+            })
             .UseEventBus()
             .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlite())
             .UseRepository<CustomizeDbContext>();
