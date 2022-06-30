@@ -16,7 +16,7 @@ public class SchedulerJobService : ISchedulerJobService
         _logger = loggerFactory?.CreateLogger<SchedulerJobService>();
     }
 
-    public async Task<Guid> AddbAsync(AddSchedulerJobRequest request)
+    public async Task<Guid> AddAsync(AddSchedulerJobRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
         {

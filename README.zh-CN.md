@@ -1,4 +1,4 @@
-﻿中 | [EN](README.md)
+﻿﻿中 | [EN](README.md)
 
 [![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
 
@@ -56,6 +56,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 * Storage: 云存储
   * [阿里云存储](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.zh-CN.md)
 * 业务能力
+  * [Auth](./src/BasicAbility/Masa.Contrib.BasicAbility.Auth/README.zh-CN.md): 权限认证
   * [Dcc](./src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.zh-CN.md): 分布式配置中心
   * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md): 项目管理
   * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.zh-CN.md): 分布式调度中心
