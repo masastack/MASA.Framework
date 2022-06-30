@@ -28,7 +28,7 @@ public static class CollectionExtensions
 
     public static void RemoveRange<T>(this ICollection<T> collection, IEnumerable<T> datas, Func<T, object> keySelector)
     {
-        var oldDatas = collection.Where(item => datas.Any(data => keySelector(data).Equals(keySelector(item))));
+        var oldDatas = collection.Where(item => datas.Any(data => keySelector(data).Equals(keySelector(item)))).ToList();
         if (oldDatas.Count() > 0)
         {
             foreach (var oldData in oldDatas)
@@ -40,7 +40,7 @@ public static class CollectionExtensions
 
     public static void Remove<T>(this ICollection<T> collection, Func<T, bool> condition)
     {
-        var datas = collection.Where(condition);
+        var datas = collection.Where(condition).ToList();
         if(datas.Count() > 0)
         {
             foreach (var data in datas)

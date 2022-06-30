@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress)
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
-#warning modify
+
         services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddAuthClient(callerOptions =>
         {

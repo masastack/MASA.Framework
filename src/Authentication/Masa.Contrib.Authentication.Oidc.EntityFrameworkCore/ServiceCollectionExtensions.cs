@@ -5,9 +5,9 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOidcDbContext(this IServiceCollection services, Action<DbContextOptionsBuilder> optionsAction)
+    public static IServiceCollection AddOidcDbContext<T>(this IServiceCollection services) where T : DbContext
     {
-        services.AddDbContext<OidcDbContext>(optionsAction);
+        services.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<T>()));
         services.AddScoped<IUserClaimRepository, UserClaimRepository>();
         services.AddScoped<IIdentityResourceRepository, IdentityResourceRepository>();
         services.AddScoped<IClientRepository, ClientRepository>();
