@@ -6,12 +6,14 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Repositories;
 public class ApiScopeRepository : IApiScopeRepository
 {
     SyncCache _cache;
-    OidcDbContext _context;
+    DbContext _context;
+    IRepository<ApiScope> _repository;
 
-    public ApiScopeRepository(SyncCache cache, OidcDbContext context)
+    public ApiScopeRepository(SyncCache cache, OidcDbContext context, IRepository<ApiScope> repository)
     {
         _cache = cache;
         _context = context;
+        _repository = repository;
     }
 
     public async Task<PaginatedList<ApiScope>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<ApiScope, bool>>? condition = null)
@@ -64,24 +66,21 @@ public class ApiScopeRepository : IApiScopeRepository
         if (exist)
             throw new UserFriendlyException($"ApiScope with name {apiScope.Name} already exists");
 
-        var newApiScope = await _context.AddAsync(apiScope);
-        await _context.SaveChangesAsync();
+        var newApiScope = await _repository.AddAsync(apiScope);
         await _cache.SyncApiScopeCacheAsync(apiScope.Id);
-        return newApiScope.Entity;
+        return newApiScope;
     }
 
     public async Task<ApiScope> UpdateAsync(ApiScope apiScope)
     {
-        var newApiScope = _context.Update(apiScope);
-        await _context.SaveChangesAsync();
+        var newApiScope = await _repository.UpdateAsync(apiScope);
         await _cache.SyncApiScopeCacheAsync(apiScope.Id);
-        return newApiScope.Entity;
+        return newApiScope;
     }
 
     public async Task RemoveAsync(ApiScope apiScope)
     {
-        _context.Remove(apiScope);
-        await _context.SaveChangesAsync();
+        await _repository.RemoveAsync(apiScope);
         await _cache.RemoveApiScopeCacheAsync(apiScope);
     }
 }

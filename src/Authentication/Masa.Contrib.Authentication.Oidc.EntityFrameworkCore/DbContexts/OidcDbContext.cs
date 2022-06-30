@@ -3,15 +3,12 @@
 
 namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.DbContexts;
 
-public class OidcDbContext : DbContext
+public class OidcDbContext
 {
-    public OidcDbContext(DbContextOptions<OidcDbContext> options) : base(options)
-    {
-    }
+    public DbContext Dbcontext { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public OidcDbContext(DbContext dbcontext)
     {
-        modelBuilder.HasDefaultSchema("oidc");
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(OidcDbContext).Assembly);
+        Dbcontext = dbcontext;
     }
 }

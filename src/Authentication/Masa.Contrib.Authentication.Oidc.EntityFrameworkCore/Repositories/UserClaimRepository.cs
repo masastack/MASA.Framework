@@ -5,10 +5,12 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Repositories;
 
 public class UserClaimRepository : IUserClaimRepository
 {
-    OidcDbContext _context;
+    IRepository<UserClaim> _repository;
+    DbContext _context;
 
-    public UserClaimRepository(OidcDbContext context)
+    public UserClaimRepository(IRepository<UserClaim> repository, OidcDbContext context)
     {
+        _repository = repository;
         _context = context;
     }
 
@@ -59,22 +61,17 @@ public class UserClaimRepository : IUserClaimRepository
         if (exist)
             throw new UserFriendlyException($"UserClaim with name {userClaim.Name} already exists");
 
-        var newUserClaim = await _context.AddAsync(userClaim);
-        await _context.SaveChangesAsync();
-        return newUserClaim.Entity;
+        return await _repository.AddAsync(userClaim);
     }
 
     public async Task<UserClaim> UpdateAsync(UserClaim userClaim)
     {
-        var newUserClaim = _context.Update(userClaim);
-        await _context.SaveChangesAsync();
-        return newUserClaim.Entity;
+        return await _repository.UpdateAsync(userClaim);
     }
 
     public async Task RemoveAsync(UserClaim userClaim)
     {
-        _context.Remove(userClaim);
-        await _context.SaveChangesAsync();
+        await _repository.RemoveAsync(userClaim);
     }
 
     public async Task AddStandardUserClaimsAsync()
@@ -87,6 +84,6 @@ public class UserClaimRepository : IUserClaimRepository
 
             userClaims.Add(new UserClaim(claim.Key, claim.Value));
         }
-        await _context.AddRangeAsync(userClaims);
+        await _repository.AddRangeAsync(userClaims);
     }
 }

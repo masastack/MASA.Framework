@@ -6,12 +6,14 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Repositories;
 public class ClientRepository : IClientRepository
 {
     IClientCache _cache;
-    OidcDbContext _context;
+    DbContext _context;
+    IRepository<Client> _repository;
 
-    public ClientRepository(IClientCache cache, OidcDbContext context)
+    public ClientRepository(IClientCache cache, OidcDbContext context, IRepository<Client> repository)
     {
         _cache = cache;
         _context = context;
+        _repository = repository;
     }
 
     public async Task<PaginatedList<Client>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<Client, bool>>? condition = null)
@@ -65,26 +67,23 @@ public class ClientRepository : IClientRepository
 
     public async ValueTask<Client> AddAsync(Client client)
     {
-        var newClient = await _context.AddAsync(client);
-        await _context.SaveChangesAsync();
+        var newClient = await _repository.AddAsync(client);
         var detail = await GetDetailAsync(client.Id);
         await _cache.SetAsync(detail!);
-        return newClient.Entity;
+        return newClient;
     }
 
     public async Task<Client> UpdateAsync(Client client)
     {
-        var newClient = _context.Update(client);
-        await _context.SaveChangesAsync();
+        var newClient = await _repository.UpdateAsync(client);
         var detail = await GetDetailAsync(client.Id);
         await _cache.SetAsync(detail!);
-        return newClient.Entity;
+        return newClient;
     }
 
     public async Task RemoveAsync(Client client)
     {
-        _context.Remove(client);
-        await _context.SaveChangesAsync();
+        await _repository.RemoveAsync(client);
         await _cache.RemoveAsync(client);
     }
 }

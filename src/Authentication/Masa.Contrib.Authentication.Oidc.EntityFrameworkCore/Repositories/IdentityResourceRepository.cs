@@ -6,12 +6,14 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Repositories;
 public class IdentityResourceRepository : IIdentityResourceRepository
 {
     SyncCache _cache;
-    OidcDbContext _context;
+    DbContext _context;
+    IRepository<IdentityResource> _repository;
 
-    public IdentityResourceRepository(SyncCache cache, OidcDbContext context)
+    public IdentityResourceRepository(SyncCache cache, OidcDbContext context, IRepository<IdentityResource> repository)
     {
         _cache = cache;
         _context = context;
+        _repository = repository;
     }
 
     public async Task<PaginatedList<IdentityResource>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<IdentityResource, bool>>? condition = null)
@@ -62,25 +64,22 @@ public class IdentityResourceRepository : IIdentityResourceRepository
         if (exist)
             throw new UserFriendlyException($"IdentityResource with name {identityResource.Name} already exists");
 
-        var newIdentityResource = await _context.AddAsync(identityResource);
-        await _context.SaveChangesAsync();
+        var newIdentityResource = await _repository.AddAsync(identityResource);
         await _cache.SyncIdentityResourceCacheAsync(identityResource.Id);
-        return newIdentityResource.Entity;
+        return newIdentityResource;
     }
 
     public async Task<IdentityResource> UpdateAsync(IdentityResource identityResource)
     {
-        var newIdentityResource = _context.Update(identityResource);
-        await _context.SaveChangesAsync();
+        var newIdentityResource = await _repository.UpdateAsync(identityResource);
         await _cache.SyncIdentityResourceCacheAsync(identityResource.Id);
 
-        return newIdentityResource.Entity;
+        return newIdentityResource;
     }
 
     public async Task RemoveAsync(IdentityResource identityResource)
     {
-        _context.Remove(identityResource);
-        await _context.SaveChangesAsync();
+        await _repository.RemoveAsync(identityResource);
         await _cache.RemoveIdentityResourceCacheAsync(identityResource);
     }
 
@@ -96,17 +95,16 @@ public class IdentityResourceRepository : IIdentityResourceRepository
             {
                 existData.Update(identityResource.DisplayName, identityResource.Description ?? "", true, identityResource.Required, identityResource.Emphasize, identityResource.ShowInDiscoveryDocument, true);
                 existData.BindUserClaims(userClaimIds);
-                _context.Update(existData);
+                await _repository.UpdateAsync(existData);
             }
             else
             {
                 existData = new IdentityResource(identityResource.Name, identityResource.DisplayName, identityResource.Description ?? "", true, identityResource.Required, identityResource.Enabled, identityResource.ShowInDiscoveryDocument, true);
                 existData.BindUserClaims(userClaimIds);
-                await _context.AddAsync(existData);
+                await _repository.AddAsync(existData);
             }
             syncIdentityResources.Add(existData);
         }
-        await _context.SaveChangesAsync();
         await _cache.SyncIdentityResourceCacheAsync(syncIdentityResources.Select(idrs => idrs.Id).ToArray());
     }
 }
