@@ -5,12 +5,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    #region Obsolete
+
+    [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.AddDaprEventBus<TIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), options);
 
+    [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
@@ -31,32 +35,21 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
-        var dispatcherOptions = new DispatcherOptions(services, assemblies);
-        options?.Invoke(dispatcherOptions);
-
-        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
-            serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-
-        LocalQueueProcessor.SetLogger(services);
         services.AddDaprClient(builder);
-        services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
-        services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-        services.AddSingleton<IProcessor, RetryByDataProcessor>();
-        services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
-        services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
-        services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
-        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
-        services.AddHostedService<IntegrationEventHostedService>();
-        if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
-        {
-            var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
-            logger?.LogDebug("UoW is not enabled or add delay, UoW is not used will affect 100% delivery of the message");
-        }
 
-        return services;
+        return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
+        {
+            DispatcherOptions daprDispatcherOptions = new DispatcherOptions(opt.Services, opt.Assemblies);
+            options?.Invoke(daprDispatcherOptions);
+            services.TryAddSingleton<IPublisher>(serviceProvider=> new Publisher(serviceProvider,daprDispatcherOptions.PubSubName));
+
+            daprDispatcherOptions.CopyTo(opt);
+        });
     }
 
     private class IntegrationEventBusProvider
     {
     }
+
+    #endregion
 }
