@@ -5,11 +5,11 @@ namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Options;
 
 public class OidcDbContextOptions
 {
-    IServiceProvider ServiceProvider { get; set; }
+    internal IServiceProvider ServiceProvider { get; set; }
 
-    public OidcDbContextOptions(IServiceCollection services)
+    public OidcDbContextOptions(IServiceProvider serviceProvider)
     {
-        ServiceProvider = services.BuildServiceProvider();
+        ServiceProvider = serviceProvider;
     }
 
     public async Task SeedClientDataAsync(List<Client> clients)
@@ -28,8 +28,8 @@ public class OidcDbContextOptions
     public async Task SeedStandardResourcesAsync()
     {
         var userClaim = ServiceProvider.GetRequiredService<IUserClaimRepository>();
-        var identityResourcerepository = ServiceProvider.GetRequiredService<IIdentityResourceRepository>();   
+        var identityResourcerepository = ServiceProvider.GetRequiredService<IIdentityResourceRepository>();
         await userClaim.AddStandardUserClaimsAsync();
-        //await identityResourcerepository.AddStandardIdentityResourcesAsync();
+        await identityResourcerepository.AddStandardIdentityResourcesAsync();
     }
 }

@@ -74,13 +74,13 @@ public class UserService : IUserService
     public async Task UpdateUserPasswordAsync(UpdateUserPasswordModel user)
     {
         var requestUri = $"api/user/updateUserPassword";
-        await _callerProvider.PostAsync(requestUri, user);
+        await _callerProvider.PutAsync(requestUri, user);
     }
 
     public async Task UpdateUserBaseInfoAsync(UpdateUserBaseInfoModel user)
     {
         var requestUri = $"api/user/updateUserBaseInfo";
-        await _callerProvider.PostAsync(requestUri, user);
+        await _callerProvider.PutAsync(requestUri, user);
     }
 }
 

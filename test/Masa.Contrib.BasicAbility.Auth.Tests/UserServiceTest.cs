@@ -151,5 +151,39 @@ public class UserServiceTest
         callerProvider.Verify(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
     }
+
+    [TestMethod]
+    public async Task TestUpdateUserPasswordAsync()
+    {
+        var user = new UpdateUserPasswordModel
+        {
+            Id = Guid.NewGuid(),
+            NewPassword = "masa123",
+            OldPassword = "masa123"
+        };
+        var requestUri = $"api/user/updateUserPassword";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, default, default));
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.UpdateUserPasswordAsync(user);
+    }
+
+    public async Task TestUpdateUserBaseInfoAsync()
+    {
+        var user = new UpdateUserBaseInfoModel
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = "test",
+            Gender = GenderTypes.Male,
+            PhoneNumber = "15168440403"
+        };
+        var requestUri = $"api/user/updateUserBaseInfo";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, default, default));
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.UpdateUserBaseInfoAsync(user);
+    }
 }
 

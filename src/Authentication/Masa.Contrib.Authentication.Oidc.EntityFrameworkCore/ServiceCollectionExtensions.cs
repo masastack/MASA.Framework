@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data.UoW;
+
 namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
@@ -21,6 +23,13 @@ public static class ServiceCollectionExtensions
     public static async Task AddOidcDbContext<T>(this IServiceCollection services, Func<OidcDbContextOptions, Task> options) where T : DbContext
     {
         services.AddOidcDbContext<T>();
-        await options.Invoke(new OidcDbContextOptions(services));
+        using var scope = services.BuildServiceProvider().CreateScope();      
+        var oidcDbContextOptions = new OidcDbContextOptions(scope.ServiceProvider);
+        await options.Invoke(oidcDbContextOptions);
+        var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
+        if(unitOfWork is not null)
+        {
+            await unitOfWork.CommitAsync();
+        }      
     }
 }
