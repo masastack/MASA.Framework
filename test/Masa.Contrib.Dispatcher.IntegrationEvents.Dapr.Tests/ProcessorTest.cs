@@ -15,275 +15,23 @@ public class ProcessorTest
         var services = new ServiceCollection();
         services.AddDaprEventBus<CustomizeIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
-        _options = _serviceProvider.GetRequiredService<IOptions<DispatcherOptions>>();
-    }
-
-    [TestMethod]
-    public void DeleteLocalQueueExpiresProcessorDelayTestAsync()
-    {
-        ProcessorBase processor = new DeleteLocalQueueExpiresProcessor(_options);
-        Assert.IsTrue(processor.Delay == _options.Value.CleaningLocalQueueExpireInterval);
-    }
-
-    [TestMethod]
-    public void DeletePublishedExpireEventDelayTestAsync()
-    {
-        ProcessorBase processor = new DeletePublishedExpireEventProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.CleaningExpireInterval);
-    }
-
-    [TestMethod]
-    public void RetryByDataProcessorDelayTestAsync()
-    {
-        ProcessorBase processor = new RetryByDataProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.FailedRetryInterval);
-    }
-
-    [TestMethod]
-    public async Task RetryByDataProcessorExecuteTestAsync()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging();
-
-        CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(1000);
-
-        Mock<DaprClient> daprClient = new();
-        daprClient.Setup(client
-            => client.PublishEventAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), cancellationTokenSource.Token));
-        services.AddScoped(_ => daprClient.Object);
-
-        Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent();
-
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
-        integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
-
-        List<IntegrationEventLog> list = new List<IntegrationEventLog>()
-        {
-            new(@event, Guid.Empty),
-            new(@event, Guid.Empty)
-        };
-        list.ForEach(item =>
-        {
-            item.DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
-        });
-        integrationEventLogService.Setup(service =>
-                service.RetrieveEventLogsFailedToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => list)
-            .Verifiable();
-        services.AddScoped(_ => integrationEventLogService.Object);
-
-        Mock<IUnitOfWork> uoW = new();
-        uoW.Setup(u => u.CommitAsync(cancellationTokenSource.Token)).Verifiable();
-        uoW.Setup(u => u.ServiceProvider).Returns(services.BuildServiceProvider()).Verifiable();
-        services.AddScoped(_ => uoW.Object);
-
-        Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object).Verifiable();
-        services.AddSingleton(_ => unitOfWorkManager.Object);
-
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
-
-        Mock<IOptions<DispatcherOptions>> options = new();
-        options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
-        {
-            AppId = "test"
-        };
-
-        var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
-            serviceProvider,
-            options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
-        await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
-
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
-        integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>()), Times.Exactly(2));
-    }
-
-    [TestMethod]
-    public async Task RetryByDataProcessorExecute2TestAsync()
-    {
-        var services = new ServiceCollection();
-        services.AddLogging();
-
-        CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(1000);
-
-        Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
-        integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
-        integrationEventLogService.Setup(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
-
-        List<IntegrationEventLog> list = new List<IntegrationEventLog>()
-        {
-            new(new RegisterUserIntegrationEvent(), Guid.Empty),
-            new(new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
-        };
-        for (int index = 0; index < list.Count; index++)
-        {
-            if (index == 0)
-                list[index].DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
-            else
-                list[index].DeserializeJsonContent(typeof(PaySuccessedIntegrationEvent));
-        }
-
-        Mock<DaprClient> daprClient = new();
-        daprClient.Setup(client
-                => client.PublishEventAsync(It.IsAny<string>(), nameof(RegisterUserIntegrationEvent), It.IsAny<object>(),
-                    cancellationTokenSource.Token))
-            .Throws(new Exception("custom exception"));
-        daprClient.Setup(client
-                => client.PublishEventAsync(It.IsAny<string>(), nameof(PaySuccessedIntegrationEvent), It.IsAny<object>(),
-                    cancellationTokenSource.Token))
-            .Throws(new UserFriendlyException("custom exception"));
-        services.AddScoped(_ => daprClient.Object);
-
-        integrationEventLogService.Setup(service =>
-                service.RetrieveEventLogsFailedToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => list)
-            .Verifiable();
-        services.AddScoped(_ => integrationEventLogService.Object);
-
-        Mock<IUnitOfWork> uoW = new();
-        uoW.Setup(u => u.CommitAsync(cancellationTokenSource.Token)).Verifiable();
-        uoW.Setup(u => u.ServiceProvider).Returns(services.BuildServiceProvider()).Verifiable();
-        services.AddScoped(_ => uoW.Object);
-
-        Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object).Verifiable();
-        services.AddSingleton(_ => unitOfWorkManager.Object);
-
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
-
-        Mock<IOptions<DispatcherOptions>> options = new();
-        options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
-        {
-            AppId = "test"
-        };
-
-        var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
-            serviceProvider,
-            options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
-        await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
-
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
-        integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>()), Times.Never);
-        integrationEventLogService.Verify(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>()), Times.Exactly(1));
-    }
-
-    [TestMethod]
-    public async Task RetryByDataProcessorExecute2AndNotUseLoggerTestAsync()
-    {
-        var services = new ServiceCollection();
-
-        CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(1000);
-
-        Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
-        integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
-        integrationEventLogService.Setup(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
-
-        List<IntegrationEventLog> list = new List<IntegrationEventLog>()
-        {
-            new(new RegisterUserIntegrationEvent(), Guid.Empty),
-            new(new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
-        };
-        for (int index = 0; index < list.Count; index++)
-        {
-            if (index == 0)
-                list[index].DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
-            else
-                list[index].DeserializeJsonContent(typeof(PaySuccessedIntegrationEvent));
-        }
-
-        Mock<DaprClient> daprClient = new();
-        daprClient.Setup(client
-                => client.PublishEventAsync(It.IsAny<string>(), nameof(RegisterUserIntegrationEvent), It.IsAny<object>(),
-                    cancellationTokenSource.Token))
-            .Throws(new Exception("custom exception"));
-        daprClient.Setup(client
-                => client.PublishEventAsync(It.IsAny<string>(), nameof(PaySuccessedIntegrationEvent), It.IsAny<object>(),
-                    cancellationTokenSource.Token))
-            .Throws(new UserFriendlyException("custom exception"));
-        services.AddScoped(_ => daprClient.Object);
-
-        integrationEventLogService.Setup(service =>
-                service.RetrieveEventLogsFailedToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(() => list)
-            .Verifiable();
-        services.AddScoped(_ => integrationEventLogService.Object);
-
-        Mock<IOptions<DispatcherOptions>> options = new();
-        options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
-        {
-            AppId = "test"
-        };
-
-        Mock<IUnitOfWork> uoW = new();
-        uoW.Setup(u => u.CommitAsync(cancellationTokenSource.Token)).Verifiable();
-        uoW.Setup(u => u.ServiceProvider).Returns(services.BuildServiceProvider()).Verifiable();
-        services.AddScoped(_ => uoW.Object);
-
-        Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object).Verifiable();
-        services.AddSingleton(_ => unitOfWorkManager.Object);
-
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
-
-        var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
-            serviceProvider,
-            options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
-        await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
-
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
-        integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>()), Times.Never);
-        integrationEventLogService.Verify(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>()), Times.Exactly(1));
-    }
-
-    [TestMethod]
-    public void RetryByLocalQueueProcessorDelayTestAsync()
-    {
-        ProcessorBase processor = new RetryByLocalQueueProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.LocalFailedRetryInterval);
+        _options = Microsoft.Extensions.Options.Options.Create(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
     }
 
     [TestMethod]
     public async Task DeletePublishedExpireEventProcessorExecuteTestAsync()
     {
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        integrationEventLogService.Setup(service => service.DeleteExpiresAsync(It.IsAny<DateTime>(), It.IsAny<int>(), default)).Verifiable();
+        integrationEventLogService.Setup(service => service.DeleteExpiresAsync(It.IsAny<DateTime>(), It.IsAny<int>(), default))
+            .Verifiable();
         _options.Value.Services.AddScoped(_ => integrationEventLogService.Object);
 
         Mock<IUnitOfWork> uoW = new();
         uoW.Setup(uow => uow.ServiceProvider).Returns(_options.Value.Services.BuildServiceProvider()).Verifiable();
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object).Verifiable();
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+            .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
         Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
@@ -296,22 +44,8 @@ public class ProcessorTest
         var processor = new DeletePublishedExpireEventProcessor(_options.Value.Services.BuildServiceProvider(), _options);
         await processor.ExecuteAsync(default);
 
-        integrationEventLogService.Verify(service => service.DeleteExpiresAsync(It.IsAny<DateTime>(), It.IsAny<int>(), default), Times.Once);
-    }
-
-    [TestMethod]
-    public void SetGetCurrentTime()
-    {
-        var services = new ServiceCollection();
-        DateTime dateNow = DateTime.Now;
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(opt =>
-        {
-            opt.GetCurrentTime = () => dateNow;
-        });
-
-        var dispatcherOption = services.BuildServiceProvider().GetRequiredService<IOptions<DispatcherOptions>>();
-        Assert.IsNotNull(dispatcherOption);
-        Assert.IsTrue((dispatcherOption!.Value.GetCurrentTime!.Invoke() - DateTime.Now).TotalMinutes < 1);
+        integrationEventLogService.Verify(service => service.DeleteExpiresAsync(It.IsAny<DateTime>(), It.IsAny<int>(), default),
+            Times.Once);
     }
 
     [TestMethod]

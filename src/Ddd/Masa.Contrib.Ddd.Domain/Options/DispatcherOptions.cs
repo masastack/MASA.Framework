@@ -23,7 +23,6 @@ public class DispatcherOptions : IDistributedDispatcherOptions
 
     internal List<Type> AllAggregateRootTypes { get; private set; }
 
-
     private DispatcherOptions(IServiceCollection services) => Services = services;
 
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
