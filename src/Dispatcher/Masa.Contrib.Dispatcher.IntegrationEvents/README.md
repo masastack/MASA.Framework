@@ -18,7 +18,7 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        options.UseDapr();//Use Dapr to provide pub/sub capabilities, you can also choose others, remember the supplementary package and namespace
+        options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
                .UseEventLog<CatalogDbContext>();
     });
@@ -64,7 +64,7 @@ await eventBus.PublishAsync(new DemoIntegrationEvent());//Send cross-process eve
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        options.UseDapr();//Use Dapr to provide pub/sub capabilities, you can also choose others, remember the supplementary package and namespace
+        options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
         // options.MaxRetryTimes = 50;//Maximum number of retries, default: 50
         // options.RetryBatchSize = 100;//Number of single retry events, used to get retry events from persistent data source, default 100
         // options.FailedRetryInterval = 60;//Persistent data source retry pause interval, default 60s
