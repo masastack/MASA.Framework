@@ -61,17 +61,24 @@ public class UserClaimRepository : IUserClaimRepository
         if (exist)
             throw new UserFriendlyException($"UserClaim with name {userClaim.Name} already exists");
 
-        return await _repository.AddAsync(userClaim);
+        var newUserClaim = await _repository.AddAsync(userClaim);
+        await _context.SaveChangesAsync();
+
+        return newUserClaim;
     }
 
     public async Task<UserClaim> UpdateAsync(UserClaim userClaim)
     {
-        return await _repository.UpdateAsync(userClaim);
+        var newUserClaim = await _repository.UpdateAsync(userClaim);
+        await _context.SaveChangesAsync();
+
+        return newUserClaim;
     }
 
     public async Task RemoveAsync(UserClaim userClaim)
     {
         await _repository.RemoveAsync(userClaim);
+        await _context.SaveChangesAsync();
     }
 
     public async Task AddStandardUserClaimsAsync()
@@ -85,5 +92,6 @@ public class UserClaimRepository : IUserClaimRepository
             userClaims.Add(new UserClaim(claim.Key, claim.Value));
         }
         await _repository.AddRangeAsync(userClaims);
+        await _context.SaveChangesAsync();
     }
 }

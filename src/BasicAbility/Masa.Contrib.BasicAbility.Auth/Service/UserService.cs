@@ -70,5 +70,17 @@ public class UserService : IUserService
         var requestUri = $"api/user/visitedList";
         return (await _callerProvider.GetAsync<object, List<UserVisitedModel>>(requestUri, new { userId = userId })) ?? new();
     }
+
+    public async Task UpdateUserPasswordAsync(UpdateUserPasswordModel user)
+    {
+        var requestUri = $"api/user/updateUserPassword";
+        await _callerProvider.PostAsync(requestUri, user);
+    }
+
+    public async Task UpdateUserBaseInfoAsync(UpdateUserBaseInfoModel user)
+    {
+        var requestUri = $"api/user/updateUserBaseInfo";
+        await _callerProvider.PostAsync(requestUri, user);
+    }
 }
 
