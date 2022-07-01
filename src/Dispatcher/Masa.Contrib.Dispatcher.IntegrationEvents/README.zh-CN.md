@@ -6,6 +6,7 @@
 
 ```C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //使用跨进程事件
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //例如使用dapr提供pub、sub能力，也可自行选择其他实现
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
 Install-Package Masa.Contrib.Data.UoW.EF //使用工作单元
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // 使用SqlServer
@@ -17,7 +18,7 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // 使用SqlServ
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        // options.UseXXX();//提供pub/sub能力
+        options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的，记得补充包和命名空间
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//使用工作单元，推荐使用
                .UseEventLog<CatalogDbContext>();
     });
@@ -63,7 +64,7 @@ await eventBus.PublishAsync(new DemoIntegrationEvent());//发送跨进程事件
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        options.UseXXX();//提供pub/sub能力
+        options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的，记得补充包和命名空间
         // options.MaxRetryTimes = 50;//最大重试次数, 默认：50
         // options.RetryBatchSize = 100;//单次重试事件数量, 用于从持久化数据源获取待重试事件, 默认100
         // options.FailedRetryInterval = 60;//持久化数据源重试停歇间隔, 默认60s

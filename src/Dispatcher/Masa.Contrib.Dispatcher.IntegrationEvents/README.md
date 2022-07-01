@@ -6,6 +6,7 @@ Example:
 
 ```C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //Use cross-process
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //For example, use dapr to provide pub and sub capabilities, or you can choose other implementations by yourself
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
 Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
@@ -17,7 +18,7 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        options.UseXXX();//Provide pub/sub capability
+        options.UseDapr();//Use Dapr to provide pub/sub capabilities, you can also choose others, remember the supplementary package and namespace
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
                .UseEventLog<CatalogDbContext>();
     });
@@ -63,7 +64,7 @@ await eventBus.PublishAsync(new DemoIntegrationEvent());//Send cross-process eve
 builder.Services
     .AddIntegrationEventBus<IntegrationEventLogService>(options=>
     {
-        options.UseXXX();//Provide pub/sub capability
+        options.UseDapr();//Use Dapr to provide pub/sub capabilities, you can also choose others, remember the supplementary package and namespace
         // options.MaxRetryTimes = 50;//Maximum number of retries, default: 50
         // options.RetryBatchSize = 100;//Number of single retry events, used to get retry events from persistent data source, default 100
         // options.FailedRetryInterval = 60;//Persistent data source retry pause interval, default 60s
