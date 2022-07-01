@@ -32,4 +32,10 @@ public class OidcDbContextOptions
         await userClaim.AddStandardUserClaimsAsync();
         await identityResourcerepository.AddStandardIdentityResourcesAsync();
     }
+
+    public async Task SyncCacheAsync()
+    {
+        var syncCache = ServiceProvider.GetRequiredService<SyncCache>();
+        await syncCache.ResetAsync();
+    }
 }
