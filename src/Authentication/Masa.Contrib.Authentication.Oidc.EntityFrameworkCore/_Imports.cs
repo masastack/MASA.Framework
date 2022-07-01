@@ -13,3 +13,4 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Linq.Expressions;
+global using Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.Options;
