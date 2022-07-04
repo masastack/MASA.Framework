@@ -17,7 +17,7 @@ public class SyncCache
         _apiResourceCache = apiResourceCache;
         _apiScopeCache = apiScopeCache;
         _identityResourceCache = identityResourceCache;
-        _context = context.Dbcontext;
+        _context = context;
     }
 
     internal async Task SyncApiResourceCacheAsync(int id)
