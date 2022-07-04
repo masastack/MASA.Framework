@@ -327,7 +327,7 @@ public class RepositoryTest : TestBase
             Description = "HuaWei"
         });
         Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.Changed);
-        await repository.SaveChangesAsync();
+        await repository.UnitOfWork.SaveChangesAsync();
         Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.UnChanged);
     }
 
@@ -342,9 +342,9 @@ public class RepositoryTest : TestBase
             Description = "HuaWei"
         });
         Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
-        await repository.SaveChangesAsync();
+        await repository.UnitOfWork.SaveChangesAsync();
         Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
-        await repository.CommitAsync();
+        await repository.UnitOfWork.CommitAsync();
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
     }
 
@@ -360,29 +360,13 @@ public class RepositoryTest : TestBase
             Description = "HuaWei"
         });
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
-        await repository.SaveChangesAsync();
+        await repository.UnitOfWork.SaveChangesAsync();
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
         {
-            await repository.CommitAsync();
+            await repository.UnitOfWork.CommitAsync();
         });
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
-    }
-
-    [TestMethod]
-    public void TestNotUseTransaction()
-    {
-        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
-        repository.UseTransaction = false;
-        Assert.ThrowsException<NotSupportedException>(() => repository.Transaction);
-    }
-
-    [TestMethod]
-    public async Task TestDbTransactionAsync()
-    {
-        var dbTransaction = (await _dbContext.Database.BeginTransactionAsync()).GetDbTransaction();
-        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
-        Assert.IsTrue(repository.Transaction.Equals(dbTransaction));
     }
 
     [TestMethod]
@@ -401,7 +385,7 @@ public class RepositoryTest : TestBase
             {
                 Description = "HuaWei"
             });
-            await repository.SaveChangesAsync();
+            await repository.UnitOfWork.SaveChangesAsync();
             Assert.IsTrue(await repository.GetCountAsync() == 1);
         }
     }

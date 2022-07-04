@@ -10,7 +10,6 @@ global using Masa.Contrib.Dispatcher.Events.Enums;
 global using Masa.Contrib.Dispatcher.Events.Internal;
 global using Masa.Contrib.Dispatcher.Events.Internal.Dispatch;
 global using Masa.Contrib.Dispatcher.Events.Internal.Expressions;
-global using Masa.Contrib.Dispatcher.Events.Internal.Middleware;
 global using Masa.Contrib.Dispatcher.Events.Options;
 global using Masa.Contrib.Dispatcher.Events.Strategies;
 global using Microsoft.Extensions.DependencyInjection;

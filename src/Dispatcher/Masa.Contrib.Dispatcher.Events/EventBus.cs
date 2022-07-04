@@ -35,7 +35,7 @@ public class EventBus : IEventBus
 
         if (_options.UnitOfWorkRelation[eventType])
         {
-            ITransaction transactionEvent = (ITransaction) @event;
+            ITransaction transactionEvent = (ITransaction)@event;
             var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
             if (unitOfWork != null)
             {
@@ -46,13 +46,13 @@ public class EventBus : IEventBus
                 }
                 else
                 {
-                    middlewares = middlewares.Where(middleware => middleware is not TransactionMiddleware<TEvent>);
+                    middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
                 }
             }
         }
 
-        EventHandlerDelegate publishEvent = async () => { await _dispatcher.PublishEventAsync(_serviceProvider, @event); };
-        await middlewares.Reverse().Aggregate(publishEvent, (next, middleware) => () => middleware.HandleAsync(@event, next))();
+        EventHandlerDelegate eventHandlerDelegate = async () => { await _dispatcher.PublishEventAsync(_serviceProvider, @event); };
+        await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
     public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes;

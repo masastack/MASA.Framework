@@ -35,10 +35,16 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public bool UseTransaction { get; set; } = true;
 
+    public bool CalledSaveChanges { get; private set; }
+
+    public bool DisableAutoSaveChanges { get; set; }
+
     public UnitOfWork(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        CalledSaveChanges = true;
+
         await Context.SaveChangesAsync(cancellationToken);
         EntityState = EntityState.UnChanged;
     }
@@ -50,10 +56,6 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
         await Context.Database.CommitTransactionAsync(cancellationToken);
         CommitState = CommitState.Commited;
-
-        var domainEventBus = ServiceProvider.GetService<IDomainEventBus>();
-        if (domainEventBus != null)
-            await domainEventBus.PublishQueueAsync();
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)

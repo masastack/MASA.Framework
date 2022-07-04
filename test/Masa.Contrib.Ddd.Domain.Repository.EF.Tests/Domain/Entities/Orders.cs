@@ -36,4 +36,3 @@ public class Orders : AuditAggregateRoot<int, Guid>
         };
     }
 }
-

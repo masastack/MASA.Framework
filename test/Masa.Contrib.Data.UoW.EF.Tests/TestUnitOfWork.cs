@@ -300,25 +300,5 @@ public class TestUnitOfWork : TestBase
         Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
     }
 
-    [TestMethod]
-    public async Task TestCommitReturnPublishQueueIsValid()
-    {
-        IServiceCollection services = new ServiceCollection();
-        Mock<IDomainEventBus> domainEventBus = new();
-        domainEventBus.Setup(eventBus => eventBus.PublishQueueAsync()).Verifiable();
-        services.AddScoped(serviceProvider => domainEventBus.Object);
-        Mock<IEventBusBuilder> eventBuilder = new();
-        eventBuilder.Setup(eb => eb.Services).Returns(services).Verifiable();
-        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite($"Data Source=test_{Guid.NewGuid()}"));
-
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-        var unitOfWork = new UnitOfWork<CustomDbContext>(serviceProvider);
-        var _ = unitOfWork.Transaction;
-        await unitOfWork.CommitAsync();
-        domainEventBus.Verify(eventBus => eventBus.PublishQueueAsync(), Times.Once());
-    }
-
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
 }

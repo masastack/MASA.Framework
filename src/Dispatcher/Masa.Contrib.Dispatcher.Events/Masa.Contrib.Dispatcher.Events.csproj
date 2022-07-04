@@ -19,4 +19,8 @@
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Dispatcher\Masa.BuildingBlocks.Dispatcher.IntegrationEvents\Masa.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions" />
+  </ItemGroup>
+
 </Project>

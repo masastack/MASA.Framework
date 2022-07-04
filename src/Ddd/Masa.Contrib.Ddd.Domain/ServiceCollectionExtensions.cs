@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
             services.TryAddScoped(domainServiceType);
         }
 
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IMiddleware<>), typeof(DomainEventMiddleware<>), ServiceLifetime.Transient));
         services.TryAddScoped<IDomainEventBus, DomainEventBus>();
         services.TryAddScoped<IDomainService, DomainService>();
         return services;
