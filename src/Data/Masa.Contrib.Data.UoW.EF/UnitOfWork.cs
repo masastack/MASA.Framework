@@ -48,8 +48,6 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        await SaveChangesAsync(cancellationToken);
-
         var domainEventBus = GetDomainEventBus();
         while (domainEventBus != null && await domainEventBus.AnyQueueAsync())
         {

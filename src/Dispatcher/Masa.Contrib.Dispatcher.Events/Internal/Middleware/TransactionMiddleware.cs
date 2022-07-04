@@ -21,31 +21,20 @@ internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
         {
             await next();
 
-            if (_unitOfWork is { EntityState: EntityState.Changed })
+            if (_unitOfWork != null)
+            {
                 await _unitOfWork.SaveChangesAsync();
-
-            if (IsUseTransaction(@event, out ITransaction? transaction))
-                await transaction!.UnitOfWork!.CommitAsync();
+                await _unitOfWork.CommitAsync();
+            }
         }
         catch (Exception)
         {
-            if (IsUseTransaction(@event, out ITransaction? transaction) && !transaction!.UnitOfWork!.DisableRollbackOnFailure)
+            if (_unitOfWork is { DisableRollbackOnFailure: false })
             {
-                await transaction.UnitOfWork!.RollbackAsync();
+                await _unitOfWork!.RollbackAsync();
             }
+
             throw;
         }
-    }
-
-    private bool IsUseTransaction(TEvent @event, out ITransaction? transaction)
-    {
-        if (@event is ITransaction { UnitOfWork: { } } transactionEvent)
-        {
-            transaction = transactionEvent;
-            return true;
-        }
-
-        transaction = null;
-        return false;
     }
 }
