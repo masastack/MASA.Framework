@@ -18,7 +18,8 @@ public class LogServiceTests
             Start = time.AddMinutes(-15),
             End = time
         };
-        var data = new string[] {
+        var data = new string[]
+        {
             "@timestamp",
             "container.instance.id",
             "container.instance.name",
@@ -26,9 +27,8 @@ public class LogServiceTests
         };
         callerProvider.Setup(provider => provider.GetAsync<IEnumerable<string>>(LogService.FIELD_URI, default)).ReturnsAsync(data).Verifiable();
         var client = new TscClient(callerProvider.Object);
-
         var result = await client.LogService.GetFieldsAsync();
-        Assert.IsNull(result);
+        Assert.IsNotNull(result);
     }
 
     [TestMethod]
@@ -41,28 +41,30 @@ public class LogServiceTests
         {
             Start = time.AddMinutes(-15),
             End = time,
-            FieldMaps = new FieldAggregationRequest[] {
+            FieldMaps = new FieldAggregationRequest[]
+            {
                   new FieldAggregationRequest{
                        Name="container.instance.id",
-                        AggType= LogAggTypes.Count,
-                         Alias="count1"
+                       AggType= LogAggTypes.Count,
+                       Alias="count1"
                   },
                   new FieldAggregationRequest{
                        Name="container.instance.name",
-                        AggType= LogAggTypes.Count,
-                         Alias="count2"
+                       AggType= LogAggTypes.Count,
+                       Alias="count2"
                   }
               }
         };
-        var data = new Dictionary<string, string> {
+        var data = new Dictionary<string, string>
+        {
             {"count1","0" },
             { "count2","0"}
         };
-        callerProvider.Setup(provider => provider.GetAsync<IEnumerable<KeyValuePair<string, string>>>(LogService.FIELD_URI, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<IEnumerable<KeyValuePair<string, string>>>(LogService.FIELD_URI, query, default)).ReturnsAsync(data).Verifiable();
         var client = new TscClient(callerProvider.Object);
 
         var result = await client.LogService.GetAggregationAsync(query);
-        Assert.IsNull(result);
+        Assert.IsNotNull(result);
     }
 
     [TestMethod]
@@ -86,10 +88,10 @@ public class LogServiceTests
         };
         options.Converters.Add(new JsonStringEnumConverter());
         var data = JsonSerializer.Deserialize<object>(str, options);
-        callerProvider.Setup(provider => provider.GetAsync<object>(LogService.LATEST_URI, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<object>(LogService.LATEST_URI, query, default)).ReturnsAsync(data).Verifiable();
         var client = new TscClient(callerProvider.Object);
 
         var result = await client.LogService.GetLatestAsync(query);
-        Assert.IsNull(result);
+        Assert.IsNotNull(result);
     }
 }

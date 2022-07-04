@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.BasicAbility.Tsc.Tests")]
 namespace Masa.Utils.Caller.Core;
 
 internal static class CallerProviderExtensions
@@ -12,6 +13,6 @@ internal static class CallerProviderExtensions
         {
             request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         }
-        return (await caller.SendAsync<TResult>(request)) ?? default!;
+        return (await caller.SendAsync<TResult>(request,default)) ?? default!;
     }
 }

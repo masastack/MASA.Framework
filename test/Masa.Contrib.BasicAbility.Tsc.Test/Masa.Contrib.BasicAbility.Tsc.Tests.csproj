@@ -7,11 +7,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
-  <ItemGroup>    
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
     <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)" />    
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

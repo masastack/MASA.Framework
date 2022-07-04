@@ -15,7 +15,7 @@ internal class MetricService : IMetricService
         _caller = caller;
     }
 
-    public async Task<IEnumerable<string>> GetMetricNamesAsync(IEnumerable<string>? match)
+    public async Task<IEnumerable<string>> GetMetricNamesAsync(IEnumerable<string>? match = default)
     {
         return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match })) ?? default!;
     }
