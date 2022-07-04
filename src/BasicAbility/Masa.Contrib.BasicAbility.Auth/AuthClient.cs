@@ -9,7 +9,7 @@ public class AuthClient : IAuthClient
     {
         UserService = new UserService(callerProvider, userContext);
         SubjectService = new SubjectService(callerProvider);
-        TeamService = new TeamService(callerProvider);
+        TeamService = new TeamService(callerProvider, userContext);
         ProjectService = new ProjectService(callerProvider, userContext);
         PermissionService = new PermissionService(callerProvider, userContext);
     }

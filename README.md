@@ -56,6 +56,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 * Storage: cloud storage
   * [Aliyun Storage](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.md)
 * Operational capacity
+  * [Auth](./src/BasicAbility/Masa.Contrib.BasicAbility.Auth/README.md): Authentication and Authorization
   * [Dcc](./src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.md): Distributed Configuration Center
   * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.md): Project Management
   * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.md): Distributed Scheduler

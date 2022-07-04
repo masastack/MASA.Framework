@@ -31,9 +31,9 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         _uniquelyIdentifies ??= Guid.NewGuid().ToString();
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
 
-        _timestampType = distributedIdGeneratorOptions.TimestampType;
+        _timestampType = distributedIdGeneratorOptions.IdGeneratorOptions.TimestampType;
         _idleTimeOut = distributedIdGeneratorOptions.IdleTimeOut;
-        _maxWorkerId = distributedIdGeneratorOptions.MaxWorkerId;
+        _maxWorkerId = distributedIdGeneratorOptions.IdGeneratorOptions.MaxWorkerId;
         _workerIdMinInterval = distributedIdGeneratorOptions.GetWorkerIdMinInterval;
         _currentWorkerKey = "snowflake.current.workerid";
         _inUseWorkerKey = "snowflake.inuse.workerid";
