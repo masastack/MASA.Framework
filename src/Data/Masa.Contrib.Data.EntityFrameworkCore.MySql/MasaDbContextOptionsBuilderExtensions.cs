@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.MySql;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseMySQL(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseMySQL(
+        this MasaDbContextBuilder builder,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseMySQL(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseMySQL(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
         => builder.UseMySQLCore(connectionString, false, mySqlOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestMySQL(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestMySQL(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
         => builder.UseMySQLCore(connectionString, true, mySqlOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseMySQLCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseMySQLCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction)
@@ -43,20 +43,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseMySQLCore(connectionString, isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseMySQL(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseMySQL(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
         => builder.UseMySQLCore(connection, false, mySqlOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestMySQL(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestMySQL(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
         => builder.UseMySQLCore(connection, true, mySqlOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseMySQLCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseMySQLCore(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         bool isTest,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
@@ -65,8 +65,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseMySQLCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseMySQLCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseMySQLCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

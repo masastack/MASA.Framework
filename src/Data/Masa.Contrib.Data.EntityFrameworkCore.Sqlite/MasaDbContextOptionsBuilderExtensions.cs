@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseSqlite(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlite(
+        this MasaDbContextBuilder builder,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseSqlite(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlite(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
         => builder.UseSqliteCore(connectionString, false, sqliteOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestSqlite(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestSqlite(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
         => builder.UseSqliteCore(connectionString, true, sqliteOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqliteCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction)
@@ -43,20 +43,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseSqliteCore(connectionString, isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseSqlite(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlite(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
         => builder.UseSqliteCore(connection, false, sqliteOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestSqlite(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestSqlite(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
         => builder.UseSqliteCore(connection, true, sqliteOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqliteCore(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         bool isTest,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
@@ -65,8 +65,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseSqliteCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqliteCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

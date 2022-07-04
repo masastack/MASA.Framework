@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.SqlServer;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseSqlServer(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlServer(
+        this MasaDbContextBuilder builder,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseSqlServer(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlServer(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
         => builder.UseSqlServerCore(connectionString, false, sqlServerOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestSqlServer(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestSqlServer(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
         => builder.UseSqlServerCore(connectionString, true, sqlServerOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseSqlServerCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqlServerCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
@@ -43,20 +43,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseSqlServerCore(connectionString, isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseSqlServer(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseSqlServer(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
         => builder.UseSqlServerCore(connection, false, sqlServerOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestSqlServer(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestSqlServer(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
         => builder.UseSqlServerCore(connection, true, sqlServerOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseSqlServerCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqlServerCore(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         bool isTest,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
@@ -65,8 +65,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseSqlServerCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseSqlServerCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseSqlServerCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

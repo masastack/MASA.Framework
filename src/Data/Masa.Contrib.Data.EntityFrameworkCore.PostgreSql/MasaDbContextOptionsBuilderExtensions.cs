@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.PostgreSql;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseNpgsql(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseNpgsql(
+        this MasaDbContextBuilder builder,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseNpgsql(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseNpgsql(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
         => builder.UseNpgsqlCore(connectionString, false, npgsqlOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestNpgsql(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestNpgsql(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
         => builder.UseNpgsqlCore(connectionString, true, npgsqlOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseNpgsqlCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseNpgsqlCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction)
@@ -43,20 +43,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseNpgsqlCore(connectionString, isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseNpgsql(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseNpgsql(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
         => builder.UseNpgsqlCore(connection, false, npgsqlOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestNpgsql(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestNpgsql(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
         => builder.UseNpgsqlCore(connection, true, npgsqlOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseNpgsqlCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseNpgsqlCore(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         bool isTest,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
@@ -65,8 +65,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseNpgsqlCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseNpgsqlCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseNpgsqlCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

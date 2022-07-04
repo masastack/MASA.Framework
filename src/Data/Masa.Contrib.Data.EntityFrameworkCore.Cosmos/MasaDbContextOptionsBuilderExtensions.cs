@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.Cosmos;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseCosmos(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseCosmos(
+        this MasaDbContextBuilder builder,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -34,24 +34,24 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseCosmos(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseCosmos(
+        this MasaDbContextBuilder builder,
         string accountEndpoint,
         string accountKey,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
         => builder.UseCosmosCore(accountEndpoint, accountKey, databaseName, false, cosmosOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestCosmos(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestCosmos(
+        this MasaDbContextBuilder builder,
         string accountEndpoint,
         string accountKey,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
         => builder.UseCosmosCore(accountEndpoint, accountKey, databaseName, true, cosmosOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseCosmosCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseCosmosCore(
+        this MasaDbContextBuilder builder,
         string accountEndpoint,
         string accountKey,
         string databaseName,
@@ -63,22 +63,22 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};", isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseCosmos(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseCosmos(
+        this MasaDbContextBuilder builder,
         string connectionString,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
         => builder.UseCosmosCore(connectionString, databaseName, false, cosmosOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestCosmos(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestCosmos(
+        this MasaDbContextBuilder builder,
         string connectionString,
         string databaseName,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
         => builder.UseCosmosCore(connectionString, databaseName, true, cosmosOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseCosmosCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseCosmosCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         string databaseName,
         bool isTest,
@@ -89,8 +89,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseCosmosCore($"{connectionString};Database={databaseName};", isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseCosmosCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseCosmosCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.Oracle;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseOracle(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseOracle(
+        this MasaDbContextBuilder builder,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseOracle(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseOracle(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
         => builder.UseOracleCore(connectionString, false, oracleOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestOracle(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestOracle(
+        this MasaDbContextBuilder builder,
         string connectionString,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
         => builder.UseOracleCore(connectionString, true, oracleOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseOracleCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseOracleCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction)
@@ -43,20 +43,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseOracleCore(connectionString, isTest);
     }
 
-    public static MasaDbContextOptionsBuilder UseOracle(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseOracle(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
         => builder.UseOracleCore(connection, false, oracleOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseTestOracle(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseTestOracle(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
         => builder.UseOracleCore(connection, true, oracleOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseOracleCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseOracleCore(
+        this MasaDbContextBuilder builder,
         DbConnection connection,
         bool isTest = false,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
@@ -65,8 +65,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseOracleCore(connection.ConnectionString, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseOracleCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseOracleCore(
+        this MasaDbContextBuilder builder,
         string connectionString,
         bool isTest = false)
     {

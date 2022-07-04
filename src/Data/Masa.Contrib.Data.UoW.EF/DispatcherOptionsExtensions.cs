@@ -7,7 +7,7 @@ public static class DispatcherOptionsExtensions
 {
     public static IEventBusBuilder UseUoW<TDbContext>(
         this IEventBusBuilder eventBusBuilder,
-        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -15,7 +15,7 @@ public static class DispatcherOptionsExtensions
 
     public static IEventBusBuilder UseUoW<TDbContext, TUserId>(
         this IEventBusBuilder eventBusBuilder,
-        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -28,7 +28,7 @@ public static class DispatcherOptionsExtensions
 
     public static IDispatcherOptions UseUoW<TDbContext>(
         this IDispatcherOptions options,
-        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -36,7 +36,7 @@ public static class DispatcherOptionsExtensions
 
     public static IDispatcherOptions UseUoW<TDbContext, TUserId>(
         this IDispatcherOptions options,
-        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -49,7 +49,7 @@ public static class DispatcherOptionsExtensions
     private static IServiceCollection UseUoW<TDbContext, TUserId>(
         this IServiceCollection services,
         string paramName,
-        Action<MasaDbContextOptionsBuilder>? optionsBuilder = null,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext

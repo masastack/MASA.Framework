@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.InMemory;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
-    public static MasaDbContextOptionsBuilder UseInMemoryDatabase(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseInMemoryDatabase(
+        this MasaDbContextBuilder builder,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
     {
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
@@ -20,20 +20,20 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder;
     }
 
-    public static MasaDbContextOptionsBuilder UseInMemoryDatabase(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseInMemoryDatabase(
+        this MasaDbContextBuilder builder,
         string databaseName,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
         => builder.UseInMemoryDatabaseCore(databaseName, false, inMemoryOptionsAction);
 
-    public static MasaDbContextOptionsBuilder UseInMemoryTestDatabase(
-        this MasaDbContextOptionsBuilder builder,
+    public static MasaDbContextBuilder UseInMemoryTestDatabase(
+        this MasaDbContextBuilder builder,
         string databaseName,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
         => builder.UseInMemoryDatabaseCore(databaseName, true, inMemoryOptionsAction);
 
-    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseInMemoryDatabaseCore(
+        this MasaDbContextBuilder builder,
         string databaseName,
         bool isTest,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction)
@@ -43,8 +43,8 @@ public static class MasaDbContextOptionsBuilderExtensions
         return builder.UseInMemoryDatabaseCore(databaseName, isTest);
     }
 
-    private static MasaDbContextOptionsBuilder UseInMemoryDatabaseCore(
-        this MasaDbContextOptionsBuilder builder,
+    private static MasaDbContextBuilder UseInMemoryDatabaseCore(
+        this MasaDbContextBuilder builder,
         string databaseName,
         bool isTest = false)
     {
