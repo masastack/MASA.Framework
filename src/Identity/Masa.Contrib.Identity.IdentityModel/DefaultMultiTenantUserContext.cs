@@ -1,23 +1,23 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Microsoft.Extensions.Logging;
 
 namespace Masa.Contrib.Identity.IdentityModel;
 
-public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContext
+internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantUserContext
 {
     public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
-
-    private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
 
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
 
     public DefaultMultiTenantUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
-        IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
-        : base(typeConvertProvider)
+        IOptionsMonitor<IdentityClaimOptions> optionsMonitor,
+        ILoggerFactory? loggerFactory = null)
+        : base(typeConvertProvider, currentPrincipalAccessor, optionsMonitor, loggerFactory)
     {
-        _currentPrincipalAccessor = currentPrincipalAccessor;
         _optionsMonitor = optionsMonitor;
     }
 
@@ -32,19 +32,18 @@ public class DefaultMultiTenantUserContext : UserContext, IMultiTenantUserContex
 
     protected override MultiTenantIdentityUser? GetUser()
     {
-        var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
-        if (claimsPrincipal == null)
+        var identityUser = GetUserBasicInfo();
+        if (identityUser == null)
+        {
             return null;
-
-        var userId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserId);
-        if (userId == null)
-            return null;
+        }
 
         return new MultiTenantIdentityUser
         {
-            Id = userId,
-            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
-            TenantId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
+            Id = identityUser.Id,
+            UserName = identityUser.UserName,
+            Roles = identityUser.Roles,
+            TenantId = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
         };
     }
 }
