@@ -63,6 +63,6 @@ public class DomainEventTest
 
         var user = await dbContext.Set<User>().Where(u => u.Id == @event.Id).AsNoTracking().FirstOrDefaultAsync();
         Assert.IsNotNull(user);
-        Assert.IsTrue(user.Name == "Tom");
+        Assert.IsTrue(user.Name == "Tom2");
     }
 }

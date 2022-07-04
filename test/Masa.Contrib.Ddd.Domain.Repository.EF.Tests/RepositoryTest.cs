@@ -362,11 +362,9 @@ public class RepositoryTest : TestBase
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
         await repository.UnitOfWork.SaveChangesAsync();
         Assert.IsTrue(repository.CommitState == CommitState.Commited);
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
-        {
-            await repository.UnitOfWork.CommitAsync();
-        });
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+
+        var order = await repository.GetCountAsync(o => o.Id == 9999);
+        Assert.IsNotNull(order);
     }
 
     [TestMethod]

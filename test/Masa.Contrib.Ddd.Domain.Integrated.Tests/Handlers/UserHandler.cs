@@ -26,7 +26,18 @@ public class UserHandler
         var user = await _repository.FindAsync(@event.Id);
         if (user != null)
         {
-            user.Name = "Tom";
+            user.UpdateName("Tom");
+            await _repository.UpdateAsync(user);
+        }
+    }
+
+    [EventHandler]
+    public async Task UpdateUser(UpdateUserDomainEvent @event)
+    {
+        var user = await _repository.FindAsync(@event.Id);
+        if (user != null && user.Name == "Tom")
+        {
+            user.Name = "Tom2";
             await _repository.UpdateAsync(user);
         }
     }

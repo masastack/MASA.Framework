@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events;
+namespace Masa.Contrib.Dispatcher.Events.Internal.Middleware;
 
 internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
     where TEvent : IEvent
@@ -21,8 +21,7 @@ internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
         {
             await next();
 
-            // todo:　later changed to state machine
-            if (_unitOfWork is { EntityState: EntityState.Changed } || _unitOfWork is { DisableAutoSaveChanges: false, CalledSaveChanges: false })
+            if (_unitOfWork is { EntityState: EntityState.Changed })
                 await _unitOfWork.SaveChangesAsync();
 
             if (IsUseTransaction(@event, out ITransaction? transaction))
@@ -40,10 +39,7 @@ internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
 
     private bool IsUseTransaction(TEvent @event, out ITransaction? transaction)
     {
-        if (@event is ITransaction
-            {
-                UnitOfWork: { UseTransaction: true, TransactionHasBegun: true, CommitState: CommitState.UnCommited }
-            } transactionEvent)
+        if (@event is ITransaction { UnitOfWork: { } } transactionEvent)
         {
             transaction = transactionEvent;
             return true;

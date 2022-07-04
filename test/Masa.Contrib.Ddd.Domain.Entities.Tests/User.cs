@@ -24,4 +24,14 @@ public class User : AggregateRoot<Guid>
             Name = name
         });
     }
+
+    public void UpdateName(string name)
+    {
+        this.Name = name;
+        this.AddDomainEvent(new UpdateUserDomainEvent()
+        {
+            Id = Id,
+            Name = name
+        });
+    }
 }
