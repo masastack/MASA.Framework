@@ -1,38 +1,59 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Masa.Contrib.Identity.IdentityModel;
 
-public sealed class DefaultUserContext : UserContext
+internal class DefaultUserContext : UserContext
 {
-    private readonly ICurrentPrincipalAccessor _currentPrincipalAccessor;
-
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
+    private readonly ILogger<DefaultUserContext>? _logger;
+
+    protected ClaimsPrincipal? ClaimsPrincipal { get; set; }
 
     public DefaultUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
-        IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
+        IOptionsMonitor<IdentityClaimOptions> optionsMonitor, ILoggerFactory? loggerFactory = null)
         : base(typeConvertProvider)
     {
-        _currentPrincipalAccessor = currentPrincipalAccessor;
         _optionsMonitor = optionsMonitor;
+        ClaimsPrincipal = currentPrincipalAccessor.GetCurrentPrincipal();
+        _logger = loggerFactory?.CreateLogger<DefaultUserContext>();
     }
 
-    protected override IsolatedIdentityUser? GetUser()
+    protected override IdentityUser? GetUser()
     {
-        var claimsPrincipal = _currentPrincipalAccessor.GetCurrentPrincipal();
-        if (claimsPrincipal == null)
-            return null;
+        return GetUserBasicInfo();
+    }
 
-        var userId = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserId);
+    protected override IdentityUser? GetUserBasicInfo()
+    {
+
+        var userId = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.UserId);
         if (userId == null)
             return null;
 
-        return new IsolatedIdentityUser
+        var roleStr = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.Role);
+        var roles = new List<IdentityRole<string>>();
+        if (!string.IsNullOrWhiteSpace(roleStr))
+        {
+            try
+            {
+                roles = JsonSerializer.Deserialize<List<IdentityRole<string>>>(roleStr) ?? roles;
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError("role data deserialization failed", e);
+            }
+        }
+        return new IdentityUser
         {
             Id = userId,
-            UserName = claimsPrincipal.FindClaimValue(_optionsMonitor.CurrentValue.UserName)
+            UserName = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
+            Roles = roles
         };
     }
 }
