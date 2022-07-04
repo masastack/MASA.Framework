@@ -5,10 +5,10 @@ namespace Masa.Contrib.BasicAbility.Tsc.Service;
 
 public class LogService : ILogService
 {
-    private const string AGGREGATION_URI = "/api/log/aggregation";
-    private const string LATEST_URI = "/api/log/latest";
-    private const string FIELD_URI = "/api/log/field";
     private readonly ICallerProvider _caller;
+    internal const string AGGREGATION_URI = "/api/log/aggregation";
+    internal const string LATEST_URI = "/api/log/latest";
+    internal const string FIELD_URI = "/api/log/field";
 
     public LogService(ICallerProvider caller)
     {
@@ -25,7 +25,7 @@ public class LogService : ILogService
         return (await _caller.GetAsync<IEnumerable<string>>(FIELD_URI)) ?? default!;
     }
 
-    public async Task<object> GetLatestAsync(LogAggregationRequest query)
+    public async Task<object> GetLatestAsync(LogLatestRequest query)
     {
         return (await _caller.GetAsync<object>(LATEST_URI, query)) ?? default!;
     }
