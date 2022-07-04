@@ -24,7 +24,11 @@ public class DistributedBenchmarks
                 new("127.0.0.1", 6379)
             };
         });
-        services.AddDistributedSnowflake(options => options.EnableMachineClock = true);
+        services.AddSnowflake(options =>
+        {
+            options.UseRedis();
+            options.EnableMachineClock = true;
+        });
         var serviceProvider = services.BuildServiceProvider();
         _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
         _idGenerator.Create();

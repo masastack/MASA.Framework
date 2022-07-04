@@ -15,7 +15,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis是基于`Masa.Contrib.
 2. 使用`Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`
 
     ``` C#
-    builder.Services.AddDistributedSnowflake();
+    builder.Services.AddSnowflake(option => option.UseRedis());
     ```
 
     > 由于依赖Redis，需使用[Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)

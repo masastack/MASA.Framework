@@ -106,6 +106,22 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestGetCurrentUserAsync()
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var data = new UserModel();
+        var requestUri = $"api/user/findById";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetCurrentUserAsync();
+        callerProvider.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     [DataRow("https://www.baidu.com/")]
     public async Task TestVisitedAsync(string url)
     {
@@ -121,7 +137,7 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestGetUserVisitedListAsync()
+    public async Task TestGetVisitedListAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new List<UserVisitedModel>();
@@ -131,9 +147,45 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = new UserService(callerProvider.Object, userContext.Object);
-        var result = await userService.GetUserVisitedListAsync();
+        var result = await userService.GetVisitedListAsync();
         callerProvider.Verify(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    public async Task TestUpdatePasswordAsync()
+    {
+        var user = new UpdateUserPasswordModel
+        {
+            Id = Guid.NewGuid(),
+            NewPassword = "masa123",
+            OldPassword = "masa123"
+        };
+        var requestUri = $"api/user/updatePassword";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.UpdatePasswordAsync(user);
+        callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
+    }
+
+    public async Task TestUpdateBasicInfoAsync()
+    {
+        var user = new UpdateUserBasicInfoModel
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = "test",
+            Gender = GenderTypes.Male,
+            PhoneNumber = "15168440403"
+        };
+        var requestUri = $"api/user/updateBasicInfo";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.UpdateBasicInfoAsync(user);
+        callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
 }
 

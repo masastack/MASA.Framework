@@ -12,9 +12,9 @@ public class EnvironmentService : IEnvironmentService
         _callerProvider = callerProvider;
     }
 
-    public async Task<EnvironmentDetailModel> GetAsync(int Id)
+    public async Task<EnvironmentDetailModel> GetAsync(int id)
     {
-        var requestUri = $"api/v1/env/{Id}";
+        var requestUri = $"api/v1/env/{id}";
         var result = await _callerProvider.GetAsync<EnvironmentDetailModel>(requestUri);
 
         return result ?? new();

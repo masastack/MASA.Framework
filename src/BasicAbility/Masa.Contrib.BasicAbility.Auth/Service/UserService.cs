@@ -50,6 +50,13 @@ public class UserService : IUserService
         return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account = account }) ?? new();
     }
 
+    public async Task<UserModel> GetCurrentUserAsync()
+    {
+        var id = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/user/findById";
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { id }) ?? new();
+    }
+
     public async Task VisitedAsync(string url)
     {
         var userId = _userContext.GetUserId<Guid>();
@@ -57,11 +64,23 @@ public class UserService : IUserService
         await _callerProvider.PostAsync<object>(requestUri, new { UserId = userId, Url = url }, true);
     }
 
-    public async Task<List<UserVisitedModel>> GetUserVisitedListAsync()
+    public async Task<List<UserVisitedModel>> GetVisitedListAsync()
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/visitedList";
         return (await _callerProvider.GetAsync<object, List<UserVisitedModel>>(requestUri, new { userId = userId })) ?? new();
+    }
+
+    public async Task UpdatePasswordAsync(UpdateUserPasswordModel user)
+    {
+        var requestUri = $"api/user/updatePassword";
+        await _callerProvider.PutAsync(requestUri, user);
+    }
+
+    public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
+    {
+        var requestUri = $"api/user/updateBasicInfo";
+        await _callerProvider.PutAsync(requestUri, user);
     }
 }
 

@@ -7,10 +7,12 @@ public class TeamService : ITeamService
 {
     readonly ICallerProvider _callerProvider;
     readonly string _party = "api/team/";
+    readonly IUserContext _userContext;
 
-    public TeamService(ICallerProvider callerProvider)
+    public TeamService(ICallerProvider callerProvider, IUserContext userContext)
     {
         _callerProvider = callerProvider;
+        _userContext = userContext;
     }
 
     public async Task<TeamDetailModel?> GetDetailAsync(Guid id)
@@ -26,6 +28,19 @@ public class TeamService : ITeamService
         {
             requestUri = $"{requestUri}?userId={userId}";
         }
+        return await _callerProvider.GetAsync<List<TeamModel>>(requestUri) ?? new();
+    }
+
+    public async Task<List<TeamModel>> GetAllAsync()
+    {
+        var requestUri = $"{_party}list";
+        return await _callerProvider.GetAsync<List<TeamModel>>(requestUri) ?? new();
+    }
+
+    public async Task<List<TeamModel>> GetUserTeamsAsync()
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"{_party}list?userId={userId}";
         return await _callerProvider.GetAsync<List<TeamModel>>(requestUri) ?? new();
     }
 }

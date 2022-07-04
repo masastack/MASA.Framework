@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="$(MasaUtilsPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Scheduler\Masa.BuildingBlocks.BasicAbility.Scheduler.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\Identity\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj" />
+  </ItemGroup>
+
+</Project>
