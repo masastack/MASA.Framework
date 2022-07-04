@@ -11,7 +11,7 @@ public class MachineClockIdGenerator : BaseIdGenerator, ISnowflakeGenerator
         LastTimestamp = GetCurrentTimestamp();
     }
 
-    public override long Create()
+    public override long NewId()
     {
         lock (Lock)
         {

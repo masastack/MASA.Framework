@@ -18,12 +18,12 @@ public class MachineClockBenchmarks
         services.AddSnowflake(options => options.EnableMachineClock = true);
         var serviceProvider = services.BuildServiceProvider();
         _idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
-        _idGenerator.Create();
+        _idGenerator.NewId();
     }
 
     [Benchmark]
     public void MachineClockByMillisecond()
     {
-        _idGenerator.Create();
+        _idGenerator.NewId();
     }
 }

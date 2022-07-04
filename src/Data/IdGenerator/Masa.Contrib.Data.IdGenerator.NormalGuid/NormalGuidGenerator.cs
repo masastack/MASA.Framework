@@ -5,7 +5,7 @@ namespace Masa.Contrib.Data.IdGenerator.NormalGuid;
 
 public class NormalGuidGenerator : IGuidGenerator
 {
-    public Guid Create() => Guid.NewGuid();
+    public Guid NewId() => Guid.NewGuid();
 }
 
 

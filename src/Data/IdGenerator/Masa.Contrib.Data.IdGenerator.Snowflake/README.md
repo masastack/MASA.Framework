@@ -24,7 +24,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake is an id constructor based on snowflake 
 
     ````
     ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
-    generator.Create();//Create a unique id
+    generator.NewId();//Create a unique id
     ````
 
 ### Parameters and FAQs:

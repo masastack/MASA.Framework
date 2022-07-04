@@ -22,5 +22,5 @@ Masa.Contrib.Data.IdGenerator.SequentialGuid is an ordered Guid constructor that
 
      ````
      ISequentialGuidGenerator generator;// Obtained through DI, or obtained through IdGeneratorFactory.SequentialGuidGenerator
-     generator.Create();//Create a unique id
+     generator.NewId();//Create a unique id
      ````

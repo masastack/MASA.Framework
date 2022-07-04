@@ -22,5 +22,5 @@ Masa.Contrib.Data.IdGenerator.SimpleGuid is a simple guid constructor that provi
 
      ````
      IGuidGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.GuidGenerator
-     generator.Create();//Create a unique id
+     generator.NewId();//Create a unique id
      ````
