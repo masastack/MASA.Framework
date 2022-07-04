@@ -39,21 +39,28 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        if (EntityState == EntityState.UnChanged)
+            return;
+
         await Context.SaveChangesAsync(cancellationToken);
         EntityState = EntityState.UnChanged;
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        if (!UseTransaction || !TransactionHasBegun)
-            throw new NotSupportedException("Transaction not opened");
-
-        await Context.Database.CommitTransactionAsync(cancellationToken);
-        CommitState = CommitState.Commited;
-
-        var domainEventBus = ServiceProvider.GetService<IDomainEventBus>();
-        if (domainEventBus != null)
+        var domainEventBus = GetDomainEventBus();
+        while (domainEventBus != null && await domainEventBus.AnyQueueAsync())
+        {
             await domainEventBus.PublishQueueAsync();
+
+            await SaveChangesAsync(cancellationToken);
+        }
+
+        if (UseTransaction && TransactionHasBegun && CommitState == CommitState.UnCommited)
+        {
+            await Context.Database.CommitTransactionAsync(cancellationToken);
+            CommitState = CommitState.Commited;
+        }
     }
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
@@ -64,7 +71,20 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
+    public Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class
+    {
+        var domainEventBus = GetDomainEventBus();
+        if (domainEventBus == null || @event is not IDomainEvent domainEvent)
+            return Task.CompletedTask;
+
+        domainEventBus.Enqueue(domainEvent);
+        return Task.CompletedTask;
+    }
+
     public async ValueTask DisposeAsync() => await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
 
     public void Dispose() => _context?.Dispose();
+
+    private IDomainEventBus? GetDomainEventBus()
+        => ServiceProvider.GetService<IDomainEventBus>();
 }

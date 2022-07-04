@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation.Middleware;
 
-public class IsolationMiddleware<TEvent> : IMiddleware<TEvent> where TEvent : IEvent
+public class IsolationMiddleware<TEvent> : Middleware<TEvent> where TEvent : IEvent
 {
     private readonly IEnumerable<IIsolationMiddleware> _middlewares;
 
@@ -12,7 +12,7 @@ public class IsolationMiddleware<TEvent> : IMiddleware<TEvent> where TEvent : IE
         _middlewares = middlewares;
     }
 
-    public async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
+    public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
     {
         foreach (var middleware in _middlewares)
         {

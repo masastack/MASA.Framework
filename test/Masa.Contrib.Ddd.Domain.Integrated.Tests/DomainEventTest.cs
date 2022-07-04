@@ -1,15 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Data;
-using Masa.BuildingBlocks.Ddd.Domain.Events;
-using Masa.Contrib.Ddd.Domain.Integrated.Tests.DomainEvents;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-using Masa.Contrib.Ddd.Domain.Entities.Tests;
-using Masa.Contrib.Dispatcher.IntegrationEvents;
-
 namespace Masa.Contrib.Ddd.Domain.Integrated.Tests;
 
 [TestClass]
@@ -31,37 +22,47 @@ public class DomainEventTest
         services.AddDomainEventBus(dispatchOptions =>
         {
             dispatchOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options =>
-            {
-                options.UseDapr();
-                options.UseEventLog<CustomizeDbContext>();
-            })
-            .UseEventBus()
-            .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlite())
-            .UseRepository<CustomizeDbContext>();
+                .UseIntegrationEventBus<IntegrationEventLogService>(options =>
+                {
+                    options.UseDapr();
+                    options.UseEventLog<CustomizeDbContext>();
+                })
+                .UseEventBus()
+                .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlite())
+                .UseRepository<CustomizeDbContext>();
         });
         _serviceProvider = services.BuildServiceProvider();
     }
 
     [TestMethod]
-    public async Task TestSaveChangesReturnDomainEventBus()
+    public async Task TestInsertAsyncReturnUserNameEqualTom()
     {
-        var dbContext = _serviceProvider.GetRequiredService<CustomizeDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var user = new User()
+        var services = new ServiceCollection();
+        services.AddDomainEventBus(dispatcherOptions =>
         {
+            dispatcherOptions
+                .UseIntegrationEventBus<IntegrationEventLogService>(options =>
+                {
+                    options.UseDapr();
+                    options.UseEventLog<CustomizeDbContext>();
+                })
+                .UseEventBus()
+                .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseTestSqlite($"data source=test-{Guid.NewGuid()}"))
+                .UseRepository<CustomizeDbContext>();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        var @event = new RegisterUserEvent()
+        {
+            Id = Guid.NewGuid(),
             Name = "Jim"
         };
-        user.AddDomainEvent(new AddUserIntegrationDomainEvent()
-        {
-            Name = user.Name
-        });
-        await dbContext.Set<User>().AddAsync(user);
-        await dbContext.SaveChangesAsync();
-        var domainEventBus = _serviceProvider.GetRequiredService<IDomainEventBus>();
-        var fields = domainEventBus.GetType().GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic).ToList();
-        var field = fields.Where(field => field.Name == "_eventQueue").First();
-        var eventQueue = (ConcurrentQueue<IDomainEvent>)field.GetValue(domainEventBus)!;
-        Assert.IsTrue(eventQueue.Count == 1);
+        await eventBus.PublishAsync(@event);
+
+        var user = await dbContext.Set<User>().Where(u => u.Id == @event.Id).AsNoTracking().FirstOrDefaultAsync();
+        Assert.IsNotNull(user);
+        Assert.IsTrue(user.Name == "Tom2");
     }
 }
