@@ -77,9 +77,9 @@ public class UserService : IUserService
         await _callerProvider.PutAsync(requestUri, user);
     }
 
-    public async Task UpdateBaseInfoAsync(UpdateUserBaseInfoModel user)
+    public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
     {
-        var requestUri = $"api/user/updateBaseInfo";
+        var requestUri = $"api/user/updateBasicInfo";
         await _callerProvider.PutAsync(requestUri, user);
     }
 }

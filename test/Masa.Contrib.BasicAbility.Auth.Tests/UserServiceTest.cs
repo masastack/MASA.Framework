@@ -137,7 +137,7 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestGetUserVisitedListAsync()
+    public async Task TestGetVisitedListAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new List<UserVisitedModel>();
@@ -147,13 +147,13 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = new UserService(callerProvider.Object, userContext.Object);
-        var result = await userService.GetUserVisitedListAsync();
+        var result = await userService.GetVisitedListAsync();
         callerProvider.Verify(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
     [TestMethod]
-    public async Task TestUpdateUserPasswordAsync()
+    public async Task TestUpdatePasswordAsync()
     {
         var user = new UpdateUserPasswordModel
         {
@@ -161,29 +161,31 @@ public class UserServiceTest
             NewPassword = "masa123",
             OldPassword = "masa123"
         };
-        var requestUri = $"api/user/updateUserPassword";
+        var requestUri = $"api/user/updatePassword";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, default, default));
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(callerProvider.Object, userContext.Object);
-        await userService.UpdateUserPasswordAsync(user);
+        await userService.UpdatePasswordAsync(user);
+        callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
 
-    public async Task TestUpdateUserBaseInfoAsync()
+    public async Task TestUpdateBasicInfoAsync()
     {
-        var user = new UpdateUserBaseInfoModel
+        var user = new UpdateUserBasicInfoModel
         {
             Id = Guid.NewGuid(),
             DisplayName = "test",
             Gender = GenderTypes.Male,
             PhoneNumber = "15168440403"
         };
-        var requestUri = $"api/user/updateUserBaseInfo";
+        var requestUri = $"api/user/updateBasicInfo";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, default, default));
+        callerProvider.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(callerProvider.Object, userContext.Object);
-        await userService.UpdateUserBaseInfoAsync(user);
+        await userService.UpdateBasicInfoAsync(user);
+        callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
 }
 

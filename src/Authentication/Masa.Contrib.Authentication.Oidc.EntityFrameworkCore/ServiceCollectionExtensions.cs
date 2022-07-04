@@ -1,13 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data;
 using Masa.BuildingBlocks.Data.UoW;
 
 namespace Masa.Contrib.Authentication.Oidc.EntityFrameworkCore;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddOidcDbContext<T>(this IServiceCollection services) where T : DbContext
+    public static IServiceCollection AddOidcDbContext<T>(this IServiceCollection services) where T : DbContext, IMasaDbContext
     {
         services.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<T>()));
         services.AddScoped<IUserClaimRepository, UserClaimRepository>();
@@ -20,7 +21,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static async Task AddOidcDbContext<T>(this IServiceCollection services, Func<OidcDbContextOptions, Task> options) where T : DbContext
+    public static async Task AddOidcDbContext<T>(this IServiceCollection services, Func<OidcDbContextOptions, Task> options) where T : DbContext, IMasaDbContext
     {
         services.AddOidcDbContext<T>();
         using var scope = services.BuildServiceProvider().CreateScope();      
