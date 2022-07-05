@@ -105,6 +105,7 @@ builder.Services.AddAliyunStorage(() =>
 1. Add Aliyun Storage Service
 
 ````C#
+// Synchronize
 builder.Services.AddAliyunStorage((serviceProvider) =>
 {
      var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -118,6 +119,21 @@ builder.Services.AddAliyunStorage((serviceProvider) =>
          Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
      };
 });
+
+// Asynchronous
+// builder.Services.AddAliyunStorage(async serviceProvider =>
+// {
+//     var daprClient = serviceProvider.GetRequiredService<DaprClient>();
+//     var accessId = (await daprClient.GetSecretAsync("localsecretstore", "access_id")).First().Value;
+//     var accessSecret = (await daprClient.GetSecretAsync("localsecretstore", "access_secret")).First().Value;
+//     var endpoint = (await daprClient.GetSecretAsync("localsecretstore", "endpoint")).First().Value;
+//     var roleArn = (await daprClient.GetSecretAsync("localsecretstore", "roleArn")).First().Value;
+//     return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest") {
+//         Sts = new AliyunStsOptions() {
+//             RegionId = "cn-hangzhou"
+//         }
+//     };
+// });
 ````
 
 2. Get `IClient` from DI and use the corresponding method
