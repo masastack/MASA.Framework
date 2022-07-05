@@ -1,81 +1,25 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
+namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public static class MasaDbContextOptionsBuilderExtensions
 {
     public static MasaDbContextOptionsBuilder UseSqlite(
         this MasaDbContextOptionsBuilder builder,
+        string connectionString,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
-        builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
-        {
-            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
-            var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
-            dbContextOptionsBuilder.UseSqlite(
-                connectionStringProvider.GetConnectionString(name),
-                sqliteOptionsAction);
-        };
+        builder.DbContextOptionsBuilder.UseSqlite(connectionString, sqliteOptionsAction);
         return builder;
     }
 
     public static MasaDbContextOptionsBuilder UseSqlite(
         this MasaDbContextOptionsBuilder builder,
-        string connectionString,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connectionString, false, sqliteOptionsAction);
-
-    public static MasaDbContextOptionsBuilder UseTestSqlite(
-        this MasaDbContextOptionsBuilder builder,
-        string connectionString,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connectionString, true, sqliteOptionsAction);
-
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
-        string connectionString,
-        bool isTest,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction)
-    {
-        builder.Builder = (_, dbContextOptionsBuilder)
-            => dbContextOptionsBuilder.UseSqlite(connectionString, sqliteOptionsAction);
-        return builder.UseSqliteCore(connectionString, isTest);
-    }
-
-    public static MasaDbContextOptionsBuilder UseSqlite(
-        this MasaDbContextOptionsBuilder builder,
         DbConnection connection,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connection, false, sqliteOptionsAction);
-
-    public static MasaDbContextOptionsBuilder UseTestSqlite(
-        this MasaDbContextOptionsBuilder builder,
-        DbConnection connection,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connection, true, sqliteOptionsAction);
-
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
-        DbConnection connection,
-        bool isTest,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
-        builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlite(connection, sqliteOptionsAction);
-        return builder.UseSqliteCore(connection.ConnectionString, isTest);
-    }
-
-    private static MasaDbContextOptionsBuilder UseSqliteCore(
-        this MasaDbContextOptionsBuilder builder,
-        string connectionString,
-        bool isTest = false)
-    {
-        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
-        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
-        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
-            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
-
-        dbConnectionOptions.TryAddConnectionString(name, connectionString);
+        builder.DbContextOptionsBuilder.UseSqlite(connection, sqliteOptionsAction);
         return builder;
     }
 }
