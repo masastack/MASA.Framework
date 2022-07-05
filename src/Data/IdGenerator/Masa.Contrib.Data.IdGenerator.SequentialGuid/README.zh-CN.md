@@ -22,5 +22,5 @@ Masa.Contrib.Data.IdGenerator.SequentialGuid是一个有序的Guid构造器，�
 
     ```
     ISequentialGuidGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SequentialGuidGenerator获取
-    generator.Create();//创建唯一id
+    generator.NewId();//创建唯一id
     ```

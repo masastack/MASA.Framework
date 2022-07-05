@@ -24,7 +24,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis是基于`Masa.Contrib.
 
     ```
     ISnowflakeGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SnowflakeGenerator获取
-    generator.Create();//创建唯一id
+    generator.NewId();//创建唯一id
     ```
 
 ### 参数:

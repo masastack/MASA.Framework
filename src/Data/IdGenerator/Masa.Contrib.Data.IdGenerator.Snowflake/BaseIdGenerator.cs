@@ -55,7 +55,7 @@ public abstract class BaseIdGenerator
         TimestampLeftShift = idGeneratorOptions.SequenceBits + idGeneratorOptions.WorkerIdBits;
     }
 
-    public virtual long Create()
+    public virtual long NewId()
     {
         lock (Lock)
         {
