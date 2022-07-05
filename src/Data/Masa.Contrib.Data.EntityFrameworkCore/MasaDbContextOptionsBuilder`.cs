@@ -6,8 +6,12 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuilder
     where TDbContext : MasaDbContext, IMasaDbContext
 {
-    public MasaDbContextOptions<TDbContext> MasaDbContextOptions
+    public MasaDbContextOptions<TDbContext> MasaOptions
         => new(ServiceProvider, (DbContextOptions<TDbContext>)DbContextOptionsBuilder.Options, EnableSoftDelete);
+
+    public MasaDbContextOptionsBuilder(bool enableSoftDelete = false) : this(null, enableSoftDelete)
+    {
+    }
 
     public MasaDbContextOptionsBuilder(
         IServiceProvider? serviceProvider,

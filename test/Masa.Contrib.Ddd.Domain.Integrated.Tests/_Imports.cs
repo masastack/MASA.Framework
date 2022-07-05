@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.Contrib.Data.EntityFrameworkCore;
-global using Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
 global using Masa.Contrib.Data.UoW.EF;
 global using Masa.Contrib.Ddd.Domain.Entities.Tests;
 global using Masa.Contrib.Ddd.Domain.Entities.Tests.DomainEvents;

@@ -9,7 +9,7 @@ public abstract class MasaDbContextOptionsBuilder
 
     public bool EnableSoftDelete { get; }
 
-    public DbContextOptionsBuilder DbContextOptionsBuilder { get; }
+    public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
 
     protected MasaDbContextOptionsBuilder(IServiceProvider? serviceProvider, MasaDbContextOptions options)
     {

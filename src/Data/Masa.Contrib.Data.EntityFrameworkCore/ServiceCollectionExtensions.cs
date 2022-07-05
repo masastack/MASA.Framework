@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
         var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete);
         optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);
 
-        return masaDbContextOptionsBuilder.MasaDbContextOptions;
+        return masaDbContextOptionsBuilder.MasaOptions;
     }
 
     private static IServiceCollection TryAddConfigure<TOptions>(
