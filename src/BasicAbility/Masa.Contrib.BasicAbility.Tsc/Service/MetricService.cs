@@ -17,7 +17,12 @@ internal class MetricService : IMetricService
 
     public async Task<IEnumerable<string>> GetMetricNamesAsync(IEnumerable<string>? match = default)
     {
-        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match })) ?? default!;
+        string param = default!;
+        if (match != null && match.Any(s => !string.IsNullOrEmpty(s)))
+        {
+            param = string.Join(',', match.Where(s => !string.IsNullOrEmpty(s)));
+        }
+        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param })) ?? default!;
     }
 
     public async Task<Dictionary<string, List<string>>> GetLabelAndValuesAsync(MetricLableValuesRequest query)
@@ -31,6 +36,11 @@ internal class MetricService : IMetricService
 
     public async Task<string> GetMetricValuesAsync(MetricRangeValueRequest query)
     {
+        if (query.Lables != null && !string.IsNullOrEmpty(query.Match))
+        {
+            query.Match = $"{query.Match}{{{string.Join(',',query.Lables)}}}";
+        }
+
         return (await _caller.GetByBodyAsync<string>(RANGEVALUES_URL, query)) ?? default!;
     }
 }
