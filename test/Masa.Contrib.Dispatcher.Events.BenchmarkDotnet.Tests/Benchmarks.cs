@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests;
 
+[MarkdownExporter, AsciiDocExporter, HtmlExporter]
 [SimpleJob(RunStrategy.ColdStart, RuntimeMoniker.Net60, targetCount: 100)]
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
 public class Benchmarks
@@ -35,7 +36,7 @@ public class Benchmarks
         };
     }
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public async Task SendCouponByDirect()
     {
         var _couponHandler = new CouponHandler(_serviceProvider);
