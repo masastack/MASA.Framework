@@ -7,7 +7,6 @@ global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Environment;
 global using Masa.Contrib.Data.Contracts.EF;
 global using Masa.Contrib.Data.EntityFrameworkCore;
-global using Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.Isolation.MultiEnvironment;
 global using Masa.Contrib.Isolation.MultiTenant;

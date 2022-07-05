@@ -7,18 +7,18 @@ public static class MasaDbContextOptionsBuilderExtensions
 {
     private static readonly List<Type> _types = new();
 
-    public static MasaDbContextOptionsBuilder UseFilter(
-        this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
+    public static MasaDbContextBuilder UseFilter(
+        this MasaDbContextBuilder masaDbContextOptionsBuilder,
         Action<FilterOptions>? options = null)
         => masaDbContextOptionsBuilder.UseFilterCore(false, options);
 
-    public static MasaDbContextOptionsBuilder UseTestFilter(
-        this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
+    public static MasaDbContextBuilder UseTestFilter(
+        this MasaDbContextBuilder masaDbContextOptionsBuilder,
         Action<FilterOptions>? options = null)
         => masaDbContextOptionsBuilder.UseFilterCore(true, options);
 
-    private static MasaDbContextOptionsBuilder UseFilterCore(
-        this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder,
+    private static MasaDbContextBuilder UseFilterCore(
+        this MasaDbContextBuilder masaDbContextOptionsBuilder,
         bool isTest,
         Action<FilterOptions>? options = null)
     {
@@ -33,7 +33,7 @@ public static class MasaDbContextOptionsBuilderExtensions
         return masaDbContextOptionsBuilder;
     }
 
-    private static void UseSoftDelete(this MasaDbContextOptionsBuilder masaDbContextOptionsBuilder, bool isTest = false)
+    private static void UseSoftDelete(this MasaDbContextBuilder masaDbContextOptionsBuilder, bool isTest = false)
     {
         if (!isTest)
         {

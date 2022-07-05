@@ -3,26 +3,18 @@
 
 namespace Masa.Contrib.Data.EntityFrameworkCore;
 
-public class MasaDbContextOptionsBuilder
+public abstract class MasaDbContextOptionsBuilder
 {
-    private IServiceProvider? _serviceProvider;
+    internal IServiceProvider? ServiceProvider { get; }
 
-    public IServiceProvider ServiceProvider => _serviceProvider ??= Services.BuildServiceProvider();
+    public bool EnableSoftDelete { get; }
 
-    public IServiceCollection Services { get; }
+    public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
 
-    public Type DbContextType { get; }
-
-    public Type UserIdType { get; }
-
-    public Action<IServiceProvider, DbContextOptionsBuilder> Builder { get; set; } = default!;
-
-    public bool EnableSoftDelete { get; set; }
-
-    public MasaDbContextOptionsBuilder(IServiceCollection services, Type dbContextType, Type userIdType)
+    protected MasaDbContextOptionsBuilder(IServiceProvider? serviceProvider, MasaDbContextOptions options)
     {
-        Services = services;
-        DbContextType = dbContextType;
-        UserIdType = userIdType;
+        ServiceProvider = serviceProvider;
+        EnableSoftDelete = options.EnableSoftDelete;
+        DbContextOptionsBuilder = new DbContextOptionsBuilder(options);
     }
 }

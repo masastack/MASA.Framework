@@ -5,15 +5,57 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
-    protected readonly IDataFilter? DataFilter;
+    private bool _isInitialize = false;
+    private IDataFilter? _dataFilter;
+
+    protected IDataFilter? DataFilter
+    {
+        get
+        {
+            TryInitialize();
+            return _dataFilter;
+        }
+    }
+
     protected readonly MasaDbContextOptions Options;
-    protected IDomainEventBus? DomainEventBus => Options.ServiceProvider.GetService<IDomainEventBus>();
-    private IConcurrencyStampProvider _concurrencyStampProvider => Options.ServiceProvider.GetRequiredService<IConcurrencyStampProvider>();
+
+    private IDomainEventBus? _domainEventBus;
+
+    protected IDomainEventBus? DomainEventBus
+    {
+        get
+        {
+            TryInitialize();
+            return _domainEventBus;
+        }
+    }
+
+    private IConcurrencyStampProvider? _concurrencyStampProvider;
+
+    public IConcurrencyStampProvider? ConcurrencyStampProvider
+    {
+        get
+        {
+            TryInitialize();
+            return _concurrencyStampProvider;
+        }
+    }
 
     public MasaDbContext(MasaDbContextOptions options) : base(options)
     {
         Options = options;
-        DataFilter = options.ServiceProvider.GetService<IDataFilter>();
+    }
+
+    protected virtual void TryInitialize()
+    {
+        if (!_isInitialize) Initialize();
+    }
+
+    protected virtual void Initialize()
+    {
+        _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
+        _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
+        _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
     }
 
     /// <summary>
@@ -155,12 +197,15 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
     protected virtual void UpdateRowVesion(ChangeTracker changeTracker)
     {
+        if (ConcurrencyStampProvider == null)
+            return;
+
         var entries = changeTracker.Entries().Where(entry
             => (entry.State == EntityState.Added || entry.State == EntityState.Modified || entry.State == EntityState.Deleted) &&
             entry.Entity is IHasConcurrencyStamp);
         foreach (var entity in entries)
         {
-            entity.CurrentValues[nameof(IHasConcurrencyStamp.RowVersion)] = _concurrencyStampProvider.GetRowVersion();
+            entity.CurrentValues[nameof(IHasConcurrencyStamp.RowVersion)] = ConcurrencyStampProvider.GetRowVersion();
         }
     }
 
