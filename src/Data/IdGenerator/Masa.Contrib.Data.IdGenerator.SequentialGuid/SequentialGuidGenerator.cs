@@ -11,7 +11,7 @@ public class SequentialGuidGenerator : ISequentialGuidGenerator
 
     public SequentialGuidGenerator(SequentialGuidType guidType) => _guidType = guidType;
 
-    public Guid Create() => Create(_guidType);
+    public Guid NewId() => Create(_guidType);
 
     public Guid Create(SequentialGuidType guidType)
     {

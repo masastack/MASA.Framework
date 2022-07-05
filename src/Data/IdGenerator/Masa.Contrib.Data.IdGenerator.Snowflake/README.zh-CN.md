@@ -24,7 +24,7 @@ Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，�
 
     ```
     ISnowflakeGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SnowflakeGenerator获取
-    generator.Create();//创建唯一id
+    generator.NewId();//创建唯一id
     ```
 
 ### 参数及常见问题:
