@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Contrib.Identity.IdentityModel;
 
 internal class DefaultMultiEnvironmentUserContext : DefaultUserContext, IMultiEnvironmentUserContext
@@ -36,5 +34,10 @@ internal class DefaultMultiEnvironmentUserContext : DefaultUserContext, IMultiEn
             Roles = identityUser.Roles,
             Environment = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.Environment),
         };
+    }
+
+    protected override IdentityUser? GetUserBasicInfo()
+    {
+        return base.GetUserBasicInfo();
     }
 }

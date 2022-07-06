@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Contrib.Identity.IdentityModel;
 
 internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantUserContext
@@ -45,5 +43,10 @@ internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantU
             Roles = identityUser.Roles,
             TenantId = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
         };
+    }
+
+    protected override IdentityUser? GetUserBasicInfo()
+    {
+        return base.GetUserBasicInfo();
     }
 }

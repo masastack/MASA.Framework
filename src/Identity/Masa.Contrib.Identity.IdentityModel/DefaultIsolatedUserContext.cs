@@ -47,4 +47,9 @@ internal class DefaultIsolatedUserContext : DefaultUserContext, IIsolatedUserCon
             Environment = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.Environment),
         };
     }
+
+    protected override IdentityUser? GetUserBasicInfo()
+    {
+        return base.GetUserBasicInfo();
+    }
 }

@@ -73,12 +73,20 @@ public class UserService : IUserService
 
     public async Task UpdatePasswordAsync(UpdateUserPasswordModel user)
     {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
         var requestUri = $"api/user/updatePassword";
         await _callerProvider.PutAsync(requestUri, user);
     }
 
     public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
     {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
         var requestUri = $"api/user/updateBasicInfo";
         await _callerProvider.PutAsync(requestUri, user);
     }
