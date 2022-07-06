@@ -54,4 +54,7 @@ public static class WebApplicationBuilderExtensions
 
         return builder;
     }
+
+    public static IMasaConfiguration GetMasaConfiguration(this WebApplicationBuilder builder)
+        => builder.Services.BuildServiceProvider().GetRequiredService<IMasaConfiguration>();
 }

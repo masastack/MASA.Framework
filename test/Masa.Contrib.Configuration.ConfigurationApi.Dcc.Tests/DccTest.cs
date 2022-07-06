@@ -798,7 +798,7 @@ public class DccTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetService<IMasaConfiguration>();
         Assert.IsTrue(masaConfiguration != null);
-        var configuration = masaConfiguration!.GetConfiguration(SectionTypes.ConfigurationAPI);
+        var configuration = masaConfiguration!.GetConfiguration(SectionTypes.ConfigurationApi);
         Assert.IsNotNull(configuration);
 
         Assert.IsTrue(configuration["WebApplication1:Brand:Name"] == "Apple");

@@ -7,7 +7,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
 {
     private readonly IConfigurationApiClient _client;
 
-    public override SectionTypes SectionType => SectionTypes.ConfigurationAPI;
+    public override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 
     private readonly ConcurrentDictionary<string, IDictionary<string, string>> _dictionaries = new();
 

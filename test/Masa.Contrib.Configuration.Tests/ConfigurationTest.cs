@@ -33,7 +33,7 @@ public class ConfigurationTest
 
         var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
-        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationAPI);
+        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationApi);
         Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());
         Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
 
@@ -67,7 +67,7 @@ public class ConfigurationTest
 
         var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
-        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationAPI);
+        var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationApi);
         Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());
         Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
 

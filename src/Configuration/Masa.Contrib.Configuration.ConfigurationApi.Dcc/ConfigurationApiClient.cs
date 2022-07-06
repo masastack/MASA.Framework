@@ -28,14 +28,24 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
     }
 
+    public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)
+    {
+        return GetRawAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
+    }
+
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string environment, string cluster, string appId,
-        string configObject, Action<string> valueChanged)
+        string configObject, Action<string>? valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
         return GetRawByKeyAsync(key, valueChanged);
     }
 
-    public async Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T> valueChanged)
+    public Task<T> GetAsync<T>(string configObject, Action<T>? valueChanged)
+    {
+        return GetAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
+    }
+
+    public async Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T>? valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -66,7 +76,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return (T)value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic> valueChanged)
+    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic>? valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -79,7 +89,11 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         });
     }
 
-    public Task<dynamic> GetDynamicAsync(string key) => GetDynamicAsync(key, null);
+    public Task<dynamic> GetDynamicAsync(string configObject)
+    {
+        var key = FomartKey(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject);
+        return GetDynamicAsync(key, null);
+    }
 
     protected virtual async Task<dynamic> GetDynamicAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
     {
