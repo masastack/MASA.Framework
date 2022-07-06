@@ -44,9 +44,4 @@ internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantU
             TenantId = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.TenantId),
         };
     }
-
-    protected override IdentityUser? GetUserBasicInfo()
-    {
-        return base.GetUserBasicInfo();
-    }
 }
