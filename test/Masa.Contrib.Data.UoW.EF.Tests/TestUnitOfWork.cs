@@ -3,6 +3,7 @@
 
 using Masa.BuildingBlocks.Ddd.Domain.Events;
 using Microsoft.Extensions.Options;
+using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;
 
 namespace Masa.Contrib.Data.UoW.EF.Tests;
 
@@ -66,7 +67,9 @@ public class TestUnitOfWork : TestBase
             Name = Guid.NewGuid().ToString()
         };
         dbContext.Add(user);
+        uoW.EntityState = EntityState.Changed;
         await uoW.SaveChangesAsync();
+        uoW.CommitState = CommitState.UnCommited;
         await uoW.RollbackAsync();
 
         Assert.IsTrue(!dbContext.User.ToList().Any());
@@ -86,19 +89,9 @@ public class TestUnitOfWork : TestBase
             Name = Guid.NewGuid().ToString()
         };
         dbContext.Add(user);
+        uoW.EntityState = EntityState.Changed;
         await uoW.SaveChangesAsync();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await uoW.RollbackAsync());
-    }
-
-    [TestMethod]
-    public async Task TestNotTransactionCommitAsync()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await uoW.CommitAsync());
     }
 
     [TestMethod]
@@ -115,7 +108,9 @@ public class TestUnitOfWork : TestBase
         };
         var transcation = uoW.Transaction;
         dbContext.User.Add(user);
+        uoW.EntityState = EntityState.Changed;
         await uoW.SaveChangesAsync();
+        uoW.CommitState = CommitState.UnCommited;//todo: Using Repository does not require manual changes to Commit status
         await uoW.CommitAsync();
 
         Assert.IsTrue(dbContext.User.ToList().Count == 1);
@@ -298,26 +293,6 @@ public class TestUnitOfWork : TestBase
         var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object,
             serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>());
         Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
-    }
-
-    [TestMethod]
-    public async Task TestCommitReturnPublishQueueIsValid()
-    {
-        IServiceCollection services = new ServiceCollection();
-        Mock<IDomainEventBus> domainEventBus = new();
-        domainEventBus.Setup(eventBus => eventBus.PublishQueueAsync()).Verifiable();
-        services.AddScoped(serviceProvider => domainEventBus.Object);
-        Mock<IEventBusBuilder> eventBuilder = new();
-        eventBuilder.Setup(eb => eb.Services).Returns(services).Verifiable();
-        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite($"Data Source=test_{Guid.NewGuid()}"));
-
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
-        var unitOfWork = new UnitOfWork<CustomDbContext>(serviceProvider);
-        var _ = unitOfWork.Transaction;
-        await unitOfWork.CommitAsync();
-        domainEventBus.Verify(eventBus => eventBus.PublishQueueAsync(), Times.Once());
     }
 
     private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;

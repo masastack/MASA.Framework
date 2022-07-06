@@ -13,7 +13,7 @@ public class SequentialGuidGeneratorTest
         List<Guid> guids = new();
         for (int i = 0; i < count; i++)
         {
-            guids.Add(new SequentialGuidGenerator(SequentialGuidType.SequentialAsString).Create());
+            guids.Add(new SequentialGuidGenerator(SequentialGuidType.SequentialAsString).NewId());
         }
         Assert.IsTrue(guids.Count == guids.Distinct().Count());
     }

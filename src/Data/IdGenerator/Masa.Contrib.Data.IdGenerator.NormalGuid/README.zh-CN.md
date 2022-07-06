@@ -22,5 +22,5 @@ Masa.Contrib.Data.IdGenerator.NormalGuid是一个简单的Guid构造器，提供
 
     ```
     IGuidGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.GuidGenerator获取
-    generator.Create();//创建唯一id
+    generator.NewId();//创建唯一id
     ```

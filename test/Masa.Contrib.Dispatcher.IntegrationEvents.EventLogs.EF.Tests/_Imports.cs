@@ -6,7 +6,6 @@ global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
 global using Masa.Contrib.Data.EntityFrameworkCore;
-global using Masa.Contrib.Data.EntityFrameworkCore.Sqlite;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Domain.Entities;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Events;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.Infrastructure;

@@ -50,7 +50,7 @@ public class IdGeneratorTest
         List<long> ids = new();
         while (count < 500000)
         {
-            var id = idGenerator.Create();
+            var id = idGenerator.NewId();
             ids.Add(id);
             count++;
         }
@@ -70,7 +70,7 @@ public class IdGeneratorTest
         List<long> ids = new();
         while (count < 500000)
         {
-            var id = idGenerator.Create();
+            var id = idGenerator.NewId();
             ids.Add(id);
             count++;
         }

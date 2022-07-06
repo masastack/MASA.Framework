@@ -55,6 +55,18 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAliyunStorage(
         this IServiceCollection services,
+        Func<IServiceProvider, Task<AliyunStorageOptions>> func,
+        string? defaultBucketName = null)
+    {
+        ArgumentNullException.ThrowIfNull(func, nameof(func));
+
+        services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
+            => new DefaultAliyunStorageOptionProvider(func.Invoke(serviceProvider).ConfigureAwait(false).GetAwaiter().GetResult()));
+        return services.AddAliyunStorageCore(defaultBucketName);
+    }
+
+    public static IServiceCollection AddAliyunStorage(
+        this IServiceCollection services,
         Func<AliyunStorageOptions> func,
         string? defaultBucketName = null)
     {

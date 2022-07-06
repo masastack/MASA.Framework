@@ -14,16 +14,16 @@ public class OrderRepository : Repository<CustomDbContext, Orders>, IOrderReposi
         try
         {
             if (UnitOfWork.UseTransaction)
-                _ = base.Transaction;
+                _ = base.UnitOfWork.Transaction;
 
             await base.AddAsync(order, default);
-            await base.SaveChangesAsync();
-            await base.CommitAsync();
+            await base.UnitOfWork.SaveChangesAsync();
+            await base.UnitOfWork.CommitAsync();
         }
         catch (Exception)
         {
             if (UnitOfWork.UseTransaction)
-                await base.RollbackAsync();
+                await base.UnitOfWork.RollbackAsync();
         }
     }
 }

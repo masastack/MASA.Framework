@@ -10,9 +10,7 @@ class Program
         var config = DefaultConfig.Instance
             .AddValidator(ExecutionValidator.FailOnError)
             .WithOptions(ConfigOptions.DisableOptimizationsValidator);
-        // BenchmarkRunner.Run<Benchmarks>(config);
-        // BenchmarkRunner.Run<SecondBenchmarks>(config);
-        BenchmarkRunner.Run<MachineClockBenchmarks>(config);
+        BenchmarkRunner.Run<Benchmarks>(config);
         // BenchmarkRunner.Run<DistributedBenchmarks>(config);
         Console.ReadLine();
     }

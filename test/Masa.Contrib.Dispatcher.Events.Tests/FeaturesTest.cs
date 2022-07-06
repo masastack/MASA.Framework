@@ -237,7 +237,6 @@ public class FeaturesTest : TestBase
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         await eventBus.PublishAsync(@event);
 
-        await eventBus.CommitAsync(default);
         uoW.Verify(u => u.CommitAsync(default), Times.Once);
     }
 

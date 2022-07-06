@@ -16,29 +16,6 @@ public class Repository<TDbContext, TEntity> :
         UnitOfWork = unitOfWork;
     }
 
-    public override bool TransactionHasBegun
-        => Context.Database.CurrentTransaction != null;
-
-    public override DbTransaction Transaction
-    {
-        get
-        {
-            if (!UseTransaction)
-                throw new NotSupportedException(nameof(Transaction));
-
-            if (TransactionHasBegun)
-                return Context.Database.CurrentTransaction!.GetDbTransaction();
-
-            return Context.Database.BeginTransaction().GetDbTransaction();
-        }
-    }
-
-    public override bool UseTransaction
-    {
-        get => UnitOfWork.UseTransaction;
-        set => UnitOfWork.UseTransaction = value;
-    }
-
     public override IUnitOfWork UnitOfWork { get; }
 
     public override EntityState EntityState
@@ -68,13 +45,6 @@ public class Repository<TDbContext, TEntity> :
         await Context.AddRangeAsync(entities, cancellationToken);
         EntityState = EntityState.Changed;
     }
-
-    public override Task CommitAsync(CancellationToken cancellationToken = default)
-        => UnitOfWork.CommitAsync(cancellationToken);
-
-    public override async ValueTask DisposeAsync() => await Context.DisposeAsync();
-
-    public override void Dispose() => Context.Dispose();
 
     public override Task<TEntity?> FindAsync(
         IEnumerable<KeyValuePair<string, object>> keyValues,
@@ -205,14 +175,6 @@ public class Repository<TDbContext, TEntity> :
         return Task.CompletedTask;
     }
 
-    public override Task RollbackAsync(CancellationToken cancellationToken = default)
-        => UnitOfWork.RollbackAsync(cancellationToken);
-
-    public override async Task SaveChangesAsync(CancellationToken cancellationToken = default)
-    {
-        await UnitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
     public override Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         Context.Set<TEntity>().Update(entity);
@@ -245,7 +207,7 @@ public class Repository<TDbContext, TEntity> :
 
 public class Repository<TDbContext, TEntity, TKey> :
     Repository<TDbContext, TEntity>,
-    IRepository<TEntity, TKey>, IUnitOfWork
+    IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
     where TDbContext : DbContext
     where TKey : IComparable

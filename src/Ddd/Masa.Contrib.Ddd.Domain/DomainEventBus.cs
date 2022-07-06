@@ -67,6 +67,11 @@ public class DomainEventBus : IDomainEventBus
         }
     }
 
+    public Task<bool> AnyQueueAsync()
+    {
+        return Task.FromResult(_eventQueue.Count > 0);
+    }
+
     public async Task CommitAsync(CancellationToken cancellationToken = default)
         => await _unitOfWork.CommitAsync(cancellationToken);
 

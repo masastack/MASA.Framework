@@ -104,21 +104,41 @@ builder.Services.AddAliyunStorage(() =>
 
 1. Add Aliyun Storage Service
 
-````C#
-builder.Services.AddAliyunStorage((serviceProvider) =>
-{
-     var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-     return new AliyunStorageOptions(
-         configuration["Aliyun:AccessKeyId"],
-         configuration["Aliyun:AccessKeySecret"],
-         configuration["Aliyun:Endpoint"],
-         configuration["Aliyun:RoleArn"],
-         configuration["Aliyun:RoleSessionName"])
-     {
-         Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
-     };
-});
-````
+   1.1. Sync
+
+    ``` C#
+    builder.Services.AddAliyunStorage((serviceProvider) =>
+    {
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        return new AliyunStorageOptions(
+            configuration["Aliyun:AccessKeyId"],
+            configuration["Aliyun:AccessKeySecret"],
+            configuration["Aliyun:Endpoint"],
+            configuration["Aliyun:RoleArn"],
+            configuration["Aliyun:RoleSessionName"])
+        {
+            Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
+        };
+    });
+    ```
+
+   1.2. Async
+
+    ``` C#
+    builder.Services.AddAliyunStorage(async serviceProvider =>
+    {
+        var daprClient = serviceProvider.GetRequiredService<DaprClient>();
+        var accessId = (await daprClient.GetSecretAsync("localsecretstore", "access_id")).First().Value;
+        var accessSecret = (await daprClient.GetSecretAsync("localsecretstore", "access_secret")).First().Value;
+        var endpoint = (await daprClient.GetSecretAsync("localsecretstore", "endpoint")).First().Value;
+        var roleArn = (await daprClient.GetSecretAsync("localsecretstore", "roleArn")).First().Value;
+        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest") {
+            Sts = new AliyunStsOptions() {
+                RegionId = "cn-hangzhou"
+            }
+        };
+    });
+    ```
 
 2. Get `IClient` from DI and use the corresponding method
 
