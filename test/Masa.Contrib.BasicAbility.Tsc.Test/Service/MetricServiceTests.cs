@@ -22,7 +22,7 @@ public class MetricServiceTests
     [DataRow(null)]
     [DataRow(new string[] { "up", "prometheus_http_requests_total", "prometheus_http_request_duration_seconds_count" })]
     [DataRow(new string[] { "not_exists", "up" })]
-    //[DataRow(new string[] { "not_exists" })]
+    [DataRow(new string[] { "not_exists" })]
     public async Task GetMetricNamesAsyncTest(IEnumerable<string> match)
     {
         var result = await _client.MetricService.GetMetricNamesAsync(match);
@@ -30,7 +30,7 @@ public class MetricServiceTests
         {
             Assert.IsNotNull(result);
         }
-        else if (match.Count() - 1 > 0)
+        else if (match.Count() > 0)
         {
             Assert.IsNotNull(result);
         }
