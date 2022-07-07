@@ -9,8 +9,10 @@ public class ConfigurationTest
     [TestMethod]
     public void TestDefaultMasaConfiguration()
     {
+        var configurationApi = Mock.Of<IConfigurationApi>();
+
         var builder = WebApplication.CreateBuilder();
-        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration, configurationApi);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
         var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
         Assert.IsTrue(!((IConfigurationSection)localConfiguration).Exists());
@@ -30,8 +32,8 @@ public class ConfigurationTest
         var builder = WebApplication.CreateBuilder();
         builder.AddMasaConfiguration(masaConfigurationBuilder
             => masaConfigurationBuilder.AddJsonFile("rabbitMq.json", optional: false, reloadOnChange: true));
-
-        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var configurationApi = Mock.Of<IConfigurationApi>();
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration, configurationApi);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
         var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationApi);
         Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());
@@ -65,7 +67,8 @@ public class ConfigurationTest
             });
         });
 
-        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration);
+        var configurationApi = Mock.Of<IConfigurationApi>();
+        var masaConfiguration = new DefaultMasaConfiguration(builder.Configuration, configurationApi);
         var localConfiguration = masaConfiguration.GetConfiguration(SectionTypes.Local);
         var configurationApiConfiguration = masaConfiguration.GetConfiguration(SectionTypes.ConfigurationApi);
         Assert.IsTrue(((IConfigurationSection)localConfiguration).Exists());

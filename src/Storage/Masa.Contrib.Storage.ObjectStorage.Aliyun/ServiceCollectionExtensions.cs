@@ -107,7 +107,7 @@ public static class ServiceCollectionExtensions
         where TOptions : class
     {
         var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.GetConfiguration(SectionTypes.Local) ??
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
             serviceProvider.GetService<IConfiguration>();
 
         if (configuration == null)
