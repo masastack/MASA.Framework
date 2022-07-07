@@ -23,13 +23,5 @@ public class DccSectionOptions
 
     public List<string> ConfigObjects { get; set; } = default!;
 
-    public string BizId { get; set; } = default!;
-
-    public List<string> BizConfigObjects { get; set; } = default!;
-
-    public string PublicId { get; set; } = default!;
-
-    public List<string> PublicConfigObjects { get; set; } = default!;
-
     public string? Secret { get; set; }
 }

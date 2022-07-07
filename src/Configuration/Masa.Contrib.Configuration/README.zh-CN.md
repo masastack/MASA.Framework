@@ -9,7 +9,7 @@ IConfiguration
 ├── Local                           本地节点（固定）
 │   ├── Redis                       自定义配置
 │   ├── ├── Host                    参数
-├── ConfigurationAPI                远程节点（固定）
+├── ConfigurationApi                远程节点（固定）
 │   ├── AppId                       替换为你的AppId
 │   ├── AppId ├── Redis             自定义节点
 │   ├── AppId ├── Redis ├── Host    参数
@@ -44,7 +44,7 @@ appsettings.json
     }
   },
   "AppId": "Replace-With-Your-AppId",
-  "ConfigObjects": [ "Redis" ], // 要挂载的对象名称,此处会将Redis配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
+  "ConfigObjects": [ "Redis" ], // 要挂载的对象名称,此处会将Redis配置挂载到ConfigurationApi:<Replace-With-Your-AppId>节点下
   "Secret": "", //Dcc App 秘钥
   "Cluster": "Default"
 }

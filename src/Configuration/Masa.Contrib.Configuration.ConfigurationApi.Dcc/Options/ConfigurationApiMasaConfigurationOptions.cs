@@ -25,5 +25,5 @@ public abstract class ConfigurationApiMasaConfigurationOptions : MasaConfigurati
     /// Configuration object name
     /// </summary>
     [JsonIgnore]
-    public sealed override SectionTypes SectionType => SectionTypes.ConfigurationAPI;
+    public sealed override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 }

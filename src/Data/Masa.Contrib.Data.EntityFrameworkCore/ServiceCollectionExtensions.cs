@@ -89,7 +89,7 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Only consider using MasaConfiguration and database configuration using local configuration
-    /// When using MasaConfiguration and the database configuration is stored in ConfigurationAPI, you need to specify the mapping relationship in Configuration by yourself
+    /// When using MasaConfiguration and the database configuration is stored in ConfigurationApi, you need to specify the mapping relationship in Configuration by yourself
     /// </summary>
     /// <param name="services"></param>
     /// <param name="sectionName"></param>
@@ -102,7 +102,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddOptions();
         var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.GetConfiguration(SectionTypes.Local) ??
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
             serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             return services;

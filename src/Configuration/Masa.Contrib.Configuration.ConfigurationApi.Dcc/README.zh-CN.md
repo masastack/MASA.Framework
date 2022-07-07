@@ -9,7 +9,7 @@
 ```c#
 IConfiguration
 ├── Local                                本地节点（固定）
-├── ConfigurationAPI                     远程节点（固定 Dcc扩展其能力）
+├── ConfigurationApi                     远程节点（固定 Dcc扩展其能力）
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  自定义节点
 │   ├── AppId ├── Redis ├── Host         参数
@@ -41,7 +41,7 @@ appsettings.json
   },
   "AppId": "Replace-With-Your-AppId",
   "Environment": "Development",
-  "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationAPI:<Replace-With-Your-AppId>节点下
+  "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationApi:<Replace-With-Your-AppId>节点下
   "Secret": "", //Dcc App 秘钥
   "Cluster": "Default"
 }
@@ -108,6 +108,9 @@ public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
 ```c#
 var app = builder.Build();
 
+//在程序入口处读取配置
+var redisHost = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("Redis:Host");
+
 app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //推荐
@@ -123,11 +126,11 @@ app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> o
     return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
 
-app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
+app.MapGet("/GetRedisHost2", ([FromServices] IConfiguration configuration) =>
 {
     //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Host的配置值
-    //格式：ConfigurationAPI:<自定义AppId>:<自定义的ConfigObject>:<参数名Host>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Host"];
+    //格式：ConfigurationApi:<自定义AppId>:<自定义的ConfigObject>:<参数名Host>
+    return configuration["ConfigurationApi:<Replace-With-Your-AppId>:Redis:Host"];
 });
 
 app.Run();

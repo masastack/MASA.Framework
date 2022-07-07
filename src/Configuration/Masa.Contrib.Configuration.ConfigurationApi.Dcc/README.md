@@ -9,7 +9,7 @@ Extend the ability of IConfiguration to manage remote configuration through Dcc.
 ```c#
 IConfiguration
 ├── Local                                Local node (fixed)
-├── ConfigurationAPI                     Remote node (fixed Dcc to expand its capacity)
+├── ConfigurationApi                     Remote node (fixed Dcc to expand its capacity)
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  Custom node
 │   ├── AppId ├── Redis ├── Host         Parameter
@@ -41,7 +41,7 @@ appsettings.json
   },
   "AppId": "Replace-With-Your-AppId",
   "Environment": "Development",
-  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationAPI:<Replace-With-Your-AppId> node
+  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationApi:<Replace-With-Your-AppId> node
   "Secret": "", //Dcc App key
   "Cluster": "Default"
 }
@@ -108,6 +108,9 @@ How to use configuration：
 ```c#
 var app = builder.Build();
 
+//Read the configuration at the program entrance
+var redisHost = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("Redis:Host");
+
 app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
     //recommend
@@ -126,8 +129,8 @@ app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> o
 app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
 {
     //Obtain the configuration value of the Host of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
-    //Format ConfigurationAPI:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter Host>
-    return configuration["ConfigurationAPI:<Replace-With-Your-AppId>:Redis:Host"];
+    //Format ConfigurationApi:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter Host>
+    return configuration["ConfigurationApi:<Replace-With-Your-AppId>:Redis:Host"];
 });
 
 app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,

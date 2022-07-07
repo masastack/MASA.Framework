@@ -9,7 +9,7 @@ IConfiguration
 ├── Local                                Local node (fixed)
 │   ├── Redis                            Custom configuration
 │   ├── ├── Host                         Parameter
-├── ConfigurationAPI                     Remote node (fixed)
+├── ConfigurationApi                     Remote node (fixed)
 │   ├── AppId                            Replace-With-Your-AppId
 │   ├── AppId ├── Redis                  Custom node
 │   ├── AppId ├── Redis ├── Host         Parameter
@@ -41,7 +41,7 @@ Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configura
     }
   },
   "AppId": "Replace-With-Your-AppId",
-  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted. Here, the Redis configuration will be mounted under the ConfigurationAPI: <Replace-With-Your-AppId> node
+  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted. Here, the Redis configuration will be mounted under the ConfigurationApi: <Replace-With-Your-AppId> node
   "Secret": "", //Dcc App key
   "Cluster": "Default"
 }
