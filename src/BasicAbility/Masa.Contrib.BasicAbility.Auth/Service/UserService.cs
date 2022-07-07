@@ -90,5 +90,11 @@ public class UserService : IUserService
         var requestUri = $"api/user/updateBasicInfo";
         await _callerProvider.PutAsync(requestUri, user);
     }
+
+    public async Task<List<UserPortraitModel>> GetUserPortraitsAsync(params Guid[] userIds)
+    {
+        var requestUri = $"api/user/portraits";
+        return await _callerProvider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, userIds) ?? new();
+    }
 }
 
