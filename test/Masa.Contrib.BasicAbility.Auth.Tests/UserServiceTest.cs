@@ -170,6 +170,7 @@ public class UserServiceTest
         callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
 
+    [TestMethod]
     public async Task TestUpdateBasicInfoAsync()
     {
         var user = new UpdateUserBasicInfoModel
@@ -186,6 +187,31 @@ public class UserServiceTest
         var userService = new UserService(callerProvider.Object, userContext.Object);
         await userService.UpdateBasicInfoAsync(user);
         callerProvider.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task GetUserPortraitsAsync()
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var userPortraits = new List<UserPortraitModel> {
+            new UserPortraitModel
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "DisplayName",
+                Account = "Account",
+                Name = "Name",
+                Avatar = "Avatar"
+            }
+        };
+        var requestUri = $"api/user/portraits";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default))
+            .ReturnsAsync(userPortraits).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var data = await userService.GetUserPortraitsAsync(userId);
+        callerProvider.Verify(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
+        Assert.IsTrue(data.Count == 1);
     }
 }
 
