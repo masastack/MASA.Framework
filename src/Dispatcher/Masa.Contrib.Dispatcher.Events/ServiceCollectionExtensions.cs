@@ -27,13 +27,15 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
-        eventBusBuilder?.Invoke(new EventBusBuilder(services));
+        var builder = new EventBusBuilder(services);
+        eventBusBuilder?.Invoke(builder);
 
         DispatcherOptions dispatcherOptions = new DispatcherOptions(services, assemblies);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, assemblies).Build(lifetime));
         services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
+        services.TryAddSingleton<IStrategyExceptionProvider, DefaultStrategyExceptionProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));

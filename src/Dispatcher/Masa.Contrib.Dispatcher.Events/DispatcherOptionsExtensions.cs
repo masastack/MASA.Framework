@@ -26,8 +26,7 @@ public static class DispatcherOptionsExtensions
     {
         ArgumentNullException.ThrowIfNull(options.Services, nameof(options.Services));
 
-        eventBusBuilder?.Invoke(new EventBusBuilder(options.Services));
-        options.Services.AddEventBus(options.Assemblies, lifetime);
+        options.Services.AddEventBus(options.Assemblies, lifetime, eventBusBuilder);
         return options;
     }
 }

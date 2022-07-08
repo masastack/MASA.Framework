@@ -5,11 +5,17 @@ namespace Masa.Contrib.Dispatcher.Events.Strategies;
 
 public class ExecutionStrategy : IExecutionStrategy
 {
+    private readonly IStrategyExceptionProvider _strategyExceptionProvider;
     private readonly ILogger<ExecutionStrategy>? _logger;
 
-    public ExecutionStrategy(ILogger<ExecutionStrategy>? logger = null) => _logger = logger;
+    public ExecutionStrategy(IStrategyExceptionProvider strategyExceptionProvider, ILogger<ExecutionStrategy>? logger = null)
+    {
+        _strategyExceptionProvider = strategyExceptionProvider;
+        _logger = logger;
+    }
 
-    public async Task ExecuteAsync<TEvent>(StrategyOptions strategyOptions, TEvent @event, Func<TEvent, Task> func, Func<TEvent, Exception, FailureLevels, Task> cancel)
+    public async Task ExecuteAsync<TEvent>(StrategyOptions strategyOptions, TEvent @event, Func<TEvent, Task> func,
+        Func<TEvent, Exception, FailureLevels, Task> cancel)
         where TEvent : IEvent
     {
         int retryTimes = 0;
@@ -21,23 +27,37 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _logger?.LogWarning("----- Error Publishing event {@Event} start: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.GetEventId());
+                    _logger?.LogWarning(
+                        "----- Error Publishing event {@Event} start: The {retries}th retrying consume a message failed. message id: {messageId} -----",
+                        @event, retryTimes, @event.GetEventId());
                 }
                 await func.Invoke(@event);
                 return;
             }
             catch (Exception ex)
             {
+
                 if (retryTimes > 0)
                 {
-                    _logger?.LogError(ex, "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----", @event, retryTimes, @event.GetEventId());
+                    _strategyExceptionProvider.LogWrite(ex,
+                        "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----",
+                        @event, retryTimes, @event.GetEventId());
                 }
                 else
                 {
-                    _logger?.LogError(ex, "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----", @event, strategyOptions.MaxRetryCount, @event.GetEventId());
+                    _strategyExceptionProvider.LogWrite(ex,
+                        "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----",
+                        @event, strategyOptions.MaxRetryCount, @event.GetEventId());
                 }
                 exception = ex;
-                retryTimes++;
+                if (_strategyExceptionProvider.SupportRetry(exception))
+                {
+                    retryTimes++;
+                }
+                else
+                {
+                    retryTimes = strategyOptions.MaxRetryCount + 1;
+                }
             }
         }
 
