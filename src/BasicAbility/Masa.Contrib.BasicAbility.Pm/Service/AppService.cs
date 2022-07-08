@@ -20,6 +20,14 @@ public class AppService : IAppService
         return result ?? new();
     }
 
+    public async Task<AppDetailModel> GetByIdentityAsync(string identity)
+    {
+        var requestUri = $"open-api/app/{identity}";
+        var result = await _callerProvider.GetAsync<AppDetailModel>(requestUri);
+
+        return result ?? new();
+    }
+
     public async Task<List<AppDetailModel>> GetListAsync()
     {
         var requestUri = $"api/v1/app";

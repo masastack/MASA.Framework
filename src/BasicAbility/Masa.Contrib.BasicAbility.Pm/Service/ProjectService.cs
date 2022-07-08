@@ -28,6 +28,14 @@ public class ProjectService : IProjectService
         return result ?? new();
     }
 
+    public async Task<ProjectDetailModel> GetByIdentityAsync(string identity)
+    {
+        var requestUri = $"open-api/project/{identity}";
+        var result = await _callerProvider.GetAsync<ProjectDetailModel>(requestUri);
+
+        return result ?? new();
+    }
+
     public async Task<List<ProjectModel>> GetListByEnvironmentClusterIdAsync(int envClusterId)
     {
         var requestUri = $"api/v1/{envClusterId}/project";
@@ -36,10 +44,10 @@ public class ProjectService : IProjectService
         return result ?? new();
     }
 
-    public async Task<List<ProjectModel>> GetListByTeamIdAsync(Guid teamId)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync(List<Guid> teamIds)
     {
-        var requestUri = $"api/v1/project/teamProjects/{teamId}";
-        var result = await _callerProvider.GetAsync<List<ProjectModel>>(requestUri);
+        var requestUri = $"api/v1/project/teamProjects";
+        var result = await _callerProvider.PostAsync<List<ProjectModel>>(requestUri, teamIds);
 
         return result ?? new();
     }

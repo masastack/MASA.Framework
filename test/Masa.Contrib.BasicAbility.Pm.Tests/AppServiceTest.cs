@@ -41,6 +41,40 @@ public class AppServiceTest
     }
 
     [TestMethod]
+    [DataRow("identity")]
+    public async Task TestGetByIdentityAsync(string identity)
+    {
+        var data = new AppDetailModel();
+
+        var requestUri = $"open-api/app/{identity}";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(callerProvider.Object);
+
+        var result = await pmCaching.AppService.GetByIdentityAsync(identity);
+        callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
+
+        Assert.IsNotNull(result);
+    }
+
+    [TestMethod]
+    [DataRow("identity")]
+    public async Task TestGetByIdentity1Async(string identity)
+    {
+        AppDetailModel? data = null;
+
+        var requestUri = $"open-api/app/{identity}";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<AppDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(callerProvider.Object);
+
+        var result = await pmCaching.AppService.GetByIdentityAsync(identity);
+        callerProvider.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
+
+        Assert.IsNotNull(result);
+    }
+
+    [TestMethod]
     public async Task TestGetListAsync()
     {
         var data = new List<AppDetailModel>
