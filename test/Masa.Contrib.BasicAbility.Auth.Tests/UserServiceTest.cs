@@ -76,6 +76,51 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestGetTotalByDepartmentAsync()
+    {
+        long data = 10;
+        Guid departmentId = Guid.NewGuid();
+        var requestUri = $"api/staff/getTotalByDepartment";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetTotalByDepartmentAsync(departmentId);
+        callerProvider.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result == data);
+    }
+
+    [TestMethod]
+    public async Task TestGetTotalByByRoleAsync()
+    {
+        long data = 10;
+        Guid roleId = Guid.NewGuid();
+        var requestUri = $"api/staff/getTotalByRole";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetTotalByRoleAsync(roleId);
+        callerProvider.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result == data);
+    }
+
+    [TestMethod]
+    public async Task TestGetTotalByTeamAsync()
+    {
+        long data = 10;
+        Guid teamId = Guid.NewGuid();
+        var requestUri = $"api/staff/getTotalByTeam";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetTotalByTeamAsync(teamId);
+        callerProvider.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result == data);
+    }
+
+    [TestMethod]
     [DataRow("account", "123456")]
     public async Task TestValidateCredentialsByAccountAsync(string account, string password)
     {
@@ -103,6 +148,39 @@ public class UserServiceTest
         var result = await userService.FindByAccountAsync(account);
         callerProvider.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    [DataRow("15168440403")]
+    public async Task TestFindByPhoneNumberAsync(string phoneNumber)
+    {
+        var data = new UserModel()
+        {
+            PhoneNumber = phoneNumber
+        };
+        var requestUri = $"api/user/findByPhoneNumber";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.FindByPhoneNumberAsync(phoneNumber);
+        callerProvider.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null && result.PhoneNumber == data.PhoneNumber);
+    }
+
+    [TestMethod]
+    [DataRow("824255786@qq.com")]
+    public async Task TestFindByEmailAsync(string email)
+    {
+        var data = new UserModel();
+        var requestUri = $"api/user/findByEmail";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.FindByEmailAsync(email);
+        callerProvider.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null && result.Email == data.Email);
     }
 
     [TestMethod]
