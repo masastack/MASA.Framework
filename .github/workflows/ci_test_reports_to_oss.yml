@@ -4,7 +4,7 @@ on:
     branches:
       - 'main'
     paths:
-      - 'test/**/*'
+      - 'test/**'
   workflow_dispatch:
   
 jobs:
