@@ -1,4 +1,4 @@
-name: Test
+name: ci_test_reports_to_oss
 on:
   pull_request:
     branches:
@@ -7,7 +7,7 @@ on:
   
 jobs:
   test:
-    name: test
+    name: ci_test_reports_to_oss
     runs-on: ubuntu-latest
     steps:
     - name: git pull
@@ -32,7 +32,7 @@ jobs:
         sudo sysctl -w vm.max_map_count=262144
         dotnet run -c Release --project ./test/Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests
         dotnet run -c Release --project ./test/Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests
-        
+
     - name: set oss path
       uses: manyuanrong/setup-ossutil@v2.0
       with:
