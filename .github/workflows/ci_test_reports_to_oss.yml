@@ -30,6 +30,10 @@ jobs:
         sudo sysctl -w vm.swappiness=1
         sudo sysctl -w fs.file-max=262144
         sudo sysctl -w vm.max_map_count=262144
+        cd /home/runner/work/MASA.Contrib
+        pwd 
+        ls 
+        tree
         dotnet run -c Release --project ./test/Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests
         dotnet run -c Release --project ./test/Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests
 
