@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.Events;
 
 public interface IStrategyExceptionProvider
 {
-    bool SupportRetry(Exception exception);
+    bool SupportRetry(Exception? exception);
 
-    void LogWrite(Exception exception, string? message, params object?[] args);
+    void LogWrite(LogLevel logLevel, Exception? exception, string? message, params object?[] args);
 }

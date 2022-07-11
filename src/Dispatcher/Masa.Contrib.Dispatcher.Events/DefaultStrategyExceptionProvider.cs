@@ -8,28 +8,21 @@ public class DefaultStrategyExceptionProvider : IStrategyExceptionProvider
     private readonly ILogger<DefaultStrategyExceptionProvider>? _logger;
 
     public DefaultStrategyExceptionProvider(ILogger<DefaultStrategyExceptionProvider>? logger)
-    {
-        _logger = logger;
-    }
+        => _logger = logger;
 
     /// <summary>
     /// Default UserFriendlyException does not support retry
     /// </summary>
     /// <param name="exception"></param>
     /// <returns></returns>
-    public bool SupportRetry(Exception exception)
+    public bool SupportRetry(Exception? exception)
     {
-        if (exception is UserFriendlyException)
-            return false;
-
-        return true;
+        return exception is not UserFriendlyException;
     }
 
-    public void LogWrite(Exception exception, string? message, params object?[] args)
+    public void LogWrite(LogLevel logLevel, Exception? exception, string? message, params object?[] args)
     {
         if (exception is not UserFriendlyException)
-        {
-            _logger?.LogError(exception, message, args);
-        }
+            _logger?.Log(logLevel, exception, message, args);
     }
 }
