@@ -1,6 +1,6 @@
 name: ci_test_reports_to_oss
 on:
-  pull_request:
+  push:
     branches:
       - 'main'
   workflow_dispatch:
