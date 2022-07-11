@@ -15,17 +15,17 @@ internal class MetricService : IMetricService
         _caller = caller;
     }
 
-    public async Task<IEnumerable<string>> GetMetricNamesAsync(IEnumerable<string>? match = default)
+    public async Task<IEnumerable<string>> GetNamesAsync(IEnumerable<string>? matches = default)
     {
         string param = default!;
-        if (match != null && match.Any(s => !string.IsNullOrEmpty(s)))
+        if (matches != null && matches.Any(s => !string.IsNullOrEmpty(s)))
         {
-            param = string.Join(',', match.Where(s => !string.IsNullOrEmpty(s)));
+            param = string.Join(',', matches.Where(s => !string.IsNullOrEmpty(s)));
         }
         return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param })) ?? default!;
     }
 
-    public async Task<Dictionary<string, List<string>>> GetLabelAndValuesAsync(MetricLableValuesRequest query)
+    public async Task<Dictionary<string, List<string>>> GetLabelValuesAsync(LableValuesRequest query)
     {
         var data = await _caller.GetByBodyAsync<Dictionary<string, Dictionary<string, List<string>>>>(LABELVALUES_URI, query);
         if (data == null || !data.ContainsKey(query.Match))
@@ -34,11 +34,11 @@ internal class MetricService : IMetricService
         return data[query.Match];
     }
 
-    public async Task<string> GetMetricValuesAsync(MetricRangeValueRequest query)
+    public async Task<string> GetValuesAsync(ValuesRequest query)
     {
         if (query.Lables != null && !string.IsNullOrEmpty(query.Match))
         {
-            query.Match = $"{query.Match}{{{string.Join(',',query.Lables)}}}";
+            query.Match = $"{query.Match}{{{string.Join(',', query.Lables)}}}";
         }
 
         return (await _caller.GetByBodyAsync<string>(RANGEVALUES_URL, query)) ?? default!;

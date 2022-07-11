@@ -23,9 +23,9 @@ public class MetricServiceTests
     [DataRow(new string[] { "up", "prometheus_http_requests_total", "prometheus_http_request_duration_seconds_count" })]
     [DataRow(new string[] { "not_exists", "up" })]
     [DataRow(new string[] { "not_exists" })]
-    public async Task GetMetricNamesAsyncTest(IEnumerable<string> match)
+    public async Task GetNamesAsyncTest(IEnumerable<string> match)
     {
-        var result = await _client.MetricService.GetMetricNamesAsync(match);
+        var result = await _client.MetricService.GetNamesAsync(match);
         if (match == null)
         {
             Assert.IsNotNull(result);
@@ -42,11 +42,11 @@ public class MetricServiceTests
 
     [TestMethod]
     [DataRow("up", "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
-    public async Task GetLabelAndValuesAsyncTest(string match, string start, string end)
+    public async Task GetLabelValuesAsyncTest(string match, string start, string end)
     {
         DateTime startDateTime = DateTime.Parse(start);
         DateTime endDateTime = DateTime.Parse(end);
-        var result = await _client.MetricService.GetLabelAndValuesAsync(new MetricLableValuesRequest
+        var result = await _client.MetricService.GetLabelValuesAsync(new LableValuesRequest
         {
             Match = match,
             Start = startDateTime,
@@ -59,11 +59,11 @@ public class MetricServiceTests
 
     [TestMethod]
     [DataRow("up", null, "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
-    public async Task GetMetricValuesAsyncTest(string match, IEnumerable<string> labels, string start, string end)
+    public async Task GetValuesAsyncTest(string match, IEnumerable<string> labels, string start, string end)
     {
         DateTime startDateTime = DateTime.Parse(start);
         DateTime endDateTime = DateTime.Parse(end);
-        var result = await _client.MetricService.GetMetricValuesAsync(new MetricRangeValueRequest
+        var result = await _client.MetricService.GetValuesAsync(new ValuesRequest
         {
             Match = match,
             Lables = labels,

@@ -12,7 +12,7 @@ public class LogServiceTests
         var callerProvider = new Mock<ICallerProvider>();
 
         var time = DateTime.Now;
-        var query = new MetricLableValuesRequest
+        var query = new LableValuesRequest
         {
             Match = "up",
             Start = time.AddMinutes(-15),
