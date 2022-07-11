@@ -1,10 +1,10 @@
 name: ci_test_reports_to_oss
 on:
-  push:
-    branches:
-      - 'main'
-    paths:
-      - 'test/**'
+  # push:
+  #   branches:
+  #     - 'main'
+  #   paths:
+  #     - 'test/**/**'
   workflow_dispatch:
   
 jobs:

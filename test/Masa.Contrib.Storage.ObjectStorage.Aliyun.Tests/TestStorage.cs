@@ -313,9 +313,3 @@ public class TestStorage : BaseTest
         Assert.IsTrue(bucketName.ToString() == "test-bucket2");
     }
 }
-
-
-
-
-
-
