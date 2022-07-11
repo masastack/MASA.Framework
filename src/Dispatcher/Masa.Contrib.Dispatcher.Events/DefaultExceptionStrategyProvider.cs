@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public class DefaultStrategyExceptionProvider : IStrategyExceptionProvider
+public class DefaultExceptionStrategyProvider : IExceptionStrategyProvider
 {
-    private readonly ILogger<DefaultStrategyExceptionProvider>? _logger;
+    private readonly ILogger<DefaultExceptionStrategyProvider>? _logger;
 
-    public DefaultStrategyExceptionProvider(ILogger<DefaultStrategyExceptionProvider>? logger = null)
+    public DefaultExceptionStrategyProvider(ILogger<DefaultExceptionStrategyProvider>? logger = null)
         => _logger = logger;
 
     /// <summary>

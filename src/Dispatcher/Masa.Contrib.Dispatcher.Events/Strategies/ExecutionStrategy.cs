@@ -5,10 +5,10 @@ namespace Masa.Contrib.Dispatcher.Events.Strategies;
 
 public class ExecutionStrategy : IExecutionStrategy
 {
-    private readonly IStrategyExceptionProvider _strategyExceptionProvider;
+    private readonly IExceptionStrategyProvider _strategyExceptionProvider;
     private readonly ILogger<ExecutionStrategy>? _logger;
 
-    public ExecutionStrategy(IStrategyExceptionProvider strategyExceptionProvider, ILogger<ExecutionStrategy>? logger = null)
+    public ExecutionStrategy(IExceptionStrategyProvider strategyExceptionProvider, ILogger<ExecutionStrategy>? logger = null)
     {
         _strategyExceptionProvider = strategyExceptionProvider;
         _logger = logger;

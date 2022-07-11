@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, assemblies).Build(lifetime));
         services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
-        services.TryAddSingleton<IStrategyExceptionProvider, DefaultStrategyExceptionProvider>();
+        services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
@@ -60,7 +60,7 @@ public static class ServiceCollectionExtensions
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
         services.AddSingleton(new SagaDispatcher(services, assemblies, true).Build(lifetime));
         services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
-        services.TryAddSingleton<IStrategyExceptionProvider, DefaultStrategyExceptionProvider>();
+        services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));

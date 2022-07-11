@@ -7,12 +7,6 @@ public class EventBusBuilder : IEventBusBuilder
 {
     public IServiceCollection Services { get; }
 
-    /// <summary>
-    /// Used for logging in default retry policy
-    /// default: true
-    /// </summary>
-    public bool EnableLog { get; set; } = true;
-
     public EventBusBuilder(IServiceCollection services) => Services = services;
 
     public IEventBusBuilder UseMiddleware(Type middleware, ServiceLifetime middlewareLifetime = ServiceLifetime.Transient)

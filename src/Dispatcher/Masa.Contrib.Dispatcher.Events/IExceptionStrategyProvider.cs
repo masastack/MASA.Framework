@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public interface IStrategyExceptionProvider
+public interface IExceptionStrategyProvider
 {
     bool SupportRetry(Exception? exception);
 
