@@ -1,0 +1,43 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+  
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: git pull
+      uses: actions/checkout@v2
+
+    - name: run a one-line script
+      run: env
+
+    - name: setting dotnet version
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+        include-prerelease: true
+    - name: dependencies
+      run: git clone --recursive https://github.com/masastack/MASA.Contrib.git
+
+    - name: Configure sysctl limits
+      run: |
+        sudo swapoff -a
+        sudo sysctl -w vm.swappiness=1
+        sudo sysctl -w fs.file-max=262144
+        sudo sysctl -w vm.max_map_count=262144
+    - name: dotnet  run test
+        dotnet run -c Release --project ./test/Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests
+        dotnet run -c Release --project ./test/Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests
+    - name: set oss path
+      uses: manyuanrong/setup-ossutil@v2.0
+      with:
+        endpoint: "oss-cn-hangzhou.aliyuncs.com"
+        access-key-id: ${{ secrets.ACCESS_KEY_ID }}
+        access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
+    - name: push oss
+        run: ossutil cp -rf  /home/runner/work/MASA.Contrib/BenchmarkDotNet.Artifacts/results/    oss://masa-cdn/masa-contrib/reports/
