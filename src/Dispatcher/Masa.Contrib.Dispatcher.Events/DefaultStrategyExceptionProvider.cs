@@ -7,7 +7,7 @@ public class DefaultStrategyExceptionProvider : IStrategyExceptionProvider
 {
     private readonly ILogger<DefaultStrategyExceptionProvider>? _logger;
 
-    public DefaultStrategyExceptionProvider(ILogger<DefaultStrategyExceptionProvider>? logger)
+    public DefaultStrategyExceptionProvider(ILogger<DefaultStrategyExceptionProvider>? logger = null)
         => _logger = logger;
 
     /// <summary>
