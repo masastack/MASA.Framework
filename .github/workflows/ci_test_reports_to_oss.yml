@@ -30,7 +30,7 @@ jobs:
         sudo sysctl -w vm.swappiness=1
         sudo sysctl -w fs.file-max=262144
         sudo sysctl -w vm.max_map_count=262144
-        cd /home/runner/work/MASA.Contrib
+        cd /home/runner/work/MASA.Contrib/MASA.Contrib/MASA.Contrib
         pwd 
         ls 
         tree
@@ -44,4 +44,4 @@ jobs:
         access-key-id: ${{ secrets.ACCESS_KEY_ID }}
         access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
     - name: push oss
-      run: ossutil cp -rf  /home/runner/work/MASA.Contrib/BenchmarkDotNet.Artifacts/results/    oss://masa-cdn/masa-contrib/reports/
+      run: ossutil cp -rf  /home/runner/work/MASA.Contrib/MASA.Contrib/MASA.Contrib/BenchmarkDotNet.Artifacts/results/    oss://masa-cdn/masa-contrib/reports/
