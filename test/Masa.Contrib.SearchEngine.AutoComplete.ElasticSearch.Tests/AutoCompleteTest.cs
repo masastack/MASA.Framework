@@ -31,7 +31,8 @@ public class AutoCompleteTest
             {
                 setting.DefaultIndex("user_index");
             });
-        }).AddAutoComplete(option => option.UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And));
+        }).AddAutoComplete(option
+            => option.UseIndexName("user_index").UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And));
         var serviceProvider = _services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetService<IAutoCompleteClient>();
         Assert.IsNotNull(autoCompleteClient);
@@ -119,14 +120,14 @@ public class AutoCompleteTest
         response = await autoCompleteClient.GetAsync<long>("li");
         Assert.IsTrue(response.IsValid && response.Total == 2);
 
-        response = await autoCompleteClient.GetAsync<long>("*si", new AutoCompleteOptions(SearchType.Fuzzy));
+        response = await autoCompleteClient.GetAsync<long>("si", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
-        response = await autoCompleteClient.GetAsync<long>("zhang*", new AutoCompleteOptions(SearchType.Fuzzy));
+        response = await autoCompleteClient.GetAsync<long>("zhang", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 2);
 
-        response = await autoCompleteClient.GetAsync<long>("*", new AutoCompleteOptions(SearchType.Fuzzy));
-        Assert.IsTrue(response.IsValid && response.Total == 3);
+        response = await autoCompleteClient.GetAsync<long>("", new AutoCompleteOptions(SearchType.Fuzzy));
+        Assert.IsTrue(response.IsValid && response.Total == 0);
     }
 
     [TestMethod]
