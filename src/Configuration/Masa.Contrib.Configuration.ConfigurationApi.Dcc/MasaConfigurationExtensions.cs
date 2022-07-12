@@ -20,7 +20,6 @@ public static class MasaConfigurationExtensions
             configurationExpandSection.Bind(expandSections);
         }
 
-        StaticConfig.AppId = builder.Configuration[nameof(DccSectionOptions.AppId)];
         return builder.UseDcc(() => dccOptions, option =>
         {
             option.Environment = builder.Configuration[nameof(DccSectionOptions.Environment)];
@@ -61,6 +60,8 @@ public static class MasaConfigurationExtensions
         Action<JsonSerializerOptions>? jsonSerializerOptions,
         Action<CallerOptions>? callerOptions)
     {
+        StaticConfig.AppId = defaultSectionOptions.AppId;
+
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
