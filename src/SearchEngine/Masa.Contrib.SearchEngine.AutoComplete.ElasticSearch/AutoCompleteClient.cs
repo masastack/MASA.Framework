@@ -27,6 +27,12 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     {
         var newOptions = options ?? new(_defaultSearchType);
         var searchType = newOptions.SearchType ?? _defaultSearchType;
+
+        keyword = keyword.Trim();
+
+        if (string.IsNullOrEmpty(keyword))
+            return new GetResponse<TAudoCompleteDocument, TValue>(true, string.Empty, new List<TAudoCompleteDocument>());
+
         if (searchType == SearchType.Fuzzy)
         {
             string newKeyword = keyword;
