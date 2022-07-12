@@ -22,7 +22,7 @@ public class FeaturesTest : TestBase
             {
                 ResetMemoryEventBus(typeof(AddBasketEvent).Assembly);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
                 throw;
