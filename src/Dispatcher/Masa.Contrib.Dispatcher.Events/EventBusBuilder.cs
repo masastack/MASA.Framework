@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public class EventBusBuilder: IEventBusBuilder
+public class EventBusBuilder : IEventBusBuilder
 {
     public IServiceCollection Services { get; }
 

@@ -19,7 +19,7 @@ public static class DispatcherOptionsExtensions
 
     #region Obsolete
 
-    [Obsolete("Use UseDapr instead")]
+    [Obsolete("Use UseIntegrationEventBus<IntegrationEventLogService>(opt => opt.UseDapr())")]
     public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
         this IDistributedDispatcherOptions dispatcherOptions,
         string daprPubSubName)
@@ -27,14 +27,14 @@ public static class DispatcherOptionsExtensions
         => dispatcherOptions.UseDaprEventBus<TIntegrationEventLogService>(option => option.PubSubName = daprPubSubName);
 
 
-    [Obsolete("Use UseDapr instead")]
+    [Obsolete("Use UseIntegrationEventBus<IntegrationEventLogService>(opt => opt.UseDapr())")]
     public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
         this IDistributedDispatcherOptions dispatcherOptions,
         Action<DispatcherOptions>? optionAction = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => dispatcherOptions.UseDaprEventBus<TIntegrationEventLogService>(optionAction, null);
 
-    [Obsolete("Use UseDapr instead")]
+    [Obsolete("Use UseIntegrationEventBus<IntegrationEventLogService>(opt => opt.UseDapr())")]
     public static IDistributedDispatcherOptions UseDaprEventBus<TIntegrationEventLogService>(
         this IDistributedDispatcherOptions dispatcherOptions,
         Action<DispatcherOptions>? optionAction,
