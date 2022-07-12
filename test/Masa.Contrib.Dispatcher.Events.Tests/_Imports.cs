@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
+global using Masa.Contrib.Data.EntityFrameworkCore;
 global using Masa.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.Events;
