@@ -16,6 +16,8 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal Operator DefaultOperator { get; private set; } = Operator.Or;
 
+    internal bool EnableMultipleCondition { get; private set; } = true;
+
     internal Action<TypeMappingDescriptor<TDocument>>? Action { get; private set; }
 
     internal Action<IIndexSettings>? IndexSettingAction { get; private set; }
@@ -76,4 +78,9 @@ public class AutoCompleteOptions<TDocument, TValue>
         return this;
     }
 
+    public AutoCompleteOptions<TDocument, TValue> UseMultipleConditions(bool enableMultipleCondition = true)
+    {
+        EnableMultipleCondition = enableMultipleCondition;
+        return this;
+    }
 }
