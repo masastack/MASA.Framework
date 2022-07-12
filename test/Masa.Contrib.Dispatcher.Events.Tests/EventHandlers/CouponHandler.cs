@@ -6,7 +6,7 @@ namespace Masa.Contrib.Dispatcher.Events.Tests.EventHandlers;
 public class CouponHandler
 {
     [EventHandler]
-    public async Task SendCouponAsync(SendCouponEvent @event)
+    public Task SendCouponAsync(SendCouponEvent @event)
     {
         throw new UserFriendlyException("custom exception");
     }

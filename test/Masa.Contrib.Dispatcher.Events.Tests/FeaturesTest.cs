@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Data.UoW.EF;
-
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -24,7 +22,7 @@ public class FeaturesTest : TestBase
             {
                 ResetMemoryEventBus(typeof(AddBasketEvent).Assembly);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
                 throw;
@@ -384,13 +382,16 @@ public class FeaturesTest : TestBase
     public async Task TestEventBusFailedReturnExceptionIsUserFriendException()
     {
         var services = new ServiceCollection();
-        services.AddEventBus(builder =>
-        {
-            builder.UseUoW<CustomizeDbContext>(optionBuilder =>
+        services.AddTestEventBus(
+            new[] { typeof(FeaturesTest).Assembly },
+            ServiceLifetime.Scoped,
+            builder =>
             {
-                optionBuilder.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
+                builder.UseUoW<CustomizeDbContext>(optionBuilder =>
+                {
+                    optionBuilder.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
+                });
             });
-        });
 
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
