@@ -18,7 +18,8 @@ public class AutoCompleteTest
     public void TestAddAutoCompleteAndNoIndexName()
     {
         var builder = _services.AddElasticsearchClient();
-        Assert.ThrowsException<ArgumentNullException>(() => builder.AddAutoComplete<Guid>());
+        Assert.ThrowsException<ArgumentNullException>(()
+            => builder.AddAutoComplete<Guid>(option => option.UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And)));
     }
 
     [TestMethod]
@@ -30,7 +31,7 @@ public class AutoCompleteTest
             {
                 setting.DefaultIndex("user_index");
             });
-        }).AddAutoComplete();
+        }).AddAutoComplete(option => option.UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And));
         var serviceProvider = _services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetService<IAutoCompleteClient>();
         Assert.IsNotNull(autoCompleteClient);
@@ -53,8 +54,11 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
-            .AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
-        Assert.ThrowsException<ArgumentException>(() => builder.AddAutoComplete(option => option.UseIndexName(userIndexName)));
+            .AddAutoComplete(option
+                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                    .UseDefaultOperator(Operator.And));
+        Assert.ThrowsException<ArgumentException>(() => builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And)));
     }
 
     [TestMethod]
@@ -65,9 +69,13 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
-            .AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefault());
+            .AddAutoComplete(option
+                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefault().UseDefaultSearchType(SearchType.Precise)
+                    .UseDefaultOperator(Operator.And));
         Assert.ThrowsException<ArgumentException>(()
-            => builder.AddAutoComplete(option => option.UseIndexName("employee_index").UseDefault()));
+            => builder.AddAutoComplete(option
+                => option.UseIndexName("employee_index").UseDefault().UseDefaultSearchType(SearchType.Precise)
+                    .UseDefaultOperator(Operator.And)));
     }
 
     [TestMethod]
@@ -82,7 +90,8 @@ public class AutoCompleteTest
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
 
         builder.AddAutoComplete<long>(option
-            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise));
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                .UseDefaultOperator(Operator.And));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
@@ -133,6 +142,8 @@ public class AutoCompleteTest
         builder.AddAutoComplete<Employee, int>(option => option
             .UseIndexName(employeeIndexName)
             .UseAlias(employeeAlias)
+            .UseDefaultSearchType(SearchType.Precise)
+            .UseDefaultOperator(Operator.And)
             .Mapping(descriptor =>
             {
                 descriptor.AutoMap<Employee>()
@@ -229,7 +240,9 @@ public class AutoCompleteTest
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
         builder.AddAutoComplete<Employee, int>(option => option
             .UseIndexName(employeeIndexName)
-            .UseAlias(employeeAlias));
+            .UseAlias(employeeAlias)
+            .UseDefaultSearchType(SearchType.Precise)
+            .UseDefaultOperator(Operator.And));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
@@ -272,7 +285,7 @@ public class AutoCompleteTest
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
             .AddAutoComplete<long>(option =>
                 option.UseIndexName(userIndexName)
-                    .UseAlias(userAlias));
+                    .UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And));
 
         await builder.Client.ClearDocumentAsync(userAlias);
 
@@ -312,7 +325,7 @@ public class AutoCompleteTest
         builder.AddAutoComplete<long>(option =>
             option.UseIndexName(userIndexName)
                 .UseAlias(userAlias)
-                .UseDefaultOperator(Operator.Or));
+                .UseDefaultOperator(Operator.Or).UseDefaultSearchType(SearchType.Precise));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
@@ -344,6 +357,8 @@ public class AutoCompleteTest
         string analyzer = "ik_max_word_pinyin";
 
         Assert.ThrowsException<ArgumentNullException>(() => builder.AddAutoComplete<Employee, int>(option => option
+            .UseDefaultSearchType(SearchType.Precise)
+            .UseDefaultOperator(Operator.And)
             .Mapping(descriptor =>
             {
                 descriptor.AutoMap<Employee>()
@@ -376,7 +391,9 @@ public class AutoCompleteTest
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
@@ -406,7 +423,9 @@ public class AutoCompleteTest
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
@@ -437,7 +456,9 @@ public class AutoCompleteTest
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
@@ -477,7 +498,9 @@ public class AutoCompleteTest
         var builder = _services.AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
         await builder.Client.DeleteIndexAsync(userIndexName);
 
-        builder.AddAutoComplete(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
+                .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]

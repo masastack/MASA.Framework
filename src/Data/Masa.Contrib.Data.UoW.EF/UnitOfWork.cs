@@ -68,7 +68,8 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         if (!UseTransaction || !TransactionHasBegun)
             return;
 
-        await Context.Database.RollbackTransactionAsync(cancellationToken);
+        if (TransactionHasBegun)
+            await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
     public Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class
