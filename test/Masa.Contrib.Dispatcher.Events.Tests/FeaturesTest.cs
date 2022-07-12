@@ -377,4 +377,26 @@ public class FeaturesTest : TestBase
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
     }
+
+    [TestMethod]
+    public async Task TestEventBusFailedReturnExceptionIsUserFriendException()
+    {
+        var services = new ServiceCollection();
+        services.AddTestEventBus(
+            new[] { typeof(FeaturesTest).Assembly },
+            ServiceLifetime.Scoped,
+            builder =>
+            {
+                builder.UseUoW<CustomizeDbContext>(optionBuilder =>
+                {
+                    optionBuilder.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
+                });
+            });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await eventBus.PublishAsync(new SendCouponEvent()));
+    }
 }

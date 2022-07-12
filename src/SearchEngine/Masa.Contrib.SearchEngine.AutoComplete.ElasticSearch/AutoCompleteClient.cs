@@ -27,12 +27,24 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     {
         var newOptions = options ?? new(_defaultSearchType);
         var searchType = newOptions.SearchType ?? _defaultSearchType;
+
+        keyword = keyword.Trim();
+
+        if (string.IsNullOrEmpty(keyword))
+            return new GetResponse<TAudoCompleteDocument, TValue>(true, string.Empty, new List<TAudoCompleteDocument>());
+
         if (searchType == SearchType.Fuzzy)
         {
+            string newKeyword = keyword;
+            if (!newKeyword.StartsWith("*"))
+                newKeyword = "*" + newKeyword;
+            if (!newKeyword.EndsWith("*"))
+                newKeyword = newKeyword + "*";
+
             var ret = await _client.GetPaginatedListAsync(
                 new PaginatedOptions<TAudoCompleteDocument>(
                     _indexName,
-                    keyword,
+                    newKeyword,
                     newOptions.Field,
                     newOptions.Page,
                     newOptions.PageSize,

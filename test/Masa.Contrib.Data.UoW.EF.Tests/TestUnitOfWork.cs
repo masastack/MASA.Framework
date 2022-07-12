@@ -75,25 +75,6 @@ public class TestUnitOfWork : TestBase
     }
 
     [TestMethod]
-    public async Task TestNotUseTranscationAsync()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
-
-        Users user = new Users()
-        {
-            Name = Guid.NewGuid().ToString()
-        };
-        dbContext.Add(user);
-        uoW.EntityState = EntityState.Changed;
-        await uoW.SaveChangesAsync();
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await uoW.RollbackAsync());
-    }
-
-    [TestMethod]
     public async Task TestCommitAsync()
     {
         _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));

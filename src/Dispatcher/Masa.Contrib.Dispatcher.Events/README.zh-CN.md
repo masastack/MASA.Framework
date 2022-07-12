@@ -207,3 +207,7 @@ IEventBus是事件总线的核心，配合Cqrs、Uow、Masa.Contrib.Ddd.Domain.R
 > 问题3. 如果在EventHandler中手动调用UoW的SaveChange方法保存，那框架还会自动保存吗？
 
     > 如果在EventHandler中手动调用了UoW的SaveChange方法保存，且之后并未再使用IRepository提供的Add、Update、Delete操作，则在EventHandler执行结束后不会二次执行SaveChange操作，但如果在手动调用UoW的SaveChange方法保存后又继续使用IRepository提供的Add、Update、Delete操作，则框架会再次调用SaveChange操作以确保数据保存成功
+
+> 问题4. 为什么开启了异常重试却未执行重试？
+
+    > 默认`UserFriendlyException`不支持重试，如果需要支持重试，则需要重新实现`IStrategyExceptionProvider`
