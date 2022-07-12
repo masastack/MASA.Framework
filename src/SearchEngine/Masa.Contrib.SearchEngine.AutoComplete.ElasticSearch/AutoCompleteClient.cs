@@ -29,10 +29,16 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         var searchType = newOptions.SearchType ?? _defaultSearchType;
         if (searchType == SearchType.Fuzzy)
         {
+            string newKeyword = keyword;
+            if (!newKeyword.StartsWith("*"))
+                newKeyword = "*" + newKeyword;
+            if (!newKeyword.EndsWith("*"))
+                newKeyword = newKeyword + "*";
+
             var ret = await _client.GetPaginatedListAsync(
                 new PaginatedOptions<TAudoCompleteDocument>(
                     _indexName,
-                    keyword,
+                    newKeyword,
                     newOptions.Field,
                     newOptions.Page,
                     newOptions.PageSize,
