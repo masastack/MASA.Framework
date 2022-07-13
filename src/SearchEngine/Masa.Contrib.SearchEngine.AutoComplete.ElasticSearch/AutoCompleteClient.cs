@@ -82,7 +82,10 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         if (_enableMultipleCondition)
             return string.Join(' ', keyword.Split(' ').Select(word => $"*{word.Trim('*')}*"));
 
-        return $"\"{keyword}\"";
+        if (!keyword.Contains(" "))
+            return $"*{keyword.Trim('*')}*";
+
+        return $"\"{keyword}\"";//Content contains spaces and is treated as a phrase for search
     }
 
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)

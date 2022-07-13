@@ -226,19 +226,21 @@ public class AutoCompleteTest
             new("李四", 2),
             new("张丽", 3),
             new("唐伯虎", 4),
-            new("唐 虎", 5)
         });
 
         Thread.Sleep(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("唐 虎");
-        Assert.IsTrue(response.Total == 1);
+        Assert.IsTrue(response.Total == 0);
 
         var response2 = await autoCompleteClient.GetAsync<long>("唐");
-        Assert.IsTrue(response2.Total == 2);
+        Assert.IsTrue(response2.Total == 1);
 
         var response3 = await autoCompleteClient.GetAsync<long>("zs");
-        Assert.IsTrue(response3.Total == 0);
+        Assert.IsTrue(response3.Total == 1);
+
+        var response4 = await autoCompleteClient.GetAsync<long>("tang");
+        Assert.IsTrue(response4.Total == 1);
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
     }
