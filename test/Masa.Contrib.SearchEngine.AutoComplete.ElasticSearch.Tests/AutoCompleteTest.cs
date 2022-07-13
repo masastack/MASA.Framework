@@ -152,16 +152,17 @@ public class AutoCompleteTest
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
-            new("李四", 2),
-            new("张丽", 3)
+            new("张丽", 2),
+            new("李四", 3)
         });
 
         Thread.Sleep(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三 ls");
-        Assert.IsTrue(response.Total == 2);
+        Assert.IsTrue(response.Total == 3);
         Assert.IsTrue(response.Data[0].Value == 1);
-        Assert.IsTrue(response.Data[1].Value == 2);
+        Assert.IsTrue(response.Data[1].Value == 3);
+        Assert.IsTrue(response.Data[2].Value == 2);
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
     }

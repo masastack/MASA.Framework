@@ -80,12 +80,20 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     private string GetFuzzyKeyword(string keyword)
     {
         if (_enableMultipleCondition)
-            return string.Join(' ', keyword.Split(' ').Select(word => $"*{word.Trim('*')}*"));
+            return string.Join(' ', keyword.Split(' ').Select(CompleteKeyword));
 
         if (!keyword.Contains(" "))
-            return $"*{keyword.Trim('*')}*";
+            return CompleteKeyword(keyword);
 
-        return $"\"{keyword}\"";//Content contains spaces and is treated as a phrase for search
+        return $"\"{keyword}\""; //Content contains spaces and is treated as a phrase for search
+    }
+
+    private string CompleteKeyword(string keyword)
+    {
+        if (keyword.Equals("*"))
+            return keyword;
+
+        return $"(*{keyword.Trim('*')}* OR {keyword.Trim('*')} OR *{keyword.Trim('*')} OR {keyword.Trim('*')}*)";
     }
 
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
