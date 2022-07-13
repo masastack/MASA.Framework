@@ -13,7 +13,13 @@ public class AutoCompleteFactory : IAutoCompleteFactory
     {
         var item = _relations.SingleOrDefault(r => r.IsDefault) ?? _relations.FirstOrDefault();
         ArgumentNullException.ThrowIfNull(item, "You should use AddAutoComplete before the project starts");
-        return new AutoCompleteClient(item.ElasticClient, item.MasaElasticClient, item.RealIndexName, item.DefaultOperator, item.DefaultSearchType);
+        return new AutoCompleteClient(
+            item.ElasticClient,
+            item.MasaElasticClient,
+            item.RealIndexName,
+            item.DefaultOperator,
+            item.DefaultSearchType,
+            item.EnableMultipleCondition);
     }
 
     /// <summary>
@@ -25,6 +31,12 @@ public class AutoCompleteFactory : IAutoCompleteFactory
     {
         var item = _relations.FirstOrDefault(relation => relation.IndexName == name || relation.Alias == name);
         ArgumentNullException.ThrowIfNull(item, nameof(name));
-        return new AutoCompleteClient(item.ElasticClient, item.MasaElasticClient, item.RealIndexName, item.DefaultOperator, item.DefaultSearchType);
+        return new AutoCompleteClient(
+            item.ElasticClient,
+            item.MasaElasticClient,
+            item.RealIndexName,
+            item.DefaultOperator,
+            item.DefaultSearchType,
+            item.EnableMultipleCondition);
     }
 }
