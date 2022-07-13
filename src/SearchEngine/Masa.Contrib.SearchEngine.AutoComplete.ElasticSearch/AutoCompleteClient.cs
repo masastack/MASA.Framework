@@ -46,7 +46,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
             var ret = await _client.GetPaginatedListAsync(
                 new PaginatedOptions<TAudoCompleteDocument>(
                     _indexName,
-                    GetKeywordByFuzzy(keyword),
+                    GetFuzzyKeyword(keyword),
                     newOptions.Field,
                     newOptions.Page,
                     newOptions.PageSize,
@@ -77,21 +77,12 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         }
     }
 
-    private string GetKeywordByFuzzy(string keyword)
+    private string GetFuzzyKeyword(string keyword)
     {
         if (_enableMultipleCondition)
-            return string.Join(' ', keyword.Split(' ').Select(CompleteKeyword));
+            return string.Join(' ', keyword.Split(' ').Select(word => $"*{word.Trim('*')}*"));
 
         return $"\"{keyword}\"";
-    }
-
-    private string CompleteKeyword(string keyword)
-    {
-        if (!keyword.StartsWith("*"))
-            keyword = "*" + keyword;
-        if (!keyword.EndsWith("*"))
-            keyword += "*";
-        return keyword;
     }
 
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
@@ -99,7 +90,8 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     {
         var queryContainer = _defaultOperator == Operator.And ?
             queryContainerDescriptor.Bool(boolQueryDescriptor => GetBoolQueryDescriptor(boolQueryDescriptor, field, keyword)) :
-            queryContainerDescriptor.Terms(descriptor => descriptor.Field(field).Terms(_enableMultipleCondition ? keyword.Split(' ') : new[] { keyword }));
+            queryContainerDescriptor.Terms(descriptor
+                => descriptor.Field(field).Terms(_enableMultipleCondition ? keyword.Split(' ') : new[] { keyword }));
         return queryContainer;
     }
 
