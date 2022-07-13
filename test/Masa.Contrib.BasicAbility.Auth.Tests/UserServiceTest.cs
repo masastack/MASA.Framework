@@ -22,6 +22,21 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task UpsertAsync()
+    {
+        var upsertUser = new UpsertUserModel();
+        var user = new UserModel();
+        var requestUri = $"api/user/upsertExternal";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PostAsync<UpsertUserModel, UserModel>(requestUri, upsertUser, default)).ReturnsAsync(user).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.UpsertAsync(upsertUser);
+        callerProvider.Verify(provider => provider.PostAsync<UpsertUserModel, UserModel>(requestUri, upsertUser, default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     public async Task TestGetListByDepartmentAsync()
     {
         var data = new List<StaffModel>()
