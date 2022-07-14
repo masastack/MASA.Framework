@@ -31,7 +31,7 @@ public class WebsiteMessageService : IWebsiteMessageService
     public async Task<List<WebsiteMessageChannelModel>> GetChannelListAsync()
     {
         var requestUri = $"{_party}/GetChannelList";
-        return await _callerProvider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri) ?? new();
+        return await _callerProvider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri)??new();
     }
 
     public async Task<PaginatedListModel<WebsiteMessageModel>> GetListAsync(GetWebsiteMessageModel options)

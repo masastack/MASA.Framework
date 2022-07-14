@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             {
                 builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            });
         });
     }
 
@@ -29,11 +29,9 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IMcClient)))
             return services;
 
-        services.AddHttpContextAccessor();
-        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
-        services.AddCaller(callerOptions);
+        services.AddCaller(callerOptions.Invoke);
 
-        services.AddScoped<IMcClient>(serviceProvider =>
+        services.AddSingleton<IMcClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
             var mcCaching = new McClient(callProvider);
