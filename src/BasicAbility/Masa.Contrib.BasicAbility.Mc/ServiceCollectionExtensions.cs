@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(mcServiceBaseAddress));
         }
 
-        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddMcClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
