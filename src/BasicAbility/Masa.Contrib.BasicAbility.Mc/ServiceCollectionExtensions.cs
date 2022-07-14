@@ -12,13 +12,14 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(mcServiceBaseAddress));
         }
 
+        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddMcClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            });
+            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });
     }
 
@@ -29,9 +30,11 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IMcClient)))
             return services;
 
-        services.AddCaller(callerOptions.Invoke);
+        services.AddHttpContextAccessor();
+        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
+        services.AddCaller(callerOptions);
 
-        services.AddSingleton<IMcClient>(serviceProvider =>
+        services.AddScoped<IMcClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
             var mcCaching = new McClient(callProvider);
