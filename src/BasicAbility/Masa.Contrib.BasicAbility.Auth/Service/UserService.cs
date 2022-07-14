@@ -20,6 +20,12 @@ public class UserService : IUserService
         return await _callerProvider.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
+    public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
+    {
+        var requestUri = $"api/user/upsertExternal";
+        return await _callerProvider.PostAsync<UpsertUserModel, UserModel>(requestUri, user);
+    }
+
     public async Task<List<StaffModel>> GetListByDepartmentAsync(Guid departmentId)
     {
         var requestUri = $"api/staff/getListByDepartment";
