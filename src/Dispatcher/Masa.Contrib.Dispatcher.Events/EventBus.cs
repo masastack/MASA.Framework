@@ -11,15 +11,18 @@ public class EventBus : IEventBus
 
     private readonly DispatcherOptions _options;
 
+    private bool _isFirst;
     private IUnitOfWork? _unitOfWork;
 
     private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
 
-    public EventBus(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options)
+    public EventBus(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options, IUnitOfWork? unitOfWork = null)
     {
         _serviceProvider = serviceProvider;
         _dispatcher = serviceProvider.GetRequiredService<Internal.Dispatch.Dispatcher>();
         _options = options.Value;
+        _unitOfWork = unitOfWork;
+        _isFirst = true;
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
@@ -30,28 +33,30 @@ public class EventBus : IEventBus
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
-            throw new NotSupportedException($"Getting \"{eventType.Name}\" relationship chain failed, see {LoadEventHelpLink} for details. ");
+            throw new NotSupportedException(
+                $"Getting \"{eventType.Name}\" relationship chain failed, see {LoadEventHelpLink} for details. ");
         }
 
         if (_options.UnitOfWorkRelation[eventType])
         {
             ITransaction transactionEvent = (ITransaction)@event;
-            var unitOfWork = _serviceProvider.GetService<IUnitOfWork>();
-            if (unitOfWork != null)
-            {
-                transactionEvent.UnitOfWork = unitOfWork;
-                if (_unitOfWork is null)
-                {
-                    _unitOfWork = transactionEvent.UnitOfWork;
-                }
-                else
-                {
-                    middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
-                }
-            }
+            transactionEvent.UnitOfWork = _unitOfWork;
+        }
+        else if (_isFirst && _unitOfWork != null)
+        {
+            // If the event does not support transactions, transactions are not enabled by default
+            _unitOfWork.UseTransaction = false;
         }
 
-        EventHandlerDelegate eventHandlerDelegate = async () => { await _dispatcher.PublishEventAsync(_serviceProvider, @event); };
+        if (!_isFirst)
+            middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
+
+        _isFirst = false;
+
+        EventHandlerDelegate eventHandlerDelegate = async () =>
+        {
+            await _dispatcher.PublishEventAsync(_serviceProvider, @event);
+        };
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
