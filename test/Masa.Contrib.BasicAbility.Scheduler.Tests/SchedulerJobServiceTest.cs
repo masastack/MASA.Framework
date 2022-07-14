@@ -68,7 +68,7 @@ public class SchedulerJobServiceTest
             {
                 JobAppIdentity = "MASA_MC_SERVICE",
                 JobEntryAssembly = "Masa.Test.Job",
-                JobEntryMethod = "TestRunJob",
+                JobEntryClassName = "TestRunJob",
                 JobParams = "1;2;3",
                 Version = ""
             },
