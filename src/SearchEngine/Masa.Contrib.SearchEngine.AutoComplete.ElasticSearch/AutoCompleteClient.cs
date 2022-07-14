@@ -93,7 +93,8 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         if (keyword.Equals("*"))
             return keyword;
 
-        return $"({keyword.Trim('*')} OR *{keyword.Trim('*')} OR {keyword.Trim('*')}*)";
+        keyword = keyword.Trim('*');
+        return $"({keyword} OR *{keyword} OR {keyword}*)";
     }
 
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
