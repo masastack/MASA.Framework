@@ -19,7 +19,6 @@ public class UserHandler
     [EventHandler]
     public async Task RegisterUserByEventAsync(RegisterUserEvent @event)
     {
-        Assert.IsFalse(_unitOfWork.UseTransaction);
         await _repository.AddAsync(new User()
         {
             Name = @event.Name,
@@ -30,7 +29,6 @@ public class UserHandler
     [EventHandler]
     public async Task RegisterUserByCommandAsync(RegisterUserCommand command)
     {
-        Assert.IsTrue(_unitOfWork.UseTransaction);
         var query = new CheckUserQuery()
         {
             Name = command.Name
@@ -49,7 +47,6 @@ public class UserHandler
     [EventHandler]
     public async Task UserExistAsync(UserAgeQuery query)
     {
-        Assert.IsFalse(_unitOfWork.UseTransaction);
         var checkUserQuery = new CheckUserQuery(); //Check whether the second verification can enter normally
         await Assert.ThrowsExceptionAsync<ValidationException>(async () => await _eventBus.PublishAsync(checkUserQuery),"Name is required on CheckUserQuery");
         if (!checkUserQuery.Result)

@@ -17,8 +17,6 @@ public class TestDispatcher : TestBase
             Age = 18
         };
         await eventBus.PublishAsync(@event);
-        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-        Assert.IsFalse(unitOfWork.UseTransaction);
 
         var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
         Assert.IsTrue(dbContext.Set<User>().Count() == 1);
@@ -35,8 +33,6 @@ public class TestDispatcher : TestBase
             Age = 18
         };
         await eventBus.PublishAsync(command);
-        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-        Assert.IsTrue(unitOfWork.UseTransaction);
 
         Assert.IsTrue(RecordMiddleware<RegisterUserCommand>.Time == 1);
         Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);
@@ -64,9 +60,6 @@ public class TestDispatcher : TestBase
         };
         await eventBus.PublishAsync(query);
         Assert.IsTrue(query.Result == default);
-
-        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-        Assert.IsFalse(unitOfWork.UseTransaction);
 
         Assert.IsTrue(RecordMiddleware<UserAgeQuery>.Time == 1);
         Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);

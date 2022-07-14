@@ -42,11 +42,6 @@ public class EventBus : IEventBus
             ITransaction transactionEvent = (ITransaction)@event;
             transactionEvent.UnitOfWork = _unitOfWork;
         }
-        else if (_isFirst && _unitOfWork != null)
-        {
-            // If the event does not support transactions, transactions are not enabled by default
-            _unitOfWork.UseTransaction = false;
-        }
 
         if (!_isFirst)
             middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
