@@ -12,6 +12,7 @@ public class McClient: IMcClient
         MessageTemplateService = new MessageTemplateService(callerProvider);
         ReceiverGroupService = new ReceiverGroupService(callerProvider);
         WebsiteMessageService = new WebsiteMessageService(callerProvider);
+        NotificationService = new NotificationService(callerProvider);
     }
 
     public IChannelService ChannelService { get; }
@@ -23,4 +24,6 @@ public class McClient: IMcClient
     public IReceiverGroupService ReceiverGroupService { get; }
 
     public IWebsiteMessageService WebsiteMessageService { get; }
+
+    public INotificationService NotificationService { get; }
 }
