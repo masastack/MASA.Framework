@@ -22,6 +22,8 @@ public static class DispatcherOptionsExtensions
 
         options.Services.AddSingleton<EventLogProvider>();
 
+        options.Services.TryAddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+
         //Add local message table model mapping
         options.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IModelCreatingProvider),
             typeof(IntegrationEventLogModelCreatingProvider), ServiceLifetime.Singleton));

@@ -8,14 +8,14 @@ public class IntegrationEventBus : IIntegrationEventBus
     private readonly DispatcherOptions _dispatcherOptions;
     private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
-    private readonly IIntegrationEventLogService _eventLogService;
+    private readonly IIntegrationEventLogService? _eventLogService;
     private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
     public IntegrationEventBus(IOptions<DispatcherOptions> options,
         IPublisher publisher,
-        IIntegrationEventLogService eventLogService,
+        IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<AppConfig>? appConfig = null,
         ILogger<IntegrationEventBus>? logger = null,
         IEventBus? eventBus = null,
@@ -59,7 +59,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             @event.UnitOfWork = _unitOfWork;
 
         var topicName = @event.Topic;
-        if (@event.UnitOfWork is { UseTransaction: true })
+        if (@event.UnitOfWork is { UseTransaction: true } && _eventLogService != null)
         {
             try
             {
