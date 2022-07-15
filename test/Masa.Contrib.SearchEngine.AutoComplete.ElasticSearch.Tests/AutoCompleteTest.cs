@@ -84,6 +84,7 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestGetAsync()
     {
+        Console.WriteLine("-----TestGetAsync-----");
         string userIndexName = $"user_index_{Guid.NewGuid()}";
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
@@ -111,12 +112,14 @@ public class AutoCompleteTest
         });
         var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<AutoCompleteTest>>();
         logger.LogError("TestGetAsync: " + System.Text.Json.JsonSerializer.Serialize(setResponse));
+        Console.WriteLine("-----TestGetAsync-----" + System.Text.Json.JsonSerializer.Serialize(setResponse));
 
         Thread.Sleep(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三");
 
         logger.LogError("TestGetAsync: response： " + System.Text.Json.JsonSerializer.Serialize(response));
+        Console.WriteLine("-----TestGetAsync: response-----" + System.Text.Json.JsonSerializer.Serialize(response));
 
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
