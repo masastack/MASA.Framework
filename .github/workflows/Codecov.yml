@@ -43,7 +43,7 @@ jobs:
           analysis-kuromoji
 
     - name: restore
-      run:
+      run: |
         - curl http://localhost:9200
         - dotnet restore
 
