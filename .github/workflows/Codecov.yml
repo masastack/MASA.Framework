@@ -43,7 +43,9 @@ jobs:
           analysis-kuromoji
 
     - name: restore
-      run: dotnet restore
+      run:
+        - curl http://localhost:9200
+        - dotnet restore
 
     - name: build
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
