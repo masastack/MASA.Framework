@@ -63,6 +63,22 @@ public class TestDispatcher : TestBase
 
         Assert.IsTrue(RecordMiddleware<UserAgeQuery>.Time == 1);
         Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);
+    }
 
+    [TestMethod]
+    public async Task TestIntegrationEventAndNotUseEventLogServiceReturnNoError()
+    {
+        var services = new ServiceCollection();
+        services.AddIntegrationEventBus(option => option.UseTestPub().UseEventBus());
+        var serviceProvider = services.BuildServiceProvider();
+
+        var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
+        await integrationEventBus.PublishAsync(new AddGoodsIntegrationEvent()
+        {
+            Name = "Apple",
+            Count = 1,
+            Id = Guid.NewGuid(),
+            Price = 9.9m,
+        });
     }
 }

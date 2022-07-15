@@ -4,22 +4,42 @@
 
 Example:
 
-```C#
+``` C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //Use cross-process
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //For example, use dapr to provide pub and sub capabilities, or you can choose other implementations by yourself
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
 Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 ```
 
 1. Add IIntegrationEventBus
 
-```C#
+1.1 Specify the local message service
+
+``` C#
 builder.Services
-    .AddIntegrationEventBus<IntegrationEventLogService>(options=>
+    .AddIntegrationEventBus<CustomizeIntegrationEventLogService>(options=>
     {
         options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
-        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//Use unit of work, recommended;
+    });
+```
+
+> CustomizeIntegrationEventLogService (custom local message service) needs to inherit IIntegrationEventLogService, and the parameters in the constructor must support getting from CI
+
+1.2 Use the provided EF version of the local message service
+
+Install `Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF`
+
+``` C#
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message log
+```
+
+``` C#
+builder.Services
+    .AddIntegrationEventBus(options=>
+    {
+        options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//Use unit of work, recommended
                .UseEventLog<CatalogDbContext>();
     });
 ```
@@ -28,7 +48,7 @@ builder.Services
 
 2. Custom IntegrationEvent
 
-```C#
+``` C#
 public class DemoIntegrationEvent : IntegrationEvent
 {
     public override string Topic { get; set; } = nameof(DemoIntegrationEvent);//dapr topic name
@@ -39,7 +59,7 @@ public class DemoIntegrationEvent : IntegrationEvent
 
 3. Custom CustomDbContext
 
-```C#
+``` C#
 public class CustomDbContext : MasaDbContext
 {
     public DbSet<User> Users { get; set; } = null!;
@@ -53,7 +73,7 @@ public class CustomDbContext : MasaDbContext
 
 4. Send Event
 
-```C#
+``` C#
 IIntegrationEventBus eventBus;//Get IIntegrationEventBus through DI
 await eventBus.PublishAsync(new DemoIntegrationEvent());//Send cross-process events
 ```

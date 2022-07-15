@@ -5,6 +5,16 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public static class DispatcherOptionsExtensions
 {
+    public static IDistributedDispatcherOptions UseIntegrationEventBus(
+        this IDistributedDispatcherOptions dispatcherOptions,
+        Action<DispatcherOptions>? optionAction = null)
+    {
+        ArgumentNullException.ThrowIfNull(dispatcherOptions.Services, nameof(dispatcherOptions.Services));
+
+        dispatcherOptions.Services.TryAddIntegrationEventBus(dispatcherOptions.Assemblies, option => optionAction?.Invoke(option));
+        return dispatcherOptions;
+    }
+
     public static IDistributedDispatcherOptions UseIntegrationEventBus<TIntegrationEventLogService>(
         this IDistributedDispatcherOptions dispatcherOptions,
         Action<DispatcherOptions>? optionAction = null)
@@ -12,10 +22,8 @@ public static class DispatcherOptionsExtensions
     {
         ArgumentNullException.ThrowIfNull(dispatcherOptions.Services, nameof(dispatcherOptions.Services));
 
-        dispatcherOptions.Services.TryAddIntegrationEventBus<TIntegrationEventLogService>(dispatcherOptions.Assemblies, option =>
-        {
-            optionAction?.Invoke(option);
-        });
+        dispatcherOptions.Services.TryAddIntegrationEventBus<TIntegrationEventLogService>(dispatcherOptions.Assemblies,
+            option => optionAction?.Invoke(option));
         return dispatcherOptions;
     }
 }
