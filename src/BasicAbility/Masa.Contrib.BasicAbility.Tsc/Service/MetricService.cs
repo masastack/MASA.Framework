@@ -18,9 +18,9 @@ internal class MetricService : IMetricService
     public async Task<IEnumerable<string>> GetNamesAsync(IEnumerable<string>? matches = default)
     {
         string param = default!;
-        if (matches != null && matches.Any(s => !string.IsNullOrEmpty(s)))
+        if (matches != null && matches.Any())
         {
-            param = string.Join(',', matches.Where(s => !string.IsNullOrEmpty(s)));
+            param = string.Join(',', matches);
         }
         return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param }))!;
     }
