@@ -89,7 +89,9 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddLogging(builder => builder.AddConsole())
-            .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
+            .AddElasticsearchClient("es",
+                option => option.UseNodes("http://localhost:9200").UseDefault()
+                    .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
 
