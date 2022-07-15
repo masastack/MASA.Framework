@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Linq;
-
 namespace Masa.Contrib.BasicAbility.Tsc.Tests.Service;
 
 [TestClass]
@@ -15,7 +13,7 @@ public class MetricServiceTests
     {
         IServiceCollection service = new ServiceCollection();
         service.AddTscClient("https://localhost:6324/");
-        _client = service.BuildServiceProvider().GetService<ITscClient>() ?? default!;
+        _client = service.BuildServiceProvider().GetRequiredService<ITscClient>();
     }
 
     [TestMethod]

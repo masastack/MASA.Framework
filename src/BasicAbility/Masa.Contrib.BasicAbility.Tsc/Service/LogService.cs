@@ -17,16 +17,16 @@ public class LogService : ILogService
 
     public async Task<IEnumerable<KeyValuePair<string, string>>> GetAggregationAsync(LogAggregationRequest query)
     {
-        return (await _caller.GetAsync<IEnumerable<KeyValuePair<string, string>>>(AGGREGATION_URI, query)) ?? default!;
+        return (await _caller.GetAsync<IEnumerable<KeyValuePair<string, string>>>(AGGREGATION_URI, query))!;
     }
 
     public async Task<IEnumerable<string>> GetFieldsAsync()
     {
-        return (await _caller.GetAsync<IEnumerable<string>>(FIELD_URI)) ?? default!;
+        return (await _caller.GetAsync<IEnumerable<string>>(FIELD_URI))!;
     }
 
     public async Task<object> GetLatestAsync(LogLatestRequest query)
     {
-        return (await _caller.GetAsync<object>(LATEST_URI, query)) ?? default!;
+        return (await _caller.GetAsync<object>(LATEST_URI, query))!;
     }
 }

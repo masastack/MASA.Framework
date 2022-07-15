@@ -22,7 +22,7 @@ internal class MetricService : IMetricService
         {
             param = string.Join(',', matches.Where(s => !string.IsNullOrEmpty(s)));
         }
-        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param })) ?? default!;
+        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param }))!;
     }
 
     public async Task<Dictionary<string, List<string>>> GetLabelValuesAsync(LableValuesRequest query)
@@ -41,6 +41,6 @@ internal class MetricService : IMetricService
             query.Match = $"{query.Match}{{{string.Join(',', query.Lables)}}}";
         }
 
-        return (await _caller.GetByBodyAsync<string>(RANGEVALUES_URL, query)) ?? default!;
+        return (await _caller.GetByBodyAsync<string>(RANGEVALUES_URL, query))!;
     }
 }

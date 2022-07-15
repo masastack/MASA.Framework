@@ -30,8 +30,6 @@ public static partial class MasaServiceExtensions
                 builder.AddRedisInstrumentation(option.Connection, option.StackExchangeRedisCallsInstrumentationOptions);
 
             option?.BuildTraceCallback?.Invoke(builder);
-
-            builder.AddOtlpExporter();
         });
 
         return services;

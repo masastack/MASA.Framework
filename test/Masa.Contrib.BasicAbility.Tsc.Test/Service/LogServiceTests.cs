@@ -7,7 +7,7 @@ namespace Masa.Contrib.BasicAbility.Tsc.Tests;
 public class LogServiceTests
 {
     [TestMethod]
-    public async Task GetFieldsAsyncTest()
+    public async Task GetMappingFieldsAsyncTest()
     {
         var callerProvider = new Mock<ICallerProvider>();
 

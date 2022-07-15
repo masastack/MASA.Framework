@@ -13,6 +13,6 @@ internal static class CallerProviderExtensions
         {
             request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         }
-        return (await caller.SendAsync<TResult>(request,default)) ?? default!;
+        return (await caller.SendAsync<TResult>(request))!;
     }
 }

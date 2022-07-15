@@ -7,7 +7,7 @@ namespace Masa.Contrib.BasicAbility.Tsc.Tests.Extensions;
 public class CallerProviderExtensionsTests
 {
     [TestMethod]
-    public async Task GetByBodyAsyncTest()
+    public async Task SendGetRequestWithBodyParameterAsyncTest()
     {
         var callerProvider = new Mock<ICallerProvider>();
         string url = "http://locahost:80/test";
