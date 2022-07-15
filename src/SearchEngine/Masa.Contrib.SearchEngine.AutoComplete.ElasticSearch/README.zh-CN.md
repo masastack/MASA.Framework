@@ -96,3 +96,19 @@ builder.Services
 > https://github.com/medcl/elasticsearch-analysis-ik
 >
 > https://github.com/medcl/elasticsearch-analysis-pinyin
+
+## 常见问题
+
+1. 出错提示为：`"Content-Type header [application/vnd.elasticsearch+json; compatible-with=7] is not supported"`
+
+   我们默认启用兼容模式，即`EnableApiVersioningHeader(true)`，这样对8.*版本支持很好，但在部分7.*会导致错误，此时需要手动关闭兼容模式，即`EnableApiVersioningHeader(false)`。
+
+    ``` C#
+    service.AddElasticsearchClient("es", option =>
+    {
+        option.UseNodes("http://localhost:9200")
+            .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
+    });
+    ```
+
+[为何开启兼容模式？](https://github.com/elastic/elasticsearch-net/issues/6154)
