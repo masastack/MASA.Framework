@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Logging;
+
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests;
 
 [TestClass]
@@ -86,6 +88,7 @@ public class AutoCompleteTest
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services
+            .AddLogging(builder => builder.AddConsole())
             .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault());
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -98,16 +101,21 @@ public class AutoCompleteTest
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
         var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
-        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        var setResponse = await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
             new("李四", 2),
             new("张丽", 3)
         });
+        var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<AutoCompleteTest>>();
+        logger.LogError("TestGetAsync: " + System.Text.Json.JsonSerializer.Serialize(setResponse));
 
         Thread.Sleep(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三");
+
+        logger.LogError("TestGetAsync: response： " + System.Text.Json.JsonSerializer.Serialize(response));
+
         Assert.IsTrue(response.IsValid && response.Total == 1);
 
         response = await autoCompleteClient.GetAsync<long>("三");
@@ -156,7 +164,7 @@ public class AutoCompleteTest
             new("李四", 3)
         });
 
-        Thread.Sleep(1000);
+        Thread.Sleep(3000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三 ls");
         Assert.IsTrue(response.Total == 3);
