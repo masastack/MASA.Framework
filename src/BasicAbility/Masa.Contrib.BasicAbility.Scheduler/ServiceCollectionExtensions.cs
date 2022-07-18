@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
             {
                 builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
-            });
+            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });
     }
 
