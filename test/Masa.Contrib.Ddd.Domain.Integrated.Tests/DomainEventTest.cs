@@ -65,4 +65,56 @@ public class DomainEventTest
         Assert.IsNotNull(user);
         Assert.IsTrue(user.Name == "Tom2");
     }
+
+    [TestMethod]
+    public async Task TestPublishMultiCommandReturnDataIs2()
+    {
+        var dbContext = _serviceProvider.GetRequiredService<CustomizeDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        var eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+
+        var @event = new RegisterUserEvent()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Jim1",
+            IsSendDomainEvent = false
+        };
+        await eventBus.PublishAsync(@event);
+
+        @event = new RegisterUserEvent()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Jim2",
+            IsSendDomainEvent = false
+        };
+        await eventBus.PublishAsync(@event);
+
+        Assert.IsTrue(dbContext.Set<User>().Count() == 2);
+    }
+
+    [TestMethod]
+    public async Task TestPublishMultiCommandReturnDataIs1()
+    {
+        var dbContext = _serviceProvider.GetRequiredService<CustomizeDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        var eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+
+        var @event = new RegisterUserEvent()
+        {
+            Id = Guid.NewGuid(),
+            Name = "error",
+            IsSendDomainEvent = false
+        };
+        await Assert.ThrowsExceptionAsync<Exception>(async () => await eventBus.PublishAsync(@event), "custom exception");
+
+        @event = new RegisterUserEvent()
+        {
+            Id = Guid.NewGuid(),
+            Name = "Jim2",
+            IsSendDomainEvent = false
+        };
+        await eventBus.PublishAsync(@event);
+
+        Assert.IsTrue(dbContext.Set<User>().Count() == 1);
+    }
 }

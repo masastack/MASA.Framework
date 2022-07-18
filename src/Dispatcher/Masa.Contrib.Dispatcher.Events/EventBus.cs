@@ -11,18 +11,22 @@ public class EventBus : IEventBus
 
     private readonly DispatcherOptions _options;
 
-    private bool _isFirst;
-    private IUnitOfWork? _unitOfWork;
+    private readonly IUnitOfWork? _unitOfWork;
 
     private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
 
-    public EventBus(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options, IUnitOfWork? unitOfWork = null)
+    public readonly IInitializeServiceProvider _initializeServiceProvider;
+
+    public EventBus(IServiceProvider serviceProvider,
+        IOptions<DispatcherOptions> options,
+        IInitializeServiceProvider initializeServiceProvider,
+        IUnitOfWork? unitOfWork = null)
     {
         _serviceProvider = serviceProvider;
         _dispatcher = serviceProvider.GetRequiredService<Internal.Dispatch.Dispatcher>();
         _options = options.Value;
+        _initializeServiceProvider = initializeServiceProvider;
         _unitOfWork = unitOfWork;
-        _isFirst = true;
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
@@ -43,10 +47,10 @@ public class EventBus : IEventBus
             transactionEvent.UnitOfWork = _unitOfWork;
         }
 
-        if (!_isFirst)
+        if (_initializeServiceProvider.IsInitialize)
             middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
 
-        _isFirst = false;
+        _initializeServiceProvider.Initialize();
 
         EventHandlerDelegate eventHandlerDelegate = async () =>
         {
@@ -64,4 +68,6 @@ public class EventBus : IEventBus
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
+
+    // public bool IsFirst() =>
 }

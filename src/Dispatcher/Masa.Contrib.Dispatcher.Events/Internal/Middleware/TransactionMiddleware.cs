@@ -6,12 +6,14 @@ namespace Masa.Contrib.Dispatcher.Events.Internal.Middleware;
 internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
     where TEvent : IEvent
 {
+    private readonly IInitializeServiceProvider _initializeServiceProvider;
     private readonly IUnitOfWork? _unitOfWork;
 
     public override bool SupportRecursive => false;
 
-    public TransactionMiddleware(IUnitOfWork? unitOfWork = null)
+    public TransactionMiddleware(IInitializeServiceProvider initializeServiceProvider, IUnitOfWork? unitOfWork = null)
     {
+        _initializeServiceProvider = initializeServiceProvider;
         _unitOfWork = unitOfWork;
     }
 
@@ -35,6 +37,10 @@ internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
             }
 
             throw;
+        }
+        finally
+        {
+            _initializeServiceProvider.Reset();
         }
     }
 }

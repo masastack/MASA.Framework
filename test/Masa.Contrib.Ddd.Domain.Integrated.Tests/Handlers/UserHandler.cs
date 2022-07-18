@@ -13,8 +13,13 @@ public class UserHandler
     [EventHandler]
     public async Task RegisterUser(RegisterUserEvent @event)
     {
-        var user = new User(@event.Id, @event.Name);
+        var user = new User(@event.Id, @event.Name,@event.IsSendDomainEvent);
         await _repository.AddAsync(user);
+
+        if (user.Name.Contains("error"))
+        {
+            throw new Exception("custom exception");// Throwing exceptions manually
+        }
     }
 
     /// <summary>

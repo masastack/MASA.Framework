@@ -212,3 +212,7 @@ IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Cont
 > Question 4. Why is exception retry enabled but not executed?
 
      > The default `UserFriendlyException` does not support retries, if you need to support retries, you need to reimplement `IStrategyExceptionProvider`
+
+> Question 5. Is EventBus thread safe?
+
+     > EventBus is not thread-safe. If multiple threads execute EventBus.PublishAsync() concurrently, exceptions such as data unsubmitted may occur
