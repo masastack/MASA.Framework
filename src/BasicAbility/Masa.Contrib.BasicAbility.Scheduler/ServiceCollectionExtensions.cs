@@ -31,6 +31,7 @@ public static class ServiceCollectionExtensions
             return services;
 
         services.AddSingleton<SchedulerProvider>();
+        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddHttpContextAccessor();
         services.AddCaller(callerOptions);
 
