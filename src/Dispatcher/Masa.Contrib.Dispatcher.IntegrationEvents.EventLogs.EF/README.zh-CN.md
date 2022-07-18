@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
 1. 使用EventLogs.EF
 
 ```C#
-.AddDaprEventBus<IntegrationEventLogService>(options =>
+.AddIntegrationEventBus(options =>
 {
     options
         // TODO
