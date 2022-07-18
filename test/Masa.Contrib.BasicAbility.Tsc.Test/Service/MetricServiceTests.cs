@@ -6,35 +6,32 @@ namespace Masa.Contrib.BasicAbility.Tsc.Tests.Service;
 [TestClass]
 public class MetricServiceTests
 {
-    private ITscClient _client;
-
-    [TestInitialize]
-    public void Initialize()
-    {
-        IServiceCollection service = new ServiceCollection();
-        service.AddTscClient("https://localhost:6324/");
-        _client = service.BuildServiceProvider().GetRequiredService<ITscClient>();
-    }
-
     [TestMethod]
     [DataRow(null)]
     [DataRow(new string[] { "up", "prometheus_http_requests_total", "prometheus_http_request_duration_seconds_count" })]
-    [DataRow(new string[] { "not_exists", "up" })]
-    [DataRow(new string[] { "not_exists" })]
+    [DataRow(new string[] { "not_exists_test" })]
     public async Task GetNamesAsyncTest(IEnumerable<string> match)
     {
-        var result = await _client.MetricService.GetNamesAsync(match);
-        if (match == null)
+        var data = new string[] { "up", "prometheus_http_requests_total", "prometheus_http_request_duration_seconds_count" };
+        var caller = new Mock<ICallerProvider>();
+        caller.Setup(provider => provider.GetAsync<IEnumerable<string>?>(MetricService.NAMES_URI, It.Is<Dictionary<string, string>>(dic => dic == null || dic.ContainsKey("match")), default))
+            .ReturnsAsync((string? url, Dictionary<string, string> param, CancellationToken token) =>
         {
-            Assert.IsNotNull(result);
-        }
-        else if (match.Count() > 0)
+            if (param == null || !param.ContainsKey("match") || param["match"] is null || !param["match"].Contains("not_exists_test"))
+                return data;
+            return default;
+        }).Verifiable();
+        var client = new TscClient(caller.Object);
+        var result = await client.MetricService.GetNamesAsync(match);
+
+        if (match != null && match.Any(s => s == "not_exists_test"))
         {
-            Assert.IsNotNull(result);
+            Assert.IsNull(result);
         }
         else
         {
-            Assert.IsNull(result);
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any());
         }
     }
 
@@ -42,9 +39,18 @@ public class MetricServiceTests
     [DataRow("up", "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
     public async Task GetLabelValuesAsyncTest(string match, string start, string end)
     {
+        var caller = new Mock<ICallerProvider>();
+        caller.Setup(provider => provider.SendAsync<Dictionary<string, Dictionary<string, List<string>>>>(It.IsNotNull<HttpRequestMessage>(), default))
+            .ReturnsAsync(new Dictionary<string, Dictionary<string, List<string>>> {
+            {"up",new Dictionary<string, List<string>>{
+                {"name",new List<string>{"name1","name2"} }
+            } }
+        });
+        var client = new TscClient(caller.Object);
+
         DateTime startDateTime = DateTime.Parse(start);
         DateTime endDateTime = DateTime.Parse(end);
-        var result = await _client.MetricService.GetLabelValuesAsync(new LableValuesRequest
+        var result = await client.MetricService.GetLabelValuesAsync(new LableValuesRequest
         {
             Match = match,
             Start = startDateTime,
@@ -59,9 +65,13 @@ public class MetricServiceTests
     [DataRow("up", null, "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
     public async Task GetValuesAsyncTest(string match, IEnumerable<string> labels, string start, string end)
     {
+        var caller = new Mock<ICallerProvider>();
+        caller.Setup(provider => provider.SendAsync<string>(It.IsNotNull<HttpRequestMessage>(), default)).ReturnsAsync("1.0");
+        var client = new TscClient(caller.Object);
+
         DateTime startDateTime = DateTime.Parse(start);
         DateTime endDateTime = DateTime.Parse(end);
-        var result = await _client.MetricService.GetValuesAsync(new ValuesRequest
+        var result = await client.MetricService.GetValuesAsync(new ValuesRequest
         {
             Match = match,
             Lables = labels,

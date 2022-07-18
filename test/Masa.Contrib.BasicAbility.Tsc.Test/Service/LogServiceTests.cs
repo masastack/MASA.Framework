@@ -45,12 +45,12 @@ public class LogServiceTests
             {
                   new FieldAggregationRequest{
                        Name="container.instance.id",
-                       AggType= LogAggTypes.Count,
+                       AggregationType= AggregationTypes.Count,
                        Alias="count1"
                   },
                   new FieldAggregationRequest{
                        Name="container.instance.name",
-                       AggType= LogAggTypes.Count,
+                       AggregationType= AggregationTypes.Count,
                        Alias="count2"
                   }
               }

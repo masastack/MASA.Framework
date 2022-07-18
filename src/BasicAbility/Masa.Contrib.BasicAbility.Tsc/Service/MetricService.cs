@@ -22,7 +22,7 @@ internal class MetricService : IMetricService
         {
             param = string.Join(',', matches);
         }
-        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new { match = param }))!;
+        return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new Dictionary<string, string> { { "match", param } }))!;
     }
 
     public async Task<Dictionary<string, List<string>>> GetLabelValuesAsync(LableValuesRequest query)

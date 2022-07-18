@@ -14,22 +14,22 @@ public static partial class MasaServiceExtensions
             if (configure != null)
                 configure.Invoke(option);
 
-            if (option?.AspNetCoreInstrumentationOptions != null)
+            if (option.AspNetCoreInstrumentationOptions != null)
                 builder.AddAspNetCoreInstrumentation(option.AspNetCoreInstrumentationOptions);
 
-            if (option?.HttpClientInstrumentationOptions != null)
+            if (option.HttpClientInstrumentationOptions != null)
                 builder.AddHttpClientInstrumentation(option.HttpClientInstrumentationOptions);
 
-            if (option?.EntityFrameworkInstrumentationOptions != null)
+            if (option.EntityFrameworkInstrumentationOptions != null)
                 builder.AddEntityFrameworkCoreInstrumentation(option.EntityFrameworkInstrumentationOptions);
 
-            if (option?.ElasticsearchClientInstrumentationOptions != null)
+            if (option.ElasticsearchClientInstrumentationOptions != null)
                 builder.AddElasticsearchClientInstrumentation(option.ElasticsearchClientInstrumentationOptions);
 
-            if (option?.StackExchangeRedisCallsInstrumentationOptions != null && option?.Connection != null)
+            if (option.StackExchangeRedisCallsInstrumentationOptions != null && option.Connection != null)
                 builder.AddRedisInstrumentation(option.Connection, option.StackExchangeRedisCallsInstrumentationOptions);
 
-            option?.BuildTraceCallback?.Invoke(builder);
+            option.BuildTraceCallback?.Invoke(builder);
         });
 
         return services;
