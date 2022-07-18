@@ -20,6 +20,12 @@ public class UserService : IUserService
         return await _callerProvider.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
+    public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
+    {
+        var requestUri = $"api/user/upsertExternal";
+        return await _callerProvider.PostAsync<UpsertUserModel, UserModel>(requestUri, user);
+    }
+
     public async Task<List<StaffModel>> GetListByDepartmentAsync(Guid departmentId)
     {
         var requestUri = $"api/staff/getListByDepartment";
@@ -38,16 +44,46 @@ public class UserService : IUserService
         return await _callerProvider.GetAsync<object, List<StaffModel>>(requestUri, new { id = teamId }) ?? new();
     }
 
+    public async Task<long> GetTotalByDepartmentAsync(Guid departmentId)
+    {
+        var requestUri = $"api/staff/getTotalByDepartment";
+        return await _callerProvider.GetAsync<object, long>(requestUri, new { id = departmentId });
+    }
+
+    public async Task<long> GetTotalByRoleAsync(Guid roleId)
+    {
+        var requestUri = $"api/staff/getTotalByRole";
+        return await _callerProvider.GetAsync<object, long>(requestUri, new { id = roleId });
+    }
+
+    public async Task<long> GetTotalByTeamAsync(Guid teamId)
+    {
+        var requestUri = $"api/staff/getTotalByTeam";
+        return await _callerProvider.GetAsync<object, long>(requestUri, new { id = teamId });
+    }
+
     public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _callerProvider.PostAsync<object, bool>(requestUri, new { account = account, password = password });
+        return await _callerProvider.PostAsync<object, bool>(requestUri, new { account, password });
     }
 
     public async Task<UserModel> FindByAccountAsync(string account)
     {
         var requestUri = $"api/user/findByAccount";
-        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account = account }) ?? new();
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { account }) ?? new();
+    }
+
+    public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
+    {
+        var requestUri = $"api/user/findByPhoneNumber";
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { phoneNumber });
+    }
+
+    public async Task<UserModel?> FindByEmailAsync(string email)
+    {
+        var requestUri = $"api/user/findByEmail";
+        return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { email });
     }
 
     public async Task<UserModel> GetCurrentUserAsync()
@@ -73,14 +109,28 @@ public class UserService : IUserService
 
     public async Task UpdatePasswordAsync(UpdateUserPasswordModel user)
     {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
         var requestUri = $"api/user/updatePassword";
         await _callerProvider.PutAsync(requestUri, user);
     }
 
     public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
     {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
         var requestUri = $"api/user/updateBasicInfo";
         await _callerProvider.PutAsync(requestUri, user);
+    }
+
+    public async Task<List<UserPortraitModel>> GetUserPortraitsAsync(params Guid[] userIds)
+    {
+        var requestUri = $"api/user/portraits";
+        return await _callerProvider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, userIds) ?? new();
     }
 }
 

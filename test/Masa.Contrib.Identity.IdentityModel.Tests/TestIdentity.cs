@@ -175,7 +175,8 @@ public class TestIdentity
                 {
                     new(ClaimType.DEFAULT_USER_ID, "1"),
                     new(ClaimType.DEFAULT_USER_NAME, "Jim"),
-                    new(ClaimType.DEFAULT_TENANT_ID, "1")
+                    new(ClaimType.DEFAULT_TENANT_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_ROLE, "[{ \"Name\": \"admin\",\"Id\": \"1\" }]")
                 })
             })
         };
@@ -184,6 +185,7 @@ public class TestIdentity
         Assert.IsTrue(userContext.IsAuthenticated);
         Assert.IsTrue(userContext.UserId == "1");
         Assert.IsTrue(userContext.UserName == "Jim");
+        Assert.IsTrue(userContext.GetUserRoles<string>().Count() > 0);
 
         var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
         Assert.IsNotNull(multiTenantUserContext);

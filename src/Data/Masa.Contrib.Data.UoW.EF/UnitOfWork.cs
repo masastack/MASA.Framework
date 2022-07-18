@@ -66,9 +66,10 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
         if (!UseTransaction || !TransactionHasBegun)
-            throw new NotSupportedException("Transactions are not opened and rollback is not supported");
+            return;
 
-        await Context.Database.RollbackTransactionAsync(cancellationToken);
+        if (TransactionHasBegun)
+            await Context.Database.RollbackTransactionAsync(cancellationToken);
     }
 
     public Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class

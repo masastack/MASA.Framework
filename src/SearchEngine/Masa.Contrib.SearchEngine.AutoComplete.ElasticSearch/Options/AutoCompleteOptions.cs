@@ -12,9 +12,11 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal bool IsDefault { get; private set; }
 
-    internal SearchType DefaultSearchType { get; private set; } = SearchType.Precise;
+    internal SearchType DefaultSearchType { get; private set; } = SearchType.Fuzzy;
 
-    internal Operator DefaultOperator { get; private set; } = Operator.And;
+    internal Operator DefaultOperator { get; private set; } = Operator.Or;
+
+    internal bool EnableMultipleCondition { get; private set; } = true;
 
     internal Action<TypeMappingDescriptor<TDocument>>? Action { get; private set; }
 
@@ -76,4 +78,9 @@ public class AutoCompleteOptions<TDocument, TValue>
         return this;
     }
 
+    public AutoCompleteOptions<TDocument, TValue> UseMultipleConditions(bool enableMultipleCondition = true)
+    {
+        EnableMultipleCondition = enableMultipleCondition;
+        return this;
+    }
 }

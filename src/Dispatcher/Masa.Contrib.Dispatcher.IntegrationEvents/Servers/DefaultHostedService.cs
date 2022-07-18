@@ -16,7 +16,7 @@ public class DefaultHostedService : IProcessingServer
 
     public Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (_serviceProvider.GetService<IUnitOfWorkManager>() == null)
+        if (_serviceProvider.GetService<IUnitOfWorkManager>() == null || _serviceProvider.GetService<IIntegrationEventLogService>() == null)
             return Task.CompletedTask;
 
         var processorTasks = _processors.Select(processor => new InfiniteLoopProcessor(_serviceProvider, processor))

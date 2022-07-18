@@ -30,6 +30,7 @@ public static class ServiceCollectionExtensions
         services.AddOptions();
         services.TryAddSingleton<IMasaConfigurationSourceProvider, DefaultMasaConfigurationSourceProvider>();
         services.TryAddSingleton<IMasaConfiguration, DefaultMasaConfiguration>();
+        services.TryAddSingleton<IConfigurationApi, DefaultConfigurationApi>();
         var configurationOptions = new ConfigurationOptions();
         action?.Invoke(configurationOptions);
 

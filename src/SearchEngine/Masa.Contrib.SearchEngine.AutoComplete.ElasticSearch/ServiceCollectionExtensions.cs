@@ -58,8 +58,15 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(new AutoCompleteRelationsOptions());
 
-        var autoCompleteRelations = new AutoCompleteRelations(elasticClient, client, option.IndexName, option.Alias, option.IsDefault,
-            option.DefaultOperator, option.DefaultSearchType);
+        var autoCompleteRelations = new AutoCompleteRelations(
+            elasticClient,
+            client,
+            option.IndexName,
+            option.Alias,
+            option.IsDefault,
+            option.DefaultOperator,
+            option.DefaultSearchType,
+            option.EnableMultipleCondition);
         services.TryAddAutoCompleteRelation(autoCompleteRelations);
 
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
@@ -131,7 +138,7 @@ public static class ServiceCollectionExtensions
             string wordDelimiterFilter = "word_delimiter";
             indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
             {
-                Filter = new[] { pinyinFilter, wordDelimiterFilter },
+                Filter = new[] { pinyinFilter, wordDelimiterFilter, "lowercase" },
                 Tokenizer = "ik_max_word"
             });
             indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());

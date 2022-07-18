@@ -11,3 +11,5 @@ global using Masa.Utils.Caller.Core;
 global using Masa.Utils.Caller.HttpClient;
 global using Microsoft.Extensions.Logging;
 global using static Masa.Contrib.BasicAbility.Scheduler.Constants;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Http;

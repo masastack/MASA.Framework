@@ -7,16 +7,36 @@
 ```C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //使用跨进程事件
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //例如使用dapr提供pub、sub能力，也可自行选择其他实现
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
 Install-Package Masa.Contrib.Data.UoW.EF //使用工作单元
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // 使用SqlServer
 ```
 
 1. 添加IIntegrationEventBus
 
+1.1 指定本地消息服务
+
 ```C#
 builder.Services
-    .AddIntegrationEventBus<IntegrationEventLogService>(options=>
+    .AddIntegrationEventBus<CustomizeIntegrationEventLogService>(options=>
+    {
+        options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的
+        options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//使用工作单元，推荐使用;
+    });
+```
+
+>  CustomizeIntegrationEventLogService（自定义本地消息服务）需继承IIntegrationEventLogService，并且构造函数中的参数必须支持从CI获取
+
+1.2 使用提供的EF版的本地消息服务
+
+安装`Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF`
+
+``` C#
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
+```
+
+```C#
+builder.Services
+    .AddIntegrationEventBus(options=>
     {
         options.UseDapr();//使用Dapr提供pub/sub能力，也可以自行选择其他的
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//使用工作单元，推荐使用

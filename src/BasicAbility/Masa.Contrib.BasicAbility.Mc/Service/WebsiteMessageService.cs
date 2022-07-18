@@ -57,4 +57,16 @@ public class WebsiteMessageService : IWebsiteMessageService
         var requestUri = $"{_party}/SetAllRead";
         await _callerProvider.PostAsync(requestUri, options);
     }
+
+    public async Task SendCheckNotificationAsync()
+    {
+        var requestUri = $"{_party}/SendCheckNotification";
+        await _callerProvider.PostAsync(requestUri, null);
+    }
+
+    public async Task SendGetNotificationAsync(List<string> userIds)
+    {
+        var requestUri = $"{_party}/SendGetNotification";
+        await _callerProvider.PostAsync(requestUri, userIds);
+    }
 }

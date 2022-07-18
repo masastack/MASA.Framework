@@ -5,6 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddIntegrationEventBus(
+        this IServiceCollection services,
+        Action<DispatcherOptions>? options = null)
+        => services.AddIntegrationEventBus(AppDomain.CurrentDomain.GetAssemblies(), options);
+
+    public static IServiceCollection AddIntegrationEventBus(
+        this IServiceCollection services,
+        Assembly[] assemblies,
+        Action<DispatcherOptions>? options = null)
+        => services.TryAddIntegrationEventBus(assemblies, options);
+
     public static IServiceCollection AddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
@@ -24,6 +35,18 @@ public static class ServiceCollectionExtensions
         Action<DispatcherOptions>? options)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
+        return services.TryAddIntegrationEventBus(assemblies, options, () =>
+        {
+            services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
+        });
+    }
+
+    internal static IServiceCollection TryAddIntegrationEventBus(
+        this IServiceCollection services,
+        Assembly[] assemblies,
+        Action<DispatcherOptions>? options,
+        Action? action = null)
+    {
         if (services.Any(service => service.ImplementationType == typeof(IntegrationEventBusProvider)))
             return services;
 
@@ -37,7 +60,7 @@ public static class ServiceCollectionExtensions
 
         LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
-        services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
+        action?.Invoke();
         services.AddSingleton<IProcessor, RetryByDataProcessor>();
         services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
         services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();

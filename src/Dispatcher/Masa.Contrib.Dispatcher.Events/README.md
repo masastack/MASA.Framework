@@ -208,3 +208,7 @@ IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Cont
 > Question 3. If the SaveChange method of UoW is manually called in EventHandler to save, will the framework also save automatically?
 
     > If the SaveChange method of UoW is manually called in the EventHandler to save, and the Add, Update, and Delete operations provided by IRepository are not used afterward, the SaveChange operation will not be executed twice after the EventHandler execution ends, but if the UoW is manually called. After the SaveChange method is saved and continue to use the Add, Update, and Delete operations provided by IRepository, the framework will call the SaveChange operation again to ensure that the data is saved successfully.
+
+> Question 4. Why is exception retry enabled but not executed?
+
+     > The default `UserFriendlyException` does not support retries, if you need to support retries, you need to reimplement `IStrategyExceptionProvider`

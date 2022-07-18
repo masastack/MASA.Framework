@@ -17,6 +17,12 @@ internal static class DispatcherExtensions
         return services;
     }
 
+    public static IServiceCollection TryAdd(this IServiceCollection services, Type serviceType, Func<IServiceProvider, object> factory, ServiceLifetime lifetime)
+    {
+        services.TryAdd(new ServiceDescriptor(serviceType, factory, lifetime));
+        return services;
+    }
+
     public static bool IsGeneric(this Type type) => type.GetTypeInfo().IsGenericTypeDefinition || type.GetTypeInfo().ContainsGenericParameters;
 
     public static bool IsConcrete(this Type type) => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface;

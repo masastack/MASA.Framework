@@ -10,29 +10,43 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     private readonly string _indexName;
     private readonly Operator _defaultOperator;
     private readonly SearchType _defaultSearchType;
+    private readonly bool _enableMultipleCondition;
 
-    public AutoCompleteClient(IElasticClient elasticClient, IMasaElasticClient client, string indexName, Operator defaultOperator,
-        SearchType defaultSearchType)
+    public AutoCompleteClient(
+        IElasticClient elasticClient,
+        IMasaElasticClient client,
+        string indexName,
+        Operator defaultOperator,
+        SearchType defaultSearchType,
+        bool enableMultipleCondition)
     {
         _elasticClient = elasticClient;
         _client = client;
         _indexName = indexName;
         _defaultOperator = defaultOperator;
         _defaultSearchType = defaultSearchType;
+        _enableMultipleCondition = enableMultipleCondition;
     }
 
-    public override async Task<GetResponse<TAudoCompleteDocument, TValue>> GetAsync<TAudoCompleteDocument, TValue>(string keyword,
+    public override async Task<GetResponse<TAudoCompleteDocument, TValue>> GetAsync<TAudoCompleteDocument, TValue>(
+        string keyword,
         AutoCompleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         var newOptions = options ?? new(_defaultSearchType);
         var searchType = newOptions.SearchType ?? _defaultSearchType;
+
+        keyword = keyword.Trim();
+
+        if (string.IsNullOrEmpty(keyword))
+            return new GetResponse<TAudoCompleteDocument, TValue>(true, string.Empty, new List<TAudoCompleteDocument>());
+
         if (searchType == SearchType.Fuzzy)
         {
             var ret = await _client.GetPaginatedListAsync(
                 new PaginatedOptions<TAudoCompleteDocument>(
                     _indexName,
-                    keyword,
+                    GetFuzzyKeyword(keyword),
                     newOptions.Field,
                     newOptions.Page,
                     newOptions.PageSize,
@@ -63,18 +77,42 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         }
     }
 
+    private string GetFuzzyKeyword(string keyword)
+    {
+        if (_enableMultipleCondition)
+            return string.Join(' ', keyword.Split(' ').Select(CompleteKeyword));
+
+        if (!keyword.Contains(" "))
+            return CompleteKeyword(keyword);
+
+        return $"\"{keyword}\""; //Content contains spaces and is treated as a phrase for search
+    }
+
+    private string CompleteKeyword(string keyword)
+    {
+        if (keyword.Equals("*"))
+            return keyword;
+
+        keyword = keyword.Trim('*');
+        return $"({keyword} OR *{keyword} OR {keyword}*)";
+    }
+
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
         where T : class
     {
         var queryContainer = _defaultOperator == Operator.And ?
             queryContainerDescriptor.Bool(boolQueryDescriptor => GetBoolQueryDescriptor(boolQueryDescriptor, field, keyword)) :
-            queryContainerDescriptor.Terms(descriptor => descriptor.Field(field).Terms(keyword.Split(' ')));
+            queryContainerDescriptor.Terms(descriptor
+                => descriptor.Field(field).Terms(_enableMultipleCondition ? keyword.Split(' ') : new[] { keyword }));
         return queryContainer;
     }
 
     private BoolQueryDescriptor<T> GetBoolQueryDescriptor<T>(BoolQueryDescriptor<T> boolQueryDescriptor, string field, string keyword)
         where T : class
     {
+        if (!_enableMultipleCondition)
+            return boolQueryDescriptor.Must(queryContainerDescriptor => queryContainerDescriptor.Term(field, keyword));
+
         foreach (var item in keyword.Split(' '))
         {
             boolQueryDescriptor = boolQueryDescriptor.Must(queryContainerDescriptor => queryContainerDescriptor.Term(field, item));

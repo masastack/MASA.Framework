@@ -27,10 +27,6 @@ public static class MasaConfigurationExtensions
             option.AppId = builder.Configuration[nameof(DccSectionOptions.AppId)];
             option.ConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
             option.Secret = builder.Configuration[nameof(DccSectionOptions.Secret)];
-            option.BizId = builder.Configuration[nameof(DccSectionOptions.BizId)];
-            option.BizConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.BizConfigObjects)).Get<List<string>>();
-            option.PublicId = builder.Configuration[nameof(DccSectionOptions.PublicId)] ?? "public-$Config";
-            option.PublicConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.PublicConfigObjects)).Get<List<string>>();
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
@@ -64,6 +60,8 @@ public static class MasaConfigurationExtensions
         Action<JsonSerializerOptions>? jsonSerializerOptions,
         Action<CallerOptions>? callerOptions)
     {
+        StaticConfig.AppId = defaultSectionOptions.AppId;
+
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;

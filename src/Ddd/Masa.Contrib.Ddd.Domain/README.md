@@ -22,7 +22,12 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 builder.Services
 .AddDomainEventBus(options =>
 {
-    options.UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomizeDbContext>())//Use cross-process events
+    options.UseIntegrationEventBus(opt =>
+    {
+        opt.UseDapr();
+        opt.UseEventLog<CustomizeDbContext>();//Use cross-process events
+    });
+    options
         // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // Use in-process events and use middleware
         .UseEventBus() // Use in-process events
         .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
