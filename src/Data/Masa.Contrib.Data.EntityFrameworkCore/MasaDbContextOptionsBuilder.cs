@@ -5,11 +5,15 @@ namespace Masa.Contrib.Data.EntityFrameworkCore;
 
 public abstract class MasaDbContextOptionsBuilder
 {
-    internal IServiceProvider? ServiceProvider { get; }
+    internal IServiceProvider? ServiceProvider { get; set; }
 
-    public bool EnableSoftDelete { get; }
+    public bool EnableSoftDelete { get; protected set; }
 
-    public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
+    public DbContextOptionsBuilder DbContextOptionsBuilder { get; protected set; }
+
+    internal MasaDbContextOptionsBuilder()
+    {
+    }
 
     protected MasaDbContextOptionsBuilder(IServiceProvider? serviceProvider, MasaDbContextOptions options)
     {
