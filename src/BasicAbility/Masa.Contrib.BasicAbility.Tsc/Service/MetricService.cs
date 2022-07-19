@@ -29,7 +29,7 @@ internal class MetricService : IMetricService
     {
         var data = await _caller.GetByBodyAsync<Dictionary<string, Dictionary<string, List<string>>>>(LABELVALUES_URI, query);
         if (data == null || !data.ContainsKey(query.Match))
-            return default!;
+            return new Dictionary<string, List<string>>();
 
         return data[query.Match];
     }

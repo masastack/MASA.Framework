@@ -6,10 +6,10 @@ namespace Masa.Utils.Caller.Core;
 
 internal static class CallerProviderExtensions
 {
-    public static async Task<TResult> GetByBodyAsync<TResult>(this ICallerProvider caller, string url, object body) where TResult : class
+    public static async Task<TResult> GetByBodyAsync<TResult>(this ICallerProvider caller, string url, object? body) where TResult : class
     {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
-        if (body != null)
+        if (body is not null)
         {
             request.Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
         }
