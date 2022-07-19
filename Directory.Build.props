@@ -10,6 +10,10 @@
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
     <DaprPackageVersion>1.5.0</DaprPackageVersion>
     <MedallionDistributedLockPackageVersion>1.0.4</MedallionDistributedLockPackageVersion>
+	 
+	<OpenTelemetryVersion>1.3.0</OpenTelemetryVersion>
+	<OpenTelemetryContribVersion>1.0.0-beta2</OpenTelemetryContribVersion>
+	<OpenTelemetryInstrumentationVersion>1.0.0-rc9.3</OpenTelemetryInstrumentationVersion>
 	
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>

@@ -27,6 +27,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         ".ico",
         ".png",
         ".woff",
+        ".icon"
     };
 
     /// <summary>
