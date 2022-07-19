@@ -8,8 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"></FrameworkReference>
   </ItemGroup>
 
   <ItemGroup>

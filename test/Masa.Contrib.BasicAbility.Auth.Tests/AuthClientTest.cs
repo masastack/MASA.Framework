@@ -10,7 +10,7 @@ public class AuthClientTest
     public void TestAddAuthClient()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentityModelCore(IdentityType.MultiEnvironment);
+        services.AddMasaIdentityModel(IdentityType.MultiEnvironment);
         services.AddAuthClient("https://localhost:18102");
         var authClient = services.BuildServiceProvider().GetRequiredService<IAuthClient>();
 
