@@ -5,14 +5,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddMasaIdentityModel(
+    public static IServiceCollection AddMasaIdentityModelCore(
         this IServiceCollection services,
         IdentityType identityType = IdentityType.Basic)
-        => services.AddMasaIdentityModel(identityType, _ =>
+        => services.AddMasaIdentityModelCore(identityType, _ =>
         {
         });
 
-    public static IServiceCollection AddMasaIdentityModel(
+    public static IServiceCollection AddMasaIdentityModelCore(
         this IServiceCollection services,
         IdentityType identityType,
         Action<IdentityClaimOptions> configureOptions)
@@ -24,9 +24,6 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IdentityProvider>();
         services.TryAddSingleton<ITypeConvertProvider, DefaultTypeConvertProvider>();
-        services.AddHttpContextAccessor();
-        services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
-
         services.Configure(configureOptions);
 
         if (identityType.HasFlag(IdentityType.MultiTenant) && identityType.HasFlag(IdentityType.MultiEnvironment))

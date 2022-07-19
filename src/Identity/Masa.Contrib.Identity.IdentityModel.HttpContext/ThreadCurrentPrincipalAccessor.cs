@@ -1,7 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Identity.IdentityModel;
+namespace Masa.Contrib.Identity.IdentityModel.HttpContext;
 
 public class ThreadCurrentPrincipalAccessor : ICurrentPrincipalAccessor
 {
