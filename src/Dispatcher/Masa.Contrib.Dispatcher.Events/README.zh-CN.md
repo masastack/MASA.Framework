@@ -210,7 +210,7 @@ IEventBus是事件总线的核心，配合Cqrs、Uow、Masa.Contrib.Ddd.Domain.R
 
 > 问题4. 为什么开启了异常重试却未执行重试？
 
-    > 默认`UserFriendlyException`不支持重试，如果需要支持重试，则需要重新实现`IStrategyExceptionProvider`
+    > 默认`UserFriendlyException`不支持重试，如果需要支持重试，则需要重新实现`IExceptionStrategyProvider`
 
 > 问题5. EventBus是线程安全的吗？
 

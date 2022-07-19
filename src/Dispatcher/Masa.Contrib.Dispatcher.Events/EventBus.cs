@@ -68,6 +68,4 @@ public class EventBus : IEventBus
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
-
-    // public bool IsFirst() =>
 }

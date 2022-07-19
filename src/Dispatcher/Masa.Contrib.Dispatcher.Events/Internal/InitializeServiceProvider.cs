@@ -5,22 +5,22 @@ namespace Masa.Contrib.Dispatcher.Events.Internal;
 
 internal class InitializeServiceProvider : IInitializeServiceProvider
 {
-    private bool _state;
+    private bool _initialized;
 
-    public bool IsInitialize => _state;
+    public bool IsInitialize => _initialized;
 
     public InitializeServiceProvider()
     {
-        _state = false;
+        _initialized = false;
     }
 
     public void Initialize()
     {
-        _state = true;
+        _initialized = true;
     }
 
     public void Reset()
     {
-        _state = false;
+        _initialized = false;
     }
 }
