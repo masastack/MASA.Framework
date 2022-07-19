@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         IdentityType identityType,
         Action<IdentityClaimOptions> configureOptions)
     {
-        //services.AddHttpContextAccessor();
+        services.AddHttpContextAccessor();
         services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
         return services.AddMasaIdentityModelCore(identityType, configureOptions);
     }
