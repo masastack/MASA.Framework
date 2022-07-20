@@ -7,9 +7,9 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 {
     public IServiceProvider ServiceProvider { get; }
 
-    private readonly DbContext? _context = null;
+    private DbContext? _context;
 
-    protected DbContext Context => _context ?? ServiceProvider.GetRequiredService<TDbContext>();
+    protected DbContext Context => _context ??= ServiceProvider.GetRequiredService<TDbContext>();
 
     public DbTransaction Transaction
     {
@@ -69,7 +69,25 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
             return;
 
         if (TransactionHasBegun)
+        {
+            DetachAll();
             await Context.Database.RollbackTransactionAsync(cancellationToken);
+        }
+    }
+
+    /// <summary>
+    /// Release entity tracking, prevent pre-submit exceptions, be processed by other Handlers and continue execution
+    /// </summary>
+    private void DetachAll()
+    {
+        var entityEntrys = Context.ChangeTracker.Entries();
+        foreach (var entry in entityEntrys)
+        {
+            if (entry != null)
+            {
+                entry.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+        }
     }
 
     public Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class

@@ -14,15 +14,18 @@ public class User : AggregateRoot<Guid>
         Id = Guid.NewGuid();
     }
 
-    public User(Guid id, string name)
+    public User(Guid id, string name, bool isSendDomainEvent)
     {
         Id = id;
         Name = name;
-        this.AddDomainEvent(new RegisterUserDomainEvent()
+        if (isSendDomainEvent)
         {
-            Id = Id,
-            Name = name
-        });
+            this.AddDomainEvent(new RegisterUserDomainEvent()
+            {
+                Id = Id,
+                Name = name
+            });
+        }
     }
 
     public void UpdateName(string name)

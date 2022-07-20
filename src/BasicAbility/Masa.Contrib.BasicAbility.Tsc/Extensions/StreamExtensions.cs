@@ -3,7 +3,7 @@
 
 namespace System.IO;
 
-public static class StreamExtenistions
+public static class StreamExtensions
 {
     private static readonly Encoding _defaultEncoding = Encoding.UTF8;
 
@@ -12,12 +12,12 @@ public static class StreamExtenistions
         if (stream == null)
             return null;
 
-        if(!stream.CanRead)
+        if (!stream.CanRead)
             return "cann't read";
 
         if (!stream.CanSeek)
             return "cann't seek";
-       
+
         var start = (int)stream.Position;
         List<byte> data = new();
         var buffer = new byte[1024];
@@ -34,7 +34,7 @@ public static class StreamExtenistions
             {
                 data.AddRange(buffer[0..count]);
                 break;
-            }            
+            }
         } while (true);
 
         if (data.Count > 0)
@@ -46,4 +46,3 @@ public static class StreamExtenistions
         return null;
     }
 }
-

@@ -37,6 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
+        services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
         return services;
@@ -62,6 +63,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
+        services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
 
