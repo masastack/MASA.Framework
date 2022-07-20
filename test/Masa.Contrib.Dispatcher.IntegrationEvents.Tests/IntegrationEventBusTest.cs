@@ -1,10 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]

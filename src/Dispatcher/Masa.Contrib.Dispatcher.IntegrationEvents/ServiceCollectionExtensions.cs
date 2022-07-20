@@ -61,11 +61,16 @@ public static class ServiceCollectionExtensions
         LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         action?.Invoke();
-        services.AddSingleton<IProcessor, RetryByDataProcessor>();
-        services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
-        services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
-        services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
+
+        if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))
+        {
+            services.AddSingleton<IProcessor, RetryByDataProcessor>();
+            services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
+            services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
+            services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
+        }
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
+
         services.AddHostedService<IntegrationEventHostedService>();
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {

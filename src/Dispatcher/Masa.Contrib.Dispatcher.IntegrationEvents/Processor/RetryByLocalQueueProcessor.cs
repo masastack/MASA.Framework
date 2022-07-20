@@ -5,7 +5,6 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class RetryByLocalQueueProcessor : ProcessorBase
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IOptionsMonitor<AppConfig>? _appConfig;
     private readonly IOptions<DispatcherOptions> _options;
     private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
@@ -18,7 +17,6 @@ public class RetryByLocalQueueProcessor : ProcessorBase
         IOptionsMonitor<AppConfig>? appConfig = null,
         ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
         _appConfig = appConfig;
         _options = options;
         _logger = logger;
