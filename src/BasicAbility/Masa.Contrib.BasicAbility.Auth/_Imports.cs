@@ -10,5 +10,4 @@ global using Masa.Contrib.BasicAbility.Auth.Service;
 global using Masa.Utils.Caller.Core;
 global using Masa.Utils.Caller.HttpClient;
 global using Microsoft.AspNetCore.Http;
-global using System.Text.Json;
 global using static Masa.Contrib.BasicAbility.Auth.Constants;
