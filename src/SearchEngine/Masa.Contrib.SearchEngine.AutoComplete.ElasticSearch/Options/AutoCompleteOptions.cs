@@ -3,8 +3,8 @@
 
 namespace Masa.Contrib.SearchEngine.AutoComplete.Options;
 
-public class AutoCompleteOptions<TDocument, TValue>
-    where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+public class AutoCompleteOptions<TDocument>
+    where TDocument : AutoCompleteDocument
 {
     internal string IndexName { get; private set; }
 
@@ -22,7 +22,7 @@ public class AutoCompleteOptions<TDocument, TValue>
 
     internal Action<IIndexSettings>? IndexSettingAction { get; private set; }
 
-    public AutoCompleteOptions<TDocument, TValue> UseIndexName(string indexName)
+    public AutoCompleteOptions<TDocument> UseIndexName(string indexName)
     {
         IndexName = indexName;
         return this;
@@ -33,7 +33,7 @@ public class AutoCompleteOptions<TDocument, TValue>
     /// </summary>
     /// <param name="alias">When it is null, no alias is set</param>
     /// <returns></returns>
-    public AutoCompleteOptions<TDocument, TValue> UseAlias(string alias)
+    public AutoCompleteOptions<TDocument> UseAlias(string alias)
     {
         Alias = alias;
         return this;
@@ -43,13 +43,13 @@ public class AutoCompleteOptions<TDocument, TValue>
     /// Set the default AutoComplete
     /// </summary>
     /// <returns></returns>
-    public AutoCompleteOptions<TDocument, TValue> UseDefault()
+    public AutoCompleteOptions<TDocument> UseDefault()
     {
         IsDefault = true;
         return this;
     }
 
-    public AutoCompleteOptions<TDocument, TValue> UseDefaultSearchType(SearchType defaultSearchType)
+    public AutoCompleteOptions<TDocument> UseDefaultSearchType(SearchType defaultSearchType)
     {
         DefaultSearchType = defaultSearchType;
         return this;
@@ -60,25 +60,25 @@ public class AutoCompleteOptions<TDocument, TValue>
     /// </summary>
     /// <param name="action"></param>
     /// <returns></returns>
-    public AutoCompleteOptions<TDocument, TValue> Mapping(Action<TypeMappingDescriptor<TDocument>> action)
+    public AutoCompleteOptions<TDocument> Mapping(Action<TypeMappingDescriptor<TDocument>> action)
     {
         Action = action;
         return this;
     }
 
-    public AutoCompleteOptions<TDocument, TValue> IndexSettings(Action<IIndexSettings> indexSettingAction)
+    public AutoCompleteOptions<TDocument> IndexSettings(Action<IIndexSettings> indexSettingAction)
     {
         IndexSettingAction = indexSettingAction;
         return this;
     }
 
-    public AutoCompleteOptions<TDocument, TValue> UseDefaultOperator(Operator defaultOperator)
+    public AutoCompleteOptions<TDocument> UseDefaultOperator(Operator defaultOperator)
     {
         DefaultOperator = defaultOperator;
         return this;
     }
 
-    public AutoCompleteOptions<TDocument, TValue> UseMultipleConditions(bool enableMultipleCondition = true)
+    public AutoCompleteOptions<TDocument> UseMultipleConditions(bool enableMultipleCondition = true)
     {
         EnableMultipleCondition = enableMultipleCondition;
         return this;

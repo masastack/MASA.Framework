@@ -3,7 +3,15 @@
 
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests.Model;
 
-public class Employee : AutoCompleteDocument<int>
+public class Employee : AutoCompleteDocument
 {
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
     public string Phone { get; set; }
+
+    protected override string GetText() => Name;
+
+    public override string GetDocumentId() => Id.ToString();
 }
