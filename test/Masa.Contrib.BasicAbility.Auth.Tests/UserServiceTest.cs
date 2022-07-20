@@ -233,16 +233,22 @@ public class UserServiceTest
     public async Task TestGetVisitedListAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var data = new List<UserVisitedModel>();
+        var data = new List<UserVisitedModel>() {
+            new UserVisitedModel
+            {
+                Name="baidu",
+                Url = "https://www.baidu.com/"
+            }
+        };
         var requestUri = $"api/user/visitedList";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, new { userId = userId }, default)).ReturnsAsync(data).Verifiable();
+        callerProvider.Setup(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = new UserService(callerProvider.Object, userContext.Object);
         var result = await userService.GetVisitedListAsync();
         callerProvider.Verify(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
-        Assert.IsTrue(result is not null);
+        Assert.IsTrue(result.Count == 1);
     }
 
     [TestMethod]
@@ -306,5 +312,87 @@ public class UserServiceTest
         callerProvider.Verify(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
         Assert.IsTrue(data.Count == 1);
     }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestIntGetUserSystemDataAsync(string systemId)
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var data = 1;
+        var requestUri = $"api/user/GetUserSystemData";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
+            .ReturnsAsync(data.ToString()).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetUserSystemDataAsync<int>(systemId);
+        Assert.IsTrue(result == 1);
+    }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestObjectGetUserSystemDataAsync(string systemId)
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var data = new SystemData
+        {
+            Name = "name",
+            Value = "value"
+        };
+        var requestUri = $"api/user/GetUserSystemData";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
+            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetUserSystemDataAsync<SystemData>(systemId);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestIntSaveUserSystemDataAsync(string systemId)
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var requestUri = $"api/user/UserSystemData";
+        var value = 1;
+        var data = new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(value) };
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PostAsync<object>(requestUri, data, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.SaveUserSystemDataAsync(systemId, value);
+        callerProvider.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
+    }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestObjectSaveUserSystemDataAsync(string systemId)
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var requestUri = $"api/user/UserSystemData";
+        var value = new SystemData
+        {
+            Name = "name",
+            Value = "value"
+        };
+        var data = new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(value) };
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PostAsync<object>(requestUri, data, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.SaveUserSystemDataAsync(systemId, value);
+        callerProvider.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
+    }
 }
 
+
+class SystemData
+{
+    public string Name { get; set; }
+    public string Value { get; set; }
+}
