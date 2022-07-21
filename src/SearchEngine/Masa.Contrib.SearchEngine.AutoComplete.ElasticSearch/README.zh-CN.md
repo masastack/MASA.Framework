@@ -43,6 +43,12 @@ public class User : AutoCompleteDocument
     {
         return $"{Name}:{Phone}";
     }
+
+    /// <summary>
+    /// 如果希望id是唯一标识
+    /// </summary>
+    /// <returns></returns>
+    public override string GetDocumentId() => Id.ToString();
 }
 ```
 

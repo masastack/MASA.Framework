@@ -43,6 +43,12 @@ public class User : AutoCompleteDocument
     {
         return $"{Name}:{Phone}";
     }
+
+    /// <summary>
+    /// If you want the id to be unique
+    /// </summary>
+    /// <returns></returns>
+    public override string GetDocumentId() => Id.ToString();
 }
 ```
 
