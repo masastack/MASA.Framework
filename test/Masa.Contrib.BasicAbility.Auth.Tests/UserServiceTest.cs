@@ -270,6 +270,19 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestDisableUserAsync()
+    {
+        var user = new DisableUserModel("account");
+        var requestUri = $"api/user/disable";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        await userService.DisableUserAsync(user);
+        callerProvider.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
+    }
+
+    [TestMethod]
     public async Task TestUpdateBasicInfoAsync()
     {
         var user = new UpdateUserBasicInfoModel

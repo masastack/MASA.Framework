@@ -149,5 +149,11 @@ public class UserService : IUserService
         var data = await _callerProvider.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
         return JsonSerializer.Deserialize<T>(data);
     }
+
+    public async Task<bool> DisableUserAsync(DisableUserModel user)
+    {
+        var requestUri = $"api/user/disable";
+        return await _callerProvider.PutAsync<bool>(requestUri, user);
+    }
 }
 
