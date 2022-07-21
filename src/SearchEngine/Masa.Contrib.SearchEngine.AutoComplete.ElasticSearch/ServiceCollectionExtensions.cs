@@ -10,11 +10,6 @@ public static class ServiceCollectionExtensions
 
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder) where TValue : notnull
-        => builder.AddAutoComplete<AutoCompleteDocument<TValue>, TValue>();
-
-    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
-        this MasaElasticsearchBuilder builder)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
         if (string.IsNullOrEmpty(indexName))
@@ -22,35 +17,70 @@ public static class ServiceCollectionExtensions
                 nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
                 "The default IndexName is not set");
 
-        return builder.AddAutoComplete<TDocument, TValue>(option => option.UseIndexName(indexName));
+        return builder.AddAutoComplete<AutoCompleteDocument<TValue>>(option => option.UseIndexName(indexName));
     }
 
-    public static MasaElasticsearchBuilder AddAutoComplete(
-        this MasaElasticsearchBuilder builder,
-        Action<AutoCompleteOptions<AutoCompleteDocument<long>, long>>? action)
-        => builder.AddAutoComplete<long>(action);
+    public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder,
+        Action<AutoCompleteOptions<AutoCompleteDocument<Guid>>>? action)
+        => builder.AddAutoComplete<Guid>(action);
 
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder,
-        Action<AutoCompleteOptions<AutoCompleteDocument<TValue>, TValue>>? action) where TValue : notnull
-        => builder.AddAutoComplete<AutoCompleteDocument<TValue>, TValue>(action);
-
-    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
-        this MasaElasticsearchBuilder builder,
-        Action<AutoCompleteOptions<TDocument, TValue>>? action)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        Action<AutoCompleteOptions<AutoCompleteDocument<TValue>>>? action) where TValue : notnull
     {
-        AutoCompleteOptions<TDocument, TValue> options = new AutoCompleteOptions<TDocument, TValue>();
+        if (typeof(TValue).IsClass)
+            throw new ArgumentException($"TValue does not support Class, please use AddAutoCompleteBySpecifyDocument<TDocument>");
+
+        AutoCompleteOptions<AutoCompleteDocument<TValue>> options = new AutoCompleteOptions<AutoCompleteDocument<TValue>>();
         action?.Invoke(options);
         builder.Services.AddAutoCompleteCore(builder.ElasticClient, builder.Client, options);
         return builder;
     }
 
-    private static void AddAutoCompleteCore<TDocument, TValue>(this IServiceCollection services,
+    [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
+    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
+        this MasaElasticsearchBuilder builder)
+        where TDocument : AutoCompleteDocument
+        where TValue : notnull
+        => builder.AddAutoCompleteBySpecifyDocument<TDocument>();
+
+    [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
+    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
+        this MasaElasticsearchBuilder builder,
+        Action<AutoCompleteOptions<TDocument>>? action)
+        where TDocument : AutoCompleteDocument
+        where TValue : notnull
+        => builder.AddAutoCompleteBySpecifyDocument(action);
+
+    public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
+        this MasaElasticsearchBuilder builder)
+        where TDocument : AutoCompleteDocument
+    {
+        var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
+        if (string.IsNullOrEmpty(indexName))
+            throw new ArgumentNullException(
+                nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
+                "The default IndexName is not set");
+
+        return builder.AddAutoCompleteBySpecifyDocument<TDocument>(option => option.UseIndexName(indexName));
+    }
+
+    public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
+        this MasaElasticsearchBuilder builder,
+        Action<AutoCompleteOptions<TDocument>>? action)
+        where TDocument : AutoCompleteDocument
+    {
+        AutoCompleteOptions<TDocument> options = new AutoCompleteOptions<TDocument>();
+        action?.Invoke(options);
+        builder.Services.AddAutoCompleteCore(builder.ElasticClient, builder.Client, options);
+        return builder;
+    }
+
+    private static void AddAutoCompleteCore<TDocument>(this IServiceCollection services,
         IElasticClient elasticClient,
         IMasaElasticClient client,
-        AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        AutoCompleteOptions<TDocument> option)
+        where TDocument : AutoCompleteDocument
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -88,11 +118,11 @@ public static class ServiceCollectionExtensions
         relationsOptions.AddRelation(relation);
     }
 
-    private static void TryCreateIndexAsync<TDocument, TValue>(
+    private static void TryCreateIndexAsync<TDocument>(
         this IMasaElasticClient client,
         ILogger<IAutoCompleteClient>? logger,
-        AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        AutoCompleteOptions<TDocument> option)
+        where TDocument : AutoCompleteDocument
     {
         IAliases? aliases = null;
         if (option.Alias != null)
@@ -114,13 +144,13 @@ public static class ServiceCollectionExtensions
         client.CreateIndex(logger, option.IndexName, aliases, option);
     }
 
-    private static void CreateIndex<TDocument, TValue>(
+    private static void CreateIndex<TDocument>(
         this IMasaElasticClient client,
         ILogger<IAutoCompleteClient>? logger,
         string indexName,
         IAliases? aliases,
-        AutoCompleteOptions<TDocument, TValue> option)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        AutoCompleteOptions<TDocument> option)
+        where TDocument : AutoCompleteDocument
     {
         IAnalysis analysis = new AnalysisDescriptor();
         analysis.Analyzers = new Analyzers();
@@ -151,11 +181,6 @@ public static class ServiceCollectionExtensions
         {
             mapping = mapping
                 .AutoMap<TDocument>()
-                .Properties(ps =>
-                    ps.Text(s =>
-                        s.Name(n => n.Id)
-                    )
-                )
                 .Properties(ps =>
                     ps.Text(s =>
                         s.Name(n => n.Text)
