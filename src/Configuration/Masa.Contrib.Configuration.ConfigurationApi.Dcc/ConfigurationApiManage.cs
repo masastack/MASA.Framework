@@ -17,7 +17,7 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
     }
 
     ///<inheritdoc/>
-    public async Task InitAsync(string environment, string cluster, string appId, Dictionary<string, string> configObjects)
+    public async Task InitializeAsync(string environment, string cluster, string appId, Dictionary<string, string> configObjects)
     {
         var requestUri = $"open-api/releasing/init/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}";
         var result = await _callerProvider.PostAsync(requestUri, configObjects, default);
