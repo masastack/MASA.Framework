@@ -7,11 +7,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
-        Action<IdentityClaimOptions> configureOptions)
-        => services.AddMasaIdentityModel(IdentityType.Basic, configureOptions);
-
-    public static IServiceCollection AddMasaIdentityModel(
-        this IServiceCollection services,
         IdentityType identityType = IdentityType.Basic)
         => services.AddMasaIdentityModel(identityType, _ =>
         {
