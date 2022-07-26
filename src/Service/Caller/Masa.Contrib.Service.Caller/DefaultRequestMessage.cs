@@ -10,13 +10,13 @@ public abstract class DefaultRequestMessage
     private readonly IHttpContextAccessor? _httpContextAccessor;
     protected readonly CallerFactoryOptions Options;
 
-    public DefaultRequestMessage(IOptionsFactory<CallerFactoryOptions> optionsFactory,
+    public DefaultRequestMessage(IOptions<CallerFactoryOptions> options,
         IRequestIdGenerator requestIdGenerator,
         IHttpContextAccessor? httpContextAccessor = null)
     {
         _requestIdGenerator = requestIdGenerator;
         _httpContextAccessor = httpContextAccessor;
-        Options = optionsFactory.Create(Microsoft.Extensions.Options.Options.DefaultName);
+        Options = options.Value;
         _requestIdKey = Options.RequestIdKey ?? "Masa-Request-Id";
     }
 

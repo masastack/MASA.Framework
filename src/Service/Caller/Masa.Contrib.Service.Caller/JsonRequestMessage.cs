@@ -8,10 +8,10 @@ public class JsonRequestMessage : DefaultRequestMessage, IRequestMessage
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
     public JsonRequestMessage(
-        IOptionsFactory<CallerFactoryOptions> optionsFactory,
+        IOptions<CallerFactoryOptions> options,
         IRequestIdGenerator requestIdGenerator,
         IHttpContextAccessor? httpContextAccessor = null)
-        : base(optionsFactory, requestIdGenerator, httpContextAccessor)
+        : base(options, requestIdGenerator, httpContextAccessor)
     {
         _jsonSerializerOptions = Options.JsonSerializerOptions;
     }

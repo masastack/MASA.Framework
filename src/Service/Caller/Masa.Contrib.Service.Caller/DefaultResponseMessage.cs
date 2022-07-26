@@ -8,9 +8,9 @@ public class DefaultResponseMessage : IResponseMessage
     private readonly ILogger<DefaultResponseMessage>? _logger;
     private readonly CallerFactoryOptions _options;
 
-    public DefaultResponseMessage(IOptionsFactory<CallerFactoryOptions> optionsFactory, ILogger<DefaultResponseMessage>? logger = null)
+    public DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
     {
-        _options = optionsFactory.Create(Options.DefaultName);
+        _options = options.Value;
         _logger = logger;
     }
 

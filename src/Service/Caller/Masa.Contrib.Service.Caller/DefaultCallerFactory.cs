@@ -8,10 +8,10 @@ internal class DefaultCallerFactory : ICallerFactory
     private readonly IServiceProvider _serviceProvider;
     private readonly List<CallerRelationOptions> _callers;
 
-    public DefaultCallerFactory(IServiceProvider serviceProvider, IOptionsFactory<CallerFactoryOptions> callerFactoryOptions)
+    public DefaultCallerFactory(IServiceProvider serviceProvider, IOptions<CallerFactoryOptions> options)
     {
         _serviceProvider = serviceProvider;
-        _callers = callerFactoryOptions.Create(Options.DefaultName).Callers;
+        _callers = options.Value.Callers;
     }
 
     public ICallerProvider CreateClient()
