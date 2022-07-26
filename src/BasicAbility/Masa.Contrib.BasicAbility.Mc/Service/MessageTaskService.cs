@@ -21,13 +21,13 @@ public class MessageTaskService : IMessageTaskService
 
     public async Task SendOrdinaryMessageAsync(SendOrdinaryMessageModel options)
     {
-        var requestUri = $"{_party}";
-        await _callerProvider.PostAsync(requestUri, (MessageTaskUpsertModel)options);
+        var requestUri = $"{_party}/SendOrdinaryMessage";
+        await _callerProvider.PostAsync(requestUri, options);
     }
 
     public async Task SendTemplateMessageAsync(SendTemplateMessageModel options)
     {
-        var requestUri = $"{_party}";
-        await _callerProvider.PostAsync(requestUri, (MessageTaskUpsertModel)options);
+        var requestUri = $"{_party}/SendTemplateMessage";
+        await _callerProvider.PostAsync(requestUri, options);
     }
 }
