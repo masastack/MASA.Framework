@@ -24,23 +24,23 @@ public class MessageTaskServiceTest
     public async Task TestSendOrdinaryMessageAsync()
     {
         var options = new SendOrdinaryMessageModel();
-        var requestUri = $"api/message-task";
+        var requestUri = $"api/message-task/SendOrdinaryMessage";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync(requestUri, It.IsAny<MessageTaskUpsertModel>(), true, default)).Verifiable();
+        callerProvider.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
         var messageTaskService = new Mock<MessageTaskService>(callerProvider.Object);
         await messageTaskService.Object.SendOrdinaryMessageAsync(options);
-        callerProvider.Verify(provider => provider.PostAsync(requestUri, It.IsAny<MessageTaskUpsertModel>(), true, default), Times.Once);
+        callerProvider.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 
     [TestMethod]
     public async Task TestSendTemplateMessageAsync()
     {
         var options = new SendTemplateMessageModel();
-        var requestUri = $"api/message-task";
+        var requestUri = $"api/message-task/SendTemplateMessage";
         var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync(requestUri, It.IsAny<MessageTaskUpsertModel>(), true, default)).Verifiable();
+        callerProvider.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
         var messageTaskService = new Mock<MessageTaskService>(callerProvider.Object);
         await messageTaskService.Object.SendTemplateMessageAsync(options);
-        callerProvider.Verify(provider => provider.PostAsync(requestUri, It.IsAny<MessageTaskUpsertModel>(), true, default), Times.Once);
+        callerProvider.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 }
