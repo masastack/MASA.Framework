@@ -22,7 +22,7 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 builder.Services
 .AddDomainEventBus(options =>
 {
-    options.UseIntegrationEventBus<IntegrationEventLogService>(opt =>
+    options.UseIntegrationEventBus(opt =>
     {
         opt.UseDapr();
         opt.UseEventLog<CustomizeDbContext>();//使用跨进程事件

@@ -1,7 +1,7 @@
 name: Package Push Nuget
 on:
   release:
-    types: [ created ]
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
         dotnet-version: '6.0.x'
         include-prerelease: true
     - name: dependencies
-      run: git clone -b main https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
+      run: git clone -b $GITHUB_REF_NAME https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
 
     - name: restore
       run: dotnet restore

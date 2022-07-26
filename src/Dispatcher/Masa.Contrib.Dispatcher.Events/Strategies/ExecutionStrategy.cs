@@ -5,12 +5,12 @@ namespace Masa.Contrib.Dispatcher.Events.Strategies;
 
 public class ExecutionStrategy : IExecutionStrategy
 {
-    private readonly IExceptionStrategyProvider _strategyExceptionProvider;
+    private readonly IExceptionStrategyProvider _exceptionStrategyProvider;
     private readonly ILogger<ExecutionStrategy>? _logger;
 
-    public ExecutionStrategy(IExceptionStrategyProvider strategyExceptionProvider, ILogger<ExecutionStrategy>? logger = null)
+    public ExecutionStrategy(IExceptionStrategyProvider exceptionStrategyProvider, ILogger<ExecutionStrategy>? logger = null)
     {
-        _strategyExceptionProvider = strategyExceptionProvider;
+        _exceptionStrategyProvider = exceptionStrategyProvider;
         _logger = logger;
     }
 
@@ -27,7 +27,7 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _strategyExceptionProvider.LogWrite(LogLevel.Warning,
+                    _exceptionStrategyProvider.LogWrite(LogLevel.Warning,
                         null,
                         "----- Error Publishing event {@Event} start: The {retries}th retrying consume a message failed. message id: {messageId} -----",
                         @event, retryTimes, @event.GetEventId());
@@ -39,20 +39,20 @@ public class ExecutionStrategy : IExecutionStrategy
             {
                 if (retryTimes > 0)
                 {
-                    _strategyExceptionProvider.LogWrite(LogLevel.Error,
+                    _exceptionStrategyProvider.LogWrite(LogLevel.Error,
                         ex,
                         "----- Error Publishing event {@Event} finish: The {retries}th retrying consume a message failed. message id: {messageId} -----",
                         @event, retryTimes, @event.GetEventId());
                 }
                 else
                 {
-                    _strategyExceptionProvider.LogWrite(LogLevel.Error,
+                    _exceptionStrategyProvider.LogWrite(LogLevel.Error,
                         ex,
                         "----- Error Publishing event {@Event}: after {maxRetries}th executions and we will stop retrying. message id: {messageId} -----",
                         @event, strategyOptions.MaxRetryCount, @event.GetEventId());
                 }
                 exception = ex;
-                if (_strategyExceptionProvider.SupportRetry(exception))
+                if (_exceptionStrategyProvider.SupportRetry(exception))
                 {
                     retryTimes++;
                 }

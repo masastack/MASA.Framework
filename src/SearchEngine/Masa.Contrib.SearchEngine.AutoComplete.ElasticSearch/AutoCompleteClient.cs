@@ -28,7 +28,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         _enableMultipleCondition = enableMultipleCondition;
     }
 
-    public override async Task<GetResponse<TAudoCompleteDocument, TValue>> GetAsync<TAudoCompleteDocument, TValue>(
+    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>> GetBySpecifyDocumentAsync<TAudoCompleteDocument>(
         string keyword,
         AutoCompleteOptions? options = null,
         CancellationToken cancellationToken = default)
@@ -39,7 +39,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         keyword = keyword.Trim();
 
         if (string.IsNullOrEmpty(keyword))
-            return new GetResponse<TAudoCompleteDocument, TValue>(true, string.Empty, new List<TAudoCompleteDocument>());
+            return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(true, string.Empty, new List<TAudoCompleteDocument>());
 
         if (searchType == SearchType.Fuzzy)
         {
@@ -52,7 +52,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                     newOptions.PageSize,
                     _defaultOperator)
                 , cancellationToken);
-            return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.Message)
+            return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(ret.IsValid, ret.Message)
             {
                 Total = ret.Total,
                 TotalPages = ret.TotalPages,
@@ -68,7 +68,8 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                     .Query(q => GetQueryDescriptor(q, newOptions.Field, keyword.ToLower()))
                 , cancellationToken
             );
-            return new GetResponse<TAudoCompleteDocument, TValue>(ret.IsValid, ret.ServerError?.ToString() ?? "")
+            return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(ret.IsValid,
+                ret.ServerError?.ToString() ?? "")
             {
                 Data = ret.Hits.Select(hit => hit.Source).ToList(),
                 Total = ret.Total,
@@ -80,12 +81,21 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     private string GetFuzzyKeyword(string keyword)
     {
         if (_enableMultipleCondition)
-            return string.Join(' ', keyword.Split(' ').Select(word => $"*{word.Trim('*')}*"));
+            return string.Join(' ', keyword.Split(' ').Select(CompleteKeyword));
 
         if (!keyword.Contains(" "))
-            return $"*{keyword.Trim('*')}*";
+            return CompleteKeyword(keyword);
 
-        return $"\"{keyword}\"";//Content contains spaces and is treated as a phrase for search
+        return $"\"{keyword}\""; //Content contains spaces and is treated as a phrase for search
+    }
+
+    private string CompleteKeyword(string keyword)
+    {
+        if (keyword.Equals("*"))
+            return keyword;
+
+        keyword = keyword.Trim('*');
+        return $"({keyword} OR *{keyword} OR {keyword}*)";
     }
 
     private QueryContainer GetQueryDescriptor<T>(QueryContainerDescriptor<T> queryContainerDescriptor, string field, string keyword)
@@ -112,15 +122,15 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     }
 
 
-    public override Task<SetResponse> SetAsync<TAudoCompleteDocument, TValue>(IEnumerable<TAudoCompleteDocument> documents,
+    public override Task<SetResponse> SetBySpecifyDocumentAsync<TAudoCompleteDocument>(IEnumerable<TAudoCompleteDocument> documents,
         SetOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         SetOptions newOptions = options ?? new();
         if (newOptions.IsOverride)
-            return SetMultiAsync<TAudoCompleteDocument, TValue>(documents, cancellationToken);
+            return SetMultiAsync(documents, cancellationToken);
 
-        return SetByNotOverrideAsync<TAudoCompleteDocument, TValue>(documents, cancellationToken);
+        return SetByNotOverrideAsync(documents, cancellationToken);
     }
 
     /// <summary>
@@ -130,16 +140,15 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     /// <param name="documents"></param>
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TDocument"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    private async Task<SetResponse> SetMultiAsync<TDocument, TValue>(
+    private async Task<SetResponse> SetMultiAsync<TDocument>(
         IEnumerable<TDocument> documents,
         CancellationToken cancellationToken = default)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        where TDocument : AutoCompleteDocument
     {
         var request = new SetDocumentRequest<TDocument>(_indexName);
         foreach (var document in documents)
-            request.AddDocument(document, document.Id);
+            request.AddDocument(document, document.GetDocumentId());
 
         var ret = await _client.SetDocumentAsync(request, cancellationToken);
         return new SetResponse(ret.IsValid, ret.Message)
@@ -155,16 +164,15 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     /// <param name="documents"></param>
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TDocument"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
     /// <returns></returns>
-    private async Task<SetResponse> SetByNotOverrideAsync<TDocument, TValue>(
+    private async Task<SetResponse> SetByNotOverrideAsync<TDocument>(
         IEnumerable<TDocument> documents,
         CancellationToken cancellationToken = default)
-        where TDocument : AutoCompleteDocument<TValue> where TValue : notnull
+        where TDocument : AutoCompleteDocument
     {
         var request = new CreateMultiDocumentRequest<TDocument>(_indexName);
         foreach (var document in documents)
-            request.AddDocument(document, document.Id);
+            request.AddDocument(document, document.GetDocumentId());
 
         var ret = await _client.CreateMultiDocumentAsync(request, cancellationToken);
         return new SetResponse(ret.IsValid, ret.Message)

@@ -132,5 +132,28 @@ public class UserService : IUserService
         var requestUri = $"api/user/portraits";
         return await _callerProvider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, userIds) ?? new();
     }
+
+    public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/user/UserSystemData";
+        await _callerProvider.PostAsync<object>(requestUri,
+            new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(data) },
+            true);
+    }
+
+    public async Task<T?> GetUserSystemDataAsync<T>(string systemId)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/user/GetUserSystemData";
+        var data = await _callerProvider.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        return JsonSerializer.Deserialize<T>(data);
+    }
+
+    public async Task<bool> DisableUserAsync(DisableUserModel user)
+    {
+        var requestUri = $"api/user/disable";
+        return await _callerProvider.PutAsync<bool>(requestUri, user);
+    }
 }
 
