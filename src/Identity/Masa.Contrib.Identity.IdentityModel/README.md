@@ -5,7 +5,7 @@
 Example:
 
 ```` C#
-Install-Package Masa.Contrib.Identity
+Install-Package Masa.Contrib.Identity.IdentityModel
 ````
 
 1. Modify `Program.cs`
