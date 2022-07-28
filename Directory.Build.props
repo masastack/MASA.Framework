@@ -6,7 +6,7 @@
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
     <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
-    <MasaUtilsPackageVersion>0.5.0-rc.1</MasaUtilsPackageVersion>
+    <MasaUtilsPackageVersion>0.5.0</MasaUtilsPackageVersion>
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
     <DaprPackageVersion>1.5.0</DaprPackageVersion>
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>

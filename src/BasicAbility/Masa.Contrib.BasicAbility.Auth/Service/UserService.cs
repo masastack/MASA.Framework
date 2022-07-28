@@ -155,5 +155,11 @@ public class UserService : IUserService
         var requestUri = $"api/user/disable";
         return await _callerProvider.PutAsync<bool>(requestUri, user);
     }
+
+    public async Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts)
+    {
+        var requestUri = $"api/user/GetListByAccount";
+        return await _callerProvider.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts }) ?? new();
+    }
 }
 

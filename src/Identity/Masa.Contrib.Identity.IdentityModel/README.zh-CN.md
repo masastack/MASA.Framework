@@ -5,7 +5,7 @@
 用例：
 
 ``` C#
-Install-Package Masa.Contrib.Identity
+Install-Package Masa.Contrib.Identity.IdentityModel
 ```
 
 1. 修改`Program.cs`
