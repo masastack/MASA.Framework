@@ -15,6 +15,6 @@ public class OssService : IOssService
     public async Task<SecurityTokenModel> GetSecurityTokenAsync()
     {
         var requestUri = $"api/oss/GetSecurityToken";
-        return await _callerProvider.GetAsync<SecurityTokenModel>(requestUri) ?? throw new UserFriendlyException("If the fault is unknown, contact the administrator");
+        return await _callerProvider.GetAsync<SecurityTokenModel>(requestUri) ?? throw new UserFriendlyException("Unknown exception, contact the administrator");
     }
 }
