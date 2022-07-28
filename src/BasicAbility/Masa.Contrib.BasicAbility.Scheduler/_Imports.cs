@@ -4,12 +4,13 @@
 global using Masa.BuildingBlocks.BasicAbility.Scheduler;
 global using Masa.BuildingBlocks.BasicAbility.Scheduler.Request;
 global using Masa.BuildingBlocks.BasicAbility.Scheduler.Service;
-global using Masa.BuildingBlocks.Identity.IdentityModel;
+global using Masa.BuildingBlocks.Service.Caller;
+global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.Contrib.BasicAbility.Scheduler;
 global using Masa.Contrib.BasicAbility.Scheduler.Services;
-global using Masa.Utils.Caller.Core;
-global using Masa.Utils.Caller.HttpClient;
-global using Microsoft.Extensions.Logging;
-global using static Masa.Contrib.BasicAbility.Scheduler.Constants;
+global using Masa.Contrib.Service.Caller;
+global using Masa.Contrib.Service.Caller.HttpClient;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Http;
+global using Microsoft.Extensions.Logging;
+global using static Masa.Contrib.BasicAbility.Scheduler.Constants;

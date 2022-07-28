@@ -14,8 +14,8 @@ Masa.Contrib.Service.Caller is the basic class library of Caller, which provides
 
 `Masa.Contrib.Service.Caller` is the basic class library of Caller, but it cannot be used alone. Currently, Caller supports two implementations:
 
-* Implementation based on HttpClient: [Masa.Utils.Caller.HttpClient](../Masa.Utils.Caller.HttpClient/README.md)
-* Implementation based on DaprClient: [Masa.Utils.Caller.DaprClient](../Masa.Utils.Caller.DaprClient/README.md)
+* Implementation based on HttpClient: [Masa.Contrib.Service.Caller.HttpClient](../Masa.Contrib.Service.Caller.HttpClient/README.md)
+* Implementation based on DaprClient: [Masa.Contrib.Service.Caller.DaprClient](../Masa.Contrib.Service.Caller.DaprClient/README.md)
 
 > Q: What should I do if the callee uses xml instead of json?
 >

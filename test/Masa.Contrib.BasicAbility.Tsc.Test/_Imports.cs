@@ -3,8 +3,9 @@
 
 global using Masa.BuildingBlocks.BasicAbility.Tsc.Enums;
 global using Masa.BuildingBlocks.BasicAbility.Tsc.Model;
+global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.BasicAbility.Tsc.Service;
-global using Masa.Utils.Caller.Core;
+global using Masa.Contrib.Service.Caller;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System;

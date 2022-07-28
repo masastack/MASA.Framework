@@ -1,13 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
-// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.BasicAbility.Tsc;
 global using Masa.BuildingBlocks.BasicAbility.Tsc.Model;
 global using Masa.BuildingBlocks.BasicAbility.Tsc.Service;
+global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.BasicAbility.Tsc;
 global using Masa.Contrib.BasicAbility.Tsc.Service;
-global using Masa.Utils.Caller.Core;
-global using Masa.Utils.Caller.HttpClient;
+global using Masa.Contrib.Service.Caller;
+global using Masa.Contrib.Service.Caller.HttpClient;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient;

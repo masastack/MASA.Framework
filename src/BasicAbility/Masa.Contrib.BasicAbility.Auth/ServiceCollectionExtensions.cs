@@ -22,10 +22,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
-        if (!services.Any(service => service.ServiceType == typeof(IMultiEnvironmentUserContext)))
-        {
+        if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
-        }
 
         services.AddHttpContextAccessor();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();

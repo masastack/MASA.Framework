@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caller.Core" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
     <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient" Version="$(OpenTelemetryContribVersion)" />
     <PackageReference Include="OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore" Version="$(OpenTelemetryContribVersion)" />
@@ -23,6 +21,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\MASA.BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Tsc\Masa.BuildingBlocks.BasicAbility.Tsc.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>
 
 </Project>
