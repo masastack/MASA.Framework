@@ -407,7 +407,7 @@ public class UserServiceTest
     {
         var data = new List<UserSimpleModel>()
         {
-            new UserSimpleModel(Guid.NewGuid(),"account","displayName")
+            new UserSimpleModel(Guid.NewGuid(), "account", "displayName")
         };
         var accounts = new List<string> { "account" };
         var requestUri = $"api/user/GetListByAccount";
