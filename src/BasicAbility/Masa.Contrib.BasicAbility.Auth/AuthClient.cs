@@ -12,7 +12,6 @@ public class AuthClient : IAuthClient
         TeamService = new TeamService(callerProvider, userContext);
         ProjectService = new ProjectService(callerProvider, userContext);
         PermissionService = new PermissionService(callerProvider, userContext);
-        OssService = new OssService(callerProvider);
     }
 
     public IUserService UserService { get; }
@@ -24,7 +23,5 @@ public class AuthClient : IAuthClient
     public IPermissionService PermissionService { get; }
 
     public IProjectService ProjectService { get; }
-
-    public IOssService OssService { get; }
 }
 
