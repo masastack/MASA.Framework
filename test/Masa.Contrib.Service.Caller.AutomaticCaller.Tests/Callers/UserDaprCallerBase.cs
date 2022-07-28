@@ -18,12 +18,3 @@ public abstract class UserDaprCallerBase : DaprCallerBase
         return base.UseDapr().AddHttpRequestMessage<DefaultDaprRequestMessage>();
     }
 }
-
-public class DefaultDaprRequestMessage : IDaprRequestMessage
-{
-    public Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage)
-    {
-        requestMessage.Headers.Add("test", "test");
-        return Task.FromResult(requestMessage);
-    }
-}

@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Service.Caller.Options;
-using Microsoft.Extensions.Options;
-
 namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests;
 
 [TestClass]

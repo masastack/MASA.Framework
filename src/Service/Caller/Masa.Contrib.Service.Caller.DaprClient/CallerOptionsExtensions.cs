@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.Caller.DaprClient;
 
 public static class CallerOptionsExtensions
 {
-    public static CallerOptions UseDapr(this CallerOptions callerOptions, Func<MasaDaprClientBuilder> clientBuilder)
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions, Func<MasaDaprClientBuilder> clientBuilder)
     {
         if (clientBuilder == null)
             throw new ArgumentNullException(nameof(clientBuilder));
@@ -24,10 +24,10 @@ public static class CallerOptionsExtensions
 
         AddCallerExtensions.AddCaller(callerOptions, builder.Name, builder.IsDefault,
             serviceProvider => new DaprCallerProvider(serviceProvider, builder.Name, builder.AppId));
-        return callerOptions;
+        return new DefaultDaprClientBuilder(callerOptions.Services, builder.Name);
     }
 
-    public static CallerOptions UseDapr(this CallerOptions callerOptions, Action<MasaDaprClientBuilder> clientBuilder)
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions, Action<MasaDaprClientBuilder> clientBuilder)
     {
         if (clientBuilder == null)
             throw new ArgumentNullException(nameof(clientBuilder));

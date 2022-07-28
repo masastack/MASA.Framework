@@ -20,7 +20,7 @@ public abstract class DefaultRequestMessage
         _requestIdKey = Options.RequestIdKey ?? "Masa-Request-Id";
     }
 
-    protected void TrySetRequestId(HttpRequestMessage requestMessage)
+    protected virtual void TrySetRequestId(HttpRequestMessage requestMessage)
     {
         var httpContext = _httpContextAccessor?.HttpContext;
         if (httpContext == null)
