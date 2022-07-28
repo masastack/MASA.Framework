@@ -421,7 +421,6 @@ public class UserServiceTest
     }
 }
 
-
 class SystemData
 {
     public string Name { get; set; }
