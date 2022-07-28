@@ -401,8 +401,25 @@ public class UserServiceTest
         await userService.SaveUserSystemDataAsync(systemId, value);
         callerProvider.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
-}
 
+    [TestMethod]
+    public async Task TestGetListByAccountAsync()
+    {
+        var data = new List<UserSimpleModel>()
+        {
+            new UserSimpleModel(Guid.NewGuid(), "account", "displayName")
+        };
+        var accounts = new List<string> { "account" };
+        var requestUri = $"api/user/GetListByAccount";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetListByAccountAsync(accounts);
+        callerProvider.Verify(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result.Count == 1);
+    }
+}
 
 class SystemData
 {
