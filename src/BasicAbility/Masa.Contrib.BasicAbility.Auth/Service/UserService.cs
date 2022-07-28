@@ -62,10 +62,10 @@ public class UserService : IUserService
         return await _callerProvider.GetAsync<object, long>(requestUri, new { id = teamId });
     }
 
-    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password)
+    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _callerProvider.PostAsync<object, bool>(requestUri, new { account, password });
+        return await _callerProvider.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
     }
 
     public async Task<UserModel> FindByAccountAsync(string account)
