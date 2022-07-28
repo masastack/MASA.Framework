@@ -5,6 +5,7 @@
 ## Example:
 
 ````c#
+Install-Package Masa.Contrib.Service.Caller
 Install-Package Masa.Contrib.Service.Caller.DaprClient
 ````
 

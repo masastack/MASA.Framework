@@ -5,6 +5,7 @@
 ## 用例:
 
 ```c#
+Install-Package Masa.Contrib.Service.Caller
 Install-Package Masa.Contrib.Service.Caller.HttpClient
 ```
 
