@@ -5,9 +5,9 @@ namespace Masa.Contrib.Data.EntityFrameworkCore.Tests.Internal;
 
 internal class Repository
 {
-    private readonly CustomizeDbContext _testDbContext;
+    private readonly CustomDbContext _testDbContext;
 
-    public Repository(CustomizeDbContext testDbContext) => _testDbContext = testDbContext;
+    public Repository(CustomDbContext testDbContext) => _testDbContext = testDbContext;
 
     public Task<List<Student>> GetPaginatedListAsync(int skip, int take, CancellationToken cancellationToken = default)
         => _testDbContext.Set<Student>().Skip(skip).Take(take).ToListAsync(cancellationToken);

@@ -5,14 +5,14 @@ namespace Masa.Contrib.BasicAbility.Auth.Service;
 
 public class PermissionService : IPermissionService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly IUserContext _userContext;
 
     const string PART = "api/permission/";
 
-    public PermissionService(ICallerProvider callerProvider, IUserContext userContext)
+    public PermissionService(ICaller caller, IUserContext userContext)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
         _userContext = userContext;
     }
 
@@ -21,21 +21,21 @@ public class PermissionService : IPermissionService
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"{PART}authorized?appId={appId}&code={code}&userId={userId}";
-        return await _callerProvider.GetAsync<bool>(requestUri);
+        return await _caller.GetAsync<bool>(requestUri);
     }
 
     public async Task<List<MenuModel>> GetMenusAsync(string appId)
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"{PART}menus?appId={appId}&userId={userId}";
-        return await _callerProvider.GetAsync<List<MenuModel>>(requestUri, default) ?? new();
+        return await _caller.GetAsync<List<MenuModel>>(requestUri, default) ?? new();
     }
 
     public async Task<List<string>> GetElementPermissionsAsync(string appId)
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"{PART}element-permissions?appId={appId}&userId={userId}";
-        return await _callerProvider.GetAsync<List<string>>(requestUri, default) ?? new();
+        return await _caller.GetAsync<List<string>>(requestUri, default) ?? new();
     }
 
     public async Task<bool> AddFavoriteMenuAsync(Guid menuId)
@@ -43,7 +43,7 @@ public class PermissionService : IPermissionService
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PART}addFavoriteMenu?permissionId={menuId}&userId={userId}", null);
+            await _caller.PutAsync($"{PART}addFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -57,7 +57,7 @@ public class PermissionService : IPermissionService
         try
         {
             var userId = _userContext.GetUserId<Guid>();
-            await _callerProvider.PutAsync($"{PART}removeFavoriteMenu?permissionId={menuId}&userId={userId}", null);
+            await _caller.PutAsync($"{PART}removeFavoriteMenu?permissionId={menuId}&userId={userId}", null);
             return true;
         }
         catch
@@ -70,6 +70,6 @@ public class PermissionService : IPermissionService
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"{PART}menu-favorite-list?userId={userId}";
-        return await _callerProvider.GetAsync<List<CollectMenuModel>>(requestUri, default) ?? new();
+        return await _caller.GetAsync<List<CollectMenuModel>>(requestUri, default) ?? new();
     }
 }

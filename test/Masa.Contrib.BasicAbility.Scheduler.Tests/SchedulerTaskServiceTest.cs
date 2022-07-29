@@ -18,12 +18,12 @@ public class SchedulerTaskServiceTest
         };
 
         var requestUri = $"{API}/stop";
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         var loggerFactory = new Mock<ILoggerFactory>();
-        callerProvider.Setup(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
+        caller.Setup(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default)).Verifiable();
+        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
         var result = await schedulerClient.SchedulerTaskService.StopAsync(requestData);
-        callerProvider.Verify(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default), Times.Once);
+        caller.Verify(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
     }
 
@@ -37,12 +37,12 @@ public class SchedulerTaskServiceTest
         };
 
         var requestUri = $"{API}/start";
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         var loggerFactory = new Mock<ILoggerFactory>();
-        callerProvider.Setup(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(callerProvider.Object, loggerFactory.Object);
+        caller.Setup(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default)).Verifiable();
+        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
         var result = await schedulerClient.SchedulerTaskService.StartAsync(request);
-        callerProvider.Verify(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default), Times.Once);
+        caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
     }
 }

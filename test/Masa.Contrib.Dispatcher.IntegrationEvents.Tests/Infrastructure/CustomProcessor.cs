@@ -3,13 +3,13 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 
-public class CustomizeProcessor : ProcessorBase
+public class CustomProcessor : ProcessorBase
 {
     public static int Times = 0;
 
     public override int Delay => 2;
 
-    public CustomizeProcessor(IServiceProvider? serviceProvider) : base(serviceProvider)
+    public CustomProcessor(IServiceProvider? serviceProvider) : base(serviceProvider)
     {
     }
 

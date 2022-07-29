@@ -13,7 +13,7 @@ public class MetricServiceTests
     public async Task GetNamesAsyncTest(IEnumerable<string> match)
     {
         var data = new string[] { "up", "prometheus_http_requests_total", "prometheus_http_request_duration_seconds_count" };
-        var caller = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<IEnumerable<string>?>(MetricService.NAMES_URI, It.Is<Dictionary<string, string>>(dic => dic == null || dic.ContainsKey("match")), default))
             .ReturnsAsync((string? url, Dictionary<string, string> param, CancellationToken token) =>
         {
@@ -39,7 +39,7 @@ public class MetricServiceTests
     [DataRow("up", "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
     public async Task GetLabelValuesAsyncTest(string match, string start, string end)
     {
-        var caller = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.SendAsync<Dictionary<string, Dictionary<string, List<string>>>>(It.IsNotNull<HttpRequestMessage>(), default))
             .ReturnsAsync(new Dictionary<string, Dictionary<string, List<string>>> {
             {"up",new Dictionary<string, List<string>>{
@@ -65,7 +65,7 @@ public class MetricServiceTests
     [DataRow("up", null, "2022-07-01T09:00:00.000Z", "2022-07-05T22:00:00.000Z")]
     public async Task GetValuesAsyncTest(string match, IEnumerable<string> labels, string start, string end)
     {
-        var caller = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.SendAsync<string>(It.IsNotNull<HttpRequestMessage>(), default)).ReturnsAsync("1.0");
         var client = new TscClient(caller.Object);
 

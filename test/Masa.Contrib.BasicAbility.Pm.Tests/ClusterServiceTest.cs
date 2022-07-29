@@ -13,12 +13,12 @@ public class ClusterServiceTest
         var data = new ClusterDetailModel();
 
         var requestUri = $"api/v1/cluster/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -30,12 +30,12 @@ public class ClusterServiceTest
         ClusterDetailModel? data = null;
 
         var requestUri = $"api/v1/cluster/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ClusterDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ClusterDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ClusterDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -49,12 +49,12 @@ public class ClusterServiceTest
         };
 
         var requestUri = $"api/v1/envClusters";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetEnvironmentClustersAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -65,12 +65,12 @@ public class ClusterServiceTest
         List<EnvironmentClusterModel>? data = null;
 
         var requestUri = $"api/v1/envClusters";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<EnvironmentClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetEnvironmentClustersAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<EnvironmentClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
@@ -84,12 +84,12 @@ public class ClusterServiceTest
         };
 
         var requestUri = $"api/v1/cluster";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetListAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -100,12 +100,12 @@ public class ClusterServiceTest
         List<ClusterModel>? data = null;
 
         var requestUri = $"api/v1/cluster";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetListAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
@@ -120,12 +120,12 @@ public class ClusterServiceTest
         };
 
         var requestUri = $"api/v1/{envId}/cluster";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetListByEnvIdAsync(envId);
-        callerProvider.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -137,12 +137,12 @@ public class ClusterServiceTest
         List<ClusterModel>? data = null;
 
         var requestUri = $"api/v1/{envId}/cluster";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ClusterModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ClusterService.GetListByEnvIdAsync(envId);
-        callerProvider.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ClusterModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }

@@ -15,11 +15,11 @@ public class SubjectServiceTest
         };
         string filter = "test";
         var requestUri = $"api/subject/getList";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var subjectService = new Mock<SubjectService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var subjectService = new Mock<SubjectService>(caller.Object);
         var result = await subjectService.Object.GetListAsync(filter);
-        callerProvider.Verify(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<object, List<SubjectModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }
 }

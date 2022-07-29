@@ -5,23 +5,23 @@ namespace Masa.Contrib.BasicAbility.Mc.Service;
 
 public class MessageTemplateService : IMessageTemplateService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly string _party = "api/message-template";
 
-    public MessageTemplateService(ICallerProvider callerProvider)
+    public MessageTemplateService(ICaller caller)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     public async Task<MessageTemplateModel?> GetAsync(Guid id)
     {
         var requestUri = $"{_party}/{id}";
-        return await _callerProvider.GetAsync<MessageTemplateModel>(requestUri);
+        return await _caller.GetAsync<MessageTemplateModel>(requestUri);
     }
 
     public async Task<PaginatedListModel<MessageTemplateModel>> GetListAsync(GetMessageTemplateModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options) ?? new();
+        return await _caller.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options) ?? new();
     }
 }

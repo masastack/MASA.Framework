@@ -27,20 +27,20 @@ public class CallerTest
         });
         _ = _builder.Build();
         var serviceProvider = _builder.Services.BuildServiceProvider();
-        var githubCaller = serviceProvider.GetRequiredService<ICallerProvider>();
+        var githubCaller = serviceProvider.GetRequiredService<ICaller>();
         Assert.IsTrue(await GetAsync(githubCaller));
     }
 
-    private async Task<bool> GetAsync(ICallerProvider callerProvider)
+    private async Task<bool> GetAsync(ICaller caller)
     {
-        var res = await callerProvider.GetAsync("");
+        var res = await caller.GetAsync("");
         return res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK;
     }
 
     [TestMethod]
     public void TestConvertToDictionaryByDynamic()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var dictionary = new Dictionary<string, string>
         {
             { "account", "jim" },
@@ -58,7 +58,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var query = new UserListQuery("Jim");
         var dictionary = new Dictionary<string, string>
         {
@@ -71,7 +71,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject2()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var query = new UserDetailQuery("Jim", "Music", "Game");
         var result = provider.ConvertToDictionary(query);
         Assert.IsTrue(result.Count == 2);
@@ -86,7 +86,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject3()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
 
         List<string> tags = null!;
         var query = new UserDetailQuery("Jim", tags);
@@ -99,7 +99,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject4()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var query = new UserDetailQuery(null!, "Music", "Game");
         var result = provider.ConvertToDictionary(query);
         Assert.IsTrue(result.Count == 1);
@@ -113,7 +113,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject5()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var dic = new Dictionary<string, string>()
         {
             { "Account", "Jim" }
@@ -126,7 +126,7 @@ public class CallerTest
     [TestMethod]
     public void TestConvertToDictionaryByObject6()
     {
-        var provider = new DefaultTypeConvertProvider();
+        var provider = new DefaultTypeConvert();
         var dic = new List<KeyValuePair<string, string>>()
         {
             new("Account", "Jim")

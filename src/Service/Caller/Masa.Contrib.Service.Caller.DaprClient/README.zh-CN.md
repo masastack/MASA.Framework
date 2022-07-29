@@ -27,8 +27,8 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
 2. 如何使用:
 
     ``` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICallerProvider userCallerProvider, string name)
-        => userCallerProvider.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
+        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
     ```
 
     > 完整请求的接口地址是：http://localhost:3500/v1.0/invoke/<Replace-You-Dapr-AppID>/method/Hello?Name={name}
@@ -54,22 +54,22 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
 4. 如何使用UserCaller或OrderCaller
 
     ``` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICallerProvider userCallerProvider, string name)
-        => userCallerProvider.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
+        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
 
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
-        var callerProvider = callerFactory.CreateClient("OrderCaller");
-        return callerProvider.GetAsync<string>($"/Hello", new { Name = name });
+        var caller = callerFactory.CreateClient("OrderCaller");
+        return caller.GetAsync<string>($"/Hello", new { Name = name });
     });
     ```
 
 > 当多个Caller被添加时，如何获取指定的Caller？
->> 通过`CallerFactory`的`CreateClient`方法得到指定别名的CallerProvider
+>> 通过`CallerFactory`的`CreateClient`方法得到指定别名的Caller
 >
-> 为什么`userCallerProvider`没有通过`CallerFactory`的`CreateClient`方法得到对应的Caller？
->> 如果未指定默认的ICallerProvider，则在`AddCaller`方法中第一个被添加的就是默认的CallerProvider
+> 为什么`userCaller`没有通过`CallerFactory`的`CreateClient`方法得到对应的Caller？
+>> 如果未指定默认的ICaller，则在`AddCaller`方法中第一个被添加的就是默认的Caller
 
 ### 推荐用法
 
@@ -90,7 +90,7 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
         {
         }
 
-        public Task<string> HelloAsync(string name) => CallerProvider.GetStringAsync($"/Hello", new { Name = name });
+        public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
     }
     ```
 

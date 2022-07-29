@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Data.EntityFrameworkCore.Tests;
 
-public class CustomizeDbContext : MasaDbContext<CustomizeDbContext>
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
-    public CustomizeDbContext(MasaDbContextOptions<CustomizeDbContext> options) : base(options)
+    public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 

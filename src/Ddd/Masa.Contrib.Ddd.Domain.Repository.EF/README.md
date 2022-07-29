@@ -43,7 +43,7 @@ public class DemoService : ServiceBase
 }
 ```
 
-If the method defined by IRepository is not enough to support the business, you can customize the Repository
+If the method defined by IRepository is not enough to support the business, you can custom the Repository
 
 ```C#
 public interface IProductRepository : IRepository<ProductItem>

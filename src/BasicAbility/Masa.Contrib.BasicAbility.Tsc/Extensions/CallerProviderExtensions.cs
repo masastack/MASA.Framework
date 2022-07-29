@@ -6,7 +6,7 @@ namespace Masa.Contrib.Service.Caller;
 
 internal static class CallerProviderExtensions
 {
-    public static async Task<TResult> GetByBodyAsync<TResult>(this ICallerProvider caller, string url, object? body) where TResult : class
+    public static async Task<TResult> GetByBodyAsync<TResult>(this ICaller caller, string url, object? body) where TResult : class
     {
         var request = new HttpRequestMessage(HttpMethod.Get, url);
         if (body is not null)

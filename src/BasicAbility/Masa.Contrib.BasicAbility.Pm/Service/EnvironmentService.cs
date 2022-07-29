@@ -5,17 +5,17 @@ namespace Masa.Contrib.BasicAbility.Pm.Service;
 
 public class EnvironmentService : IEnvironmentService
 {
-    private readonly ICallerProvider _callerProvider;
+    private readonly ICaller _caller;
 
-    public EnvironmentService(ICallerProvider callerProvider)
+    public EnvironmentService(ICaller caller)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     public async Task<EnvironmentDetailModel> GetAsync(int id)
     {
         var requestUri = $"api/v1/env/{id}";
-        var result = await _callerProvider.GetAsync<EnvironmentDetailModel>(requestUri);
+        var result = await _caller.GetAsync<EnvironmentDetailModel>(requestUri);
 
         return result ?? new();
     }
@@ -23,7 +23,7 @@ public class EnvironmentService : IEnvironmentService
     public async Task<List<EnvironmentModel>> GetListAsync()
     {
         var requestUri = $"api/v1/env";
-        var result = await _callerProvider.GetAsync<List<EnvironmentModel>>(requestUri);
+        var result = await _caller.GetAsync<List<EnvironmentModel>>(requestUri);
 
         return result ?? new();
     }

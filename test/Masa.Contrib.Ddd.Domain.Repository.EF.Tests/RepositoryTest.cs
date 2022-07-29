@@ -150,7 +150,7 @@ public class RepositoryTest : TestBase
     {
         _dispatcherOptions.Object.UseRepository<CustomDbContext>();
         var serviceProvider = _services.BuildServiceProvider();
-        var customizeOrderRepository = serviceProvider.GetRequiredService<ICustomizeOrderRepository>();
+        var customOrderRepository = serviceProvider.GetRequiredService<ICustomOrderRepository>();
 
         var orders = new List<Orders>
         {
@@ -170,8 +170,8 @@ public class RepositoryTest : TestBase
                 OrderNumber = 20220227
             }
         };
-        await customizeOrderRepository.AddRangeAsync(orders);
-        await customizeOrderRepository.UnitOfWork.SaveChangesAsync();
+        await customOrderRepository.AddRangeAsync(orders);
+        await customOrderRepository.UnitOfWork.SaveChangesAsync();
 
         var sorting = new Dictionary<string, bool>(
             new List<KeyValuePair<string, bool>>
@@ -179,7 +179,7 @@ public class RepositoryTest : TestBase
                 new("OrderNumber", true),
                 new("Description", false)
             });
-        var list = await customizeOrderRepository.GetPaginatedListAsync(
+        var list = await customOrderRepository.GetPaginatedListAsync(
             0,
             10,
             sorting);
@@ -193,7 +193,7 @@ public class RepositoryTest : TestBase
                 new("OrderNumber", false),
                 new("Description", true)
             });
-        list = await customizeOrderRepository.GetPaginatedListAsync(
+        list = await customOrderRepository.GetPaginatedListAsync(
             order => order.Id != 3,
             0,
             10,
@@ -201,14 +201,14 @@ public class RepositoryTest : TestBase
         Assert.IsTrue(list[0].Id == 2);
         Assert.IsTrue(list[1].Id == 1);
 
-        list = await customizeOrderRepository.GetPaginatedListAsync(
+        list = await customOrderRepository.GetPaginatedListAsync(
             order => order.Id != 3,
             0,
             10);
         Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
         Assert.IsTrue(list[1].Id == 2);
 
-        list = await customizeOrderRepository.GetPaginatedListAsync(0, 10);
+        list = await customOrderRepository.GetPaginatedListAsync(0, 10);
         Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
         Assert.IsTrue(list[1].Id == 2);
     }
@@ -307,13 +307,13 @@ public class RepositoryTest : TestBase
     }
 
     [TestMethod]
-    public void TestCustomizeOrderRepository()
+    public void TestCustomOrderRepository()
     {
         _dispatcherOptions.Object.UseRepository<CustomDbContext>();
 
         var serviceProvider = _services.BuildServiceProvider();
-        var customizeOrderRepository = serviceProvider.GetService<ICustomizeOrderRepository>();
-        Assert.IsNotNull(customizeOrderRepository);
+        var customOrderRepository = serviceProvider.GetService<ICustomOrderRepository>();
+        Assert.IsNotNull(customOrderRepository);
     }
 
     [TestMethod]

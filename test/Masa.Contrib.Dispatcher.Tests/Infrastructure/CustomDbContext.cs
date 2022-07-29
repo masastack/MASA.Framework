@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Dispatcher.Tests.Infrastructure;
 
-public class CustomizeDbContext : MasaDbContext
+public class CustomDbContext : MasaDbContext
 {
     public DbSet<User> User { get; set; }
 
-    public CustomizeDbContext(MasaDbContextOptions options) : base(options)
+    public CustomDbContext(MasaDbContextOptions options) : base(options)
     {
     }
 }

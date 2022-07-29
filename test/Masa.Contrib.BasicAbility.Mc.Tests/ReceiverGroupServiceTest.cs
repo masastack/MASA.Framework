@@ -12,11 +12,11 @@ public class ReceiverGroupServiceTest
         var data = new ReceiverGroupModel();
         Guid id = Guid.NewGuid();
         var requestUri = $"api/receiver-group/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ReceiverGroupModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var receiverGroupService = new Mock<ReceiverGroupService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ReceiverGroupModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var receiverGroupService = new Mock<ReceiverGroupService>(caller.Object);
         var result = await receiverGroupService.Object.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<ReceiverGroupModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ReceiverGroupModel>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -26,11 +26,11 @@ public class ReceiverGroupServiceTest
         var options = new GetReceiverGroupModel();
         var data = new PaginatedListModel<ReceiverGroupModel>();
         var requestUri = $"api/receiver-group";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
-        var receiverGroupService = new Mock<ReceiverGroupService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        var receiverGroupService = new Mock<ReceiverGroupService>(caller.Object);
         var result = await receiverGroupService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<GetReceiverGroupModel, PaginatedListModel<ReceiverGroupModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

@@ -12,11 +12,11 @@ public class WebsiteMessageServiceTest
         var data = new WebsiteMessageModel();
         Guid id = Guid.NewGuid();
         var requestUri = $"api/website-message/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<WebsiteMessageModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<WebsiteMessageModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         var result = await websiteMessageService.Object.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<WebsiteMessageModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<WebsiteMessageModel>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -26,11 +26,11 @@ public class WebsiteMessageServiceTest
         var options = new GetWebsiteMessageModel();
         var data = new PaginatedListModel<WebsiteMessageModel>();
         var requestUri = $"api/website-message";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         var result = await websiteMessageService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<GetWebsiteMessageModel, PaginatedListModel<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -38,11 +38,11 @@ public class WebsiteMessageServiceTest
     public async Task TestCheckAsync()
     {
         var requestUri = $"api/website-message/Check";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync(requestUri, null, true, default)).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, null, true, default)).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         await websiteMessageService.Object.CheckAsync();
-        callerProvider.Verify(provider => provider.PostAsync(requestUri, null, true, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync(requestUri, null, true, default), Times.Once);
     }
 
     [TestMethod]
@@ -50,11 +50,11 @@ public class WebsiteMessageServiceTest
     {
         Guid id = Guid.NewGuid();
         var requestUri = $"api/website-message/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.DeleteAsync(requestUri, null, true, default)).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync(requestUri, null, true, default)).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         await websiteMessageService.Object.DeleteAsync(id);
-        callerProvider.Verify(provider => provider.DeleteAsync(requestUri, null, true, default), Times.Once);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, null, true, default), Times.Once);
     }
 
     [TestMethod]
@@ -62,11 +62,11 @@ public class WebsiteMessageServiceTest
     {
         var data = new List<WebsiteMessageChannelModel>();
         var requestUri = $"api/website-message/GetChannelList";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         var result = await websiteMessageService.Object.GetChannelListAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -76,11 +76,11 @@ public class WebsiteMessageServiceTest
         var options = new GetNoticeListModel();
         var data = new List<WebsiteMessageModel>();
         var requestUri = $"api/website-message/GetNoticeList";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         var result = await websiteMessageService.Object.GetNoticeListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -89,11 +89,11 @@ public class WebsiteMessageServiceTest
     {
         var options = new ReadWebsiteMessageModel();
         var requestUri = $"api/website-message/Read";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         await websiteMessageService.Object.ReadAsync(options);
-        callerProvider.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 
     [TestMethod]
@@ -101,10 +101,10 @@ public class WebsiteMessageServiceTest
     {
         var options = new ReadAllWebsiteMessageModel();
         var requestUri = $"api/website-message/SetAllRead";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
-        var websiteMessageService = new Mock<WebsiteMessageService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
+        var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
         await websiteMessageService.Object.SetAllReadAsync(options);
-        callerProvider.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 }

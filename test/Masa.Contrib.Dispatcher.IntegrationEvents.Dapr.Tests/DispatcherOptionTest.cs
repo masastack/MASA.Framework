@@ -37,7 +37,7 @@ public class DispatcherOptionTest
         Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
         distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
         distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
-        distributedDispatcherOptions.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>("pubsub2");
+        distributedDispatcherOptions.Object.UseDaprEventBus<CustomIntegrationEventLogService>("pubsub2");
         var serviceProvider = services.BuildServiceProvider();
 
         var integrationEventBus = serviceProvider.GetService<IIntegrationEventBus>();

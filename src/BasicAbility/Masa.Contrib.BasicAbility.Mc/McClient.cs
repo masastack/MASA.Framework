@@ -5,13 +5,13 @@ namespace Masa.Contrib.BasicAbility.Mc;
 
 public class McClient: IMcClient
 {
-    public McClient(ICallerProvider callerProvider)
+    public McClient(ICaller caller)
     {
-        ChannelService = new ChannelService(callerProvider);
-        MessageTaskService = new MessageTaskService(callerProvider);
-        MessageTemplateService = new MessageTemplateService(callerProvider);
-        ReceiverGroupService = new ReceiverGroupService(callerProvider);
-        WebsiteMessageService = new WebsiteMessageService(callerProvider);
+        ChannelService = new ChannelService(caller);
+        MessageTaskService = new MessageTaskService(caller);
+        MessageTemplateService = new MessageTemplateService(caller);
+        ReceiverGroupService = new ReceiverGroupService(caller);
+        WebsiteMessageService = new WebsiteMessageService(caller);
     }
 
     public IChannelService ChannelService { get; }

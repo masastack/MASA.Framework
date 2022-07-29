@@ -4,11 +4,11 @@
 
 Masa.Contrib.Service.Caller是Caller的基础类库，提供了以下能力的抽象
 
-* `ICallerFactory`: 工厂，用于创建`CallerProvider` (Singleton)
-* `ICallerProvider`: 提供`Post`、`Delete`、`Patch`、`Put`、`Get`、`Send`的能力 (Scoped)
+* `ICallerFactory`: 工厂，用于创建`Caller` (Singleton)
+* `ICaller`: 提供`Post`、`Delete`、`Patch`、`Put`、`Get`、`Send`的能力 (Scoped)
 * `IRequestMessage`: 提供对请求数据处理的能力 (默认实现[`JsonRequestMessage`](./JsonRequestMessage.cs)) (Singleton)
 * `IResponseMessage`: 提供对响应数据处理的能力 (默认实现[`DefaultResponseMessage`](./DefaultResponseMessage.cs)) (Singleton)
-* `ITypeConvertProvider`: 提供类型转换的能力，为`ICallerProvider`的`Get`请求支撑 (Singleton)
+* `ITypeConvert`: 提供类型转换的能力，为`ICaller`的`Get`请求支撑 (Singleton)
 
 ## 总结
 
@@ -31,6 +31,6 @@ Masa.Contrib.Service.Caller是Caller的基础类库，提供了以下能力的�
 > A: 重写IResponseMessage，在调用AddCaller之前先将自定义的ResponseMessage添加到IServiceCollection中
 
   ``` C#
-  services.AddSingleton<IResponseMessage, CustomizeResponseMessage>();
+  services.AddSingleton<IResponseMessage, CustomResponseMessage>();
   services.AddCaller();
   ```

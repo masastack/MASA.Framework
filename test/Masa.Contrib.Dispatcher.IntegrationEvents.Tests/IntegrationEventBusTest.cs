@@ -371,18 +371,18 @@ public class IntegrationEventBusTest
     public void TestAddIntegrationEventBusReturnThrowNoImplementing()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<NotSupportedException>(() => services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>());
+        Assert.ThrowsException<NotSupportedException>(() => services.AddIntegrationEventBus<CustomIntegrationEventLogService>());
     }
 
     [TestMethod]
     public void TestAddMultiIntegrationEventBusReturnIntegrationEventBusCountEqual1()
     {
         var services = new ServiceCollection();
-        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>(dispatcherOptions =>
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(dispatcherOptions =>
         {
             Mock<IPublisher> publisher = new();
             dispatcherOptions.Services.TryAddSingleton(publisher.Object);
-        }).AddIntegrationEventBus<CustomizeIntegrationEventLogService>(dispatcherOptions =>
+        }).AddIntegrationEventBus<CustomIntegrationEventLogService>(dispatcherOptions =>
         {
             Mock<IPublisher> publisher = new();
             dispatcherOptions.Services.TryAddSingleton(publisher.Object);

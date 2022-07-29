@@ -3,14 +3,14 @@
 
 namespace Masa.Contrib.Ddd.Domain.Tests.Events;
 
-public record CustomizeDomainEvent : DomainEvent
+public record CustomDomainCommand : DomainCommand
 {
-    public CustomizeDomainEvent() : base()
+    public CustomDomainCommand() : base()
     {
 
     }
 
-    public CustomizeDomainEvent(Guid eventId, DateTime creationTime) : base(eventId, creationTime)
+    public CustomDomainCommand(Guid eventId, DateTime creationTime) : base(eventId, creationTime)
     {
     }
 }

@@ -161,8 +161,8 @@ public class DccTest
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
-        var callerProvider = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().CreateClient("CustomHttpClient");
-        Assert.IsNotNull(callerProvider);
+        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
+        Assert.IsNotNull(caller);
     }
 
     [TestMethod]

@@ -25,7 +25,7 @@ var app = builder.Services
                  .AddServices(builder);
 ```
 
-2. Customize Service and inherit ServiceBase
+2. Custom Service and inherit ServiceBase
 
 ```c#
 public class IntegrationEventService : ServiceBase

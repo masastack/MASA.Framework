@@ -9,7 +9,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task GetMappingFieldsAsyncTest()
     {
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
 
         var time = DateTime.Now;
         var query = new LableValuesRequest
@@ -25,8 +25,8 @@ public class LogServiceTests
             "container.instance.name",
             "Id"
         };
-        callerProvider.Setup(provider => provider.GetAsync<IEnumerable<string>>(LogService.FIELD_URI, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(callerProvider.Object);
+        caller.Setup(provider => provider.GetAsync<IEnumerable<string>>(LogService.FIELD_URI, default)).ReturnsAsync(data).Verifiable();
+        var client = new TscClient(caller.Object);
         var result = await client.LogService.GetFieldsAsync();
         Assert.IsNotNull(result);
     }
@@ -34,7 +34,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task GetAggregationAsyncTest()
     {
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
 
         var time = DateTime.Now;
         var query = new LogAggregationRequest
@@ -60,8 +60,8 @@ public class LogServiceTests
             {"count1","0" },
             { "count2","0"}
         };
-        callerProvider.Setup(provider => provider.GetAsync<IEnumerable<KeyValuePair<string, string>>>(LogService.FIELD_URI, query, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(callerProvider.Object);
+        caller.Setup(provider => provider.GetAsync<IEnumerable<KeyValuePair<string, string>>>(LogService.FIELD_URI, query, default)).ReturnsAsync(data).Verifiable();
+        var client = new TscClient(caller.Object);
 
         var result = await client.LogService.GetAggregationAsync(query);
         Assert.IsNotNull(result);
@@ -70,7 +70,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task GetLatestAsyncTest()
     {
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
 
         var time = DateTime.Now;
         var query = new LogLatestRequest
@@ -88,8 +88,8 @@ public class LogServiceTests
         };
         options.Converters.Add(new JsonStringEnumConverter());
         var data = JsonSerializer.Deserialize<object>(str, options);
-        callerProvider.Setup(provider => provider.GetAsync<object>(LogService.LATEST_URI, query, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(callerProvider.Object);
+        caller.Setup(provider => provider.GetAsync<object>(LogService.LATEST_URI, query, default)).ReturnsAsync(data).Verifiable();
+        var client = new TscClient(caller.Object);
 
         var result = await client.LogService.GetLatestAsync(query);
         Assert.IsNotNull(result);

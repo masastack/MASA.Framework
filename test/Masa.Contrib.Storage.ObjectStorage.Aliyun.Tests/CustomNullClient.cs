@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-public class CustomizeNullClient : DefaultCredentialProvider
+public class CustomNullClient : DefaultCredentialProvider
 {
     public string Message = "You are not authorized to do this action. You should be authorized by RAM.";
 
@@ -17,7 +17,7 @@ public class CustomizeNullClient : DefaultCredentialProvider
         long durationSeconds) => throw new Exception(Message);
 
 
-    public CustomizeNullClient(IOssClientFactory ossClientFactory,
+    public CustomNullClient(IOssClientFactory ossClientFactory,
         IAliyunStorageOptionProvider optionProvider,
         IMemoryCache cache,
         ILogger<DefaultCredentialProvider>? logger = null)

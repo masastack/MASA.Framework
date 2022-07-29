@@ -25,13 +25,13 @@ builder.Services
     options.UseIntegrationEventBus(opt =>
     {
         opt.UseDapr();
-        opt.UseEventLog<CustomizeDbContext>();//Use cross-process events
+        opt.UseEventLog<CustomDbContext>();//Use cross-process events
     });
     options
         // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // Use in-process events and use middleware
         .UseEventBus() // Use in-process events
-        .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
-        .UseRepository<CustomizeDbContext>();//Use the EF version of Repository to achieve
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseRepository<CustomDbContext>();//Use the EF version of Repository to achieve
 })
 ```
 

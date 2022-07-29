@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
             var schedulerClient = new SchedulerClient(callProvider, loggerFactory);
             return schedulerClient;

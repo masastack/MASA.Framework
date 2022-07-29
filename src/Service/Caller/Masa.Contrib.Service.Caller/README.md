@@ -4,11 +4,11 @@
 
 Masa.Contrib.Service.Caller is the basic class library of Caller, which provides the abstraction of the following capabilities
 
-* `ICallerFactory`: Factory for creating `CallerProvider` (Singleton)
-* `ICallerProvider`: Provides `Post`, `Delete`, `Patch`, `Put`, `Get`, `Send` capabilities (Scoped)
+* `ICallerFactory`: Factory for creating `Caller` (Singleton)
+* `ICaller`: Provides `Post`, `Delete`, `Patch`, `Put`, `Get`, `Send` capabilities (Scoped)
 * `IRequestMessage`: Provides the ability to process request data (default implementation [`JsonRequestMessage`](./JsonRequestMessage.cs)) (Singleton)
 * `IResponseMessage`: Provides the ability to handle response data (default implementation [`DefaultResponseMessage`](./DefaultResponseMessage.cs)) (Singleton)
-* `ITypeConvertProvider`: Provides the ability to convert types, support for `Get` requests of `ICallerProvider` (Singleton)
+* `ITypeConvert`: Provides the ability to convert types, support for `Get` requests of `ICaller` (Singleton)
 
 ## Summarize
 
@@ -31,6 +31,6 @@ Masa.Contrib.Service.Caller is the basic class library of Caller, which provides
 > A: Rewrite IResponseMessage, add custom ResponseMessage to IServiceCollection before calling AddCaller
 
   ```` C#
-  services.AddSingleton<IResponseMessage, CustomizeResponseMessage>();
+  services.AddSingleton<IResponseMessage, CustomResponseMessage>();
   services.AddCaller();
   ````

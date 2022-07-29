@@ -5,14 +5,14 @@ namespace Masa.Contrib.BasicAbility.Auth.Service;
 
 public class ProjectService : IProjectService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly IMultiEnvironmentUserContext _multiEnvironmentUserContext;
 
     const string PARTY = "api/project/";
 
-    public ProjectService(ICallerProvider callerProvider, IMultiEnvironmentUserContext multiEnvironmentUserContext)
+    public ProjectService(ICaller caller, IMultiEnvironmentUserContext multiEnvironmentUserContext)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
         _multiEnvironmentUserContext = multiEnvironmentUserContext;
     }
 
@@ -21,6 +21,6 @@ public class ProjectService : IProjectService
         var userId = _multiEnvironmentUserContext.GetUserId<Guid>();
         var environment = _multiEnvironmentUserContext.Environment ?? "";
         var requestUri = $"{PARTY}navigations?userId={userId}&environment={environment}";
-        return await _callerProvider.GetAsync<List<ProjectModel>>(requestUri) ?? new();
+        return await _caller.GetAsync<List<ProjectModel>>(requestUri) ?? new();
     }
 }

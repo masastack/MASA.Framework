@@ -10,7 +10,7 @@ public class DccManageTest
 {
     private DccSectionOptions _dccSectionOptions;
     private JsonSerializerOptions _jsonSerializerOptions;
-    private Mock<ICallerProvider> _callerProvider;
+    private Mock<ICaller> _caller;
 
     [TestInitialize]
     public void Initialize()
@@ -30,7 +30,7 @@ public class DccManageTest
         {
             PropertyNameCaseInsensitive = true
         };
-        _callerProvider = new Mock<ICallerProvider>();
+        _caller = new Mock<ICaller>();
     }
 
     [DataTestMethod]
@@ -38,13 +38,13 @@ public class DccManageTest
     public async Task TestUpdateAsync(string environment, string cluster, string appId, string configObject)
     {
         var brand = new Brands("Microsoft");
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent(brand.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await manage.UpdateAsync(environment, cluster, appId, configObject, brand);
     }
 
@@ -54,13 +54,13 @@ public class DccManageTest
     {
         var brand = new Brands("Microsoft");
 
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.ExpectationFailed,
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -69,13 +69,13 @@ public class DccManageTest
     public async Task TestUpdateAsyncAndCustomError(string environment, string cluster, string appId, string configObject)
     {
         var brand = new Brands("Microsoft");
-        _callerProvider.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PutAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = (HttpStatusCode)299,
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -87,13 +87,13 @@ public class DccManageTest
         {
             { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
         };
-        _callerProvider.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.OK,
             Content = new StringContent(configObjects.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await manage.InitializeAsync(environment, cluster, appId, configObjects);
     }
 
@@ -106,13 +106,13 @@ public class DccManageTest
             { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
         };
 
-        _callerProvider.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = HttpStatusCode.ExpectationFailed,
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.InitializeAsync(environment, cluster, appId, configObjects));
     }
 
@@ -125,13 +125,13 @@ public class DccManageTest
             { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
         };
 
-        _callerProvider.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
+        _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
             StatusCode = (HttpStatusCode)299,
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_callerProvider.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.InitializeAsync(environment, cluster, appId, configObjects));
     }
 

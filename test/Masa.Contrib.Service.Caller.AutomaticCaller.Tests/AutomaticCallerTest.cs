@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using DaprCaller = Masa.Contrib.Service.Caller.AutomaticCaller.Tests.Callers.DaprCaller;
+
 namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests;
 
 [TestClass]

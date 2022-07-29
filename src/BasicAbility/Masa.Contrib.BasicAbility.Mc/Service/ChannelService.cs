@@ -5,23 +5,23 @@ namespace Masa.Contrib.BasicAbility.Mc.Service;
 
 public class ChannelService : IChannelService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly string _party = "api/channel";
 
-    public ChannelService(ICallerProvider callerProvider)
+    public ChannelService(ICaller caller)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     public async Task<ChannelModel?> GetAsync(Guid id)
     {
         var requestUri = $"{_party}/{id}";
-        return await _callerProvider.GetAsync<ChannelModel>(requestUri);
+        return await _caller.GetAsync<ChannelModel>(requestUri);
     }
 
     public async Task<PaginatedListModel<ChannelModel>> GetListAsync(GetChannelModel options)
     {
         var requestUri = $"{_party}";
-        return await _callerProvider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options) ?? new();
+        return await _caller.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options) ?? new();
     }
 }

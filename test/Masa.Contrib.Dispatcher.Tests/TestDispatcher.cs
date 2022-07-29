@@ -18,7 +18,7 @@ public class TestDispatcher : TestBase
         };
         await eventBus.PublishAsync(@event);
 
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(dbContext.Set<User>().Count() == 1);
     }
 
@@ -37,7 +37,7 @@ public class TestDispatcher : TestBase
         Assert.IsTrue(RecordMiddleware<RegisterUserCommand>.Time == 1);
         Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);
 
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(dbContext.Set<User>().Count() == 1);
     }
 
@@ -46,7 +46,7 @@ public class TestDispatcher : TestBase
     {
         var serviceProvider = ServiceProvider;
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Set<User>().AddAsync(new User()
         {
             Name = "Tom",

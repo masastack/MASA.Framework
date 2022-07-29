@@ -5,17 +5,17 @@ namespace Masa.Contrib.BasicAbility.Auth.Service;
 
 public class SubjectService : ISubjectService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
 
-    public SubjectService(ICallerProvider callerProvider)
+    public SubjectService(ICaller caller)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     public async Task<List<SubjectModel>> GetListAsync(string filter)
     {
         var requestUri = $"api/subject/getList";
-        return await _callerProvider.GetAsync<object, List<SubjectModel>>(requestUri, new { filter }) ?? new();
+        return await _caller.GetAsync<object, List<SubjectModel>>(requestUri, new { filter }) ?? new();
     }
 }
 

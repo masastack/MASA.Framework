@@ -28,9 +28,9 @@ public class OrderRepository : Repository<CustomDbContext, Orders>, IOrderReposi
     }
 }
 
-public class CustomizeOrderRepository : Repository<CustomDbContext, Orders, int>, ICustomizeOrderRepository
+public class CustomOrderRepository : Repository<CustomDbContext, Orders, int>, ICustomOrderRepository
 {
-    public CustomizeOrderRepository(CustomDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
+    public CustomOrderRepository(CustomDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     {
     }
 }

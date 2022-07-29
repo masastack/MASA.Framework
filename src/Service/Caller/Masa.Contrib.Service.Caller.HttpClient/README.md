@@ -16,10 +16,10 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(httpClientBuilder =>
+        options.UseHttpClient(clientBuilder =>
         {
-            httpClientBuilder.Name = "UserCaller";// The alias of the current Caller, when there is only one HttpClient, you can not assign a value to Name
-            httpClientBuilder.BaseAddress = "http://localhost:5000" ;
+            clientBuilder.Name = "UserCaller";// The alias of the current Caller, when there is only one HttpClient, you can not assign a value to Name
+            clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
     });
     ````
@@ -27,8 +27,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 2. How to use:
 
     ```` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICallerProvider userCallerProvider, string name)
-        => userCallerProvider.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
+        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
     ````
 
     > The interface address of the complete request is: http://localhost:5000/Hello?Name={name}
@@ -38,15 +38,15 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(httpClientBuilder =>
+        options.UseHttpClient(clientBuilder =>
         {
-            httpClientBuilder.Name = "UserCaller";
-            httpClientBuilder.BaseAddress = "http://localhost:5000" ;
+            clientBuilder.Name = "UserCaller";
+            clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
-        options.UseHttpClient(httpClientBuilder =>
+        options.UseHttpClient(clientBuilder =>
         {
-            httpClientBuilder.Name = "OrderCaller";
-            httpClientBuilder.BaseAddress = "http://localhost:6000" ;
+            clientBuilder.Name = "OrderCaller";
+            clientBuilder.BaseAddress = "http://localhost:6000" ;
         });
     });
     ````
@@ -54,22 +54,22 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 4. How to use UserCaller or OrderCaller
 
     ```` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICallerProvider userCallerProvider, string name)
-        => userCallerProvider.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
+        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
 
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
-        var callerProvider = callerFactory.CreateClient("OrderCaller");
-        return callerProvider.GetAsync<string>($"/Hello", new { Name = name });
+        var caller = callerFactory.Create("OrderCaller");
+        return caller.GetAsync<string>($"/Hello", new { Name = name });
     });
     ````
 
 > When multiple Callers are added, how to get the specified Caller?
->> Get the CallerProvider of the specified alias through the `CreateClient` method of `CallerFactory`
+>> Get the Caller of the specified alias through the `Create` method of `CallerFactory`
 >
-> Why doesn't `userCallerProvider` get the corresponding Caller through the `CreateClient` method of `CallerFactory`?
->> If no default ICallerProvider is specified, the default CallerProvider is the first one added in the `AddCaller` method
+> Why doesn't `userCaller` get the corresponding Caller through the `Create` method of `CallerFactory`?
+>> If no default ICaller is specified, the default Caller is the first one added in the `AddCaller` method
 
 ### Recommended usage
 
@@ -90,7 +90,7 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
         {
         }
 
-        public Task<string> HelloAsync(string name) => CallerProvider.GetStringAsync($"/Hello", new { Name = name });
+        public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
 
         /// <summary>
         /// There is no need to overload by default, and it can be overloaded when there are special requirements for httpClient

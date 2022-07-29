@@ -3,14 +3,14 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public class DaprCallerProvider : AbstractCallerProvider
+public class DaprCaller : AbstractCaller
 {
     private Dapr.Client.DaprClient? _daprClient;
     private Dapr.Client.DaprClient DaprClient => _daprClient ??= ServiceProvider.GetRequiredService<Dapr.Client.DaprClient>();
     private readonly CallerDaprClientOptions _callerDaprClientOptions;
     protected readonly string AppId;
 
-    public DaprCallerProvider(IServiceProvider serviceProvider, string name, string appId)
+    public DaprCaller(IServiceProvider serviceProvider, string name, string appId)
         : base(serviceProvider)
     {
         var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<CallerDaprClientOptions>>();

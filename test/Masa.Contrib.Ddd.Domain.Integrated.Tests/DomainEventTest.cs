@@ -25,11 +25,11 @@ public class DomainEventTest
                 .UseIntegrationEventBus<IntegrationEventLogService>(options =>
                 {
                     options.UseDapr();
-                    options.UseEventLog<CustomizeDbContext>();
+                    options.UseEventLog<CustomDbContext>();
                 })
                 .UseEventBus()
-                .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlite())
-                .UseRepository<CustomizeDbContext>();
+                .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlite())
+                .UseRepository<CustomDbContext>();
         });
         _serviceProvider = services.BuildServiceProvider();
     }
@@ -44,14 +44,14 @@ public class DomainEventTest
                 .UseIntegrationEventBus<IntegrationEventLogService>(options =>
                 {
                     options.UseDapr();
-                    options.UseEventLog<CustomizeDbContext>();
+                    options.UseEventLog<CustomDbContext>();
                 })
                 .UseEventBus()
-                .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseTestSqlite($"data source=test-{Guid.NewGuid()}"))
-                .UseRepository<CustomizeDbContext>();
+                .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseTestSqlite($"data source=test-{Guid.NewGuid()}"))
+                .UseRepository<CustomDbContext>();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         var @event = new RegisterUserEvent()
@@ -69,7 +69,7 @@ public class DomainEventTest
     [TestMethod]
     public async Task TestPublishMultiCommandReturnDataIs2()
     {
-        var dbContext = _serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = _serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
         var eventBus = _serviceProvider.GetRequiredService<IEventBus>();
 
@@ -95,7 +95,7 @@ public class DomainEventTest
     [TestMethod]
     public async Task TestPublishMultiCommandReturnDataIs1()
     {
-        var dbContext = _serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = _serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
         var eventBus = _serviceProvider.GetRequiredService<IEventBus>();
 

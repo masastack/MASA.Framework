@@ -16,8 +16,8 @@ internal class DccFactory
     }
 
     public static IConfigurationApiManage CreateManage(
-        ICallerProvider callerProvider,
+        ICaller caller,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
-        => new ConfigurationApiManage(callerProvider, defaultSectionOption, expandSectionOptions);
+        => new ConfigurationApiManage(caller, defaultSectionOption, expandSectionOptions);
 }

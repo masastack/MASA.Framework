@@ -12,7 +12,7 @@ public static class CallerOptionsExtensions
             => builder.ConfigureHttpClient(httpClient));
 
         AddCallerExtensions.AddCaller(callerOptions, builder.Name, builder.IsDefault, serviceProvider
-            => new HttpClientCallerProvider(serviceProvider, builder.Name, builder.Prefix));
+            => new HttpClientCaller(serviceProvider, builder.Name, builder.Prefix));
         return httpClientBuilder;
     }
 

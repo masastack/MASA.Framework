@@ -20,8 +20,8 @@ public class CallerTest
             });
         });
         var serviceProvider = services.BuildServiceProvider();
-        var callerProvider1 = serviceProvider.GetRequiredService<ICallerProvider>();
-        var callerProvider2 = serviceProvider.GetRequiredService<ICallerProvider>();
+        var callerProvider1 = serviceProvider.GetRequiredService<ICaller>();
+        var callerProvider2 = serviceProvider.GetRequiredService<ICaller>();
         Assert.IsTrue(callerProvider1 == callerProvider2);
     }
 
@@ -44,12 +44,12 @@ public class CallerTest
             });
         });
         var serviceProvider = services.BuildServiceProvider();
-        var callerProvider = serviceProvider.GetRequiredService<ICallerProvider>();
-        Assert.IsNotNull(callerProvider);
+        var caller = serviceProvider.GetRequiredService<ICaller>();
+        Assert.IsNotNull(caller);
 
-        var caller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient();
-        var daprCaller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("dapr");
-        var httpCaller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("http");
+        caller = serviceProvider.GetRequiredService<ICallerFactory>().Create();
+        var daprCaller = serviceProvider.GetRequiredService<ICallerFactory>().Create("dapr");
+        var httpCaller = serviceProvider.GetRequiredService<ICallerFactory>().Create("http");
 
         Assert.IsTrue(caller.GetType().FullName != daprCaller.GetType().FullName);
         Assert.IsTrue(caller.GetType().FullName == httpCaller.GetType().FullName);
@@ -208,7 +208,7 @@ public class CallerTest
             });
         });
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("masastack"));
-        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("masastack2"));
+        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create("masastack"));
+        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create("masastack2"));
     }
 }

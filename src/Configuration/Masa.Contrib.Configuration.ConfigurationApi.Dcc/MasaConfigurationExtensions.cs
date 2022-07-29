@@ -88,7 +88,8 @@ public static class MasaConfigurationExtensions
             else
             {
                 action.Invoke(options);
-                callerName = options.Callers.Select(opt => opt.Name).FirstOrDefault();
+                callerName = options.Callers.Select(opt => opt.Name).FirstOrDefault()
+                    ?? throw new Exception("Missing Caller implementation, eg: options.UseHttpClient()");
             }
         });
 
@@ -138,7 +139,7 @@ public static class MasaConfigurationExtensions
         services.TryAddSingleton(serviceProvider =>
         {
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-            return DccFactory.CreateManage(callerFactory.CreateClient(callerName), defaultSectionOption, expansionSectionOptions);
+            return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, expansionSectionOptions);
         });
         return services;
     }

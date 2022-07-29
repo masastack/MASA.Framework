@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Service.Caller.Tests;
 
-public class CustomHttpClientCallerProvider : HttpClientCallerProvider
+public class CustomHttpClientCaller : HttpClientCaller
 {
-    public CustomHttpClientCallerProvider(IServiceProvider serviceProvider, string name, string baseApi)
+    public CustomHttpClientCaller(IServiceProvider serviceProvider, string name, string baseApi)
         : base(serviceProvider, name, baseApi)
     {
     }

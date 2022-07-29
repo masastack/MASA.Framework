@@ -17,7 +17,7 @@ public class ProcessorTest
     {
         var services = new ServiceCollection();
         MockPublisher(services);
-        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>();
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
         _options = _serviceProvider.GetRequiredService<IOptions<DispatcherOptions>>();
     }
@@ -345,8 +345,8 @@ public class ProcessorTest
         MockPublisher(services);
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
         services.AddSingleton(_ => unitOfWorkManager.Object);
-        services.AddScoped<IProcessor, CustomizeProcessor>();
-        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>(opt =>
+        services.AddScoped<IProcessor, CustomProcessor>();
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt =>
         {
             opt.CleaningLocalQueueExpireInterval = 1;
             opt.CleaningExpireInterval = 1;
@@ -360,7 +360,7 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(5000);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
-        Assert.IsTrue(CustomizeProcessor.Times > 0);
+        Assert.IsTrue(CustomProcessor.Times > 0);
     }
 
     [TestMethod]
@@ -371,8 +371,8 @@ public class ProcessorTest
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
         services.AddSingleton(_ => unitOfWorkManager.Object);
         services.AddLogging();
-        services.AddScoped<IProcessor, CustomizeProcessor>();
-        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>(opt =>
+        services.AddScoped<IProcessor, CustomProcessor>();
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt =>
         {
             opt.CleaningLocalQueueExpireInterval = 1;
             opt.CleaningExpireInterval = 1;
@@ -386,7 +386,7 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(5000);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
-        Assert.IsTrue(CustomizeProcessor.Times > 0);
+        Assert.IsTrue(CustomProcessor.Times > 0);
     }
 
     private void MockPublisher(IServiceCollection services)

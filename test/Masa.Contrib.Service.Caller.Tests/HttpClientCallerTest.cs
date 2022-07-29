@@ -31,15 +31,15 @@ public class HttpClientCallerTest
         var services = new ServiceCollection();
         services.AddCaller(opt => opt.UseHttpClient());
         var serviceProvider = services.BuildServiceProvider();
-        var provider = new CustomHttpClientCallerProvider(serviceProvider, string.Empty, prefix);
-        Assert.IsTrue(provider.GetResult(methods) == result);
+        var caller = new CustomHttpClientCaller(serviceProvider, string.Empty, prefix);
+        Assert.IsTrue(caller.GetResult(methods) == result);
     }
 
     [TestMethod]
     public async Task TestRequestDataIsXmlAsync()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<ITypeConvertProvider, DefaultTypeConvertProvider>();
+        services.AddSingleton<ITypeConvert, DefaultTypeConvert>();
         services.AddSingleton<IRequestMessage, XmlRequestMessage>();
         services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
         Mock<IHttpClientFactory> httpClientFactory = new();
@@ -66,11 +66,11 @@ public class HttpClientCallerTest
         httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
         services.AddSingleton(httpClientFactory.Object);
         var serviceProvider = services.BuildServiceProvider();
-        string name = "<Customize-Alias>";
+        string name = "<Custom-Alias>";
         string prefix = "<Replace-Your-Service-Prefix>";
-        var httpClientCallerProvider = new HttpClientCallerProvider(serviceProvider, name, prefix);
+        var caller = new HttpClientCaller(serviceProvider, name, prefix);
 
-        var res = await httpClientCallerProvider.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        var res = await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
         Assert.IsNotNull(res);
         Assert.IsTrue(res.Code == response.Code);
     }
@@ -81,7 +81,7 @@ public class HttpClientCallerTest
         var services = new ServiceCollection();
         RegisterUser registerUser = new RegisterUser("Jim", "123456");
 
-        services.AddSingleton<ITypeConvertProvider, DefaultTypeConvertProvider>();
+        services.AddSingleton<ITypeConvert, DefaultTypeConvert>();
         Mock<IRequestMessage> requestMessage = new();
         requestMessage.Setup(req => req.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>()))
             .ReturnsAsync(new HttpRequestMessage(HttpMethod.Post, "Hello")).Verifiable();
@@ -116,11 +116,11 @@ public class HttpClientCallerTest
         httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
         services.AddSingleton(httpClientFactory.Object);
         var serviceProvider = services.BuildServiceProvider();
-        string name = "<Customize-Alias>";
+        string name = "<Custom-Alias>";
         string prefix = "<Replace-Your-Service-Prefix>";
-        var httpClientCallerProvider = new HttpClientCallerProvider(serviceProvider, name, prefix);
+        var caller = new HttpClientCaller(serviceProvider, name, prefix);
 
-        var res = await httpClientCallerProvider.PostAsync<BaseResponse>("Hello", registerUser);
+        var res = await caller.PostAsync<BaseResponse>("Hello", registerUser);
         Assert.IsNotNull(res);
         Assert.IsTrue(res.Code == response.Code);
         requestMessage.Verify(r => r.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()), Times.Once);

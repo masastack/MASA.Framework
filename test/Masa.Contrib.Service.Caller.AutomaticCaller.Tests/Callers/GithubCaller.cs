@@ -14,7 +14,7 @@ public class GithubCaller : HttpClientCallerBase
 
     public async Task<bool> GetAsync()
     {
-        var res = await CallerProvider.GetAsync("");
+        var res = await Caller.GetAsync("");
         return res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK;
     }
 }

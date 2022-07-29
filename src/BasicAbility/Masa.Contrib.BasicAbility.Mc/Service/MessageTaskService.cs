@@ -5,29 +5,29 @@ namespace Masa.Contrib.BasicAbility.Mc.Service;
 
 public class MessageTaskService : IMessageTaskService
 {
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly string _party = "api/message-task";
 
-    public MessageTaskService(ICallerProvider callerProvider)
+    public MessageTaskService(ICaller caller)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     public async Task<MessageTaskModel?> GetAsync(Guid id)
     {
         var requestUri = $"{_party}/{id}";
-        return await _callerProvider.GetAsync<MessageTaskModel>(requestUri);
+        return await _caller.GetAsync<MessageTaskModel>(requestUri);
     }
 
     public async Task SendOrdinaryMessageAsync(SendOrdinaryMessageModel options)
     {
         var requestUri = $"{_party}/SendOrdinaryMessage";
-        await _callerProvider.PostAsync(requestUri, options);
+        await _caller.PostAsync(requestUri, options);
     }
 
     public async Task SendTemplateMessageAsync(SendTemplateMessageModel options)
     {
         var requestUri = $"{_party}/SendTemplateMessage";
-        await _callerProvider.PostAsync(requestUri, options);
+        await _caller.PostAsync(requestUri, options);
     }
 }

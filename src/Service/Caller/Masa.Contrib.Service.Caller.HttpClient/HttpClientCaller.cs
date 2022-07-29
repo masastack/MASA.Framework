@@ -3,13 +3,13 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
-public class HttpClientCallerProvider : AbstractCallerProvider
+public class HttpClientCaller : AbstractCaller
 {
     private readonly System.Net.Http.HttpClient _httpClient;
     private readonly string _prefix;
     private readonly bool _prefixIsNullOrEmpty;
 
-    public HttpClientCallerProvider(IServiceProvider serviceProvider, string name, string prefix)
+    public HttpClientCaller(IServiceProvider serviceProvider, string name, string prefix)
         : base(serviceProvider)
     {
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);

@@ -5,12 +5,12 @@ namespace Masa.Contrib.BasicAbility.Pm;
 
 public class PmClient : IPmClient
 {
-    public PmClient(ICallerProvider callerProvider)
+    public PmClient(ICaller caller)
     {
-        EnvironmentService = new EnvironmentService(callerProvider);
-        ClusterService = new ClusterService(callerProvider);
-        ProjectService = new ProjectService(callerProvider);
-        AppService = new AppService(callerProvider);
+        EnvironmentService = new EnvironmentService(caller);
+        ClusterService = new ClusterService(caller);
+        ProjectService = new ProjectService(caller);
+        AppService = new AppService(caller);
     }
 
     public IProjectService ProjectService { get; init; }

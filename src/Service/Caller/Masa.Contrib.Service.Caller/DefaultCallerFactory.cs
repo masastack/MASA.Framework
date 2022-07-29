@@ -14,13 +14,13 @@ internal class DefaultCallerFactory : ICallerFactory
         _callers = options.Value.Callers;
     }
 
-    public ICallerProvider CreateClient()
+    public ICaller Create()
     {
         var caller = _callers.SingleOrDefault(c => c.IsDefault) ?? _callers.FirstOrDefault()!;
         return caller.Func.Invoke(_serviceProvider);
     }
 
-    public ICallerProvider CreateClient(string name)
+    public ICaller Create(string name)
     {
         var caller = _callers.SingleOrDefault(c => c.Name == name);
         if (caller == null)

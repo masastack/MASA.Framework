@@ -29,9 +29,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IRequestMessage, JsonRequestMessage>();
         services.TryAddSingleton<IResponseMessage, DefaultResponseMessage>();
         services.TryAddSingleton<IRequestIdGenerator, DefaultRequestIdGenerator>();
-        services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().CreateClient());
+        services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
 
-        services.TryAddSingleton<ITypeConvertProvider, DefaultTypeConvertProvider>();
+        services.TryAddSingleton<ITypeConvert, DefaultTypeConvert>();
         services.AddAutomaticCaller(callerOption);
         TryOrUpdateCallerOptions(services, callerOption);
         return services;
