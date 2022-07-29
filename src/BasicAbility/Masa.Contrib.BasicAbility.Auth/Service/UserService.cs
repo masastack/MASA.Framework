@@ -93,6 +93,13 @@ public class UserService : IUserService
         return await _callerProvider.GetAsync<object, UserModel>(requestUri, new { id }) ?? new();
     }
 
+    public async Task<StaffDetailModel?> GetCurrentStaffAsync()
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/staff/getExternalByUserId";
+        return await _callerProvider.GetAsync<object, StaffDetailModel>(requestUri, new { userId });
+    }
+
     public async Task VisitedAsync(string url)
     {
         var userId = _userContext.GetUserId<Guid>();
