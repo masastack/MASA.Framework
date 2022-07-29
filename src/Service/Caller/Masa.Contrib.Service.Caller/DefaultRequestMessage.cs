@@ -26,7 +26,7 @@ public abstract class DefaultRequestMessage
             return;
 
         if (!httpContext.Request.Headers.TryGetValue(_requestIdKey, out var requestId))
-            requestId = Options?.IdGeneratorFunc?.Invoke(ServiceProvider) ?? Guid.NewGuid().ToString();
+            requestId = Guid.NewGuid().ToString();
 
         if (requestMessage.Headers.All(h => h.Key != _requestIdKey))
             requestMessage.Headers.Add(_requestIdKey, requestId.ToString());
