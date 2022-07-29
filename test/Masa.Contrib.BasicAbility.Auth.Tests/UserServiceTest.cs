@@ -215,6 +215,22 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestGetCurrentStaffAsync()
+    {
+        var userId = Guid.NewGuid();
+        var data = new StaffDetailModel();
+        var requestUri = $"api/staff/getExternalByUserId";
+        var callerProvider = new Mock<ICallerProvider>();
+        callerProvider.Setup(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(callerProvider.Object, userContext.Object);
+        var result = await userService.GetCurrentStaffAsync();
+        callerProvider.Verify(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     [DataRow("https://www.baidu.com/")]
     public async Task TestVisitedAsync(string url)
     {
