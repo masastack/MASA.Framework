@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-public class CustomizeCredentialProvider : DefaultCredentialProvider
+public class CustomCredentialProvider : DefaultCredentialProvider
 {
     public readonly TemporaryCredentialsResponse TemporaryCredentials = new(
         "accessKeyId",
@@ -11,7 +11,7 @@ public class CustomizeCredentialProvider : DefaultCredentialProvider
         "sessionToken",
         DateTime.UtcNow.AddHours(-1));
 
-    public CustomizeCredentialProvider(IOssClientFactory ossClientFactory,
+    public CustomCredentialProvider(IOssClientFactory ossClientFactory,
         IAliyunStorageOptionProvider optionProvider,
         IMemoryCache cache,
         ILogger<DefaultCredentialProvider>? logger)

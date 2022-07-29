@@ -12,11 +12,11 @@ public class ChannelServiceTest
         var data = new ChannelModel();
         Guid channelId = Guid.NewGuid();
         var requestUri = $"api/channel/{channelId}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ChannelModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var channelService = new Mock<ChannelService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ChannelModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var channelService = new Mock<ChannelService>(caller.Object);
         var result = await channelService.Object.GetAsync(channelId);
-        callerProvider.Verify(provider => provider.GetAsync<ChannelModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ChannelModel>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -26,11 +26,11 @@ public class ChannelServiceTest
         var options = new GetChannelModel();
         var data = new PaginatedListModel<ChannelModel>();
         var requestUri = $"api/channel";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
-        var channelService = new Mock<ChannelService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        var channelService = new Mock<ChannelService>(caller.Object);
         var result = await channelService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

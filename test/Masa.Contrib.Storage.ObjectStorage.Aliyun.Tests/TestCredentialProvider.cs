@@ -15,7 +15,7 @@ public class TestCredentialProvider : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
-        var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
@@ -35,7 +35,7 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeNullClient(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomNullClient(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
@@ -51,7 +51,7 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
@@ -69,7 +69,7 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
@@ -86,7 +86,7 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);
@@ -108,7 +108,7 @@ public class TestCredentialProvider : BaseTest
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomizeCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
+        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
             MockOptionProvider().Object,
             memoryCache,
             NullLogger<DefaultCredentialProvider>.Instance);

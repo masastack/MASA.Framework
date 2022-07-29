@@ -22,10 +22,8 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
-        if (!services.Any(service => service.ServiceType == typeof(IMultiEnvironmentUserContext)))
-        {
+        if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
-        }
 
         services.AddHttpContextAccessor();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
@@ -35,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var authClient = new AuthClient(callProvider, userContext);
             return authClient;
         });

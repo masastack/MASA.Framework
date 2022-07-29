@@ -12,11 +12,11 @@ public class MessageTemplateServiceTest
         var data = new MessageTemplateModel();
         Guid id = Guid.NewGuid();
         var requestUri = $"api/message-template/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<MessageTemplateModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var messageTemplateService = new Mock<MessageTemplateService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<MessageTemplateModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var messageTemplateService = new Mock<MessageTemplateService>(caller.Object);
         var result = await messageTemplateService.Object.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<MessageTemplateModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<MessageTemplateModel>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -26,11 +26,11 @@ public class MessageTemplateServiceTest
         var options = new GetMessageTemplateModel();
         var data = new PaginatedListModel<MessageTemplateModel>();
         var requestUri = $"api/message-template";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
-        var messageTemplateService = new Mock<MessageTemplateService>(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
+        var messageTemplateService = new Mock<MessageTemplateService>(caller.Object);
         var result = await messageTemplateService.Object.GetListAsync(options);
-        callerProvider.Verify(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<GetMessageTemplateModel, PaginatedListModel<MessageTemplateModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

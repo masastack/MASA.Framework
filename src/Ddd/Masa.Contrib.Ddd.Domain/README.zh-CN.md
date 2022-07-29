@@ -25,13 +25,13 @@ builder.Services
     options.UseIntegrationEventBus(opt =>
     {
         opt.UseDapr();
-        opt.UseEventLog<CustomizeDbContext>();//使用跨进程事件
+        opt.UseEventLog<CustomDbContext>();//使用跨进程事件
     });
     options
         // .UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(ValidatorMiddleware<>))) // 使用进程内事件并使用中间件
         .UseEventBus()//使用进程内事件
-        .UseUoW<CustomizeDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
-        .UseRepository<CustomizeDbContext>();//使用Repository的EF版实现
+        .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=idientity"))
+        .UseRepository<CustomDbContext>();//使用Repository的EF版实现
 })
 ```
 

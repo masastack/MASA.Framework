@@ -85,8 +85,17 @@ public class DccTest
         _services.AddSingleton(httpClientFactory.Object);
         _services.AddCaller(options => options.UseHttpClient());
 
-        MasaConfigurationExtensions.TryAddConfigurationApiManage(_services, new DccSectionOptions(), new List<DccSectionOptions>());
-        MasaConfigurationExtensions.TryAddConfigurationApiManage(_services, new DccSectionOptions(), new List<DccSectionOptions>());
+        MasaConfigurationExtensions.TryAddConfigurationApiManage(
+            _services,
+            "http",
+            new DccSectionOptions(),
+            new List<DccSectionOptions>());
+
+        MasaConfigurationExtensions.TryAddConfigurationApiManage(
+            _services,
+            "http",
+            new DccSectionOptions(),
+            new List<DccSectionOptions>());
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         var serviceProvider = _services.BuildServiceProvider();
@@ -152,8 +161,8 @@ public class DccTest
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
-        var callerProvider = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().CreateClient("CustomHttpClient");
-        Assert.IsNotNull(callerProvider);
+        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
+        Assert.IsNotNull(caller);
     }
 
     [TestMethod]

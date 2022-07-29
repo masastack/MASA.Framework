@@ -22,15 +22,15 @@ public class TestBase
         {
             dispatcherOptions
                 .UseIntegrationEventBus<IntegrationEventLogService>(option => option.UseTestPub())
-                .UseEventLog<CustomizeDbContext>()
+                .UseEventLog<CustomDbContext>()
                 .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordMiddleware<>)).UseMiddleware(typeof(ValidatorMiddleware<>)))
-                .UseUoW<CustomizeDbContext>(optionBuilder =>
+                .UseUoW<CustomDbContext>(optionBuilder =>
                 {
                     optionBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseTestFilter();
                 })
-                .UseRepository<CustomizeDbContext>();
+                .UseRepository<CustomDbContext>();
         });
-        var dbContext = ServiceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = ServiceProvider.GetRequiredService<CustomDbContext>();
         dbContext.Database.EnsureCreated();
     }
 }

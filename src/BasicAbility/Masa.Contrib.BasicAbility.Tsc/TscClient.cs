@@ -6,10 +6,10 @@ namespace Masa.Contrib.BasicAbility.Tsc;
 
 internal class TscClient : ITscClient
 {
-    public TscClient(ICallerProvider callerProvider)
+    public TscClient(ICaller caller)
     {
-        LogService = new LogService(callerProvider);
-        MetricService = new MetricService(callerProvider);
+        LogService = new LogService(caller);
+        MetricService = new MetricService(caller);
     }
 
     public ILogService LogService { get; }

@@ -3,8 +3,8 @@
 
 global using Masa.BuildingBlocks.BasicAbility.Mc;
 global using Masa.BuildingBlocks.BasicAbility.Mc.Model;
+global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.BasicAbility.Mc.Service;
-global using Masa.Utils.Caller.Core;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;

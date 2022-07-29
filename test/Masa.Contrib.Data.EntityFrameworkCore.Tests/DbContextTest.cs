@@ -105,10 +105,10 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestDisabledSoftDelete()
     {
-        Services.AddMasaDbContext<CustomizeDbContext>(options
+        Services.AddMasaDbContext<CustomDbContext>(options
             => options.UseTestFilter().UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}"));
         var serviceProvider = Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
         var student = new Student
         {
@@ -142,8 +142,8 @@ public class DbContextTest : TestBase
     public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomizeDbContext>()
-            .AddMasaDbContext<CustomizeDbContext>();
+        services.AddMasaDbContext<CustomDbContext>()
+            .AddMasaDbContext<CustomDbContext>();
 
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter>().Count() == 1);
@@ -153,7 +153,7 @@ public class DbContextTest : TestBase
     public void TestAddMasaDbContextReturnSaveChangeFilterEqual2()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomizeDbContext>(opt =>
+        services.AddMasaDbContext<CustomDbContext>(opt =>
         {
             opt.UseTestSqlite(Guid.NewGuid().ToString()).UseFilter();
         });

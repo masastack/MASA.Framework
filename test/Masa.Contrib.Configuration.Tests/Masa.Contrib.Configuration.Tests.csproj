@@ -35,9 +35,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Remove="rabbitMq.json" />
-    <Content Include="customAppConfig.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="rabbitMq.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

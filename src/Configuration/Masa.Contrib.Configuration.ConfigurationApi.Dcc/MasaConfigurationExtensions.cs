@@ -58,7 +58,7 @@ public static class MasaConfigurationExtensions
         DccSectionOptions defaultSectionOptions,
         List<DccSectionOptions>? expansionSectionOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions,
-        Action<CallerOptions>? callerOptions)
+        Action<CallerOptions>? action)
     {
         StaticConfig.AppId = defaultSectionOptions.AppId;
 
@@ -75,18 +75,21 @@ public static class MasaConfigurationExtensions
             PropertyNameCaseInsensitive = true
         };
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
+        string callerName = DEFAULT_CLIENT_NAME;
         services.AddCaller(options =>
         {
-            if (callerOptions == null)
+            if (action == null)
             {
                 options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(DEFAULT_CLIENT_NAME, string.Empty,
+                    => new MasaHttpClientBuilder(callerName, string.Empty,
                         opt => opt.BaseAddress = new Uri(config.DccConfigurationOptions.ManageServiceAddress))
                 );
             }
             else
             {
-                callerOptions.Invoke(options);
+                action.Invoke(options);
+                callerName = options.Callers.Select(opt => opt.Name).FirstOrDefault()
+                    ?? throw new Exception("Missing Caller implementation, eg: options.UseHttpClient()");
             }
         });
 
@@ -94,7 +97,7 @@ public static class MasaConfigurationExtensions
             .AddSharedMasaMemoryCache(config.DccConfigurationOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
         TryAddConfigurationApiClient(services, config.DefaultSectionOptions, config.ExpansionSectionOptions, jsonSerializerOption);
-        TryAddConfigurationApiManage(services, config.DefaultSectionOptions, config.ExpansionSectionOptions);
+        TryAddConfigurationApiManage(services, callerName, config.DefaultSectionOptions, config.ExpansionSectionOptions);
 
         var sectionOptions = new List<DccSectionOptions>()
         {
@@ -129,13 +132,14 @@ public static class MasaConfigurationExtensions
     }
 
     public static IServiceCollection TryAddConfigurationApiManage(IServiceCollection services,
+        string callerName,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions)
     {
         services.TryAddSingleton(serviceProvider =>
         {
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-            return DccFactory.CreateManage(callerFactory, defaultSectionOption, expansionSectionOptions);
+            return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, expansionSectionOptions);
         });
         return services;
     }

@@ -324,7 +324,7 @@ public class IdGeneratorTest
         {
             GetWorkerIdMinInterval = 0
         };
-        return new CustomizeDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
+        return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
     }
 
     private ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)

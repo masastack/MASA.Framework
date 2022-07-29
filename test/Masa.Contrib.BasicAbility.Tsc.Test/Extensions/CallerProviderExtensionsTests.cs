@@ -9,12 +9,12 @@ public class CallerProviderExtensionsTests
     [TestMethod]
     public async Task SendGetRequestWithBodyParameterAsyncTest()
     {
-        var callerProvider = new Mock<ICallerProvider>();
+        var caller = new Mock<ICaller>();
         string url = "http://locahost:80/test";
         var param = new { name = "name" };
         var result = "ok";
-        callerProvider.Setup(provider => provider.SendAsync<string>(It.IsAny<HttpRequestMessage>(), default)).ReturnsAsync(result);
-        var str = await callerProvider.Object.GetByBodyAsync<string>(url, "name");
+        caller.Setup(provider => provider.SendAsync<string>(It.IsAny<HttpRequestMessage>(), default)).ReturnsAsync(result);
+        var str = await caller.Object.GetByBodyAsync<string>(url, "name");
         Assert.IsNotNull(str);
         Assert.AreEqual(result, str);
     }

@@ -13,10 +13,10 @@ public class TestBase
         Services = new ServiceCollection();
     }
 
-    protected CustomizeDbContext CreateDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider,
+    protected CustomDbContext CreateDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider,
         bool initConnectionString = true)
     {
-        Services.AddMasaDbContext<CustomizeDbContext>(options =>
+        Services.AddMasaDbContext<CustomDbContext>(options =>
         {
             if (enableSoftDelete)
                 options.UseTestFilter();
@@ -27,7 +27,7 @@ public class TestBase
                 options.UseSqlite();
         });
         serviceProvider = Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         dbContext.Database.EnsureCreated();
         return dbContext;
     }

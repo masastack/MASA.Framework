@@ -15,12 +15,12 @@ public class ProjectServiceTest
         };
         string env = "development";
         var requestUri = $"api/v1/projectwithapps/{env}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetProjectAppsAsync(env);
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }
 
@@ -30,13 +30,13 @@ public class ProjectServiceTest
         List<ProjectAppsModel>? data = null;
         string env = "development";
         var requestUri = $"api/v1/projectwithapps/{env}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => (provider.GetAsync<List<ProjectAppsModel>>(It.IsAny<string>(), default))).ReturnsAsync(data)
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => (provider.GetAsync<List<ProjectAppsModel>>(It.IsAny<string>(), default))).ReturnsAsync(data)
             .Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetProjectAppsAsync(env);
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
@@ -48,12 +48,12 @@ public class ProjectServiceTest
         var data = new ProjectDetailModel();
 
         var requestUri = $"api/v1/project/{Id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetAsync(Id);
-        callerProvider.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -65,12 +65,12 @@ public class ProjectServiceTest
         ProjectDetailModel? data = null;
 
         var requestUri = $"api/v1/project/{id}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ProjectDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ProjectDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetAsync(id);
-        callerProvider.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -82,12 +82,12 @@ public class ProjectServiceTest
         var data = new ProjectDetailModel();
 
         var requestUri = $"open-api/project/{identity}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetByIdentityAsync(identity);
-        callerProvider.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -99,12 +99,12 @@ public class ProjectServiceTest
         ProjectDetailModel? data = null;
 
         var requestUri = $"open-api/project/{identity}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<ProjectDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<ProjectDetailModel>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetByIdentityAsync(identity);
-        callerProvider.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<ProjectDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -118,12 +118,12 @@ public class ProjectServiceTest
             new ProjectModel { Id = 1 }
         };
         var requestUri = $"api/v1/{envClusterId}/project";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetListByEnvironmentClusterIdAsync(envClusterId);
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -134,12 +134,12 @@ public class ProjectServiceTest
     {
         List<ProjectModel>? data = null;
         var requestUri = $"api/v1/{envClusterId}/project";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ProjectModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetListByEnvironmentClusterIdAsync(envClusterId);
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
@@ -153,12 +153,12 @@ public class ProjectServiceTest
         };
         var teamIds = new List<Guid> { Guid.NewGuid() };
         var requestUri = $"api/v1/project/teamProjects";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetListByTeamIdsAsync(teamIds);
-        callerProvider.Verify(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -169,12 +169,12 @@ public class ProjectServiceTest
         List<ProjectModel>? data = null;
         var teamIds = new List<Guid> { Guid.NewGuid() };
         var requestUri = $"api/v1/project/teamProjects";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.PostAsync<List<ProjectModel>>(It.IsAny<string>(), It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<List<ProjectModel>>(It.IsAny<string>(), It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetListByTeamIdsAsync(teamIds);
-        callerProvider.Verify(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<List<ProjectModel>>(requestUri, teamIds, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
@@ -187,12 +187,12 @@ public class ProjectServiceTest
             new ProjectTypeModel { Id = 1 }
         };
         var requestUri = $"api/v1/project/projectType";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetProjectTypesAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 1);
     }
@@ -202,12 +202,12 @@ public class ProjectServiceTest
     {
         List<ProjectTypeModel>? data = null;
         var requestUri = $"api/v1/project/projectType";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<ProjectTypeModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
-        var pmCaching = new PmClient(callerProvider.Object);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectTypeModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
 
         var result = await pmCaching.ProjectService.GetProjectTypesAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }

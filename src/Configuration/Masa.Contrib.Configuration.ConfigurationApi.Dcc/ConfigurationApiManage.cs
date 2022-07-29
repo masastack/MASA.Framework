@@ -5,22 +5,22 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
 {
-    private readonly ICallerProvider _callerProvider;
+    private readonly ICaller _caller;
 
     public ConfigurationApiManage(
-        ICallerProvider callerProvider,
+        ICaller caller,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
     }
 
     ///<inheritdoc/>
     public async Task InitializeAsync(string environment, string cluster, string appId, Dictionary<string, string> configObjects)
     {
         var requestUri = $"open-api/releasing/init/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}";
-        var result = await _callerProvider.PostAsync(requestUri, configObjects, default);
+        var result = await _caller.PostAsync(requestUri, configObjects, default);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
         if ((int)result.StatusCode == 299 || !result.IsSuccessStatusCode)
@@ -33,7 +33,7 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
     public async Task UpdateAsync(string environment, string cluster, string appId, string configObject, object value)
     {
         var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{GetConfigObject(configObject)}";
-        var result = await _callerProvider.PutAsync(requestUri, value, default);
+        var result = await _caller.PutAsync(requestUri, value, default);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
         if ((int)result.StatusCode == 299 || !result.IsSuccessStatusCode)

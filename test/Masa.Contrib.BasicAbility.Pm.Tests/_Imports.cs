@@ -3,8 +3,8 @@
 
 global using Masa.BuildingBlocks.BasicAbility.Pm;
 global using Masa.BuildingBlocks.BasicAbility.Pm.Model;
-global using Masa.Utils.Caller.Core;
-global using Masa.Utils.Caller.HttpClient;
+global using Masa.BuildingBlocks.Service.Caller;
+global using Masa.Contrib.Service.Caller.HttpClient;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;

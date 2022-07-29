@@ -26,7 +26,7 @@ public static class ServiceExtensions
 
         services.AddSingleton<ITscClient>(serviceProvider =>
         {
-            var caller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var pmCaching = new TscClient(caller);
             return pmCaching;
         });

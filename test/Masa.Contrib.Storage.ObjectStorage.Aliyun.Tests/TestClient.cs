@@ -6,14 +6,14 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class TestClient : BaseTest
 {
-    private CustomizeClient _client;
+    private CustomClient _client;
 
     [TestInitialize]
     public void Initialize()
     {
         Mock<ICredentialProvider> credentialProvider = new Mock<ICredentialProvider>();
         Mock<IAliyunStorageOptionProvider> optionProvider = MockOptionProvider(true);
-        _client = new CustomizeClient(credentialProvider.Object, optionProvider.Object, NullLogger<DefaultStorageClient>.Instance);
+        _client = new CustomClient(credentialProvider.Object, optionProvider.Object, NullLogger<DefaultStorageClient>.Instance);
     }
 
     [TestMethod]

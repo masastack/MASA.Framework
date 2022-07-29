@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 
-public class CustomizeDistributedWorkerProvider : DistributedWorkerProvider
+public class CustomDistributedWorkerProvider : DistributedWorkerProvider
 {
-    public CustomizeDistributedWorkerProvider(IDistributedCacheClient distributedCacheClient,
+    public CustomDistributedWorkerProvider(IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
         IOptions<RedisConfigurationOptions> redisOptions,
         ILogger<DistributedWorkerProvider>? logger)

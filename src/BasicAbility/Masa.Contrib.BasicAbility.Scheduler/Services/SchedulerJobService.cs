@@ -7,12 +7,12 @@ public class SchedulerJobService : ISchedulerJobService
 {
     const string API = "/api/scheduler-job";
 
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly ILogger<SchedulerJobService>? _logger;
 
-    public SchedulerJobService(ICallerProvider callerProvider, ILoggerFactory? loggerFactory = null)
+    public SchedulerJobService(ICaller caller, ILoggerFactory? loggerFactory = null)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
         _logger = loggerFactory?.CreateLogger<SchedulerJobService>();
     }
 
@@ -39,7 +39,7 @@ public class SchedulerJobService : ISchedulerJobService
         try
         {
             var requestUri = $"{API}/addSchedulerJobBySdk";
-            return await _callerProvider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
+            return await _caller.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
         }
         catch (Exception ex)
         {
@@ -60,7 +60,7 @@ public class SchedulerJobService : ISchedulerJobService
                 Enabled = false
             };
             var requestUri = $"{API}/changeEnableStatus";
-            await _callerProvider.PutAsync<ChangeEnabledStatusRequest>(requestUri, requestData);
+            await _caller.PutAsync<ChangeEnabledStatusRequest>(requestUri, requestData);
             return true;
         }
         catch (Exception ex)
@@ -81,7 +81,7 @@ public class SchedulerJobService : ISchedulerJobService
                 Enabled = true
             };
             var requestUri = $"{API}/changeEnableStatus";
-            await _callerProvider.PutAsync<ChangeEnabledStatusRequest>(requestUri, requestData);
+            await _caller.PutAsync<ChangeEnabledStatusRequest>(requestUri, requestData);
             return true;
         }
         catch (Exception ex)
@@ -96,7 +96,7 @@ public class SchedulerJobService : ISchedulerJobService
         try
         {
             var requestUri = $"{API}";
-            await _callerProvider.DeleteAsync(requestUri, request);
+            await _caller.DeleteAsync(requestUri, request);
             return true;
         }
         catch (Exception ex)
@@ -111,7 +111,7 @@ public class SchedulerJobService : ISchedulerJobService
         try
         {
             var requestUri = $"{API}/startJob";
-            await _callerProvider.PutAsync(requestUri, request);
+            await _caller.PutAsync(requestUri, request);
             return true;
         }
         catch (Exception ex)

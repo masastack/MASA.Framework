@@ -12,12 +12,12 @@ public class TeamServiceTest
         var data = new TeamDetailModel();
         Guid teamId = Guid.NewGuid();
         var requestUri = $"api/team/detail";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<object, TeamDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<object, TeamDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
-        var teamService = new Mock<TeamService>(callerProvider.Object, userContext.Object);
+        var teamService = new Mock<TeamService>(caller.Object, userContext.Object);
         var result = await teamService.Object.GetDetailAsync(teamId);
-        callerProvider.Verify(provider => provider.GetAsync<object, TeamDetailModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<object, TeamDetailModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -26,12 +26,12 @@ public class TeamServiceTest
     {
         var data = new List<TeamModel>();
         var requestUri = $"api/team/list";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
-        var teamService = new Mock<TeamService>(callerProvider.Object, userContext.Object);
+        var teamService = new Mock<TeamService>(caller.Object, userContext.Object);
         var result = await teamService.Object.GetAllAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -41,13 +41,13 @@ public class TeamServiceTest
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new List<TeamModel>();
         var requestUri = $"api/team/list?userId={userId}";
-        var callerProvider = new Mock<ICallerProvider>();
-        callerProvider.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<TeamModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var teamService = new Mock<TeamService>(callerProvider.Object, userContext.Object);
+        var teamService = new Mock<TeamService>(caller.Object, userContext.Object);
         var result = await teamService.Object.GetUserTeamsAsync();
-        callerProvider.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<List<TeamModel>>(requestUri, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 }

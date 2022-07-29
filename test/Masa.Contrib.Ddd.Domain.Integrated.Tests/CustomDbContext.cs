@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Ddd.Domain.Integrated.Tests;
 
-public class CustomizeDbContext : MasaDbContext<CustomizeDbContext>
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public DbSet<User> User { get; set; }
 
-    public CustomizeDbContext(MasaDbContextOptions<CustomizeDbContext> options) : base(options)
+    public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 }

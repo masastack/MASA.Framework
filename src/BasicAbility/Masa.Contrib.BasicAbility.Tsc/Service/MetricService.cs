@@ -5,12 +5,12 @@ namespace Masa.Contrib.BasicAbility.Tsc.Service;
 
 internal class MetricService : IMetricService
 {
-    private readonly ICallerProvider _caller;
+    private readonly ICaller _caller;
     internal const string RANGEVALUES_URL = "/api/metric/range-values";
     internal const string NAMES_URI = "/api/metric/names";
     internal const string LABELVALUES_URI = "/api/metric/label-values";
 
-    public MetricService(ICallerProvider caller)
+    public MetricService(ICaller caller)
     {
         _caller = caller;
     }

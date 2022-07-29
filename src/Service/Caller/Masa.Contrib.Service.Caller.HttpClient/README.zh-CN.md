@@ -1,0 +1,111 @@
+中 | [EN](README.md)
+
+## Masa.Contrib.Service.Caller.HttpClient
+
+## 用例:
+
+```c#
+Install-Package Masa.Contrib.Service.Caller
+Install-Package Masa.Contrib.Service.Caller.HttpClient
+```
+
+### 基本用法:
+
+1. 修改`Program.cs`
+
+    ``` C#
+    builder.Services.AddCaller(options =>
+    {
+        options.UseHttpClient(clientBuilder =>
+        {
+            clientBuilder.Name = "UserCaller";// 当前Caller的别名，仅存在一个HttpClient时，可以不对Name赋值
+            clientBuilder.BaseAddress = "http://localhost:5000" ;
+        });
+    });
+    ```
+
+2. 如何使用:
+
+    ``` C#
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name }));
+    ```
+
+   > 完整请求的接口地址是：http://localhost:5000/Hello?Name={name}
+
+3. 当存在多个HttpClient时，则修改`Program.cs`为
+
+    ``` C#
+    builder.Services.AddCaller(options =>
+    {
+        options.UseHttpClient(clientBuilder =>
+        {
+            clientBuilder.Name = "UserCaller";
+            clientBuilder.BaseAddress = "http://localhost:5000" ;
+        });
+        options.UseHttpClient(clientBuilder =>
+        {
+            clientBuilder.Name = "OrderCaller";
+            clientBuilder.BaseAddress = "http://localhost:6000" ;
+        });
+    });
+    ```
+
+4. 如何使用UserCaller或OrderCaller
+
+    ``` C#
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name })); // 获取到的是UserCaller
+
+
+    app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
+    {
+        var orderCaller = callerFactory.Create("OrderCaller");
+        return orderCaller.GetAsync<string>($"/Hello", new { Name = name });
+    });
+    ```
+
+> 当多个Caller被添加时，如何获取指定的Caller？
+>> 通过`CallerFactory`的`Create`方法得到指定别名的Caller
+>
+> 为什么`caller`没有通过`CallerFactory`的`Create`方法得到对应的Caller？
+>> 如果未指定默认的ICallerProvider，则在`AddCaller`方法中第一个被添加的就是默认的Caller
+
+### 推荐用法
+
+1. 修改`Program.cs`
+
+    ``` C#
+    builder.Services.AddCaller();
+    ```
+
+2. 新增加类`UserCaller`
+
+    ``` C#
+    public class UserCaller: HttpClientCallerBase
+    {
+        protected override string BaseAddress { get; set; } = "http://localhost:5000";
+
+        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+        }
+
+        public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
+
+        /// <summary>
+        /// 默认不需要重载，对httpClient有特殊需求时可重载
+        /// </summary>
+        /// <param name="httpClient"></param>
+        protected override void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
+        {
+            httpClient.Timeout = TimeSpan.FromSeconds(5);
+        }
+    }
+    ```
+
+3. 如何使用UserCaller
+
+    ``` C#
+    app.MapGet("/Test/User/Hello", ([FromServices] UserCaller caller, string name)
+        => caller.HelloAsync(name));
+    ```

@@ -8,7 +8,7 @@ public interface IOrderRepository : IRepository<Orders>
     Task AddAsync(Orders order);
 }
 
-public interface ICustomizeOrderRepository : IRepository<Orders, int>
+public interface ICustomOrderRepository : IRepository<Orders, int>
 {
 
 }

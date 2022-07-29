@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 
-public class CustomizeIntegrationEventLogService : IIntegrationEventLogService
+public class CustomIntegrationEventLogService : IIntegrationEventLogService
 {
     public Task MarkEventAsFailedAsync(Guid eventId)
     {

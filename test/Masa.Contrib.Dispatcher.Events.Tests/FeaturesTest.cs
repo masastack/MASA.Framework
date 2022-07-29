@@ -387,14 +387,14 @@ public class FeaturesTest : TestBase
             ServiceLifetime.Scoped,
             builder =>
             {
-                builder.UseUoW<CustomizeDbContext>(optionBuilder =>
+                builder.UseUoW<CustomDbContext>(optionBuilder =>
                 {
                     optionBuilder.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
                 });
             });
 
         var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomizeDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await eventBus.PublishAsync(new SendCouponEvent()));

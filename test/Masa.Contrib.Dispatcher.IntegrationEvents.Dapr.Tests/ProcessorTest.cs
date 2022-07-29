@@ -13,7 +13,7 @@ public class ProcessorTest
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>();
+        services.AddDaprEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
         _options = Microsoft.Extensions.Options.Options.Create(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
     }
@@ -83,8 +83,8 @@ public class ProcessorTest
         var services = new ServiceCollection();
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
         services.AddSingleton(_ => unitOfWorkManager.Object);
-        services.AddScoped<IProcessor, CustomizeProcessor>();
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(opt =>
+        services.AddScoped<IProcessor, CustomProcessor>();
+        services.AddDaprEventBus<CustomIntegrationEventLogService>(opt =>
         {
             opt.CleaningLocalQueueExpireInterval = 1;
             opt.CleaningExpireInterval = 1;
@@ -98,7 +98,7 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(5000);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
-        Assert.IsTrue(CustomizeProcessor.Times > 0);
+        Assert.IsTrue(CustomProcessor.Times > 0);
     }
 
     [TestMethod]
@@ -108,8 +108,8 @@ public class ProcessorTest
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
         services.AddSingleton(_ => unitOfWorkManager.Object);
         services.AddLogging();
-        services.AddScoped<IProcessor, CustomizeProcessor>();
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(opt =>
+        services.AddScoped<IProcessor, CustomProcessor>();
+        services.AddDaprEventBus<CustomIntegrationEventLogService>(opt =>
         {
             opt.CleaningLocalQueueExpireInterval = 1;
             opt.CleaningExpireInterval = 1;
@@ -123,6 +123,6 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(5000);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
-        Assert.IsTrue(CustomizeProcessor.Times > 0);
+        Assert.IsTrue(CustomProcessor.Times > 0);
     }
 }

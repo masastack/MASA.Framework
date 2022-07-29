@@ -66,8 +66,8 @@ public class IntegrationEventBusTest
         distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
         distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
         distributedDispatcherOptions.Object
-            .UseDaprEventBus<CustomizeIntegrationEventLogService>()
-            .UseDaprEventBus<CustomizeIntegrationEventLogService>();
+            .UseDaprEventBus<CustomIntegrationEventLogService>()
+            .UseDaprEventBus<CustomIntegrationEventLogService>();
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IIntegrationEventBus>().Count() == 1);
     }
@@ -76,7 +76,7 @@ public class IntegrationEventBusTest
     public void TestAddDaprEventBus()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>();
+        services.AddDaprEventBus<CustomIntegrationEventLogService>();
         var serviceProvider = services.BuildServiceProvider();
         var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
         Assert.IsNotNull(integrationEventBus);
@@ -89,7 +89,7 @@ public class IntegrationEventBusTest
         services.AddLogging();
         services
             .AddDaprEventBus<
-                CustomizeIntegrationEventLogService>(); //The logger cannot be mocked and cannot verify that the logger is executed only once
+                CustomIntegrationEventLogService>(); //The logger cannot be mocked and cannot verify that the logger is executed only once
 
         var serviceProvider = services.BuildServiceProvider();
         var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
@@ -101,7 +101,7 @@ public class IntegrationEventBusTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        services.AddDaprEventBus<CustomizeIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
+        services.AddDaprEventBus<CustomIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
         {
             option.PubSubName = "pubsub";
         });
@@ -118,7 +118,7 @@ public class IntegrationEventBusTest
         distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
         distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(AppDomain.CurrentDomain.GetAssemblies()).Verifiable();
         Assert.ThrowsException<ArgumentNullException>(() =>
-                distributedDispatcherOptions.Object.UseDaprEventBus<CustomizeIntegrationEventLogService>(),
+                distributedDispatcherOptions.Object.UseDaprEventBus<CustomIntegrationEventLogService>(),
             $"Value cannot be null. (Parameter '{nameof(_options.Object.Services)}')");
     }
 
@@ -126,7 +126,7 @@ public class IntegrationEventBusTest
     public void TestUseDaprReturnNotNull()
     {
         var services = new ServiceCollection();
-        services.AddIntegrationEventBus<CustomizeIntegrationEventLogService>(opt =>
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt =>
         {
             opt.UseDapr();
         });

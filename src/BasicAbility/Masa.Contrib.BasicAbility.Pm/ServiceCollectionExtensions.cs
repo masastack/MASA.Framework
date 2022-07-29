@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IPmClient>(serviceProvider =>
         {
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var pmCaching = new PmClient(callProvider);
             return pmCaching;
         });

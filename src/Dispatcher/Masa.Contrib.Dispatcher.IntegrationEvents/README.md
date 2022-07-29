@@ -17,14 +17,14 @@ Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 
 ``` C#
 builder.Services
-    .AddIntegrationEventBus<CustomizeIntegrationEventLogService>(options=>
+    .AddIntegrationEventBus<CustomIntegrationEventLogService>(options=>
     {
         options.UseDapr();//Use Dapr to provide pub/sub capabilities, or you can choose other
         options.UseUoW<CatalogDbContext>(dbOptions => dbOptions.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"))//Use unit of work, recommended;
     });
 ```
 
-> CustomizeIntegrationEventLogService (custom local message service) needs to inherit IIntegrationEventLogService, and the parameters in the constructor must support getting from CI
+> CustomIntegrationEventLogService (custom local message service) needs to inherit IIntegrationEventLogService, and the parameters in the constructor must support getting from CI
 
 1.2 Use the provided EF version of the local message service
 

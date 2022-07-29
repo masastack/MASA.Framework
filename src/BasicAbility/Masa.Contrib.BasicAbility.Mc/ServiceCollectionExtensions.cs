@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IMcClient>(serviceProvider =>
         {
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var mcCaching = new McClient(callProvider);
             return mcCaching;
         });

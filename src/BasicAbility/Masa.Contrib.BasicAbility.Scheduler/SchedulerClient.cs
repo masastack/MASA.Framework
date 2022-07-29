@@ -9,9 +9,9 @@ public class SchedulerClient : ISchedulerClient
 
     public ISchedulerTaskService SchedulerTaskService { get; }
 
-    public SchedulerClient(ICallerProvider callerProvider, ILoggerFactory? loggerFactory = null)
+    public SchedulerClient(ICaller caller, ILoggerFactory? loggerFactory = null)
     {
-        SchedulerJobService = new SchedulerJobService(callerProvider, loggerFactory);
-        SchedulerTaskService = new SchedulerTaskService(callerProvider, loggerFactory);
+        SchedulerJobService = new SchedulerJobService(caller, loggerFactory);
+        SchedulerTaskService = new SchedulerTaskService(caller, loggerFactory);
     }
 }

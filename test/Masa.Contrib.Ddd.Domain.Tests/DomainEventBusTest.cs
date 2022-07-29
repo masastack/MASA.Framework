@@ -265,19 +265,19 @@ public class DomainEventBusTest
         var id = Guid.NewGuid();
         var createTime = DateTime.UtcNow;
 
-        var domainCommand = new CustomizeDomainCommand();
+        var domainCommand = new CustomDomainCommand();
         Assert.IsTrue(domainCommand.GetEventId() != default);
         Assert.IsTrue(domainCommand.GetCreationTime() != default && domainCommand.GetCreationTime() >= createTime);
 
-        domainCommand = new CustomizeDomainCommand(id, createTime);
+        domainCommand = new CustomDomainCommand(id, createTime);
         Assert.IsTrue(domainCommand.GetEventId() == id);
         Assert.IsTrue(domainCommand.GetCreationTime() == createTime);
 
-        var domainEvent = new CustomizeDomainEvent();
+        var domainEvent = new CustomDomainEvent();
         Assert.IsTrue(domainEvent.GetEventId() != default);
         Assert.IsTrue(domainEvent.GetCreationTime() != default && domainEvent.GetCreationTime() >= createTime);
 
-        domainEvent = new CustomizeDomainEvent(id, createTime);
+        domainEvent = new CustomDomainEvent(id, createTime);
         Assert.IsTrue(domainEvent.GetEventId() == id);
         Assert.IsTrue(domainEvent.GetCreationTime() == createTime);
 

@@ -7,12 +7,12 @@ public class SchedulerTaskService : ISchedulerTaskService
 {
     const string API = "/api/scheduler-task";
 
-    readonly ICallerProvider _callerProvider;
+    readonly ICaller _caller;
     readonly ILogger<SchedulerTaskService>? _logger;
 
-    public SchedulerTaskService(ICallerProvider callerProvider, ILoggerFactory? loggerFactory)
+    public SchedulerTaskService(ICaller caller, ILoggerFactory? loggerFactory)
     {
-        _callerProvider = callerProvider;
+        _caller = caller;
         _logger = loggerFactory?.CreateLogger<SchedulerTaskService>();
     }
 
@@ -21,7 +21,7 @@ public class SchedulerTaskService : ISchedulerTaskService
         try
         {
             var requestUri = $"{API}/stop";
-            await _callerProvider.PutAsync(requestUri, request);
+            await _caller.PutAsync(requestUri, request);
             return true;
         }
         catch (Exception ex)
@@ -43,7 +43,7 @@ public class SchedulerTaskService : ISchedulerTaskService
             };
 
             var requestUri = $"{API}/start";
-            await _callerProvider.PutAsync(requestUri, requestData);
+            await _caller.PutAsync(requestUri, requestData);
             return true;
         }
         catch (Exception ex)

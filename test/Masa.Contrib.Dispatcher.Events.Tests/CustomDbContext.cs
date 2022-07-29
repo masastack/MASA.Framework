@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
-public class CustomizeDbContext : MasaDbContext
+public class CustomDbContext : MasaDbContext
 {
-    public CustomizeDbContext(MasaDbContextOptions options) : base(options) { }
+    public CustomDbContext(MasaDbContextOptions options) : base(options) { }
 }
