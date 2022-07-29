@@ -5,17 +5,16 @@ namespace Masa.Contrib.Service.Caller;
 
 public abstract class DefaultRequestMessage
 {
+    protected readonly IServiceProvider ServiceProvider;
     private readonly string _requestIdKey;
-    private readonly IRequestIdGenerator _requestIdGenerator;
     private readonly IHttpContextAccessor? _httpContextAccessor;
     protected readonly CallerFactoryOptions Options;
 
-    public DefaultRequestMessage(IOptions<CallerFactoryOptions> options,
-        IRequestIdGenerator requestIdGenerator,
-        IHttpContextAccessor? httpContextAccessor = null)
+    public DefaultRequestMessage(IServiceProvider serviceProvider,
+        IOptions<CallerFactoryOptions> options)
     {
-        _requestIdGenerator = requestIdGenerator;
-        _httpContextAccessor = httpContextAccessor;
+        ServiceProvider = serviceProvider;
+        _httpContextAccessor = ServiceProvider.GetService<IHttpContextAccessor>();
         Options = options.Value;
         _requestIdKey = Options.RequestIdKey ?? "Masa-Request-Id";
     }
@@ -27,7 +26,7 @@ public abstract class DefaultRequestMessage
             return;
 
         if (!httpContext.Request.Headers.TryGetValue(_requestIdKey, out var requestId))
-            requestId = _requestIdGenerator.NewId();
+            requestId = Options.IdGeneratorFunc?.Invoke(ServiceProvider) ?? Guid.NewGuid().ToString();
 
         if (requestMessage.Headers.All(h => h.Key != _requestIdKey))
             requestMessage.Headers.Add(_requestIdKey, requestId.ToString());

@@ -18,7 +18,7 @@ internal static class CallerDependExtensions
     {
         List<Type> types = GetCallerByNotDependCaller(callerTypes);
         if (types.Count == 0)
-            throw new UserFriendlyException(Const.CIRCULAR_DEPENDENCY);
+            throw new UserFriendlyException(ErrorMessages.CIRCULAR_DEPENDENCY);
 
         return callerTypes.CallersArrangement(types, 1);
     }
@@ -46,7 +46,7 @@ internal static class CallerDependExtensions
         if (types.Count != allTypes.Count)
         {
             if (executeTimes >= allTypes.Count)
-                throw new UserFriendlyException(Const.CIRCULAR_DEPENDENCY);
+                throw new UserFriendlyException(ErrorMessages.CIRCULAR_DEPENDENCY);
 
             return CallersArrangement(allTypes, types, ++executeTimes);
         }

@@ -27,8 +27,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 2. How to use:
 
     ```` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
-        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name }));
     ````
 
     > The interface address of the complete request is: http://localhost:5000/Hello?Name={name}
@@ -54,8 +54,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 4. How to use UserCaller or OrderCaller
 
     ```` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
-        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name }));// Get UserCaller
 
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
@@ -68,7 +68,7 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 > When multiple Callers are added, how to get the specified Caller?
 >> Get the Caller of the specified alias through the `Create` method of `CallerFactory`
 >
-> Why doesn't `userCaller` get the corresponding Caller through the `Create` method of `CallerFactory`?
+> Why doesn't `caller` get the corresponding Caller through the `Create` method of `CallerFactory`?
 >> If no default ICaller is specified, the default Caller is the first one added in the `AddCaller` method
 
 ### Recommended usage

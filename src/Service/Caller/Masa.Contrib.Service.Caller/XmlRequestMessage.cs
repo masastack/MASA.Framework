@@ -6,10 +6,9 @@ namespace Masa.Contrib.Service.Caller;
 public class XmlRequestMessage : DefaultRequestMessage, IRequestMessage
 {
     public XmlRequestMessage(
-        IOptions<CallerFactoryOptions> options,
-        IRequestIdGenerator requestIdGenerator,
-        IHttpContextAccessor? httpContextAccessor = null)
-        : base(options, requestIdGenerator, httpContextAccessor)
+        IServiceProvider serviceProvider,
+        IOptions<CallerFactoryOptions> options)
+        : base(serviceProvider, options)
     {
     }
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller;
 
-public class DefaultTypeConvert : ITypeConvert
+public class DefaultTypeConvertor : ITypeConvertor
 {
     private static readonly ConcurrentDictionary<Type, List<PropertyInfoMember>> Dictionary = new();
 

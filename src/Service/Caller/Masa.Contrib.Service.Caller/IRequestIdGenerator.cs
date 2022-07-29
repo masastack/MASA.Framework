@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller;
 
-public interface IRequestIdGenerator
+public interface IRequestIdGenerator2
 {
     string NewId();
 }

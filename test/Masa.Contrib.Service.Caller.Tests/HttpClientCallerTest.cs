@@ -39,7 +39,7 @@ public class HttpClientCallerTest
     public async Task TestRequestDataIsXmlAsync()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<ITypeConvert, DefaultTypeConvert>();
+        services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         services.AddSingleton<IRequestMessage, XmlRequestMessage>();
         services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
         Mock<IHttpClientFactory> httpClientFactory = new();
@@ -81,7 +81,7 @@ public class HttpClientCallerTest
         var services = new ServiceCollection();
         RegisterUser registerUser = new RegisterUser("Jim", "123456");
 
-        services.AddSingleton<ITypeConvert, DefaultTypeConvert>();
+        services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         Mock<IRequestMessage> requestMessage = new();
         requestMessage.Setup(req => req.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>()))
             .ReturnsAsync(new HttpRequestMessage(HttpMethod.Post, "Hello")).Verifiable();

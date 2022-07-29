@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller;
 
-public class DefaultRequestIdGenerator : IRequestIdGenerator
+public class DefaultRequestIdGenerator : IRequestIdGenerator2
 {
     public string NewId() => Guid.NewGuid().ToString();
 }

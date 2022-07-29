@@ -62,10 +62,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, long>(requestUri, new { id = teamId });
     }
 
-    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password)
+    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _caller.PostAsync<object, bool>(requestUri, new { account, password });
+        return await _caller.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
     }
 
     public async Task<UserModel> FindByAccountAsync(string account)
@@ -91,6 +91,13 @@ public class UserService : IUserService
         var id = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/findById";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { id }) ?? new();
+    }
+
+    public async Task<StaffDetailModel?> GetCurrentStaffAsync()
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/staff/getExternalByUserId";
+        return await _caller.GetAsync<object, StaffDetailModel>(requestUri, new { userId });
     }
 
     public async Task VisitedAsync(string url)

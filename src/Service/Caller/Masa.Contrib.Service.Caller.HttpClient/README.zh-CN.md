@@ -27,8 +27,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 2. 如何使用:
 
     ``` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
-        => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name }));
     ```
 
    > 完整请求的接口地址是：http://localhost:5000/Hello?Name={name}
@@ -54,8 +54,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 4. 如何使用UserCaller或OrderCaller
 
     ``` C#
-    app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
-        => userCallerProvider.GetAsync<string>($"/Hello", new { Name = name }));
+    app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
+        => caller.GetAsync<string>($"/Hello", new { Name = name })); // 获取到的是UserCaller
 
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
@@ -68,7 +68,7 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 > 当多个Caller被添加时，如何获取指定的Caller？
 >> 通过`CallerFactory`的`Create`方法得到指定别名的Caller
 >
-> 为什么`userCaller`没有通过`CallerFactory`的`Create`方法得到对应的Caller？
+> 为什么`caller`没有通过`CallerFactory`的`Create`方法得到对应的Caller？
 >> 如果未指定默认的ICallerProvider，则在`AddCaller`方法中第一个被添加的就是默认的Caller
 
 ### 推荐用法

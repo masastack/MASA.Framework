@@ -9,7 +9,7 @@ public class TypeConvertTest
     [TestMethod]
     public void TestConvertToKeyValuePairs()
     {
-        var defaultTypeConvertProvider = new DefaultTypeConvert();
+        var defaultTypeConvertProvider = new DefaultTypeConvertor();
         var result = defaultTypeConvertProvider.ConvertToKeyValuePairs(new
         {
             id = 1,
