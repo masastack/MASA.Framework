@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         services.AddAutomaticCaller(callerOption);
-        TryOrUpdateCallerOptions(services, callerOption);
+        TryOrUpdate(services, callerOption);
         return services;
     }
 
@@ -72,7 +72,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static IServiceCollection TryOrUpdateCallerOptions(this IServiceCollection services, CallerOptions options)
+    private static IServiceCollection TryOrUpdate(this IServiceCollection services, CallerOptions options)
     {
         services.Configure<CallerFactoryOptions>(callerOptions =>
         {
