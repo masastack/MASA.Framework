@@ -7,7 +7,7 @@ public class XmlRequestMessage : DefaultRequestMessage, IRequestMessage
 {
     public XmlRequestMessage(
         IServiceProvider serviceProvider,
-        IOptions<CallerFactoryOptions> options)
+        IOptions<CallerFactoryOptions>? options = null)
         : base(serviceProvider, options)
     {
     }

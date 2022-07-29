@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(schedulerServiceBaseAddress));
         }
 
-        services.AddSingleton<IRequestMessage, JsonRequestMessage>();
         return services.AddSchedulerClient(callerOptions =>
         {
             callerOptions.UseHttpClient(builder =>

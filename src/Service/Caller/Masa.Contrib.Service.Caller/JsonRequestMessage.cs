@@ -9,10 +9,10 @@ public class JsonRequestMessage : DefaultRequestMessage, IRequestMessage
 
     public JsonRequestMessage(
         IServiceProvider serviceProvider,
-        IOptions<CallerFactoryOptions> options)
+        IOptions<CallerFactoryOptions>? options = null)
         : base(serviceProvider, options)
     {
-        _jsonSerializerOptions = Options.JsonSerializerOptions;
+        _jsonSerializerOptions = Options?.JsonSerializerOptions;
     }
 
     public virtual Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage)
