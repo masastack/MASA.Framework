@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Data.Elasticsearch" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\SearchEngine\Masa.BuildingBlocks.SearchEngine.AutoComplete\Masa.BuildingBlocks.SearchEngine.AutoComplete.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Data\Masa.Utils.Data.Elasticsearch\Masa.Utils.Data.Elasticsearch.csproj" />
   </ItemGroup>
 
 </Project>

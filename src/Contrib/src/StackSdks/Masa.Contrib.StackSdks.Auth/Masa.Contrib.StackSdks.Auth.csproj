@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,14 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Configuration.Json" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="$(MasaUtilsPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Auth\Masa.BuildingBlocks.StackSdks.Auth.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Identity\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>

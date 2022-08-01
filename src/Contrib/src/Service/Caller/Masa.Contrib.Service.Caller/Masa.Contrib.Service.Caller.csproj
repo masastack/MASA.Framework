@@ -7,10 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Exceptions" Version="$(MasaUtilsPackageVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\src\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 </Project>

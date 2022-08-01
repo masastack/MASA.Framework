@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.Memory" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Exceptions" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\src\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\src\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

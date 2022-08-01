@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Exceptions" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Models.Config" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(MicrosoftPackageVersion)" />
@@ -18,6 +16,8 @@
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Ddd\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Dispatcher\Masa.BuildingBlocks.Dispatcher.Events\Masa.BuildingBlocks.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Dispatcher\Masa.BuildingBlocks.Dispatcher.IntegrationEvents\Masa.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Models\Masa.Utils.Models.Config\Masa.Utils.Models.Config.csproj" />
   </ItemGroup>
 
 </Project>

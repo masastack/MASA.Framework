@@ -7,12 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.Memory" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="$(MasaUtilsPackageVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\BuildingBlocks\src\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\src\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\src\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>

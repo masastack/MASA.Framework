@@ -10,11 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Caching.Redis" Version="$(MasaUtilsPackageVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Authentication\Masa.BuildingBlocks.Authentication.Oidc.Storage\Masa.BuildingBlocks.Authentication.Oidc.Storage.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Authentication.Oidc.Cache\Masa.Contrib.Authentication.Oidc.Cache.csproj" />
   </ItemGroup>

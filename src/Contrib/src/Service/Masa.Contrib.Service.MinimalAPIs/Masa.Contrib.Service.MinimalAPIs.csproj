@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Utils.Caching.Core" Version="$(MasaUtilsPackageVersion)" />
-    <PackageReference Include="Masa.Utils.Extensions.DependencyInjection" Version="$(MasaUtilsPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.MinimalAPIs\Masa.BuildingBlocks.Service.MinimalAPIs.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Caching\Masa.Utils.Caching.Core\Masa.Utils.Caching.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\src\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
 </Project>
