@@ -19,7 +19,7 @@ Example：
 
 ```C#
 Install-Package Masa.Contrib.Configuration
-Install-Package Masa.Contrib.BasicAbility.Dcc //DCC can provide remote configuration capabilities
+Install-Package Masa.Contrib.StackSdks.Dcc //DCC can provide remote configuration capabilities
 ​```json
 {
   //Custom configuration

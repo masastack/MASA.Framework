@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolati
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Storage.ObjectStorage", "src\BuildingBlocks\src\Storage\Masa.BuildingBlocks.Storage.ObjectStorage\Masa.BuildingBlocks.Storage.ObjectStorage.csproj", "{74283F68-6B38-4CF4-B0CB-AAD65618ADB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Pm", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Pm\Masa.BuildingBlocks.StackSdks.Pm.csproj", "{AB6FAB84-5218-48A8-8F94-03B02ECD098F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Data.Mapping", "src\BuildingBlocks\src\Data\Masa.BuildingBlocks.Data.Mapping\Masa.BuildingBlocks.Data.Mapping.csproj", "{5A3338F1-9963-4CAC-85A3-7AB263CB15B0}"
 EndProject
@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Data", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service.Contracts", "src\BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.Contracts\Masa.BuildingBlocks.Service.Contracts.csproj", "{736F69E9-89D0-47E2-99AF-9412AAE1C6BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Auth", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth\Masa.BuildingBlocks.BasicAbility.Auth.csproj", "{4B818EE6-8E13-40DA-B99A-218BB228EE91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Auth", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Auth\Masa.BuildingBlocks.StackSdks.Auth.csproj", "{4B818EE6-8E13-40DA-B99A-218BB228EE91}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{B7F5651E-C4CB-413E-AF6E-420D1AFB7EA6}"
 EndProject
@@ -51,17 +51,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Identity.IdentityModel", "src\BuildingBlocks\src\Identity\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj", "{18634B69-0ED1-4C64-9735-4DFD2B2B0E9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Dcc", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Dcc\Masa.BuildingBlocks.BasicAbility.Dcc.csproj", "{FF3FD53D-D23E-48AC-98B6-3B028B4DE8AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Dcc", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Dcc\Masa.BuildingBlocks.StackSdks.Dcc.csproj", "{FF3FD53D-D23E-48AC-98B6-3B028B4DE8AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Auth.Contracts", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth.Contracts\Masa.BuildingBlocks.BasicAbility.Auth.Contracts.csproj", "{981E883E-CCDC-400B-8FB1-76E1E65C32AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Auth.Contracts", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Auth.Contracts\Masa.BuildingBlocks.StackSdks.Auth.Contracts.csproj", "{981E883E-CCDC-400B-8FB1-76E1E65C32AF}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicAbility", "BasicAbility", "{0D34A7F0-DC77-4789-A136-93089CBD15C3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StackSdks", "StackSdks", "{0D34A7F0-DC77-4789-A136-93089CBD15C3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Scheduler", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Scheduler\Masa.BuildingBlocks.BasicAbility.Scheduler.csproj", "{0EB0CB69-4C44-4462-A92A-A9B9FDA171DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Scheduler", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Scheduler\Masa.BuildingBlocks.StackSdks.Scheduler.csproj", "{0EB0CB69-4C44-4462-A92A-A9B9FDA171DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Mc", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Mc\Masa.BuildingBlocks.BasicAbility.Mc.csproj", "{DA816A33-F164-4456-92DD-A672BAD1A6B1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Tsc", "src\BuildingBlocks\src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Tsc\Masa.BuildingBlocks.BasicAbility.Tsc.csproj", "{C265268A-F311-4B6A-915E-C1AF9D1EB624}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Mc", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdks.Mc\Masa.BuildingBlocks.StackSdks.Mc.csproj", "{DA816A33-F164-4456-92DD-A672BAD1A6B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Service.Caller", "src\BuildingBlocks\src\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj", "{ABF6E41A-CBF9-49DE-87FC-9D88F440A104}"
 EndProject
@@ -395,33 +393,31 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Int
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Tests", "src\Contrib\test\Dispatcher\Masa.Contrib.Dispatcher.Tests\Masa.Contrib.Dispatcher.Tests.csproj", "{AE626BF6-3202-46B2-BB1A-0E71ED462C84}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicAbility", "BasicAbility", "{985B71A9-DF28-4B70-9DA5-1D60B82E8551}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StackSdks", "StackSdks", "{985B71A9-DF28-4B70-9DA5-1D60B82E8551}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Auth", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Auth\Masa.Contrib.BasicAbility.Auth.csproj", "{140EE15C-4E28-4BAB-8B0D-46E17D28BF9F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Auth", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Auth\Masa.Contrib.StackSdks.Auth.csproj", "{140EE15C-4E28-4BAB-8B0D-46E17D28BF9F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Dcc", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Dcc\Masa.Contrib.BasicAbility.Dcc.csproj", "{EAAD274F-9C5D-4531-A4E5-A5764E9D644A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Dcc", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Dcc\Masa.Contrib.StackSdks.Dcc.csproj", "{EAAD274F-9C5D-4531-A4E5-A5764E9D644A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Mc", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Mc\Masa.Contrib.BasicAbility.Mc.csproj", "{F9C27912-F7EC-47B6-A385-064BD4B92EDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Mc", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Mc\Masa.Contrib.StackSdks.Mc.csproj", "{F9C27912-F7EC-47B6-A385-064BD4B92EDA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\Masa.Contrib.BasicAbility.Pm.csproj", "{F346B708-0D1B-4BA7-AA86-1B977BA88FB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Pm", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Pm\Masa.Contrib.StackSdks.Pm.csproj", "{F346B708-0D1B-4BA7-AA86-1B977BA88FB6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Scheduler", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Scheduler\Masa.Contrib.BasicAbility.Scheduler.csproj", "{332D590C-11EC-481D-AC55-6279548F1CF4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Scheduler", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Scheduler\Masa.Contrib.StackSdks.Scheduler.csproj", "{332D590C-11EC-481D-AC55-6279548F1CF4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Tsc", "src\Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Tsc\Masa.Contrib.BasicAbility.Tsc.csproj", "{7BF99E7E-37EB-46D6-8808-2254430C3645}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc", "src\Contrib\src\StackSdks\Masa.Contrib.StackSdks.Tsc\Masa.Contrib.StackSdks.Tsc.csproj", "{7BF99E7E-37EB-46D6-8808-2254430C3645}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicAbility", "BasicAbility", "{CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StackSdks", "StackSdks", "{CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Tsc.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Tsc.Test\Masa.Contrib.BasicAbility.Tsc.Tests.csproj", "{5EF602A6-3996-44D3-A6C0-5319C9BF8B21}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Tsc.Test\Masa.Contrib.StackSdks.Tsc.Tests.csproj", "{5EF602A6-3996-44D3-A6C0-5319C9BF8B21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Dcc.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Dcc.Tests\Masa.Contrib.BasicAbility.Dcc.Tests\Masa.Contrib.BasicAbility.Dcc.Tests.csproj", "{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Mc.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Mc.Tests\Masa.Contrib.StackSdks.Mc.Tests.csproj", "{37138DEF-EEE4-4363-A307-0027B4C6ACD8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Mc.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Mc.Tests\Masa.Contrib.BasicAbility.Mc.Tests.csproj", "{37138DEF-EEE4-4363-A307-0027B4C6ACD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Auth.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Auth.Tests\Masa.Contrib.StackSdks.Auth.Tests.csproj", "{A93F1887-0011-466C-8EB8-3A338AEA5A4B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Auth.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Auth.Tests\Masa.Contrib.BasicAbility.Auth.Tests.csproj", "{A93F1887-0011-466C-8EB8-3A338AEA5A4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Pm.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Pm.Tests\Masa.Contrib.StackSdks.Pm.Tests.csproj", "{A1EE1EEE-ACD6-4951-AAEF-701FB83C2680}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Pm.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Pm.Tests\Masa.Contrib.BasicAbility.Pm.Tests.csproj", "{A1EE1EEE-ACD6-4951-AAEF-701FB83C2680}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.BasicAbility.Scheduler.Tests", "src\Contrib\test\BasicAbility\Masa.Contrib.BasicAbility.Scheduler.Tests\Masa.Contrib.BasicAbility.Scheduler.Tests.csproj", "{9E0BBDD7-9D7A-4173-A1CA-6284CD1092BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Scheduler.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Scheduler.Tests\Masa.Contrib.StackSdks.Scheduler.Tests.csproj", "{9E0BBDD7-9D7A-4173-A1CA-6284CD1092BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{965C3DBE-2DF3-4BCF-A7BB-C26BEB2F8CCA}"
 EndProject
@@ -482,6 +478,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ReadWriteSpliting", "ReadWriteSpliting", "{AF35D4CC-EBE2-4F2B-8622-7A93A8CF9EF8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.ReadWriteSpliting.Cqrs.Tests", "src\Contrib\test\ReadWriteSpliting\Masa.Contrib.ReadWriteSpliting.Cqrs.Tests\Masa.Contrib.ReadWriteSpliting.Cqrs.Tests.csproj", "{F45CBF27-1D45-404C-9B09-5CC781AF5942}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Dcc.Tests", "src\Contrib\test\StackSdks\Masa.Contrib.StackSdks.Dcc.Tests\Masa.Contrib.StackSdks.Dcc.Tests.csproj", "{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.StackSdks.Tsc", "src\BuildingBlocks\src\StackSdks\Masa.BuildingBlocks.StackSdk.Tsc\Masa.BuildingBlocks.StackSdks.Tsc.csproj", "{8EA836C9-BE07-4EDE-A983-122A1D9FB499}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -699,14 +699,6 @@ Global
 		{DA816A33-F164-4456-92DD-A672BAD1A6B1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA816A33-F164-4456-92DD-A672BAD1A6B1}.Release|x64.ActiveCfg = Release|Any CPU
 		{DA816A33-F164-4456-92DD-A672BAD1A6B1}.Release|x64.Build.0 = Release|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Debug|x64.Build.0 = Debug|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Release|x64.ActiveCfg = Release|Any CPU
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624}.Release|x64.Build.0 = Release|Any CPU
 		{ABF6E41A-CBF9-49DE-87FC-9D88F440A104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ABF6E41A-CBF9-49DE-87FC-9D88F440A104}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABF6E41A-CBF9-49DE-87FC-9D88F440A104}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1683,14 +1675,6 @@ Global
 		{5EF602A6-3996-44D3-A6C0-5319C9BF8B21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EF602A6-3996-44D3-A6C0-5319C9BF8B21}.Release|x64.ActiveCfg = Release|Any CPU
 		{5EF602A6-3996-44D3-A6C0-5319C9BF8B21}.Release|x64.Build.0 = Release|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Debug|x64.Build.0 = Debug|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Release|x64.ActiveCfg = Release|Any CPU
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8}.Release|x64.Build.0 = Release|Any CPU
 		{37138DEF-EEE4-4363-A307-0027B4C6ACD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37138DEF-EEE4-4363-A307-0027B4C6ACD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37138DEF-EEE4-4363-A307-0027B4C6ACD8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1891,6 +1875,22 @@ Global
 		{F45CBF27-1D45-404C-9B09-5CC781AF5942}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F45CBF27-1D45-404C-9B09-5CC781AF5942}.Release|x64.ActiveCfg = Release|Any CPU
 		{F45CBF27-1D45-404C-9B09-5CC781AF5942}.Release|x64.Build.0 = Release|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Debug|x64.Build.0 = Debug|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Release|x64.ActiveCfg = Release|Any CPU
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36}.Release|x64.Build.0 = Release|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Debug|x64.Build.0 = Debug|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Release|x64.ActiveCfg = Release|Any CPU
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1925,7 +1925,6 @@ Global
 		{0D34A7F0-DC77-4789-A136-93089CBD15C3} = {88740F49-00A1-40F8-B141-78EFA7CE2B4D}
 		{0EB0CB69-4C44-4462-A92A-A9B9FDA171DE} = {0D34A7F0-DC77-4789-A136-93089CBD15C3}
 		{DA816A33-F164-4456-92DD-A672BAD1A6B1} = {0D34A7F0-DC77-4789-A136-93089CBD15C3}
-		{C265268A-F311-4B6A-915E-C1AF9D1EB624} = {0D34A7F0-DC77-4789-A136-93089CBD15C3}
 		{ABF6E41A-CBF9-49DE-87FC-9D88F440A104} = {E8CE3469-6E0F-495C-937E-D9820DE3DA89}
 		{5944A182-13B8-4DA6-AEE2-0A01E64A9648} = {B9256C4D-86F4-4E67-8774-C3EF971EC811}
 		{88740F49-00A1-40F8-B141-78EFA7CE2B4D} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
@@ -2100,7 +2099,6 @@ Global
 		{7BF99E7E-37EB-46D6-8808-2254430C3645} = {985B71A9-DF28-4B70-9DA5-1D60B82E8551}
 		{CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692} = {19999563-8BBA-48A3-A087-EDEC1185E5C8}
 		{5EF602A6-3996-44D3-A6C0-5319C9BF8B21} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
-		{7D4EE00E-4F41-46B8-B9D5-A0F743F075A8} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
 		{37138DEF-EEE4-4363-A307-0027B4C6ACD8} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
 		{A93F1887-0011-466C-8EB8-3A338AEA5A4B} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
 		{A1EE1EEE-ACD6-4951-AAEF-701FB83C2680} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
@@ -2135,6 +2133,8 @@ Global
 		{89EE0C4D-6C29-472E-9109-84327DB489A1} = {92F310E1-6CD0-4066-9703-B81B4AC07819}
 		{AF35D4CC-EBE2-4F2B-8622-7A93A8CF9EF8} = {19999563-8BBA-48A3-A087-EDEC1185E5C8}
 		{F45CBF27-1D45-404C-9B09-5CC781AF5942} = {AF35D4CC-EBE2-4F2B-8622-7A93A8CF9EF8}
+		{2715E67E-6111-4CCD-9C6E-BA8AE47E6D36} = {CD8E78AE-7AC0-44EE-9FCE-7F1EEEB66692}
+		{8EA836C9-BE07-4EDE-A983-122A1D9FB499} = {0D34A7F0-DC77-4789-A136-93089CBD15C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

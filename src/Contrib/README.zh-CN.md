@@ -56,11 +56,11 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
 * Storage: 云存储
   * [阿里云存储](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.zh-CN.md)
 * 业务能力
-  * [Auth](./src/BasicAbility/Masa.Contrib.BasicAbility.Auth/README.zh-CN.md): 权限认证
-  * [Dcc](./src/BasicAbility/Masa.Contrib.BasicAbility.Dcc/README.zh-CN.md): 分布式配置中心
-  * [PM](./src/BasicAbility/Masa.Contrib.BasicAbility.Pm/README.zh-CN.md): 项目管理
-  * [Scheduler](./src/BasicAbility/Masa.Contrib.BasicAbility.Scheduler/README.zh-CN.md): 分布式调度中心
-  * [TSC](./src/BasicAbility/Masa.Contrib.BasicAbility.Tsc/README.zh-CN.md): 故障排除平台
+  * [Auth](./src/StackSdks/Masa.Contrib.StackSdks.Auth/README.zh-CN.md): 权限认证
+  * [Dcc](./src/StackSdks/Masa.Contrib.StackSdks.Dcc/README.zh-CN.md): 分布式配置中心
+  * [PM](./src/StackSdks/Masa.Contrib.StackSdks.Pm/README.zh-CN.md): 项目管理
+  * [Scheduler](./src/StackSdks/Masa.Contrib.StackSdks.Scheduler/README.zh-CN.md): 分布式调度中心
+  * [TSC](./src/StackSdks/Masa.Contrib.StackSdks.Tsc/README.zh-CN.md): 故障排除平台
 
 
 ## 如何克隆

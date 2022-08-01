@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31521.260
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BasicAbility", "BasicAbility", "{5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StackSdks", "StackSdks", "{5DFAF4A2-ECB5-46E4-904D-1EA5F48B2D48}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dispatcher", "Dispatcher", "{FBD326D3-E59C-433E-A88E-14E179E3093D}"
 EndProject
@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Ddd.Domain.Tests", "test\Masa.BuildingBlocks.Ddd.Domain.Tests\Masa.BuildingBlocks.Ddd.Domain.Tests.csproj", "{1FCBC928-0BD4-4BBC-BDFD-3C5BEB85D9DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Pm", "src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Pm\Masa.BuildingBlocks.BasicAbility.Pm.csproj", "{5692C8E2-7D58-4BB6-B20A-F6CD8C1A4217}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Pm", "src\StackSdks\Masa.BuildingBlocks.StackSdks.Pm\Masa.BuildingBlocks.StackSdks.Pm.csproj", "{5692C8E2-7D58-4BB6-B20A-F6CD8C1A4217}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Isolation", "src\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj", "{5E3CAD7F-B036-4CA0-9473-4CCA4F5AC5A8}"
 EndProject
@@ -88,13 +88,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Oidc.Storage", "src\Authentication\Masa.BuildingBlocks.Authentication.Oidc.Storage\Masa.BuildingBlocks.Authentication.Oidc.Storage.csproj", "{701DF095-CF25-4311-9129-279A1834D8A3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Scheduler", "src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Scheduler\Masa.BuildingBlocks.BasicAbility.Scheduler.csproj", "{E9B586D1-CCEF-450E-9E29-E102B141C32F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Scheduler", "src\StackSdks\Masa.BuildingBlocks.StackSdks.Scheduler\Masa.BuildingBlocks.StackSdks.Scheduler.csproj", "{E9B586D1-CCEF-450E-9E29-E102B141C32F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Auth.Contracts", "src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth.Contracts\Masa.BuildingBlocks.BasicAbility.Auth.Contracts.csproj", "{A006D835-D5A1-440E-A55A-58BE27794515}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Auth.Contracts", "src\StackSdks\Masa.BuildingBlocks.StackSdks.Auth.Contracts\Masa.BuildingBlocks.StackSdks.Auth.Contracts.csproj", "{A006D835-D5A1-440E-A55A-58BE27794515}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Auth", "src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Auth\Masa.BuildingBlocks.BasicAbility.Auth.csproj", "{8EE885E8-7D15-4810-9E1B-871089319080}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Auth", "src\StackSdks\Masa.BuildingBlocks.StackSdks.Auth\Masa.BuildingBlocks.StackSdks.Auth.csproj", "{8EE885E8-7D15-4810-9E1B-871089319080}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.BasicAbility.Dcc", "src\BasicAbility\Masa.BuildingBlocks.BasicAbility.Dcc\Masa.BuildingBlocks.BasicAbility.Dcc.csproj", "{BDBF100E-79F9-4B99-8D66-2CFCC790E9F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Dcc", "src\StackSdks\Masa.BuildingBlocks.StackSdks.Dcc\Masa.BuildingBlocks.StackSdks.Dcc.csproj", "{BDBF100E-79F9-4B99-8D66-2CFCC790E9F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Service.Caller", "src\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj", "{C4BF6451-134A-4113-8B13-5F8CE95E1B72}"
 EndProject

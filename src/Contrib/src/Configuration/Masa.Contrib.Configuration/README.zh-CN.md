@@ -19,7 +19,7 @@ IConfiguration
 
 ```C#
 Install-Package Masa.Contrib.Configuration
-Install-Package Masa.Contrib.BasicAbility.Dcc //DCC可提供远程配置的能力
+Install-Package Masa.Contrib.StackSdks.Dcc //DCC可提供远程配置的能力
 ```
 
 appsettings.json
