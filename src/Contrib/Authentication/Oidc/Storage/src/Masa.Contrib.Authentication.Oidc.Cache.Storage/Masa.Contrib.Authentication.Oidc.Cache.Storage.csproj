@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>
+      $(WarningsAsErrors);CS8600;CS8601;CS8602;CS8603;CS8604;CS8609;CS8610;CS8614;CS8616;CS8618;CS8619;CS8620;CS8622;CS8625
+    </WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\BuildingBlocks\Authentication\Oidc\Storage\src\Masa.BuildingBlocks.Authentication.Oidc.Storage\Masa.BuildingBlocks.Authentication.Oidc.Storage.csproj" />
+    <ProjectReference Include="..\..\..\Cache\src\Masa.Contrib.Authentication.Oidc.Cache\Masa.Contrib.Authentication.Oidc.Cache.csproj" />
+  </ItemGroup>
+
+</Project>

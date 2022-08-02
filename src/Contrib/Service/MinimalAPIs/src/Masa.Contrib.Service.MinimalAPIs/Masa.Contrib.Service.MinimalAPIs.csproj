@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\BuildingBlocks\Service\MinimalAPIs\src\Masa.BuildingBlocks.Service.MinimalAPIs\Masa.BuildingBlocks.Service.MinimalAPIs.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\Caching\Caching\src\Masa.Utils.Caching.Core\Masa.Utils.Caching.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Utils\Extensions\DependencyInjection\src\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
+  </ItemGroup>
+
+</Project>

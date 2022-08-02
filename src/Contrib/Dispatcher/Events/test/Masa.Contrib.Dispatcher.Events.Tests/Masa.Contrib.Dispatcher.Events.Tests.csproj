@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <DebugType>Full</DebugType>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.msbuild" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="$(FluentValidationAspNetCorePackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsParameter.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterNotNull.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsParameterType.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests\Masa.Contrib.Dispatcher.Events.CheckMethodsType.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests\Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests\Masa.Contrib.Dispatcher.Events.OnlyCancelHandler.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.csproj" />
+  </ItemGroup>
+
+</Project>
