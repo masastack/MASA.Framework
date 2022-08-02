@@ -3,10 +3,6 @@
 
 global using Masa.Utils.Caller.Core;
 global using Masa.Utils.Caller.HttpClient;
-global using Masa.Utils.Caller.Tests.Queries;
-global using Masa.Utils.Caller.Tests.Requesties;
-global using Masa.Utils.Caller.Tests.Response;
-global using Masa.Utils.Caller.Tests.Utils;
 global using Masa.Utils.Exceptions;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
@@ -19,3 +15,12 @@ global using System.Runtime.ExceptionServices;
 global using System.Text;
 global using System.Text.Json.Serialization;
 global using System.Xml.Serialization;
+global using System.Net.Http.Json;
+global using Masa.Utils.Caller.Tests.Application;
+global using Masa.Utils.Caller.Tests.Application.Requesties;
+global using Masa.Utils.Caller.Tests.Application.Response;
+global using Masa.Utils.Caller.Tests.Infrastructure;
+global using Masa.Utils.Caller.Tests.Infrastructure.Utils;
+global using Masa.Utils.Caller.Tests.Application.Queries;
+global using Masa.Utils.Caller.DaprClient;
+global using Masa.Utils.Caller.Tests.Infrastructure.Callers;

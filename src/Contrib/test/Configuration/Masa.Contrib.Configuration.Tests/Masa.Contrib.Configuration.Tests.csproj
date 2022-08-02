@@ -21,7 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Remove="appsettings.json" />
     <Content Include="appsettings.json">
@@ -40,12 +40,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\src\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests\Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests.csproj" />
-    <ProjectReference Include="..\Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests\Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Configuration.AutoMap.Tests\Masa.Contrib.Configuration.AutoMap.Tests.csproj" />
   </ItemGroup>
 
 </Project>

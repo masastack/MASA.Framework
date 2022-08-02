@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Configuration.AutoMap.Tests;
+
 namespace Masa.Contrib.Configuration.Tests;
 
 [TestClass]
@@ -42,7 +44,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -77,7 +79,7 @@ public class ConfigurationTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var rabbitMqOptions = serviceProvider.GetRequiredService<IOptions<RabbitMqOptions>>();
         Assert.IsTrue(rabbitMqOptions is
-        { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
+            { Value.HostName: "localhost", Value.UserName: "admin", Value.Password: "admin", Value.VirtualHost: "/", Value.Port: "5672" });
 
         var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
         Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
@@ -142,7 +144,7 @@ public class ConfigurationTest
         builder.Configuration.AddConfiguration(chainedConfiguration.Build());
 
         Assert.ThrowsException<Exception>(()
-                => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(KafkaOptions).Assembly)
+                => builder.AddMasaConfiguration()
             , $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
     }
 
@@ -169,8 +171,12 @@ public class ConfigurationTest
         Assert.ThrowsException<Exception>(() =>
         {
             return builder.AddMasaConfiguration(configurationBuilder =>
-                    configurationBuilder.AddJsonFile("redis.json", true, true),
-                typeof(ConfigurationTest).Assembly, typeof(MountSectionRedisOptions).Assembly);
+                {
+                    configurationBuilder
+                        .AddJsonFile("rabbitMq.json", true, true)
+                        .AddJsonFile("redis.json", true, true);
+                    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<MountSectionRedisOptions>("Test"));
+                });
         }, $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
     }
 

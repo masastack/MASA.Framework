@@ -31,108 +31,205 @@ public class CallerTest
         Assert.IsTrue(await GetAsync(githubCaller));
     }
 
+    [TestMethod]
+    public void TestCallerProviderServiceLifetime()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddCaller(opt =>
+        {
+            opt.UseHttpClient(clientBuilder =>
+            {
+                clientBuilder.Name = "http";
+                clientBuilder.IsDefault = true;
+                clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var callerProvider1 = serviceProvider.GetRequiredService<ICallerProvider>();
+        var callerProvider2 = serviceProvider.GetRequiredService<ICallerProvider>();
+        Assert.IsTrue(callerProvider1 == callerProvider2);
+    }
+
+    [TestMethod]
+    public void TestCaller()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddCaller(opt =>
+        {
+            opt.UseHttpClient(clientBuilder =>
+            {
+                clientBuilder.Name = "http";
+                clientBuilder.IsDefault = true;
+                clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
+            });
+            opt.UseDapr(clientBuilder =>
+            {
+                clientBuilder.Name = "dapr";
+                clientBuilder.IsDefault = false;
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var callerProvider = serviceProvider.GetRequiredService<ICallerProvider>();
+        Assert.IsNotNull(callerProvider);
+
+        var caller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient();
+        var daprCaller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("dapr");
+        var httpCaller = serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("http");
+
+        Assert.IsTrue(caller.GetType().FullName != daprCaller.GetType().FullName);
+        Assert.IsTrue(caller.GetType().FullName == httpCaller.GetType().FullName);
+    }
+
+    [TestMethod]
+    public void TestMultiDefaultCaller()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "gitee";
+                    builder.BaseAddress = "https://gitee.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+        });
+    }
+
+    [TestMethod]
+    public void TestMultiDefaultCaller2()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "gitee";
+                    builder.BaseAddress = "https://gitee.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+        });
+    }
+
+    [TestMethod]
+    public void TestRepeatCallerName()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+        });
+    }
+
+    [TestMethod]
+    public void TestRepeatCallerName2()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = "github";
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+        });
+    }
+
+    [TestMethod]
+    public void TestRepeatCallerName3()
+    {
+        IServiceCollection services = new ServiceCollection();
+        Assert.ThrowsException<ArgumentException>(() =>
+        {
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.Name = typeof(GithubCaller).FullName!;
+                    builder.BaseAddress = "https://github.com/masastack";
+                    builder.IsDefault = true;
+                });
+            });
+        });
+    }
+
+    [TestMethod]
+    public void TestAddMultiCaller()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddCaller(opt =>
+        {
+            opt.UseHttpClient(builder =>
+            {
+                builder.Name = "masastack";
+                builder.BaseAddress = "https://github.com/masastack";
+                builder.IsDefault = true;
+            });
+        });
+        services.AddCaller(opt =>
+        {
+            opt.UseHttpClient(builder =>
+            {
+                builder.Name = "masastack2";
+                builder.BaseAddress = "https://github.com/masastack";
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("masastack"));
+        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().CreateClient("masastack2"));
+    }
+
     private async Task<bool> GetAsync(ICallerProvider callerProvider)
     {
         var res = await callerProvider.GetAsync("");
         return res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK;
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByDynamic()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var dictionary = new Dictionary<string, string>
-        {
-            { "account", "jim" },
-            { "age", "18" }
-        };
-        var request = new
-        {
-            account = "jim",
-            age = 18
-        };
-        var result = provider.ConvertToDictionary(request);
-        Assert.IsTrue(System.Text.Json.JsonSerializer.Serialize(result) == System.Text.Json.JsonSerializer.Serialize(dictionary));
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var query = new UserListQury("Jim");
-        var dictionary = new Dictionary<string, string>
-        {
-            { "name", query.Name }
-        };
-        var result = provider.ConvertToDictionary(query);
-        Assert.IsTrue(System.Text.Json.JsonSerializer.Serialize(result) == System.Text.Json.JsonSerializer.Serialize(dictionary));
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject2()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var query = new UserDetailQury("Jim", "Music", "Game");
-        var result = provider.ConvertToDictionary(query);
-        Assert.IsTrue(result.Count == 2);
-        Assert.IsTrue(result["name"] == query.Name);
-        Assert.IsTrue(result["Tags"] == System.Text.Json.JsonSerializer.Serialize(new List<string>()
-        {
-            "Music",
-            "Game"
-        }));
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject3()
-    {
-        var provider = new DefaultTypeConvertProvider();
-
-        List<string> tags = null!;
-        var query = new UserDetailQury("Jim", tags);
-        var result = provider.ConvertToDictionary(query);
-
-        Assert.IsTrue(result.Count == 1);
-        Assert.IsTrue(result["name"] == query.Name);
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject4()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var query = new UserDetailQury(null!, "Music", "Game");
-        var result = provider.ConvertToDictionary(query);
-        Assert.IsTrue(result.Count == 1);
-        Assert.IsTrue(result["Tags"] == System.Text.Json.JsonSerializer.Serialize(new List<string>()
-        {
-            "Music",
-            "Game"
-        }));
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject5()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var dic = new Dictionary<string, string>()
-        {
-            { "Account", "Jim" }
-        };
-        var result = provider.ConvertToDictionary(dic);
-        Assert.IsTrue(result.Count == 1);
-        Assert.IsTrue(result["Account"] == "Jim");
-    }
-
-    [TestMethod]
-    public void TestConvertToDictionaryByObject6()
-    {
-        var provider = new DefaultTypeConvertProvider();
-        var dic = new List<KeyValuePair<string, string>>()
-        {
-            new("Account", "Jim")
-        };
-        var result = provider.ConvertToDictionary(dic);
-        Assert.IsTrue(result.Count == 1);
-        Assert.IsTrue(result["Account"] == "Jim");
     }
 }

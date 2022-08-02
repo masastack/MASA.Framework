@@ -3,8 +3,6 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.Contrib.Configuration.ErrorSectionAutoMap.NoArgumentConstructor.Tests;
-global using Masa.Contrib.Configuration.ErrorSectionAutoMap.Tests;
-global using Masa.Contrib.Configuration.MountErrorSectionAutoMap.Tests;
 global using Masa.Contrib.Configuration.Tests.Config;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;

@@ -11,3 +11,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using System.Net;
+global using DaprCaller = Masa.Contrib.Service.Caller.AutomaticCaller.Tests.Callers.DaprCaller;

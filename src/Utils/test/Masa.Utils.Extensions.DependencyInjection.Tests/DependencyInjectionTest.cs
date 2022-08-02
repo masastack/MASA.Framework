@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Utils.Extensions.DependencyInjection.Tests.Domain.Models;
+
 namespace Masa.Utils.Extensions.DependencyInjection.Tests;
 
 [TestClass]
@@ -140,18 +142,17 @@ public class DependencyInjectionTest
     }
 
     [TestMethod]
-    public void TestAddAutoInjectByAssemblies()
+    public void TestAddAutoInjectAndEmptyAssemblyReturnServiceIsNull()
     {
         var services = new ServiceCollection();
-        services.AddAutoInject(typeof(IRepository<>).Assembly);
+        services.AddAutoInject(Array.Empty<Assembly>());
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetService<IRepository<User>>());
-
+        Assert.IsNull(serviceProvider.GetService<IRepository<User>>());
         Assert.IsNull(serviceProvider.GetService<BaseService>());
     }
 
     [TestMethod]
-    public void TestAddAutoInjectMultiByAssemblies()
+    public void TestAddAutoInjectMultiReturnCountIs1()
     {
         var services = new ServiceCollection();
         services
@@ -160,21 +161,6 @@ public class DependencyInjectionTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IRepository<User>>());
         Assert.IsTrue(serviceProvider.GetServices<IRepository<User>>().Count() == 1);
-
-        Assert.IsNull(serviceProvider.GetService<BaseService>());
-    }
-
-    [TestMethod]
-    public void TestAddAutoInjectByTypes()
-    {
-        var services = new ServiceCollection();
-        services
-            .AddAutoInject(typeof(IRepository<>));
-        var serviceProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetService<IRepository<User>>());
-        Assert.IsTrue(serviceProvider.GetServices<IRepository<User>>().Count() == 1);
-
-        Assert.IsNull(serviceProvider.GetService<BaseService>());
     }
 
     [TestMethod]

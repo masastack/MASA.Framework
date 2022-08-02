@@ -1,592 +1,232 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Ddd.Domain.Repository.EF.Tests;
 
 [TestClass]
-public class RepositoryTest : TestBase
+public class RepositoryTest
 {
-    private IServiceCollection _services = default!;
-    private Assembly[] _assemblies;
-    private Mock<IDispatcherOptions> _dispatcherOptions = default!;
-    private CustomDbContext _dbContext;
-    private UnitOfWork<CustomDbContext> _uoW;
-
     [TestInitialize]
-    public async Task InitializeAsync()
+    public void Initialize()
     {
-        await InitializeAsync(null);
     }
 
-    public async Task InitializeAsync(Action<IServiceCollection>? action)
+    [TestMethod]
+    public async Task TestAddRangeReturnEntityStateEqualChangedAsync()
     {
-        _services = new ServiceCollection();
-        _assemblies = new[]
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.AddRangeAsync(It.IsAny<Orders[]>(), default))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var orders = new List<Orders>()
         {
-            typeof(BaseRepositoryTest).Assembly
+            new(9999)
         };
-        _dispatcherOptions = new Mock<IDispatcherOptions>();
-        _dispatcherOptions.Setup(options => options.Services).Returns(() => _services);
-        _dispatcherOptions.Setup(options => options.Assemblies).Returns(() => _assemblies);
-        if (action == null)
-            _services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        else
-            action.Invoke(_services);
-
-        var serviceProvider = _services.BuildServiceProvider();
-        _dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await _dbContext.Database.EnsureCreatedAsync();
-        _uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
-        _dispatcherOptions.Object.UseUoW<CustomDbContext>();
-    }
-
-    private async Task<IRepository<Orders>> InitDataAsync()
-    {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
-
-        var serviceProvider = _services.BuildServiceProvider();
-        var orders = new List<Orders>
-        {
-            new(1)
-            {
-                OrderNumber = 9999999,
-                Description = "Apple"
-            },
-            new(2)
-            {
-                OrderNumber = 9999999,
-                Description = "HuaWei"
-            }
-        };
-
-        var repository = serviceProvider.GetRequiredService<IRepository<Orders>>();
         await repository.AddRangeAsync(orders);
-        await repository.UnitOfWork.SaveChangesAsync();
-        return repository;
+        dbContext.Verify(context => context.AddRangeAsync(It.IsAny<IEnumerable<Orders>>(), default), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
-    private async Task<IRepository<Orders, int>> InitDataAndReturnRepositoryAsync()
+    [TestMethod]
+    public async Task TestAddRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.AddRangeAsync(It.IsAny<Orders[]>(), default))
+            .Verifiable();
 
-        var serviceProvider = _services.BuildServiceProvider();
-        var orders = new List<Orders>
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
+
+        var orders = new List<Orders>()
         {
-            new(1)
-            {
-                OrderNumber = 9999999,
-                Description = "Apple"
-            },
-            new(2)
-            {
-                OrderNumber = 9999999,
-                Description = "HuaWei"
-            }
+            new(9999)
         };
-
-        var repository = serviceProvider.GetRequiredService<IRepository<Orders, int>>();
         await repository.AddRangeAsync(orders);
-        await repository.UnitOfWork.SaveChangesAsync();
-        return repository;
+        dbContext.Verify(context => context.AddRangeAsync(It.IsAny<IEnumerable<Orders>>(), default), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 
     [TestMethod]
-    public async Task TestAddAsync()
+    public async Task TestUpdateRangeReturnEntityStateEqualChangedAsync()
     {
-        var repository = await InitDataAsync();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
 
-        var orderList = await repository.GetListAsync(order => order.OrderNumber == 9999999);
-        Assert.IsNotNull(orderList);
-        Assert.IsTrue(orderList.Count() == 2);
+        Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
-        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "Apple") == 1);
-    }
-
-    [TestMethod]
-    public async Task TestRemoveAsync()
-    {
-        var repository = await InitDataAsync();
-
-        await repository.AddAsync(new Orders(3)
+        var orders = new List<Orders>()
         {
-            OrderNumber = 9999997,
-            Description = "Google"
-        });
-        await repository.AddAsync(new Orders(4)
-        {
-            OrderNumber = 9999996,
-            Description = "Microsoft"
-        });
-        await repository.RemoveAsync(order => order.Description == "Apple");
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(await repository.GetCountAsync() == 3);
-
-        var order = await repository.FindAsync(
-            new List<KeyValuePair<string, object>>
-            {
-                new(nameof(Orders.Description), "Google")
-            });
-        await repository.RemoveAsync(order!);
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(await repository.GetCountAsync(order => order.Description == "Google") == 0);
-    }
-
-    [TestMethod]
-    public async Task TestRemoveRangeAsync()
-    {
-        var repository = await InitDataAsync();
-
-        Assert.IsTrue(await repository.GetCountAsync() == 2);
-
-        var remainingOrders = await repository.GetListAsync();
-        await repository.RemoveRangeAsync(remainingOrders);
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        Assert.IsTrue(await repository.GetCountAsync() == 0);
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListAsync()
-    {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
-        var serviceProvider = _services.BuildServiceProvider();
-        var customOrderRepository = serviceProvider.GetRequiredService<ICustomOrderRepository>();
-
-        var orders = new List<Orders>
-        {
-            new(1)
-            {
-                Description = "HuaWei",
-                OrderNumber = 20220228
-            },
-            new(2)
-            {
-                Description = "Microsoft",
-                OrderNumber = 20220227
-            },
-            new(3)
-            {
-                Description = "Apple",
-                OrderNumber = 20220227
-            }
+            new(9999)
         };
-        await customOrderRepository.AddRangeAsync(orders);
-        await customOrderRepository.UnitOfWork.SaveChangesAsync();
-
-        var sorting = new Dictionary<string, bool>(
-            new List<KeyValuePair<string, bool>>
-            {
-                new("OrderNumber", true),
-                new("Description", false)
-            });
-        var list = await customOrderRepository.GetPaginatedListAsync(
-            0,
-            10,
-            sorting);
-        Assert.IsTrue(list[0].Id == 1);
-        Assert.IsTrue(list[1].Id == 3);
-        Assert.IsTrue(list[2].Id == 2);
-
-        sorting = new Dictionary<string, bool>(
-            new List<KeyValuePair<string, bool>>
-            {
-                new("OrderNumber", false),
-                new("Description", true)
-            });
-        list = await customOrderRepository.GetPaginatedListAsync(
-            order => order.Id != 3,
-            0,
-            10,
-            sorting);
-        Assert.IsTrue(list[0].Id == 2);
-        Assert.IsTrue(list[1].Id == 1);
-
-        list = await customOrderRepository.GetPaginatedListAsync(
-            order => order.Id != 3,
-            0,
-            10);
-        Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
-        Assert.IsTrue(list[1].Id == 2);
-
-        list = await customOrderRepository.GetPaginatedListAsync(0, 10);
-        Assert.IsTrue(list[0].Id == 1); //If you do not specify a sort value, the database will sort by default
-        Assert.IsTrue(list[1].Id == 2);
+        await repository.UpdateRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
     [TestMethod]
-    public async Task TestTranscationFailedAsync()
+    public async Task TestUpdateRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
-        var serviceProvider = _services.BuildServiceProvider();
-        var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-        var order = new Orders(1)
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
+
+        var orders = new List<Orders>()
         {
-            OrderNumber = 1
+            new(9999)
         };
-        await repository.AddAsync(order);
-        Assert.IsTrue(await repository.GetCountAsync() == 0);
+        await repository.UpdateRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 
     [TestMethod]
-    public async Task TestTranscationSucceededAsync()
+    public async Task TestUpdateReturnEntityStateEqualChangedAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
-        var serviceProvider = _services.BuildServiceProvider();
-        var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-        var order = new Orders(1)
-        {
-            OrderNumber = 1,
-            Description = "Apple"
-        };
-        await repository.AddAsync(order);
-        Assert.IsTrue(await repository.GetCountAsync() == 1);
-    }
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Update(It.IsAny<Orders>()))
+            .Verifiable();
 
-    [TestMethod]
-    public async Task TestUpdateAsync()
-    {
-        await InitializeAsync(services =>
-            services.AddMasaDbContext<CustomDbContext>(options =>
-            {
-                options.Builder = (_, dbContextOptionsBuilder)
-                    => dbContextOptionsBuilder.UseSqlite(Connection)
-                        .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-            }));
+        Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
-        var serviceProvider = _services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-
-        var repository = serviceProvider.GetRequiredService<IOrderRepository>();
-
-        var order = new Orders(1)
-        {
-            OrderNumber = 1,
-            Description = "Apple"
-        };
-        await repository.AddAsync(order, default);
-        await repository.UnitOfWork.SaveChangesAsync();
-        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-
-        order = await repository.FindAsync(order => order.Description == "Apple");
-        order!.Description = "Apple Company";
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        order = await repository.FindAsync(order => order.Description == "Apple");
-        Assert.IsNotNull(order);
-
+        var order = new Orders(999);
         await repository.UpdateAsync(order);
-        await repository.UnitOfWork.SaveChangesAsync();
-        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-        Assert.IsTrue(await repository.GetCountAsync() == 1);
-
-        order = await repository.FindAsync(order => order.Description == "Apple");
-        Assert.IsNotNull(order);
-
-        order.Description = "Apple Company";
-        await repository.UpdateRangeAsync(new List<Orders>
-            { order });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        dbContext.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
-
-        order = await repository.FindAsync(order => order.Description == "Apple");
-        Assert.IsNull(order);
+        dbContext.Verify(context => context.Set<Orders>().Update(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
     [TestMethod]
-    public async Task TestFindAsync()
+    public async Task TestUpdateAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        await InitDataAsync();
-        var repository = _services.BuildServiceProvider()
-            .GetRequiredService<IRepository<Orders, int>>();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Update(It.IsAny<Orders>()))
+            .Verifiable();
 
-        var order = await repository.FindAsync(2);
-        Assert.IsNotNull(order);
-        Assert.IsTrue(order.Description == "HuaWei");
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
+
+        var order = new Orders(999);
+        await repository.UpdateAsync(order);
+        dbContext.Verify(context => context.Set<Orders>().Update(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 
     [TestMethod]
-    public void TestCustomOrderRepository()
+    public async Task TestRemoveRangeReturnEntityStateEqualChangedAsync()
     {
-        _dispatcherOptions.Object.UseRepository<CustomDbContext>();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
 
-        var serviceProvider = _services.BuildServiceProvider();
-        var customOrderRepository = serviceProvider.GetService<ICustomOrderRepository>();
-        Assert.IsNotNull(customOrderRepository);
-    }
+        Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
-    [TestMethod]
-    public async Task TestEntityStateAsync()
-    {
-        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
-        Assert.IsTrue(repository.EntityState == Masa.BuildingBlocks.Data.UoW.EntityState.UnChanged);
-
-        await repository.AddAsync(new Orders(9999)
+        var orders = new List<Orders>()
         {
-            Description = "HuaWei"
-        });
-        Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.Changed);
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(repository.EntityState == BuildingBlocks.Data.UoW.EntityState.UnChanged);
+            new(9999)
+        };
+        await repository.RemoveRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
     [TestMethod]
-    public async Task TestCommitStateAsync()
+    public async Task TestRemoveRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
 
-        await repository.AddAsync(new Orders(9999)
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
+
+        var orders = new List<Orders>()
         {
-            Description = "HuaWei"
-        });
-        Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(repository.CommitState == CommitState.UnCommited);
-        await repository.UnitOfWork.CommitAsync();
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
-    }
-
-    [TestMethod]
-    public async Task TestCommitStateAndNotUseTransactionAsync()
-    {
-        _uoW.UseTransaction = false;
-        var repository = new Repository<CustomDbContext, Orders>(_dbContext, _uoW);
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
-
-        await repository.AddAsync(new Orders(9999)
-        {
-            Description = "HuaWei"
-        });
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(repository.CommitState == CommitState.Commited);
-
-        var order = await repository.GetCountAsync(o => o.Id == 9999);
-        Assert.IsNotNull(order);
-    }
-
-    [TestMethod]
-    public async Task TestServiceLifeAsync()
-    {
-        var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = services.BuildServiceProvider();
-
-        await using (var scope = serviceProvider.CreateAsyncScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
-            var uow = new UnitOfWork<CustomDbContext>(scope.ServiceProvider);
-            var repository = new Repository<CustomDbContext, Orders>(dbContext, uow);
-            await repository.AddAsync(new Orders(1)
-            {
-                Description = "HuaWei"
-            });
-            await repository.UnitOfWork.SaveChangesAsync();
-            Assert.IsTrue(await repository.GetCountAsync() == 1);
-        }
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListByAscAsyncReturnFirstOrderIdIs1()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = await repository.GetPaginatedListAsync(0, 2, "Id", false);
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 1);
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListByDescAsyncReturnFirstOrderIdIs3()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = await repository.GetPaginatedListAsync(0, 2, "Id");
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListByIdGreatherThan1AndAscAsyncReturnFirstOrderIdIs2()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, 0, 2, "Id", false);
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 2);
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListByIdGreatherThan1AndDescAsyncReturnFirstOrderIdIs3()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, 0, 2, "Id");
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
-    }
-
-    [TestMethod]
-    public async Task TestGetPaginatedListByOptionsAsyncReturnFirstOrderIdIs1()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = await repository.GetPaginatedListAsync(new PaginatedOptions(1, 1, "Id", false));
-        Assert.IsTrue(paginatedList is { Total: 3 } && paginatedList.Result.First().Id == 1);
+            new(9999)
+        };
+        await repository.RemoveRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 
 
     [TestMethod]
-    public async Task TestGetPaginatedListByOptionsAndDescAsyncReturnFirstOrderIdIs2()
+    public async Task TestRemoveReturnEntityStateEqualChangedAsync()
     {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Remove(It.IsAny<Orders>()))
+            .Verifiable();
 
-        var paginatedList = await repository.GetPaginatedListAsync(new PaginatedOptions(2, 1, "Id", true));
-        Assert.IsTrue(paginatedList is { Total: 3 } && paginatedList.Result.First().Id == 2);
+        Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var order = new Orders(999);
+        await repository.RemoveAsync(order);
+        dbContext.Verify(context => context.Set<Orders>().Remove(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
     [TestMethod]
-    public async Task TestGetPaginatedListByIdGreatherThen2AsyncReturnFirstOrderIdIs2AndCountIs2()
+    public async Task TestRemoveAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
+        Mock<DbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Remove(It.IsAny<Orders>()))
+            .Verifiable();
 
-        var paginatedList = await repository.GetPaginatedListAsync(o => o.Id > 1, new PaginatedOptions(2, 1, "Id"));
-        Assert.IsTrue(paginatedList is { Total: 2 } && paginatedList.Result.First().Id == 2);
-    }
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
+        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 
-    [TestMethod]
-    public async Task TestGetListByDescAsyncReturnFirstOrderIdIs1()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = (await repository.GetListAsync("Id", false)).ToList();
-        Assert.IsTrue(paginatedList.Count == 3 && paginatedList.First().Id == 1);
-    }
-
-    [TestMethod]
-    public async Task TestGetListByAscAsyncReturnFirstOrderIdIs3()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = (await repository.GetListAsync("Id")).ToList();
-        Assert.IsTrue(paginatedList.Count == 3 && paginatedList.First().Id == 3);
-    }
-
-    [TestMethod]
-    public async Task TestGetListByIdGreatherThan1AndAscAsyncReturnFirstOrderIdIs2()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = (await repository.GetListAsync(o => o.Id > 1, "Id", false)).ToList();
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 2);
-    }
-
-    [TestMethod]
-    public async Task TestGetListByGreatherThan1AndDescAsyncReturnFirstOrderIdIs3()
-    {
-        var repository = await InitDataAsync();
-        await repository.AddAsync(new Orders(3)
-        {
-            OrderNumber = 99998,
-            Description = "Microsoft"
-        });
-        await repository.UnitOfWork.SaveChangesAsync();
-
-        var paginatedList = (await repository.GetListAsync(o => o.Id > 1, "Id")).ToList();
-        Assert.IsTrue(paginatedList.Count == 2 && paginatedList.First().Id == 3);
-    }
-
-    [TestMethod]
-    public void TestPaginatedOptionsConstructorAndSortingIsNullReturnSortingIsNull()
-    {
-        int page = 1;
-        int pageSize = 20;
-        var pageOptions = new PaginatedOptions(page, pageSize);
-        Assert.IsTrue(pageOptions.Sorting == null);
-    }
-
-    [TestMethod]
-    public void TestPaginatedOptionsConstructorReturnSortingCountIs1()
-    {
-        int page = 1;
-        int pageSize = 20;
-        var pageOptions = new PaginatedOptions(page, pageSize, "Id");
-        Assert.IsTrue(pageOptions.Page == page && pageOptions.PageSize == pageSize && pageOptions.Sorting!.Count == 1);
-    }
-
-    [TestMethod]
-    public async Task TestRemoveIdEqual1ReturnCountIs1()
-    {
-        var repository = await InitDataAndReturnRepositoryAsync();
-        await repository.RemoveAsync(1);
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(await repository.GetCountAsync() == 1);
-    }
-
-    [TestMethod]
-    public async Task TestRemoveIdEqual1Or2ReturnCountIs0()
-    {
-        var repository = await InitDataAndReturnRepositoryAsync();
-        await repository.RemoveRangeAsync(new[] { 1, 2 });
-        await repository.UnitOfWork.SaveChangesAsync();
-        Assert.IsTrue(await repository.GetCountAsync() == 0);
+        var order = new Orders(999);
+        await repository.RemoveAsync(order);
+        dbContext.Verify(context => context.Set<Orders>().Remove(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 }

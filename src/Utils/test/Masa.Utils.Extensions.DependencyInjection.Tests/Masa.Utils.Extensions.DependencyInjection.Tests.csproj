@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
-    <ProjectReference Include="..\Masa.Utils.Extensions.DependencyInjection.Repository.Tests\Masa.Utils.Extensions.DependencyInjection.Repository.Tests.csproj" />
   </ItemGroup>
 
 </Project>

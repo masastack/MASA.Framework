@@ -14,3 +14,4 @@ global using System.Data.Common;
 global using System.Linq.Expressions;
 global using System.Reflection;
 global using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;
+global using System.Runtime.CompilerServices;

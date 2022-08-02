@@ -364,7 +364,7 @@ public class FeaturesTest : TestBase
     {
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
-            new EventHandlerAttribute(-10);
+            _ = new EventHandlerAttribute(-10);
         }, "The order must be greater than or equal to 0");
     }
 
@@ -376,27 +376,5 @@ public class FeaturesTest : TestBase
         var registerUserEvent = new RegisterUserEvent("Jim");
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
-    }
-
-    [TestMethod]
-    public async Task TestEventBusFailedReturnExceptionIsUserFriendException()
-    {
-        var services = new ServiceCollection();
-        services.AddTestEventBus(
-            new[] { typeof(FeaturesTest).Assembly },
-            ServiceLifetime.Scoped,
-            builder =>
-            {
-                builder.UseUoW<CustomDbContext>(optionBuilder =>
-                {
-                    optionBuilder.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
-                });
-            });
-
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await eventBus.PublishAsync(new SendCouponEvent()));
     }
 }
