@@ -1,6 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+#pragma warning disable CS0618
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 
 [TestClass]
