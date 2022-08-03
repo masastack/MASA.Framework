@@ -287,11 +287,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orm", "Orm", "{343A61CC-45B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UoW", "UoW", "{E8B3FB42-C450-4B12-9C2C-7B9A02B616BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EF", "src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts.EF\Masa.Contrib.Data.Contracts.EF.csproj", "{8353A1CE-B6F0-42A2-B7F1-BC87707719AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EntityFrameworkCore", "src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts.EntityFrameworkCore\Masa.Contrib.Data.Contracts.EntityFrameworkCore.csproj", "{8353A1CE-B6F0-42A2-B7F1-BC87707719AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{83E5A183-56D6-4CAC-95A6-FB280AA7AE3D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EF.Tests", "src\Contrib\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.EF.Tests\Masa.Contrib.Data.Contracts.EF.Tests.csproj", "{905DB539-092C-4365-ACA1-531D3F2A6665}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EntityFrameworkCore.Tests", "src\Contrib\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.EntityFrameworkCore.Tests\Masa.Contrib.Data.Contracts.EntityFrameworkCore.Tests.csproj", "{905DB539-092C-4365-ACA1-531D3F2A6665}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.DistributedLock.Local", "src\Contrib\Data\DistributedLock\Masa.Contrib.Data.DistributedLock.Local\Masa.Contrib.Data.DistributedLock.Local.csproj", "{51A22652-A76D-4BB6-92B3-269E7628F4AA}"
 EndProject
@@ -385,11 +385,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{B5C55192-FF3D-4F9D-B78A-C9E73D56BBFD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Repository.EF", "src\Contrib\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EF\Masa.Contrib.Ddd.Domain.Repository.EF.csproj", "{88B7B81E-1F86-4CB2-AB48-A301D2A67A40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore", "src\Contrib\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore\Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore.csproj", "{88B7B81E-1F86-4CB2-AB48-A301D2A67A40}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F83E3E53-2DFE-4B1F-B988-204CA4A42572}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Repository.EF.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EF.Tests\Masa.Contrib.Ddd.Domain.Repository.EF.Tests.csproj", "{6DB001ED-4652-41C7-8C4A-07FF1C03266B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore.Tests\Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore.Tests.csproj", "{6DB001ED-4652-41C7-8C4A-07FF1C03266B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events", "src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj", "{7E0946DF-53F5-45A9-97BE-779A42E34DB6}"
 EndProject
@@ -423,13 +423,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationEvents", "Integr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.Dapr", "src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.csproj", "{4A0491D9-F548-4367-8B96-B046A6783743}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF", "src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.csproj", "{F9E3D84A-C5C4-4797-A5E6-B7FE4F288225}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore", "src\Contrib\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore.csproj", "{F9E3D84A-C5C4-4797-A5E6-B7FE4F288225}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{11B7C7BA-AF7E-4695-B244-19C8B1C23E1C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests", "src\Contrib\Dispatcher\IntegrationEvents\Tests\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests\Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests.csproj", "{16D0B9F5-6FFB-4F2D-AB14-0E0811DAC1D9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests", "src\Contrib\Dispatcher\IntegrationEvents\Tests\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF.Tests.csproj", "{1FC195D0-E126-4740-8720-09144C61EDD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore.Tests", "src\Contrib\Dispatcher\IntegrationEvents\Tests\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore.Tests\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore.Tests.csproj", "{1FC195D0-E126-4740-8720-09144C61EDD6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.IntegrationEvents.Tests", "src\Contrib\Dispatcher\IntegrationEvents\Tests\Masa.Contrib.Dispatcher.IntegrationEvents.Tests\Masa.Contrib.Dispatcher.IntegrationEvents.Tests.csproj", "{5F1F2A46-5C4C-4D0A-8C89-73785EE41340}"
 EndProject
@@ -443,13 +443,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UoW", "UoW", "{174693E7-0B9
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{60C0BD3E-3A4B-4C06-9AC4-07C909FCDC2D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF", "src\Contrib\Isolation\UoW\Masa.Contrib.Isolation.UoW.EF\Masa.Contrib.Isolation.UoW.EF.csproj", "{F7801358-1D38-4697-A185-FF9DF52F3F83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EntityFrameworkCore", "src\Contrib\Isolation\UoW\Masa.Contrib.Isolation.UoW.EntityFrameworkCore\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.csproj", "{F7801358-1D38-4697-A185-FF9DF52F3F83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{BB77344E-0EE7-40BC-8EB8-47C1E41C9250}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Tests", "src\Contrib\Isolation\UoW\Tests\Masa.Contrib.Isolation.UoW.EF.Tests\Masa.Contrib.Isolation.UoW.EF.Tests.csproj", "{60196CF3-CC20-4ACA-AC59-8FACA9B3AD6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Tests", "src\Contrib\Isolation\UoW\Tests\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Tests\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Tests.csproj", "{60196CF3-CC20-4ACA-AC59-8FACA9B3AD6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EF.Web.Tests", "src\Contrib\Isolation\UoW\Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests\Masa.Contrib.Isolation.UoW.EF.Web.Tests.csproj", "{F928EBF3-2527-4B9A-816B-3D6CFA35A9CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Web.Tests", "src\Contrib\Isolation\UoW\Tests\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Web.Tests\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.Web.Tests.csproj", "{F928EBF3-2527-4B9A-816B-3D6CFA35A9CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Isolation.MultiEnvironment.Tests", "src\Contrib\Isolation\Tests\Masa.Contrib.Isolation.MultiEnvironment.Tests\Masa.Contrib.Isolation.MultiEnvironment.Tests.csproj", "{405EDD78-48E8-490B-AE2A-713AB89AA73E}"
 EndProject

@@ -28,10 +28,10 @@ builder.Services
 
 1.2 使用提供的EF版的本地消息服务
 
-安装`Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF`
+安装`Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore`
 
 ``` C#
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore //记录跨进程消息日志
 ```
 
 ```C#

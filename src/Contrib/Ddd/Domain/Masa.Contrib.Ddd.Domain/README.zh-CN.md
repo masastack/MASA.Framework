@@ -6,12 +6,12 @@
 
 ```c#
 Install-Package Masa.Contrib.Ddd.Domain
-Install-Package Masa.Contrib.Ddd.Domain.Repository.EF
+Install-Package Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore
 
 Install-Package Masa.Contrib.Dispatcher.Events
 
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore
 Install-Package Masa.Contrib.Data.UoW.EF
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```

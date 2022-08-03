@@ -6,7 +6,7 @@
 
 ```c#
 Install-Package Masa.Contrib.Data.EntityFrameworkCore
-Install-Package Masa.Contrib.Data.Contracts.EF
+Install-Package Masa.Contrib.Data.Contracts.EntityFrameworkCore
 Install-Package Microsoft.EntityFrameworkCore.SqlServer//这里以SqlServer举例
 ```
 

@@ -4,7 +4,7 @@
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
 global using Masa.BuildingBlocks.Data.Contracts.Paginated;
-global using Masa.Contrib.Data.Contracts.EF;
+global using Masa.Contrib.Data.Contracts.EntityFrameworkCore;
 global using Masa.Contrib.Data.EntityFrameworkCore.Filters;
 global using Masa.Contrib.Data.EntityFrameworkCore.Tests.Internal;
 global using Masa.Contrib.Data.EntityFrameworkCore.Tests.Models;

@@ -7,7 +7,7 @@
 ```C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //使用跨进程事件
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //通过dapr完成跨进程事件
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //记录跨进程消息日志
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore //记录跨进程消息日志
 Install-Package Masa.Contrib.Data.UoW.EF //使用工作单元
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // 使用SqlServer
 ```

@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Contracts\Masa.Contrib.Data.Contracts.EF\Masa.Contrib.Data.Contracts.EF.csproj" />
+    <ProjectReference Include="..\..\..\Contracts\Masa.Contrib.Data.Contracts.EntityFrameworkCore\Masa.Contrib.Data.Contracts.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj" />
   </ItemGroup>
 

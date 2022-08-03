@@ -5,7 +5,7 @@
 用例：
 
 ```C#
-Install-Package Masa.Contrib.Isolation.UoW.EF
+Install-Package Masa.Contrib.Isolation.UoW.EntityFrameworkCore
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
 ```

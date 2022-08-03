@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.14.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Contracts\Masa.Contrib.Data.Contracts.EntityFrameworkCore\Masa.Contrib.Data.Contracts.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Orm\EntityFrameworkCore\Masa.Contrib.Data.EntityFrameworkCore.Sqlite\Masa.Contrib.Data.EntityFrameworkCore.Sqlite.csproj" />
+    <ProjectReference Include="..\..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
+    <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Isolation.UoW.EntityFrameworkCore\Masa.Contrib.Isolation.UoW.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

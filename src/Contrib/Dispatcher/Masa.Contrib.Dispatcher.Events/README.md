@@ -192,7 +192,7 @@ Runtime=.NET 6.0  IterationCount=100  RunStrategy=ColdStart
 
 ##### Summarize
 
-IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Contrib.Ddd.Domain.Repository.EF to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
+IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
 
 > Question 1. Publishing events through eventBus, Handler error -> and handler throw exception
 
@@ -203,7 +203,7 @@ IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Cont
 
 > Question 2. Under what circumstances will SaveChange be automatically saved -> When auto call SaveChange?
 
-    > Use UoW and Masa.Contrib.Ddd.Domain.Repository.EF, and use the Add, Update, Delete operations provided by IRepository, publish events through EventBus, and automatically execute SaveChange after executing EventHandler
+    > Use UoW and Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore, and use the Add, Update, Delete operations provided by IRepository, publish events through EventBus, and automatically execute SaveChange after executing EventHandler
 
 > Question 3. If the SaveChange method of UoW is manually called in EventHandler to save, will the framework also save automatically?
 

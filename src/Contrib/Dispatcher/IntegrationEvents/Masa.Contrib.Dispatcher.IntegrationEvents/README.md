@@ -28,10 +28,10 @@ builder.Services
 
 1.2 Use the provided EF version of the local message service
 
-Install `Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF`
+Install `Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore`
 
 ``` C#
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message log
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore //Record cross-process message log
 ```
 
 ``` C#

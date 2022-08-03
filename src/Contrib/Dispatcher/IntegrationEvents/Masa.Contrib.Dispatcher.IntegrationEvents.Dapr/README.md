@@ -7,7 +7,7 @@ Example:
 ```C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //Use cross-process
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //Send cross-process messages
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF //Record cross-process message logs
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore //Record cross-process message logs
 Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
 Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
 ```

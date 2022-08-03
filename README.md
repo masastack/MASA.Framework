@@ -32,7 +32,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
     * [InMemory](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.InMemory/README.md)
     * [Oracle](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.Oracle/README.md)
     * [PostgreSql](./src/Data/Masa.Contrib.Data.EntityFrameworkCore.PostgreSql/README.md)
-  * [Data.Contracts.EF](./src/Data/Masa.Contrib.Data.Contracts.EF/): data protocol
+  * [Data.Contracts.EF](./src/Data/Masa.Contrib.Data.Contracts.EntityFrameworkCore/): data protocol
   * UoW: unit of work
     * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EF/README.md)
   * IdGenerator: Unique ID generator
@@ -43,16 +43,16 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
   * Mapping: object mapping
      * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.md)
 * [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.md)
-  * [Ddd.Domain.Repository.EF](./src/Ddd/Masa.Contrib.Ddd.Domain.Repository.EF/README.md): Provide warehousing services
+  * [Ddd.Domain.Repository.EF](./src/Ddd/Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore/README.md): Provide warehousing services
 * Dispatcher
   * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.md): In-process events
   * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.md): Cross-process events
-    * [IntegrationEvents.EventLogs.EF](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF/README.md): Provides message management services for cross-process events
+    * [IntegrationEvents.EventLogs.EF](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore/README.md): Provides message management services for cross-process events
 * Isolation: Support physical isolation, logical isolation
-  * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EF/README.md)
+  * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EntityFrameworkCore/README.md)
   * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.md): MultiEnvironment
   * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.md): Multi-tenancy
-* [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.md): Support API classification aggregation similar to Controller
+* [MinimalAPI](./src/Service/Masa.Contrib.Service.Mini~~~~malAPIs/README.md): Support API classification aggregation similar to Controller
 * Storage: cloud storage
   * [Aliyun Storage](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.md)
 * Operational capacity
