@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
 global using Masa.Contrib.Configuration;
 global using Masa.Contrib.Configuration.Internal;
-global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.Configuration.CommandLine;
 global using Microsoft.Extensions.Configuration.EnvironmentVariables;
