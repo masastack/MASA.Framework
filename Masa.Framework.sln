@@ -83,11 +83,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{1987405B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.SearchEngine.AutoComplete.Tests", "src\BuildingBlocks\SearchEngine\Tests\Masa.BuildingBlocks.SearchEngine.AutoComplete.Tests\Masa.BuildingBlocks.SearchEngine.AutoComplete.Tests.csproj", "{412A5797-7D42-4F7C-96AB-4F784872ED08}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Oidc.Cache", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.Oidc.Cache\Masa.BuildingBlocks.Authentication.Oidc.Cache.csproj", "{2730D483-5E03-43EA-B8AA-D9EB1BAC77C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.csproj", "{2730D483-5E03-43EA-B8AA-D9EB1BAC77C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Oidc.Domain", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.Oidc.Domain\Masa.BuildingBlocks.Authentication.Oidc.Domain.csproj", "{E50AD1BC-69B0-4E51-94CB-72AB10761710}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain\Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.csproj", "{E50AD1BC-69B0-4E51-94CB-72AB10761710}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Oidc.Storage", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.Oidc.Storage\Masa.BuildingBlocks.Authentication.Oidc.Storage.csproj", "{0D395B3E-D603-49C3-AD80-B53979EDF9E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage.csproj", "{0D395B3E-D603-49C3-AD80-B53979EDF9E1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Identity.IdentityModel", "src\BuildingBlocks\Authentication\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj", "{249E8BD4-C358-4358-93FA-78320D335014}"
 EndProject
@@ -247,11 +247,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{62E8
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenIdConnect", "OpenIdConnect", "{41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Oidc.Cache", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.Oidc.Cache\Masa.Contrib.Authentication.Oidc.Cache.csproj", "{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj", "{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Oidc.Cache.Storage", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.Oidc.Cache.Storage\Masa.Contrib.Authentication.Oidc.Cache.Storage.csproj", "{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Oidc.EntityFrameworkCore", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.Oidc.EntityFrameworkCore\Masa.Contrib.Authentication.Oidc.EntityFrameworkCore.csproj", "{3532E374-C922-4B79-93CA-2B0E4CC14FB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore\Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore.csproj", "{3532E374-C922-4B79-93CA-2B0E4CC14FB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Identity.IdentityModel", "src\Contrib\Authentication\Masa.Contrib.Identity.IdentityModel\Masa.Contrib.Identity.IdentityModel.csproj", "{DF784809-63B1-44EF-802E-CCCB1FFAA557}"
 EndProject
@@ -531,9 +529,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{4231AB12
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests", "src\Contrib\Storage\ObjectStorage\Tests\Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests\Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests.csproj", "{C65638DC-2418-4453-917F-9FA8D068594E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Oidc.Models", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.Oidc.Models\Masa.BuildingBlocks.Authentication.Oidc.Models.csproj", "{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Models", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.csproj", "{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.csproj", "{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1079,14 +1079,6 @@ Global
 		{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0}.Release|x64.ActiveCfg = Release|Any CPU
 		{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0}.Release|x64.Build.0 = Release|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Debug|x64.Build.0 = Debug|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Release|x64.ActiveCfg = Release|Any CPU
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4}.Release|x64.Build.0 = Release|Any CPU
 		{3532E374-C922-4B79-93CA-2B0E4CC14FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3532E374-C922-4B79-93CA-2B0E4CC14FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3532E374-C922-4B79-93CA-2B0E4CC14FB9}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1887,6 +1879,14 @@ Global
 		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|x64.ActiveCfg = Release|Any CPU
 		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|x64.Build.0 = Release|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|x64.Build.0 = Debug|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|x64.ActiveCfg = Release|Any CPU
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2007,7 +2007,6 @@ Global
 		{62E888C1-9FCD-413D-91CB-1F2DD3D356E3} = {950DA7D0-48C1-42BA-8E8F-F72C0DCE41C4}
 		{41769FBF-91A8-48D1-B3BB-CAE4C814E7CD} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{B92E29C1-4C44-4C5D-B3B2-22AAF07A62A0} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
-		{4E8F809F-BF45-4E61-AFEA-2027EE74BFF4} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{3532E374-C922-4B79-93CA-2B0E4CC14FB9} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{DF784809-63B1-44EF-802E-CCCB1FFAA557} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{94D15C26-7204-4299-BC23-B89F5A0B0BF9} = {3198630F-C09B-40AE-B9A1-E79249296E48}
@@ -2150,6 +2149,7 @@ Global
 		{C65638DC-2418-4453-917F-9FA8D068594E} = {4231AB12-3FB7-408E-B7C2-9CC0FFB710B1}
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D} = {CFC8DE12-A06F-46E2-890A-6EC9400F17DA}
 		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
+		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
