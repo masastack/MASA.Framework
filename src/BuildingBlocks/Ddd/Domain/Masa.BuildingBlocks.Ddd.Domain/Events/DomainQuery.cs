@@ -4,7 +4,6 @@
 namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 
 public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
-    where TResult : notnull
 {
     private Guid _eventId;
     private DateTime _creationTime;

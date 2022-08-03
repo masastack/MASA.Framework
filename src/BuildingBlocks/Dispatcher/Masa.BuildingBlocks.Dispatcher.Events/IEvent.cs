@@ -15,7 +15,6 @@ public interface IEvent
 }
 
 public interface IEvent<TResult> : IEvent
-    where TResult : notnull
 {
     TResult Result { get; set; }
 }
