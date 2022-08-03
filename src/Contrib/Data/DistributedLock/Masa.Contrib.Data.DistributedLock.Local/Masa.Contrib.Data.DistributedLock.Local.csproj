@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
+    <ProjectReference Include="..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
+  </ItemGroup>
+
+</Project>

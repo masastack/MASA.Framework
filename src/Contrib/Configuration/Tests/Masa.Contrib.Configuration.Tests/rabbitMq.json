@@ -1,0 +1,9 @@
+{
+  "RabbitMq": {
+    "HostName": "localhost",
+    "UserName": "admin",
+    "Password": "admin",
+    "VirtualHost": "/",
+    "Port": 5672
+  }
+}
