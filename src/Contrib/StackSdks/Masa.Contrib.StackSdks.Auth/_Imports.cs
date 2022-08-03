@@ -4,7 +4,7 @@
 global using Masa.BuildingBlocks.StackSdks.Auth;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Auth.Service;
-global using Masa.BuildingBlocks.Identity.IdentityModel;
+global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.Contrib.Service.Caller;

@@ -3,7 +3,7 @@
 ## Masa.Contrib.StackSdks.Auth
 
 Injecting IAuthClient interface，cal the service to obtain the capabilities provided by the auth SDK.
-SDK need to get current user ID dependency Masa.Contrib.Identity.IdentityModel(../../Identity/Masa.Contrib.Identity.IdentityModel/README.zh，Therefore,the identitymodel service needs to be added before use.
+SDK need to get current user ID dependency Masa.Contrib.Authentication.Identity(../../Identity/Masa.Contrib.Authentication.Identity/README.zh，Therefore,the identitymodel service needs to be added before use.
 
 ### Service Introduction
 

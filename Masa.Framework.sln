@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage.csproj", "{0D395B3E-D603-49C3-AD80-B53979EDF9E1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Identity.IdentityModel", "src\BuildingBlocks\Authentication\Masa.BuildingBlocks.Identity.IdentityModel\Masa.BuildingBlocks.Identity.IdentityModel.csproj", "{249E8BD4-C358-4358-93FA-78320D335014}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.Identity", "src\BuildingBlocks\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj", "{249E8BD4-C358-4358-93FA-78320D335014}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Configuration", "src\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj", "{BB008555-DDF4-4A1F-B784-F3B7F34CDFDC}"
 EndProject
@@ -251,11 +251,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore\Masa.Contrib.Authentication.OpenIdConnect.EntityFrameworkCore.csproj", "{3532E374-C922-4B79-93CA-2B0E4CC14FB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Identity.IdentityModel", "src\Contrib\Authentication\Masa.Contrib.Identity.IdentityModel\Masa.Contrib.Identity.IdentityModel.csproj", "{DF784809-63B1-44EF-802E-CCCB1FFAA557}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity\Masa.Contrib.Authentication.Identity.csproj", "{DF784809-63B1-44EF-802E-CCCB1FFAA557}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94D15C26-7204-4299-BC23-B89F5A0B0BF9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Identity.IdentityModel.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Identity.IdentityModel.Tests\Masa.Contrib.Identity.IdentityModel.Tests.csproj", "{06381F61-2C55-4322-9417-EA14F5F0E467}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration", "src\Contrib\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj", "{A59E1EA1-9F5D-486E-9D2D-A2DD0DF7CD79}"
 EndProject
@@ -534,6 +532,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.csproj", "{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.Tests\Masa.Contrib.Authentication.Identity.Tests.csproj", "{1527C989-514E-4066-9FE0-BF4289D31CB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1095,14 +1095,6 @@ Global
 		{DF784809-63B1-44EF-802E-CCCB1FFAA557}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF784809-63B1-44EF-802E-CCCB1FFAA557}.Release|x64.ActiveCfg = Release|Any CPU
 		{DF784809-63B1-44EF-802E-CCCB1FFAA557}.Release|x64.Build.0 = Release|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Debug|x64.Build.0 = Debug|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Release|Any CPU.Build.0 = Release|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Release|x64.ActiveCfg = Release|Any CPU
-		{06381F61-2C55-4322-9417-EA14F5F0E467}.Release|x64.Build.0 = Release|Any CPU
 		{A59E1EA1-9F5D-486E-9D2D-A2DD0DF7CD79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A59E1EA1-9F5D-486E-9D2D-A2DD0DF7CD79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A59E1EA1-9F5D-486E-9D2D-A2DD0DF7CD79}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1887,6 +1879,14 @@ Global
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|x64.ActiveCfg = Release|Any CPU
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Release|x64.Build.0 = Release|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Debug|x64.Build.0 = Debug|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Release|x64.ActiveCfg = Release|Any CPU
+		{1527C989-514E-4066-9FE0-BF4289D31CB3}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2010,7 +2010,6 @@ Global
 		{3532E374-C922-4B79-93CA-2B0E4CC14FB9} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{DF784809-63B1-44EF-802E-CCCB1FFAA557} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{94D15C26-7204-4299-BC23-B89F5A0B0BF9} = {3198630F-C09B-40AE-B9A1-E79249296E48}
-		{06381F61-2C55-4322-9417-EA14F5F0E467} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{A59E1EA1-9F5D-486E-9D2D-A2DD0DF7CD79} = {191588CC-BDCB-4C23-AD8E-76391F8BD7B9}
 		{8C5FBB10-CFAE-482C-93E8-7E03303D7825} = {191588CC-BDCB-4C23-AD8E-76391F8BD7B9}
 		{0B6512C6-64F0-4403-B074-67F3B95341D7} = {8C5FBB10-CFAE-482C-93E8-7E03303D7825}
@@ -2150,6 +2149,7 @@ Global
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D} = {CFC8DE12-A06F-46E2-890A-6EC9400F17DA}
 		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
+		{1527C989-514E-4066-9FE0-BF4289D31CB3} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
