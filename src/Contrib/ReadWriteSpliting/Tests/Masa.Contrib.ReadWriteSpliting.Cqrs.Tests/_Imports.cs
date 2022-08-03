@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Dispatcher.Events;
+global using Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Commands;
+global using Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Queries;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Commands;
 global using Masa.Contrib.ReadWriteSpliting.Cqrs.Queries;
