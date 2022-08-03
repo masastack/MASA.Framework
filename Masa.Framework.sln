@@ -345,7 +345,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{55DCA34D-48CE-4D32-8515-B6583FA548AE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Benchmarks.csproj", "{5957E2B1-A517-4225-8517-71D3B0B29B90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks.csproj", "{5957E2B1-A517-4225-8517-71D3B0B29B90}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Mapping.Mapster", "src\Contrib\Data\Mapping\Masa.Contrib.Data.Mapping.Mapster\Masa.Contrib.Data.Mapping.Mapster.csproj", "{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96}"
 EndProject
@@ -413,7 +413,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Eve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests", "src\Contrib\Dispatcher\Tests\Scenes\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests\Masa.Contrib.Dispatcher.Events.OrderEqualBySaga.Tests.csproj", "{45A38571-F3B7-4F82-AD83-1BD9D74D27C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Benchmarks", "src\Contrib\Dispatcher\Tests\Benchmarks\Masa.Contrib.Dispatcher.Events.Benchmarks\Masa.Contrib.Dispatcher.Events.Benchmarks.csproj", "{32767187-B7F0-4A67-909D-C1FB6F940FCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Benchmarks", "src\Contrib\Dispatcher\Tests\Benchmarks\Masa.Contrib.Dispatcher.Events.Tests.Benchmarks\Masa.Contrib.Dispatcher.Events.Tests.Benchmarks.csproj", "{32767187-B7F0-4A67-909D-C1FB6F940FCC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{08FC046F-D74F-43A6-8755-25BFC443DA96}"
 EndProject
@@ -529,7 +529,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.Object
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Models", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.csproj", "{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.csproj", "{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}"
 EndProject

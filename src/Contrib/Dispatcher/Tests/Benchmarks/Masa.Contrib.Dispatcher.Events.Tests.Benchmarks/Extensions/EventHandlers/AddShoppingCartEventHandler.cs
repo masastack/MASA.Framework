@@ -1,9 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.Events.Benchmarks.Extensions.Events;
-
-namespace Masa.Contrib.Dispatcher.Events.Benchmarks.Extensions.EventHandlers;
+namespace Masa.Contrib.Dispatcher.Events.Tests.Benchmarks.Extensions.EventHandlers;
 
 public class AddShoppingCartEventHandler : IRequestHandler<AddShoppingCartEvent>
 {
