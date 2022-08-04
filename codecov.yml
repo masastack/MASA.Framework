@@ -1,0 +1,2 @@
+ignore:
+  - "**/Utils"  # ignore folders and all its contents

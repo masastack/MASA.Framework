@@ -16,14 +16,6 @@ jobs:
     - name: run a one-line script
       run: env
 
-    - name: setting dotnet version
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '6.0.x'
-        include-prerelease: true
-    - name: dependencies
-      run: git clone -b main https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
-
     - name: Configure sysctl limits
       run: |
         sudo swapoff -a
@@ -49,7 +41,7 @@ jobs:
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
     
     - name: test
-      run: dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+      run: dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
       uses: codecov/codecov-action@v2

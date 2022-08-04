@@ -1,16 +1,16 @@
 [中](README.zh-CN.md) | EN
 
-[![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
+[![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
 
-# MASA.Contrib
+# MASA.Framework
 
-The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks) to provide open, community driven reusable components for building mesh applications.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
+Provide open, community driven reusable components for building modern applications. These components will be used by the MASA Stack and MASA Labs projects.  These components will be used by the [MASA Stack](https://github.com/masastack) and [MASA Labs](https://github.com/masalabs) projects.
 
 
 
 ## Roadmap
-* [Release Notes](https://github.com/masastack/MASA.Contrib/releases)
-* [Latest Roadmap](https://github.com/masastack/MASA.Contrib/issues/42)
+* [Release Notes](https://github.com/masastack/MASA.Framework/releases)
+* [Latest Roadmap](https://github.com/masastack/MASA.Framework/issues/42)
 
 
 
@@ -66,7 +66,7 @@ The purpose of MASA.Contrib is based on [MASA.BuildingBlocks](https://github.com
 
 ## How to clone
 ````
-git clone --recursive https://github.com/masastack/MASA.Contrib.git
+git clone https://github.com/masastack/MASA.Framework.git
 ````
 
 
@@ -86,8 +86,8 @@ If you wish to contribute, please [Pull Request](https://github.com/masastack/MA
 
 Thanks to all the friends who have contributed to this project.
 
-<a href="https://github.com/masastack/MASA.Contrib/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=masastack/MASA.Contrib" />
+<a href="https://github.com/masastack/MASA.Framework/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=masastack/MASA.Framework" />
 </a>
 
 
