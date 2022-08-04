@@ -43,8 +43,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
-    <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests\Masa.Contrib.Configuration.AutoMap.NoArgumentConstructor.Tests.csproj" />
-    <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.AutoMap.Tests\Masa.Contrib.Configuration.AutoMap.Tests.csproj" />
+    <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.NoArgumentConstructor\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.NoArgumentConstructor.csproj" />
+    <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.csproj" />
   </ItemGroup>
 
 </Project>

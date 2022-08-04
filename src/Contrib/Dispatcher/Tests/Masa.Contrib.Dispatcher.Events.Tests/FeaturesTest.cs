@@ -1,6 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameter.Events;
+using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.Events;
+using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.Events;
+using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.Events;
+using Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler.Events;
+
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -124,7 +130,7 @@ public class FeaturesTest : TestBase
         {
             try
             {
-                ResetMemoryEventBus(typeof(OnlyCancelHandler.Tests.Events.BindPhoneNumberEvent).Assembly);
+                ResetMemoryEventBus(typeof(BindPhoneNumberEvent).Assembly);
             }
             catch (NotSupportedException)
             {
