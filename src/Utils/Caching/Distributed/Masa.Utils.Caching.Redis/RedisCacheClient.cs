@@ -33,6 +33,12 @@ public class RedisCacheClient : IDistributedCacheClient
                 end
                 return count";
 
+    private const string GET_KEYS_SCRIPT = @"return redis.call('keys',@pattern)";
+    private const string GET_KEY_AND_VALUE_SCRIPT = " local ks = redis.call('KEYS', @keypattern) " +
+        " local result={}  " +
+        " for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end; " +
+        " return result";
+
     private const string ABSOLUTE_EXPIRATION_KEY = "absexp";
     private const string SLIDING_EXPIRATION_KEY = "sldexp";
     private const string DATA_KEY = "data";
@@ -296,6 +302,55 @@ public class RedisCacheClient : IDistributedCacheClient
         return await _db.KeyExistsAsync(key);
     }
 
+    /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    public List<string> GetKeys(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(GET_KEYS_SCRIPT);
+        var cacheResult = _db.ScriptEvaluate(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull)
+            return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    public async Task<List<string>> GetKeysAsync(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(GET_KEYS_SCRIPT);
+        var cacheResult = await _db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull)
+            return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    public Dictionary<string, T?> GetListByKeyPattern<T>(string keyPattern)
+    {
+        var arrayRedisResult = _db.ScriptEvaluate(
+            LuaScript.Prepare(GET_KEY_AND_VALUE_SCRIPT),
+            new { keypattern = keyPattern }).ToDictionary();
+
+        Dictionary<string, T?> dictionary = new();
+
+        foreach (var redisResult in arrayRedisResult)
+        {
+            var byteArray = (RedisValue[])redisResult.Value;
+            MapMetadata(byteArray, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
+            Refresh(redisResult.Key, absExpr, sldExpr);
+            dictionary.Add(redisResult.Key, ConvertToValue<T>(data));
+        }
+
+        return dictionary;
+    }
+
     /// <inheritdoc />
     public void Refresh(string key)
     {
@@ -403,18 +458,10 @@ end";
             results = _db.HashMemberGet(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY);
         }
 
-        if (results.Length >= 2)
-        {
-            MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr);
-            Refresh(key, absExpr, sldExpr);
-        }
+        MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
+        Refresh(key, absExpr, sldExpr);
 
-        if (results.Length >= 3 && results[2].HasValue)
-        {
-            return results[2];
-        }
-
-        return RedisValue.Null;
+        return data;
     }
 
     private async Task<RedisValue> GetAndRefreshAsync(string key, bool getData)
@@ -432,19 +479,9 @@ end";
             results = await _db.HashMemberGetAsync(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY).ConfigureAwait(false);
         }
 
-        // TODO: Error handling
-        if (results.Length >= 2)
-        {
-            MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr);
-            await RefreshAsync(key, absExpr, sldExpr).ConfigureAwait(false);
-        }
-
-        if (results.Length >= 3 && results[2].HasValue)
-        {
-            return results[2];
-        }
-
-        return RedisValue.Null;
+        MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out var data);
+        await RefreshAsync(key, absExpr, sldExpr).ConfigureAwait(false);
+        return data;
     }
 
     private void Refresh(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr)
@@ -501,20 +538,35 @@ end";
         }
     }
 
-    private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration)
+    private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration,
+        out RedisValue data)
     {
         absoluteExpiration = null;
         slidingExpiration = null;
-        var absoluteExpirationTicks = (long?)results[0];
-        if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NOT_PRESENT)
-        {
-            absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
-        }
+        data = RedisValue.Null;
 
-        var slidingExpirationTicks = (long?)results[1];
-        if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NOT_PRESENT)
+        for (int index = 0; index < results.Length; index += 2)
         {
-            slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+            if (results[index] == ABSOLUTE_EXPIRATION_KEY)
+            {
+                var absoluteExpirationTicks = (long?)results[index + 1];
+                if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NOT_PRESENT)
+                {
+                    absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+                }
+            }
+            else if (results[index] == SLIDING_EXPIRATION_KEY)
+            {
+                var slidingExpirationTicks = (long?)results[index + 1];
+                if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NOT_PRESENT)
+                {
+                    slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+                }
+            }
+            else if (results[index] == DATA_KEY)
+            {
+                data = results[index + 1];
+            }
         }
     }
 
