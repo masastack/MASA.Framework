@@ -6,16 +6,20 @@
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
     <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
-    <MasaUtilsPackageVersion>0.5.0</MasaUtilsPackageVersion>
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
     <DaprPackageVersion>1.5.0</DaprPackageVersion>
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>
     <MedallionDistributedLockPackageVersion>1.0.4</MedallionDistributedLockPackageVersion>
-	 
-	<OpenTelemetryVersion>1.3.0</OpenTelemetryVersion>
-	<OpenTelemetryContribVersion>1.0.0-beta2</OpenTelemetryContribVersion>
-	<OpenTelemetryInstrumentationVersion>1.0.0-rc9.3</OpenTelemetryInstrumentationVersion>
-	
+    <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
+    <FluentValidationAspNetCorePackageVersion>11.1.2</FluentValidationAspNetCorePackageVersion>
+    <StackExchangeRedisPackageVersion>2.2.4</StackExchangeRedisPackageVersion>
+    <NESTPackageVersion>7.17.4</NESTPackageVersion>
+    <IdentityPackageVersion>6.15.0</IdentityPackageVersion>
+
+    <OpenTelemetryVersion>1.3.0</OpenTelemetryVersion>
+    <OpenTelemetryContribVersion>1.0.0-beta2</OpenTelemetryContribVersion>
+    <OpenTelemetryInstrumentationVersion>1.0.0-rc9.3</OpenTelemetryInstrumentationVersion>
+
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>
     <Authors>masastack</Authors>
