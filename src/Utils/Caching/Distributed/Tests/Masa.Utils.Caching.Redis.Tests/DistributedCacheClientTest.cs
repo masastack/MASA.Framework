@@ -38,12 +38,23 @@ public class DistributedCacheClientTest
     }
 
     [TestMethod]
-    public void TestGetKeysReturnCountIs1()
+    public void TestGetListByKeyPatternReturnCountIs1()
     {
         _cacheClient.Set("test1", "test1:Result");
         _cacheClient.Set("redis1", "redis1");
         _cacheClient.Set("redis2", "redis2");
         var dictionary = _cacheClient.GetListByKeyPattern<string>("test*");
+        Assert.AreEqual(1, dictionary.Count);
+        Assert.IsTrue(dictionary["test1"] == "test1:Result");
+    }
+
+    [TestMethod]
+    public async Task TestGetListByKeyPatternAsyncReturnCountIs1()
+    {
+        _cacheClient.Set("test1", "test1:Result");
+        _cacheClient.Set("redis1", "redis1");
+        _cacheClient.Set("redis2", "redis2");
+        var dictionary = await _cacheClient.GetListByKeyPatternAsync<string>("test*");
         Assert.AreEqual(1, dictionary.Count);
         Assert.IsTrue(dictionary["test1"] == "test1:Result");
     }

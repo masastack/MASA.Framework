@@ -58,6 +58,14 @@ public interface IDistributedCacheClient : ICacheClient
     Dictionary<string, T?> GetListByKeyPattern<T>(string keyPattern);
 
     /// <summary>
+    /// Fuzzy query key-value pair collection based on key Pattern
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<Dictionary<string, T?>> GetListByKeyPatternAsync<T>(string keyPattern);
+
+    /// <summary>
     /// Subscribes to perform some operation when a change to the perferred/active node is broadcast.
     /// </summary>
     /// <param name="channel">The channel to subscribe to.</param>

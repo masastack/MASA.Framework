@@ -34,6 +34,7 @@ public class RedisCacheClient : IDistributedCacheClient
                 return count";
 
     private const string GET_KEYS_SCRIPT = @"return redis.call('keys',@pattern)";
+
     private const string GET_KEY_AND_VALUE_SCRIPT = " local ks = redis.call('KEYS', @keypattern) " +
         " local result={}  " +
         " for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end; " +
@@ -338,13 +339,37 @@ public class RedisCacheClient : IDistributedCacheClient
             LuaScript.Prepare(GET_KEY_AND_VALUE_SCRIPT),
             new { keypattern = keyPattern }).ToDictionary();
 
+        return GetListByKeyPatternCore<T?>(
+            arrayRedisResult,
+            (key, absExpr, sldExpr) =>
+            {
+                Refresh(key, absExpr, sldExpr);
+                return Task.CompletedTask;
+            });
+    }
+
+    public async Task<Dictionary<string, T?>> GetListByKeyPatternAsync<T>(string keyPattern)
+    {
+        var arrayRedisResult = (await _db.ScriptEvaluateAsync(
+            LuaScript.Prepare(GET_KEY_AND_VALUE_SCRIPT),
+            new { keypattern = keyPattern })).ToDictionary();
+
+        return GetListByKeyPatternCore<T?>(
+            arrayRedisResult,
+            async (key, absExpr, sldExpr) => await RefreshAsync(key, absExpr, sldExpr));
+    }
+
+    private Dictionary<string, T?> GetListByKeyPatternCore<T>(
+        Dictionary<string, RedisResult> arrayRedisResult,
+        Func<string, DateTimeOffset?, TimeSpan?, Task> func)
+    {
         Dictionary<string, T?> dictionary = new();
 
         foreach (var redisResult in arrayRedisResult)
         {
             var byteArray = (RedisValue[])redisResult.Value;
             MapMetadata(byteArray, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
-            Refresh(redisResult.Key, absExpr, sldExpr);
+            func.Invoke(redisResult.Key, absExpr, sldExpr);
             dictionary.Add(redisResult.Key, ConvertToValue<T>(data));
         }
 
