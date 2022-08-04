@@ -263,7 +263,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scenes", "Scenes", "{258E4702-B414-4629-BD37-CAEE20BE052B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.Tests.Scenes.AutoMap.NoArgumentConstructor", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.NoArgumentConstructor\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.NoArgumentConstructor.csproj", "{D901BE09-397A-4FEC-AF5F-2EF9C2EB2FF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor.csproj", "{D901BE09-397A-4FEC-AF5F-2EF9C2EB2FF7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.Tests.Scenes.AutoMap", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.csproj", "{A3637D23-8548-4665-B61B-A8F5B94837E0}"
 EndProject

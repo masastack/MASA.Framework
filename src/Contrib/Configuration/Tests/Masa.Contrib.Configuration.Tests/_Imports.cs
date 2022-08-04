@@ -3,6 +3,8 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.Contrib.Configuration.Tests.Config;
+global using Masa.Contrib.Configuration.Tests.Scenes.AutoMap;
+global using Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
