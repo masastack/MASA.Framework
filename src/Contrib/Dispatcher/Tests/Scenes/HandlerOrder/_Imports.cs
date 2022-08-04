@@ -3,4 +3,4 @@
 
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.Contrib.Dispatcher.Events.Enums;
-global using Masa.Contrib.Dispatcher.Events.HandlerOrder.Tests.Events;
+global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.Events;
