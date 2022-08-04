@@ -343,9 +343,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{17B751BF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Tests", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.csproj", "{0457B5A1-02D7-44FF-8FE6-468A456E2909}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmarks", "Benchmarks", "{55DCA34D-48CE-4D32-8515-B6583FA548AE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Benchmarks.csproj", "{5957E2B1-A517-4225-8517-71D3B0B29B90}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Perfs", "Perfs", "{55DCA34D-48CE-4D32-8515-B6583FA548AE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Mapping.Mapster", "src\Contrib\Data\Mapping\Masa.Contrib.Data.Mapping.Mapster\Masa.Contrib.Data.Mapping.Mapster.csproj", "{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96}"
 EndProject
@@ -521,17 +519,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Storage.Object
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Authentication.OpenIdConnect.Models", "src\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.csproj", "{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Benchmarks.csproj", "{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.csproj", "{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.Tests\Masa.Contrib.Authentication.Identity.Tests.csproj", "{1527C989-514E-4066-9FE0-BF4289D31CB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Benchmarks", "src\Contrib\Dispatcher\Tests\Masa.Contrib.Dispatcher.Events.Tests.Benchmarks\Masa.Contrib.Dispatcher.Events.Tests.Benchmarks.csproj", "{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Perfs", "src\Contrib\Dispatcher\Tests\Masa.Contrib.Dispatcher.Events.Tests.Perfs\Masa.Contrib.Dispatcher.Events.Tests.Perfs.csproj", "{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler", "src\Contrib\Dispatcher\Tests\Scenes\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler.csproj", "{7BEC0D57-4881-41FC-9E8B-39B618E736D8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder", "src\Contrib\Dispatcher\Tests\Scenes\Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder\Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.csproj", "{1E45F9CE-A6BB-4E54-B058-E165B77D2762}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Perfs\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs.csproj", "{2C964008-C8C5-4C80-8387-48B3B2CA84D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Perfs", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Perfs\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Perfs\Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Perfs.csproj", "{E350B685-5625-4985-8D79-B637D44DBCEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1309,14 +1309,6 @@ Global
 		{0457B5A1-02D7-44FF-8FE6-468A456E2909}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0457B5A1-02D7-44FF-8FE6-468A456E2909}.Release|x64.ActiveCfg = Release|Any CPU
 		{0457B5A1-02D7-44FF-8FE6-468A456E2909}.Release|x64.Build.0 = Release|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Debug|x64.Build.0 = Debug|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Release|x64.ActiveCfg = Release|Any CPU
-		{5957E2B1-A517-4225-8517-71D3B0B29B90}.Release|x64.Build.0 = Release|Any CPU
 		{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1837,14 +1829,6 @@ Global
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}.Release|x64.ActiveCfg = Release|Any CPU
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D}.Release|x64.Build.0 = Release|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Debug|x64.Build.0 = Debug|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|x64.ActiveCfg = Release|Any CPU
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B}.Release|x64.Build.0 = Release|Any CPU
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1885,6 +1869,22 @@ Global
 		{1E45F9CE-A6BB-4E54-B058-E165B77D2762}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E45F9CE-A6BB-4E54-B058-E165B77D2762}.Release|x64.ActiveCfg = Release|Any CPU
 		{1E45F9CE-A6BB-4E54-B058-E165B77D2762}.Release|x64.Build.0 = Release|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3}.Release|x64.Build.0 = Release|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Debug|x64.Build.0 = Debug|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Release|x64.ActiveCfg = Release|Any CPU
+		{E350B685-5625-4985-8D79-B637D44DBCEF}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2053,7 +2053,6 @@ Global
 		{17B751BF-DB79-46B0-A61E-BB8A52919AC9} = {FFEF958B-DA21-4552-86B6-87D9592A3668}
 		{0457B5A1-02D7-44FF-8FE6-468A456E2909} = {17B751BF-DB79-46B0-A61E-BB8A52919AC9}
 		{55DCA34D-48CE-4D32-8515-B6583FA548AE} = {17B751BF-DB79-46B0-A61E-BB8A52919AC9}
-		{5957E2B1-A517-4225-8517-71D3B0B29B90} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
 		{11038FB8-C0D1-4E98-8D5C-3F3CC7836C96} = {46FAD690-6764-41EA-B4C4-D9D5020C23CF}
 		{874CD160-F058-41A2-B99F-D3A0FEC78312} = {46FAD690-6764-41EA-B4C4-D9D5020C23CF}
 		{8E33F77D-E636-4965-87E4-00FC3823F44B} = {874CD160-F058-41A2-B99F-D3A0FEC78312}
@@ -2141,12 +2140,13 @@ Global
 		{4231AB12-3FB7-408E-B7C2-9CC0FFB710B1} = {1B2FF31A-187A-4D36-AD81-1ABD9BCF9044}
 		{C65638DC-2418-4453-917F-9FA8D068594E} = {4231AB12-3FB7-408E-B7C2-9CC0FFB710B1}
 		{9A4E38CC-7B7E-4F7B-904A-B0933F3CC22D} = {CFC8DE12-A06F-46E2-890A-6EC9400F17DA}
-		{7C20D657-DBAB-4CD7-931A-40FF0BC11D3B} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{1527C989-514E-4066-9FE0-BF4289D31CB3} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{A0B995F8-8C73-4885-8C9E-BAFD071B0A58} = {DAF45769-BCA5-43D6-8F04-DE7B2B98DB25}
 		{7BEC0D57-4881-41FC-9E8B-39B618E736D8} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{1E45F9CE-A6BB-4E54-B058-E165B77D2762} = {08B138B5-2599-4F42-9584-6AE736673882}
+		{2C964008-C8C5-4C80-8387-48B3B2CA84D3} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
+		{E350B685-5625-4985-8D79-B637D44DBCEF} = {55DCA34D-48CE-4D32-8515-B6583FA548AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

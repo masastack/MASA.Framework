@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events.Tests.Benchmarks.Extensions.Middleware;
+namespace Masa.Contrib.Dispatcher.Events.Tests.Perfs.Extensions.Middleware;
 
 public class LoggingMiddleware<TEvent> : Middleware<TEvent> where TEvent : notnull, IEvent
 {
