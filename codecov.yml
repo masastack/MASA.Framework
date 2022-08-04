@@ -1,2 +1,2 @@
 ignore:
-  - "src/Utils"  # ignore folders and all its contents
+  - "**/Utils"  # ignore folders and all its contents
