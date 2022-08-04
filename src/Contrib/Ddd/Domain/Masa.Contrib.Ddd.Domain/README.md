@@ -6,14 +6,14 @@ Example：
 
 ```c#
 Install-Package Masa.Contrib.Ddd.Domain
-Install-Package Masa.Contrib.Ddd.Domain.Repository.EntityFrameworkCore
+Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore
 
 Install-Package Masa.Contrib.Dispatcher.Events
 
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore
-Install-Package Masa.Contrib.Data.UoW.EF
-Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore
+Install-Package Masa.Contrib.Data.UoW.EFCore
+Install-Package Masa.Contrib.Data.EFCore.SqlServer
 ```
 
 1. Add DomainEventBus

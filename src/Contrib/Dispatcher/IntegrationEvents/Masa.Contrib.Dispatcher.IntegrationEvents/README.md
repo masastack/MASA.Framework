@@ -7,8 +7,8 @@ Example:
 ``` C#
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //Use cross-process
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //For example, use dapr to provide pub and sub capabilities, or you can choose other implementations by yourself
-Install-Package Masa.Contrib.Data.UoW.EF //Use UnitOfWork
-Install-Package Masa.Contrib.Data.EntityFrameworkCore.SqlServer // Use SqlServer
+Install-Package Masa.Contrib.Data.UoW.EFCore //Use UnitOfWork
+Install-Package Masa.Contrib.Data.EFCore.SqlServer // Use SqlServer
 ```
 
 1. Add IIntegrationEventBus
@@ -28,10 +28,10 @@ builder.Services
 
 1.2 Use the provided EF version of the local message service
 
-Install `Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore`
+Install `Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore`
 
 ``` C#
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EntityFrameworkCore //Record cross-process message log
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore //Record cross-process message log
 ```
 
 ``` C#
