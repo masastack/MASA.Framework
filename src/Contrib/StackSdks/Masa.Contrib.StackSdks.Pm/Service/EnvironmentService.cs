@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Pm.Model;
-using Masa.BuildingBlocks.StackSdks.Pm.Service;
-
 namespace Masa.Contrib.StackSdks.Pm.Service;
 
 public class EnvironmentService : IEnvironmentService
