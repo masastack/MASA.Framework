@@ -33,12 +33,12 @@ public class RedisCacheClient : IDistributedCacheClient
                 end
                 return count";
 
-    private const string GET_KEYS_SCRIPT = @"return redis.call('keys',@pattern)";
+    private const string GET_KEYS_SCRIPT = @"return redis.call('keys', @pattern)";
 
-    private const string GET_KEY_AND_VALUE_SCRIPT = " local ks = redis.call('KEYS', @keypattern) " +
-        " local result={}  " +
-        " for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end; " +
-        " return result";
+    private const string GET_KEY_AND_VALUE_SCRIPT = @"local ks = redis.call('KEYS', @keypattern)
+        local result = {}
+        for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
+        return result";
 
     private const string ABSOLUTE_EXPIRATION_KEY = "absexp";
     private const string SLIDING_EXPIRATION_KEY = "sldexp";
