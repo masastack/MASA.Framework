@@ -7,6 +7,8 @@ public class MasaException : Exception
 {
     public string? ErrorCode { get; set; }
 
+    public object[] Parameters { get; set; }
+
     public MasaException()
     {
     }
@@ -16,7 +18,19 @@ public class MasaException : Exception
     {
     }
 
-    public MasaException(string message, Exception innerException)
+    public MasaException(string errorCode, params object[] parameters)
+        : this(null, errorCode, parameters)
+    {
+    }
+
+    public MasaException(Exception? innerException, string errorCode, params object[] parameters)
+        : base(null, innerException)
+    {
+        ErrorCode = errorCode;
+        Parameters = parameters;
+    }
+
+    public MasaException(string message, Exception? innerException)
         : base(message, innerException)
     {
     }
