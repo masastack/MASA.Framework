@@ -43,32 +43,19 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IAppPortProvider, DefaultAppPortProvider>();
         action.Invoke();
+        if (isDelay)
+            return services.AddHostedService<DaprBackgroundService>();
+
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
-        string appId = string.Empty;
-        services.Configure<AppConfig>(appConfig =>
-        {
-            if (string.IsNullOrEmpty(appConfig.AppId) && !string.IsNullOrEmpty(appId))
-                appConfig.AppId = appId;
-        });
-        if (isDelay)
-        {
-            options.OnChange(daprOptions =>
-            {
-                appId = daprOptions.GetAppId();
-            });
-            return services.AddHostedService<DaprBackgroundService>();
-        }
 
         ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort, nameof(options.CurrentValue.AppPort));
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
         options.OnChange(daprOptions =>
         {
-            appId = daprOptions.GetAppId();
             daprProcess.Refresh(daprOptions);
         });
         daprProcess.Start(options.CurrentValue);
-        appId = options.CurrentValue.GetAppId();
         CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
         return services;
     }

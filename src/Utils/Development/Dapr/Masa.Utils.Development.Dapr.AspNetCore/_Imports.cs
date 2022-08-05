@@ -3,7 +3,6 @@
 
 global using Masa.Utils.Development.Dapr;
 global using Masa.Utils.Development.Dapr.AspNetCore;
-global using Masa.Utils.Models.Config;
 global using Microsoft.AspNetCore.Hosting.Server;
 global using Microsoft.AspNetCore.Hosting.Server.Features;
 global using Microsoft.Extensions.Configuration;

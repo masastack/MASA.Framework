@@ -3,14 +3,7 @@
 
 namespace Masa.Utils.Models.Config;
 
-/// <summary>
-/// Apply global configuration
-/// </summary>
 public class AppConfig
 {
-    public string? AppId { get; set; }
-
-    public string? Environment { get; set; }
-
-    public string? Cluster { get; set; }
+    public string AppId { get; set; } = string.Empty;
 }
