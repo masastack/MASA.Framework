@@ -221,7 +221,7 @@ public class UserServiceTest
     {
         var userId = Guid.NewGuid();
         var data = new StaffDetailModel();
-        var requestUri = $"api/staff/getExternalByUserId";
+        var requestUri = $"api/staff/getDetailByUserId";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -317,6 +317,25 @@ public class UserServiceTest
         var userService = new UserService(caller.Object, userContext.Object);
         await userService.UpdateBasicInfoAsync(user);
         caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestUpdateStaffBasicInfoAsync()
+    {
+        var staff = new UpdateStaffBasicInfoModel
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = "test",
+            Gender = GenderTypes.Male,
+            PhoneNumber = "15168440403"
+        };
+        var requestUri = $"api/staff/updateBasicInfo";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PutAsync(requestUri, staff, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.UpdateStaffBasicInfoAsync(staff);
+        caller.Verify(provider => provider.PutAsync(requestUri, staff, true, default), Times.Once);
     }
 
     [TestMethod]
@@ -428,7 +447,7 @@ public class UserServiceTest
             new UserSimpleModel(Guid.NewGuid(), "account", "displayName")
         };
         var accounts = new List<string> { "account" };
-        var requestUri = $"api/user/GetListByAccount";
+        var requestUri = $"api/user/getListByAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
