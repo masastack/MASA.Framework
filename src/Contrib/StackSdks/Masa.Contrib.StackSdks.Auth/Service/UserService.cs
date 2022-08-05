@@ -100,11 +100,11 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, StaffDetailModel>(requestUri, new { userId });
     }
 
-    public async Task VisitedAsync(string url)
+    public async Task VisitedAsync(string appId, string url)
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/visit";
-        await _caller.PostAsync<object>(requestUri, new { UserId = userId, Url = url }, true);
+        await _caller.PostAsync<object>(requestUri, new { UserId = userId, appId = appId, Url = url }, true);
     }
 
     public async Task<List<UserVisitedModel>> GetVisitedListAsync()

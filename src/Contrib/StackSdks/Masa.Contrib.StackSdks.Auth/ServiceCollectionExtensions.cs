@@ -21,7 +21,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
-
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
