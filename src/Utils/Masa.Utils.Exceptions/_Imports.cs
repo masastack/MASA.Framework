@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.Utils.Exceptions;
-global using Masa.Utils.Exceptions.Handlers;
 global using Masa.Utils.Exceptions.Internal;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Mvc;
