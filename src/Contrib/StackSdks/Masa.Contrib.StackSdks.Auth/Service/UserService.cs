@@ -96,7 +96,7 @@ public class UserService : IUserService
     public async Task<StaffDetailModel?> GetCurrentStaffAsync()
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/staff/getExternalByUserId";
+        var requestUri = $"api/staff/getDetailByUserId";
         return await _caller.GetAsync<object, StaffDetailModel>(requestUri, new { userId });
     }
 
@@ -134,6 +134,12 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, user);
     }
 
+    public async Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel staff)
+    {
+        var requestUri = $"api/staff/updateBasicInfo";
+        await _caller.PutAsync(requestUri, staff);
+    }
+
     public async Task<List<UserPortraitModel>> GetUserPortraitsAsync(params Guid[] userIds)
     {
         var requestUri = $"api/user/portraits";
@@ -165,8 +171,8 @@ public class UserService : IUserService
 
     public async Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts)
     {
-        var requestUri = $"api/user/GetListByAccount";
-        return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts }) ?? new();
+        var requestUri = $"api/user/getListByAccount";
+        return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
     }
 }
 

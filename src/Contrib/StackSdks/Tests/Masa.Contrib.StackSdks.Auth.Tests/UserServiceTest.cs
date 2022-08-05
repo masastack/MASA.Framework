@@ -320,6 +320,25 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestUpdateStaffBasicInfoAsync()
+    {
+        var staff = new UpdateStaffBasicInfoModel
+        {
+            Id = Guid.NewGuid(),
+            DisplayName = "test",
+            Gender = GenderTypes.Male,
+            PhoneNumber = "15168440403"
+        };
+        var requestUri = $"api/staff/updateBasicInfo";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PutAsync(requestUri, staff, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.UpdateStaffBasicInfoAsync(staff);
+        caller.Verify(provider => provider.PutAsync(requestUri, staff, true, default), Times.Once);
+    }
+
+    [TestMethod]
     public async Task GetUserPortraitsAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
