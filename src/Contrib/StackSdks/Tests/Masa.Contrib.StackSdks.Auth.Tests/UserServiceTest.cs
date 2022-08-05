@@ -221,7 +221,7 @@ public class UserServiceTest
     {
         var userId = Guid.NewGuid();
         var data = new StaffDetailModel();
-        var requestUri = $"api/staff/getListByUserId";
+        var requestUri = $"api/staff/getDetailByUserId";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
