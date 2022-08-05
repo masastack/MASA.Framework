@@ -41,7 +41,7 @@ jobs:
       run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
     
     - name: test
-      run: dotnet test --filter (FullyQualifiedName!~Masa.Utils) & (FullyQualifiedName!~Masa.BuildingBlocks) --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+      run: dotnet test --filter FullyQualifiedName!~Masa.Utils & FullyQualifiedName!~Masa.BuildingBlocks --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
       uses: codecov/codecov-action@v2
