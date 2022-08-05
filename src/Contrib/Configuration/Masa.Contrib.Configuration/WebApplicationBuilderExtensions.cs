@@ -5,6 +5,26 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class WebApplicationBuilderExtensions
 {
+    public static WebApplicationBuilder InitializeAppConfiguration(this WebApplicationBuilder builder)
+    {
+        var configuration = builder.Configuration;
+        builder.Services.Configure<MasaAppConfigureOptions>(options =>
+        {
+            if (string.IsNullOrWhiteSpace(options.AppId))
+                options.AppId = configuration.GetConfigurationValue(nameof(MasaAppConfigureOptions.AppId),
+                    () => (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(".", "-"));
+
+            if (string.IsNullOrWhiteSpace(options.Environment))
+                options.Environment = configuration.GetConfigurationValue("ASPNETCORE_ENVIRONMENT",
+                    () => "Production");
+
+            if (string.IsNullOrWhiteSpace(options.Cluster))
+                options.Environment = configuration.GetConfigurationValue(nameof(MasaAppConfigureOptions.Cluster),
+                    () => "Default");
+        });
+        return builder;
+    }
+
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate = null)
