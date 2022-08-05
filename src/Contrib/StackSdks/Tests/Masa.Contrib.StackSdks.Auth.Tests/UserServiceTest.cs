@@ -221,7 +221,7 @@ public class UserServiceTest
     {
         var userId = Guid.NewGuid();
         var data = new StaffDetailModel();
-        var requestUri = $"api/staff/getExternalByUserId";
+        var requestUri = $"api/staff/getListByUserId";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -447,7 +447,7 @@ public class UserServiceTest
             new UserSimpleModel(Guid.NewGuid(), "account", "displayName")
         };
         var accounts = new List<string> { "account" };
-        var requestUri = $"api/user/GetListByAccount";
+        var requestUri = $"api/user/getListByAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
