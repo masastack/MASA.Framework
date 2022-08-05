@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration;
 
-public static class MasaConfigurationExtensions
+public static class MasaConfigurationBuilderExtensions
 {
     public static void UseMasaOptions(this IMasaConfigurationBuilder builder, Action<MasaRelationOptions> options)
     {

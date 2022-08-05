@@ -6,21 +6,41 @@ namespace Microsoft.AspNetCore.Builder;
 public static class WebApplicationBuilderExtensions
 {
     public static WebApplicationBuilder InitializeAppConfiguration(this WebApplicationBuilder builder)
+        => builder.InitializeAppConfiguration(null);
+
+    public static WebApplicationBuilder InitializeAppConfiguration(
+        this WebApplicationBuilder builder,
+        Action<MasaAppConfigureOptionsRelation>? action)
     {
-        var configuration = builder.Configuration;
+        if (builder.Services.Any(service => service.ImplementationType == typeof(InitializeAppConfigurationProvider)))
+            return builder;
+
+        builder.Services.AddSingleton<InitializeAppConfigurationProvider>();
+
+        MasaAppConfigureOptionsRelation optionsRelation = new();
+        action?.Invoke(optionsRelation);
+        IConfiguration configuration = builder.Configuration;
+        bool isInitialize = false;
         builder.Services.Configure<MasaAppConfigureOptions>(options =>
         {
+            if (!isInitialize)
+            {
+                var masaConfiguration = builder.Services.BuildServiceProvider().GetService<IMasaConfiguration>();
+                if (masaConfiguration != null) configuration = masaConfiguration.Local;
+                isInitialize = true;
+            }
+
             if (string.IsNullOrWhiteSpace(options.AppId))
-                options.AppId = configuration.GetConfigurationValue(nameof(MasaAppConfigureOptions.AppId),
-                    () => (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(".", "-"));
+                options.AppId = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.AppId)],
+                    () => optionsRelation.DataDefaultValue[nameof(options.AppId)]);
 
             if (string.IsNullOrWhiteSpace(options.Environment))
-                options.Environment = configuration.GetConfigurationValue("ASPNETCORE_ENVIRONMENT",
-                    () => "Production");
+                options.Environment = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.Environment)],
+                    () => optionsRelation.DataDefaultValue[nameof(options.Environment)]);
 
             if (string.IsNullOrWhiteSpace(options.Cluster))
-                options.Environment = configuration.GetConfigurationValue(nameof(MasaAppConfigureOptions.Cluster),
-                    () => "Default");
+                options.Cluster = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.Cluster)],
+                    () => optionsRelation.DataDefaultValue[nameof(options.Cluster)]);
         });
         return builder;
     }
@@ -58,6 +78,8 @@ public static class WebApplicationBuilderExtensions
         Action<IMasaConfigurationBuilder>? configureDelegate,
         Action<ConfigurationOptions>? action)
     {
+        builder.InitializeAppConfiguration();
+
         IConfigurationRoot masaConfiguration =
             builder.Services.CreateMasaConfiguration(
                 configureDelegate,
@@ -77,4 +99,9 @@ public static class WebApplicationBuilderExtensions
 
     public static IMasaConfiguration GetMasaConfiguration(this WebApplicationBuilder builder)
         => builder.Services.BuildServiceProvider().GetRequiredService<IMasaConfiguration>();
+
+    private class InitializeAppConfigurationProvider
+    {
+
+    }
 }
