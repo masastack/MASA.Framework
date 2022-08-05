@@ -160,7 +160,7 @@ public class UserService : IUserService
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/GetUserSystemData";
         var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
-        return JsonSerializer.Deserialize<T>(data);
+        return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
 
     public async Task<bool> DisableUserAsync(DisableUserModel user)
