@@ -2,9 +2,9 @@
 
 [![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
 
-# MASA.Contrib
+# MASA.Framework
 
-MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MASA Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。
+NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
 
 
 
