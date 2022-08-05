@@ -1,14 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.EventBus.IntegrationTests.Application.Command;
-using Masa.EventBus.IntegrationTests.Application.Events;
-using Masa.EventBus.IntegrationTests.Application.Queries;
-using Masa.EventBus.IntegrationTests.Domain.Aggregate;
-using Masa.EventBus.IntegrationTests.Infrastructure;
-using Masa.EventBus.IntegrationTests.Infrastructure.Extensions;
-using Masa.EventBus.IntegrationTests.Infrastructure.Middleware;
-
 namespace Masa.EventBus.IntegrationTests;
 
 [TestClass]
