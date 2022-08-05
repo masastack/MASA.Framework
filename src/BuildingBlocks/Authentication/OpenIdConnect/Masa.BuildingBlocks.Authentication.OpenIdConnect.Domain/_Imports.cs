@@ -9,3 +9,4 @@ global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using System.Linq.Expressions;
+global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Utils;
