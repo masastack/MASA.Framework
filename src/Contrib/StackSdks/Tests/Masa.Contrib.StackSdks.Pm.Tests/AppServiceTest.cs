@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Pm.Model;
-
 namespace Masa.Contrib.StackSdks.Pm.Tests;
 
 [TestClass]
@@ -180,5 +178,42 @@ public class AppServiceTest
         caller.Verify(provider => provider.GetAsync<AppDetailModel>(requestUri, default), Times.Once);
 
         Assert.IsNotNull(result);
+    }
+
+    [TestMethod]
+    [DataRow(AppTypes.UI)]
+    public async Task TestGetListByAppTypes(params AppTypes[] appTypes)
+    {
+        var data = new List<AppDetailModel>
+        {
+            new AppDetailModel()
+        };
+
+        var requestUri = $"open-api/app/by-types";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<AppTypes[], List<AppDetailModel>>(requestUri, appTypes, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
+
+        var result = await pmCaching.AppService.GetListByAppTypes(appTypes);
+        caller.Verify(provider => provider.PostAsync<AppTypes[], List<AppDetailModel>>(requestUri, appTypes, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 1);
+    }
+
+    [TestMethod]
+    [DataRow(AppTypes.UI)]
+    public async Task TestGetListByAppTypes1(params AppTypes[] appTypes)
+    {
+        List<AppDetailModel>? data = null;
+
+        var requestUri = $"open-api/app/by-types";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<AppTypes[], List<AppDetailModel>>(It.IsAny<string>(), appTypes, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
+
+        var result = await pmCaching.AppService.GetListByAppTypes(appTypes);
+        caller.Verify(provider => provider.PostAsync<AppTypes[], List<AppDetailModel>>(requestUri, appTypes, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 0);
     }
 }

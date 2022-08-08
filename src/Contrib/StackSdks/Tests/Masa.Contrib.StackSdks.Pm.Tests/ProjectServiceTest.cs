@@ -16,7 +16,7 @@ public class ProjectServiceTest
             new ProjectAppsModel(1, "", "", "", Guid.NewGuid())
         };
         string env = "development";
-        var requestUri = $"api/v1/projectwithapps/{env}";
+        var requestUri = $"open-api/projectwithapps/{env}";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<List<ProjectAppsModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var pmCaching = new PmClient(caller.Object);
@@ -31,7 +31,7 @@ public class ProjectServiceTest
     {
         List<ProjectAppsModel>? data = null;
         string env = "development";
-        var requestUri = $"api/v1/projectwithapps/{env}";
+        var requestUri = $"open-api/projectwithapps/{env}";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => (provider.GetAsync<List<ProjectAppsModel>>(It.IsAny<string>(), default))).ReturnsAsync(data)
             .Verifiable();
