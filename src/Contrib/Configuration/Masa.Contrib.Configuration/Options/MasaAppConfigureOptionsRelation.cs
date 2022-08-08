@@ -5,26 +5,25 @@ namespace Masa.BuildingBlocks.Configuration.Options;
 
 public class MasaAppConfigureOptionsRelation
 {
-    public Dictionary<string, string> DataVariables { get; }
-
-    public Dictionary<string, string> DataDefaultValue { get; }
+    public Dictionary<string, (string Variable, string DefaultValue)> Data { get; set; }
 
     public MasaAppConfigureOptionsRelation()
     {
-        DataVariables = new()
-        {
-            { nameof(MasaAppConfigureOptions.AppId), nameof(MasaAppConfigureOptions.AppId) },
-            { nameof(MasaAppConfigureOptions.Environment), "ASPNETCORE_ENVIRONMENT" },
-            { nameof(MasaAppConfigureOptions.Cluster), nameof(MasaAppConfigureOptions.Cluster) },
-        };
-        DataDefaultValue = new Dictionary<string, string>()
+        Data = new Dictionary<string, (string Variable, string DefaultValue)>()
         {
             {
                 nameof(MasaAppConfigureOptions.AppId),
-                (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(".", "-")
+                (nameof(MasaAppConfigureOptions.AppId),
+                    (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(".", "-"))
             },
-            { nameof(MasaAppConfigureOptions.Environment), "Production" },
-            { nameof(MasaAppConfigureOptions.Cluster), "Default" },
+            {
+                nameof(MasaAppConfigureOptions.Environment),
+                ("ASPNETCORE_ENVIRONMENT", "Production")
+            },
+            {
+                nameof(MasaAppConfigureOptions.Cluster),
+                (nameof(MasaAppConfigureOptions.Cluster), "Default")
+            }
         };
     }
 }

@@ -20,27 +20,27 @@ public static class WebApplicationBuilderExtensions
         MasaAppConfigureOptionsRelation optionsRelation = new();
         action?.Invoke(optionsRelation);
         IConfiguration configuration = builder.Configuration;
-        bool isInitialize = false;
+        bool initialized = false;
         builder.Services.Configure<MasaAppConfigureOptions>(options =>
         {
-            if (!isInitialize)
+            if (!initialized)
             {
                 var masaConfiguration = builder.Services.BuildServiceProvider().GetService<IMasaConfiguration>();
                 if (masaConfiguration != null) configuration = masaConfiguration.Local;
-                isInitialize = true;
+                initialized = true;
             }
 
             if (string.IsNullOrWhiteSpace(options.AppId))
-                options.AppId = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.AppId)],
-                    () => optionsRelation.DataDefaultValue[nameof(options.AppId)]);
+                options.AppId = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.AppId)].Variable,
+                    () =>  optionsRelation.Data[nameof(options.AppId)].DefaultValue);
 
             if (string.IsNullOrWhiteSpace(options.Environment))
-                options.Environment = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.Environment)],
-                    () => optionsRelation.DataDefaultValue[nameof(options.Environment)]);
+                options.Environment = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Environment)].Variable,
+                    () => optionsRelation.Data[nameof(options.Environment)].DefaultValue);
 
             if (string.IsNullOrWhiteSpace(options.Cluster))
-                options.Cluster = configuration.GetConfigurationValue(optionsRelation.DataVariables[nameof(options.Cluster)],
-                    () => optionsRelation.DataDefaultValue[nameof(options.Cluster)]);
+                options.Cluster = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Cluster)].Variable,
+                    () => optionsRelation.Data[nameof(options.Cluster)].DefaultValue);
         });
         return builder;
     }
