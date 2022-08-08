@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public class MachineClockIdGenerator : BaseIdGenerator, ISnowflakeGenerator
 {
-    public MachineClockIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
-        : base(workerProvider, idGeneratorOptions)
+    public MachineClockIdGenerator(IWorkerProvider workerProvider, SnowflakeGeneratorOptions snowflakeGeneratorOptions)
+        : base(workerProvider, snowflakeGeneratorOptions)
     {
         LastTimestamp = GetCurrentTimestamp();
     }

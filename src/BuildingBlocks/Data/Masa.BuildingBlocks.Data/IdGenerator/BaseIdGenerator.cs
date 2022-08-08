@@ -3,6 +3,10 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IGuidGenerator : IIdGenerator<Guid>
+public abstract class BaseIdGenerator<TOut> : IIdGenerator<TOut>
+    where TOut : notnull
 {
+    public abstract TOut NewId();
+
+    public virtual string NewStringId() => NewId().ToString()!;
 }

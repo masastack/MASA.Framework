@@ -9,11 +9,35 @@ public static class ServiceCollectionExtensions
         => services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAtEnd);
 
     public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, SequentialGuidType guidType)
+        => services.AddSequentialGuidGenerator(guidType, Options.Options.DefaultName);
+
+    public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, string name)
+        => services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAtEnd, name);
+
+    public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, SequentialGuidType guidType, string name)
     {
+        if (services.Any(service => service.ImplementationType == typeof(SequentialGuidGeneratorProvider)))
+            return services;
+
+        services.AddSingleton<SequentialGuidGeneratorProvider>();
+
         services.TryAddSingleton<ISequentialGuidGenerator>(_ => new SequentialGuidGenerator(guidType));
-        services.TryAddSingleton<IIdGenerator<System.SequentialGuid, Guid>>(serviceProvider
-            => serviceProvider.GetRequiredService<ISequentialGuidGenerator>());
-        IdGeneratorFactory.SetSequentialGuidGenerator(services.BuildServiceProvider().GetRequiredService<ISequentialGuidGenerator>());
+        services.AddSingleton<IIdGenerator<Guid>>(serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>());
+        services.AddSingleton<IIdGenerator, ISequentialGuidGenerator>();
+
+        services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
+        {
+            factoryOptions.Options.Add(new IdGeneratorRelationOptions(name)
+            {
+                Func = serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>()
+            });
+        });
+
         return services;
+    }
+
+    private class SequentialGuidGeneratorProvider
+    {
+
     }
 }

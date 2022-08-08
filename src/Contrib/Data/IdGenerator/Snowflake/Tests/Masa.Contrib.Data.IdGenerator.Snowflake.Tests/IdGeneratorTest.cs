@@ -45,7 +45,7 @@ public class IdGeneratorTest
             opt.EnableMachineClock = true;
         });
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         int count = 1;
         List<long> ids = new();
         while (count < 500000)
@@ -65,7 +65,7 @@ public class IdGeneratorTest
         var services = new ServiceCollection();
         services.AddSnowflake();
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         int count = 1;
         List<long> ids = new();
         while (count < 500000)
@@ -316,11 +316,11 @@ public class IdGeneratorTest
 
     private IWorkerProvider GetWorkerProvider(IServiceCollection? services, int workerIdBits = 10)
     {
-        var idGeneratorOptions = new IdGeneratorOptions(services ?? new ServiceCollection())
+        var snowflakeGeneratorOptions = new SnowflakeGeneratorOptions(services ?? new ServiceCollection())
         {
             WorkerIdBits = workerIdBits
         };
-        DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(idGeneratorOptions)
+        DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(snowflakeGeneratorOptions)
         {
             GetWorkerIdMinInterval = 0
         };

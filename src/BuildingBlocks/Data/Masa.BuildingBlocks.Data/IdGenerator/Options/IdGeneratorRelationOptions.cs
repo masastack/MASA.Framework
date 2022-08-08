@@ -3,6 +3,10 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IGuidGenerator : IIdGenerator<Guid>
+public class IdGeneratorRelationOptions : MasaRelationOptions<IIdGenerator>
 {
+    public IdGeneratorRelationOptions(string name)
+        : base(name)
+    {
+    }
 }
