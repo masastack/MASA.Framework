@@ -32,7 +32,7 @@ public static class WebApplicationBuilderExtensions
 
             if (string.IsNullOrWhiteSpace(options.AppId))
                 options.AppId = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.AppId)].Variable,
-                    () =>  optionsRelation.Data[nameof(options.AppId)].DefaultValue);
+                    () => optionsRelation.Data[nameof(options.AppId)].DefaultValue);
 
             if (string.IsNullOrWhiteSpace(options.Environment))
                 options.Environment = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Environment)].Variable,
