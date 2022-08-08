@@ -59,20 +59,22 @@ public class ApiResource : FullAggregateRoot<int, Guid>
 
     public void BindUserClaims(List<int> userClaims)
     {
-        _userClaims.Clear();
-        _userClaims.AddRange(userClaims.Select(id => new ApiResourceClaim(id)));
+        _userClaims = _userClaims.MergeBy(
+           userClaims.Select(userClaim => new ApiResourceClaim(userClaim)),
+           item => item.UserClaimId);
+    }
+
+    public void BindApiScopes(List<int> apiScopes)
+    {
+        _apiScopes = _apiScopes.MergeBy(
+           apiScopes.Select(apiScope => new ApiResourceScope(apiScope)),
+           item => item.ApiScopeId);
     }
 
     public void BindProperties(Dictionary<string, string> properties)
     {
         _properties.Clear();
         _properties.AddRange(properties.Select(property => new ApiResourceProperty(property.Key, property.Value)));
-    }
-
-    public void BindApiScopes(List<int> apiScopes)
-    {
-        _apiScopes.Clear();
-        _apiScopes.AddRange(apiScopes.Select(id => new ApiResourceScope(id)));
     }
 }
 

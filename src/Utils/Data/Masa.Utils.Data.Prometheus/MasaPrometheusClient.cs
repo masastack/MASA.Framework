@@ -6,50 +6,56 @@ namespace Masa.Utils.Data.Prometheus;
 
 internal class MasaPrometheusClient : IMasaPrometheusClient
 {
-    private readonly ICallerProvider _caller;
+    private readonly HttpClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly ILogger _logger;
+    private const string LABLES_URL = "/api/v1/labels";
+    private const string QUERY_URL = "/api/v1/query";
+    private const string QUERY_RANGE_URL = "/api/v1/query_range";
+    private const string SERIES_URL = "/api/v1/series";
+    private const string EXEMPLAR_URL = "/api/v1/query_exemplars";
+    private const string LABLE_VALUE_URL = "/api/v1/label/{0}/values";
 
-    public MasaPrometheusClient(ICallerProvider caller, JsonSerializerOptions jsonSerializerOptions)
+    public MasaPrometheusClient(HttpClient client, JsonSerializerOptions jsonSerializerOptions, ILogger<MasaPrometheusClient> logger)
     {
-        _caller = caller;
+        _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
+        _logger = logger;
     }
 
     public async Task<ExemplarResultResponse> ExemplarQueryAsync(QueryExemplarRequest query)
     {
-        return await QueryDataAsync<ExemplarResultResponse>("/api/v1/query_exemplars", query);
+        return await QueryDataAsync<ExemplarResultResponse>(EXEMPLAR_URL, query);
     }
 
     public async Task<LabelResultResponse> LabelsQueryAsync(MetaDataQueryRequest query)
     {
-        return await QueryDataAsync<LabelResultResponse>("/api/v1/labels", query);
+        return await QueryDataAsync<LabelResultResponse>(LABLES_URL, query);
     }
 
     public async Task<LabelResultResponse> LabelValuesQueryAsync(LableValueQueryRequest query)
     {
-        var name = query.Lable;
-        query.Lable = null;
-        return await QueryDataAsync<LabelResultResponse>($"/api/v1/label/{name}/values", query);
+        return await QueryDataAsync<LabelResultResponse>(string.Format(LABLE_VALUE_URL, query.Lable), query);
     }
 
     public async Task<QueryResultCommonResponse> QueryAsync(QueryRequest query)
     {
-        return await QueryDataAsync<QueryResultCommonResponse>("/api/v1/query", query);
+        return await QueryDataAsync<QueryResultCommonResponse>(QUERY_URL, query);
     }
 
     public async Task<QueryResultCommonResponse> QueryRangeAsync(QueryRangeRequest query)
     {
-        return await QueryDataAsync<QueryResultCommonResponse>("/api/v1/query_range", query);
+        return await QueryDataAsync<QueryResultCommonResponse>(QUERY_RANGE_URL, query);
     }
 
     public async Task<SeriesResultResponse> SeriesQueryAsync(MetaDataQueryRequest query)
     {
-        return await QueryDataAsync<SeriesResultResponse>("/api/v1/series", query);
+        return await QueryDataAsync<SeriesResultResponse>(SERIES_URL, query);
     }
 
     private async Task<T> QueryDataAsync<T>(string url, object data) where T : ResultBaseResponse
     {
-        var str = await _caller.GetAsync(url, data);
+        var str = await _client.GetAsync(url, data, _logger);
         if (string.IsNullOrEmpty(str))
             return default!;
 

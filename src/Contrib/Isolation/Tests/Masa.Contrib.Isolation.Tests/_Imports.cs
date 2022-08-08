@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data;
-global using Masa.BuildingBlocks.Data.Options;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation.Environment;
