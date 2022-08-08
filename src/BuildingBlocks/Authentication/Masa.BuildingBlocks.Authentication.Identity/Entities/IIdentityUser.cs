@@ -9,5 +9,5 @@ public interface IIdentityUser
 
     string? UserName { get; set; }
 
-    IEnumerable<IdentityRole<string>> Roles { get; set; }
+    string[] Roles { get; set; }
 }

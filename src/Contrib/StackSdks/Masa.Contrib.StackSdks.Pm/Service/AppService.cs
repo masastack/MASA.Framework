@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Pm.Model;
-using Masa.BuildingBlocks.StackSdks.Pm.Service;
-
 namespace Masa.Contrib.StackSdks.Pm.Service;
 
 public class AppService : IAppService
@@ -51,6 +48,14 @@ public class AppService : IAppService
     {
         var requestUri = $"api/v1/appWhitEnvCluster/{id}";
         var result = await _caller.GetAsync<AppDetailModel>(requestUri);
+
+        return result ?? new();
+    }
+
+    public async Task<List<AppDetailModel>> GetListByAppTypes(params AppTypes[] appTypes)
+    {
+        var requestUri = $"open-api/app/by-types";
+        var result = await _caller.PostAsync<AppTypes[], List<AppDetailModel>>(requestUri, appTypes);
 
         return result ?? new();
     }

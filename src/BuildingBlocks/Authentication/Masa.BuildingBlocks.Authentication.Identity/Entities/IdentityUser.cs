@@ -9,5 +9,5 @@ public class IdentityUser : IIdentityUser
 
     public string? UserName { get; set; }
 
-    public IEnumerable<IdentityRole<string>> Roles { get; set; } = new List<IdentityRole<string>>();
+    public string[] Roles { get; set; } = Array.Empty<string>();
 }

@@ -16,7 +16,7 @@ public class ProjectServiceTest
             new ProjectModel()
         };
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var requestUri = $"api/project/navigations?userId={userId}&environment=development";
+        var requestUri = $"api/project/navigations?userId={userId}";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IMultiEnvironmentUserContext>();

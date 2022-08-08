@@ -34,12 +34,12 @@ internal class DefaultUserContext : UserContext
             return null;
 
         var roleStr = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.Role);
-        var roles = new List<IdentityRole<string>>();
+        var roles = Array.Empty<string>();
         if (!string.IsNullOrWhiteSpace(roleStr))
         {
             try
             {
-                roles = JsonSerializer.Deserialize<List<IdentityRole<string>>>(roleStr) ?? roles;
+                roles = JsonSerializer.Deserialize<string[]>(roleStr) ?? roles;
             }
             catch (Exception e)
             {

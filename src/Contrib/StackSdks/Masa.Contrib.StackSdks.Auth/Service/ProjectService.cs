@@ -6,21 +6,20 @@ namespace Masa.Contrib.StackSdks.Auth.Service;
 public class ProjectService : IProjectService
 {
     readonly ICaller _caller;
-    readonly IMultiEnvironmentUserContext _multiEnvironmentUserContext;
+    readonly IUserContext _userContext;
 
     const string PARTY = "api/project/";
 
-    public ProjectService(ICaller caller, IMultiEnvironmentUserContext multiEnvironmentUserContext)
+    public ProjectService(ICaller caller, IUserContext userContext)
     {
         _caller = caller;
-        _multiEnvironmentUserContext = multiEnvironmentUserContext;
+        _userContext = userContext;
     }
 
     public async Task<List<ProjectModel>> GetGlobalNavigations()
     {
-        var userId = _multiEnvironmentUserContext.GetUserId<Guid>();
-        var environment = _multiEnvironmentUserContext.Environment ?? "";
-        var requestUri = $"{PARTY}navigations?userId={userId}&environment={environment}";
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"{PARTY}navigations?userId={userId}";
         return await _caller.GetAsync<List<ProjectModel>>(requestUri) ?? new();
     }
 }
