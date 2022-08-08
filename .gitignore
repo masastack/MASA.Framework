@@ -219,3 +219,4 @@ Thunbs.db
 #忽略nuget库 
 packages/
 .vscode/
+coverage.opencover.xml

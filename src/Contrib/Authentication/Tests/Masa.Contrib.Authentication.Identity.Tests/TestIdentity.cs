@@ -139,7 +139,7 @@ public class TestIdentity
                     new(ClaimType.DEFAULT_USER_ID, "1"),
                     new(ClaimType.DEFAULT_USER_NAME, "Jim"),
                     new(ClaimType.DEFAULT_TENANT_ID, "1"),
-                    new(ClaimType.DEFAULT_USER_ROLE, "[{ \"Name\": \"admin\",\"Id\": \"1\" }]")
+                    new(ClaimType.DEFAULT_USER_ROLE, "[\"roleId\"]")
                 })
             })
         };
@@ -176,7 +176,7 @@ public class TestIdentity
                     new(ClaimType.DEFAULT_USER_ID, "1"),
                     new(ClaimType.DEFAULT_USER_NAME, "Jim"),
                     new(ClaimType.DEFAULT_TENANT_ID, "1"),
-                    new(ClaimType.DEFAULT_USER_ROLE, "[{ \"Name\": \"admin\",\"Id\": \"1\" }]")
+                    new(ClaimType.DEFAULT_USER_ROLE, "[\"1\"]")
                 })
             })
         };
