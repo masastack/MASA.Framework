@@ -33,6 +33,13 @@ public class RedisCacheClient : IDistributedCacheClient
                 end
                 return count";
 
+    private const string GET_KEYS_SCRIPT = @"return redis.call('keys', @pattern)";
+
+    private const string GET_KEY_AND_VALUE_SCRIPT = @"local ks = redis.call('KEYS', @keypattern)
+        local result = {}
+        for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
+        return result";
+
     private const string ABSOLUTE_EXPIRATION_KEY = "absexp";
     private const string SLIDING_EXPIRATION_KEY = "sldexp";
     private const string DATA_KEY = "data";
@@ -296,6 +303,78 @@ public class RedisCacheClient : IDistributedCacheClient
         return await _db.KeyExistsAsync(key);
     }
 
+    /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    public List<string> GetKeys(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(GET_KEYS_SCRIPT);
+        var cacheResult = _db.ScriptEvaluate(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull)
+            return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    public async Task<List<string>> GetKeysAsync(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(GET_KEYS_SCRIPT);
+        var cacheResult = await _db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull) return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    public Dictionary<string, T?> GetListByKeyPattern<T>(string keyPattern)
+    {
+        var arrayRedisResult = _db.ScriptEvaluate(
+            LuaScript.Prepare(GET_KEY_AND_VALUE_SCRIPT),
+            new { keypattern = keyPattern }).ToDictionary();
+
+        return GetListByKeyPatternCore<T?>(
+            arrayRedisResult,
+            (key, absExpr, sldExpr) =>
+            {
+                Refresh(key, absExpr, sldExpr);
+                return Task.CompletedTask;
+            });
+    }
+
+    public async Task<Dictionary<string, T?>> GetListByKeyPatternAsync<T>(string keyPattern)
+    {
+        var arrayRedisResult = (await _db.ScriptEvaluateAsync(
+            LuaScript.Prepare(GET_KEY_AND_VALUE_SCRIPT),
+            new { keypattern = keyPattern })).ToDictionary();
+
+        return GetListByKeyPatternCore<T?>(
+            arrayRedisResult,
+            async (key, absExpr, sldExpr) => await RefreshAsync(key, absExpr, sldExpr));
+    }
+
+    private Dictionary<string, T?> GetListByKeyPatternCore<T>(
+        Dictionary<string, RedisResult> arrayRedisResult,
+        Func<string, DateTimeOffset?, TimeSpan?, Task> func)
+    {
+        Dictionary<string, T?> dictionary = new();
+
+        foreach (var redisResult in arrayRedisResult)
+        {
+            var byteArray = (RedisValue[])redisResult.Value;
+            MapMetadata(byteArray, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
+            func.Invoke(redisResult.Key, absExpr, sldExpr);
+            dictionary.Add(redisResult.Key, ConvertToValue<T>(data));
+        }
+
+        return dictionary;
+    }
+
     /// <inheritdoc />
     public void Refresh(string key)
     {
@@ -331,31 +410,25 @@ public class RedisCacheClient : IDistributedCacheClient
     /// <inheritdoc />
     public void Publish<T>(string channel, Action<SubscribeOptions<T>> setup)
     {
-        if (channel == null)
-            throw new ArgumentNullException(nameof(channel));
-
-        if (setup == null)
-            throw new ArgumentNullException(nameof(setup));
-
-        var options = new SubscribeOptions<T>();
-        setup.Invoke(options);
-
-        if (string.IsNullOrWhiteSpace(options.Key))
-            throw new ArgumentNullException(nameof(options.Key));
-
-        var message = JsonSerializer.Serialize(options);
-
-        _subscriber.Publish(channel, message);
+        PublishCore(channel, setup, (c, message) =>
+        {
+            _subscriber.Publish(c, message);
+            return Task.CompletedTask;
+        });
     }
 
     /// <inheritdoc />
     public async Task PublishAsync<T>(string channel, Action<SubscribeOptions<T>> setup)
     {
-        if (channel == null)
-            throw new ArgumentNullException(nameof(channel));
+        PublishCore(channel, setup, async (c, message) => await _subscriber.PublishAsync(c, message));
+        await Task.CompletedTask;
+    }
 
-        if (setup == null)
-            throw new ArgumentNullException(nameof(setup));
+    private void PublishCore<T>(string channel, Action<SubscribeOptions<T>> setup, Func<string, string, Task> func)
+    {
+        ArgumentNullException.ThrowIfNull(channel, nameof(channel));
+
+        ArgumentNullException.ThrowIfNull(setup, nameof(setup));
 
         var options = new SubscribeOptions<T>();
         setup.Invoke(options);
@@ -364,8 +437,7 @@ public class RedisCacheClient : IDistributedCacheClient
             throw new ArgumentNullException(nameof(options.Key));
 
         var message = JsonSerializer.Serialize(options);
-
-        await _subscriber.PublishAsync(channel, message);
+        func.Invoke(channel, message);
     }
 
     public async Task<long> HashIncrementAsync(string key, long value = 1L)
@@ -393,28 +465,13 @@ end";
         if (key == null)
             throw new ArgumentNullException(nameof(key));
 
-        RedisValue[] results;
-        if (getData)
-        {
-            results = _db.HashMemberGet(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY, DATA_KEY);
-        }
-        else
-        {
-            results = _db.HashMemberGet(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY);
-        }
+        var results = getData ? _db.HashMemberGet(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY, DATA_KEY) :
+            _db.HashMemberGet(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY);
 
-        if (results.Length >= 2)
-        {
-            MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr);
-            Refresh(key, absExpr, sldExpr);
-        }
+        MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
+        Refresh(key, absExpr, sldExpr);
 
-        if (results.Length >= 3 && results[2].HasValue)
-        {
-            return results[2];
-        }
-
-        return RedisValue.Null;
+        return data;
     }
 
     private async Task<RedisValue> GetAndRefreshAsync(string key, bool getData)
@@ -422,63 +479,41 @@ end";
         if (key == null)
             throw new ArgumentNullException(nameof(key));
 
-        RedisValue[] results;
-        if (getData)
-        {
-            results = await _db.HashMemberGetAsync(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY, DATA_KEY).ConfigureAwait(false);
-        }
-        else
-        {
-            results = await _db.HashMemberGetAsync(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY).ConfigureAwait(false);
-        }
+        var results = getData ?
+            await _db.HashMemberGetAsync(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY, DATA_KEY).ConfigureAwait(false) :
+            await _db.HashMemberGetAsync(key, ABSOLUTE_EXPIRATION_KEY, SLIDING_EXPIRATION_KEY).ConfigureAwait(false);
 
-        // TODO: Error handling
-        if (results.Length >= 2)
-        {
-            MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr);
-            await RefreshAsync(key, absExpr, sldExpr).ConfigureAwait(false);
-        }
-
-        if (results.Length >= 3 && results[2].HasValue)
-        {
-            return results[2];
-        }
-
-        return RedisValue.Null;
+        MapMetadata(results, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out var data);
+        await RefreshAsync(key, absExpr, sldExpr).ConfigureAwait(false);
+        return data;
     }
 
     private void Refresh(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr)
     {
-        if (key == null)
+        RefreshCore(key, absExpr, sldExpr, (k, expr) =>
         {
-            throw new ArgumentNullException(nameof(key));
-        }
-
-        // Note Refresh has no effect if there is just an absolute expiration (or neither).
-        if (sldExpr.HasValue)
-        {
-            TimeSpan? expr;
-            if (absExpr.HasValue)
-            {
-                var relExpr = absExpr.Value - DateTimeOffset.Now;
-                expr = relExpr <= sldExpr.Value ? relExpr : sldExpr;
-            }
-            else
-            {
-                expr = sldExpr;
-            }
-
-            _db.KeyExpire(key, expr);
-            // TODO: Error handling
-        }
+            _db.KeyExpire(k, expr);
+            return Task.CompletedTask;
+        });
     }
 
     private async Task RefreshAsync(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr, CancellationToken token = default)
     {
-        if (key == null)
+        RefreshCore(key, absExpr, sldExpr, async (k, expr) =>
         {
-            throw new ArgumentNullException(nameof(key));
-        }
+            await _db.KeyExpireAsync(k, expr).ConfigureAwait(false);
+        }, token);
+        await Task.CompletedTask;
+    }
+
+    private void RefreshCore(
+        string key,
+        DateTimeOffset? absExpr,
+        TimeSpan? sldExpr,
+        Func<string, TimeSpan?, Task> func,
+        CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(key, nameof(key));
 
         token.ThrowIfCancellationRequested();
 
@@ -496,25 +531,39 @@ end";
                 expr = sldExpr;
             }
 
-            await _db.KeyExpireAsync(key, expr).ConfigureAwait(false);
-            // TODO: Error handling
+            func.Invoke(key, expr);
         }
     }
 
-    private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration)
+    private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration,
+        out RedisValue data)
     {
         absoluteExpiration = null;
         slidingExpiration = null;
-        var absoluteExpirationTicks = (long?)results[0];
-        if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NOT_PRESENT)
-        {
-            absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
-        }
+        data = RedisValue.Null;
 
-        var slidingExpirationTicks = (long?)results[1];
-        if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NOT_PRESENT)
+        for (int index = 0; index < results.Length; index += 2)
         {
-            slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+            if (results[index] == ABSOLUTE_EXPIRATION_KEY)
+            {
+                var absoluteExpirationTicks = (long?)results[index + 1];
+                if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NOT_PRESENT)
+                {
+                    absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+                }
+            }
+            else if (results[index] == SLIDING_EXPIRATION_KEY)
+            {
+                var slidingExpirationTicks = (long?)results[index + 1];
+                if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NOT_PRESENT)
+                {
+                    slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+                }
+            }
+            else if (results[index] == DATA_KEY)
+            {
+                data = results[index + 1];
+            }
         }
     }
 

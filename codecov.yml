@@ -1,0 +1,3 @@
+ignore:
+  - "**/Utils"  # ignore folders and all its contents
+  - "**/BuildingBlocks"  # ignore folders and all its contents
