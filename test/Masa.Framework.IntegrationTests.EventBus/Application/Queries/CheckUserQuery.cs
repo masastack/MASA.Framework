@@ -1,11 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.EventBus.IntegrationTests.Application.Queries;
+namespace Masa.Framework.IntegrationTests.EventBus.Application.Queries;
 
-public record UserAgeQuery : Query<int>
+public record CheckUserQuery : Query<bool>
 {
     public string Name { get; set; }
 
-    public override int Result { get; set; }
+    public override bool Result { get; set; }
 }

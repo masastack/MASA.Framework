@@ -1,11 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.EventBus.IntegrationTests.Application.Command;
+namespace Masa.Framework.IntegrationTests.EventBus.Application.Queries;
 
-public record RegisterUserCommand : BuildingBlocks.ReadWriteSpliting.Cqrs.Commands.Command
+public record UserAgeQuery : Query<int>
 {
     public string Name { get; set; }
 
-    public int Age { get; set; }
+    public override int Result { get; set; }
 }

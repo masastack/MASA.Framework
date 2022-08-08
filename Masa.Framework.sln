@@ -531,7 +531,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Perfs\Distributed.Redis.Tests.Perfs\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs.csproj", "{9EA05A47-B28A-4CD1-8058-00A2098ED0C2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.EventBus.IntegrationTests", "test\Masa.EventBus.IntegrationTests\Masa.EventBus.IntegrationTests.csproj", "{A9EED08B-6C1E-4409-9874-AA7D34102519}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Framework.IntegrationTests.EventBus", "test\Masa.Framework.IntegrationTests.EventBus\Masa.Framework.IntegrationTests.EventBus.csproj", "{A9EED08B-6C1E-4409-9874-AA7D34102519}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
