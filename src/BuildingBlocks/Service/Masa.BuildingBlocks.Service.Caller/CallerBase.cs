@@ -5,13 +5,16 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public abstract class CallerBase
 {
-    public virtual string Name { get; set; } = string.Empty;
+    /// <summary>
+    ///
+    /// </summary>
+    public virtual string? Name { get; set; }
 
     protected CallerOptions CallerOptions { get; private set; } = default!;
 
     private ICaller? _caller;
 
-    protected ICaller Caller => _caller ??= ServiceProvider.GetRequiredService<ICallerFactory>().Create(Name);
+    protected ICaller Caller => _caller ??= ServiceProvider.GetRequiredService<ICallerFactory>().Create(Name!);
 
     [Obsolete("CallerProvider has expired, please use Caller")]
     protected ICaller CallerProvider => Caller;
@@ -25,7 +28,6 @@ public abstract class CallerBase
     public void SetCallerOptions(CallerOptions options, string name)
     {
         CallerOptions = options;
-        if (string.IsNullOrEmpty(Name))
-            Name = name;
+        Name ??= name;
     }
 }

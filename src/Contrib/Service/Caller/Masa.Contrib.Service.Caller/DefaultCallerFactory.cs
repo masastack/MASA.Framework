@@ -11,12 +11,12 @@ internal class DefaultCallerFactory : ICallerFactory
     public DefaultCallerFactory(IServiceProvider serviceProvider, IOptions<CallerFactoryOptions> options)
     {
         _serviceProvider = serviceProvider;
-        _callers = options.Value.Callers;
+        _callers = options.Value.Options;
     }
 
     public ICaller Create()
     {
-        var caller = _callers.SingleOrDefault(c => c.IsDefault) ?? _callers.FirstOrDefault()!;
+        var caller = _callers.SingleOrDefault(c => c.Name == Options.DefaultName) ?? _callers.FirstOrDefault()!;
         return caller.Func.Invoke(_serviceProvider);
     }
 

@@ -14,8 +14,6 @@ public class CallerTest
         {
             opt.UseHttpClient(clientBuilder =>
             {
-                clientBuilder.Name = "http";
-                clientBuilder.IsDefault = true;
                 clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
             });
         });
@@ -33,14 +31,10 @@ public class CallerTest
         {
             opt.UseHttpClient(clientBuilder =>
             {
-                clientBuilder.Name = "http";
-                clientBuilder.IsDefault = true;
                 clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
             });
-            opt.UseDapr(clientBuilder =>
+            opt.UseDapr("dapr", _ =>
             {
-                clientBuilder.Name = "dapr";
-                clientBuilder.IsDefault = false;
             });
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -49,7 +43,7 @@ public class CallerTest
 
         caller = serviceProvider.GetRequiredService<ICallerFactory>().Create();
         var daprCaller = serviceProvider.GetRequiredService<ICallerFactory>().Create("dapr");
-        var httpCaller = serviceProvider.GetRequiredService<ICallerFactory>().Create("http");
+        var httpCaller = serviceProvider.GetRequiredService<ICallerFactory>().Create();
 
         Assert.IsTrue(caller.GetType().FullName != daprCaller.GetType().FullName);
         Assert.IsTrue(caller.GetType().FullName == httpCaller.GetType().FullName);
@@ -60,26 +54,19 @@ public class CallerTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        services.AddCaller(opt =>
-        {
-            opt.UseHttpClient(builder =>
-            {
-                builder.Name = "github";
-                builder.BaseAddress = "https://github.com/masastack";
-                builder.IsDefault = true;
-            });
-            opt.UseHttpClient(builder =>
-            {
-                builder.Name = "gitee";
-                builder.BaseAddress = "https://gitee.com/masastack";
-                builder.IsDefault = true;
-            });
-        });
-        var serviceProvider = services.BuildServiceProvider();
         Assert.ThrowsException<ArgumentException>(() =>
         {
-            var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<CallerFactoryOptions>>();
-            optionsFactory.Create(Options.DefaultName);
+            services.AddCaller(opt =>
+            {
+                opt.UseHttpClient(builder =>
+                {
+                    builder.BaseAddress = "https://github.com/masastack";
+                });
+                opt.UseHttpClient(builder =>
+                {
+                    builder.BaseAddress = "https://gitee.com/masastack";
+                });
+            });
         });
     }
 
@@ -91,18 +78,14 @@ public class CallerTest
         {
             opt.UseHttpClient(builder =>
             {
-                builder.Name = "gitee";
                 builder.BaseAddress = "https://gitee.com/masastack";
-                builder.IsDefault = true;
             });
         });
         services.AddCaller(opt =>
         {
             opt.UseHttpClient(builder =>
             {
-                builder.Name = "github";
                 builder.BaseAddress = "https://github.com/masastack";
-                builder.IsDefault = true;
             });
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -123,15 +106,11 @@ public class CallerTest
             {
                 opt.UseHttpClient(builder =>
                 {
-                    builder.Name = "github";
                     builder.BaseAddress = "https://github.com/masastack";
-                    builder.IsDefault = true;
                 });
                 opt.UseHttpClient(builder =>
                 {
-                    builder.Name = "github";
                     builder.BaseAddress = "https://github.com/masastack";
-                    builder.IsDefault = true;
                 });
             });
         });
@@ -141,23 +120,20 @@ public class CallerTest
     public void TestRepeatCallerName2()
     {
         IServiceCollection services = new ServiceCollection();
+        var callerName = "github";
         services.AddCaller(opt =>
         {
-            opt.UseHttpClient(builder =>
+            opt.UseHttpClient(callerName, builder =>
             {
-                builder.Name = "github";
                 builder.BaseAddress = "https://github.com/masastack";
-                builder.IsDefault = true;
             });
         });
 
         services.AddCaller(opt =>
         {
-            opt.UseHttpClient(builder =>
+            opt.UseHttpClient(callerName, builder =>
             {
-                builder.Name = "github";
                 builder.BaseAddress = "https://github.com/masastack";
-                builder.IsDefault = true;
             });
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -176,11 +152,9 @@ public class CallerTest
         {
             services.AddCaller(opt =>
             {
-                opt.UseHttpClient(builder =>
+                opt.UseHttpClient(typeof(GithubCaller).FullName!, builder =>
                 {
-                    builder.Name = typeof(GithubCaller).FullName!;
                     builder.BaseAddress = "https://github.com/masastack";
-                    builder.IsDefault = true;
                 });
             });
         });
@@ -194,21 +168,18 @@ public class CallerTest
         {
             opt.UseHttpClient(builder =>
             {
-                builder.Name = "masastack";
                 builder.BaseAddress = "https://github.com/masastack";
-                builder.IsDefault = true;
             });
         });
         services.AddCaller(opt =>
         {
-            opt.UseHttpClient(builder =>
+            opt.UseHttpClient("masastack2", builder =>
             {
-                builder.Name = "masastack2";
                 builder.BaseAddress = "https://github.com/masastack";
             });
         });
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create("masastack"));
+        Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create());
         Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create("masastack2"));
     }
 }

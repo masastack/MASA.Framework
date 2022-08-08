@@ -16,9 +16,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ``` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";// 当前Caller的别名，仅存在一个HttpClient时，可以不对Name赋值
             clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
     });
@@ -38,14 +37,12 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ``` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";
             clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("OrderCaller", clientBuilder =>
         {
-            clientBuilder.Name = "OrderCaller";
             clientBuilder.BaseAddress = "http://localhost:6000" ;
         });
     });

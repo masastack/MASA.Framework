@@ -16,9 +16,8 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";// The alias of the current Caller, when there is only one Provider, you can not assign a value to Name
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee dapr
         });
     });
@@ -38,14 +37,12 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee User service Dapr
         });
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("OrderCaller", clientBuilder =>
         {
-            clientBuilder.Name = "OrderCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee Order service Dapr
         });
     });

@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
