@@ -25,9 +25,9 @@ public class MasaApp
     public static TService? GetService<TService>(IServiceProvider serviceProvider)
         => serviceProvider.GetService<TService>();
 
-    public static TService? GetRequiredService<TService>() where TService : notnull
+    public static TService GetRequiredService<TService>() where TService : notnull
         => GetRequiredService<TService>(RootServices);
 
-    public static TService? GetRequiredService<TService>(IServiceProvider serviceProvider) where TService : notnull
+    public static TService GetRequiredService<TService>(IServiceProvider serviceProvider) where TService : notnull
         => serviceProvider.GetRequiredService<TService>();
 }
