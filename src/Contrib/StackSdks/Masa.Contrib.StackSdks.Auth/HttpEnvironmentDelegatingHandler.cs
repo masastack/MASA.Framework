@@ -5,22 +5,26 @@ namespace Masa.Contrib.StackSdks.Auth;
 
 public class HttpEnvironmentDelegatingHandler : DelegatingHandler
 {
-    readonly IHttpContextAccessor _httpContextAccessor;
     readonly IEnvironmentProvider _environmentProvider;
+    readonly IHttpContextAccessor _httpContextAccessor;
 
-    public HttpEnvironmentDelegatingHandler(IHttpContextAccessor httpContextAccessor, IEnvironmentProvider environmentProvider)
+    public HttpEnvironmentDelegatingHandler(IEnvironmentProvider environmentProvider,
+        IHttpContextAccessor httpContextAccessor)
     {
-        _httpContextAccessor = httpContextAccessor;
         _environmentProvider = environmentProvider;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var envClaim = _httpContextAccessor.HttpContext?.User.Claims.FirstOrDefault(c => c.Type == "env");
-        if (envClaim != null)
+        var requestProvider = _httpContextAccessor.HttpContext?.RequestServices.GetService<IEnvironmentProvider>();
+        if (requestProvider != null)
         {
-            _httpContextAccessor.HttpContext?.Items.TryAdd(ENVIRONMENT_KEY, _environmentProvider.GetEnvironment());
-            request.Headers.Add(ENVIRONMENT_KEY, _environmentProvider.GetEnvironment());
+            request.Headers.Add(IsolationConsts.ENVIRONMENT, requestProvider.GetEnvironment());
+        }
+        else
+        {
+            request.Headers.Add(IsolationConsts.ENVIRONMENT, _environmentProvider.GetEnvironment());
         }
         return await base.SendAsync(request, cancellationToken);
     }

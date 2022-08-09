@@ -54,8 +54,9 @@ public class ApiScope : FullAggregateRoot<int, Guid>
 
     public void BindUserClaims(List<int> userClaims)
     {
-        _userClaims.Clear();
-        _userClaims.AddRange(userClaims.Select(id => new ApiScopeClaim(id)));
+        _userClaims = _userClaims.MergeBy(
+           userClaims.Select(userClaim => new ApiScopeClaim(userClaim)),
+           item => item.UserClaimId);
     }
 
     public void BindProperties(Dictionary<string, string> properties)
