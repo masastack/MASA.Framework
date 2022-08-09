@@ -58,4 +58,22 @@ public class DistributedCacheClientTest
         Assert.AreEqual(1, dictionary.Count);
         Assert.IsTrue(dictionary["test1"] == "test1:Result");
     }
+
+    [DataTestMethod]
+    [DataRow("test1", "Result1")]
+    public async Task TestGetAsyncReturnResult1(string key, string value)
+    {
+        _cacheClient.Set(key, value);
+        var res = await _cacheClient.GetAsync<string>(key);
+        Assert.AreEqual(value, res);
+    }
+
+    [DataTestMethod]
+    [DataRow("test1", "Result1")]
+    public void TestGetReturnResult1(string key, string value)
+    {
+        _cacheClient.Set(key, value);
+        var res = _cacheClient.Get<string>(key);
+        Assert.AreEqual(value, res);
+    }
 }
