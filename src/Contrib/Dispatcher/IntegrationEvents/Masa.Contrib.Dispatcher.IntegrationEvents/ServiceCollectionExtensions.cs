@@ -72,6 +72,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
 
         services.AddHostedService<IntegrationEventHostedService>();
+        services.AddHostedService<InitializeMasaAppHostedService>();
+
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();

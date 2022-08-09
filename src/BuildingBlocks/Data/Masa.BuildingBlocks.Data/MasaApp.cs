@@ -5,16 +5,16 @@ namespace Masa.BuildingBlocks.Data;
 
 public class MasaApp
 {
-    private static bool initialized = false;
+    private static bool _initialized;
     public static IServiceProvider RootServices { get; private set; }
 
     public static void TrySetRootServices(IServiceProvider serviceProvider, bool checkInitialize = true)
     {
         if (!checkInitialize)
             RootServices = serviceProvider;
-        else if (!initialized)
+        else if (!_initialized)
         {
-            initialized = true;
+            _initialized = true;
             RootServices = serviceProvider;
         }
     }

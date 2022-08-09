@@ -32,6 +32,7 @@ public static class ServiceCollectionExtensions
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
 
             services.AddServices<ServiceBase>(true, AppDomain.CurrentDomain.GetAssemblies());
+            services.AddHostedService<InitializeMasaAppHostedService>();
         }
 
         var serviceProvider = services.BuildServiceProvider();
