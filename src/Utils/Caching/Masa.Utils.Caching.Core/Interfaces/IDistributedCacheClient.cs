@@ -36,6 +36,36 @@ public interface IDistributedCacheClient : ICacheClient
     Task<bool> ExistsAsync<T>(string key);
 
     /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    List<string> GetKeys(string keyPattern);
+
+    /// <summary>
+    /// Support fuzzy filtering to obtain key set
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <returns></returns>
+    Task<List<string>> GetKeysAsync(string keyPattern);
+
+    /// <summary>
+    /// Fuzzy query key-value pair collection based on key Pattern
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Dictionary<string, T?> GetListByKeyPattern<T>(string keyPattern);
+
+    /// <summary>
+    /// Fuzzy query key-value pair collection based on key Pattern
+    /// </summary>
+    /// <param name="keyPattern"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<Dictionary<string, T?>> GetListByKeyPatternAsync<T>(string keyPattern);
+
+    /// <summary>
     /// Subscribes to perform some operation when a change to the perferred/active node is broadcast.
     /// </summary>
     /// <param name="channel">The channel to subscribe to.</param>

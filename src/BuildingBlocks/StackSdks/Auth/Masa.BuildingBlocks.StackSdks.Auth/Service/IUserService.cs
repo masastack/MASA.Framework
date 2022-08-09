@@ -33,13 +33,15 @@ public interface IUserService
 
     Task<StaffDetailModel?> GetCurrentStaffAsync();
 
-    Task VisitedAsync(string url);
+    Task VisitedAsync(string appId, string url);
 
     Task<List<UserVisitedModel>> GetVisitedListAsync();
 
     Task UpdatePasswordAsync(UpdateUserPasswordModel user);
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
+
+    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
 
     Task<List<UserPortraitModel>> GetUserPortraitsAsync(params Guid[] userIds);
 

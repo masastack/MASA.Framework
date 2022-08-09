@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using Masa.Utils.Security.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -57,7 +58,6 @@ public static class ServiceCollectionExtensions
                 options.ClientId = clinetId;
                 options.ClientSecret = clientSecret;
                 options.ResponseType = OpenIdConnectResponseType.Code;
-
                 foreach (var scope in scopes)
                 {
                     options.Scope.Add(scope);
@@ -72,6 +72,9 @@ public static class ServiceCollectionExtensions
 
                 options.NonceCookie.SameSite = SameSiteMode.Unspecified;
                 options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+
+                options.ClaimActions.MapUniqueJsonKey("environment", "environment");
+                options.ClaimActions.MapUniqueJsonKey("role", "role");
 
                 options.Events = new OpenIdConnectEvents
                 {

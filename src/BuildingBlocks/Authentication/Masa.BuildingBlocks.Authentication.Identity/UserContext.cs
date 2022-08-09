@@ -45,12 +45,8 @@ public abstract class UserContext : IUserSetter, IUserContext
         return new DisposeAction(() => _currentUser.Value = user);
     }
 
-    public IEnumerable<IdentityRole<TRoleId>> GetUserRoles<TRoleId>()
+    public IEnumerable<TRoleId> GetUserRoles<TRoleId>()
     {
-        return GetUserSimple()?.Roles.Select(r => new IdentityRole<TRoleId>
-        {
-            Id = TypeConvertProvider.ConvertTo<TRoleId>(r.Id),
-            Name = r.Name
-        }) ?? new List<IdentityRole<TRoleId>>();
+        return GetUserSimple()?.Roles.Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r)) ?? new List<TRoleId>();
     }
 }

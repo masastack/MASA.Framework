@@ -9,4 +9,19 @@ public class UserFriendlyException : MasaException
         : base(message)
     {
     }
+
+    public UserFriendlyException(string message, Exception? innerException)
+        : base(message, innerException)
+    {
+    }
+
+    public UserFriendlyException(string errorCode, params object[] parameters)
+        : base(errorCode, parameters)
+    {
+    }
+
+    public UserFriendlyException(Exception? innerException, string errorCode, params object[] parameters)
+        : base(innerException, errorCode, parameters)
+    {
+    }
 }
