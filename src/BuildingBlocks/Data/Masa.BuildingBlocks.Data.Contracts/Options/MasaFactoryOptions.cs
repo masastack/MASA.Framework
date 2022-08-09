@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.Data.Contracts;
 
 public class MasaFactoryOptions<TRelationOptions> where TRelationOptions : MasaRelationOptions
 {
-    public List<TRelationOptions> Options { get; set; }
+    public List<TRelationOptions> Options { get; set; } = new();
 }

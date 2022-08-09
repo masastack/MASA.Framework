@@ -87,13 +87,13 @@ public class DccTest
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,
-            "http",
+            Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
             new List<DccSectionOptions>());
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,
-            "http",
+            Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
             new List<DccSectionOptions>());
         Assert.IsTrue(_services.Count(service
