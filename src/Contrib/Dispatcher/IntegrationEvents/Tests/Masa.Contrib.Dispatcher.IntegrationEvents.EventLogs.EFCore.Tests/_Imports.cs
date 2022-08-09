@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
-global using Masa.Contrib.Data.EFCore;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.Tests.Domain.Entities;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.Tests.Events;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.Tests.Infrastructure;

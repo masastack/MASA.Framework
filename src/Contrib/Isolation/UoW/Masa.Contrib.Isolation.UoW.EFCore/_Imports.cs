@@ -6,8 +6,6 @@ global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Environment;
 global using Masa.BuildingBlocks.Isolation.MultiTenant;
-global using Masa.Contrib.Data.EFCore;
-global using Masa.Contrib.Data.EFCore.Filters;
 global using Masa.Contrib.Data.UoW.EFCore;
 global using Masa.Contrib.Isolation.UoW.EFCore.Internal;
 global using Microsoft.EntityFrameworkCore;
