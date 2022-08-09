@@ -6,17 +6,15 @@ namespace Masa.BuildingBlocks.Data;
 public class IdGeneratorFactory
 {
     private static IGuidGenerator? _guidGenerator;
+    private static ISequentialGuidGenerator? _sequentialGuidGenerator;
+    private static ISnowflakeGenerator? _snowflakeGenerator;
 
     public static IGuidGenerator GuidGenerator => _guidGenerator ??= MasaApp.GetRequiredService<IGuidGenerator>() ??
         throw new Exception($"Unsupported {nameof(GuidGenerator)}");
 
-    private static ISequentialGuidGenerator? _sequentialGuidGenerator;
-
     public static ISequentialGuidGenerator SequentialGuidGenerator
         => _sequentialGuidGenerator ??= MasaApp.GetRequiredService<ISequentialGuidGenerator>() ??
             throw new Exception($"Unsupported {nameof(SequentialGuidGenerator)}");
-
-    private static ISnowflakeGenerator? _snowflakeGenerator;
 
     public static ISnowflakeGenerator SnowflakeGenerator
         => _snowflakeGenerator ??= MasaApp.GetRequiredService<ISnowflakeGenerator>() ??

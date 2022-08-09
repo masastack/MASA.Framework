@@ -5,24 +5,21 @@ namespace Masa.BuildingBlocks.Data;
 
 public class DefaultIdGeneratorFactory : IIdGeneratorFactory
 {
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IOptions<IdGeneratorFactoryOptions> _idGeneratorFactoryOptions;
+    private readonly IdGeneratorRelationOptions? _defaultIdGeneratorOptions;
     private IGuidGenerator? _guidGenerator;
+    private ISequentialGuidGenerator? _sequentialGuidGenerator;
+    private ISnowflakeGenerator? _snowflakeGenerator;
 
     public IGuidGenerator GuidGenerator => _guidGenerator ??=
         _serviceProvider.GetService<IGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(GuidGenerator)}");
 
-    private ISequentialGuidGenerator? _sequentialGuidGenerator;
-
     public ISequentialGuidGenerator SequentialGuidGenerator => _sequentialGuidGenerator ??=
         _serviceProvider.GetService<ISequentialGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(SequentialGuidGenerator)}");
 
-    private ISnowflakeGenerator? _snowflakeGenerator;
-
     public ISnowflakeGenerator SnowflakeGenerator => _snowflakeGenerator ??=
         _serviceProvider.GetService<ISnowflakeGenerator>() ?? throw new Exception($"Unsupported {nameof(SnowflakeGenerator)}");
-
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<IdGeneratorFactoryOptions> _idGeneratorFactoryOptions;
-    private readonly IdGeneratorRelationOptions? _defaultIdGeneratorOptions;
 
     public DefaultIdGeneratorFactory(IServiceProvider serviceProvider)
     {
