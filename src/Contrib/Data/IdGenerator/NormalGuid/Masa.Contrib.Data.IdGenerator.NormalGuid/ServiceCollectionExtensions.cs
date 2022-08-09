@@ -19,8 +19,8 @@ public static class ServiceCollectionExtensions
 
         services.AddIdGeneratorCore();
         services.AddSingleton<IGuidGenerator, NormalGuidGenerator>();
-        services.AddSingleton<IIdGenerator<Guid>, IGuidGenerator>();
-        services.AddSingleton<IIdGenerator, IGuidGenerator>();
+        services.AddSingleton<IIdGenerator<Guid>>(serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>());
+        services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>());
 
         services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
         {

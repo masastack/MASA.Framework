@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class IdGeneratorFactory
+public static class IdGeneratorFactory
 {
     private static IGuidGenerator? _guidGenerator;
     private static ISequentialGuidGenerator? _sequentialGuidGenerator;

@@ -350,4 +350,35 @@ public class IdGeneratorTest
         }
         return configurationOptions;
     }
+
+    [TestMethod]
+    public void TestSnowflakeGuidReturnIdGeneratorIsNotNull()
+    {
+        var services = new ServiceCollection();
+        services.AddSnowflake();
+        var serviceProvider = services.BuildServiceProvider();
+        var idGenerator = serviceProvider.GetService<IIdGenerator<long>>();
+        Assert.IsNotNull(idGenerator);
+        Assert.IsTrue(idGenerator.GetType() == typeof(SnowflakeIdGenerator));
+
+        Assert.IsNotNull(serviceProvider.GetService<IIdGenerator>());
+        Assert.IsNull(serviceProvider.GetService<IIdGenerator<Guid>>());
+        Assert.IsNotNull(serviceProvider.GetService<ISnowflakeGenerator>());
+    }
+
+    [TestMethod]
+    public void TestSnowflakeGuidByMasaAppReturnIdGeneratorIsNotNull()
+    {
+        var services = new ServiceCollection();
+        MasaApp.Services = services;
+        services.AddSnowflake();
+
+        var idGenerator = MasaApp.GetService<IIdGenerator<long>>();
+        Assert.IsNotNull(idGenerator);
+        Assert.IsTrue(idGenerator.GetType() == typeof(SnowflakeIdGenerator));
+
+        Assert.IsNotNull(MasaApp.GetService<IIdGenerator>());
+        Assert.IsNull(MasaApp.GetService<IIdGenerator<Guid>>());
+        Assert.IsNotNull(MasaApp.GetService<ISnowflakeGenerator>());
+    }
 }

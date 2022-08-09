@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         services.AddIdGeneratorCore();
         services.TryAddSingleton<ISequentialGuidGenerator>(_ => new SequentialGuidGenerator(guidType));
         services.AddSingleton<IIdGenerator<Guid>>(serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>());
-        services.AddSingleton<IIdGenerator, ISequentialGuidGenerator>();
+        services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>());
 
         services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
         {
