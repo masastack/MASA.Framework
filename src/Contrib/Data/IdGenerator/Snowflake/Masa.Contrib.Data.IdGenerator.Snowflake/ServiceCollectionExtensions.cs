@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
                 => new SnowflakeIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
                     snowflakeGeneratorOptions));
         }
+        services.AddIdGeneratorCore();
         services.AddSingleton<IIdGenerator<long>>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
         services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
 
