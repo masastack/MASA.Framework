@@ -44,7 +44,7 @@ public abstract class BaseIdGenerator: BaseIdGenerator<long>
 
     protected object Lock { get; } = new();
 
-    public BaseIdGenerator(IWorkerProvider workerProvider, SnowflakeGeneratorOptions snowflakeGeneratorOptions)
+    protected BaseIdGenerator(IWorkerProvider workerProvider, SnowflakeGeneratorOptions snowflakeGeneratorOptions)
     {
         _workerProvider = workerProvider;
         TimestampType = snowflakeGeneratorOptions.TimestampType;

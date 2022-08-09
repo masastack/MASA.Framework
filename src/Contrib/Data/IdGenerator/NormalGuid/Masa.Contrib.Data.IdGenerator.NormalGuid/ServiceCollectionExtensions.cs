@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class SimpleGuidGeneratorProvider
+    private sealed class SimpleGuidGeneratorProvider
     {
     }
 }

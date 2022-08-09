@@ -31,7 +31,7 @@ public class Benchmarks
             }));
     }
 
-    private IIdGenerator<long> InitializeIdGenerator(Action<IServiceCollection> action)
+    private static IIdGenerator<long> InitializeIdGenerator(Action<IServiceCollection> action)
     {
         IServiceCollection services = new ServiceCollection();
         action.Invoke(services);

@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class SequentialGuidGeneratorProvider
+    private sealed class SequentialGuidGeneratorProvider
     {
 
     }

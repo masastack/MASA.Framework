@@ -5,6 +5,8 @@ global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Repositories;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Constans;
+global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.Contrib.Authentication.OpenIdConnect.EFCore.Caches;
 global using Masa.Contrib.Authentication.OpenIdConnect.EFCore.DbContexts;

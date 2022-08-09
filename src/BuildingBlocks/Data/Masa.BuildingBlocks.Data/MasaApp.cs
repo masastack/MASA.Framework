@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class MasaApp
+public static class MasaApp
 {
     private static IServiceProvider? _rootServiceProvider;
 
