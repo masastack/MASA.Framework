@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Mapster;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.Mapping;
 global using Masa.Contrib.Data.Mapping.Mapster.Tests.Domain.Aggregates.Orders;
 global using Masa.Contrib.Data.Mapping.Mapster.Tests.Domain.Aggregates.Users;
