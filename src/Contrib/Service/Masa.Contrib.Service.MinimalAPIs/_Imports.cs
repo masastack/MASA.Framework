@@ -3,7 +3,6 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.MinimalAPIs;
-global using Masa.Contrib.Service.MinimalAPIs;
 global using Masa.Contrib.Service.MinimalAPIs.BackgroundServices;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Routing;

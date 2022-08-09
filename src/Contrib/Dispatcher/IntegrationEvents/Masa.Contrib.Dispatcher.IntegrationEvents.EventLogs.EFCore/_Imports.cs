@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
-global using Masa.Contrib.Data.EFCore;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;

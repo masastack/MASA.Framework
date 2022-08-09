@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Masa.Contrib.Data.EFCore</RootNamespace>
+    <RootNamespace>Microsoft.EntityFrameworkCore</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

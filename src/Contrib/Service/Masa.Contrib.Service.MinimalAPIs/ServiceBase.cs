@@ -1,11 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.MinimalAPIs;
+namespace Microsoft.AspNetCore.Builder;
 
 public abstract class ServiceBase : IService
 {
-    private ServiceProvider _serviceProvider = default!;
+    private readonly ServiceProvider _serviceProvider = default!;
 
     public WebApplication App => _serviceProvider.GetRequiredService<WebApplication>();
 
