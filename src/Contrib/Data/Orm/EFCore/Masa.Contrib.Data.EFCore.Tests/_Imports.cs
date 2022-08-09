@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
 global using Masa.BuildingBlocks.Data.Contracts.Paginated;
 global using Masa.Contrib.Data.Contracts.EFCore;
-global using Masa.Contrib.Data.EFCore.Filters;
 global using Masa.Contrib.Data.EFCore.Tests.Internal;
 global using Masa.Contrib.Data.EFCore.Tests.Models;
 global using Microsoft.EntityFrameworkCore;
