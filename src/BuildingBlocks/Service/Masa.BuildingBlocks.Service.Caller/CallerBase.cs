@@ -5,9 +5,6 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public abstract class CallerBase
 {
-    /// <summary>
-    ///
-    /// </summary>
     public virtual string? Name { get; set; }
 
     protected CallerOptions CallerOptions { get; private set; } = default!;

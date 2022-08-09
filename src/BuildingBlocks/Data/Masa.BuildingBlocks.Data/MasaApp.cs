@@ -5,28 +5,32 @@ namespace Masa.BuildingBlocks.Data;
 
 public class MasaApp
 {
-    private static bool _initialized;
-    public static IServiceProvider RootServices { get; private set; }
+    private static IServiceProvider? _rootServiceProvider;
 
-    public static void TrySetRootServices(IServiceProvider serviceProvider, bool checkInitialize = true)
+    public static IServiceProvider RootServiceProvider
     {
-        if (!checkInitialize)
-            RootServices = serviceProvider;
-        else if (!_initialized)
+        get
         {
-            _initialized = true;
-            RootServices = serviceProvider;
+            if (_rootServiceProvider == null) Build();
+            return _rootServiceProvider!;
         }
+        private set => _rootServiceProvider = value;
     }
 
+    public static IServiceCollection Services { get; set; }
+
+    public static void Build() => Build(Services.BuildServiceProvider());
+
+    public static void Build(IServiceProvider serviceProvider) => RootServiceProvider = serviceProvider;
+
     public static TService? GetService<TService>()
-        => GetService<TService>(RootServices);
+        => GetService<TService>(RootServiceProvider);
 
     public static TService? GetService<TService>(IServiceProvider serviceProvider)
         => serviceProvider.GetService<TService>();
 
     public static TService GetRequiredService<TService>() where TService : notnull
-        => GetRequiredService<TService>(RootServices);
+        => GetRequiredService<TService>(RootServiceProvider);
 
     public static TService GetRequiredService<TService>(IServiceProvider serviceProvider) where TService : notnull
         => serviceProvider.GetRequiredService<TService>();
