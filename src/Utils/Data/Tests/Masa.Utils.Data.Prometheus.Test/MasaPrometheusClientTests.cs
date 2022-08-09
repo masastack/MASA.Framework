@@ -6,68 +6,107 @@ namespace Masa.Utils.Data.Prometheus.Test;
 [TestClass]
 public class MasaPrometheusClientTests
 {
-    private IMasaPrometheusClient _client;
+    private IMasaPrometheusClient _client = default!;
+    private Mock<HttpMessageHandler> _mockHandler = new();
+    private const string HOST = "http://localhost";
 
-    public MasaPrometheusClientTests()
+    [TestInitialize]
+    public void Initialized()
     {
         IServiceCollection service = new ServiceCollection();
-        service.AddPrometheusClient("http://localhost:9090");
-        _client = service.BuildServiceProvider().GetService<IMasaPrometheusClient>() ?? default!;
+        service.AddLogging();
+        var logger = service.BuildServiceProvider().GetRequiredService<ILogger<MasaPrometheusClient>>();
+
+        var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+        options.Converters.Add(new JsonStringEnumConverter());
+        _mockHandler = new();
+        var client = new HttpClient(_mockHandler.Object)
+        {
+            BaseAddress = new Uri(HOST)
+        };
+        _client = new MasaPrometheusClient(client, options, logger);
     }
 
+    #region query test
     [TestMethod]
-    [DataRow(null)]
     [DataRow("up")]
-    [DataRow("not_exists")]
-    [DataRow("error data")]
-    public async Task TestQueryAsync(string query)
+    public async Task TestQueryOkAsync(string query)
     {
+        SetTestData("{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{\"__name__\":\"up\",\"instance\":\"host.docker.internal:9090\",\"job\":\"dapr\"},\"value\":[1659492293.921,\"1\"]}]}}");
         var result = await _client.QueryAsync(new QueryRequest
         {
             Query = query
         });
 
         Assert.IsNotNull(result);
-        if (string.IsNullOrEmpty(query) || query.Contains(' '))
-        {
-            Assert.AreEqual(result.Status, ResultStatuses.Error);
-        }
-        else
-        {
-            if (query == "not_exists")
-            {
-                Assert.IsFalse(result.Data?.Result?.Any());
-            }
-            else
-            {
-                Assert.IsTrue(result.Data?.Result?.Any());
-            }
-        }
+        Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
+        Assert.IsNotNull(result.Data.Result);
+        Assert.IsTrue(result.Data.Result.Any());
     }
+
+    [TestMethod]
+    [DataRow("not_exists")]
+    public async Task TestQueryEmptyAsync(string query)
+    {
+        SetTestData("{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[]}}");
+        var result = await _client.QueryAsync(new QueryRequest
+        {
+            Query = query
+        });
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
+        Assert.IsNotNull(result.Data.Result);
+        Assert.IsFalse(result.Data.Result.Any());
+    }
+
+    [TestMethod]
+    [DataRow(null)]
+    [DataRow("error data")]
+    public async Task TestQueryErrorAsync(string query)
+    {
+        SetTestData("{\"status\":\"error\",\"errorType\":\"bad_data\",\"error\":\"invalid parameter \\\"query\\\": 1:7: parse error: unexpected identifier \\\"data\\\"\"}", HttpStatusCode.BadRequest);
+        var result = await _client.QueryAsync(new QueryRequest
+        {
+            Query = query
+        });
+
+        Assert.IsNotNull(result);
+        Assert.AreNotEqual(result.Status, ResultStatuses.Success);
+    }
+    #endregion
 
     [TestMethod]
     public async Task TestQueryVectorAsync()
     {
+        SetTestData("{\"status\":\"success\",\"data\":{\"resultType\":\"vector\",\"result\":[{\"metric\":{\"__name__\":\"up\",\"instance\":\"host.docker.internal:9090\",\"job\":\"dapr\"},\"value\":[1659492293.921,\"1\"]}]}}");
         var result = await _client.QueryAsync(new QueryRequest
         {
             Query = "up"
         });
 
-        if (result != null && result.Data != null && result.Data.Result != null)
-        {
-            var data = result.Data.Result as QueryResultInstantVectorResponse[];
+        Assert.IsNotNull(result);
+        Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
+        Assert.IsNotNull(result.Data.Result);
+        Assert.IsTrue(result.Data.Result.Any());
 
-            Assert.IsNotNull(data);
-            Assert.IsNotNull(data[0].Metric);
-            Assert.IsNotNull(data[0].Value);
-            Assert.IsNotNull(data[0].Metric.Keys);
-            Assert.AreEqual(2, data[0].Value.Length);
-        }
+        var data = (result.Data.Result as QueryResultInstantVectorResponse[])!;
+        Assert.IsNotNull(data);
+        var metrics = data[0].Metric;
+        Assert.IsNotNull(metrics);
+        Assert.IsNotNull(metrics.Keys);
+        var values = data[0].Value;
+        Assert.IsNotNull(values);
+        Assert.IsTrue(values.Length > 0);
     }
 
     [TestMethod]
     public async Task TestQueryRangeAsync()
     {
+        SetTestData("{\"status\":\"success\",\"data\":{\"resultType\":\"matrix\",\"result\":[{\"metric\":{\"__name__\":\"up\",\"instance\":\"172.31.96.1:8889\",\"job\":\"docker\"},\"values\":[[1659493800,\"0\"],[1659495600,\"0\"]]},{\"metric\":{\"__name__\":\"up\",\"instance\":\"host.docker.internal:9090\",\"job\":\"dapr\"},\"values\":[[1659493800,\"1\"],[1659495600,\"1\"]]}]}}");
         var result = await _client.QueryRangeAsync(new QueryRangeRequest
         {
             Query = "up",
@@ -75,80 +114,93 @@ public class MasaPrometheusClientTests
             End = "2022-06-17T02:30:00.000Z",
             Step = "300s",
         });
+
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Status, ResultStatuses.Success);
         Assert.IsNotNull(result.Data);
-        if (result.Data.ResultType == ResultTypes.Matrix)
-        {
-            var data = result.Data.Result as QueryResultMatrixRangeResponse[];
-            Assert.IsNotNull(data);
-            Assert.IsNotNull(data[0].Metric);
-            Assert.IsNotNull(data[0].Values);
-        }
+        Assert.IsNotNull(result.Data.Result);
+        Assert.IsTrue(result.Data.Result.Any());
+
+        var data = result.Data.Result as QueryResultMatrixRangeResponse[];
+        Assert.IsNotNull(data);
+        Assert.IsNotNull(data[0].Metric);
+        Assert.IsNotNull(data[0].Values);
     }
 
     [TestMethod]
     public async Task TestSeriesQueryAsync()
     {
+        SetTestData("{\"status\":\"success\",\"data\":[{\"__name__\":\"up\",\"job\":\"prometheus\",\"instance\":\"localhost:9090\"},{\"__name__\":\"up\",\"job\":\"node\",\"instance\":\"localhost:9091\"},{\"__name__\":\"process_start_time_seconds\",\"job\":\"prometheus\",\"instance\":\"localhost:9090\"}]}");
         var result = await _client.SeriesQueryAsync(new MetaDataQueryRequest
         {
             Match = new string[] { "up" },
             Start = "2022-06-17T02:00:00.000Z",
-            End = "2022-06-17T02:30:00.000Z"
+            End = "2022-06-17T02:30:00.000Z",
         });
+
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
     }
 
     [TestMethod]
-    [DataRow(null)]
-    [DataRow(new string[] { "up" })]
-    [DataRow(new string[] { "not_exists" })]
-    [DataRow(new string[] { "error data" })]
+    [DataRow(new string[] { "up", "up1" })]
     public async Task TestLabelsQueryAsync(IEnumerable<string> matches)
     {
-        if (matches != null && matches.Any(s => s.Contains(' ')))
+        SetTestData("{\"status\":\"success\",\"data\":[\"up\"]}");
+        var result = await _client.LabelsQueryAsync(new MetaDataQueryRequest
         {
-            var result = await _client.LabelsQueryAsync(new MetaDataQueryRequest { Match = matches });
-            Assert.AreEqual(result.Status, ResultStatuses.Error);
-            Assert.IsNotNull(result.Error);
-        }
-        else
-        {
-            var result = await _client.LabelsQueryAsync(default!);
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.Status, ResultStatuses.Success);
-            if (matches == null || matches.Any(s => s == "up"))
-            {
-                Assert.IsTrue(result.Data?.Any());
-            }
-            else
-            {
-                Assert.IsFalse(result.Data?.Any());
-            }
-        }
+            Match = new string[] { "up" },
+            Start = "2022-06-17T02:00:00.000Z",
+            End = "2022-06-17T02:30:00.000Z",
+        });
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
     }
 
     [TestMethod]
     public async Task TestLabelValuesQueryAsync()
     {
-        var result = await _client.LabelValuesQueryAsync(new LableValueQueryRequest());
+        SetTestData("{\"status\":\"success\",\"data\":[\"dapr\",\"docker\"]}");
+        var result = await _client.LabelValuesQueryAsync(new LableValueQueryRequest
+        {
+            Lable = "job",
+            Start = "2022-06-17T02:00:00.000Z",
+            End = "2022-06-17T02:30:00.000Z",
+        });
+
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Status, ResultStatuses.Success);
+        Assert.IsNotNull(result.Data);
     }
 
     [TestMethod]
     [DataRow()]
     public async Task TestExemplarQueryAsync()
     {
+        var str = "{\"status\":\"success\",\"data\":[{\"seriesLabels\":{\"__name__\":\"test_exemplar_metric_total\",\"instance\":\"localhost:8090\",\"job\":\"prometheus\",\"service\":\"bar\"},\"exemplars\":[{\"labels\":{\"traceID\":\"EpTxMJ40fUus7aGY\"},\"value\":\"6\",\"timestamp\":1600096945.479}]},{\"seriesLabels\":{\"__name__\":\"test_exemplar_metric_total\",\"instance\":\"localhost:8090\",\"job\":\"prometheus\",\"service\":\"foo\"},\"exemplars\":[{\"labels\":{\"traceID\":\"Olp9XHlq763ccsfa\"},\"value\":\"19\",\"timestamp\":1600096955.479},{\"labels\":{\"traceID\":\"hCtjygkIHwAN9vs4\"},\"value\":\"20\",\"timestamp\":1600096965.489}]}]}";
+        SetTestData(str);
         var param = new QueryExemplarRequest
         {
-            Query = "up",
+            Query = "test_exemplar_metric_total",
             Start = "2022-06-17T02:00:00.000Z",
             End = "2022-06-17T02:30:00.000Z"
         };
         var result = await _client.ExemplarQueryAsync(param);
         Assert.IsNotNull(result);
         Assert.AreEqual(result.Status, ResultStatuses.Success);
+    }
+
+    private void SetTestData(string result, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+    {
+        _mockHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+           .ReturnsAsync(new HttpResponseMessage()
+           {
+               StatusCode = HttpStatusCode.OK,
+               Content = new StringContent(result)
+           });
     }
 }
