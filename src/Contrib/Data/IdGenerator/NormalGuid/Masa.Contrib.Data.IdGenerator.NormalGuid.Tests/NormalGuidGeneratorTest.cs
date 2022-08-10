@@ -49,6 +49,13 @@ public class NormalGuidGeneratorTest
         Assert.IsTrue(idGenerator.GetType() == typeof(NormalGuidGenerator));
     }
 
+    [TestMethod]
+    public void TestNormarlGuidByNameIsNullReturnArgumentNullException()
+    {
+        var services = new ServiceCollection();
+        MasaApp.Services = services;
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddSimpleGuidGenerator(null!));
+    }
 
     [TestMethod]
     public void TestAddMultiSequentialGuidReturnIdGeneratorCountIs1()

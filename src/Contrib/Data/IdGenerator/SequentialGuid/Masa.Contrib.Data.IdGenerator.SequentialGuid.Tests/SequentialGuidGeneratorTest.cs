@@ -121,4 +121,12 @@ public class SequentialGuidGeneratorTest
 
         Assert.IsTrue(services.Count(d => d.ServiceType == typeof(IIdGenerator<Guid>)) == 1);
     }
+
+    [TestMethod]
+    public void TestSequentialGuidByNameIsNullReturnArgumentNullException()
+    {
+        var services = new ServiceCollection();
+        MasaApp.Services = services;
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddSequentialGuidGenerator(null!));
+    }
 }

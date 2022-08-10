@@ -167,4 +167,49 @@ public class CallerTest
         Assert.IsTrue(httpClient!.BaseAddress!.OriginalString == baseAddress);
 
     }
+
+    [TestMethod]
+    public void TestRepeatCallerNameReturnArgumentException()
+    {
+        var services = new ServiceCollection();
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.github.com";
+            });
+        });
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.gitee.com";
+            });
+        });
+
+        Assert.ThrowsException<ArgumentException>(() => services.BuildServiceProvider().GetService<ICaller>());
+    }
+
+
+    [TestMethod]
+    public void TestInitializationMasaHttpClientBuilderReturnEqual()
+    {
+        var masaHttpClientBuilder = new MasaHttpClientBuilder();
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.Configure == null);
+
+
+        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", _ =>
+        {
+        });
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
+
+        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", "api", _ =>
+        {
+        });
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == "api");
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
+    }
 }
