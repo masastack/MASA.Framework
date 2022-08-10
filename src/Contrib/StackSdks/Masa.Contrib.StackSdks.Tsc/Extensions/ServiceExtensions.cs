@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Tests")]
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtensions
@@ -17,10 +18,9 @@ public static class ServiceExtensions
 
         services.AddCaller(builder =>
         {
-            builder.UseHttpClient(options =>
+            builder.UseHttpClient(DEFAULT_CLIENT_NAME, options =>
             {
                 options.BaseAddress = tscServiceBaseUri;
-                options.Name = DEFAULT_CLIENT_NAME;
             });
         });
 

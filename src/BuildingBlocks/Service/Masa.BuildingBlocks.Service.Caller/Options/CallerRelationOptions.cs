@@ -3,18 +3,11 @@
 
 namespace Masa.BuildingBlocks.Service.Caller.Options;
 
-public class CallerRelationOptions
+public class CallerRelationOptions : MasaRelationOptions<ICaller>
 {
-    public string Name { get; } = default!;
-
-    public bool IsDefault { get; }
-
-    public Func<IServiceProvider, ICaller> Func { get; } = default!;
-
-    public CallerRelationOptions(string name, bool isDefault, Func<IServiceProvider, ICaller> func)
+    public CallerRelationOptions(string name, Func<IServiceProvider, ICaller> func) : base(name)
     {
         Name = name;
-        IsDefault = isDefault;
         Func = func;
     }
 }

@@ -5,8 +5,8 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 
 public class SnowflakeIdGenerator : BaseIdGenerator, ISnowflakeGenerator
 {
-    public SnowflakeIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
-        : base(workerProvider, idGeneratorOptions)
+    public SnowflakeIdGenerator(IWorkerProvider workerProvider, SnowflakeGeneratorOptions snowflakeGeneratorOptions)
+        : base(workerProvider, snowflakeGeneratorOptions)
     {
     }
 

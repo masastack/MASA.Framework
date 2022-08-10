@@ -16,9 +16,8 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });

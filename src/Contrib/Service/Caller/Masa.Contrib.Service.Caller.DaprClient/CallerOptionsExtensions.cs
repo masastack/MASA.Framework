@@ -5,7 +5,13 @@ namespace Masa.Contrib.Service.Caller.DaprClient;
 
 public static class CallerOptionsExtensions
 {
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions, Func<MasaDaprClientBuilder> clientBuilder)
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        Func<MasaDaprClientBuilder> clientBuilder)
+        => callerOptions.UseDapr(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
+
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        string name,
+        Func<MasaDaprClientBuilder> clientBuilder)
     {
         if (clientBuilder == null)
             throw new ArgumentNullException(nameof(clientBuilder));
@@ -22,12 +28,18 @@ public static class CallerOptionsExtensions
             builder.Configure?.Invoke(daprClientBuilder);
         });
 
-        AddCallerExtensions.AddCaller(callerOptions, builder.Name, builder.IsDefault,
-            serviceProvider => new DaprCaller(serviceProvider, builder.Name, builder.AppId));
-        return new DefaultDaprClientBuilder(callerOptions.Services, builder.Name);
+        AddCallerExtensions.AddCaller(callerOptions, name,
+            serviceProvider => new DaprCaller(serviceProvider, name, builder.AppId));
+        return new DefaultDaprClientBuilder(callerOptions.Services, name);
     }
 
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions, Action<MasaDaprClientBuilder> clientBuilder)
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        Action<MasaDaprClientBuilder> clientBuilder)
+        => callerOptions.UseDapr(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
+
+    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        string name,
+        Action<MasaDaprClientBuilder> clientBuilder)
     {
         if (clientBuilder == null)
             throw new ArgumentNullException(nameof(clientBuilder));
@@ -35,6 +47,6 @@ public static class CallerOptionsExtensions
         MasaDaprClientBuilder builder = new MasaDaprClientBuilder();
         clientBuilder.Invoke(builder);
 
-        return callerOptions.UseDapr(() => builder);
+        return callerOptions.UseDapr(name, () => builder);
     }
 }

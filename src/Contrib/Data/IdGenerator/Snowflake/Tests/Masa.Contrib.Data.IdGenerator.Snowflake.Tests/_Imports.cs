@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
+global using Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 global using Masa.Utils.Caching.Core.Interfaces;
 global using Masa.Utils.Caching.Redis;
 global using Masa.Utils.Caching.Redis.Models;

@@ -3,6 +3,6 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IGuidGenerator : IIdGenerator<Guid, Guid>
+public interface IGuidGenerator : IIdGenerator<Guid>
 {
 }

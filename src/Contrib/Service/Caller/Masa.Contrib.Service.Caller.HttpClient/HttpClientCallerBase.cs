@@ -17,9 +17,8 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual IHttpClientBuilder UseHttpClient()
     {
-        return CallerOptions.UseHttpClient(httpClientBuilder =>
+        return CallerOptions.UseHttpClient(Name!, httpClientBuilder =>
         {
-            httpClientBuilder.Name = Name;
             httpClientBuilder.Prefix = Prefix;
             httpClientBuilder.BaseAddress = BaseAddress;
             httpClientBuilder.Configure = ConfigureHttpClient;

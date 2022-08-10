@@ -14,9 +14,8 @@ public static class ServiceCollectionExtensions
 
         return services.AddMcClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });

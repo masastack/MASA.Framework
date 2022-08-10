@@ -80,8 +80,8 @@ public static class MasaConfigurationExtensions
         {
             if (action == null)
             {
-                options.UseHttpClient(()
-                    => new MasaHttpClientBuilder(callerName, string.Empty,
+                options.UseHttpClient(callerName, ()
+                    => new MasaHttpClientBuilder(
                         opt => opt.BaseAddress = new Uri(config.DccConfigurationOptions.ManageServiceAddress))
                 );
             }

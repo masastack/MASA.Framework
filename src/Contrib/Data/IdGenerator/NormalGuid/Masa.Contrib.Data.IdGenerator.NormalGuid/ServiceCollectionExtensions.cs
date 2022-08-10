@@ -6,10 +6,33 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSimpleGuidGenerator(this IServiceCollection services)
+        => services.AddSimpleGuidGenerator(Options.Options.DefaultName);
+
+    public static IServiceCollection AddSimpleGuidGenerator(this IServiceCollection services, string name)
     {
-        services.TryAddSingleton<IGuidGenerator, NormalGuidGenerator>();
-        services.TryAddSingleton<IIdGenerator<Guid, Guid>, IGuidGenerator>();
-        IdGeneratorFactory.SetGuidGenerator(services.BuildServiceProvider().GetRequiredService<IGuidGenerator>());
+        ArgumentNullException.ThrowIfNull(name, nameof(name));
+
+        if (services.Any(service => service.ImplementationType == typeof(SimpleGuidGeneratorProvider)))
+            return services;
+
+        services.AddSingleton<SimpleGuidGeneratorProvider>();
+
+        services.AddIdGeneratorCore();
+        services.AddSingleton<IGuidGenerator, NormalGuidGenerator>();
+        services.AddSingleton<IIdGenerator<Guid>>(serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>());
+        services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>());
+
+        services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
+        {
+            factoryOptions.Options.Add(new IdGeneratorRelationOptions(name)
+            {
+                Func = serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>()
+            });
+        });
         return services;
+    }
+
+    private sealed class SimpleGuidGeneratorProvider
+    {
     }
 }

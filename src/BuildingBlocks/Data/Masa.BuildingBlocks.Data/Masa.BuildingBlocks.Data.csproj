@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
   
+  <ItemGroup>
+    <ProjectReference Include="..\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
+  </ItemGroup>
+  
 </Project>

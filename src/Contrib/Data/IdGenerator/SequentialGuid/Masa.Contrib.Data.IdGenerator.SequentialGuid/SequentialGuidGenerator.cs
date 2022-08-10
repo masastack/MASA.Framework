@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.SequentialGuid;
 
-public class SequentialGuidGenerator : ISequentialGuidGenerator
+public class SequentialGuidGenerator : BaseIdGenerator<Guid>, ISequentialGuidGenerator
 {
     private static readonly RandomNumberGenerator RandomGenerator = RandomNumberGenerator.Create();
 
@@ -11,7 +11,7 @@ public class SequentialGuidGenerator : ISequentialGuidGenerator
 
     public SequentialGuidGenerator(SequentialGuidType guidType) => _guidType = guidType;
 
-    public Guid NewId() => Create(_guidType);
+    public override Guid NewId() => Create(_guidType);
 
     public Guid Create(SequentialGuidType guidType)
     {

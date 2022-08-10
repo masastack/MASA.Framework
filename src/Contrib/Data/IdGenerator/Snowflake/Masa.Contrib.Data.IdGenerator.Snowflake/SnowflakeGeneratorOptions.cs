@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
-public class IdGeneratorOptions
+public class SnowflakeGeneratorOptions
 {
     public IServiceCollection Services { get;}
 
@@ -59,7 +59,9 @@ public class IdGeneratorOptions
 
     public void EnableSupportDistributed() => SupportDistributed = true;
 
-    public IdGeneratorOptions(IServiceCollection services)
+    public string Name { get; set; } = Microsoft.Extensions.Options.Options.DefaultName;
+
+    public SnowflakeGeneratorOptions(IServiceCollection services)
     {
         Services = services;
     }
