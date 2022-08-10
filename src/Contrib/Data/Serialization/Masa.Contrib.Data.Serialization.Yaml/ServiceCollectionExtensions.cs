@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddYaml(this IServiceCollection services, bool? isDefault = null)
+    public static IServiceCollection AddYaml(this IServiceCollection services)
     {
         if (services.Any(service => service.ImplementationType == typeof(YamlProvider)))
             return services;
@@ -18,9 +18,9 @@ public static class ServiceCollectionExtensions
         {
             serializerOptions
                 .MappingSerializer(DataType.Yml.ToString(),
-                    serviceProvider => serviceProvider.GetRequiredService<IYamlSerializer>(), isDefault)
+                    serviceProvider => serviceProvider.GetRequiredService<IYamlSerializer>())
                 .MappingDeserializer(DataType.Yml.ToString(),
-                    serviceProvider => serviceProvider.GetRequiredService<IYamlDeserializer>(), isDefault);
+                    serviceProvider => serviceProvider.GetRequiredService<IYamlDeserializer>());
         });
         return services;
     }

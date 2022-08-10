@@ -7,9 +7,9 @@ internal class DefaultUserContext : UserContext
 {
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
     private readonly IDeserializer? _deserializer;
-    private static MemoryCache<Type, CustomizeModelRelation> _modelRelationCache = new();
+    private static readonly MemoryCache<Type, CustomizeModelRelation> ModelRelationCache = new();
 
-    protected ClaimsPrincipal? ClaimsPrincipal { get; set; }
+    private ClaimsPrincipal? ClaimsPrincipal { get; set; }
 
     public DefaultUserContext(
         ITypeConvertProvider typeConvertProvider,
@@ -31,7 +31,7 @@ internal class DefaultUserContext : UserContext
         if (userId == null)
             return null;
 
-        var modelRelation = _modelRelationCache.GetOrAdd(userType, (type) =>
+        var modelRelation = ModelRelationCache.GetOrAdd(userType, (type) =>
         {
             var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .MinBy(x => x.GetParameters().Length)!;
