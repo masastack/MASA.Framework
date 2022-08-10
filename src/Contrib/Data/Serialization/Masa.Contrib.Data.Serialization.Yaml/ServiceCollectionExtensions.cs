@@ -15,6 +15,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<YamlProvider>();
 
+        services.AddSerializationCore();
+
         services
             .AddYamlCore()
             .Configure<SerializerFactoryOptions>(options =>
@@ -39,7 +41,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class YamlProvider
+    private sealed class YamlProvider
     {
     }
 }

@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class IdentityProvider
+    private sealed class IdentityProvider
     {
     }
 }

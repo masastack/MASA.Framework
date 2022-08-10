@@ -5,7 +5,7 @@ namespace Masa.Contrib.Authentication.Identity;
 
 public class IdentityClaimOptions
 {
-    private Dictionary<string, string> _mapping = new();
+    private readonly Dictionary<string, string> _mapping = new();
     private MemoryCache<string, string> Mappings { get; } = new();
 
     private string? _userId;

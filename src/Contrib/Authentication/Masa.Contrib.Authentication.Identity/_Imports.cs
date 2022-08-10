@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Data;
 global using Masa.Contrib.Authentication.Identity;
 global using Masa.Contrib.Authentication.Identity.Const;
-global using Masa.Contrib.Identity.IdentityModel.Internal;
 global using Masa.Utils.Caching.Memory;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;

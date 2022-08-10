@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class JsonProvider
+    private sealed class JsonProvider
     {
     }
 }

@@ -15,7 +15,7 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     protected ITypeConvertProvider TypeConvertProvider { get; }
 
-    public UserContext(ITypeConvertProvider typeConvertProvider)
+    protected UserContext(ITypeConvertProvider typeConvertProvider)
     {
         TypeConvertProvider = typeConvertProvider;
         _currentUser.Value = new Dictionary<Type, object?>();

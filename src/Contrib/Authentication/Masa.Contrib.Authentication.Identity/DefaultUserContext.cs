@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Authentication.Identity.Internal;
+
 namespace Masa.Contrib.Authentication.Identity;
 
 internal class DefaultUserContext : UserContext
@@ -30,7 +32,7 @@ internal class DefaultUserContext : UserContext
 
         var modelRelation = ModelRelationCache.GetOrAdd(userType, (type) =>
         {
-            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
                 .MinBy(x => x.GetParameters().Length)!;
             return new CustomizeModelRelation(
                 InstanceBuilder.CreateInstanceDelegate(constructor),

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Identity.IdentityModel.Internal;
+namespace Masa.Contrib.Authentication.Identity.Internal;
 
-public class InstanceBuilder
+internal static class InstanceBuilder
 {
     public static Func<object[], object> CreateInstanceDelegate(ConstructorInfo constructorInfo)
     {
