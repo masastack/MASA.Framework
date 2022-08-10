@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Reflection;
-
 #pragma warning disable CS0618
 namespace Masa.Contrib.Service.Caller.Tests;
 
