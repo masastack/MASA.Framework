@@ -6,7 +6,6 @@ namespace Masa.Contrib.Authentication.Identity;
 internal class DefaultUserContext : UserContext
 {
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
-    private readonly IDeserializer? _deserializer;
     private static readonly MemoryCache<Type, CustomizeModelRelation> ModelRelationCache = new();
 
     private ClaimsPrincipal? ClaimsPrincipal { get; set; }
@@ -14,14 +13,12 @@ internal class DefaultUserContext : UserContext
     public DefaultUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
-        IOptionsMonitor<IdentityClaimOptions> optionsMonitor,
-        IDeserializer? deserializer = null)
+        IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
         : base(typeConvertProvider)
     {
         _optionsMonitor = optionsMonitor;
         _optionsMonitor.CurrentValue.Initialize();
         ClaimsPrincipal = currentPrincipalAccessor.GetCurrentPrincipal();
-        _deserializer = deserializer;
     }
 
     protected override object? GetUser(Type userType)
@@ -50,7 +47,7 @@ internal class DefaultUserContext : UserContext
             if (claimValue != null)
             {
                 modelRelation.Setters[property]
-                    .Invoke(userModel, new[] { TypeConvertProvider.ConvertTo(claimValue, property.PropertyType, _deserializer) });
+                    .Invoke(userModel, new[] { TypeConvertProvider.ConvertTo(claimValue, property.PropertyType) });
             }
         }
 

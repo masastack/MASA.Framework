@@ -15,13 +15,18 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<JsonProvider>();
 
+        services.AddSerializationCore();
         services.TryAddSingleton<IJsonSerializer, DefaultJsonSerializer>();
         services.TryAddSingleton<IJsonDeserializer, DefaultJsonDeserializer>();
-        services.Configure<SerializerOptions>(serializerOptions =>
+        services.Configure<SerializerFactoryOptions>(options =>
         {
-            serializerOptions
+            options
                 .MappingSerializer(name,
-                    serviceProvider => serviceProvider.GetRequiredService<IJsonSerializer>())
+                    serviceProvider => serviceProvider.GetRequiredService<IJsonSerializer>());
+        });
+        services.Configure<DeserializerFactoryOptions>(options =>
+        {
+            options
                 .MappingDeserializer(name,
                     serviceProvider => serviceProvider.GetRequiredService<IJsonDeserializer>());
         });

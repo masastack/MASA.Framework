@@ -15,6 +15,12 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
         Action<IdentityClaimOptions> configureOptions)
+        => services.AddMasaIdentityModel(DataType.Json.ToString(), configureOptions);
+
+    public static IServiceCollection AddMasaIdentityModel(
+        this IServiceCollection services,
+        string name,
+        Action<IdentityClaimOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(configureOptions);
 
@@ -23,21 +29,22 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IdentityProvider>();
 
-        services.AddMasaData();
+        services.AddJson(DataType.Json.ToString());
+        services.AddTypeConvert(DataType.Json.ToString());
         services.AddHttpContextAccessor();
         services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
 
         services.Configure(configureOptions);
 
-        return services.AddMasaIdentityModelCore();
+        return services.AddMasaIdentityModelCore(name);
     }
 
-    private static IServiceCollection AddMasaIdentityModelCore(this IServiceCollection services)
+    private static IServiceCollection AddMasaIdentityModelCore(this IServiceCollection services, string name)
     {
-        services.TryAddScoped(serviceProvider => new DefaultUserContext(serviceProvider.GetRequiredService<ITypeConvertProvider>(),
+        services.TryAddScoped(serviceProvider => new DefaultUserContext(
+            serviceProvider.GetRequiredService<ITypeConvertFactory>().Create(name),
             serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>(),
-            serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>(),
-            serviceProvider.GetRequiredService<IJsonDeserializer>()));
+            serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>()));
 
         services.TryAddScoped<IUserSetter>(serviceProvider => serviceProvider.GetService<DefaultUserContext>()!);
         services.TryAddScoped<IUserContext>(serviceProvider => serviceProvider.GetService<DefaultUserContext>()!);

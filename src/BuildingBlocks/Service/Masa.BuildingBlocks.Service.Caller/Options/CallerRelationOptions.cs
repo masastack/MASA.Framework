@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.Service.Caller.Options;
 
 public class CallerRelationOptions : MasaRelationOptions<ICaller>
 {
-    public CallerRelationOptions(string name, Func<IServiceProvider, ICaller> func) : base(name)
+    public CallerRelationOptions(string name, Func<IServiceProvider, ICaller> func)
+        : base(name)
     {
-        Name = name;
         Func = func;
     }
 }

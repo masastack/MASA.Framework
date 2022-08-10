@@ -6,27 +6,34 @@ namespace Masa.Contrib.Data;
 public class DefaultTypeConvertFactory : ITypeConvertFactory
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly TypeConvertOptions _options;
+    private readonly IOptions<TypeConvertFactoryOptions> _typeConvertFactoryOptions;
+    private readonly TypeConvertRelationOptions? _defaultOptions;
 
-    public DefaultTypeConvertFactory(IOptions<TypeConvertOptions> options, IServiceProvider serviceProvider)
+    public DefaultTypeConvertFactory(IOptions<TypeConvertFactoryOptions> typeConvertFactoryOptions, IServiceProvider serviceProvider)
     {
-        _options = options.Value;
+        _typeConvertFactoryOptions = typeConvertFactoryOptions;
+        _defaultOptions = _typeConvertFactoryOptions.Value.Options.FirstOrDefault(options
+                => options.Name == Options.DefaultName) ??
+            _typeConvertFactoryOptions.Value.Options.FirstOrDefault();
         _serviceProvider = serviceProvider;
     }
 
     public ITypeConvertProvider Create()
     {
-        var func = _options.GetTypeConvert();
-        if (func == null) throw new NotImplementedException("TypeConvert provider get failed");
+        if (_defaultOptions == null)
+            throw new NotImplementedException("Default typeConvert not found, you need to add it");
 
-        return func.Invoke(_serviceProvider);
+        return _defaultOptions.Func.Invoke(_serviceProvider);
     }
 
     public ITypeConvertProvider Create(string name)
     {
-        var func = _options.GetTypeConvert(name);
-        if (func == null) throw new NotImplementedException("TypeConvert provider get failed");
+        var typeConvertOptions =
+            _typeConvertFactoryOptions.Value.Options.FirstOrDefault(options
+                => options.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (typeConvertOptions == null)
+            throw new NotImplementedException($"No TypeConvert found for 【{name}】");
 
-        return func.Invoke(_serviceProvider);
+        return typeConvertOptions.Func.Invoke(_serviceProvider);
     }
 }
