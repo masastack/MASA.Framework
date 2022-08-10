@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+#pragma warning disable CS0618
 namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests;
 
 [TestClass]
@@ -14,7 +15,7 @@ public class CallerTest
         {
             opt.UseHttpClient(clientBuilder =>
             {
-                clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
+                clientBuilder.BaseApi = "https://github.com/masastack/MASA.Contrib";
             });
         });
         var serviceProvider = services.BuildServiceProvider();

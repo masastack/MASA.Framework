@@ -32,4 +32,32 @@ public class NormalGuidGeneratorTest
 
         Assert.IsNotNull(MasaApp.GetService<IIdGenerator>());
     }
+
+    [TestMethod]
+    public void TestNormarlGuidByCustomNameReturnIdGeneratorIsNotNull()
+    {
+        var services = new ServiceCollection();
+        MasaApp.Services = services;
+        services.AddSimpleGuidGenerator("normal");
+        MasaApp.Build();
+
+        var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
+        Assert.IsNotNull(idGeneratorFactory);
+
+        var idGenerator = idGeneratorFactory.Create("normal");
+        Assert.IsNotNull(idGenerator);
+        Assert.IsTrue(idGenerator.GetType() == typeof(NormalGuidGenerator));
+    }
+
+
+    [TestMethod]
+    public void TestAddMultiSequentialGuidReturnIdGeneratorCountIs1()
+    {
+        var services = new ServiceCollection();
+        MasaApp.Services = services;
+        services.AddSimpleGuidGenerator().AddSimpleGuidGenerator();
+        MasaApp.Build();
+
+        Assert.IsTrue(services.Count(d => d.ServiceType == typeof(IIdGenerator<Guid>)) == 1);
+    }
 }

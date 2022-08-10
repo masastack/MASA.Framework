@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Reflection;
+
 #pragma warning disable CS0618
 namespace Masa.Contrib.Service.Caller.Tests;
 
@@ -135,5 +137,34 @@ public class CallerTest
         var result = provider.ConvertToDictionary(dic);
         Assert.IsTrue(result.Count == 1);
         Assert.IsTrue(result["Account"] == "Jim");
+    }
+
+    [TestMethod]
+    public void TestCustomCallerNameReturnNotNull()
+    {
+        var baseAddress = "http://www.github.com";
+        var services = new ServiceCollection();
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient("gitee", httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.gitee.com";
+            });
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = baseAddress;
+            });
+        });
+
+        var caller = services.BuildServiceProvider().GetService<ICaller>();
+        Assert.IsNotNull(caller);
+
+        var httpClientCaller = ((HttpClientCaller)caller);
+        System.Net.Http.HttpClient httpClient =
+            (System.Net.Http.HttpClient)httpClientCaller.GetType()
+                .GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(httpClientCaller)!;
+        Assert.IsTrue(httpClient!.BaseAddress!.OriginalString == baseAddress);
+
     }
 }
