@@ -3,9 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.NormalGuid;
 
-public class NormalGuidGenerator : IGuidGenerator
+public class NormalGuidGenerator : BaseIdGenerator<Guid>, IGuidGenerator
 {
-    public Guid NewId() => Guid.NewGuid();
+    public override Guid NewId() => Guid.NewGuid();
 }
-
-

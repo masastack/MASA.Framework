@@ -22,49 +22,20 @@ public class MasaDaprClientBuilder
         }
     }
 
-    private string _name = default!;
-
-    public string Name
-    {
-        get
-        {
-            return _name;
-        }
-        set
-        {
-            if (value is null)
-                throw new ArgumentNullException(nameof(Name));
-
-            _name = value;
-        }
-    }
-
-    public bool IsDefault { get; set; } = false;
-
     public Action<DaprClientBuilder>? Configure { get; set; }
 
     internal MasaDaprClientBuilder()
     {
-        this.Name = string.Empty;
     }
 
     public MasaDaprClientBuilder(string appid)
-        : this(appid, "dapr") { }
-
-    public MasaDaprClientBuilder(string appid, string name)
-        : this(appid, name, null)
+        : this(appid, null)
     {
     }
 
-    public MasaDaprClientBuilder(string appid, string name, Action<DaprClientBuilder>? configure) : this(appid, name, configure, false)
-    {
-    }
-
-    public MasaDaprClientBuilder(string appid, string name, Action<DaprClientBuilder>? configure, bool isDefault)
+    public MasaDaprClientBuilder(string appid, Action<DaprClientBuilder>? configure)
     {
         AppId = appid;
-        Name = name;
         Configure = configure;
-        IsDefault = isDefault;
     }
 }

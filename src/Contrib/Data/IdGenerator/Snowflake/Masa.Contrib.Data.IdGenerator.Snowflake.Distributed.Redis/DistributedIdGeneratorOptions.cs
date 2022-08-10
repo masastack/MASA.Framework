@@ -24,8 +24,8 @@ public class DistributedIdGeneratorOptions
     /// </summary>
     public long RefreshTimestampInterval { get; set; } = 500;
 
-    public IdGeneratorOptions IdGeneratorOptions { get; }
+    public SnowflakeGeneratorOptions IdGeneratorOptions { get; }
 
-    public DistributedIdGeneratorOptions(IdGeneratorOptions idGeneratorOptions)
+    public DistributedIdGeneratorOptions(SnowflakeGeneratorOptions idGeneratorOptions)
         => IdGeneratorOptions = idGeneratorOptions;
 }

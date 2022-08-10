@@ -72,6 +72,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
 
         services.AddHostedService<IntegrationEventHostedService>();
+
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
         {
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();

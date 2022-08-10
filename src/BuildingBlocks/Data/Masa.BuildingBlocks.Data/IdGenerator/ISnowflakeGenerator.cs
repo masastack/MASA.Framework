@@ -3,6 +3,6 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface ISnowflakeGenerator : IIdGenerator<Snowflake, long>
+public interface ISnowflakeGenerator : IIdGenerator<long>
 {
 }

@@ -17,15 +17,14 @@ public abstract class DaprCallerBase : CallerBase
 
     protected virtual DefaultDaprClientBuilder UseDapr()
     {
-        CallerOptions.UseDapr(opt =>
+        CallerOptions.UseDapr(Name!, opt =>
         {
-            opt.Name = Name;
             opt.AppId = AppId;
             if (Configure != null)
             {
                 opt.Configure = Configure;
             }
         });
-        return new DefaultDaprClientBuilder(CallerOptions.Services, Name);
+        return new DefaultDaprClientBuilder(CallerOptions.Services, Name!);
     }
 }

@@ -87,13 +87,13 @@ public class DccTest
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,
-            "http",
+            Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
             new List<DccSectionOptions>());
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,
-            "http",
+            Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
             new List<DccSectionOptions>());
         Assert.IsTrue(_services.Count(service
@@ -155,9 +155,8 @@ public class DccTest
             jsonSerializerOption.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
         }, option =>
         {
-            option.UseHttpClient(builder =>
+            option.UseHttpClient("CustomHttpClient", builder =>
             {
-                builder.Name = "CustomHttpClient";
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });

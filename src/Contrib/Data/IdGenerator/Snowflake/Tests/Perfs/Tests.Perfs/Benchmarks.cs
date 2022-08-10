@@ -10,10 +10,10 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Perfs;
 [MinColumn, MaxColumn, MeanColumn, MedianColumn]
 public class Benchmarks
 {
-    private IIdGenerator<System.Snowflake, long> _idGenerator;
-    private IIdGenerator<System.Snowflake, long> _idGeneratorBySecond;
-    private IIdGenerator<System.Snowflake, long> _idGeneratorByEnableMachineClock;
-    private IIdGenerator<System.Snowflake, long> _idGeneratorBySecondAndEnableMachineClock;
+    private IIdGenerator<long> _idGenerator;
+    private IIdGenerator<long> _idGeneratorBySecond;
+    private IIdGenerator<long> _idGeneratorByEnableMachineClock;
+    private IIdGenerator<long> _idGeneratorBySecondAndEnableMachineClock;
 
     [GlobalSetup]
     public void GlobalSetup()
@@ -31,12 +31,12 @@ public class Benchmarks
             }));
     }
 
-    private IIdGenerator<System.Snowflake, long> InitializeIdGenerator(Action<IServiceCollection> action)
+    private static IIdGenerator<long> InitializeIdGenerator(Action<IServiceCollection> action)
     {
         IServiceCollection services = new ServiceCollection();
         action.Invoke(services);
         var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<System.Snowflake, long>>();
+        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         idGenerator.NewId();
         return idGenerator;
     }

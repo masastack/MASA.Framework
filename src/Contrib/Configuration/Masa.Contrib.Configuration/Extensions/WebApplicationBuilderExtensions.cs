@@ -17,6 +17,8 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddSingleton<InitializeAppConfigurationProvider>();
 
+        MasaApp.Services = builder.Services;
+
         MasaAppConfigureOptionsRelation optionsRelation = new();
         action?.Invoke(optionsRelation);
         IConfiguration configuration = builder.Configuration;

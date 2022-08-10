@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Scheduler;
-
 namespace Masa.Contrib.StackSdks.Scheduler.Tests;
 
 [TestClass]
@@ -15,9 +13,8 @@ public class SchedulerClientTest
 
         services.AddSchedulerClient(option =>
         {
-            option.UseHttpClient(builder =>
+            option.UseHttpClient("masa.contrib.basicability.scheduler", builder =>
             {
-                builder.Name = "masa.contrib.basicability.scheduler";
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });

@@ -3,10 +3,8 @@
 
 namespace Masa.BuildingBlocks.Service.Caller.Options;
 
-public class CallerFactoryOptions
+public class CallerFactoryOptions : MasaFactoryOptions<CallerRelationOptions>
 {
-    public readonly List<CallerRelationOptions> Callers = new();
-
     public JsonSerializerOptions? JsonSerializerOptions { get; set; }
 
     public string? RequestIdKey { get; set; }
