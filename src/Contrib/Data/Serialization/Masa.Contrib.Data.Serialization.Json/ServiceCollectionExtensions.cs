@@ -6,9 +6,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddJson(this IServiceCollection services)
-        => services.AddJson(Options.Options.DefaultName);
-
-    public static IServiceCollection AddJson(this IServiceCollection services, string name)
     {
         if (services.Any(service => service.ImplementationType == typeof(JsonProvider)))
             return services;
@@ -18,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddSerializationCore();
         services.TryAddSingleton<IJsonSerializer, DefaultJsonSerializer>();
         services.TryAddSingleton<IJsonDeserializer, DefaultJsonDeserializer>();
+        string name = DataType.Json.ToString();
         services.Configure<SerializerFactoryOptions>(options =>
         {
             options

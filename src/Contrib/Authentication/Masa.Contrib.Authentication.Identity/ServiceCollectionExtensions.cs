@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IdentityProvider>();
 
-        services.AddJson(DataType.Json.ToString());
+        services.AddJson();
         services.AddTypeConvert(DataType.Json.ToString());
         services.AddHttpContextAccessor();
         services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();

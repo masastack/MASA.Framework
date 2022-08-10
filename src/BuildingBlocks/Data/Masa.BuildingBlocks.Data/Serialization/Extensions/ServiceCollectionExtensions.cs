@@ -9,6 +9,8 @@ public static partial class ServiceCollectionExtensions
     {
         services.TryAddSingleton<IDeserializerFactory, DefaultDeserializerFactory>();
         services.TryAddSingleton<ISerializerFactory, DefaultSerializerFactory>();
+        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<ISerializerFactory>().Create());
+        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IDeserializerFactory>().Create());
         return services;
     }
 }
