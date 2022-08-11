@@ -83,6 +83,7 @@ public class TestIdentity
 
         Assert.IsTrue(isolationUserContext.IsAuthenticated);
         Assert.IsTrue(isolationUserContext.UserId == "1");
+        Assert.IsTrue(isolationUserContext.GetUserId<int>() == 1);
         Assert.IsTrue(isolationUserContext.UserName == "Jim");
         Assert.IsTrue(isolationUserContext.TenantId == "1");
         Assert.IsTrue(isolationUserContext.Environment == "dev");
@@ -114,6 +115,11 @@ public class TestIdentity
         Assert.IsTrue(userContext.UserId == "1");
         Assert.IsTrue(userContext.UserName == "Jim");
         Assert.IsTrue(userContext.GetUserRoles<string>().Count() == 1);
+        var simpleUser = userContext.GetUser();
+        Assert.IsNotNull(simpleUser);
+        Assert.IsTrue(simpleUser.Id == "1");
+        Assert.IsTrue(simpleUser.UserName == "Jim");
+        Assert.IsTrue(System.Text.Json.JsonSerializer.Serialize(simpleUser.Roles) == "[\"1\"]");
 
         var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
         Assert.IsNotNull(multiTenantUserContext);

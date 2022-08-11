@@ -9,5 +9,5 @@ public class DefaultYamlSerializer : IYamlSerializer
 
     public DefaultYamlSerializer(YamlDotNet.Serialization.ISerializer serializer) => _serializer = serializer;
 
-    public string Serialize<TValue>(TValue value) => value == null ? String.Empty : _serializer.Serialize(value);
+    public string Serialize<TValue>(TValue value) => value == null ? string.Empty : _serializer.Serialize(value);
 }

@@ -5,7 +5,7 @@ namespace Masa.Contrib.Data.Serialization.Yaml.Tests.Model;
 
 public class User
 {
-    public int Id { get; set; }
+    public decimal Age { get; set; }
 
     public string Name { get; set; }
 
@@ -14,9 +14,9 @@ public class User
 
     }
 
-    public User(int id, string name)
+    public User(decimal age, string name)
     {
-        Id = id;
+        Age = age;
         Name = name;
     }
 }

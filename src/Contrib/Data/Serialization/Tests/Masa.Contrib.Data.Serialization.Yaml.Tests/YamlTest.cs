@@ -7,23 +7,24 @@ namespace Masa.Contrib.Data.Serialization.Yaml.Tests;
 public class YamlTest
 {
     [TestMethod]
-    public void TestSerialize()
+    public void TestSerializeAndDeserialize()
     {
-        var user = new User(1, "John");
+        var user = new User(1.5m, "John");
         var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
         var yaml = new DefaultYamlSerializer(serializer).Serialize(user);
-        Assert.AreEqual("id: 1\r\nname: John\r\n", yaml);
+        var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        var deserializerUser = new DefaultYamlDeserializer(deserializer).Deserialize<User>(yaml);
+        Assert.IsNotNull(deserializerUser);
+        Assert.IsTrue(user.Age == deserializerUser.Age && user.Name == deserializerUser.Name);
     }
 
     [TestMethod]
-    public void TestDeserialize()
+    public void TestSerializeAndValueIsNullReturnEmpty()
     {
-        var yaml = "id: 1\r\nname: John\r\n";
-        var deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
-        var user = new DefaultYamlDeserializer(deserializer).Deserialize<User>(yaml);
-        Assert.IsNotNull(user);
-        Assert.AreEqual(1, user.Id);
-        Assert.AreEqual("John", user.Name);
+        var serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        object? user = null;
+        var yaml = new DefaultYamlSerializer(serializer).Serialize(user);
+        Assert.AreEqual(string.Empty, yaml);
     }
 
     [TestMethod]
