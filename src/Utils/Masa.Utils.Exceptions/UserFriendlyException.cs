@@ -3,6 +3,7 @@
 
 namespace System;
 
+[Serializable]
 public class UserFriendlyException : MasaException
 {
     public UserFriendlyException(string message)

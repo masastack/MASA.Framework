@@ -28,20 +28,33 @@ internal class DispatcherBase
     public async Task PublishEventAsync<TEvent>(IServiceProvider serviceProvider, TEvent @event)
         where TEvent : IEvent
     {
+        BeforePublishEvent(@event, out List<DispatchRelationOptions> dispatchRelations);
+        await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event);
+    }
+
+    private void BeforePublishEvent<TEvent>(TEvent @event,
+        out List<DispatchRelationOptions> dispatchRelations)
+        where TEvent : IEvent
+    {
         ArgumentNullException.ThrowIfNull(@event, nameof(@event));
         var eventType = @event.GetType();
-        if (!SharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? dispatchRelations))
+        if (!SharingRelationNetwork!.RelationNetwork.TryGetValue(eventType, out List<DispatchRelationOptions>? relationOptions))
         {
             if (@event is IIntegrationEvent)
             {
-                Logger?.LogError($"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
-                throw new ArgumentNullException($"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
+                Logger?.LogError(
+                    $"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
+                throw new ArgumentNullException(
+                    $"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
             }
 
-            Logger?.LogError($"Dispatcher: The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
-            throw new ArgumentNullException($"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
+            Logger?.LogError(
+                "Dispatcher: The {EventTypeFullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus",
+                eventType.FullName);
+            throw new ArgumentNullException(
+                $"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
         }
-        await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event);
+        dispatchRelations = relationOptions;
     }
 
     private async Task ExecuteEventHandlerAsync<TEvent>(IServiceProvider serviceProvider,
@@ -56,6 +69,7 @@ internal class DispatcherBase
         foreach (var dispatchRelation in dispatchRelations)
         {
             if (isCancel) return;
+
             dispatchHandler = dispatchRelation.Handler;
 
             strategyOptions.SetStrategy(dispatchHandler);
@@ -70,13 +84,15 @@ internal class DispatcherBase
                 {
                     isCancel = true;
                     if (dispatchRelation.CancelHandlers.Any())
-                        await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers, @event);
+                        await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers,
+                            @event);
                     else
                         ex.ThrowException();
                 }
                 else
                 {
-                    Logger?.LogError("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event, @event.GetEventId());
+                    Logger?.LogError("----- Publishing event {@Event} error rollback is ignored: message id: {messageId} -----", @event,
+                        @event.GetEventId());
                 }
             });
         }
@@ -95,14 +111,16 @@ internal class DispatcherBase
             strategyOptions.SetStrategy(cancelHandler);
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
-                logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event, @event.GetEventId());
+                logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event,
+                    @event.GetEventId());
                 await cancelHandler.ExcuteAction(serviceProvider, @event);
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
                     ex.ThrowException();
 
-                logger?.LogError("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event, @event.GetEventId());
+                logger?.LogError("----- Publishing event {@Event} rollback error ignored: message id: {messageId} -----", @event,
+                    @event.GetEventId());
                 return Task.CompletedTask;
             });
         }
@@ -122,6 +140,8 @@ internal class DispatcherBase
     protected void Build() => SharingRelationNetwork!.Build();
 
     protected bool IsSagaMode(Type handlerType, MethodInfo method) =>
-      typeof(IEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) && method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync)) ||
-      typeof(ISagaEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) && method.Name.Equals(nameof(ISagaEventHandler<IEvent>.CancelAsync));
+        typeof(IEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) &&
+        method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync)) ||
+        typeof(ISagaEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) &&
+        method.Name.Equals(nameof(ISagaEventHandler<IEvent>.CancelAsync));
 }

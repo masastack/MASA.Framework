@@ -10,7 +10,7 @@ public abstract class DefaultRequestMessage
     private readonly IHttpContextAccessor? _httpContextAccessor;
     protected readonly CallerFactoryOptions? Options;
 
-    public DefaultRequestMessage(IServiceProvider serviceProvider,
+    protected DefaultRequestMessage(IServiceProvider serviceProvider,
         IOptions<CallerFactoryOptions>? options = null)
     {
         ServiceProvider = serviceProvider;

@@ -6,3 +6,4 @@ global using Masa.BuildingBlocks.Data.Contracts;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using System.Reflection;
+global using System.Runtime.Serialization;

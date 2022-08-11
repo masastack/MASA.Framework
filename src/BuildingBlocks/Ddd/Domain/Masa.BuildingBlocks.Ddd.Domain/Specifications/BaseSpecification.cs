@@ -5,14 +5,13 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Specifications;
 
 public abstract class BaseSpecification<T> : ISpecification<T>
 {
-    public BaseSpecification(Expression<Func<T, bool>> whereExpression)
+    protected BaseSpecification(Expression<Func<T, bool>> whereExpression)
     {
         WhereExpression = whereExpression;
     }
     public Expression<Func<T, bool>> WhereExpression { get; }
 
-    public List<Expression<Func<T, object>>> Includes { get; } =
-                                           new List<Expression<Func<T, object>>>();
+    public List<Expression<Func<T, object>>> Includes { get; } = new();
 
     public List<string> IncludeStrings { get; } = new List<string>();
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.DistributedLock.Local.Internal;
 
-internal class DisposeAction : IDisposable, IAsyncDisposable
+internal sealed class DisposeAction : IDisposable, IAsyncDisposable
 {
     private readonly SemaphoreSlim _semaphore;
 

@@ -128,7 +128,7 @@ public static class ServiceCollectionExtensions
         return type.BaseType != null && BaseOf<T>(type.BaseType);
     }
 
-    private class DependencyInjectionService
+    private sealed class DependencyInjectionService
     {
 
     }

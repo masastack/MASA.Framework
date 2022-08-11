@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 
-internal class EnironmentExtensions
+internal static class EnironmentExtensions
 {
     public static int? GetEnvironmentVariable(string variable)
     {

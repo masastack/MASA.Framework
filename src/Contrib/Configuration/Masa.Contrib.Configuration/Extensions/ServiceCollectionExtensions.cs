@@ -94,7 +94,7 @@ public static class ServiceCollectionExtensions
                 configurationSection = configurationSection.GetSection(sectionName);
         }
         if (!configurationSection.Exists())
-            throw new Exception($"Check if the mapping section is correct，section name is [{configurationSection!.Path}]");
+            throw new MasaException($"Check if the mapping section is correct，section name is [{configurationSection!.Path}]");
 
         var configurationChangeTokenSource =
             Activator.CreateInstance(typeof(ConfigurationChangeTokenSource<>).MakeGenericType(optionType), string.Empty,
@@ -113,7 +113,7 @@ public static class ServiceCollectionExtensions
             configureOptions));
     }
 
-    private class MasaConfigurationProvider
+    private sealed class MasaConfigurationProvider
     {
 
     }

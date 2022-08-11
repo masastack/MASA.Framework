@@ -39,7 +39,7 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
 
     public override int GetHashCode()
     {
-        return GetKeys().Select(key => key.Value).Aggregate(0, (hashCode, next) => HashCode.Combine(hashCode, next));
+        return GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
     }
 
     public static bool operator ==(Entity? x, Entity? y)

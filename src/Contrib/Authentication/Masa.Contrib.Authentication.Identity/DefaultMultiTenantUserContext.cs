@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Authentication.Identity;
 
-internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantUserContext
+internal sealed class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantUserContext
 {
     public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
 
@@ -19,7 +19,7 @@ internal class DefaultMultiTenantUserContext : DefaultUserContext, IMultiTenantU
         _optionsMonitor = optionsMonitor;
     }
 
-    public virtual TTenantId? GetTenantId<TTenantId>()
+    public TTenantId? GetTenantId<TTenantId>()
     {
         var tenantId = TenantId;
         if (tenantId == null)

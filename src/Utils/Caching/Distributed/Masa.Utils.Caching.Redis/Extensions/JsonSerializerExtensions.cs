@@ -58,12 +58,9 @@ public static class JsonSerializerExtensions
     {
         public JsonSerializerOptions Options { get; private set; }
 
-        internal JsonDynamicType(JsonSerializerOptions options)
+        private protected JsonDynamicType(JsonSerializerOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             Options = options;
         }
@@ -118,7 +115,7 @@ public static class JsonSerializerExtensions
         {
             bool success = TryConvert(typeof(T), out object? result);
             Debug.Assert(success);
-            return result is T ? (T) result : default;
+            return result is T ? (T)result : default;
         }
 
         public override void SetValue(object value)
@@ -151,7 +148,7 @@ public static class JsonSerializerExtensions
         {
             bool success = obj.TryConvert(typeof(string), out object? result);
             Debug.Assert(success);
-            return (string) result!;
+            return (string)result!;
         }
     }
 
@@ -173,7 +170,7 @@ public static class JsonSerializerExtensions
         {
             if (TryConvert(typeof(T), out object? result))
             {
-                return result is T ? (T) result : default;
+                return result is T ? (T)result : default;
             }
 
             throw new InvalidOperationException($"Cannot change type {_value.GetType()} to {typeof(T)}.");
@@ -295,7 +292,7 @@ public static class JsonSerializerExtensions
         {
             bool success = TryConvert(typeof(T), out object? result);
             Debug.Assert(success);
-            return (T) result!;
+            return (T)result!;
         }
 
         public override void SetValue(object value)
@@ -328,7 +325,7 @@ public static class JsonSerializerExtensions
         {
             bool success = obj.TryConvert(typeof(bool), out object? result);
             Debug.Assert(success);
-            return (bool) result!;
+            return (bool)result!;
         }
     }
 
@@ -337,7 +334,7 @@ public static class JsonSerializerExtensions
     /// </summary>
     public sealed class JsonDynamicObject : JsonDynamicType, IDictionary<string, object>
     {
-        private IDictionary<string, object> _value;
+        private readonly IDictionary<string, object> _value;
 
         public JsonDynamicObject(JsonSerializerOptions options)
             : base(options)
@@ -351,8 +348,7 @@ public static class JsonSerializerExtensions
         {
             if (_value.TryGetValue(binder.Name, out result))
             {
-                JsonDynamicObject? dynamicObj = result as JsonDynamicObject;
-                if (dynamicObj != null)
+                if (result is JsonDynamicObject dynamicObj)
                 {
                     return dynamicObj.TryConvert(binder.ReturnType, out result);
                 }
@@ -412,7 +408,7 @@ public static class JsonSerializerExtensions
         ICollection<object> IDictionary<string, object>.Values => _value.Values;
         public int Count => _value.Count;
         bool ICollection<KeyValuePair<string, object>>.IsReadOnly => _value.IsReadOnly;
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _value).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_value).GetEnumerator();
         public bool TryGetValue(string key, out object value) => _value.TryGetValue(key, out value!);
     }
 
@@ -421,7 +417,7 @@ public static class JsonSerializerExtensions
     /// </summary>
     public sealed class JsonDynamicArray : JsonDynamicType, IList<object>
     {
-        private IList<object> _value;
+        private readonly IList<object> _value;
 
         public JsonDynamicArray(JsonSerializerOptions options) : base(options)
         {
@@ -463,7 +459,7 @@ public static class JsonSerializerExtensions
         public void Insert(int index, object item) => _value.Insert(index, item);
         public bool Remove(object item) => _value.Remove(item);
         public void RemoveAt(int index) => _value.RemoveAt(index);
-        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable) _value).GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_value).GetEnumerator();
     }
 
     /// <summary>
@@ -476,7 +472,7 @@ public static class JsonSerializerExtensions
         {
             // For simplicity in adding the converter, we use a single converter instead of two.
             return typeToConvert == typeof(object) ||
-                   typeof(JsonDynamicType).IsAssignableFrom(typeToConvert);
+                typeof(JsonDynamicType).IsAssignableFrom(typeToConvert);
         }
 
         public sealed override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

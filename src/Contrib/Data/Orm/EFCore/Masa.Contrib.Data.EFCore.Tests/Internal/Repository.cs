@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.EFCore.Tests.Internal;
 
-internal class Repository
+internal sealed class Repository
 {
     private readonly CustomDbContext _testDbContext;
 
@@ -12,7 +12,7 @@ internal class Repository
     public Task<List<Student>> GetPaginatedListAsync(int skip, int take, CancellationToken cancellationToken = default)
         => _testDbContext.Set<Student>().Skip(skip).Take(take).ToListAsync(cancellationToken);
 
-    public virtual async Task<BasePaginatedList<Student>> GetPaginatedListAsync(PaginatedOptions options, CancellationToken cancellationToken = default)
+    public async Task<BasePaginatedList<Student>> GetPaginatedListAsync(PaginatedOptions options, CancellationToken cancellationToken = default)
     {
         var result = await GetPaginatedListAsync(
             (options.Page - 1) * options.PageSize,

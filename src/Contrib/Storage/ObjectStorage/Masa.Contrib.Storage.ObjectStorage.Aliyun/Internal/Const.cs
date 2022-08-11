@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Internal;
 
-internal class Const
+internal static class Const
 {
     public const string TEMPORARY_CREDENTIALS_CACHEKEY = "Aliyun.Storage.TemporaryCredentials";
 

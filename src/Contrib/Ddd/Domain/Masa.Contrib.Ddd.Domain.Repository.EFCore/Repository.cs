@@ -6,7 +6,7 @@ namespace Masa.Contrib.Ddd.Domain.Repository.EFCore;
 public class Repository<TDbContext, TEntity> :
     BaseRepository<TEntity>
     where TEntity : class, IEntity
-    where TDbContext : DbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
     protected TDbContext Context { get; }
 
@@ -209,7 +209,7 @@ public class Repository<TDbContext, TEntity, TKey> :
     Repository<TDbContext, TEntity>,
     IRepository<TEntity, TKey>
     where TEntity : class, IEntity<TKey>
-    where TDbContext : DbContext
+    where TDbContext : DbContext, IMasaDbContext
     where TKey : IComparable
 {
     public Repository(TDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)

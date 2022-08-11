@@ -641,7 +641,15 @@ end";
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_connection != null)
-            _connection.Dispose();
+        Dispose(true);
+
+        if (_connection != null) _connection.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        // Cleanup
     }
 }

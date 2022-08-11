@@ -59,9 +59,15 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
 
     public void Dispose()
     {
+        Dispose(true);
         foreach (var configurationRepository in _configurationRepositories)
         {
             configurationRepository.RemoveChangeListener(this);
         }
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

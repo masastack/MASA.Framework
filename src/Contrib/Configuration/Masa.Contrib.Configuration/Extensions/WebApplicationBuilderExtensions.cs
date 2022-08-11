@@ -102,7 +102,7 @@ public static class WebApplicationBuilderExtensions
     public static IMasaConfiguration GetMasaConfiguration(this WebApplicationBuilder builder)
         => builder.Services.BuildServiceProvider().GetRequiredService<IMasaConfiguration>();
 
-    private class InitializeAppConfigurationProvider
+    private sealed class InitializeAppConfigurationProvider
     {
 
     }

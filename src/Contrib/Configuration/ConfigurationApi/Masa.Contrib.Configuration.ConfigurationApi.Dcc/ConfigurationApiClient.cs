@@ -5,7 +5,6 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
@@ -22,7 +21,6 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        _serviceProvider = serviceProvider;
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
@@ -76,7 +74,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return (T)value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic>? valueChanged)
+    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
+        Action<dynamic>? valueChanged)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -100,6 +99,11 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         if (string.IsNullOrEmpty(key))
             throw new ArgumentNullException(nameof(key));
 
+        return await GetDynamicInternalAsync(key, valueChanged);
+    }
+
+    private async Task<dynamic> GetDynamicInternalAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
+    {
         var value = _taskExpandoObjects.GetOrAdd(key, k => new Lazy<Task<ExpandoObject>>(async () =>
         {
             var options = new JsonSerializerOptions(_jsonSerializerOptions);
@@ -115,7 +119,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return await value;
     }
 
-    protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key, Action<string>? valueChanged)
+    protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
+        Action<string>? valueChanged)
     {
         var raw = await _client.GetAsync<string>(key, value =>
         {
@@ -147,7 +152,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 catch (Exception exception)
                 {
                     _logger?.LogWarning(exception,
-                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Properties type");
+                        "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Properties type", paramName);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -159,8 +164,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogWarning(exception,
-                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Xml type");
+                    _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Xml type",
+                        paramName);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -175,8 +180,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogWarning(exception,
-                        $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid Yaml type");
+                    _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Yaml type",
+                        paramName);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -200,9 +205,9 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         }
         catch (Exception exception)
         {
-            string message = $"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid response value";
-            _logger?.LogWarning(exception, message);
-            throw new ArgumentException(message);
+            _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid response value",
+                paramName);
+            throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid response value");
         }
         if (result == null || result.ConfigFormat == 0)
             throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is an unsupported type");

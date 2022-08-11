@@ -128,10 +128,6 @@ public static class ServiceCollectionExtensions
     private static IOptionsMonitor<AliyunStorageConfigureOptions> GetAliyunStorageConfigurationOption(IServiceProvider serviceProvider)
         => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
 
-    private static IAliyunStorageOptionProvider GetAliyunStorageOptionProvider(IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IAliyunStorageOptionProvider>();
-
-
     private static void CheckAliYunStorageOptions(AliyunStorageOptions options)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));

@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Configuration;
 
-public class Properties : IEquatable<Properties>, IEquatable<object>
+public sealed class Properties : IEquatable<Properties>, IEquatable<object>
 {
     private readonly Dictionary<string, string> _dict;
 

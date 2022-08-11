@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.Mapping.Mapster.Internal;
 
-internal class TypeAdapterSetterExpand
+internal static class TypeAdapterSetterExpand
 {
     public static TypeAdapterSetter<TSource, TDestination> NewConfigByConstructor<TSource, TDestination>(TypeAdapterConfig adapterConfig,
         object constructorInfo)

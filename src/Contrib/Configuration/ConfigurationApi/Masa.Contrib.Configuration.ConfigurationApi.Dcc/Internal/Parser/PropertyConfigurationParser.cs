@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 
-internal class PropertyConfigurationParser
+internal static class PropertyConfigurationParser
 {
     public static IDictionary<string, string>? Parse(string raw, JsonSerializerOptions serializerOption)
         => JsonSerializer.Deserialize<List<Property>>(raw, serializerOption)!.ToDictionary(k => k.Key, v => v.Value);
