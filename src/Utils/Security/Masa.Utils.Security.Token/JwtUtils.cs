@@ -3,7 +3,7 @@
 
 namespace Masa.Utils.Security.Token;
 
-public class JwtUtils
+public static class JwtUtils
 {
     internal static IServiceCollection Services { get; set; }
 
