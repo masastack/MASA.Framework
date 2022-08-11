@@ -69,12 +69,8 @@ jobs:
       run: |
         dotnet-sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build /p:ContinuousIntegrationBuild=true
-        dotnet test --filter FullyQualifiedName~Masa.Contrib --no-build --verbosity normal --collect "Code Coverage"
+        dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal --collect "Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
         dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-        
-    - name: Opencover Test
-      run: |
-        dotnet test --filter FullyQualifiedName~Masa.Contrib --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
       uses: codecov/codecov-action@v2
