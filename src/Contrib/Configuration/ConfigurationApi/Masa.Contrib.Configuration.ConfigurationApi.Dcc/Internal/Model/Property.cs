@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Model;
 
-internal abstract class Property
+internal class Property
 {
     public string Key { get; set; } = default!;
 
