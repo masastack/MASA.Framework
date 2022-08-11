@@ -5,6 +5,8 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Entities;
 
 public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
 {
+    private static readonly EntityComparer<Entity> Instance = new();
+
     public abstract IEnumerable<(string Name, object Value)> GetKeys();
 
     /// <inheritdoc/>
@@ -18,47 +20,18 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
 
     public override bool Equals(object? obj)
     {
-        if (this is null ^ obj is null) return false;
+        if (obj is Entity other) return Instance.Equals(this, other);
 
-        if (obj is Entity other)
-        {
-            return other.GetKeys().Select(key => key.Value).SequenceEqual(GetKeys().Select(key => key.Value));
-        }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
-    public bool Equals(Entity? other)
-    {
-        if (this is null ^ other is null) return false;
+    public bool Equals(Entity? other) => Instance.Equals(this, other);
 
-        return other!.GetKeys().Select(key => key.Value).SequenceEqual(GetKeys().Select(key => key.Value));
-    }
+    public override int GetHashCode() => Instance.GetHashCode(this);
 
-    public override int GetHashCode()
-    {
-        return GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
-    }
+    public static bool operator ==(Entity? x, Entity? y) => Instance.Equals(x, y);
 
-    public static bool operator ==(Entity? x, Entity? y)
-    {
-        if (x is null ^ y is null) return false;
-
-        if (x is null) return true;
-
-        return x.Equals(y);
-    }
-
-    public static bool operator !=(Entity? x, Entity? y)
-    {
-        if (x is null ^ y is null) return true;
-
-        if (x is null) return false;
-
-        return !x.Equals(y);
-    }
+    public static bool operator !=(Entity? x, Entity? y) => !Instance.Equals(x, y);
 }
 
 public abstract class Entity<TKey> : Entity, IEntity<TKey>

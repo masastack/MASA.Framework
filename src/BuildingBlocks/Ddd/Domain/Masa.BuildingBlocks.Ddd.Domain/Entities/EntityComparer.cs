@@ -12,7 +12,7 @@ public class EntityComparer<TEntity> : IEqualityComparer<Entity>
 
         if (x is null) return true;
 
-        return x.Equals(y);
+        return GetHashCode(x) == GetHashCode(y);
     }
 
     public int GetHashCode(Entity obj)

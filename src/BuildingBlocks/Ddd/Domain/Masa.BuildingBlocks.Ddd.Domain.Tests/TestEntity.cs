@@ -30,7 +30,6 @@ public class TestEntity
         var id = Guid.NewGuid();
         MasaEntity x = new(id);
         MasaEntity y = new(id);
-
         Assert.AreEqual(x.GetHashCode(), y.GetHashCode());
         Assert.IsTrue(x == y);
     }
