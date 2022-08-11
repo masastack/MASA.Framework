@@ -75,7 +75,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     }
 
     public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
-        Action<dynamic>? valueChanged)
+        Action<dynamic>? valueChanged = null)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 

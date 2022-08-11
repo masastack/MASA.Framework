@@ -5,17 +5,12 @@ namespace Masa.Utils.Security.Token;
 
 public class JwtUtils
 {
-    private static IServiceCollection _services;
+    internal static IServiceCollection Services { get; set; }
 
     private static IServiceProvider? _serviceProvider;
 
-    public JwtUtils(IServiceCollection services)
-    {
-        _services = services;
-    }
-
     private static IServiceProvider GetServiceProvider()
-        => _serviceProvider ??= _services.BuildServiceProvider().CreateScope().ServiceProvider;
+        => _serviceProvider ??= Services.BuildServiceProvider().CreateScope().ServiceProvider;
 
     private static IJwtProvider GetJwtProvider() => GetServiceProvider().GetRequiredService<IJwtProvider>();
 

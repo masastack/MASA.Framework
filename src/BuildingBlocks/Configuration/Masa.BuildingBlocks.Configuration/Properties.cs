@@ -68,6 +68,6 @@ public sealed class Properties : IEquatable<Properties>, IEquatable<object>
 
     public override int GetHashCode()
     {
-        return _dict.Select(key => key.Key + key.Value).Aggregate(0, (hashCode, next) => HashCode.Combine(hashCode, next));
+        return _dict.Select(key => key.Key + key.Value).Aggregate(0, HashCode.Combine);
     }
 }

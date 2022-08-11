@@ -32,6 +32,7 @@ public class TestEntity
         MasaEntity y = new(id);
 
         Assert.AreEqual(x.GetHashCode(), y.GetHashCode());
+        Assert.IsTrue(x == y);
     }
 
     [TestMethod]
