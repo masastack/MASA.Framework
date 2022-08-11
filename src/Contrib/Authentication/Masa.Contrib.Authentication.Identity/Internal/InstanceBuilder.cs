@@ -7,20 +7,19 @@ internal static class InstanceBuilder
 {
     public static Func<object[], object> CreateInstanceDelegate(ConstructorInfo constructorInfo)
     {
-        ParameterInfo[] parameters = constructorInfo.GetParameters();
         var parameterParameterExpression = Expression.Parameter(typeof(object[]), "parameters");
 
-        var parameterCast = new List<Expression>(parameters.Length);
-        for (int i = 0; i < parameters.Length; i++)
+        var parameterCast = constructorInfo.GetParameters().Select((parameterInfo, i) =>
         {
-            var paramInfo = parameters[i];
             var valueObj = Expression.ArrayIndex(parameterParameterExpression, Expression.Constant(i));
-            var valueCast = Expression.Convert(valueObj, paramInfo.ParameterType);
-            parameterCast.Add(valueCast);
-        }
-        NewExpression newExp = Expression.New(constructorInfo, parameterCast);
-        Expression<Func<object[], object>> lambdaExp = Expression.Lambda<Func<object[], object>>(newExp, parameterParameterExpression);
-        return lambdaExp.Compile();
+            return Expression.Convert(valueObj, parameterInfo.ParameterType);
+        }).ToArray();
+
+        return Expression.Lambda<Func<object[], object>>
+        (
+            Expression.New(constructorInfo, parameterCast),
+            parameterParameterExpression
+        ).Compile();
     }
 
     public static Dictionary<PropertyInfo, MethodInfo> GetPropertyAndMethodInfoRelations(Type type)
