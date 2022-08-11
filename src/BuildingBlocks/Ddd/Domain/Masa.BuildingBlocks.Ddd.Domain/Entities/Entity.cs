@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Entities;
 
-public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
+public abstract class Entity : IEntity, IEqualityComparer<Entity>
 {
     public abstract IEnumerable<(string Name, object Value)> GetKeys();
 
@@ -30,18 +30,6 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
         }
     }
 
-    public bool Equals(Entity? other)
-    {
-        if (this is null ^ other is null) return false;
-
-        return other!.GetKeys().Select(key => key.Value).SequenceEqual(GetKeys().Select(key => key.Value));
-    }
-
-    public override int GetHashCode()
-    {
-        return GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
-    }
-
     public static bool operator ==(Entity? x, Entity? y)
     {
         if (x is null ^ y is null) return false;
@@ -58,6 +46,18 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
         if (x is null) return false;
 
         return !x.Equals(y);
+    }
+
+    public bool Equals(Entity x, Entity y)
+    {
+        if (x is null ^ y is null) return false;
+
+        return y!.GetKeys().Select(key => key.Value).SequenceEqual(x.GetKeys().Select(key => key.Value));
+    }
+
+    public int GetHashCode(Entity obj)
+    {
+        return obj.GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
     }
 }
 

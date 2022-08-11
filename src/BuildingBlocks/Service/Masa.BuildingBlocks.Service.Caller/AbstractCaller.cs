@@ -35,15 +35,6 @@ public abstract class AbstractCaller : ICaller
         HttpRequestMessage request,
         CancellationToken cancellationToken = default);
 
-    public abstract Task<HttpRequestMessage> CreateRequestAsync(
-        HttpMethod method,
-        string? methodName);
-
-    public abstract Task<HttpRequestMessage> CreateRequestAsync<TRequest>(
-        HttpMethod method,
-        string? methodName,
-        TRequest data);
-
     public abstract Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken = default);
@@ -80,6 +71,15 @@ public abstract class AbstractCaller : ICaller
         HttpRequestMessage request = await CreateRequestAsync(method, methodName, data);
         return await SendAsync<TResponse>(request, cancellationToken);
     }
+
+    public abstract Task<HttpRequestMessage> CreateRequestAsync(
+        HttpMethod method,
+        string? methodName);
+
+    public abstract Task<HttpRequestMessage> CreateRequestAsync<TRequest>(
+        HttpMethod method,
+        string? methodName,
+        TRequest data);
 
     public abstract Task SendGrpcAsync(
         string methodName,
@@ -303,7 +303,7 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
+        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
         return await SendAsync<TResponse>(request, cancellationToken);
     }
 
