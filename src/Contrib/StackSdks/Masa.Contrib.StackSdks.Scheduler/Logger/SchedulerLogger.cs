@@ -30,14 +30,14 @@ namespace Masa.Contrib.StackSdks.Scheduler.Logger
             _logger.LogError(exception, LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
         }
 
-        public void LogWarning(string message)
-        {
-            _logger.LogWarning(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
-        }
-
         public void LogError(string message)
         {
             _logger.LogError(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+        }
+
+        public void LogWarning(string message)
+        {
+            _logger.LogWarning(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
         }
 
         public void LogDebug(string message)
