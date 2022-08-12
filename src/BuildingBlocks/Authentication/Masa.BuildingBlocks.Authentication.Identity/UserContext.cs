@@ -57,6 +57,8 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     public IEnumerable<TRoleId> GetUserRoles<TRoleId>()
     {
-        return GetUserSimple()?.Roles.Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r)) ?? new List<TRoleId>();
+        return GetUserSimple()?.Roles
+            .Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r) ??
+                throw new ArgumentException($"RoleId cannot be converted to [{typeof(TRoleId).Name}]")) ?? new List<TRoleId>();
     }
 }

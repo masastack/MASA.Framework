@@ -1,23 +1,19 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Authentication.Identity.Internal;
 
 internal static class InstanceBuilder
 {
+    private static readonly Expression[] UnaryExpressions = Array.Empty<UnaryExpression>();
+
     public static Func<object[], object> CreateInstanceDelegate(ConstructorInfo constructorInfo)
     {
         var parameterParameterExpression = Expression.Parameter(typeof(object[]), "parameters");
 
-        var parameterCast = constructorInfo.GetParameters().Select((parameterInfo, i) =>
-        {
-            var valueObj = Expression.ArrayIndex(parameterParameterExpression, Expression.Constant(i));
-            return Expression.Convert(valueObj, parameterInfo.ParameterType);
-        }).ToArray();
-
         return Expression.Lambda<Func<object[], object>>
         (
-            Expression.New(constructorInfo, parameterCast),
+            Expression.New(constructorInfo, UnaryExpressions),
             parameterParameterExpression
         ).Compile();
     }

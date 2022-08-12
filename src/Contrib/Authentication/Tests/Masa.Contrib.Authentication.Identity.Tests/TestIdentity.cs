@@ -129,6 +129,11 @@ public class TestIdentity
 
         var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
         Assert.IsNotNull(isolationUserContext);
+
+        var user = isolationUserContext.GetUser();
+        Assert.IsNotNull(user);
+        Assert.AreEqual("1", user.Id);
+        Assert.AreEqual("Jim", user.UserName);
     }
 
     [TestMethod]
@@ -161,12 +166,23 @@ public class TestIdentity
         var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
         Assert.IsNotNull(multiTenantUserContext);
         Assert.IsTrue(multiTenantUserContext.TenantId == "1");
+        Assert.AreEqual(1, multiTenantUserContext.GetTenantId<int>());
 
         var multiEnvironmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
         Assert.IsNotNull(multiEnvironmentUserContext);
 
         var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
         Assert.IsNotNull(isolationUserContext);
+
+        Assert.AreEqual("1", isolationUserContext.TenantId);
+        Assert.AreEqual(1, isolationUserContext.GetTenantId<int>());
+        Assert.AreEqual(null, isolationUserContext.Environment);
+
+        var simpleUser = userContext.GetUser();
+        Assert.IsNotNull(simpleUser);
+        Assert.AreEqual("1", simpleUser.Id);
+        Assert.AreEqual("Jim", simpleUser.UserName);
+        Assert.AreEqual("[\"1\",\"2\"]", System.Text.Json.JsonSerializer.Serialize(simpleUser.Roles));
     }
 
     [TestMethod]
@@ -205,6 +221,17 @@ public class TestIdentity
         Assert.IsTrue(userContext.IsAuthenticated);
         Assert.IsTrue(userContext.UserId == "1");
         Assert.IsTrue(userContext.UserName == "Jim");
+
+        var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
+        Assert.IsNotNull(multiTenantUserContext);
+        Assert.AreEqual(null, multiTenantUserContext.TenantId);
+        Assert.AreEqual(null, multiTenantUserContext.GetTenantId<int?>());
+
+        var isolationUserContext = serviceProvider.GetService<IIsolatedUserContext>();
+        Assert.IsNotNull(isolationUserContext);
+
+        Assert.AreEqual(null, isolationUserContext.TenantId);
+        Assert.AreEqual(null, isolationUserContext.GetTenantId<int?>());
     }
 
     [TestMethod]
@@ -260,5 +287,55 @@ public class TestIdentity
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
         var user = userContext.GetUser<CustomerUser>();
         Assert.IsTrue(user is { TrueName: "lisi" });
+    }
+
+    [TestMethod]
+    public void TestCustomerUserModel3ReturnTrueNameEqualLisi()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentityModel(option =>
+        {
+            option.Mapping(nameof(CustomerUser2.TrueName), "realname");
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new List<ClaimsIdentity>()
+            {
+                new(new List<Claim>()
+                {
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new("realname", "lisi")
+                })
+            })
+        };
+        var userContext = serviceProvider.GetRequiredService<IUserContext>();
+        Assert.ThrowsException<InvalidOperationException>(() => userContext.GetUser<CustomerUser2>());
+    }
+
+    [TestMethod]
+    public void TestIdentityClaimOptions()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentityModel(option =>
+        {
+            option.UserId = "sub";
+            option.UserName = "name";
+            option.Role = "role";
+            option.TenantId = "tenantid";
+            option.Environment = "env";
+            option.Mapping("age", "https://masastack.com/security/identity/claims/age");
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var identityClaimOptions = serviceProvider.GetRequiredService<IOptions<IdentityClaimOptions>>();
+        Assert.AreEqual("sub", identityClaimOptions.Value.UserId);
+        Assert.AreEqual("name", identityClaimOptions.Value.UserName);
+        Assert.AreEqual("role", identityClaimOptions.Value.Role);
+        Assert.AreEqual("tenantid", identityClaimOptions.Value.TenantId);
+        Assert.AreEqual("env", identityClaimOptions.Value.Environment);
+        Assert.AreEqual("https://masastack.com/security/identity/claims/age", identityClaimOptions.Value.GetClaimType("Age"));
     }
 }

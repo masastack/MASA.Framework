@@ -31,7 +31,7 @@ public class DefaultTypeConvertProvider : ITypeConvertProvider
     public T? ConvertTo<T>(string value, IDeserializer? deserializer = null)
     {
         var result = ConvertTo(value, typeof(T), deserializer);
-        return result is T ? (T)result : default;
+        return result is T res ? res : default;
     }
 
     public object? ConvertTo(string value, Type type, IDeserializer? deserializer = null)
