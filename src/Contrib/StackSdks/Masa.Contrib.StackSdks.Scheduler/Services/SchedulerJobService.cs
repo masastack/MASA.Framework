@@ -1,10 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Scheduler.Enum;
-using Masa.BuildingBlocks.StackSdks.Scheduler.Request;
-using Masa.BuildingBlocks.StackSdks.Scheduler.Service;
-
 namespace Masa.Contrib.StackSdks.Scheduler.Services;
 
 public class SchedulerJobService : ISchedulerJobService
