@@ -3,19 +3,19 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Entities;
 
-public class EntityComparer<TEntity> : IEqualityComparer<Entity>
+public class EntityComparer<TEntity> : IEqualityComparer<TEntity>
     where TEntity : IEntity
 {
-    public bool Equals(Entity? x, Entity? y)
+    public bool Equals(TEntity? x, TEntity? y)
     {
         if (x is null ^ y is null) return false;
 
         if (x is null) return true;
 
-        return GetHashCode(x) == GetHashCode(y);
+        return GetHashCode(x) == GetHashCode(y!);
     }
 
-    public int GetHashCode(Entity obj)
+    public int GetHashCode(TEntity obj)
     {
         return obj.GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
     }
