@@ -32,7 +32,7 @@ internal class DefaultUserContext : UserContext
         {
             var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
                     .FirstOrDefault(c => c.GetParameters().Length == 0) ??
-                throw new InvalidOperationException($"【{type.Name}】 has a parameterless constructor");
+                throw new InvalidOperationException($"[{type.Name}] has a parameterless constructor");
             return new CustomizeModelRelation(
                 InstanceBuilder.CreateInstanceDelegate(constructor),
                 InstanceBuilder.GetPropertyAndMethodInfoRelations(type));
