@@ -8,12 +8,10 @@ public class SchedulerJobService : ISchedulerJobService
     const string API = "/api/scheduler-job";
 
     readonly ICaller _caller;
-    readonly ILogger<SchedulerJobService>? _logger;
 
-    public SchedulerJobService(ICaller caller, ILoggerFactory? loggerFactory = null)
+    public SchedulerJobService(ICaller caller)
     {
         _caller = caller;
-        _logger = loggerFactory?.CreateLogger<SchedulerJobService>();
     }
 
     public async Task<Guid> AddAsync(AddSchedulerJobRequest request)

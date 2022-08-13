@@ -22,9 +22,8 @@ public class SchedulerTaskServiceTest
 
         var requestUri = $"{API}/stop";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerTaskService.StopAsync(requestData);
         caller.Verify(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
@@ -41,9 +40,8 @@ public class SchedulerTaskServiceTest
 
         var requestUri = $"{API}/start";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerTaskService.StartAsync(request);
         caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<StartSchedulerTaskRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
