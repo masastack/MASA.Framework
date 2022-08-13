@@ -11,7 +11,7 @@ namespace Masa.Contrib.StackSdks.Scheduler.Logger
 
         private readonly Guid _jobId;
 
-        public const string LOGGER_BODY = "LogType: {LogType}, Writer: {Writer}, TaskId: {TaskId}, JobId: {JobId}, Message: {Message}";
+        public const string LOGGER_BODY = "{Message}, LogType: {LogType}, LogWriter: {LogWriter}, TaskId: {TaskId}, JobId: {JobId}";
 
         public SchedulerLogger(ILoggerFactory loggerFactory, Guid jobId, Guid taskId)
         {
@@ -22,27 +22,27 @@ namespace Masa.Contrib.StackSdks.Scheduler.Logger
 
         public void LogInformation(string message)
         {
-            _logger.LogInformation(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+            _logger.LogInformation(LOGGER_BODY, message, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId);
         }
 
         public void LogError(Exception exception, string message)
         {
-            _logger.LogError(exception, LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+            _logger.LogError(exception, LOGGER_BODY, message, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId);
         }
 
         public void LogError(string message)
         {
-            _logger.LogError(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+            _logger.LogError(LOGGER_BODY, message, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId);
         }
 
         public void LogWarning(string message)
         {
-            _logger.LogWarning(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+            _logger.LogWarning(LOGGER_BODY, message, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId);
         }
 
         public void LogDebug(string message)
         {
-            _logger.LogDebug(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
+            _logger.LogDebug(LOGGER_BODY, message, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId);
         }
     }
 }
