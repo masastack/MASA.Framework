@@ -17,6 +17,8 @@ public class AddSchedulerJobRequest
 
     public string CronExpression { get; set; } = string.Empty;
 
+    public string JobIdentity { get; set; } = string.Empty;
+
     public string Description { get; set; } = string.Empty;
 
     /// <summary>

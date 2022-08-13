@@ -43,6 +43,7 @@ public class SchedulerJobServiceTest
             FailedRetryCount = 0,
             FailedRetryInterval = 0,
             IsAlertException = false,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutSecond = 30,
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
@@ -83,6 +84,7 @@ public class SchedulerJobServiceTest
             FailedRetryInterval = 0,
             IsAlertException = false,
             RunTimeoutSecond = 30,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
             ScheduleExpiredStrategy = ScheduleExpiredStrategyTypes.Ignore
@@ -121,6 +123,7 @@ public class SchedulerJobServiceTest
             FailedRetryInterval = 0,
             IsAlertException = false,
             RunTimeoutSecond = 30,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
             ScheduleExpiredStrategy = ScheduleExpiredStrategyTypes.Ignore
@@ -145,6 +148,7 @@ public class SchedulerJobServiceTest
             Name = "TestJob",
             JobType = JobTypes.Http,
             CronExpression = "",
+            JobIdentity = "masa-mc-sync-job",
             HttpConfig = new SchedulerJobHttpConfig()
             {
                 RequestUrl = "www.baidu.com",
@@ -303,5 +307,24 @@ public class SchedulerJobServiceTest
         var result = await schedulerClient.SchedulerJobService.DisableAsync(requestData);
         caller.Verify(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task GetSchedulerJobQueryByIdentityAsync()
+    {
+        var requestData = new GetSchedulerJobByIdentityRequest()
+        {
+            JobIdentity = "masa-scheduler-test-job",
+            ProjectIdentity = "masa-scheduler"
+        };
+
+        var requestUri = $"{API}/getSchedulerJobQueryByIdentityAsync";
+        var caller = new Mock<ICaller>();
+        var loggerFactory = new Mock<ILoggerFactory>();
+        caller.Setup(provider => provider.GetAsync<SchedulerJobModel?>(requestUri, requestData, default)).ReturnsAsync(new SchedulerJobModel()).Verifiable();
+        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var result = await schedulerClient.SchedulerJobService.GetSchedulerJobQueryByIdentityAsync(requestData);
+        caller.Verify(provider => provider.GetAsync<SchedulerJobModel?>(requestUri, requestData, default), Times.Once);
+        Assert.IsNotNull(result);
     }
 }
