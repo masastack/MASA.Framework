@@ -20,7 +20,7 @@ namespace Masa.Contrib.StackSdks.Scheduler.Logger
             _taskId = taskId;
         }
 
-        public void LogInfomation(string message)
+        public void LogInformation(string message)
         {
             _logger.LogInformation(LOGGER_BODY, LoggerTypes.JobLog.ToString(), WriterTypes.Job.ToString(), _taskId, _jobId, message);
         }
