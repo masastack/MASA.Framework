@@ -41,7 +41,7 @@ public abstract class Entity : IEntity
 
         if (x is null) return true;
 
-        return x.GetKeys().Select(key => key.Value).SequenceEqual(x.GetKeys().Select(key => key.Value));
+        return y.GetKeys().Select(key => key.Value).SequenceEqual(x.GetKeys().Select(key => key.Value));
     }
 
     public static bool operator !=(Entity? x, Entity? y)
