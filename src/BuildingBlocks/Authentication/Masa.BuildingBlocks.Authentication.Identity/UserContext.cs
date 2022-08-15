@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.Identity;
 
 public abstract class UserContext : IUserSetter, IUserContext
 {
-    private readonly AsyncLocal<object?> _currentUser = new();
+    private readonly AsyncLocal<Dictionary<Type, object?>?> _currentUser = new();
 
     public bool IsAuthenticated => GetUserSimple() != null;
 
@@ -15,11 +15,13 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     protected ITypeConvertProvider TypeConvertProvider { get; }
 
-    public UserContext(ITypeConvertProvider typeConvertProvider) => TypeConvertProvider = typeConvertProvider;
+    protected UserContext(ITypeConvertProvider typeConvertProvider)
+    {
+        TypeConvertProvider = typeConvertProvider;
+        _currentUser.Value = new Dictionary<Type, object?>();
+    }
 
-    protected abstract object? GetUser();
-
-    protected abstract IdentityUser? GetUserBasicInfo();
+    protected abstract object? GetUser(Type userType);
 
     public TUserId? GetUserId<TUserId>()
     {
@@ -30,9 +32,16 @@ public abstract class UserContext : IUserSetter, IUserContext
         return TypeConvertProvider.ConvertTo<TUserId>(userId);
     }
 
+    public IdentityUser? GetUser() => GetUser<IdentityUser>();
+
     public TIdentityUser? GetUser<TIdentityUser>() where TIdentityUser : IIdentityUser
     {
-        var user = _currentUser.Value ?? GetUser();
+        var userModelType = typeof(TIdentityUser);
+        if (!_currentUser.Value!.TryGetValue(userModelType, out var user) || user == null)
+        {
+            user ??= GetUser(userModelType);
+            _currentUser.Value.TryAdd(userModelType, user);
+        }
         return user == null ? default : (TIdentityUser)user;
     }
 
@@ -40,13 +49,16 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     public IDisposable Change<TIdentityUser>(TIdentityUser identityUser) where TIdentityUser : IIdentityUser
     {
-        var user = GetUser();
-        _currentUser.Value = identityUser;
-        return new DisposeAction(() => _currentUser.Value = user);
+        var userModelType = typeof(TIdentityUser);
+        var user = GetUser(userModelType);
+        _currentUser.Value![userModelType] = identityUser;
+        return new DisposeAction(() => _currentUser.Value[userModelType] = user);
     }
 
     public IEnumerable<TRoleId> GetUserRoles<TRoleId>()
     {
-        return GetUserSimple()?.Roles.Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r)) ?? new List<TRoleId>();
+        return GetUserSimple()?.Roles
+            .Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r) ??
+                throw new ArgumentException($"RoleId cannot be converted to [{typeof(TRoleId).Name}]")) ?? new List<TRoleId>();
     }
 }

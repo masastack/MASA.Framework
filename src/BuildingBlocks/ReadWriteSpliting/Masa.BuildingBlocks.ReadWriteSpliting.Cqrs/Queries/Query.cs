@@ -4,7 +4,6 @@
 namespace Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Queries;
 
 public abstract record Query<TResult> : IQuery<TResult>
-    where TResult : notnull
 {
     private Guid _eventId;
     private DateTime _creationTime;
