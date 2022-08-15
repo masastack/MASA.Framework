@@ -44,9 +44,9 @@ internal class DispatcherBase
             {
                 Logger?.LogError(
                     "Dispatcher: The [{eventName}] is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it",
-                    eventType.Name);
+                    eventType.FullName);
                 throw new UserFriendlyException(
-                    $"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
+                    $"The [{eventType.FullName}] is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
             }
 
             Logger?.LogError(
