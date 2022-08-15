@@ -1,5 +1,3 @@
-using Masa.BuildingBlocks.Ddd.Domain.Values;
-
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
@@ -38,6 +36,44 @@ public class TestValueObject
 
         Assert.IsTrue(x == y);
         Assert.IsTrue(x != z);
+    }
+
+    [TestMethod]
+    public void TestDistinct()
+    {
+        var id = Guid.NewGuid();
+        MasaValueObject x = new() { Id = id };
+        MasaValueObject y = new() { Id = id };
+        MasaValueObject z = new() { Id = Guid.NewGuid() };
+
+        var list = new List<MasaValueObject>()
+        {
+            x,
+            y,
+            z
+        };
+        Assert.IsTrue(list.Distinct().Count() == 2);
+        Assert.IsTrue(list.Contains(x));
+        Assert.IsTrue(list.Contains(z));
+    }
+
+    [TestMethod]
+    public void TestContainer()
+    {
+        var id = Guid.NewGuid();
+        MasaValueObject x = new() { Id = id };
+        MasaValueObject y = new() { Id = id };
+        MasaValueObject z = new() { Id = Guid.NewGuid() };
+
+        var list = new List<MasaValueObject>()
+        {
+            x,
+            y
+        };
+        Assert.IsTrue(list.Distinct().Count() == 1);
+        Assert.IsTrue(list.Contains(x));
+        Assert.IsTrue(list.Contains(y));
+        Assert.IsFalse(list.Contains(z));
     }
 
     public class MasaValueObject : ValueObject

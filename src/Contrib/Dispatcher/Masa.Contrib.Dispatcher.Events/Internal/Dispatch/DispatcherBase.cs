@@ -43,15 +43,16 @@ internal class DispatcherBase
             if (@event is IIntegrationEvent)
             {
                 Logger?.LogError(
-                    $"Dispatcher: The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
-                throw new ArgumentNullException(
+                    "Dispatcher: The [{eventName}] is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it",
+                    eventType.Name);
+                throw new UserFriendlyException(
                     $"The current event is an out-of-process event. You should use IIntegrationEventBus or IDomainEventBus to send it");
             }
 
             Logger?.LogError(
-                "Dispatcher: The {EventTypeFullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus",
+                "Dispatcher: The [{EventTypeFullName}] Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus",
                 eventType.FullName);
-            throw new ArgumentNullException(
+            throw new UserFriendlyException(
                 $"The {eventType.FullName} Handler method was not found. Check to see if the EventHandler feature is added to the method and if the Assembly is specified when using EventBus");
         }
         dispatchRelations = relationOptions;
