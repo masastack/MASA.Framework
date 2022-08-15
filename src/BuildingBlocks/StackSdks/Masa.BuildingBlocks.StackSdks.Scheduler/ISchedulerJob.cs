@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Scheduler;
 
 public interface ISchedulerJob
 {
-    Task Init(IServiceProvider serviceProvider, Guid jobId, Guid taskId);
+    Task Init(WebApplicationBuilder builder, IServiceProvider serviceProvider, Guid jobId, Guid taskId);
 
     Task BeforeExcuteAsync(JobContext context);
 

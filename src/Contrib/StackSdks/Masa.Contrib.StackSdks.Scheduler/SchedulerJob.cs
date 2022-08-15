@@ -7,8 +7,14 @@ public abstract class SchedulerJob : ISchedulerJob
 {
     protected SchedulerLogger<SchedulerJob> Logger { get; set; }
 
-    public Task Init(IServiceProvider serviceProvider, Guid jobId, Guid taskId)
+    protected WebApplicationBuilder Builder { get; set; }
+
+    protected IServiceProvider ServiceProvider { get; set; }
+
+    public Task Init(WebApplicationBuilder builder, IServiceProvider serviceProvider, Guid jobId, Guid taskId)
     {
+        Builder = builder;
+        ServiceProvider = serviceProvider;
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         Logger = new SchedulerLogger<SchedulerJob>(loggerFactory, jobId, taskId);
         return Task.CompletedTask;
