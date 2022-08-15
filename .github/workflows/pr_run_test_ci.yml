@@ -9,6 +9,9 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis-version: [5]
     steps:
     - name: git pull
       uses: actions/checkout@v2
@@ -21,6 +24,11 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
+
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.4.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
 
     - name: Configure sysctl limits
       run: |
