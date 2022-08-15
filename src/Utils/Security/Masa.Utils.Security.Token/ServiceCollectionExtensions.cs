@@ -9,7 +9,6 @@ public static class ServiceCollectionExtensions
     {
         services.Configure(options);
         services.TryAddScoped<IJwtProvider, DefaultJwtProvider>();
-        new JwtUtils(services);
         return services;
     }
 }

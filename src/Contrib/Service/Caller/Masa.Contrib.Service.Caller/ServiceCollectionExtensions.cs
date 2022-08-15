@@ -78,21 +78,10 @@ public static class ServiceCollectionExtensions
         {
             options.Callers.ForEach(caller =>
             {
-                if (callerOptions.Callers.Any(relation => relation.Name == caller.Name))
+                if (callerOptions.Options.Any(relation => relation.Name == caller.Name))
                     throw new ArgumentException($"The caller name already exists, please change the name, the repeat name is [{caller.Name}]");
 
-                if (callerOptions.Callers.Any(relation => relation.IsDefault && caller.IsDefault))
-                {
-                    string errorCallerNames = string.Join("、", callerOptions.Callers
-                        .Where(relation => relation.IsDefault)
-                        .Select(relation => relation.Name)
-                        .Concat(options.Callers.Where(relation => relation.IsDefault).Select(relation => relation.Name))
-                        .Distinct());
-                    throw new ArgumentException(
-                        $"There can only be at most one default Caller Provider, and now the following Caller Providers are found to be default: {errorCallerNames}");
-                }
-
-                callerOptions.Callers.Add(caller);
+                callerOptions.Options.Add(caller);
             });
 
             if (callerOptions.JsonSerializerOptions == null && options.JsonSerializerOptions != null)

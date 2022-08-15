@@ -3,9 +3,13 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IIdGenerator<in T,out TOut>
-    where T : notnull
+public interface IIdGenerator
+{
+    string NewStringId();
+}
+
+public interface IIdGenerator<out TOut>: IIdGenerator
     where TOut : notnull
 {
-    public TOut NewId();
+    TOut NewId();
 }

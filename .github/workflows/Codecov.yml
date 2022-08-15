@@ -9,6 +9,10 @@ jobs:
   test:
     name: codecov
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis-version: [5]
+
     steps:
     - name: git pull
       uses: actions/checkout@v2
@@ -34,16 +38,48 @@ jobs:
           analysis-smartcn
           analysis-kuromoji
 
-    - name: restore
-      run: dotnet restore
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.4.0
+      with:
+        redis-version: ${{ matrix.redis-version }}
 
-    - name: build
-      run: dotnet build --no-restore /p:ContinuousIntegrationBuild=true
-    
-    - name: test
-      run: dotnet test --filter FullyQualifiedName~Masa.Contrib --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+        
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+        
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v1
+      with:
+        path: ~\sonar\cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+        
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v1
+      with:
+        path: .\.sonar\scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+        
+    - name: Install SonarCloud scanner
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        
+    - name: Build and analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet-sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet build /p:ContinuousIntegrationBuild=true
+        dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal --collect "Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+        dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: codecov
       uses: codecov/codecov-action@v2
-
-

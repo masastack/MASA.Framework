@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace System;
+namespace Masa.BuildingBlocks.Data;
 
-public readonly struct Snowflake
+public interface ITypeConvertFactory
 {
+    ITypeConvertProvider Create();
 
+    ITypeConvertProvider Create(string name);
 }

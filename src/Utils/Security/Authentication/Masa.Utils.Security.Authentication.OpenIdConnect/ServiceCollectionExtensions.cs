@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         })
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
-            options.ExpireTimeSpan = TimeSpan.FromSeconds(3600);
+            options.ExpireTimeSpan = TimeSpan.FromSeconds(5);
         })
         .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
@@ -67,6 +67,7 @@ public static class ServiceCollectionExtensions
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.UseTokenLifetime = true;
 
+                options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5.0);
                 options.TokenValidationParameters.RequireExpirationTime = true;
                 options.TokenValidationParameters.ValidateLifetime = true;
 
@@ -82,6 +83,19 @@ public static class ServiceCollectionExtensions
                     {
                         context.HandleResponse();
                         context.Response.Redirect("/");
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        if (context.HttpContext.Request.Path.Value == "/signin-oidc")
+                        {
+                            context.SkipHandler();
+                            context.Response.Redirect("/");
+                        }
+                        else
+                        {
+                            context.HandleResponse();
+                        }
                         return Task.CompletedTask;
                     }
                 };

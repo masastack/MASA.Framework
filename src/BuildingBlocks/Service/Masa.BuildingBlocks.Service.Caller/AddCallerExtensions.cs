@@ -5,11 +5,11 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class AddCallerExtensions
 {
-    public static void AddCaller(CallerOptions callerOptions, string name, bool isDefault, Func<IServiceProvider, ICaller> func)
+    public static void AddCaller(CallerOptions callerOptions, string name, Func<IServiceProvider, ICaller> func)
     {
         if (callerOptions.Callers.Any(c => c.Name == name))
             throw new ArgumentException($"The caller name already exists, please change the name, the repeat name is {name}");
 
-        callerOptions.Callers.Add(new CallerRelationOptions(name, isDefault, func));
+        callerOptions.Callers.Add(new CallerRelationOptions(name, func));
     }
 }

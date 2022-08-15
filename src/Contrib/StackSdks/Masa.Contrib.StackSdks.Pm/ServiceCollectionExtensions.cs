@@ -16,9 +16,8 @@ public static class ServiceCollectionExtensions
 
         return services.AddPmClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(pmServiceBaseAddress);
             });
         });
