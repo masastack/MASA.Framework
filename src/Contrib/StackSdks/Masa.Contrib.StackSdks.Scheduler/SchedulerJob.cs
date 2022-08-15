@@ -11,11 +11,11 @@ public abstract class SchedulerJob : ISchedulerJob
 
     protected IServiceProvider ServiceProvider { get; set; }
 
-    public Task Init(WebApplicationBuilder builder, IServiceProvider serviceProvider, Guid jobId, Guid taskId)
+    public Task InitializeAsync(WebApplicationBuilder builder, Guid jobId, Guid taskId)
     {
         Builder = builder;
-        ServiceProvider = serviceProvider;
-        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        ServiceProvider = builder.Services.BuildServiceProvider();
+        var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
         Logger = new SchedulerLogger<SchedulerJob>(loggerFactory, jobId, taskId);
         return Task.CompletedTask;
     }
