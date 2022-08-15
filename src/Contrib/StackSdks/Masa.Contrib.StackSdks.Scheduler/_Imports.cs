@@ -14,6 +14,7 @@ global using Masa.Contrib.StackSdks.Scheduler;
 global using Masa.Contrib.StackSdks.Scheduler.Logger;
 global using Masa.Contrib.StackSdks.Scheduler.Services;
 global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;

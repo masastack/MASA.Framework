@@ -14,4 +14,6 @@ public interface ISchedulerJobService
     Task<bool> EnableAsync(BaseSchedulerJobRequest request);
 
     Task<bool> DisableAsync(BaseSchedulerJobRequest request);
+
+    Task<SchedulerJobModel?> GetSchedulerJobQueryByIdentityAsync(GetSchedulerJobByIdentityRequest request);
 }
