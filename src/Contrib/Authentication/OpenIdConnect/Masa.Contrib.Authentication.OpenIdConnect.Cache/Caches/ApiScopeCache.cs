@@ -7,9 +7,9 @@ public class ApiScopeCache : IApiScopeCache
 {
     IMemoryCacheClient _memoryCacheClient;
 
-    public ApiScopeCache(IMemoryCacheClient memoryCacheClient)
+    public ApiScopeCache(MemoryCacheProvider memoryCacheProvider)
     {
-        _memoryCacheClient = memoryCacheClient;
+        _memoryCacheClient = memoryCacheProvider.GetMemoryCacheClient();
     }
 
     public async Task<List<ApiScopeModel>> GetListAsync(IEnumerable<string> names)

@@ -7,9 +7,9 @@ public class ApiResourceCache : IApiResourceCache
 {
     IMemoryCacheClient _memoryCacheClient;
 
-    public ApiResourceCache(IMemoryCacheClient memoryCacheClient)
+    public ApiResourceCache(MemoryCacheProvider memoryCacheProvider)
     {
-        _memoryCacheClient = memoryCacheClient;
+        _memoryCacheClient = memoryCacheProvider.GetMemoryCacheClient();
     }
 
     public async Task<List<ApiResourceModel>> GetListAsync(IEnumerable<string> names)

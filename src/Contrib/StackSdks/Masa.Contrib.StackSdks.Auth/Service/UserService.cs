@@ -68,10 +68,10 @@ public class UserService : IUserService
         return await _caller.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
     }
 
-    public async Task<UserModel> FindByAccountAsync(string account)
+    public async Task<UserModel?> FindByAccountAsync(string account)
     {
         var requestUri = $"api/user/findByAccount";
-        return await _caller.GetAsync<object, UserModel>(requestUri, new { account }) ?? new();
+        return await _caller.GetAsync<object, UserModel>(requestUri, new { account });
     }
 
     public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
