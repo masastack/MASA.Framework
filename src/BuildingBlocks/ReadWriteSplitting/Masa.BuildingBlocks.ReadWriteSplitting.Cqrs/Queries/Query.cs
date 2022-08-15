@@ -1,19 +1,18 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Commands;
+namespace Masa.BuildingBlocks.ReadWriteSplitting.Cqrs.Queries;
 
-public abstract record Command : ICommand
+public abstract record Query<TResult> : IQuery<TResult>
 {
     private Guid _eventId;
     private DateTime _creationTime;
 
-    [JsonIgnore]
-    public IUnitOfWork? UnitOfWork { get; set; }
+    public abstract TResult Result { get; set; }
 
-    protected Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected Query() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    protected Command(Guid eventId, DateTime creationTime)
+    protected Query(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

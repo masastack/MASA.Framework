@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.ReadWriteSpliting.Cqrs\Masa.Contrib.ReadWriteSpliting.Cqrs.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.ReadWriteSplitting.Cqrs\Masa.Contrib.ReadWriteSplitting.Cqrs.csproj" />
   </ItemGroup>
 
 </Project>

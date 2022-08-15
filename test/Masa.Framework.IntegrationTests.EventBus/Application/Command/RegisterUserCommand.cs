@@ -3,7 +3,7 @@
 
 namespace Masa.Framework.IntegrationTests.EventBus.Application.Command;
 
-public record RegisterUserCommand : BuildingBlocks.ReadWriteSpliting.Cqrs.Commands.Command
+public record RegisterUserCommand : BuildingBlocks.ReadWriteSplitting.Cqrs.Commands.Command
 {
     public string Name { get; set; }
 

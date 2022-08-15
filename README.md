@@ -27,7 +27,7 @@ Provide open, community driven reusable components for building modern applicati
   * [Configuration core, provide local configuration](./src/Configuration/Masa.Contrib.Configuration/README.md)
   * ConfigurationAPI
     * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
-* [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.md)
+* [CQRS](./src/ReadWriteSplitting/Cqrs/Masa.Contrib.ReadWriteSplitting.Cqrs/README.md)
 * Data:
   * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EFCore/README.md)
     * [SqlServer](./src/Data/Masa.Contrib.Data.EFCore.SqlServer/README.md)

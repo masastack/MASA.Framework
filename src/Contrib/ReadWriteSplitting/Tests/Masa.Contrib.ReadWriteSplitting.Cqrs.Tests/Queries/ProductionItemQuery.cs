@@ -3,7 +3,7 @@
 
 
 
-namespace Masa.Contrib.ReadWriteSpliting.Cqrs.Tests.Queries;
+namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests.Queries;
 
 public record ProductionItemQuery : Query<string>
 {

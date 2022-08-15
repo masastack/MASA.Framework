@@ -21,7 +21,7 @@ MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.Bui
   * [Configuration核心、提供本地配置](./src/Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
   * ConfigurationAPI
     * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
-* [CQRS](./src/ReadWriteSpliting/Cqrs/Masa.Contrib.ReadWriteSpliting.Cqrs/README.zh-CN.md)
+* [CQRS](./src/ReadWriteSplitting/Cqrs/Masa.Contrib.ReadWriteSplitting.Cqrs/README.zh-CN.md)
 * Data:
   * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EFCore/README.zh-CN.md)
     * [SqlServer](./src/Data/Masa.Contrib.Data.EFCore.SqlServer/README.zh-CN.md)

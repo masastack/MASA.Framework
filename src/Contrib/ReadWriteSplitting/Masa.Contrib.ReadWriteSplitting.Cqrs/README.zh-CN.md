@@ -1,19 +1,19 @@
-[中](README.zh-CN.md) | EN
+中 | [EN](README.md)
 
 ## Cqrs
 
-Example：
+用例：
 
-1. Define Command and Query base classes
-2. Support the Handler of Saga mode, and provide the basic implementation of CommandHandler
+1. 定义了Command与Query基类
+2. 支持Saga模式的Handler，并提供CommandHandler基础实现
 
    ```C#
-   Install-Package Masa.Contrib.ReadWriteSpliting.Cqrs
+   Install-Package Masa.Contrib.ReadWriteSplitting.Cqrs
    ```
 
 ##### Query：
 
-1. Define Query
+1. 定义Query
 
    ```C#
    public class CatalogItemQuery : Query<List<CatalogItem>>
@@ -24,14 +24,15 @@ Example：
    }
    ```
 
-2. Define QueryHandler
+2. 定义QueryHandler
 
    ```C#
    public class CatalogQueryHandler : QueryHandler<CatalogItemQuery, List<CatalogItem>>
    {
        private readonly ICatalogItemRepository _catalogItemRepository;
 
-       public CatalogQueryHandler(ICatalogItemRepository catalogItemRepository) => _catalogItemRepository = catalogItemRepository;
+       public CatalogQueryHandler(ICatalogItemRepository catalogItemRepository)
+           => _catalogItemRepository = catalogItemRepository;
 
        public async Task HandleAsync(CatalogItemQuery query)
        {
@@ -40,18 +41,18 @@ Example：
    }
    ```
 
-3. Send Query
+3. 发送Query
 
    ```c#
-   IEventBus eventBus;//Get IEventBus through DI
+   IEventBus eventBus;//通过DI得到IEventBus
    await eventBus.PublishAsync(new CatalogItemQuery() { Name = "Rolex" });
    ```
 
-   > Tip: The generic type after Query is consistent with the return type of Result. You need to assign a value to Result in Handler so that the caller can get the result.
+   > 提示：Query后的泛型与Result的返回类型保持一致，需要再Handler中为Result赋值，以便调用方得到结果
 
 ##### Command
 
-1. Define Command
+1. 定义 Command
 
    ```c#
    public class CreateCatalogItemCommand : Command
@@ -62,14 +63,14 @@ Example：
    }
    ```
 
-2. Add CommandHandler
+2. 添加 CommandHandler
 
    ```c#
    public class CatalogCommandHandler : CommandHandler<CreateCatalogItemCommand>
    {
        private readonly ICatalogItemRepository _catalogItemRepository;
 
-       public CatalogCommandHandler(ICatalogItemRepository catalogItemRepository) => _catalogItemRepository = catalogItemRepository;
+       public CatalogCommandHandler(ICatalogItemRepository catalogItemRepository) => _catalogItemRepository =    catalogItemRepository;
 
        public async Task HandleAsync(CreateCatalogItemCommand command)
        {
@@ -78,9 +79,9 @@ Example：
    }
    ```
 
-3. Send Command
+3. 发送 Command
 
    ```C#
-   IEventBus eventBus;//Get IEventBus through DI
+   IEventBus eventBus;//通过DI得到IEventBus
    await eventBus.PublishAsync(new CreateCatalogItemCommand());
    ```
