@@ -5,12 +5,7 @@ namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests.Callers;
 
 public class GithubCaller : HttpClientCallerBase
 {
-    public GithubCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-        BaseAddress = "https://github.com/masastack";
-    }
-
-    protected override string BaseAddress { get; set; }
+    protected override string BaseAddress { get; set; } = "https://github.com/masastack";
 
     public async Task<bool> GetAsync()
     {

@@ -18,6 +18,7 @@ public class DaprCaller : AbstractCaller
         AppId = appId;
     }
 
+
     public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)
         where TResponse : default
     {
@@ -29,6 +30,8 @@ public class DaprCaller : AbstractCaller
     {
         var httpRequestMessage =
             await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName));
+
+        RequestMessageAction?.Invoke(httpRequestMessage);
 
         DealRequestMessage(Action);
 
@@ -44,6 +47,8 @@ public class DaprCaller : AbstractCaller
     {
         var httpRequestMessage =
             await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName), data);
+
+        RequestMessageAction?.Invoke(httpRequestMessage);
 
         DealRequestMessage(Action);
 
