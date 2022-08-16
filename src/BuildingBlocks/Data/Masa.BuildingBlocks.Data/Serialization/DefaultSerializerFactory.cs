@@ -3,37 +3,18 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class DefaultSerializerFactory : ISerializerFactory
+public class DefaultSerializerFactory : AbstractMasaFactory<ISerializer, SerializerRelationOptions>,
+    ISerializerFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<SerializerFactoryOptions> _serializerFactoryOptions;
-    private readonly SerializerRelationOptions? _defaultSerializerOptions;
+    protected override string DefaultServiceNotFoundMessage => "Default serializer not found, you need to add it, like services.AddJson()";
 
-    public DefaultSerializerFactory(IServiceProvider serviceProvider, IOptions<SerializerFactoryOptions> serializerFactoryOptions)
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] serializer, it was not found";
+    protected override MasaFactoryOptions<SerializerRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<SerializerFactoryOptions> _optionsMonitor;
+
+    public DefaultSerializerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
-        _serializerFactoryOptions = serializerFactoryOptions;
-        _defaultSerializerOptions = serializerFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name == Options.DefaultName) ??
-            serializerFactoryOptions.Value.Options.FirstOrDefault();
-    }
-
-    public ISerializer Create()
-    {
-        if (_defaultSerializerOptions == null)
-            throw new NotImplementedException("Default serializer not found, you need to add it, like services.AddJson()");
-
-        return _defaultSerializerOptions.Func.Invoke(_serviceProvider);
-    }
-
-    public ISerializer Create(string name)
-    {
-        var serializerOptions =
-            _serializerFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        if (serializerOptions == null)
-            throw new NotImplementedException($"No serializer found for 【{name}】");
-
-        return serializerOptions.Func.Invoke(_serviceProvider);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<SerializerFactoryOptions>>();
     }
 }

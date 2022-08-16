@@ -43,6 +43,7 @@ public class SchedulerJobServiceTest
             FailedRetryCount = 0,
             FailedRetryInterval = 0,
             IsAlertException = false,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutSecond = 30,
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
@@ -51,9 +52,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
         caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
@@ -83,6 +83,7 @@ public class SchedulerJobServiceTest
             FailedRetryInterval = 0,
             IsAlertException = false,
             RunTimeoutSecond = 30,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
             ScheduleExpiredStrategy = ScheduleExpiredStrategyTypes.Ignore
@@ -90,9 +91,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
         caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
@@ -121,6 +121,7 @@ public class SchedulerJobServiceTest
             FailedRetryInterval = 0,
             IsAlertException = false,
             RunTimeoutSecond = 30,
+            JobIdentity = "masa-mc-sync-job",
             RunTimeoutStrategy = RunTimeoutStrategyTypes.IgnoreTimeout,
             ScheduleBlockStrategy = ScheduleBlockStrategyTypes.Parallel,
             ScheduleExpiredStrategy = ScheduleExpiredStrategyTypes.Ignore
@@ -128,9 +129,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
         caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
@@ -145,6 +145,7 @@ public class SchedulerJobServiceTest
             Name = "TestJob",
             JobType = JobTypes.Http,
             CronExpression = "",
+            JobIdentity = "masa-mc-sync-job",
             HttpConfig = new SchedulerJobHttpConfig()
             {
                 RequestUrl = "www.baidu.com",
@@ -166,9 +167,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
@@ -185,9 +185,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
@@ -204,9 +203,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
@@ -223,9 +221,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
@@ -239,9 +236,8 @@ public class SchedulerJobServiceTest
         };
 
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.RemoveAsync(requestData);
         caller.Verify(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default), Times.Once);
 
@@ -259,9 +255,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/startJob";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.StartAsync(requestData);
         caller.Verify(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
@@ -278,9 +273,8 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/changeEnableStatus";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.EnableAsync(requestData);
         caller.Verify(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
@@ -297,11 +291,28 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/changeEnableStatus";
         var caller = new Mock<ICaller>();
-        var loggerFactory = new Mock<ILoggerFactory>();
         caller.Setup(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default)).Verifiable();
-        var schedulerClient = new SchedulerClient(caller.Object, loggerFactory.Object);
+        var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.DisableAsync(requestData);
         caller.Verify(provider => provider.PutAsync<ChangeEnabledStatusRequest>(requestUri, It.IsAny<ChangeEnabledStatusRequest>(), true, default), Times.Once);
         Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task GetSchedulerJobQueryByIdentityAsync()
+    {
+        var requestData = new GetSchedulerJobByIdentityRequest()
+        {
+            JobIdentity = "masa-scheduler-test-job",
+            ProjectIdentity = "masa-scheduler"
+        };
+
+        var requestUri = $"{API}/getSchedulerJobQueryByIdentityAsync";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<SchedulerJobModel?>(requestUri, requestData, default)).ReturnsAsync(new SchedulerJobModel()).Verifiable();
+        var schedulerClient = new SchedulerClient(caller.Object);
+        var result = await schedulerClient.SchedulerJobService.GetSchedulerJobQueryByIdentityAsync(requestData);
+        caller.Verify(provider => provider.GetAsync<SchedulerJobModel?>(requestUri, requestData, default), Times.Once);
+        Assert.IsNotNull(result);
     }
 }

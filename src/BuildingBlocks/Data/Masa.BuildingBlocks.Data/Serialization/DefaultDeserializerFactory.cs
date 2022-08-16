@@ -3,37 +3,18 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class DefaultDeserializerFactory : IDeserializerFactory
+public class DefaultDeserializerFactory : AbstractMasaFactory<IDeserializer, DeserializerRelationOptions>,
+    IDeserializerFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<DeserializerFactoryOptions> _deserializerFactoryOptions;
-    private readonly DeserializerRelationOptions? _defaultDeserializerOptions;
+    protected override string DefaultServiceNotFoundMessage => "Default deserializer not found, you need to add it, like services.AddJson()";
 
-    public DefaultDeserializerFactory(IServiceProvider serviceProvider, IOptions<DeserializerFactoryOptions> deserializerFactoryOptions)
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] deserializer, it was not found";
+    protected override MasaFactoryOptions<DeserializerRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<DeserializerFactoryOptions> _optionsMonitor;
+
+    public DefaultDeserializerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
-        _deserializerFactoryOptions = deserializerFactoryOptions;
-        _defaultDeserializerOptions = deserializerFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name == Options.DefaultName) ??
-            deserializerFactoryOptions.Value.Options.FirstOrDefault();
-    }
-
-    public IDeserializer Create()
-    {
-        if (_defaultDeserializerOptions == null)
-            throw new NotImplementedException("Default deserializer not found, you need to add it, like services.AddJson()");
-
-        return _defaultDeserializerOptions.Func.Invoke(_serviceProvider);
-    }
-
-    public IDeserializer Create(string name)
-    {
-        var deserializerOptions =
-            _deserializerFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        if (deserializerOptions == null)
-            throw new NotImplementedException($"No deserializer found for 【{name}】");
-
-        return deserializerOptions.Func.Invoke(_serviceProvider);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<DeserializerFactoryOptions>>();
     }
 }

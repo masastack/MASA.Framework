@@ -9,7 +9,9 @@ public class HttpClientCaller : AbstractCaller
     private readonly string _prefix;
     private readonly bool _prefixIsNullOrEmpty;
 
-    public HttpClientCaller(IServiceProvider serviceProvider, string name, string prefix)
+    public HttpClientCaller(IServiceProvider serviceProvider,
+        string name,
+        string prefix)
         : base(serviceProvider)
     {
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);
@@ -24,11 +26,20 @@ public class HttpClientCaller : AbstractCaller
         return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken);
     }
 
-    public override Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
-        => RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)));
+    public override async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
+    {
+        var requestMessage = await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)));
+        RequestMessageAction?.Invoke(requestMessage);
+        return requestMessage;
+    }
 
-    public override Task<HttpRequestMessage> CreateRequestAsync<TRequest>(HttpMethod method, string? methodName, TRequest data)
-        => RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data);
+    public override async Task<HttpRequestMessage> CreateRequestAsync<TRequest>(HttpMethod method, string? methodName, TRequest data)
+    {
+        var requestMessage =
+            await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data);
+        RequestMessageAction?.Invoke(requestMessage);
+        return requestMessage;
+    }
 
     public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
     {

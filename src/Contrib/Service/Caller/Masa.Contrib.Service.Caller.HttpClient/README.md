@@ -54,7 +54,6 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
         => caller.GetAsync<string>($"/Hello", new { Name = name }));// Get UserCaller
 
-
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
         var caller = callerFactory.Create("OrderCaller");
@@ -82,10 +81,6 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     public class UserCaller: HttpClientCallerBase
     {
         protected override string BaseAddress { get; set; } = "http://localhost:5000";
-
-        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
 
         public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
 

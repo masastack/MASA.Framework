@@ -9,6 +9,10 @@ public abstract class DaprCallerBase : CallerBase
 
     public virtual Action<DaprClientBuilder>? Configure { get; set; } = null;
 
+    protected DaprCallerBase()
+    {
+    }
+
     protected DaprCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }

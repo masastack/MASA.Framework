@@ -9,6 +9,11 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual string Prefix { get; set; } = string.Empty;
 
+    protected HttpClientCallerBase()
+    {
+
+    }
+
     protected HttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }

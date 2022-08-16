@@ -30,6 +30,8 @@ public class DaprCaller : AbstractCaller
         var httpRequestMessage =
             await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName));
 
+        RequestMessageAction?.Invoke(httpRequestMessage);
+
         DealRequestMessage(Action);
 
         return httpRequestMessage;
@@ -44,6 +46,8 @@ public class DaprCaller : AbstractCaller
     {
         var httpRequestMessage =
             await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName), data);
+
+        RequestMessageAction?.Invoke(httpRequestMessage);
 
         DealRequestMessage(Action);
 

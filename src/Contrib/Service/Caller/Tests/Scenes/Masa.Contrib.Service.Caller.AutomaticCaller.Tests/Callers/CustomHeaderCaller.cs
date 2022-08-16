@@ -3,13 +3,21 @@
 
 namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests.Callers;
 
-public class GithubCaller : HttpClientCallerBase
+public class CustomHeaderCaller : HttpClientCallerBase
 {
+    private readonly TokenProvider? _tokenProvider;
     protected override string BaseAddress { get; set; } = "https://github.com/masastack";
+
+    public CustomHeaderCaller(TokenProvider? tokenProvider = null) => _tokenProvider = tokenProvider;
 
     public async Task<bool> GetAsync()
     {
         var res = await Caller.GetAsync("");
         return res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK;
+    }
+
+    protected override void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
+    {
+        Assert.IsTrue(_tokenProvider != null && _tokenProvider.Token == "token");
     }
 }

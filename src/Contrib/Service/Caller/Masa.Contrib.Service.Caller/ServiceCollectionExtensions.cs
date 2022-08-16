@@ -52,13 +52,17 @@ public static class ServiceCollectionExtensions
             {
                 var constructorInfo = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .MaxBy(constructor => constructor.GetParameters().Length)!;
-                List<object> parameters = new();
+                List<object?> parameters = new();
                 foreach (var parameter in constructorInfo.GetParameters())
                 {
-                    parameters.Add(serviceProvider.GetRequiredService(parameter.ParameterType));
+                    parameters.Add(serviceProvider.GetService(parameter.ParameterType));
                 }
                 var callerBase = (constructorInfo.Invoke(parameters.ToArray()) as CallerBase)!;
                 callerBase.SetCallerOptions(callerOptions, type.FullName ?? type.Name);
+                if (callerBase.ServiceProvider == null)
+                {
+                    callerBase.SetServiceProvider(serviceProvider);
+                }
                 return callerBase;
             }, callerOptions.CallerLifetime);
             services.TryAdd(serviceDescriptor);
@@ -79,7 +83,8 @@ public static class ServiceCollectionExtensions
             options.Callers.ForEach(caller =>
             {
                 if (callerOptions.Options.Any(relation => relation.Name == caller.Name))
-                    throw new ArgumentException($"The caller name already exists, please change the name, the repeat name is [{caller.Name}]");
+                    throw new ArgumentException(
+                        $"The caller name already exists, please change the name, the repeat name is [{caller.Name}]");
 
                 callerOptions.Options.Add(caller);
             });
