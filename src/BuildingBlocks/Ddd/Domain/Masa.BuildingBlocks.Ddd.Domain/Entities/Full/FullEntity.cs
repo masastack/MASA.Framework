@@ -14,11 +14,11 @@ public abstract class FullEntity<TKey, TUserId>
 {
     public bool IsDeleted { get; protected set; }
 
-    public FullEntity() : base()
+    protected FullEntity() : base()
     {
     }
 
-    public FullEntity(TKey id) : base(id)
+    protected FullEntity(TKey id) : base(id)
     {
     }
 }

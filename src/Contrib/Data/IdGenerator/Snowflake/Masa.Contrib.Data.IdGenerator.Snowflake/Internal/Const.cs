@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Internal;
 
-internal class Const
+internal static class Const
 {
     /// <summary>
     /// Default working cluster idkey

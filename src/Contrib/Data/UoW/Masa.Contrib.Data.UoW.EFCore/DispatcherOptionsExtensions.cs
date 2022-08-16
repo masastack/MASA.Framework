@@ -78,7 +78,7 @@ public static class DispatcherOptionsExtensions
         return services;
     }
 
-    private class UoWProvider
+    private sealed class UoWProvider
     {
     }
 }

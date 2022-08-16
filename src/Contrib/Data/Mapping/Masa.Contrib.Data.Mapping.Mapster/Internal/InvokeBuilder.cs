@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.Mapping.Mapster.Internal;
 
-internal class InvokeBuilder
+internal static class InvokeBuilder
 {
     private static readonly MethodInfo _newConfigMethodInfo;
     private static readonly Type _typeAdapterConfigType;

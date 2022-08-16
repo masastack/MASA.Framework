@@ -36,9 +36,4 @@ public static class IdGeneratorOptionsExtensions
                     distributedIdGeneratorOptions));
         }
     }
-
-    private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
-        services.BuildServiceProvider().GetRequiredService<TService>();
-
-
 }

@@ -14,13 +14,13 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestAddRangeReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.AddRangeAsync(It.IsAny<Orders[]>(), default))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
         var orders = new List<Orders>()
@@ -36,14 +36,14 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestAddRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.AddRangeAsync(It.IsAny<Orders[]>(), default))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
         unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
         Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 
@@ -60,13 +60,13 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestUpdateRangeReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
         var orders = new List<Orders>()
@@ -82,14 +82,14 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestUpdateRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
         unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
         Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 
@@ -106,13 +106,13 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestUpdateReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().Update(It.IsAny<Orders>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
         var order = new Orders(999);
@@ -125,14 +125,14 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestUpdateAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().Update(It.IsAny<Orders>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
         unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
         Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 
@@ -146,13 +146,13 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestRemoveRangeReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
         var orders = new List<Orders>()
@@ -168,14 +168,14 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestRemoveRangeAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
         unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
         Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 
@@ -193,13 +193,13 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestRemoveReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().Remove(It.IsAny<Orders>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
         var order = new Orders(999);
@@ -212,14 +212,14 @@ public class RepositoryTest
     [TestMethod]
     public async Task TestRemoveAndUseTransactionReturnEntityStateEqualChangedAsync()
     {
-        Mock<DbContext> dbContext = new();
+        Mock<CustomDbContext> dbContext = new();
         dbContext
             .Setup(context => context.Set<Orders>().Remove(It.IsAny<Orders>()))
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
         unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
-        var repository = new Repository<DbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
         Assert.IsTrue(repository.UnitOfWork.UseTransaction);
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.Contracts.EFCore.Internal;
 
-internal class DisposeAction : IDisposable
+internal sealed class DisposeAction : IDisposable
 {
     private readonly Action _action;
 

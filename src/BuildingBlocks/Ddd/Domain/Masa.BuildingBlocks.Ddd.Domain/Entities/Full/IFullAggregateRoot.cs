@@ -3,12 +3,12 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 
-public interface IFullAggregateRoot<TUserId> : IFullEntity<TUserId>, IAuditAggregateRoot<TUserId>
+public interface IFullAggregateRoot<out TUserId> : IFullEntity<TUserId>, IAuditAggregateRoot<TUserId>
 {
 
 }
 
-public interface IFullAggregateRoot<TKey, TUserId> : IFullEntity<TKey, TUserId>, IAuditAggregateRoot<TKey, TUserId>
+public interface IFullAggregateRoot<TKey, out TUserId> : IFullEntity<TKey, TUserId>, IAuditAggregateRoot<TKey, TUserId>
 {
 
 }

@@ -85,7 +85,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class IntegrationEventBusProvider
+    private sealed class IntegrationEventBusProvider
     {
     }
 }

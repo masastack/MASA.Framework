@@ -31,7 +31,7 @@ public static class IsolationBuilderExtensions
         return isolationBuilder;
     }
 
-    private class MultiTenantProvider
+    private sealed class MultiTenantProvider
     {
     }
 }

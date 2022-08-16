@@ -24,7 +24,7 @@ public class ChoreTest : TestBase
             Gender = gender == 1,
             Abstract = abstracts
         };
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
         {
             await _eventBus.PublishAsync(@event);
         });

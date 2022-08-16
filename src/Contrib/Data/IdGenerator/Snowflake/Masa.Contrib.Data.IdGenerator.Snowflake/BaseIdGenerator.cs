@@ -67,7 +67,7 @@ public abstract class BaseIdGenerator: BaseIdGenerator<long>
 
                 if (res.Support) LastTimestamp = res.LastTimestamp;
                 else
-                    throw new Exception(
+                    throw new MasaException(
                         $"InvalidSystemClock: Clock moved backwards, Refusing to generate id for {LastTimestamp - currentTimestamp} milliseconds");
             }
 

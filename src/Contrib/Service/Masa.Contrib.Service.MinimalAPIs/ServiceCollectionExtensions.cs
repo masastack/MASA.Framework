@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
         return app;
     }
 
-    private class MinimalApisMarkerService
+    private sealed class MinimalApisMarkerService
     {
 
     }

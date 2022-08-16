@@ -7,7 +7,7 @@ internal delegate Task TaskInvokeDelegate(object target, params object[] paramet
 
 internal delegate void VoidInvokeDelegate(object target, object[] parameters);
 
-internal class InvokeBuilder
+internal static class InvokeBuilder
 {
     public static TaskInvokeDelegate Build(MethodInfo methodInfo, Type targetType)
     {

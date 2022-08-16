@@ -28,7 +28,7 @@ public class CouponHandler
     [EventHandler(Order = 20, FailureLevels = FailureLevels.Ignore)]
     public Task SendNotice(RegisterUserEvent @event)
     {
-        _logger?.LogInformation("------Send Coupon------");
+        _logger?.LogInformation("------Send Coupon Notice------");
 
         var num = new Random().Next(1, 3);
         if (num % 2 == 0)
@@ -42,7 +42,7 @@ public class CouponHandler
     [EventHandler(Order = 10, RetryTimes = 5, IsCancel = true)]
     public Task CancelSendCoupon(RegisterUserEvent @event)
     {
-        _logger?.LogInformation("------Cancel Send Coupon------");
+        _logger?.LogInformation("------Cancel Send Coupon Notice------");
 
         var num = new Random().Next(1, 3);
         if (num % 2 == 0)

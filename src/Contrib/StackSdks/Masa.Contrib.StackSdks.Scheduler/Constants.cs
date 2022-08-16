@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Scheduler;
 
-internal class Constants
+internal static class Constants
 {
     internal const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.scheduler";
     internal const string ENVIRONMENT_KEY = "env_key";

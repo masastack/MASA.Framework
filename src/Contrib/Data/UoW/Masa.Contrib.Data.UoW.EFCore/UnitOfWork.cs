@@ -100,9 +100,27 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         return Task.CompletedTask;
     }
 
-    public async ValueTask DisposeAsync() => await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
+    public async ValueTask DisposeAsync()
+    {
+        DisposeAsync(true);
+        await (_context?.DisposeAsync() ?? ValueTask.CompletedTask);
+        GC.SuppressFinalize(this);
+    }
 
-    public void Dispose() => _context?.Dispose();
+    protected virtual void DisposeAsync(bool disposing)
+    {
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        _context?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 
     private IDomainEventBus? GetDomainEventBus()
         => ServiceProvider.GetService<IDomainEventBus>();

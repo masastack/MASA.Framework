@@ -5,7 +5,7 @@ namespace Microsoft.EntityFrameworkCore;
 
 public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
-    private bool _isInitialize = false;
+    private bool _initialized;
     private IDataFilter? _dataFilter;
 
     protected IDataFilter? DataFilter
@@ -41,14 +41,14 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         }
     }
 
-    public MasaDbContext(MasaDbContextOptions options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions options) : base(options)
     {
         Options = options;
     }
 
     protected virtual void TryInitialize()
     {
-        if (!_isInitialize) Initialize();
+        if (!_initialized) Initialize();
     }
 
     protected virtual void Initialize()
@@ -56,6 +56,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
         _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
         _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
+        _initialized = true;
     }
 
     /// <summary>
@@ -69,13 +70,6 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         OnModelCreatingExecuting(modelBuilder);
 
         OnModelCreatingConfigureGlobalFilters(modelBuilder);
-
-        // null when run dotnet ef cli
-        if (Options == null)
-        {
-            base.OnModelCreating(modelBuilder);
-            return;
-        }
 
         foreach (var provider in Options.ModelCreatingProviders)
             provider.Configure(modelBuilder);
@@ -125,7 +119,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     }
 
     protected virtual bool IsSoftDeleteFilterEnabled
-        => (Options?.EnableSoftDelete ?? false) && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
+        => Options is { EnableSoftDelete: true } && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
 
     /// <summary>
     /// Automatic soft delete.
@@ -142,22 +136,16 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
     protected virtual void OnBeforeSaveChanges()
     {
-        if (Options != null)
-        {
-            UpdateRowVesion(ChangeTracker);
-            OnBeforeSaveChangesByFilters();
-            DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
+        UpdateRowVesion(ChangeTracker);
+        OnBeforeSaveChangesByFilters();
+        DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     protected virtual async Task OnBeforeSaveChangesAsync()
     {
-        if (Options != null)
-        {
-            UpdateRowVesion(ChangeTracker);
-            OnBeforeSaveChangesByFilters();
-            await DomainEventEnqueueAsync(ChangeTracker);
-        }
+        UpdateRowVesion(ChangeTracker);
+        OnBeforeSaveChangesByFilters();
+        await DomainEventEnqueueAsync(ChangeTracker);
     }
 
     protected virtual void OnBeforeSaveChangesByFilters()
@@ -170,7 +158,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occured when intercept SaveChanges() or SaveChangesAsync()", ex);
+                throw new MasaException("An error occured when intercept SaveChanges() or SaveChangesAsync()", ex);
             }
         }
     }
@@ -182,13 +170,14 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
         var domainEntities = changeTracker
             .Entries<IGenerateDomainEvents>()
-            .Where(entry => entry.Entity.GetDomainEvents().Any());
+            .Where(entry => entry.Entity.GetDomainEvents().Any())
+            .ToList();
 
         var domainEvents = domainEntities
             .SelectMany(entry => entry.Entity.GetDomainEvents())
             .ToList();
 
-        domainEntities.ToList()
+        domainEntities
             .ForEach(entity => entity.Entity.ClearDomainEvents());
 
         foreach (var domainEvent in domainEvents)
@@ -234,7 +223,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 public abstract class MasaDbContext<TDbContext> : MasaDbContext
     where TDbContext : DbContext, IMasaDbContext
 {
-    public MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
     }
 

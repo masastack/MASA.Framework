@@ -13,15 +13,15 @@ public abstract class AuditEntity<TUserId> : Entity, IAuditEntity<TUserId>
 
     public DateTime ModificationTime { get; set; }
 
-    public AuditEntity() => Initialize();
+    protected AuditEntity() => Initialize();
 
-    public void Initialize()
+    private void Initialize()
     {
         this.CreationTime = this.GetCurrentTime();
         this.ModificationTime = this.GetCurrentTime();
     }
 
-    public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
+    protected virtual DateTime GetCurrentTime() => DateTime.UtcNow;
 }
 
 public abstract class AuditEntity<TKey, TUserId> : Entity<TKey>, IAuditEntity<TKey, TUserId>
@@ -34,21 +34,21 @@ public abstract class AuditEntity<TKey, TUserId> : Entity<TKey>, IAuditEntity<TK
 
     public DateTime ModificationTime { get; protected set; }
 
-    public AuditEntity() : base()
+    protected AuditEntity() : base()
     {
         Initialize();
     }
 
-    public AuditEntity(TKey id) : base(id)
+    protected AuditEntity(TKey id) : base(id)
     {
         Initialize();
     }
 
-    public void Initialize()
+    private void Initialize()
     {
         this.CreationTime = this.GetCurrentTime();
         this.ModificationTime = this.GetCurrentTime();
     }
 
-    public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
+    protected virtual DateTime GetCurrentTime() => DateTime.UtcNow;
 }

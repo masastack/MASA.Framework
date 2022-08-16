@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Model;
 
-internal class StaticConfig
+internal static class StaticConfig
 {
     public static string AppId { get; set; }
 
