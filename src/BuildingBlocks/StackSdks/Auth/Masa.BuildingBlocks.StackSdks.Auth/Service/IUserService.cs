@@ -25,7 +25,7 @@ public interface IUserService
 
     Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
-    Task<UserModel> FindByAccountAsync(string account);
+    Task<UserModel?> FindByAccountAsync(string account);
 
     Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber);
 
