@@ -8,7 +8,7 @@ global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
-global using Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Queries;
+global using Masa.BuildingBlocks.ReadWriteSplitting.Cqrs.Queries;
 global using Masa.Contrib.Data.Contracts.EFCore;
 global using Masa.Contrib.Data.UoW.EFCore;
 global using Masa.Contrib.Ddd.Domain.Repository.EFCore;

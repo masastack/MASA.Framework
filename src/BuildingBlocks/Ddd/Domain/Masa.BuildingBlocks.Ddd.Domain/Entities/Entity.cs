@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Entities;
 
-public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
+public abstract class Entity : IEntity
 {
     public abstract IEnumerable<(string Name, object Value)> GetKeys();
 
@@ -22,24 +22,17 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
 
         if (obj is Entity other)
         {
-            return other.GetKeys().Select(key => key.Value).SequenceEqual(GetKeys().Select(key => key.Value));
+            return this == other;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
-    public bool Equals(Entity? other)
-    {
-        if (this is null ^ other is null) return false;
-
-        return other!.GetKeys().Select(key => key.Value).SequenceEqual(GetKeys().Select(key => key.Value));
-    }
+    protected virtual bool Equals(Entity? other) => this == other;
 
     public override int GetHashCode()
     {
-        return GetKeys().Select(key => key.Value).Aggregate(0, (hashCode, next) => HashCode.Combine(hashCode, next));
+        return GetKeys().Select(key => key.Value).Aggregate(0, HashCode.Combine);
     }
 
     public static bool operator ==(Entity? x, Entity? y)
@@ -48,7 +41,7 @@ public abstract class Entity : IEntity, IEquatable<Entity>, IEquatable<object>
 
         if (x is null) return true;
 
-        return x.Equals(y);
+        return x.GetKeys().Select(key => key.Value).SequenceEqual(x.GetKeys().Select(key => key.Value));
     }
 
     public static bool operator !=(Entity? x, Entity? y)
