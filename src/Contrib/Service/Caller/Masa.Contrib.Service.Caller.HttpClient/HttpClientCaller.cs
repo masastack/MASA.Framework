@@ -10,7 +10,8 @@ public class HttpClientCaller : AbstractCaller
     private readonly bool _prefixIsNullOrEmpty;
 
     public HttpClientCaller(IServiceProvider serviceProvider,
-        string name, string prefix)
+        string name,
+        string prefix)
         : base(serviceProvider)
     {
         _httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);
