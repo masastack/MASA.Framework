@@ -7,7 +7,7 @@ public static class DispatcherOptionsExtensions
 {
     public static IDispatcherOptions UseRepository<TDbContext>(
         this IDispatcherOptions options)
-        where TDbContext : DbContext
+        where TDbContext : DbContext, IMasaDbContext
     {
         if (options.Services == null)
             throw new ArgumentNullException(nameof(options.Services));
@@ -24,7 +24,7 @@ public static class DispatcherOptionsExtensions
         return options;
     }
 
-    private class RepositoryProvider
+    private sealed class RepositoryProvider
     {
 
     }

@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCaller(this IServiceCollection services, params Assembly[] assemblies)
         => services.AddCaller(options => options.Assemblies = assemblies);
 
-    private static IServiceCollection AddCaller(this IServiceCollection services,
+    public static IServiceCollection AddCaller(this IServiceCollection services,
         ServiceLifetime lifetime = ServiceLifetime.Scoped,
         params Assembly[] assemblies)
         => services.AddCaller(options =>

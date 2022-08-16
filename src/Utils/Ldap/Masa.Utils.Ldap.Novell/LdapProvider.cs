@@ -5,8 +5,8 @@ namespace Masa.Utils.Ldap.Novell;
 
 public class LdapProvider : ILdapProvider, IDisposable
 {
-    ILdapConnection ldapConnection = null!;
-    LdapOptions _ldapOptions;
+    private ILdapConnection? _ldapConnection;
+    private readonly LdapOptions _ldapOptions;
 
     private readonly string[] _attributes =
     {
@@ -27,18 +27,18 @@ public class LdapProvider : ILdapProvider, IDisposable
 
     private async Task<ILdapConnection> GetConnectionAsync()
     {
-        if (ldapConnection != null && ldapConnection.Connected)
+        if (_ldapConnection is { Connected: true })
         {
-            return ldapConnection;
+            return _ldapConnection;
         }
-        ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapOptions.ServerPortSsl != 0 };
+        _ldapConnection = new LdapConnection() { SecureSocketLayer = _ldapOptions.ServerPortSsl != 0 };
         //Connect function will create a socket connection to the server - Port 389 for insecure and 3269 for secure
-        await ldapConnection.ConnectAsync(_ldapOptions.ServerAddress,
+        await _ldapConnection.ConnectAsync(_ldapOptions.ServerAddress,
             _ldapOptions.ServerPortSsl != 0 ? _ldapOptions.ServerPortSsl : _ldapOptions.ServerPort);
         //Bind function with null user dn and password value will perform anonymous bind to LDAP server
-        await ldapConnection.BindAsync(_ldapOptions.RootUserDn, _ldapOptions.RootUserPassword);
+        await _ldapConnection.BindAsync(_ldapOptions.RootUserDn, _ldapOptions.RootUserPassword);
 
-        return ldapConnection;
+        return _ldapConnection;
     }
 
     public async Task<bool> AuthenticateAsync(string distinguishedName, string password)
@@ -73,7 +73,7 @@ public class LdapProvider : ILdapProvider, IDisposable
         {
             new LdapAttribute("instanceType", "4"),
             new LdapAttribute("objectCategory", $"CN=Users,{_ldapOptions.UserSearchBaseDn}"),
-            new LdapAttribute("objectClass", new[] {"top", "person", "organizationalPerson", "user"}),
+            new LdapAttribute("objectClass", new[] { "top", "person", "organizationalPerson", "user" }),
             new LdapAttribute("name", user.Name),
             new LdapAttribute("cn", $"{user.FirstName} {user.LastName}"),
             new LdapAttribute("sAMAccountName", user.SamAccountName),
@@ -115,10 +115,10 @@ public class LdapProvider : ILdapProvider, IDisposable
     {
         using var ldapConnection = await GetConnectionAsync();
         return await ldapConnection.SearchUsingSimplePagingAsync(new SearchOptions(
-            _ldapOptions.UserSearchBaseDn,
-            LdapConnection.ScopeSub,
-            "(&(objectCategory=person)(objectClass=user))",
-            _attributes),
+                _ldapOptions.UserSearchBaseDn,
+                LdapConnection.ScopeSub,
+                "(&(objectCategory=person)(objectClass=user))",
+                _attributes),
             pageSize);
     }
 
@@ -140,11 +140,11 @@ public class LdapProvider : ILdapProvider, IDisposable
     {
         using var ldapConnection = await GetConnectionAsync();
         var searchResults = await ldapConnection.SearchAsync(
-                baseDn,
-                LdapConnection.ScopeSub,
-                filter,
-                _attributes,
-                false);
+            baseDn,
+            LdapConnection.ScopeSub,
+            filter,
+            _attributes,
+            false);
         await foreach (var searchResult in searchResults)
         {
             yield return searchResult;
@@ -176,14 +176,21 @@ public class LdapProvider : ILdapProvider, IDisposable
 
     public void Dispose()
     {
-        if (ldapConnection.Connected)
+        Dispose(true);
+
+        if (_ldapConnection != null)
         {
-            ldapConnection.Disconnect();
+            _ldapConnection.Dispose();
+
+            if (_ldapConnection.Connected) _ldapConnection.Disconnect();
         }
-        if (ldapConnection != null)
-        {
-            ldapConnection.Dispose();
-        }
+
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        // Cleanup
     }
 
     private LdapUser CreateUser(string distinguishedName, LdapAttributeSet attributeSet)
@@ -215,8 +222,8 @@ public class LdapProvider : ILdapProvider, IDisposable
             CountryName = attributeSet.GetString("co"),
             CountryCode = attributeSet.GetString("c")
         };
-        attributeSet.TryGetValue("sAMAccountType", out var sAMAccountType);
-        ldapUser.SamAccountType = int.Parse(sAMAccountType?.StringValue ?? "0");
+        attributeSet.TryGetValue("sAMAccountType", out var sAmAccountType);
+        ldapUser.SamAccountType = int.Parse(sAmAccountType?.StringValue ?? "0");
 
         ldapUser.IsDomainAdmin = ldapUser.MemberOf.Contains("CN=Domain Admins," + _ldapOptions.BaseDn);
 

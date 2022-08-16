@@ -32,7 +32,7 @@ public static class DispatcherOptionsExtensions
         return options;
     }
 
-    private class EventLogProvider
+    private sealed class EventLogProvider
     {
     }
 }

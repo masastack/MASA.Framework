@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
 
-public interface IAuditEntity<TUserId> : IEntity
+public interface IAuditEntity<out TUserId> : IEntity
 {
     TUserId Creator { get; }
 
@@ -14,6 +14,6 @@ public interface IAuditEntity<TUserId> : IEntity
     DateTime ModificationTime { get; }
 }
 
-public interface IAuditEntity<TKey, TUserId> : IAuditEntity<TUserId>, IEntity<TKey>
+public interface IAuditEntity<out TKey, out TUserId> : IAuditEntity<TUserId>, IEntity<TKey>
 {
 }

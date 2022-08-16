@@ -8,7 +8,7 @@ public class CommandArgumentBuilder
     private const string DEFAULT_ARGUMENT_SEPARATOR = " ";
     private const string DEFAULT_ARGUMENT_PREFIX = "--";
 
-    private Dictionary<string, string> _arguments = new();
+    private readonly Dictionary<string, string> _arguments = new();
 
     public string ArgumemtPrefix { get; }
 

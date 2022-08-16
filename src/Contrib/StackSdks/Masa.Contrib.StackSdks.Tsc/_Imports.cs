@@ -8,6 +8,7 @@ global using Masa.BuildingBlocks.StackSdks.Tsc.Service;
 global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Tsc;
+global using Masa.Contrib.StackSdks.Tsc.Service;
 global using Microsoft.AspNetCore.Http;
 global using OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient;
 global using OpenTelemetry.Contrib.Instrumentation.EntityFrameworkCore;

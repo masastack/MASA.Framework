@@ -8,7 +8,7 @@ internal static class ServiceCollectionRepositoryExtensions
     public static IServiceCollection TryAddRepository<TDbContext>(
         this IServiceCollection services,
         params Assembly[] assemblies)
-        where TDbContext : DbContext
+        where TDbContext : DbContext, IMasaDbContext
     {
         if (assemblies == null || assemblies.Length == 0)
         {

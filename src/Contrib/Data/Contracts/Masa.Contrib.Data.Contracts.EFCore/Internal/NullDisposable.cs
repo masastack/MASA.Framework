@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.Contracts.EFCore.Internal;
 
-internal class NullDisposable : IDisposable
+internal sealed class NullDisposable : IDisposable
 {
     public static NullDisposable Instance { get; } = new();
 

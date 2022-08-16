@@ -10,9 +10,9 @@ public abstract record Query<TResult> : IQuery<TResult>
 
     public abstract TResult Result { get; set; }
 
-    public Query() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected Query() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public Query(Guid eventId, DateTime creationTime)
+    protected Query(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

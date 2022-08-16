@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Internal;
 
-internal class ObjectStorageExtensions
+internal static class ObjectStorageExtensions
 {
     internal static string CheckNullOrEmptyAndReturnValue(string? parameter, string parameterName)
     {

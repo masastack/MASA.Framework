@@ -3,7 +3,7 @@
 
 namespace System;
 
-public class Enum<TEnum>
+public static class Enum<TEnum>
     where TEnum : Enum
 {
     public static List<TAttribute> GetAttributes<TAttribute>()

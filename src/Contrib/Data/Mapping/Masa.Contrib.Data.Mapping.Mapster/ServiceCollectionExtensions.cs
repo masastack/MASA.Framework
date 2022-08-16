@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMapping(this IServiceCollection services, MapOptions mapOptions)
         => services.AddMapster(mapOptions);
 
-    private class MappingProvider
+    private sealed class MappingProvider
     {
     }
 }

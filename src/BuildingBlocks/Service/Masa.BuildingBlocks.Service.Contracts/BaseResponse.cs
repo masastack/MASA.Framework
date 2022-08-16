@@ -5,13 +5,13 @@ namespace Masa.BuildingBlocks.Service.Contracts;
 
 public abstract class BaseResponse : BaseMessage
 {
-    public BaseResponse(Guid correlationId) : base()
+    protected BaseResponse()
     {
-        base._correlationId = correlationId;
     }
 
-    public BaseResponse()
+    protected BaseResponse(Guid correlationId) : base()
     {
+        base._correlationId = correlationId;
     }
 }
 
@@ -19,12 +19,12 @@ public abstract class BaseResponse<T> : BaseResponse
 {
     public T? Data { get; set; }
 
-    public BaseResponse(Guid correlationId)
-        : base(correlationId)
+    protected BaseResponse()
     {
     }
 
-    public BaseResponse()
+    protected BaseResponse(Guid correlationId)
+        : base(correlationId)
     {
     }
 }

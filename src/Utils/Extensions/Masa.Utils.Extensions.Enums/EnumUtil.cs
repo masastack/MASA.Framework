@@ -3,7 +3,7 @@
 
 namespace System;
 
-public class EnumUtil
+public static class EnumUtil
 {
     public static T? GetSubitemAttribute<T>(object enumSubitem)
         where T : Attribute, new()

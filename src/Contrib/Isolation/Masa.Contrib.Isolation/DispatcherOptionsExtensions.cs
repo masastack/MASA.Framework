@@ -83,7 +83,7 @@ public static class DispatcherOptionsExtensions
         return services;
     }
 
-    private class IsolationProvider
+    private sealed class IsolationProvider
     {
     }
 }

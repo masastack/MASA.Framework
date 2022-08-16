@@ -11,9 +11,9 @@ public abstract record Command : ICommand
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 
-    public Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected Command() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public Command(Guid eventId, DateTime creationTime)
+    protected Command(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

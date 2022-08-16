@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class SchedulerProvider
+    private sealed class SchedulerProvider
     {
     }
 }

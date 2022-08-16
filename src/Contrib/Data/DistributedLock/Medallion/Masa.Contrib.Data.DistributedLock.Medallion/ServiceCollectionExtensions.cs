@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         builder.Invoke(new MedallionBuilder(services));
 
         if (!services.Any<IDistributedLockProvider>())
-            throw new Exception("Please add IDistributedLockProvider first.");
+            throw new MasaException("Please add IDistributedLockProvider first.");
 
         services.TryAddSingleton<IMasaDistributedLock, DefaultMedallionDistributedLock>();
         return services;
