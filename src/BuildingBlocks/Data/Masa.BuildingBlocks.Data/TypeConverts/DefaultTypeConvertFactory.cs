@@ -9,7 +9,7 @@ public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvide
     protected override string DefaultServiceNotFoundMessage
         => "Default typeConvert not found, you need to add it, like services.AddTypeConvert()";
 
-    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{name}] typeConvert, it was not found";
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] typeConvert, it was not found";
 
     protected override MasaFactoryOptions<TypeConvertRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
 

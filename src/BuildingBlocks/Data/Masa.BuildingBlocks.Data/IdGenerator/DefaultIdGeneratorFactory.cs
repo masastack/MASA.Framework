@@ -23,7 +23,7 @@ public class DefaultIdGeneratorFactory : AbstractMasaFactory<IIdGenerator, IdGen
         "No default IdGenerator found, you may need service.AddSimpleGuidGenerator()";
 
     protected override string SpecifyServiceNotFoundMessage { get; } =
-        "Please make sure you have used [{name}] IdGenerator, it was not found";
+        "Please make sure you have used [{0}] IdGenerator, it was not found";
 
     protected override MasaFactoryOptions<IdGeneratorRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
 

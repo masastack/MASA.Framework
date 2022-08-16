@@ -210,4 +210,17 @@ public class CallerTest
         Assert.IsTrue(masaHttpClientBuilder.Prefix == "api");
         Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
     }
+
+    [TestMethod]
+    public void TestNotUseCaller()
+    {
+        var services = new ServiceCollection();
+        services.AddCaller();
+        var serviceProvider = services.BuildServiceProvider();
+        var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
+        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create(),
+            "No default Caller found, you may need service.AddCaller()");
+        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create("test"),
+            string.Format("Please make sure you have used [{0}] Caller, it was not found", "test"));
+    }
 }

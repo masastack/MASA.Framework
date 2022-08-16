@@ -8,7 +8,7 @@ public class DefaultDeserializerFactory : AbstractMasaFactory<IDeserializer, Des
 {
     protected override string DefaultServiceNotFoundMessage => "Default deserializer not found, you need to add it, like services.AddJson()";
 
-    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{name}] deserializer, it was not found";
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] deserializer, it was not found";
     protected override MasaFactoryOptions<DeserializerRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
 
     private readonly IOptionsMonitor<DeserializerFactoryOptions> _optionsMonitor;
