@@ -11,12 +11,25 @@ public abstract class CallerBase
 
     private ICaller? _caller;
 
-    protected ICaller Caller => _caller ??= ServiceProvider.GetRequiredService<ICallerFactory>().Create(Name!);
+    protected ICaller Caller
+    {
+        get
+        {
+            if (_caller == null)
+            {
+                _caller = ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
+                _caller.ConfigRequestMessage(ConfigHttpRequestMessage);
+            }
+            return _caller;
+        }
+    }
 
     [Obsolete("CallerProvider has expired, please use Caller")]
     protected ICaller CallerProvider => Caller;
 
-    private IServiceProvider ServiceProvider { get; }
+    public IServiceProvider? ServiceProvider { get; private set; }
+
+    protected CallerBase() => ServiceProvider = null;
 
     protected CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
@@ -26,5 +39,15 @@ public abstract class CallerBase
     {
         CallerOptions = options;
         Name ??= name;
+    }
+
+    public void SetServiceProvider(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+    }
+
+    protected virtual void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
+    {
+
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Service.Caller;
+global using Masa.Contrib.Service.Caller.DaprClient;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.Service.Caller.Tests.Queries;
 global using Masa.Contrib.Service.Caller.Tests.Requesties;

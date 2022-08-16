@@ -54,7 +54,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
         => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
 
-
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
         var caller = callerFactory.CreateClient("OrderCaller");
@@ -82,10 +81,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     public class UserCaller: DaprCallerBase
     {
         protected override string AppId { get; set; } = "<Replace-You-UserService-Dapr-AppID>";
-
-        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
 
         public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
     }

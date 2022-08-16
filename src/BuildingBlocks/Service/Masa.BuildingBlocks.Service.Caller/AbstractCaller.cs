@@ -6,17 +6,23 @@ namespace Masa.BuildingBlocks.Service.Caller;
 public abstract class AbstractCaller : ICaller
 {
     private readonly ITypeConvertor _typeConvertor;
-    public readonly IServiceProvider ServiceProvider;
+    protected readonly IServiceProvider ServiceProvider;
 
     private IRequestMessage? _requestMessage;
     private IResponseMessage? _responseMessage;
     protected IRequestMessage RequestMessage => _requestMessage ??= ServiceProvider.GetRequiredService<IRequestMessage>();
     protected IResponseMessage ResponseMessage => _responseMessage ??= ServiceProvider.GetRequiredService<IResponseMessage>();
+    protected Action<HttpRequestMessage>? RequestMessageAction;
 
     protected AbstractCaller(IServiceProvider serviceProvider)
     {
         _typeConvertor = serviceProvider.GetRequiredService<ITypeConvertor>();
         ServiceProvider = serviceProvider;
+    }
+
+    public virtual void ConfigRequestMessage(Action<HttpRequestMessage> action)
+    {
+        RequestMessageAction = action;
     }
 
     public virtual async Task<HttpResponseMessage> SendAsync(
