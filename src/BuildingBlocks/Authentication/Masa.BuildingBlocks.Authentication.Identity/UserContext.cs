@@ -18,7 +18,6 @@ public abstract class UserContext : IUserSetter, IUserContext
     protected UserContext(ITypeConvertProvider typeConvertProvider)
     {
         TypeConvertProvider = typeConvertProvider;
-        _currentUser.Value = new Dictionary<Type, object?>();
     }
 
     protected abstract object? GetUser(Type userType);
@@ -37,10 +36,10 @@ public abstract class UserContext : IUserSetter, IUserContext
     public TIdentityUser? GetUser<TIdentityUser>() where TIdentityUser : IIdentityUser
     {
         var userModelType = typeof(TIdentityUser);
-        if (!_currentUser.Value!.TryGetValue(userModelType, out var user) || user == null)
+        if (!CurrentUser.TryGetValue(userModelType, out var user) || user == null)
         {
             user ??= GetUser(userModelType);
-            _currentUser.Value.TryAdd(userModelType, user);
+            CurrentUser.TryAdd(userModelType, user);
         }
         return user == null ? default : (TIdentityUser)user;
     }
@@ -51,8 +50,8 @@ public abstract class UserContext : IUserSetter, IUserContext
     {
         var userModelType = typeof(TIdentityUser);
         var user = GetUser(userModelType);
-        _currentUser.Value![userModelType] = identityUser;
-        return new DisposeAction(() => _currentUser.Value[userModelType] = user);
+        CurrentUser[userModelType] = identityUser;
+        return new DisposeAction(() => CurrentUser[userModelType] = user);
     }
 
     public IEnumerable<TRoleId> GetUserRoles<TRoleId>()
@@ -61,4 +60,6 @@ public abstract class UserContext : IUserSetter, IUserContext
             .Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r) ??
                 throw new ArgumentException($"RoleId cannot be converted to [{typeof(TRoleId).Name}]")) ?? new List<TRoleId>();
     }
+
+    private Dictionary<Type, object?> CurrentUser => _currentUser.Value ??= new Dictionary<Type, object?>();
 }
