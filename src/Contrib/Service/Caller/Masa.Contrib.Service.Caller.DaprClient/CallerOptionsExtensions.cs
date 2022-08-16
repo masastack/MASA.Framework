@@ -25,6 +25,7 @@ public static class CallerOptionsExtensions
             builder.Configure?.Invoke(daprClientBuilder);
         });
 
+        callerOptions.Services.AddOptions();
         AddCallerExtensions.AddCaller(callerOptions, name,
             serviceProvider => new DaprCaller(serviceProvider, name, builder.AppId));
         return new DefaultDaprClientBuilder(callerOptions.Services, name);
