@@ -6,13 +6,9 @@ namespace Masa.Contrib.Service.Caller.AutomaticCaller.Tests.Callers;
 public class CustomHeaderCaller : HttpClientCallerBase
 {
     private readonly TokenProvider _tokenProvider;
-
-    public CustomHeaderCaller(TokenProvider tokenProvider)
-    {
-        _tokenProvider = tokenProvider;
-    }
-
     protected override string BaseAddress { get; set; } = "https://github.com/masastack";
+
+    public CustomHeaderCaller(TokenProvider tokenProvider) => _tokenProvider = tokenProvider;
 
     public async Task<bool> GetAsync()
     {
