@@ -7,9 +7,9 @@ public class IdentityResourceCache : IIdentityResourceCache
 {
     IMemoryCacheClient _memoryCacheClient;
 
-    public IdentityResourceCache(IMemoryCacheClient memoryCacheClient)
+    public IdentityResourceCache(MemoryCacheProvider memoryCacheProvider)
     {
-        _memoryCacheClient = memoryCacheClient;
+        _memoryCacheClient = memoryCacheProvider.GetMemoryCacheClient();
     }
 
     public async Task<List<IdentityResourceModel>> GetListAsync(IEnumerable<string> names)
