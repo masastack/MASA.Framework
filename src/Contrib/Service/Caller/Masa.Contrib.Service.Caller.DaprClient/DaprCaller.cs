@@ -18,7 +18,6 @@ public class DaprCaller : AbstractCaller
         AppId = appId;
     }
 
-
     public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)
         where TResponse : default
     {
