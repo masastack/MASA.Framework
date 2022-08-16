@@ -5,7 +5,7 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache;
 
 public class MemoryCacheProvider
 {
-    IMemoryCacheClientFactory _memoryCacheClientFactory;
+    readonly IMemoryCacheClientFactory _memoryCacheClientFactory;
 
     public MemoryCacheProvider(IMemoryCacheClientFactory memoryCacheClientFactory)
     {
