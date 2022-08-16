@@ -183,4 +183,49 @@ public class CallerTest
         Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create());
         Assert.IsNotNull(serviceProvider.GetRequiredService<ICallerFactory>().Create("masastack2"));
     }
+
+    [TestMethod]
+    public void TestDefaultCaller()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddCaller();
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultCaller = serviceProvider.GetService<ICaller>();
+        Assert.IsNotNull(defaultCaller);
+
+        services.AddCaller(opt =>
+        {
+            opt.UseHttpClient(builder =>
+            {
+                builder.BaseAddress = "https://github.com/masastack";
+            });
+        });
+        serviceProvider = services.BuildServiceProvider();
+        defaultCaller = serviceProvider.GetRequiredService<ICaller>();
+        Assert.IsNotNull(defaultCaller);
+        Assert.IsTrue(defaultCaller.GetType() == typeof(HttpClientCaller));
+
+        var httpClient = typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.NonPublic | BindingFlags.Instance);
+        Assert.IsNotNull(httpClient);
+
+        var httpClientValue = httpClient.GetValue(defaultCaller);
+        Assert.IsTrue(httpClientValue != null && ((System.Net.Http.HttpClient)httpClientValue).BaseAddress != null &&
+            ((System.Net.Http.HttpClient)httpClientValue).BaseAddress!.ToString() == "https://github.com/masastack");
+    }
+
+    [TestMethod]
+    public async Task TestConfigHttpRequestMessageAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddScoped<TokenProvider>();
+        services.AddCaller();
+        var serviceProvider = services.BuildServiceProvider();
+        using var scope = serviceProvider.CreateScope();
+        var customHeaderCaller = scope.ServiceProvider.GetService<CustomHeaderCaller>();
+        Assert.IsNotNull(customHeaderCaller);
+        var tokenProvider = scope.ServiceProvider.GetService<TokenProvider>();
+        Assert.IsNotNull(tokenProvider);
+        tokenProvider.Token = "token";
+        await customHeaderCaller.GetAsync();
+    }
 }

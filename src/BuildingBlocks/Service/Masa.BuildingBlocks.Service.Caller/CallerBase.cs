@@ -46,7 +46,7 @@ public abstract class CallerBase
         ServiceProvider = serviceProvider;
     }
 
-    public virtual void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
+    protected virtual void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
     {
 
     }

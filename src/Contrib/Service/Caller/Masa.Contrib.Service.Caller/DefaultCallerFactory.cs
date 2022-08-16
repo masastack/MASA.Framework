@@ -6,25 +6,36 @@ namespace Masa.Contrib.Service.Caller;
 internal class DefaultCallerFactory : ICallerFactory
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly List<CallerRelationOptions> _options;
+    private readonly IOptionsMonitor<CallerFactoryOptions> _optionsMonitor;
 
-    public DefaultCallerFactory(IServiceProvider serviceProvider, IOptions<CallerFactoryOptions> options)
+    public DefaultCallerFactory(
+        IServiceProvider serviceProvider,
+        IOptionsMonitor<CallerFactoryOptions> optionsMonitor)
     {
         _serviceProvider = serviceProvider;
-        _options = options.Value.Options;
+        _optionsMonitor = optionsMonitor;
+    }
+
+    private CallerRelationOptions? GetDefaultOptions(List<CallerRelationOptions> optionsList)
+    {
+        return optionsList.SingleOrDefault(c => c.Name == Options.DefaultName) ??
+            optionsList.FirstOrDefault();
     }
 
     public ICaller Create()
     {
-        var options = _options.SingleOrDefault(c => c.Name == Options.DefaultName) ?? _options.FirstOrDefault()!;
-        return options.Func.Invoke(_serviceProvider);
+        var defaultOptions = GetDefaultOptions(_optionsMonitor.CurrentValue.Options);
+        if (defaultOptions == null)
+            throw new MasaException("No default Caller found, you may need service.AddCaller()");
+
+        return defaultOptions.Func.Invoke(_serviceProvider);
     }
 
     public ICaller Create(string name)
     {
-        var options = _options.SingleOrDefault(c => c.Name == name);
+        var options = _optionsMonitor.CurrentValue.Options.SingleOrDefault(c => c.Name == name);
         if (options == null)
-            throw new NotSupportedException($"Please make sure you have used [{name}] Caller");
+            throw new MasaException($"Please make sure you have used [{name}] Caller, it was not found");
 
         return options.Func.Invoke(_serviceProvider);
     }
