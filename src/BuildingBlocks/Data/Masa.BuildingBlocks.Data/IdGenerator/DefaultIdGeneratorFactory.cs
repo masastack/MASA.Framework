@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class DefaultIdGeneratorFactory : AbstractMasaFactory<IIdGenerator, IdGeneratorFactoryOptions, IdGeneratorRelationOptions>,
+public class DefaultIdGeneratorFactory : AbstractMasaFactory<IIdGenerator, IdGeneratorRelationOptions>,
     IIdGeneratorFactory
 {
     private IGuidGenerator? _guidGenerator;
@@ -19,21 +19,19 @@ public class DefaultIdGeneratorFactory : AbstractMasaFactory<IIdGenerator, IdGen
     public ISnowflakeGenerator SnowflakeGenerator => _snowflakeGenerator ??=
         ServiceProvider.GetService<ISnowflakeGenerator>() ?? throw new Exception($"Unsupported {nameof(SnowflakeGenerator)}");
 
-
     protected override string DefaultServiceNotFoundMessage { get; } =
         "No default IdGenerator found, you may need service.AddSimpleGuidGenerator()";
 
     protected override string SpecifyServiceNotFoundMessage { get; } =
         "Please make sure you have used [{name}] IdGenerator, it was not found";
 
+    protected override MasaFactoryOptions<IdGeneratorRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<IdGeneratorFactoryOptions> _optionsMonitor;
+
     public DefaultIdGeneratorFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-    }
-
-    private IdGeneratorRelationOptions? GetDefaultOptions(List<IdGeneratorRelationOptions> optionsList)
-    {
-        return optionsList.SingleOrDefault(c => c.Name == Options.DefaultName) ??
-            optionsList.FirstOrDefault();
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IdGeneratorFactoryOptions>>();
     }
 
     public IIdGenerator<TOut> Create<TOut>() where TOut : notnull

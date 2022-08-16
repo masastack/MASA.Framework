@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IMasaFactory<TService> where TService : class
+public interface IMasaFactory<out TService> where TService : class
 {
     TService Create();
 

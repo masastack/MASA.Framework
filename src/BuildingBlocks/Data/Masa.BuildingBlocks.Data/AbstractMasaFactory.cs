@@ -3,24 +3,22 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public abstract class AbstractMasaFactory<TService, TFactoryOptions, TRelationOptions> : IMasaFactory<TService>
+public abstract class AbstractMasaFactory<TService, TRelationOptions> : IMasaFactory<TService>
     where TService : class
     where TRelationOptions : MasaRelationOptions<TService>
-    where TFactoryOptions : MasaFactoryOptions<TRelationOptions>
 {
     protected abstract string DefaultServiceNotFoundMessage { get; }
     protected abstract string SpecifyServiceNotFoundMessage { get; }
-    protected virtual IOptionsMonitor<TFactoryOptions> OptionsMonitor { get; }
+    protected abstract MasaFactoryOptions<TRelationOptions> FactoryOptions { get; }
 
     protected readonly IServiceProvider ServiceProvider;
 
-    public AbstractMasaFactory(IServiceProvider serviceProvider)
+    protected AbstractMasaFactory(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
-        OptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TFactoryOptions>>();
     }
 
-    private MasaRelationOptions<TService>? GetDefaultOptions(List<TRelationOptions> optionsList)
+    private static MasaRelationOptions<TService>? GetDefaultOptions(List<TRelationOptions> optionsList)
     {
         return optionsList.SingleOrDefault(c => c.Name == Options.DefaultName) ??
             optionsList.FirstOrDefault();
@@ -28,7 +26,7 @@ public abstract class AbstractMasaFactory<TService, TFactoryOptions, TRelationOp
 
     public virtual TService Create()
     {
-        var defaultOptions = GetDefaultOptions(OptionsMonitor.CurrentValue.Options);
+        var defaultOptions = GetDefaultOptions(FactoryOptions.Options);
         if (defaultOptions == null)
             throw new NotImplementedException(DefaultServiceNotFoundMessage);
 
@@ -37,7 +35,7 @@ public abstract class AbstractMasaFactory<TService, TFactoryOptions, TRelationOp
 
     public virtual TService Create(string name)
     {
-        var options = OptionsMonitor.CurrentValue.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var options = FactoryOptions.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (options == null)
             throw new NotImplementedException(string.Format(SpecifyServiceNotFoundMessage, name));
 

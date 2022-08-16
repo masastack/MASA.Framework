@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data;
 
-public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvider, TypeConvertFactoryOptions, TypeConvertRelationOptions>,
+public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvider, TypeConvertRelationOptions>,
     ITypeConvertFactory
 {
     protected override string DefaultServiceNotFoundMessage
@@ -11,7 +11,12 @@ public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvide
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{name}] typeConvert, it was not found";
 
+    protected override MasaFactoryOptions<TypeConvertRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<TypeConvertFactoryOptions> _optionsMonitor;
+
     public DefaultTypeConvertFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TypeConvertFactoryOptions>>();
     }
 }
