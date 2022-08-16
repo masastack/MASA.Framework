@@ -13,6 +13,7 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Utils.Caching.Core.DependencyInjection;
+global using Masa.Utils.Caching.Core.Interfaces;
 global using Masa.Utils.Caching.Core.Models;
 global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;

@@ -10,6 +10,11 @@ public class DccConfigurationOptions
     public string ManageServiceAddress { get; set; } = default!;
 
     /// <summary>
+    /// public config id
+    /// </summary>
+    public string? PublicId { get; set; }
+
+    /// <summary>
     /// The prefix of Dcc PubSub, it is not recommended to modify
     /// </summary>
     public string? SubscribeKeyPrefix { get; set; }

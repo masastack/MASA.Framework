@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Options;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public static class MasaConfigurationExtensions
@@ -14,19 +16,21 @@ public static class MasaConfigurationExtensions
         var dccOptions = configurationSection.Get<DccConfigurationOptions>();
 
         List<DccSectionOptions> expandSections = new();
-        var configurationExpandSection = builder.Configuration.GetSection("ExpandSections");
+        var configurationExpandSection = configurationSection.GetSection("ExpandSections");
         if (configurationExpandSection.Exists())
         {
             configurationExpandSection.Bind(expandSections);
         }
 
+        var masaAppConfigureOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<MasaAppConfigureOptions>>();
+
         return builder.UseDcc(() => dccOptions, option =>
         {
-            option.Environment = builder.Configuration[nameof(DccSectionOptions.Environment)];
-            option.Cluster = builder.Configuration[nameof(DccSectionOptions.Cluster)];
-            option.AppId = builder.Configuration[nameof(DccSectionOptions.AppId)];
-            option.ConfigObjects = builder.Configuration.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
-            option.Secret = builder.Configuration[nameof(DccSectionOptions.Secret)];
+            option.Environment = configurationSection[nameof(DccSectionOptions.Environment)] ?? masaAppConfigureOptions.Value.Environment;
+            option.Cluster = configurationSection[nameof(DccSectionOptions.Cluster)] ?? masaAppConfigureOptions.Value.Cluster;
+            option.AppId = configurationSection[nameof(DccSectionOptions.AppId)] ?? masaAppConfigureOptions.Value.AppId;
+            option.ConfigObjects = configurationSection.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
+            option.Secret = configurationSection[nameof(DccSectionOptions.Secret)] ?? masaAppConfigureOptions.Value.Data.GetValueOrDefault(nameof(DccSectionOptions.Secret));
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
@@ -61,6 +65,7 @@ public static class MasaConfigurationExtensions
         Action<CallerOptions>? action)
     {
         StaticConfig.AppId = defaultSectionOptions.AppId;
+        StaticConfig.PublicId = configureOptions.PublicId ?? StaticConfig.PublicId;
 
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
@@ -106,7 +111,7 @@ public static class MasaConfigurationExtensions
 
         var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationApiClient>();
         var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(sectionOptions, configurationApiClient, loggerFactory));
+        builder.AddRepository(new DccConfigurationRepository(config.DefaultSectionOptions, config.ExpansionSectionOptions, configurationApiClient, loggerFactory));
         return builder;
     }
 

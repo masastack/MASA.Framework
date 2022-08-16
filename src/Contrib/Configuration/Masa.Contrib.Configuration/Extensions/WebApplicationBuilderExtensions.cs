@@ -43,6 +43,11 @@ public static class WebApplicationBuilderExtensions
             if (string.IsNullOrWhiteSpace(options.Cluster))
                 options.Cluster = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Cluster)].Variable,
                     () => optionsRelation.Data[nameof(options.Cluster)].DefaultValue);
+
+            foreach (var data in optionsRelation.Data)
+            {
+                options.Data[data.Key] = data.Value.DefaultValue;
+            }
         });
         return builder;
     }

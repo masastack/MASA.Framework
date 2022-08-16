@@ -14,6 +14,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
     private readonly ConcurrentDictionary<string, ConfigurationTypes> _configObjectConfigurationTypeRelations = new();
 
     public DccConfigurationRepository(
+        DccSectionOptions defaultSectionOption,
         IEnumerable<DccSectionOptions> sectionOptions,
         IConfigurationApiClient client,
         ILoggerFactory loggerFactory)
