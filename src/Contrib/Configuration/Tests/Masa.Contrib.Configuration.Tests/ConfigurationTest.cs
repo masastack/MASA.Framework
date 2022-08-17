@@ -304,7 +304,7 @@ public class ConfigurationTest
             configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
-        });
+        }, typeof(ConfigurationTest).Assembly);
         var localConfiguration = builder.GetMasaConfiguration().Local;
         Assert.IsTrue(localConfiguration[key] == value);
     }
