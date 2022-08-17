@@ -7,6 +7,8 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
 {
     private readonly IConfigurationApiClient _client;
 
+    private readonly IDistributedCacheClient _distributedCacheClient;
+
     public override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 
     private readonly ConcurrentDictionary<string, IDictionary<string, string>> _dictionaries = new();
@@ -15,16 +17,48 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
 
     public DccConfigurationRepository(
         DccSectionOptions defaultSectionOption,
-        IEnumerable<DccSectionOptions> sectionOptions,
+        IEnumerable<DccSectionOptions> expansionSectionOptions,
         IConfigurationApiClient client,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        IDistributedCacheClient distributedCacheClient)
         : base(loggerFactory)
     {
         _client = client;
-        foreach (var sectionOption in sectionOptions)
+        _distributedCacheClient = distributedCacheClient;
+
+        var defaultSection = HandleDefaultSectionOptions(defaultSectionOption);
+        var sectionOptionOptions = new List<DccSectionOptions>()
+        {
+            defaultSection
+        }.Concat(expansionSectionOptions);
+
+        foreach (var sectionOption in sectionOptionOptions)
         {
             Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
         }
+    }
+
+    private DccSectionOptions HandleDefaultSectionOptions(DccSectionOptions defaultSectionOption)
+    {
+        if (!defaultSectionOption.ConfigObjects.Any())
+        {
+            var defaultConfigObjects = new List<string>();
+
+            string partialKey =
+                $"{defaultSectionOption.Environment}-{defaultSectionOption.Cluster}-{defaultSectionOption.AppId}";
+            List<string> keys = _distributedCacheClient.GetKeys($"{partialKey}*");
+            foreach (var key in keys)
+            {
+                var configObject = key.Split($"{partialKey}-", StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+                if (configObject == null) continue;
+
+                defaultConfigObjects.Add(configObject);
+            }
+
+            defaultSectionOption.ConfigObjects = defaultConfigObjects;
+        }
+
+        return defaultSectionOption;
     }
 
     private async Task Initialize(DccSectionOptions sectionOption)
@@ -32,7 +66,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         foreach (var configObject in sectionOption.ConfigObjects)
         {
             string key = $"{sectionOption.Environment!}-{sectionOption.Cluster!}-{sectionOption.AppId}-{configObject}".ToLower();
-            var result = await _client.GetRawAsync(sectionOption.Environment!, sectionOption.Cluster!, sectionOption.AppId, configObject, (val) =>
+            var (Raw, ConfigurationType) = await _client.GetRawAsync(sectionOption.Environment!, sectionOption.Cluster!, sectionOption.AppId, configObject, (val) =>
             {
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
                 {
@@ -41,33 +75,31 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
                 }
             });
 
-            _configObjectConfigurationTypeRelations.TryAdd(key, result.ConfigurationType);
-            _dictionaries[key] = FormatRaw(sectionOption.AppId, configObject, result.Raw, result.ConfigurationType);
+            _configObjectConfigurationTypeRelations.TryAdd(key, ConfigurationType);
+            _dictionaries[key] = FormatRaw(sectionOption.AppId, configObject, Raw, ConfigurationType);
         }
     }
 
-    private IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
+    private static IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
     {
         if (raw == null)
             return new Dictionary<string, string>();
 
-        switch (configurationType)
+        return configurationType switch
         {
-            case ConfigurationTypes.Json:
-                return SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw));
-            case ConfigurationTypes.Properties:
-                return SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!);
-            case ConfigurationTypes.Text:
-                return new Dictionary<string, string>()
+            ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            ConfigurationTypes.Properties => SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
+            ConfigurationTypes.Text => new Dictionary<string, string>()
                 {
                     { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw ?? "" }
-                };
-            default:
-                throw new NotSupportedException(nameof(configurationType));
-        }
+                },
+            ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            _ => throw new NotSupportedException(nameof(configurationType)),
+        };
     }
 
-    private IDictionary<string, string> SecondaryFormat(
+    private static IDictionary<string, string> SecondaryFormat(
         string appId,
         string configObject,
         IDictionary<string, string> data)

@@ -105,13 +105,12 @@ public static class MasaConfigurationExtensions
         TryAddConfigurationApiClient(services, config.DefaultSectionOptions, config.ExpansionSectionOptions, jsonSerializerOption);
         TryAddConfigurationApiManage(services, callerName, config.DefaultSectionOptions, config.ExpansionSectionOptions);
 
-        var sectionOptions = new List<DccSectionOptions>()
-        {
-            config.DefaultSectionOptions
-        }.Concat(config.ExpansionSectionOptions);
+        var serviceProvider = services.BuildServiceProvider();
+        var client = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+        GetDccSectionOptionsByAppidPattern(client, defaultSectionOptions.AppId);
 
-        var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationApiClient>();
-        var loggerFactory = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>();
+        var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         builder.AddRepository(new DccConfigurationRepository(config.DefaultSectionOptions, config.ExpansionSectionOptions, configurationApiClient, loggerFactory));
         return builder;
     }
@@ -148,6 +147,13 @@ public static class MasaConfigurationExtensions
             return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, expansionSectionOptions);
         });
         return services;
+    }
+
+    private static List<string> GetDccSectionOptionsByAppidPattern(IDistributedCacheClient client, string appId)
+    {
+        List<string> keys = client.GetKeys($"*{appId}*");
+
+        return keys;
     }
 
     private static DccOptions GetDccConfigurationOption(
