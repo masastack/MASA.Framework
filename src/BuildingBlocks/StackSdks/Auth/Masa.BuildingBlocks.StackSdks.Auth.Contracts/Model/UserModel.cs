@@ -7,9 +7,9 @@ public class UserModel
 {
     public Guid Id { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public string? DisplayName { get; set; }
+    public string DisplayName { get; set; }
 
     public string Account { get; set; }
 
@@ -44,8 +44,8 @@ public class UserModel
 
     public UserModel(
         Guid id,
-        string name,
-        string? displayName,
+        string? name,
+        string displayName,
         string account,
         GenderTypes gender,
         string avatar,
