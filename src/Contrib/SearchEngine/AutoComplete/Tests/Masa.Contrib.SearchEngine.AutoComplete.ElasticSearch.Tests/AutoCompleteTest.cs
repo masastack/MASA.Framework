@@ -7,7 +7,7 @@ namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests;
 [TestClass]
 public class AutoCompleteTest
 {
-    private readonly string _defaultNode = "http://localhost:9200";
+    private readonly string _defaultNode = "http://localhost:9200/";
     private IServiceCollection _services;
 
     [TestInitialize]
@@ -170,10 +170,9 @@ public class AutoCompleteTest
         Thread.Sleep(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三 ls");
-        Assert.IsTrue(response.Total == 3);
+        Assert.IsTrue(response.Total == 2);
         Assert.IsTrue(response.Data[0].Value == 1);
         Assert.IsTrue(response.Data[1].Value == 3);
-        Assert.IsTrue(response.Data[2].Value == 2);
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
     }
@@ -677,5 +676,54 @@ public class AutoCompleteTest
 
         getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 0);
+    }
+
+    [TestMethod]
+    public async Task TestAsync()
+    {
+        string userIndexName = $"auto_index_1";
+        string userAlias = $"auto_index";
+
+        var builder = _services
+            .AddElasticsearchClient("es",
+                option => option.UseNodes(_defaultNode).UseDefault()
+                    .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
+
+        await builder.Client.DeleteIndexByAliasAsync(userAlias);
+
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        var res = await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三:zhangsan:zhangsan@qq.com:18888888888",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四:lisi:lisi@qq.com:19999999999",
+                Value = 2
+            }
+        });
+
+        Thread.Sleep(1000);
+
+        var getResponse = await autoCompleteClient.GetAsync<long>("张三");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("zhangsan");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("zs");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("ls");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+
+        getResponse = await autoCompleteClient.GetAsync<long>("李四");
+        Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
     }
 }

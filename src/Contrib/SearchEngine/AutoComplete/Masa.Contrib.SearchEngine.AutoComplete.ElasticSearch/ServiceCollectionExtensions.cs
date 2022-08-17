@@ -96,7 +96,8 @@ public static class ServiceCollectionExtensions
             option.IsDefault,
             option.DefaultOperator,
             option.DefaultSearchType,
-            option.EnableMultipleCondition);
+            option.EnableMultipleCondition,
+            option.QueryAnalyzer);
         services.TryAddAutoCompleteRelation(autoCompleteRelations);
 
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
@@ -168,7 +169,7 @@ public static class ServiceCollectionExtensions
             string wordDelimiterFilter = "word_delimiter";
             indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
             {
-                Filter = new[] { pinyinFilter, wordDelimiterFilter, "lowercase" },
+                Filter = new[] { pinyinFilter, "lowercase" },
                 Tokenizer = "ik_max_word"
             });
             indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
