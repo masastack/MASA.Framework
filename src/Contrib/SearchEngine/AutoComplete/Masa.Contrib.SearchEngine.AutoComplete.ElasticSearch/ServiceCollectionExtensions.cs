@@ -166,7 +166,6 @@ public static class ServiceCollectionExtensions
         else
         {
             string pinyinFilter = "pinyin";
-            string wordDelimiterFilter = "word_delimiter";
             indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
             {
                 Filter = new[] { pinyinFilter, "lowercase" },
