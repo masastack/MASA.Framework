@@ -15,6 +15,8 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     protected ITypeConvertProvider TypeConvertProvider { get; }
 
+    protected virtual Dictionary<Type, object?> CurrentUser => _currentUser.Value ??= new Dictionary<Type, object?>();
+
     protected UserContext(ITypeConvertProvider typeConvertProvider)
     {
         TypeConvertProvider = typeConvertProvider;
@@ -60,6 +62,4 @@ public abstract class UserContext : IUserSetter, IUserContext
             .Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r) ??
                 throw new ArgumentException($"RoleId cannot be converted to [{typeof(TRoleId).Name}]")) ?? new List<TRoleId>();
     }
-
-    private Dictionary<Type, object?> CurrentUser => _currentUser.Value ??= new Dictionary<Type, object?>();
 }
