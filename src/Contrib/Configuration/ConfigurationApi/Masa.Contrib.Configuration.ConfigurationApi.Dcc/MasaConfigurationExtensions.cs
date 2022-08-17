@@ -63,10 +63,7 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions>? expansionSectionOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions,
         Action<CallerOptions>? action)
-    {
-        StaticConfig.AppId = defaultSectionOptions.AppId;
-        StaticConfig.PublicId = configureOptions.PublicId ?? StaticConfig.PublicId;
-
+    {        
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
@@ -74,6 +71,9 @@ public static class MasaConfigurationExtensions
         services.AddSingleton<DccConfigurationProvider>();
 
         var config = GetDccConfigurationOption(configureOptions, defaultSectionOptions, expansionSectionOptions);
+
+        StaticConfig.AppId = defaultSectionOptions.AppId;
+        StaticConfig.PublicId = configureOptions.PublicId ?? StaticConfig.PublicId;
 
         var jsonSerializerOption = new JsonSerializerOptions()
         {
@@ -111,7 +111,8 @@ public static class MasaConfigurationExtensions
 
         var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(config.DefaultSectionOptions, config.ExpansionSectionOptions, configurationApiClient, loggerFactory));
+        var cacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+        builder.AddRepository(new DccConfigurationRepository(config.DefaultSectionOptions, config.ExpansionSectionOptions, configurationApiClient, loggerFactory, cacheClient));
         return builder;
     }
 
@@ -177,9 +178,6 @@ public static class MasaConfigurationExtensions
 
         if (string.IsNullOrEmpty(defaultSectionOptions.AppId))
             throw new ArgumentNullException("AppId cannot be empty");
-
-        if (defaultSectionOptions.ConfigObjects == null || !defaultSectionOptions.ConfigObjects.Any())
-            throw new ArgumentNullException("ConfigObjects cannot be empty");
 
         if (string.IsNullOrEmpty(defaultSectionOptions.Cluster))
             defaultSectionOptions.Cluster = "Default";
