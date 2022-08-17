@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Pm;
 
-public class Constants
+public static class Constants
 {
     internal const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.pm";
 }

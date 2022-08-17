@@ -83,6 +83,7 @@ public static class MasaConfigurationExtensions
         string callerName = DEFAULT_CLIENT_NAME;
         services.AddCaller(options =>
         {
+            options.Assemblies = new[] { typeof(DccConfigurationProvider).Assembly };
             if (action == null)
             {
                 options.UseHttpClient(callerName, ()
@@ -215,7 +216,7 @@ public static class MasaConfigurationExtensions
             throw new ArgumentNullException(
                 "Error getting environment information, please make sure the value of ASPNETCORE_ENVIRONMENT has been configured");
 
-    private class DccConfigurationProvider
+    private sealed class DccConfigurationProvider
     {
 
     }

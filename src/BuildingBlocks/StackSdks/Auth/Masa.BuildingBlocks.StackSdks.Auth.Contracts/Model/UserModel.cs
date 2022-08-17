@@ -33,6 +33,8 @@ public class UserModel
 
     public List<Guid> RoleIds { get; set; } = new();
 
+    public DateTime CreationTime { get; set; }
+
     public UserModel()
     {
         Name = "";

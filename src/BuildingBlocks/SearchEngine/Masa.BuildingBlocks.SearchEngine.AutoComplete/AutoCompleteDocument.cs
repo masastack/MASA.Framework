@@ -38,21 +38,21 @@ public class AutoCompleteDocument
 
 public class AutoCompleteDocument<TValue> : AutoCompleteDocument where TValue : notnull
 {
-    private string _id;
+    private readonly string _id;
 
     public string Id
     {
         get
         {
             if (string.IsNullOrEmpty(_id))
-                return Value?.ToString() ?? throw new ArgumentException("{Id} cannot be empty", nameof(Id));
+                return Value?.ToString() ?? throw new ArgumentException($"{nameof(Id)} cannot be empty", nameof(Id));
 
             return _id;
         }
         init
         {
             if (string.IsNullOrEmpty(value))
-                throw new ArgumentException("{Id} cannot be empty", nameof(Id));
+                throw new ArgumentException($"{nameof(Id)} cannot be empty", nameof(Id));
 
             _id = value;
         }

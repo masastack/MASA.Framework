@@ -8,9 +8,9 @@ public abstract record Event : IEvent
     private Guid _eventId;
     private DateTime _creationTime;
 
-    public Event() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected Event() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public Event(Guid eventId, DateTime creationTime)
+    protected Event(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

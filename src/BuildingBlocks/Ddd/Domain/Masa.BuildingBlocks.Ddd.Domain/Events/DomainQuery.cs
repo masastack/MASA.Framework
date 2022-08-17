@@ -17,9 +17,9 @@ public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
 
     public abstract TResult Result { get; set; }
 
-    public DomainQuery() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected DomainQuery() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public DomainQuery(Guid eventId, DateTime creationTime)
+    protected DomainQuery(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

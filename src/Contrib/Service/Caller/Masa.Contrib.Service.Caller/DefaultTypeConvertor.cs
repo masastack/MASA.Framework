@@ -25,7 +25,7 @@ public class DefaultTypeConvertor : ITypeConvertor
     /// <typeparam name="TRequest">Support classes, anonymous objects</typeparam>
     /// <returns></returns>
     [Obsolete("Use ConvertToKeyValuePairs instead")]
-    public Dictionary<string, string> ConvertToDictionary<TRequest>(TRequest request) where TRequest : class
+    public Dictionary<string, string> ConvertToDictionary<TRequest>(TRequest? request) where TRequest : class
         => new(ConvertToKeyValuePairs(request));
 
     /// <summary>
@@ -34,9 +34,9 @@ public class DefaultTypeConvertor : ITypeConvertor
     /// <param name="request"></param>
     /// <typeparam name="TRequest">Support classes, anonymous objects</typeparam>
     /// <returns></returns>
-    public IEnumerable<KeyValuePair<string, string>> ConvertToKeyValuePairs<TRequest>(TRequest request) where TRequest : class
+    public IEnumerable<KeyValuePair<string, string>> ConvertToKeyValuePairs<TRequest>(TRequest? request) where TRequest : class
     {
-        if (request.Equals(null))
+        if (request is null)
             return Array.Empty<KeyValuePair<string, string>>();
 
         if (request is Dictionary<string, string> response)
@@ -74,12 +74,12 @@ public class DefaultTypeConvertor : ITypeConvertor
         return members;
     }
 
-    protected bool IsSkip(PropertyInfo property)
+    protected virtual bool IsSkip(PropertyInfo property)
         => !property.CanRead ||
             !property.PropertyType.IsPublic ||
             property.CustomAttributes.Any(attr => attr.AttributeType == typeof(JsonIgnoreAttribute));
 
-    protected string GetPropertyName(PropertyInfo property)
+    protected virtual string GetPropertyName(PropertyInfo property)
     {
         if (property.CustomAttributes.Any(attr => attr.AttributeType == typeof(JsonPropertyNameAttribute)))
         {
@@ -93,6 +93,6 @@ public class DefaultTypeConvertor : ITypeConvertor
         return property.Name;
     }
 
-    protected bool IsNeedSerialize(PropertyInfo property)
+    protected virtual bool IsNeedSerialize(PropertyInfo property)
         => !property.PropertyType.IsPrimitive && !NotNeedSerializeTypes.Contains(property.PropertyType);
 }

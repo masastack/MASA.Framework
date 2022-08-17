@@ -14,11 +14,11 @@ public abstract class FullAggregateRoot<TKey, TUserId>
 {
     public bool IsDeleted { get; protected set; }
 
-    public FullAggregateRoot() : base()
+    protected FullAggregateRoot() : base()
     {
     }
 
-    public FullAggregateRoot(TKey id) : base(id)
+    protected FullAggregateRoot(TKey id) : base(id)
     {
     }
 }

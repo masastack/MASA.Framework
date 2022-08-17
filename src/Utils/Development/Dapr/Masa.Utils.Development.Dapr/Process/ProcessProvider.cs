@@ -37,7 +37,7 @@ public class ProcessProvider : IProcessProvider
 
         var effectivePorts = Enumerable.Range(minPort.Value, maxPort.Value).Except(usePorts).ToList();
         if (effectivePorts.Count == 0)
-            throw new Exception("... No port available exception");
+            throw new MasaException("... No port available exception");
 
         return effectivePorts.FirstOrDefault();
     }

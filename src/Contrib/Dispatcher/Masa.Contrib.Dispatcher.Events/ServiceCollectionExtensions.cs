@@ -70,7 +70,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class EventBusProvider
+    private sealed class EventBusProvider
     {
     }
 }

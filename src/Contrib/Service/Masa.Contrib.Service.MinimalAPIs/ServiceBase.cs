@@ -13,13 +13,13 @@ public abstract class ServiceBase : IService
 
     public IServiceCollection Services { get; protected set; }
 
-    public ServiceBase(IServiceCollection services)
+    protected ServiceBase(IServiceCollection services)
     {
         Services = services;
         _serviceProvider = services.BuildServiceProvider();
     }
 
-    public ServiceBase(IServiceCollection services, string baseUri)
+    protected ServiceBase(IServiceCollection services, string baseUri)
     {
         BaseUri = baseUri;
         Services = services;

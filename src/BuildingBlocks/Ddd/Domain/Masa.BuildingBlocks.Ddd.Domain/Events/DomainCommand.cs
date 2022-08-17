@@ -11,9 +11,9 @@ public abstract record DomainCommand : IDomainCommand
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 
-    public DomainCommand() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected DomainCommand() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public DomainCommand(Guid eventId, DateTime creationTime)
+    protected DomainCommand(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

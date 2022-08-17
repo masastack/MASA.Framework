@@ -48,7 +48,7 @@ internal static class CallerDependExtensions
             if (executeTimes >= allTypes.Count)
                 throw new UserFriendlyException(ErrorMessages.CIRCULAR_DEPENDENCY);
 
-            return CallersArrangement(allTypes, types, ++executeTimes);
+            return CallersArrangement(allTypes, types, executeTimes + 1);
         }
         return types;
     }

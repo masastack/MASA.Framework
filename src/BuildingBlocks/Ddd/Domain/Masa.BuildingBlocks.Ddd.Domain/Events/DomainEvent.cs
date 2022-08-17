@@ -11,9 +11,9 @@ public abstract record DomainEvent : IDomainEvent
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 
-    public DomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected DomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    public DomainEvent(Guid eventId, DateTime creationTime)
+    protected DomainEvent(Guid eventId, DateTime creationTime)
     {
         _eventId = eventId;
         _creationTime = creationTime;

@@ -7,9 +7,9 @@ public class ClientCache : IClientCache
 {
     IMemoryCacheClient _memoryCacheClient;
 
-    public ClientCache(IMemoryCacheClient memoryCacheClient)
+    public ClientCache(MemoryCacheProvider memoryCacheProvider)
     {
-        _memoryCacheClient = memoryCacheClient;
+        _memoryCacheClient = memoryCacheProvider.GetMemoryCacheClient();
     }
 
     public async Task<ClientModel?> GetAsync(string clientId)

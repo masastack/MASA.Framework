@@ -1,12 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Data;
-using System.Text;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 
-internal class XmlConfigurationParser
+internal static class XmlConfigurationParser
 {
     public static string XmlToJson(string xmlStr)
     {

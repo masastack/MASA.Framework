@@ -8,7 +8,7 @@ public delegate Task EventHandlerDelegate();
 /// <summary>
 /// Middleware is assembled into an event pipeline to handle invoke event and result
 /// </summary>
-public interface IMiddleware<TEvent>
+public interface IMiddleware<in TEvent>
     where TEvent : IEvent
 {
     Task HandleAsync(TEvent @event, EventHandlerDelegate next);

@@ -13,15 +13,15 @@ public abstract class AuditAggregateRoot<TUserId> : AggregateRoot, IAuditAggrega
 
     public DateTime ModificationTime { get; set; }
 
-    public AuditAggregateRoot() => Initialize();
+    protected AuditAggregateRoot() => Initialize();
 
-    public void Initialize()
+    private void Initialize()
     {
         this.CreationTime = this.GetCurrentTime();
         this.ModificationTime = this.GetCurrentTime();
     }
 
-    public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
+    protected virtual DateTime GetCurrentTime() => DateTime.UtcNow;
 }
 
 public abstract class AuditAggregateRoot<TKey, TUserId> : AggregateRoot<TKey>, IAuditAggregateRoot<TKey, TUserId>
@@ -34,21 +34,21 @@ public abstract class AuditAggregateRoot<TKey, TUserId> : AggregateRoot<TKey>, I
 
     public DateTime ModificationTime { get; protected set; }
 
-    public AuditAggregateRoot() : base()
+    protected AuditAggregateRoot() : base()
     {
         Initialize();
     }
 
-    public AuditAggregateRoot(TKey id) : base(id)
+    protected AuditAggregateRoot(TKey id) : base(id)
     {
         Initialize();
     }
 
-    public void Initialize()
+    private void Initialize()
     {
         this.CreationTime = this.GetCurrentTime();
         this.ModificationTime = this.GetCurrentTime();
     }
 
-    public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
+    protected virtual DateTime GetCurrentTime() => DateTime.UtcNow;
 }

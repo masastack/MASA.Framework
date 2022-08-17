@@ -14,7 +14,7 @@ public abstract record IntegrationEvent : IIntegrationEvent
     [JsonIgnore]
     public abstract string Topic { get; set; }
 
-    public IntegrationEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected IntegrationEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
     protected IntegrationEvent(Guid eventId, DateTime creationTime)
     {

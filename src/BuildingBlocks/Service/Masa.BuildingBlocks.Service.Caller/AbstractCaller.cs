@@ -6,17 +6,23 @@ namespace Masa.BuildingBlocks.Service.Caller;
 public abstract class AbstractCaller : ICaller
 {
     private readonly ITypeConvertor _typeConvertor;
-    public readonly IServiceProvider ServiceProvider;
+    protected readonly IServiceProvider ServiceProvider;
 
     private IRequestMessage? _requestMessage;
     private IResponseMessage? _responseMessage;
     protected IRequestMessage RequestMessage => _requestMessage ??= ServiceProvider.GetRequiredService<IRequestMessage>();
     protected IResponseMessage ResponseMessage => _responseMessage ??= ServiceProvider.GetRequiredService<IResponseMessage>();
+    protected Action<HttpRequestMessage>? RequestMessageAction;
 
-    public AbstractCaller(IServiceProvider serviceProvider)
+    protected AbstractCaller(IServiceProvider serviceProvider)
     {
         _typeConvertor = serviceProvider.GetRequiredService<ITypeConvertor>();
         ServiceProvider = serviceProvider;
+    }
+
+    public virtual void ConfigRequestMessage(Action<HttpRequestMessage> action)
+    {
+        RequestMessageAction = action;
     }
 
     public virtual async Task<HttpResponseMessage> SendAsync(
@@ -34,15 +40,6 @@ public abstract class AbstractCaller : ICaller
     public abstract Task<TResponse?> SendAsync<TResponse>(
         HttpRequestMessage request,
         CancellationToken cancellationToken = default);
-
-    public abstract Task<HttpRequestMessage> CreateRequestAsync(
-        HttpMethod method,
-        string? methodName);
-
-    public abstract Task<HttpRequestMessage> CreateRequestAsync<TRequest>(
-        HttpMethod method,
-        string? methodName,
-        TRequest data);
 
     public abstract Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
@@ -80,6 +77,15 @@ public abstract class AbstractCaller : ICaller
         HttpRequestMessage request = await CreateRequestAsync(method, methodName, data);
         return await SendAsync<TResponse>(request, cancellationToken);
     }
+
+    public abstract Task<HttpRequestMessage> CreateRequestAsync(
+        HttpMethod method,
+        string? methodName);
+
+    public abstract Task<HttpRequestMessage> CreateRequestAsync<TRequest>(
+        HttpMethod method,
+        string? methodName,
+        TRequest data);
 
     public abstract Task SendGrpcAsync(
         string methodName,
@@ -275,14 +281,11 @@ public abstract class AbstractCaller : ICaller
         return await SendAsync<TResponse>(request, cancellationToken);
     }
 
-    public virtual async Task<TResponse?> PostAsync<TResponse>(
+    public virtual Task<TResponse?> PostAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
-    {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => PostAsync<object, TResponse>(methodName, data, cancellationToken);
 
     public virtual Task<HttpResponseMessage> PatchAsync(
         string? methodName,
@@ -306,18 +309,15 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
+        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
         return await SendAsync<TResponse>(request, cancellationToken);
     }
 
-    public virtual async Task<TResponse?> PatchAsync<TResponse>(
+    public virtual Task<TResponse?> PatchAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
-    {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => PatchAsync<object, TResponse>(methodName, data, cancellationToken);
 
     public virtual Task<HttpResponseMessage> PutAsync(
         string? methodName,
@@ -345,14 +345,11 @@ public abstract class AbstractCaller : ICaller
         return await SendAsync<TResponse>(request, cancellationToken);
     }
 
-    public virtual async Task<TResponse?> PutAsync<TResponse>(
+    public virtual Task<TResponse?> PutAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => PutAsync<object, TResponse>(methodName, data, cancellationToken);
 
     public virtual Task<HttpResponseMessage> DeleteAsync(
         string? methodName,
@@ -380,12 +377,9 @@ public abstract class AbstractCaller : ICaller
         return await SendAsync<TResponse>(request, cancellationToken);
     }
 
-    public virtual async Task<TResponse?> DeleteAsync<TResponse>(
+    public virtual Task<TResponse?> DeleteAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => DeleteAsync<object, TResponse>(methodName, data, cancellationToken);
 }

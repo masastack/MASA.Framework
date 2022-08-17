@@ -3,37 +3,20 @@
 
 namespace Masa.Contrib.Data;
 
-public class DefaultTypeConvertFactory : ITypeConvertFactory
+public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvider, TypeConvertRelationOptions>,
+    ITypeConvertFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IOptions<TypeConvertFactoryOptions> _typeConvertFactoryOptions;
-    private readonly TypeConvertRelationOptions? _defaultOptions;
+    protected override string DefaultServiceNotFoundMessage
+        => "Default typeConvert not found, you need to add it, like services.AddTypeConvert()";
 
-    public DefaultTypeConvertFactory(IOptions<TypeConvertFactoryOptions> typeConvertFactoryOptions, IServiceProvider serviceProvider)
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] typeConvert, it was not found";
+
+    protected override MasaFactoryOptions<TypeConvertRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<TypeConvertFactoryOptions> _optionsMonitor;
+
+    public DefaultTypeConvertFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _typeConvertFactoryOptions = typeConvertFactoryOptions;
-        _defaultOptions = _typeConvertFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name == Options.DefaultName) ??
-            _typeConvertFactoryOptions.Value.Options.FirstOrDefault();
-        _serviceProvider = serviceProvider;
-    }
-
-    public ITypeConvertProvider Create()
-    {
-        if (_defaultOptions == null)
-            throw new NotImplementedException("Default typeConvert not found, you need to add it");
-
-        return _defaultOptions.Func.Invoke(_serviceProvider);
-    }
-
-    public ITypeConvertProvider Create(string name)
-    {
-        var typeConvertOptions =
-            _typeConvertFactoryOptions.Value.Options.FirstOrDefault(options
-                => options.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        if (typeConvertOptions == null)
-            throw new NotImplementedException($"No TypeConvert found for 【{name}】");
-
-        return typeConvertOptions.Func.Invoke(_serviceProvider);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TypeConvertFactoryOptions>>();
     }
 }

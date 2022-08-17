@@ -27,7 +27,7 @@ public static class IsolationBuilderExtensions
         return isolationBuilder;
     }
 
-    private class EnvironmentProvider
+    private sealed class EnvironmentProvider
     {
     }
 }

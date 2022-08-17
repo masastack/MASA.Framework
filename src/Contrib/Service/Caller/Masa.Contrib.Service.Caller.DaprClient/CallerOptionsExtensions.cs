@@ -13,12 +13,9 @@ public static class CallerOptionsExtensions
         string name,
         Func<MasaDaprClientBuilder> clientBuilder)
     {
-        if (clientBuilder == null)
-            throw new ArgumentNullException(nameof(clientBuilder));
+        ArgumentNullException.ThrowIfNull(clientBuilder, nameof(ArgumentNullException));
 
         MasaDaprClientBuilder builder = clientBuilder.Invoke();
-        if (clientBuilder == null)
-            throw new ArgumentNullException(nameof(clientBuilder));
 
         callerOptions.Services.AddDaprClient(daprClientBuilder =>
         {
@@ -28,6 +25,7 @@ public static class CallerOptionsExtensions
             builder.Configure?.Invoke(daprClientBuilder);
         });
 
+        callerOptions.Services.AddOptions();
         AddCallerExtensions.AddCaller(callerOptions, name,
             serviceProvider => new DaprCaller(serviceProvider, name, builder.AppId));
         return new DefaultDaprClientBuilder(callerOptions.Services, name);
@@ -41,8 +39,7 @@ public static class CallerOptionsExtensions
         string name,
         Action<MasaDaprClientBuilder> clientBuilder)
     {
-        if (clientBuilder == null)
-            throw new ArgumentNullException(nameof(clientBuilder));
+        ArgumentNullException.ThrowIfNull(clientBuilder, nameof(clientBuilder));
 
         MasaDaprClientBuilder builder = new MasaDaprClientBuilder();
         clientBuilder.Invoke(builder);

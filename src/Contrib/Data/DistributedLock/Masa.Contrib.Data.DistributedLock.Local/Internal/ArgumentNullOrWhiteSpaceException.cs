@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.DistributedLock.Local.Internal;
 
-internal class ArgumentNullOrWhiteSpaceException
+internal static class ArgumentNullOrWhiteSpaceException
 {
     public static void ThrowIfNullOrWhiteSpace(string? argument, string? paramName = null)
     {

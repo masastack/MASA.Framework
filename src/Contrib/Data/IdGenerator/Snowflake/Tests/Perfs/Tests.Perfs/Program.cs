@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Perfs;
 
-class Program
+static class Program
 {
     static void Main(string[] args)
     {

@@ -3,6 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
+[Serializable]
 public class ConnectionStrings : Dictionary<string, string>
 {
     public const string DEFAULT_SECTION = "ConnectionStrings";
@@ -17,7 +18,14 @@ public class ConnectionStrings : Dictionary<string, string>
 
     public ConnectionStrings() { }
 
-    public ConnectionStrings(IEnumerable<KeyValuePair<string, string>> connectionStrings) : base(connectionStrings) { }
+    public ConnectionStrings(IEnumerable<KeyValuePair<string, string>> connectionStrings)
+        : base(connectionStrings) { }
+
+    protected ConnectionStrings(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+
+    }
 
     public string GetConnectionString(string name)
     {

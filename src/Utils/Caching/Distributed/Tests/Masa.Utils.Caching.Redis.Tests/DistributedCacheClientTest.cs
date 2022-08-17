@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Caching.Redis.Tests;
@@ -22,7 +22,7 @@ public class DistributedCacheClientTest
         });
         _serviceProvider = services.BuildServiceProvider();
         _cacheClient = _serviceProvider.GetRequiredService<IDistributedCacheClient>();
-        _cacheClient.Remove<string>("test1", "test2", "redis1", "redis2");
+        _cacheClient.Remove<string>("test", "test1", "test2", "redis1", "redis2");
     }
 
     [TestMethod]

@@ -26,7 +26,7 @@ public static class MasaConfigurationBuilderExtensions
             var constructorInfo = optionType.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).FirstOrDefault(info => info.GetParameters().Length == 0);
 
             if (constructorInfo == null)
-                throw new Exception($"[{optionType.Name}] must have a parameterless constructor");
+                throw new MasaException($"[{optionType.Name}] must have a parameterless constructor");
 
             var option = (IMasaConfigurationOptions)Activator.CreateInstance(optionType, !constructorInfo.IsPublic)!;
             var sectionName = option.Section ?? optionType.Name;

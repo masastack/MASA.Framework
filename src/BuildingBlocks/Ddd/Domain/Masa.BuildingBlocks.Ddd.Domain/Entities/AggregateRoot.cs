@@ -41,11 +41,11 @@ public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey>, 
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 
-    public AggregateRoot() : base()
+    protected AggregateRoot() : base()
     {
     }
 
-    public AggregateRoot(TKey id) : base(id)
+    protected AggregateRoot(TKey id) : base(id)
     {
     }
 
