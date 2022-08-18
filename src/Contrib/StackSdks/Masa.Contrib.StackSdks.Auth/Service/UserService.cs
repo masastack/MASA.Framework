@@ -130,6 +130,16 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, user);
     }
 
+    public async Task UpdateAvatarAsync(UpdateUserAvatarModel user)
+    {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/updateAvatar";
+        await _caller.PutAsync(requestUri, user);
+    }
+
     public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
     {
         if (user.Id == Guid.Empty)

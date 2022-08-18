@@ -19,7 +19,8 @@ public class AutoCompleteFactory : IAutoCompleteFactory
             item.RealIndexName,
             item.DefaultOperator,
             item.DefaultSearchType,
-            item.EnableMultipleCondition);
+            item.EnableMultipleCondition,
+            item.QueryAnalyzer);
     }
 
     /// <summary>
@@ -37,6 +38,7 @@ public class AutoCompleteFactory : IAutoCompleteFactory
             item.RealIndexName,
             item.DefaultOperator,
             item.DefaultSearchType,
-            item.EnableMultipleCondition);
+            item.EnableMultipleCondition,
+            item.QueryAnalyzer);
     }
 }

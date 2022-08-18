@@ -34,6 +34,8 @@ public class AutoCompleteRelations
 
     internal SearchType DefaultSearchType { get; }
 
+    internal string QueryAnalyzer { get; }
+
     internal AutoCompleteRelations(
         IElasticClient elasticClient,
         IMasaElasticClient masaElasticClient,
@@ -42,7 +44,8 @@ public class AutoCompleteRelations
         bool isDefault,
         Operator defaultOperator,
         SearchType defaultSearchType,
-        bool enableMultipleCondition)
+        bool enableMultipleCondition,
+        string queryAnalyzer)
     {
         ElasticClient = elasticClient;
         MasaElasticClient = masaElasticClient;
@@ -53,5 +56,6 @@ public class AutoCompleteRelations
         DefaultOperator = defaultOperator;
         DefaultSearchType = defaultSearchType;
         EnableMultipleCondition = enableMultipleCondition;
+        QueryAnalyzer = queryAnalyzer;
     }
 }

@@ -22,6 +22,8 @@ public class AutoCompleteOptions<TDocument>
 
     internal Action<IIndexSettings>? IndexSettingAction { get; private set; }
 
+    internal string QueryAnalyzer { get; private set; } = "ik_smart";
+
     public AutoCompleteOptions<TDocument> UseIndexName(string indexName)
     {
         IndexName = indexName;
@@ -81,6 +83,12 @@ public class AutoCompleteOptions<TDocument>
     public AutoCompleteOptions<TDocument> UseMultipleConditions(bool enableMultipleCondition = true)
     {
         EnableMultipleCondition = enableMultipleCondition;
+        return this;
+    }
+
+    public AutoCompleteOptions<TDocument> UseQueryAnalyzer(string queryAnalyzer)
+    {
+        QueryAnalyzer = queryAnalyzer;
         return this;
     }
 }
