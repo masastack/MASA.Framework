@@ -7,11 +7,11 @@ public abstract class UserContext : IUserSetter, IUserContext
 {
     private readonly AsyncLocal<Dictionary<Type, object?>?> _currentUser = new();
 
-    public bool IsAuthenticated => GetUserSimple() != null;
+    public bool IsAuthenticated => GetUser() != null;
 
-    public string? UserId => GetUserSimple()?.Id;
+    public string? UserId => GetUser()?.Id;
 
-    public string? UserName => GetUserSimple()?.UserName;
+    public string? UserName => GetUser()?.UserName;
 
     protected ITypeConvertProvider TypeConvertProvider { get; }
 
@@ -46,8 +46,6 @@ public abstract class UserContext : IUserSetter, IUserContext
         return user == null ? default : (TIdentityUser)user;
     }
 
-    public IIdentityUser? GetUserSimple() => GetUser<IdentityUser>();
-
     public IDisposable Change<TIdentityUser>(TIdentityUser identityUser) where TIdentityUser : IIdentityUser
     {
         var userModelType = typeof(TIdentityUser);
@@ -58,7 +56,7 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     public IEnumerable<TRoleId> GetUserRoles<TRoleId>()
     {
-        return GetUserSimple()?.Roles
+        return GetUser()?.Roles
             .Select(r => TypeConvertProvider.ConvertTo<TRoleId>(r) ??
                 throw new ArgumentException($"RoleId cannot be converted to [{typeof(TRoleId).Name}]")) ?? new List<TRoleId>();
     }
