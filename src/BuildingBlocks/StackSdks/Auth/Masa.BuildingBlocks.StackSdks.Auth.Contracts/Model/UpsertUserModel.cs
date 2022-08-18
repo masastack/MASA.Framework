@@ -11,7 +11,7 @@ public class UpsertUserModel
 
     public string? Name { get; set; }
 
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     public string? IdCard { get; set; }
 
