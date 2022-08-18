@@ -26,26 +26,26 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         _client = client;
         _distributedCacheClient = distributedCacheClient;
 
-        var defaultSection = HandleDefaultSectionOptions(defaultSectionOption);
         var sectionOptionOptions = new List<DccSectionOptions>()
         {
-            defaultSection
+            defaultSectionOption
         }.Concat(expansionSectionOptions);
 
         foreach (var sectionOption in sectionOptionOptions)
         {
-            Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
+            var section = HandleSectionOptions(sectionOption);
+            Initialize(section).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 
-    private DccSectionOptions HandleDefaultSectionOptions(DccSectionOptions defaultSectionOption)
+    private DccSectionOptions HandleSectionOptions(DccSectionOptions defaultSectionOption)
     {
         if (!defaultSectionOption.ConfigObjects.Any())
         {
             var defaultConfigObjects = new List<string>();
 
             string partialKey =
-                $"{defaultSectionOption.Environment}-{defaultSectionOption.Cluster}-{defaultSectionOption.AppId}";
+                $"{defaultSectionOption.Environment}-{defaultSectionOption.Cluster}-{defaultSectionOption.AppId}".ToLower();
             List<string> keys = _distributedCacheClient.GetKeys($"{partialKey}*");
             foreach (var key in keys)
             {

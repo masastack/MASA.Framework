@@ -7,12 +7,14 @@ public class DccConfigurationOptions
 {
     public RedisConfigurationOptions RedisOptions { get; set; }
 
-    public string ManageServiceAddress { get; set; } = default!;
-
     /// <summary>
     /// public config id
     /// </summary>
-    public string? PublicId { get; set; }
+    public string PublicId { get; set; } = default!;
+
+    public string? PublicSecret { get; set; }
+
+    public string ManageServiceAddress { get; set; } = default!;
 
     /// <summary>
     /// The prefix of Dcc PubSub, it is not recommended to modify

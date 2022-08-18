@@ -15,22 +15,42 @@ public static class MasaConfigurationExtensions
         var configurationSection = builder.Configuration.GetSection("DccOptions");
         var dccOptions = configurationSection.Get<DccConfigurationOptions>();
 
+        var masaAppConfigureOptions =
+            builder.Services.BuildServiceProvider().GetRequiredService<IOptions<MasaAppConfigureOptions>>();
+
+        dccOptions.PublicId ??= masaAppConfigureOptions.Value.Data.GetValueOrDefault(nameof(DccConfigurationOptions.PublicId))
+                ?? StaticConfig.PublicId;
+        string environment =
+            configurationSection[nameof(DccSectionOptions.Environment)] ?? masaAppConfigureOptions.Value.Environment;
+        string cluster =
+            configurationSection[nameof(DccSectionOptions.Cluster)] ?? masaAppConfigureOptions.Value.Cluster;
+
         List<DccSectionOptions> expandSections = new();
         var configurationExpandSection = configurationSection.GetSection("ExpandSections");
         if (configurationExpandSection.Exists())
         {
             configurationExpandSection.Bind(expandSections);
         }
-
-        var masaAppConfigureOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<MasaAppConfigureOptions>>();
+        //add public SectionOptions to expandSections
+        expandSections.Add(new DccSectionOptions
+        {
+            Environment = environment,
+            Cluster = cluster,
+            AppId = dccOptions.PublicId,
+            Secret = dccOptions.PublicSecret
+                ?? masaAppConfigureOptions.Value.Data.GetValueOrDefault(nameof(DccConfigurationOptions.PublicSecret)),
+            ConfigObjects = new()
+        });
 
         return builder.UseDcc(() => dccOptions, option =>
         {
-            option.Environment = configurationSection[nameof(DccSectionOptions.Environment)] ?? masaAppConfigureOptions.Value.Environment;
-            option.Cluster = configurationSection[nameof(DccSectionOptions.Cluster)] ?? masaAppConfigureOptions.Value.Cluster;
+            option.Environment = environment;
+            option.Cluster = cluster;
             option.AppId = configurationSection[nameof(DccSectionOptions.AppId)] ?? masaAppConfigureOptions.Value.AppId;
-            option.ConfigObjects = configurationSection.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>();
-            option.Secret = configurationSection[nameof(DccSectionOptions.Secret)] ?? masaAppConfigureOptions.Value.Data.GetValueOrDefault(nameof(DccSectionOptions.Secret));
+            option.ConfigObjects = configurationSection.GetSection(nameof(DccSectionOptions.ConfigObjects)).Get<List<string>>()
+                ?? new();
+            option.Secret = configurationSection[nameof(DccSectionOptions.Secret)]
+                ?? masaAppConfigureOptions.Value.Data.GetValueOrDefault(nameof(DccSectionOptions.Secret));
         }, option => option.ExpandSections = expandSections, jsonSerializerOptions, callerOptions);
     }
 
@@ -63,7 +83,7 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions>? expansionSectionOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions,
         Action<CallerOptions>? action)
-    {        
+    {
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
             return builder;
@@ -73,7 +93,7 @@ public static class MasaConfigurationExtensions
         var config = GetDccConfigurationOption(configureOptions, defaultSectionOptions, expansionSectionOptions);
 
         StaticConfig.AppId = defaultSectionOptions.AppId;
-        StaticConfig.PublicId = configureOptions.PublicId ?? StaticConfig.PublicId;
+        StaticConfig.PublicId = configureOptions.PublicId;
 
         var jsonSerializerOption = new JsonSerializerOptions()
         {
@@ -191,9 +211,6 @@ public static class MasaConfigurationExtensions
                 expansionOption.Environment = defaultSectionOptions.Environment;
             if (string.IsNullOrEmpty(expansionOption.Cluster))
                 expansionOption.Cluster = defaultSectionOptions.Cluster;
-
-            if (expansionOption.ConfigObjects == null || !expansionOption.ConfigObjects.Any())
-                throw new ArgumentNullException("ConfigObjects in the extension section cannot be empty");
 
             if (expansionOption.AppId == defaultSectionOptions.AppId ||
                 expansionOptions.Any(section => section.AppId == expansionOption.AppId))

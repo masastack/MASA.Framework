@@ -37,13 +37,15 @@ appsettings.json
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    }
-  },
+    },
+    "PublicId": "PublicId",
+    "PublicSecret": "PublicSecret",
   "AppId": "Replace-With-Your-AppId",
   "Environment": "Development",
   "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationApi:<Replace-With-Your-AppId> node
   "Secret": "", //Dcc App key
   "Cluster": "Default"
+  },
 }
 
 ```

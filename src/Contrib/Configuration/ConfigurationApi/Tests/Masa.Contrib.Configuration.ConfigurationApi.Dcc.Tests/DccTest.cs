@@ -20,7 +20,9 @@ public class DccTest
     [TestInitialize]
     public void Initialize()
     {
-        _services = new ServiceCollection();
+        var builder = WebApplication.CreateBuilder();
+        builder = builder.InitializeAppConfiguration();
+        _services = builder.Services;
         _masaConfigurationBuilder = new Mock<IMasaConfigurationBuilder>();
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build;
         _masaConfigurationBuilder.Setup(builder => builder.Configuration).Returns(configuration).Verifiable();
@@ -632,6 +634,7 @@ public class DccTest
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
         _masaConfigurationBuilder.Object.UseDcc();
+
         Assert.IsTrue(
             configurationApiClient
                 .GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
@@ -732,7 +735,7 @@ public class DccTest
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
             Content = "Test",
-            ConfigFormat = (ConfigFormats)4
+            ConfigFormat = (ConfigFormats)6
         });
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
