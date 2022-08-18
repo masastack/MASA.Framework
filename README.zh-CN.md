@@ -3,9 +3,11 @@
 [![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
+
+
 # MASA.Framework
 
-NET下一代微服务开发框架，提供基于分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
+.NET下一代微服务开发框架，提供基于分布式应用运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
 
 ![Framework](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
 
@@ -67,7 +69,7 @@ dotnet run
 3. Commit with commit message, like `feat(Isolation): Support physical isolation, logical isolation`
 4. Create Pull Request
 
-如果你希望参与贡献，欢迎 [Pull Request](https://github.com/masastack/MASA.BuildingBlocks/pulls)，或给我们 [报告 Bug](https://github.com/masastack/MASA.BuildingBlocks/issues/new) 。
+如果你希望参与贡献，欢迎 [Pull Request](https://github.com/masastack/MASA.Framework/pulls)，或给我们 [报告 Bug](https://github.com/masastack/MASA.Framework/issues/new) 。
 
 
 

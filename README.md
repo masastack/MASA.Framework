@@ -3,9 +3,11 @@
 [![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
+
+
 # MASA.Framework
 
-NET next-generation microservice development framework, which provides cloud native best practices based on distributed runtime--Dapr, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
+.NET next-generation microservice development framework, which provides cloud native best practices based on Distributed Application Runtime--Dapr, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
 
 ![Framework](https://s2.loli.net/2022/08/18/G5FDp4Ocx16k8As.png)
 
@@ -68,7 +70,7 @@ dotnet run
 3. Commit with commit message, like `feat(Isolation): Support physical isolation, logical isolation`
 4. Create Pull Request
 
-If you wish to contribute, please [Pull Request](https://github.com/masastack/MASA.BuildingBlocks/pulls), or send us a [Report Bug](https://github.com/masastack/MASA.BuildingBlocks /issues/new) .
+If you wish to contribute, please [Pull Request](https://github.com/masastack/MASA.Framework/pulls), or send us a [Report Bug](https://github.com/masastack/MASA.Framework /issues/new) .
 
 
 
