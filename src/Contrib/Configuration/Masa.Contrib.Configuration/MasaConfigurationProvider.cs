@@ -43,7 +43,7 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
 
     void SetData()
     {
-        Dictionary<string, string> data = new();
+        Dictionary<string, string> data = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (var configurationType in _data.Keys)
         {

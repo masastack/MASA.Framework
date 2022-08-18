@@ -169,12 +169,12 @@ public class ConfigurationTest
         Assert.ThrowsException<MasaException>(() =>
         {
             return builder.AddMasaConfiguration(configurationBuilder =>
-                {
-                    configurationBuilder
-                        .AddJsonFile("rabbitMq.json", true, true)
-                        .AddJsonFile("redis.json", true, true);
-                    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<MountSectionRedisOptions>("Test"));
-                });
+            {
+                configurationBuilder
+                    .AddJsonFile("rabbitMq.json", true, true)
+                    .AddJsonFile("redis.json", true, true);
+                configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<MountSectionRedisOptions>("Test"));
+            });
         }, $"Check if the mapping section is correct，section name is [{It.IsAny<string>()}]");
     }
 
@@ -290,5 +290,22 @@ public class ConfigurationTest
         }, typeof(ConfigurationTest).Assembly);
 
         Assert.IsTrue(builder.Configuration["project-name"] == "masa-unit-test");
+    }
+
+    [DataTestMethod]
+    [DataRow("KafkaOptions:Servers", "Kafka Server")]
+    [DataRow("kafkaoptions:Servers", "Kafka Server")]
+    [DataRow("kafkaOptions:servers", "Kafka Server")]
+    public void TestMasaConfigurationByKey(string key, string value)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.AddMasaConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
+        }, typeof(ConfigurationTest).Assembly);
+        var localConfiguration = builder.GetMasaConfiguration().Local;
+        Assert.IsTrue(localConfiguration[key] == value);
     }
 }
