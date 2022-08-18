@@ -1,13 +1,13 @@
 ﻿﻿中 | [EN](README.md)
 
-[![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
+[![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
 # MASA.Framework
 
 NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
 
-![Frame 9032.png](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
+![Framework](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
 
 
 
