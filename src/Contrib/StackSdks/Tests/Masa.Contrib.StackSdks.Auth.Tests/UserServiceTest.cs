@@ -303,6 +303,19 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestUpdateAvatarAsync()
+    {
+        var user = new UpdateUserAvatarModel(default, "");
+        var requestUri = $"api/user/updateAvatar";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.UpdateAvatarAsync(user);
+        caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
+    }
+
+    [TestMethod]
     public async Task TestDisableUserAsync()
     {
         var user = new DisableUserModel("account");
@@ -323,7 +336,6 @@ public class UserServiceTest
             Id = Guid.NewGuid(),
             DisplayName = "test",
             Gender = GenderTypes.Male,
-            PhoneNumber = "15168440403"
         };
         var requestUri = $"api/user/updateBasicInfo";
         var caller = new Mock<ICaller>();

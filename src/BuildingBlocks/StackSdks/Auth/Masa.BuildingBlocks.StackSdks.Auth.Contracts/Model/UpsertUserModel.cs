@@ -7,9 +7,9 @@ public class UpsertUserModel
 {
     public Guid Id { get; set; }
 
-    public string Account { get; set; }
+    public string? Account { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public string? DisplayName { get; set; }
 
@@ -22,17 +22,5 @@ public class UpsertUserModel
     public string? Email { get; set; }
 
     public GenderTypes Gender { get; set; }
-
-    public UpsertUserModel()
-    {
-        Account = "";
-        Name = "";
-    }
-
-    public UpsertUserModel(string account, string name)
-    {
-        Account = account;
-        Name = name;
-    }
 }
 
