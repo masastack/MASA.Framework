@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
-public interface IEventHandler<TEvent>
+public interface IEventHandler<in TEvent>
         where TEvent : IEvent
 {
     Task HandleAsync(TEvent @event);

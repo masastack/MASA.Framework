@@ -4,13 +4,10 @@
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data;
-global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
-global using Masa.BuildingBlocks.Data.Options;
+global using Masa.BuildingBlocks.Data.Contracts;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;
-global using Masa.Contrib.Data.EFCore;
-global using Masa.Contrib.Data.EFCore.Filters;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.EntityFrameworkCore.Infrastructure;

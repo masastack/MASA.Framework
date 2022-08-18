@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private class IntegrationEventBusProvider
+    private sealed class IntegrationEventBusProvider
     {
     }
 

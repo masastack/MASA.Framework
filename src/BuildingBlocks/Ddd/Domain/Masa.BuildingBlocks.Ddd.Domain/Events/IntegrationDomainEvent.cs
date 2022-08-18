@@ -8,5 +8,5 @@ public abstract record IntegrationDomainEvent(Guid Id, DateTime CreationTime) : 
     [JsonIgnore]
     public abstract string Topic { get; set; }
 
-    public IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 }

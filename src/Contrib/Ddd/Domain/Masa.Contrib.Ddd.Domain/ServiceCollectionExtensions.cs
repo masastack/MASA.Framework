@@ -25,13 +25,13 @@ public static class ServiceCollectionExtensions
         services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         if (services.All(service => service.ServiceType != typeof(IEventBus)))
-            throw new Exception("Please add EventBus first.");
+            throw new MasaException("Please add EventBus first.");
 
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
-            throw new Exception("Please add UoW first.");
+            throw new MasaException("Please add UoW first.");
 
         if (services.All(service => service.ServiceType != typeof(IIntegrationEventBus)))
-            throw new Exception("Please add IntegrationEventBus first.");
+            throw new MasaException("Please add IntegrationEventBus first.");
 
         services.CheckAggregateRootRepositories(dispatcherOptions.AllAggregateRootTypes);
 
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
 
     private static Type GetServiceRepositoryType(Type entityType) => typeof(IRepository<>).MakeGenericType(entityType);
 
-    private class DomainEventBusProvider
+    private sealed class DomainEventBusProvider
     {
 
     }

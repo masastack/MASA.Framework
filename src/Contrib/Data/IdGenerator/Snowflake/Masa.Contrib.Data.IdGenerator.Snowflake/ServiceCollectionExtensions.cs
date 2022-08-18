@@ -8,47 +8,55 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSnowflake(this IServiceCollection services)
         => services.AddSnowflake(null);
 
-    public static IServiceCollection AddSnowflake(this IServiceCollection services, Action<IdGeneratorOptions>? options)
+    public static IServiceCollection AddSnowflake(this IServiceCollection services, Action<SnowflakeGeneratorOptions>? action)
     {
-        var idGeneratorOptions = new IdGeneratorOptions(services);
-        options?.Invoke(idGeneratorOptions);
+        var snowflakeGeneratorOptions = new SnowflakeGeneratorOptions(services);
+        action?.Invoke(snowflakeGeneratorOptions);
 
         services.TryAddSingleton<IWorkerProvider, DefaultWorkerProvider>();
 
-        CheckIdGeneratorOptions(services, idGeneratorOptions);
+        CheckIdGeneratorOptions(services, snowflakeGeneratorOptions);
 
-        services.TryAddSingleton<IIdGenerator<System.Snowflake, long>>(serviceProvider
-            => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
-        if (idGeneratorOptions.EnableMachineClock)
+        if (snowflakeGeneratorOptions.EnableMachineClock)
         {
             services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
-                => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(), idGeneratorOptions));
+                => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(), snowflakeGeneratorOptions));
         }
         else
         {
             services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
                 => new SnowflakeIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
-                    idGeneratorOptions));
+                    snowflakeGeneratorOptions));
         }
+        services.AddIdGeneratorCore();
+        services.AddSingleton<IIdGenerator<long>>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
+        services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
 
-        if (idGeneratorOptions.SupportDistributed)
+        services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
+        {
+            factoryOptions.Options.Add(new IdGeneratorRelationOptions(snowflakeGeneratorOptions.Name)
+            {
+                Func = serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>()
+            });
+        });
+
+        if (snowflakeGeneratorOptions.SupportDistributed)
         {
             services.Add(ServiceDescriptor.Singleton<IHostedService>(serviceProvider
                 => new WorkerIdBackgroundServices(
-                    idGeneratorOptions.HeartbeatInterval,
-                    idGeneratorOptions.MaxExpirationTime,
+                    snowflakeGeneratorOptions.HeartbeatInterval,
+                    snowflakeGeneratorOptions.MaxExpirationTime,
                     serviceProvider.GetRequiredService<IWorkerProvider>(),
                     serviceProvider.GetService<ILogger<WorkerIdBackgroundServices>>()
                 )));
         }
-        IdGeneratorFactory.SetSnowflakeGenerator(services.BuildServiceProvider().GetRequiredService<ISnowflakeGenerator>());
         return services;
     }
 
     private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
         services.BuildServiceProvider().GetRequiredService<TService>();
 
-    private static void CheckIdGeneratorOptions(IServiceCollection services, IdGeneratorOptions generatorOptions)
+    private static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
     {
         if (generatorOptions.BaseTime > DateTime.UtcNow)
             throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),

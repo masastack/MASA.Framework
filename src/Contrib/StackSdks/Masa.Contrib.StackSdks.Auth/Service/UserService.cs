@@ -20,6 +20,12 @@ public class UserService : IUserService
         return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
+    public async Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user)
+    {
+        var requestUri = $"api/user/addThirdPartyUser";
+        return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user);
+    }
+
     public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
     {
         var requestUri = $"api/user/upsertExternal";
@@ -68,10 +74,10 @@ public class UserService : IUserService
         return await _caller.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
     }
 
-    public async Task<UserModel> FindByAccountAsync(string account)
+    public async Task<UserModel?> FindByAccountAsync(string account)
     {
         var requestUri = $"api/user/findByAccount";
-        return await _caller.GetAsync<object, UserModel>(requestUri, new { account }) ?? new();
+        return await _caller.GetAsync<object, UserModel>(requestUri, new { account });
     }
 
     public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
@@ -100,11 +106,11 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, StaffDetailModel>(requestUri, new { userId });
     }
 
-    public async Task VisitedAsync(string url)
+    public async Task VisitedAsync(string appId, string url)
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/visit";
-        await _caller.PostAsync<object>(requestUri, new { UserId = userId, Url = url }, true);
+        await _caller.PostAsync<object>(requestUri, new { UserId = userId, appId = appId, Url = url }, true);
     }
 
     public async Task<List<UserVisitedModel>> GetVisitedListAsync()

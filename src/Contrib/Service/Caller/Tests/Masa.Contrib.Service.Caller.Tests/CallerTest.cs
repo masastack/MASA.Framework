@@ -136,4 +136,182 @@ public class CallerTest
         Assert.IsTrue(result.Count == 1);
         Assert.IsTrue(result["Account"] == "Jim");
     }
+
+    [TestMethod]
+    public void TestCustomCallerNameReturnNotNull()
+    {
+        var baseAddress = "http://www.github.com";
+        var services = new ServiceCollection();
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient("gitee", httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.gitee.com";
+            });
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = baseAddress;
+            });
+        });
+
+        var caller = services.BuildServiceProvider().GetService<ICaller>();
+        Assert.IsNotNull(caller);
+
+        var httpClientCaller = ((HttpClientCaller)caller);
+        System.Net.Http.HttpClient httpClient =
+            (System.Net.Http.HttpClient)httpClientCaller.GetType()
+                .GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(httpClientCaller)!;
+        Assert.IsTrue(httpClient!.BaseAddress!.OriginalString == baseAddress);
+
+    }
+
+    [TestMethod]
+    public void TestRepeatCallerNameReturnArgumentException()
+    {
+        var services = new ServiceCollection();
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.github.com";
+            });
+        });
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient(httpClientBuilder =>
+            {
+                httpClientBuilder.BaseApi = "http://www.gitee.com";
+            });
+        });
+
+        Assert.ThrowsException<ArgumentException>(() => services.BuildServiceProvider().GetService<ICaller>());
+    }
+
+
+    [TestMethod]
+    public void TestInitializationMasaHttpClientBuilderReturnEqual()
+    {
+        var masaHttpClientBuilder = new MasaHttpClientBuilder();
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.Configure == null);
+
+
+        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", _ =>
+        {
+        });
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
+
+        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", "api", _ =>
+        {
+        });
+        Assert.IsTrue(masaHttpClientBuilder.Prefix == "api");
+        Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
+    }
+
+    [TestMethod]
+    public void TestNotUseCaller()
+    {
+        var services = new ServiceCollection();
+        services.AddCaller();
+        var serviceProvider = services.BuildServiceProvider();
+        var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
+        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create(),
+            "No default Caller found, you may need service.AddCaller()");
+        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create("test"),
+            string.Format("Please make sure you have used [{0}] Caller, it was not found", "test"));
+    }
+
+    [TestMethod]
+    public async Task TestConfigRequestMessageByHttpClientCallerAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
+        services.AddSingleton<IRequestMessage, XmlRequestMessage>();
+        services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
+        Mock<IHttpClientFactory> httpClientFactory = new();
+        var handlerMock = new Mock<HttpMessageHandler>();
+        var magicHttpClient = new System.Net.Http.HttpClient(handlerMock.Object)
+        {
+            BaseAddress = new Uri("http://localhost:5000")
+        };
+        var response = new BaseResponse("success");
+        handlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>()
+            )
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(XmlUtils.Serializer(response))
+            })
+            .Verifiable();
+
+        httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
+        services.AddSingleton(httpClientFactory.Object);
+        var serviceProvider = services.BuildServiceProvider();
+        string name = "<Custom-Alias>";
+        string prefix = "<Replace-Your-Service-Prefix>";
+        var caller = new HttpClientCaller(serviceProvider, name, prefix);
+
+        var excuteCount = 0;
+        caller.ConfigRequestMessage(httpRequestMessage =>
+        {
+            excuteCount++;
+            Assert.IsTrue(httpRequestMessage.RequestUri!.ToString().Contains($"{prefix}/Hello"));
+        });
+
+        await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.GetAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.GetAsync<BaseResponse>("Hello?account=Jim&password=123456");
+        await caller.PutAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.PatchAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.DeleteAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+
+        Assert.IsTrue(excuteCount == 6);
+    }
+
+    [TestMethod]
+    public async Task TestConfigRequestMessageByDaprClientCallerAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddOptions();
+        services.AddSingleton<IRequestMessage, XmlRequestMessage>();
+        services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
+        services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
+        Mock<Dapr.Client.DaprClient> daprClient = new();
+        var response = new BaseResponse("success");
+        daprClient.Setup(client => client.CreateInvokeMethodRequest(It.IsAny<HttpMethod>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(new HttpRequestMessage());
+        daprClient.Setup(client => client.InvokeMethodWithResponseAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(XmlUtils.Serializer(response))
+            });
+        services.AddSingleton(daprClient.Object);
+        var serviceProvider = services.BuildServiceProvider();
+        string name = "<Custom-Alias>";
+        string prefix = "<Replace-Your-Service-Prefix>";
+        var caller = new DaprCaller(serviceProvider, name, prefix);
+        var excuteCount = 0;
+        caller.ConfigRequestMessage(httpRequestMessage =>
+        {
+            excuteCount++;
+        });
+
+        await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.GetAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.GetAsync<BaseResponse>("Hello?account=Jim&password=123456");
+        await caller.PutAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.PatchAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+        await caller.DeleteAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
+
+        Assert.IsTrue(excuteCount == 6);
+    }
 }

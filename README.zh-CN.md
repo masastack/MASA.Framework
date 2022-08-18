@@ -1,12 +1,19 @@
 ﻿﻿中 | [EN](README.md)
 
 [![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
 # MASA.Framework
 
 NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
 
 ![Frame 9032.png](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
+
+
+
+## 文档
+
+[https://docs.masastack.com/Framework/guide/concepts.html](https://docs.masastack.com/Framework/guide/concepts.html)
 
 
 
@@ -31,21 +38,21 @@ NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最�
 
 * 安装[.NET SDK 6.0](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0)
 
-### CLI
-
-#### Install Template
+#### 安装模板
 
 ``` shell
 dotnet new --install Masa.Template
 ```
 
-#### Create Project
+#### 创建项目
 
 ``` shell
-dotnet new masafx -o Masa.Framework.Test
+dotnet new masafx -o Masa.Framework.Demo
 ```
 
-#### Run
+> 或通过Visual Studio选择`MASA Framework Project`模板进行创建
+
+#### 启动项目
 
 ``` shell
 dotnet run

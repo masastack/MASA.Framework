@@ -12,6 +12,8 @@ public class QueryBaseOptions<TDocument> : DocumentOptions
 
     public string Query { get; }
 
+    public string Analyzer { get; set; }
+
     public Operator Operator { get; set; }
 
     public Action<QueryStringQueryDescriptor<TDocument>>? Action { get; set; }

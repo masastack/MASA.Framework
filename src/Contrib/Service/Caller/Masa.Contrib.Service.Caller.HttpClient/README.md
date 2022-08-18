@@ -16,9 +16,8 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";// The alias of the current Caller, when there is only one HttpClient, you can not assign a value to Name
             clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
     });
@@ -38,14 +37,12 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";
             clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
-        options.UseHttpClient(clientBuilder =>
+        options.UseHttpClient("OrderCaller", clientBuilder =>
         {
-            clientBuilder.Name = "OrderCaller";
             clientBuilder.BaseAddress = "http://localhost:6000" ;
         });
     });
@@ -56,7 +53,6 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     ```` C#
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
         => caller.GetAsync<string>($"/Hello", new { Name = name }));// Get UserCaller
-
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
@@ -85,10 +81,6 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
     public class UserCaller: HttpClientCallerBase
     {
         protected override string BaseAddress { get; set; } = "http://localhost:5000";
-
-        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
 
         public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
 

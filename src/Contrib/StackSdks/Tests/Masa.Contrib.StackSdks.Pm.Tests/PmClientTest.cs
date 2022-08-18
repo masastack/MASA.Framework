@@ -1,13 +1,13 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Pm;
-
 namespace Masa.Contrib.StackSdks.Pm.Tests;
 
 [TestClass]
 public class PmClientTest
 {
+    public const string PM_CALLER_NAME = "masa.contrib.basicability.pm";
+
     [TestMethod]
     public void TestAddPmClient()
     {
@@ -15,9 +15,8 @@ public class PmClientTest
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(builder =>
+            option.UseHttpClient(PM_CALLER_NAME, builder =>
             {
-                builder.Name = "masa.contrib.basicability.pm";
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
@@ -52,18 +51,16 @@ public class PmClientTest
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(builder =>
+            option.UseHttpClient(PM_CALLER_NAME, builder =>
             {
-                builder.Name = "masa.contrib.basicability.pm";
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(builder =>
+            option.UseHttpClient(PM_CALLER_NAME, builder =>
             {
-                builder.Name = "masa.contrib.basicability.pm";
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });

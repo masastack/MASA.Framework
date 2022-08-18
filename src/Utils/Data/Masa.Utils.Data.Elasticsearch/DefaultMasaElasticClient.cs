@@ -375,6 +375,9 @@ public class DefaultMasaElasticClient : IMasaElasticClient
         where TDocument : class
     {
         queryDescriptor = queryDescriptor.Query(queryBaseOptions.Query);
+        if (!string.IsNullOrEmpty(queryBaseOptions.Analyzer))
+            queryDescriptor = queryDescriptor.Analyzer(queryBaseOptions.Analyzer);
+
         queryDescriptor = queryDescriptor.DefaultOperator(queryBaseOptions.Operator);
         if (!string.IsNullOrEmpty(queryBaseOptions.DefaultField))
             queryDescriptor.DefaultField(queryBaseOptions.DefaultField);

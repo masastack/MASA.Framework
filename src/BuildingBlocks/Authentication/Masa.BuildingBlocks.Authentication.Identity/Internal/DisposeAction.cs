@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.Identity.Internal;
 
-internal class DisposeAction : IDisposable
+internal sealed class DisposeAction : IDisposable
 {
     private readonly Action _action;
 

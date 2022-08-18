@@ -4,9 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>Masa.Contrib.Data.DistributedLocking.Medallion.WaitHandles</RootNamespace>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="DistributedLock.WaitHandles" Version="1.0.0" />
   </ItemGroup>
@@ -14,5 +13,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Masa.Contrib.Data.DistributedLock.Medallion\Masa.Contrib.Data.DistributedLock.Medallion.csproj" />
   </ItemGroup>
-  
+
 </Project>

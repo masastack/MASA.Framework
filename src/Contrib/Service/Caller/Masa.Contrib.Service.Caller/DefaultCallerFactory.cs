@@ -3,29 +3,18 @@
 
 namespace Masa.Contrib.Service.Caller;
 
-internal class DefaultCallerFactory : ICallerFactory
+internal class DefaultCallerFactory : AbstractMasaFactory<ICaller, CallerRelationOptions>, ICallerFactory
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly List<CallerRelationOptions> _callers;
+    protected override string DefaultServiceNotFoundMessage => "No default Caller found, you may need service.AddCaller()";
 
-    public DefaultCallerFactory(IServiceProvider serviceProvider, IOptions<CallerFactoryOptions> options)
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] Caller, it was not found";
+
+    protected override MasaFactoryOptions<CallerRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+
+    private readonly IOptionsMonitor<CallerFactoryOptions> _optionsMonitor;
+
+    public DefaultCallerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
-        _callers = options.Value.Callers;
-    }
-
-    public ICaller Create()
-    {
-        var caller = _callers.SingleOrDefault(c => c.IsDefault) ?? _callers.FirstOrDefault()!;
-        return caller.Func.Invoke(_serviceProvider);
-    }
-
-    public ICaller Create(string name)
-    {
-        var caller = _callers.SingleOrDefault(c => c.Name == name);
-        if (caller == null)
-            throw new NotSupportedException($"Please make sure you have used [{name}] Caller");
-
-        return caller.Func.Invoke(_serviceProvider);
+        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CallerFactoryOptions>>();
     }
 }

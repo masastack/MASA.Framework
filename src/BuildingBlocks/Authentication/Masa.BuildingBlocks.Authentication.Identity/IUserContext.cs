@@ -13,7 +13,9 @@ public interface IUserContext
 
     TUserId? GetUserId<TUserId>();
 
+    IdentityUser? GetUser();
+
     TIdentityUser? GetUser<TIdentityUser>() where TIdentityUser : IIdentityUser;
 
-    IEnumerable<IdentityRole<TRoleId>> GetUserRoles<TRoleId>();
+    IEnumerable<TRoleId> GetUserRoles<TRoleId>();
 }

@@ -16,9 +16,8 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ``` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";// 当前Caller的别名，仅存在一个Provider时，可以不对Name赋值
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//被调用方dapr的AppID
         });
     });
@@ -38,14 +37,12 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ``` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//被调用方User服务Dapr的AppID
         });
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("OrderCaller", clientBuilder =>
         {
-            clientBuilder.Name = "OrderCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//被调用方Order服务Dapr的AppID
         });
     });
@@ -56,7 +53,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ``` C#
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
         => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
-
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
@@ -85,10 +81,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     public class UserCaller: DaprCallerBase
     {
         protected override string AppId { get; set; } = "<Replace-You-UserService-Dapr-AppID>";
-
-        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
 
         public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
     }

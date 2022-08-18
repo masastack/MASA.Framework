@@ -5,6 +5,8 @@ namespace Masa.BuildingBlocks.StackSdks.Scheduler;
 
 public interface ISchedulerJob
 {
+    Task InitializeAsync(WebApplicationBuilder builder, Guid jobId, Guid taskId);
+
     Task BeforeExcuteAsync(JobContext context);
 
     Task<object?> ExcuteAsync(JobContext context);

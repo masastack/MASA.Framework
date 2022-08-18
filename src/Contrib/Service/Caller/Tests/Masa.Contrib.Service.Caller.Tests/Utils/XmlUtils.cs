@@ -6,7 +6,7 @@ namespace Masa.Contrib.Service.Caller.Tests;
 /// <summary>
 /// Temporary use, later versions will be removed
 /// </summary>
-internal class XmlUtils
+internal static class XmlUtils
 {
     public static string Serializer(object data)
     {

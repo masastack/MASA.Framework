@@ -85,7 +85,7 @@ public class DefaultResponseMessage : IResponseMessage
     public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         if (response.Content.Headers.ContentLength is > 0)
-            throw new Exception(await response.Content.ReadAsStringAsync(cancellationToken));
+            throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken));
 
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }

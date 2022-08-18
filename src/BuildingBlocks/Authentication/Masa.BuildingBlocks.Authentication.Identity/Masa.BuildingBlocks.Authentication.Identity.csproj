@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+  </ItemGroup>
+
 </Project>

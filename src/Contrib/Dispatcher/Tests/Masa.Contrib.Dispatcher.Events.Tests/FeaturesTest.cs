@@ -153,7 +153,7 @@ public class FeaturesTest : TestBase
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
         {
             await _eventBus.PublishAsync(@event);
         });
@@ -172,7 +172,7 @@ public class FeaturesTest : TestBase
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () =>
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
         {
             await _services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
         });

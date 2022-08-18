@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -35,10 +37,12 @@ public static class ServiceCollectionExtensions
         }
 
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<WebApplication>();
+        var app = serviceProvider.GetRequiredService<WebApplication>();
+        MasaApp.Build(app.Services);
+        return app;
     }
 
-    private class MinimalApisMarkerService
+    private sealed class MinimalApisMarkerService
     {
 
     }

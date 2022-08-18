@@ -16,9 +16,8 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Name = DEFAULT_CLIENT_NAME;
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });
@@ -39,15 +38,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            var schedulerClient = new SchedulerClient(callProvider, loggerFactory);
+            var schedulerClient = new SchedulerClient(callProvider);
             return schedulerClient;
         });
 
         return services;
     }
 
-    private class SchedulerProvider
+    private sealed class SchedulerProvider
     {
     }
 }

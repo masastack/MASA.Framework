@@ -1,12 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-global using Masa.BuildingBlocks.Data.Contracts.DataFiltering;
+global using Masa.BuildingBlocks.Data.Contracts;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Environment;
 global using Masa.Contrib.Data.Contracts.EFCore;
-global using Masa.Contrib.Data.EFCore;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.Isolation.MultiEnvironment;
 global using Masa.Contrib.Isolation.MultiTenant;

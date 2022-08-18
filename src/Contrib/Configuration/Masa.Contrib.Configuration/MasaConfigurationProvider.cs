@@ -43,7 +43,7 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
 
     void SetData()
     {
-        Dictionary<string, string> data = new();
+        Dictionary<string, string> data = new(StringComparer.OrdinalIgnoreCase);
 
         foreach (var configurationType in _data.Keys)
         {
@@ -59,9 +59,15 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
 
     public void Dispose()
     {
+        Dispose(true);
         foreach (var configurationRepository in _configurationRepositories)
         {
             configurationRepository.RemoveChangeListener(this);
         }
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

@@ -6,51 +6,52 @@ namespace Masa.Contrib.Authentication.Identity;
 internal class DefaultUserContext : UserContext
 {
     private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
-    private readonly ILogger<DefaultUserContext>? _logger;
+    private static readonly MemoryCache<Type, CustomizeModelRelation> ModelRelationCache = new();
 
-    protected ClaimsPrincipal? ClaimsPrincipal { get; set; }
+    private ClaimsPrincipal? ClaimsPrincipal { get; set; }
 
     public DefaultUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
-        IOptionsMonitor<IdentityClaimOptions> optionsMonitor, ILoggerFactory? loggerFactory = null)
+        IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
         : base(typeConvertProvider)
     {
         _optionsMonitor = optionsMonitor;
+        _optionsMonitor.CurrentValue.Initialize();
         ClaimsPrincipal = currentPrincipalAccessor.GetCurrentPrincipal();
-        _logger = loggerFactory?.CreateLogger<DefaultUserContext>();
     }
 
-    protected override IdentityUser? GetUser()
+    protected override object? GetUser(Type userType)
     {
-        return GetUserBasicInfo();
-    }
-
-    protected override IdentityUser? GetUserBasicInfo()
-    {
-
-        var userId = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.UserId);
+        var userClaimType = _optionsMonitor.CurrentValue.GetClaimType(nameof(_optionsMonitor.CurrentValue.UserId))!;
+        var userId = ClaimsPrincipal?.FindClaimValue(userClaimType);
         if (userId == null)
             return null;
 
-        var roleStr = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.Role);
-        var roles = new List<IdentityRole<string>>();
-        if (!string.IsNullOrWhiteSpace(roleStr))
+        var modelRelation = ModelRelationCache.GetOrAdd(userType, (type) =>
         {
-            try
+            var constructor = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
+                    .FirstOrDefault(c => c.GetParameters().Length == 0) ??
+                throw new InvalidOperationException($"[{type.Name}] has a parameterless constructor");
+            return new CustomizeModelRelation(
+                InstanceBuilder.CreateInstanceDelegate(constructor),
+                InstanceBuilder.GetPropertyAndMethodInfoRelations(type));
+        });
+        var userModel = modelRelation.Func.Invoke(Array.Empty<object>());
+        foreach (var property in userType.GetProperties())
+        {
+            var claimType = _optionsMonitor.CurrentValue.GetClaimType(property.Name);
+            if (claimType == null)
+                continue;
+
+            var claimValue = ClaimsPrincipal?.FindClaimValue(claimType);
+            if (claimValue != null)
             {
-                roles = JsonSerializer.Deserialize<List<IdentityRole<string>>>(roleStr) ?? roles;
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("role data deserialization failed", e);
+                modelRelation.Setters[property]
+                    .Invoke(userModel, new[] { TypeConvertProvider.ConvertTo(claimValue, property.PropertyType) });
             }
         }
-        return new IdentityUser
-        {
-            Id = userId,
-            UserName = ClaimsPrincipal?.FindClaimValue(_optionsMonitor.CurrentValue.UserName),
-            Roles = roles
-        };
+
+        return userModel;
     }
 }

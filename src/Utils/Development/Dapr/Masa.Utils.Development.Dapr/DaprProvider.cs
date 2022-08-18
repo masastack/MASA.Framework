@@ -6,7 +6,7 @@ namespace Masa.Utils.Development.Dapr;
 public class DaprProvider : IDaprProvider
 {
     private readonly ILogger<DaprProvider>? _logger;
-    private ProcessUtils _processUtils;
+    private readonly ProcessUtils _processUtils;
 
     public DaprProvider(ILoggerFactory? loggerFactory)
     {

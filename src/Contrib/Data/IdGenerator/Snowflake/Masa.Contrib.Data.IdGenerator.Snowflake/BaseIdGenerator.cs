@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
-public abstract class BaseIdGenerator
+public abstract class BaseIdGenerator: BaseIdGenerator<long>
 {
     private readonly IWorkerProvider _workerProvider;
 
@@ -44,18 +44,18 @@ public abstract class BaseIdGenerator
 
     protected object Lock { get; } = new();
 
-    public BaseIdGenerator(IWorkerProvider workerProvider, IdGeneratorOptions idGeneratorOptions)
+    protected BaseIdGenerator(IWorkerProvider workerProvider, SnowflakeGeneratorOptions snowflakeGeneratorOptions)
     {
         _workerProvider = workerProvider;
-        TimestampType = idGeneratorOptions.TimestampType;
-        MaxCallBackTime = idGeneratorOptions.MaxCallBackTime;
-        Twepoch = new DateTimeOffset(idGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
-        SequenceMask = ~(-1 << idGeneratorOptions.SequenceBits);
-        SequenceBits = idGeneratorOptions.SequenceBits;
-        TimestampLeftShift = idGeneratorOptions.SequenceBits + idGeneratorOptions.WorkerIdBits;
+        TimestampType = snowflakeGeneratorOptions.TimestampType;
+        MaxCallBackTime = snowflakeGeneratorOptions.MaxCallBackTime;
+        Twepoch = new DateTimeOffset(snowflakeGeneratorOptions.BaseTime).ToUnixTimeMilliseconds();
+        SequenceMask = ~(-1 << snowflakeGeneratorOptions.SequenceBits);
+        SequenceBits = snowflakeGeneratorOptions.SequenceBits;
+        TimestampLeftShift = snowflakeGeneratorOptions.SequenceBits + snowflakeGeneratorOptions.WorkerIdBits;
     }
 
-    public virtual long NewId()
+    public override long NewId()
     {
         lock (Lock)
         {
@@ -67,7 +67,7 @@ public abstract class BaseIdGenerator
 
                 if (res.Support) LastTimestamp = res.LastTimestamp;
                 else
-                    throw new Exception(
+                    throw new MasaException(
                         $"InvalidSystemClock: Clock moved backwards, Refusing to generate id for {LastTimestamp - currentTimestamp} milliseconds");
             }
 

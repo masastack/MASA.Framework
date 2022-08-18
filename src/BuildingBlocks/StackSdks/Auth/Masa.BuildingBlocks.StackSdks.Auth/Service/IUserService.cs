@@ -19,11 +19,13 @@ public interface IUserService
 
     Task<UserModel?> AddAsync(AddUserModel user);
 
+    Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user);
+
     Task<UserModel?> UpsertAsync(UpsertUserModel user);
 
     Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
-    Task<UserModel> FindByAccountAsync(string account);
+    Task<UserModel?> FindByAccountAsync(string account);
 
     Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber);
 
@@ -33,7 +35,7 @@ public interface IUserService
 
     Task<StaffDetailModel?> GetCurrentStaffAsync();
 
-    Task VisitedAsync(string url);
+    Task VisitedAsync(string appId, string url);
 
     Task<List<UserVisitedModel>> GetVisitedListAsync();
 

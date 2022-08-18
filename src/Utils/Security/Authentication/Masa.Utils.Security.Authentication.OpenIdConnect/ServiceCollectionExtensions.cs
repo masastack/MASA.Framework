@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using Masa.Utils.Security.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
@@ -46,7 +47,7 @@ public static class ServiceCollectionExtensions
         })
         .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
-            options.ExpireTimeSpan = TimeSpan.FromSeconds(3600);
+            options.ExpireTimeSpan = TimeSpan.FromSeconds(5);
         })
         .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
             {
@@ -57,7 +58,6 @@ public static class ServiceCollectionExtensions
                 options.ClientId = clinetId;
                 options.ClientSecret = clientSecret;
                 options.ResponseType = OpenIdConnectResponseType.Code;
-
                 foreach (var scope in scopes)
                 {
                     options.Scope.Add(scope);
@@ -67,11 +67,15 @@ public static class ServiceCollectionExtensions
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.UseTokenLifetime = true;
 
+                options.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(5.0);
                 options.TokenValidationParameters.RequireExpirationTime = true;
                 options.TokenValidationParameters.ValidateLifetime = true;
 
                 options.NonceCookie.SameSite = SameSiteMode.Unspecified;
                 options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+
+                options.ClaimActions.MapUniqueJsonKey("environment", "environment");
+                options.ClaimActions.MapUniqueJsonKey("role", "role");
 
                 options.Events = new OpenIdConnectEvents
                 {
@@ -79,6 +83,19 @@ public static class ServiceCollectionExtensions
                     {
                         context.HandleResponse();
                         context.Response.Redirect("/");
+                        return Task.CompletedTask;
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        if (context.HttpContext.Request.Path.Value == "/signin-oidc")
+                        {
+                            context.SkipHandler();
+                            context.Response.Redirect("/");
+                        }
+                        else
+                        {
+                            context.HandleResponse();
+                        }
                         return Task.CompletedTask;
                     }
                 };

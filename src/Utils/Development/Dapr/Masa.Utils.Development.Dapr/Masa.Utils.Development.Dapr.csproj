@@ -13,5 +13,9 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
+  </ItemGroup>
   
 </Project>

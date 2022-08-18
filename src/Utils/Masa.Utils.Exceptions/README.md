@@ -84,7 +84,7 @@ axios
             }
         }
     }
-    builder.Services.AddSingleton<ExceptionHandler>();
+    builder.Services.AddSingleton<IMasaExceptionHandler, ExceptionHandler>();
 
     app.UseMasaExceptionHandler();
     ````

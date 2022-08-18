@@ -16,9 +16,8 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";// The alias of the current Caller, when there is only one Provider, you can not assign a value to Name
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee dapr
         });
     });
@@ -38,14 +37,12 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ```` C#
     builder.Services.AddCaller(options =>
     {
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("UserCaller", clientBuilder =>
         {
-            clientBuilder.Name = "UserCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee User service Dapr
         });
-        options.UseDapr(clientBuilder =>
+        options.UseDapr("OrderCaller", clientBuilder =>
         {
-            clientBuilder.Name = "OrderCaller";
             clientBuilder.AppId = "<Replace-You-Dapr-AppID>" ;//AppID of the callee Order service Dapr
         });
     });
@@ -56,7 +53,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     ```` C#
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
         => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
-
 
     app.MapGet("/Test/Order/Hello", ([FromServices] ICallerFactory callerFactory, string name) =>
     {
@@ -85,10 +81,6 @@ Install-Package Masa.Contrib.Service.Caller.DaprClient
     public class UserCaller: DaprCallerBase
     {
         protected override string AppId { get; set; } = "<Replace-You-UserService-Dapr-AppID>";
-
-        public HttpCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-        }
 
         public Task<string> HelloAsync(string name) => Caller.GetStringAsync($"/Hello", new { Name = name });
     }

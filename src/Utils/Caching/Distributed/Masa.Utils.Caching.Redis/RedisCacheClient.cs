@@ -367,7 +367,7 @@ public class RedisCacheClient : IDistributedCacheClient
         foreach (var redisResult in arrayRedisResult)
         {
             var byteArray = (RedisValue[])redisResult.Value;
-            MapMetadata(byteArray, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
+            MapMetadataByAutomatic(byteArray, out DateTimeOffset? absExpr, out TimeSpan? sldExpr, out RedisValue data);
             func.Invoke(redisResult.Key, absExpr, sldExpr);
             dictionary.Add(redisResult.Key, ConvertToValue<T>(data));
         }
@@ -535,7 +535,29 @@ end";
         }
     }
 
-    private static void MapMetadata(RedisValue[] results, out DateTimeOffset? absoluteExpiration, out TimeSpan? slidingExpiration,
+    private static void MapMetadata(RedisValue[] results,
+        out DateTimeOffset? absoluteExpiration,
+        out TimeSpan? slidingExpiration,
+        out RedisValue data)
+    {
+        absoluteExpiration = null;
+        slidingExpiration = null;
+        data = results.Length > 2 ? results[2] : RedisValue.Null;
+        var absoluteExpirationTicks = (long?)results[0];
+        if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != NOT_PRESENT)
+        {
+            absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+        }
+
+        var slidingExpirationTicks = (long?)results[1];
+        if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != NOT_PRESENT)
+        {
+            slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+        }
+    }
+
+    private static void MapMetadataByAutomatic(RedisValue[] results, out DateTimeOffset? absoluteExpiration,
+        out TimeSpan? slidingExpiration,
         out RedisValue data)
     {
         absoluteExpiration = null;
@@ -619,7 +641,15 @@ end";
     /// <inheritdoc />
     public void Dispose()
     {
-        if (_connection != null)
-            _connection.Dispose();
+        Dispose(true);
+
+        if (_connection != null) _connection.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        // Cleanup
     }
 }

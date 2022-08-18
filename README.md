@@ -1,12 +1,19 @@
 [中](README.zh-CN.md) | EN
 
 [![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
 # MASA.Framework
 
 NET next-generation microservice development framework with embedded distributed runtime -- Dapr cloud native best practices, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
 
 ![Frame 9032.png](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
+
+
+
+## Docs
+
+[https://docs.masastack.com/Framework/guide/concepts.html](https://docs.masastack.com/Framework/guide/concepts.html)
 
 
 
@@ -31,7 +38,6 @@ The following are the building block capabilities provided by the Framework:
 
 * Install [.NET SDK 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
-### CLI
 
 #### Install Template
 
@@ -42,8 +48,10 @@ dotnet new --install Masa.Template
 #### Create Project
 
 ``` shell
-dotnet new masafx -o Masa.Framework.Test
+dotnet new masafx -o Masa.Framework.Demo
 ````
+
+> Or Use the `MASA Framework Project` template to create through Visual Studio
 
 #### Run
 

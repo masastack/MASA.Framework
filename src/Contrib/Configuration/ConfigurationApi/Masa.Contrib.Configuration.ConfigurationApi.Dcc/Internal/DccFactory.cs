@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
-internal class DccFactory
+internal static class DccFactory
 {
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,

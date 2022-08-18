@@ -27,7 +27,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
     {
         TypeAdapterConfig adapterConfig = GetDefaultConfig(options);
 
-        var mapTypes = GetMapAndSelectorTypes(adapterConfig, sourceType, destinationType, options, true);
+        var mapTypes = GetMapAndSelectorTypes(adapterConfig, sourceType, destinationType, options);
 
         foreach (var item in mapTypes)
         {
@@ -83,7 +83,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
             if (destinationProperty != default)
             {
                 var subMapTypes = GetMapAndSelectorTypes(adapterConfig, sourceProperty.PropertyType,
-                    destinationProperty.DdestinationPropertyType, options, false);
+                    destinationProperty.DdestinationPropertyType, options);
 
                 if (!subMapTypes.Any() || mapTypes.Any(option => subMapTypes.Any(subOption
                         => subOption.SourceType == option.SourceType && subOption.DestinationType == option.DestinationType)))
@@ -97,7 +97,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
     }
 
     private List<MapTypeOptions> GetMapAndSelectorTypes(TypeAdapterConfig adapterConfig, Type sourceType, Type destinationType,
-        MapOptions? options, bool isFirst)
+        MapOptions? options)
     {
         bool sourcePropertyIsEnumerable = IsCollection(sourceType);
         bool destinationPropertyIsEnumerable = IsCollection(destinationType);
@@ -136,7 +136,7 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
                 return constructor;
         }
 
-        throw new Exception("Failed to get the best constructor");
+        throw new MasaException("Failed to get the best constructor");
     }
 
     protected virtual bool IsPreciseMatch(ConstructorInfo destinationConstructor, List<PropertyInfo> sourceProperties)

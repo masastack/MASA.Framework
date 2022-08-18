@@ -3,7 +3,7 @@
 
 namespace Masa.Utils.Exceptions.Internal;
 
-internal class Constant
+internal static class Constant
 {
     public const string DEFAULT_HTTP_CONTENT_TYPE = "text/plain; charset=utf-8";
 

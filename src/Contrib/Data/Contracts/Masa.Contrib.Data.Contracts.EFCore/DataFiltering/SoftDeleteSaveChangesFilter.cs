@@ -3,8 +3,8 @@
 
 namespace Masa.Contrib.Data.Contracts.EFCore.DataFiltering;
 
-public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter
-    where TDbContext : DbContext
+public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter
+    where TDbContext : DbContext, IMasaDbContext
     where TUserId : IComparable
 {
     private readonly Type _userIdType;
@@ -49,7 +49,7 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
         }
     }
 
-    protected virtual void HandleNavigationEntry(IEnumerable<NavigationEntry> navigationEntries)
+    private void HandleNavigationEntry(IEnumerable<NavigationEntry> navigationEntries)
     {
         foreach (var navigationEntry in navigationEntries)
         {
@@ -71,7 +71,7 @@ public class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilt
         }
     }
 
-    protected virtual void HandleDependent(object dependentEntry)
+    private void HandleDependent(object dependentEntry)
     {
         var entityEntry = _context.Entry(dependentEntry);
         entityEntry.State = EntityState.Modified;

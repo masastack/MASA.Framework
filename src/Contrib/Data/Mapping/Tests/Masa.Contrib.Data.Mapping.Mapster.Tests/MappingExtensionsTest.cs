@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
@@ -11,6 +11,7 @@ public class MappingExtensionsTest
     {
         var services = new ServiceCollection();
         services.AddMapster();
+        MasaApp.Services = services;
     }
 
     [TestMethod]
@@ -103,12 +104,12 @@ public class MappingExtensionsTest
 
         var order = request.Map<OrderRequest, Order>();
         Assert.IsNotNull(order);
-        Assert.AreEqual(order.Name, request.Name);
-        Assert.AreEqual(order.OrderItems.Count, 1);
-        Assert.AreEqual(order.OrderItems[0].Name, request.OrderItem.Name);
-        Assert.AreEqual(order.OrderItems[0].Price, request.OrderItem.Price);
-        Assert.AreEqual(order.OrderItems[0].Number, 1);
-        Assert.AreEqual(order.TotalPrice, 1 * 10);
+        Assert.AreEqual(request.Name, order.Name);
+        Assert.AreEqual(1, order.OrderItems.Count);
+        Assert.AreEqual(request.OrderItem.Name, order.OrderItems[0].Name);
+        Assert.AreEqual(request.OrderItem.Price, order.OrderItems[0].Price);
+        Assert.AreEqual(1, order.OrderItems[0].Number);
+        Assert.AreEqual(1 * 10, order.TotalPrice);
     }
 
     [TestMethod]
@@ -125,12 +126,12 @@ public class MappingExtensionsTest
 
         var order = request.Map<Order>();
         Assert.IsNotNull(order);
-        Assert.AreEqual(order.Name, request.Name);
-        Assert.AreEqual(order.OrderItems.Count, 1);
-        Assert.AreEqual(order.OrderItems[0].Name, request.OrderItems[0].Name);
-        Assert.AreEqual(order.OrderItems[0].Price, request.OrderItems[0].Price);
-        Assert.AreEqual(order.OrderItems[0].Number, 1);
-        Assert.AreEqual(order.TotalPrice, 10);
+        Assert.AreEqual(request.Name, order.Name);
+        Assert.AreEqual(1, order.OrderItems.Count);
+        Assert.AreEqual(request.OrderItems[0].Name, order.OrderItems[0].Name);
+        Assert.AreEqual(request.OrderItems[0].Price, order.OrderItems[0].Price);
+        Assert.AreEqual(1, order.OrderItems[0].Number);
+        Assert.AreEqual(10, order.TotalPrice);
     }
 
     [TestMethod]
@@ -152,12 +153,12 @@ public class MappingExtensionsTest
 
         var order = request.Map<OrderMultiRequest, Order>();
         Assert.IsNotNull(order);
-        Assert.AreEqual(order.Name, request.Name);
-        Assert.AreEqual(order.OrderItems.Count, 1);
-        Assert.AreEqual(order.OrderItems[0].Name, request.OrderItems[0].Name);
-        Assert.AreEqual(order.OrderItems[0].Price, request.OrderItems[0].Price);
-        Assert.AreEqual(order.OrderItems[0].Number, 1);
-        Assert.AreEqual(order.TotalPrice, 0);
+        Assert.AreEqual(request.Name, order.Name);
+        Assert.AreEqual(1, order.OrderItems.Count);
+        Assert.AreEqual(request.OrderItems[0].Name, order.OrderItems[0].Name);
+        Assert.AreEqual(request.OrderItems[0].Price, order.OrderItems[0].Price);
+        Assert.AreEqual(1, order.OrderItems[0].Number);
+        Assert.AreEqual(0, order.TotalPrice);
     }
 
     [TestMethod]

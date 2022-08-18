@@ -14,6 +14,7 @@ global using Masa.Contrib.Dispatcher.IntegrationEvents.Servers;
 global using Masa.Utils.Models.Config;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using System.Collections.Concurrent;

@@ -11,6 +11,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
     private readonly Operator _defaultOperator;
     private readonly SearchType _defaultSearchType;
     private readonly bool _enableMultipleCondition;
+    private readonly string _queryAnalyzer;
 
     public AutoCompleteClient(
         IElasticClient elasticClient,
@@ -18,7 +19,8 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         string indexName,
         Operator defaultOperator,
         SearchType defaultSearchType,
-        bool enableMultipleCondition)
+        bool enableMultipleCondition,
+        string queryAnalyzer)
     {
         _elasticClient = elasticClient;
         _client = client;
@@ -26,6 +28,7 @@ public class AutoCompleteClient : BaseAutoCompleteClient
         _defaultOperator = defaultOperator;
         _defaultSearchType = defaultSearchType;
         _enableMultipleCondition = enableMultipleCondition;
+        _queryAnalyzer = queryAnalyzer;
     }
 
     public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>> GetBySpecifyDocumentAsync<TAudoCompleteDocument>(
@@ -51,6 +54,9 @@ public class AutoCompleteClient : BaseAutoCompleteClient
                     newOptions.Page,
                     newOptions.PageSize,
                     _defaultOperator)
+                {
+                    Analyzer = _queryAnalyzer
+                }
                 , cancellationToken);
             return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(ret.IsValid, ret.Message)
             {

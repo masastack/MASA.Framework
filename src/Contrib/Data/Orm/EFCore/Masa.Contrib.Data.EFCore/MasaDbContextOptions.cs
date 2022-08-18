@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EFCore;
+namespace Microsoft.EntityFrameworkCore;
 
 public abstract class MasaDbContextOptions : DbContextOptions
 {
@@ -16,7 +16,7 @@ public abstract class MasaDbContextOptions : DbContextOptions
 
     public bool EnableSoftDelete { get; }
 
-    internal MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete)
+    private protected MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete)
     {
         ServiceProvider = serviceProvider;
         EnableSoftDelete = enableSoftDelete;

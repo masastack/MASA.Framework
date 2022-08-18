@@ -24,6 +24,21 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestAddThirdPartyUserAsync()
+    {
+        var addUser = new AddThirdPartyUserModel();
+        var user = new UserModel();
+        var requestUri = $"api/user/addThirdPartyUser";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.AddThirdPartyUserAsync(addUser);
+        caller.Verify(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     public async Task UpsertAsync()
     {
         var upsertUser = new UpsertUserModel();
@@ -233,8 +248,8 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    [DataRow("https://www.baidu.com/")]
-    public async Task TestVisitedAsync(string url)
+    [DataRow("masa-auth-web-admin", "https://www.baidu.com/")]
+    public async Task TestVisitedAsync(string appId, string url)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var requestUri = $"api/user/visit";
@@ -243,7 +258,7 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = new UserService(caller.Object, userContext.Object);
-        await userService.VisitedAsync(url);
+        await userService.VisitedAsync(appId, url);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
 

@@ -3,6 +3,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
+[Serializable]
 public class BucketNames : Dictionary<string, string>
 {
     public const string DEFAULT_BUCKET_NAME = "DefaultBucketName";

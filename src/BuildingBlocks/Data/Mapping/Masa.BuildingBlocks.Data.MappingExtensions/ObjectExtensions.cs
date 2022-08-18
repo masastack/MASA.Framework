@@ -5,8 +5,10 @@ namespace System;
 
 public static class ObjectExtensions
 {
-    private static Mapper? _mapper;
-    private static Mapper GetMapper() => _mapper ??= Mapper.Instance ?? throw new Exception("Please use MapperFactory to initialize Mapper");
+    private static IMapper? _mapper;
+
+    private static IMapper GetMapper()
+        => _mapper ??= MasaApp.GetService<IMapper>() ?? throw new Exception("Please use MapperFactory to initialize Mapper");
 
     public static TDestination Map<TSource, TDestination>(this TSource source, MapOptions? options = null)
         => GetMapper().Map<TSource, TDestination>(source, options);

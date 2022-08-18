@@ -1,10 +1,10 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EFCore;
+namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptions<TContext> : MasaDbContextOptions
-    where TContext : DbContext
+    where TContext : DbContext, IMasaDbContext
 {
     private readonly DbContextOptions _originOptions;
 

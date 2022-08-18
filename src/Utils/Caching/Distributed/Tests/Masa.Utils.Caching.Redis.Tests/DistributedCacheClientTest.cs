@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Caching.Redis.Tests;
@@ -22,7 +22,7 @@ public class DistributedCacheClientTest
         });
         _serviceProvider = services.BuildServiceProvider();
         _cacheClient = _serviceProvider.GetRequiredService<IDistributedCacheClient>();
-        _cacheClient.Remove<string>("test1", "test2", "redis1", "redis2");
+        _cacheClient.Remove<string>("test", "test1", "test2", "redis1", "redis2");
     }
 
     [TestMethod]
@@ -57,5 +57,23 @@ public class DistributedCacheClientTest
         var dictionary = await _cacheClient.GetListByKeyPatternAsync<string>("test*");
         Assert.AreEqual(1, dictionary.Count);
         Assert.IsTrue(dictionary["test1"] == "test1:Result");
+    }
+
+    [DataTestMethod]
+    [DataRow("test1", "Result1")]
+    public async Task TestGetAsyncReturnResult1(string key, string value)
+    {
+        _cacheClient.Set(key, value);
+        var res = await _cacheClient.GetAsync<string>(key);
+        Assert.AreEqual(value, res);
+    }
+
+    [DataTestMethod]
+    [DataRow("test1", "Result1")]
+    public void TestGetReturnResult1(string key, string value)
+    {
+        _cacheClient.Set(key, value);
+        var res = _cacheClient.Get<string>(key);
+        Assert.AreEqual(value, res);
     }
 }
