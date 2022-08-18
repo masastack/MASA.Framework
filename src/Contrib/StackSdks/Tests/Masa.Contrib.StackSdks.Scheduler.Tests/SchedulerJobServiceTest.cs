@@ -307,7 +307,7 @@ public class SchedulerJobServiceTest
             ProjectIdentity = "masa-scheduler"
         };
 
-        var requestUri = $"{API}/getSchedulerJobQueryByIdentityAsync";
+        var requestUri = $"{API}/getSchedulerJobQueryByIdentity";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<SchedulerJobModel?>(requestUri, requestData, default)).ReturnsAsync(new SchedulerJobModel()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
