@@ -268,194 +268,14 @@ public class DccTest
                 }
             };
         }, null!, null), "defaultSectionOptions");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "";
-        }, null), "AppId cannot be empty");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = null!;
-        }, null), "ConfigObjects cannot be empty");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>();
-        }, null), "ConfigObjects cannot be empty");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, null), "Error getting environment information, please make sure the value of ASPNETCORE_ENVIRONMENT has been configured");
     }
 
     [TestMethod]
     public void TestUseDccAndErrorExpansionSectionOptions()
     {
-        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Test");
+        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Production");
 
         _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, option =>
-        {
-            option.ExpandSections = new List<DccSectionOptions>()
-            {
-                new()
-                {
-                    AppId = "Test2",
-                }
-            };
-        }), "ConfigObjects in the extension section cannot be empty");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, option =>
-        {
-            option.ExpandSections = new List<DccSectionOptions>()
-            {
-                new()
-                {
-                    AppId = "Test2",
-                    ConfigObjects = new List<string>()
-                }
-            };
-        }), "ConfigObjects in the extension section cannot be empty");
-
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
         {
             return new DccConfigurationOptions()
@@ -495,9 +315,9 @@ public class DccTest
             };
         }), "The current section already exists, no need to mount repeatedly");
 
-        _services = new ServiceCollection();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-
+        var builder = WebApplication.CreateBuilder();
+        builder = builder.InitializeAppConfiguration();
+        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(builder.Services).Verifiable();
         Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
         {
             return new DccConfigurationOptions()
