@@ -15,11 +15,21 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
         Action<IdentityClaimOptions> configureOptions)
-        => services.AddMasaIdentityModel(DataType.Json.ToString(), configureOptions);
+    {
+        services.AddJson();
+        return services.AddMasaIdentityModel(DataType.Json.ToString(), configureOptions);
+    }
 
     public static IServiceCollection AddMasaIdentityModel(
         this IServiceCollection services,
-        string name,
+        string serializationName)
+        => services.AddMasaIdentityModel(serializationName, _ =>
+        {
+        });
+
+    public static IServiceCollection AddMasaIdentityModel(
+        this IServiceCollection services,
+        string serializationName,
         Action<IdentityClaimOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(configureOptions);
@@ -29,20 +39,19 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IdentityProvider>();
 
-        services.AddJson();
-        services.AddTypeConvert(DataType.Json.ToString());
+        services.AddTypeConvert(serializationName);
         services.AddHttpContextAccessor();
         services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
 
         services.Configure(configureOptions);
 
-        return services.AddMasaIdentityModelCore(name);
+        return services.AddMasaIdentityModelCore(serializationName);
     }
 
-    private static IServiceCollection AddMasaIdentityModelCore(this IServiceCollection services, string name)
+    private static IServiceCollection AddMasaIdentityModelCore(this IServiceCollection services, string serializationName)
     {
         services.TryAddScoped(serviceProvider => new DefaultUserContext(
-            serviceProvider.GetRequiredService<ITypeConvertFactory>().Create(name),
+            serviceProvider.GetRequiredService<ITypeConvertFactory>().Create(serializationName),
             serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>(),
             serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>()));
 
