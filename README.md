@@ -5,7 +5,7 @@
 
 # MASA.Framework
 
-NET next-generation microservice development framework with embedded distributed runtime -- Dapr cloud native best practices, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
+NET next-generation microservice development framework, which provides cloud native best practices based on distributed runtime--Dapr, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
 
 ![Framework](https://s2.loli.net/2022/08/18/G5FDp4Ocx16k8As.png)
 
@@ -19,14 +19,14 @@ NET next-generation microservice development framework with embedded distributed
 
 ## route map
 
-* [Release Notes](https://github.com/masastack/MASA.Contrib/releases)
+* [Release Notes](https://github.com/masastack/MASA.Framework/releases)
 * [Latest Roadmap](https://github.com/masastack/MASA.Framework/issues/101)
 
 
 
 ## Features
 
-The following are the building block capabilities provided by the Framework:
+The following are the building block abilities provided by the Framework:
 
 ![feature.png](https://s2.loli.net/2022/08/08/ELBPiYvSj6KwNg8.png)
 
@@ -90,6 +90,6 @@ This project adopts the Code of Conduct as defined by the Contributors Covenant 
 
 ## ☀️ License Statement
 
-[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
+[![MASA.Framework](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
 
 Copyright (c) 2021-present MASA Stack

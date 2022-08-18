@@ -5,7 +5,7 @@
 
 # MASA.Framework
 
-NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
+NET下一代微服务开发框架，提供基于分布式运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
 
 ![Framework](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
 
@@ -19,7 +19,7 @@ NET下一代微服务开发框架，内嵌分布式运行时--Dapr云原生最�
 
 ## 路线图
 
-* [发行说明](https://github.com/masastack/MASA.Contrib/releases)
+* [发行说明](https://github.com/masastack/MASA.Framework/releases)
 * [最新路线图](https://github.com/masastack/MASA.Framework/issues/101)
 
 
@@ -75,8 +75,8 @@ dotnet run
 
 感谢所有为本项目做出过贡献的朋友。
 
-<a href="https://github.com/masastack/MASA.Contrib/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=masastack/MASA.Contrib" />
+<a href="https://github.com/masastack/MASA.Framework/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=masastack/MASA.Framework" />
 </a>
 
 
@@ -89,6 +89,6 @@ dotnet run
 
 ## ☀️ 许可声明
 
-[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
+[![MASA.Framework](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
 
 Copyright (c) 2021-present MASA Stack
