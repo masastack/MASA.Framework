@@ -37,7 +37,6 @@ public class UserModel
 
     public UserModel()
     {
-        Name = "";
         Avatar = "";
         Account = "";
     }
