@@ -9,7 +9,7 @@
 
 .NET next-generation microservice development framework, which provides cloud native best practices based on Distributed Application Runtime--Dapr, which can quickly realize modern application development such as distributed, microservices, DDD, SaaS, etc.
 
-![Framework](https://s2.loli.net/2022/08/18/G5FDp4Ocx16k8As.png)
+![Framework](https://s2.loli.net/2022/08/18/ZHLMpQ6tnGTvuzP.png)
 
 
 
