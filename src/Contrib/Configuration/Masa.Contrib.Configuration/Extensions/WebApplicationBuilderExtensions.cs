@@ -32,21 +32,28 @@ public static class WebApplicationBuilderExtensions
                 initialized = true;
             }
 
+
             if (string.IsNullOrWhiteSpace(options.AppId))
                 options.AppId = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.AppId)].Variable,
                     () => optionsRelation.Data[nameof(options.AppId)].DefaultValue);
+            else
+                options.Data[nameof(options.AppId)] = options.AppId;
 
             if (string.IsNullOrWhiteSpace(options.Environment))
                 options.Environment = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Environment)].Variable,
                     () => optionsRelation.Data[nameof(options.Environment)].DefaultValue);
+            else
+                options.Data[nameof(options.Environment)] = options.Environment;
 
             if (string.IsNullOrWhiteSpace(options.Cluster))
                 options.Cluster = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Cluster)].Variable,
                     () => optionsRelation.Data[nameof(options.Cluster)].DefaultValue);
+            else
+                options.Data[nameof(options.Cluster)] = options.Cluster;
 
             foreach (var data in optionsRelation.Data)
             {
-                options.Data[data.Key] = data.Value.DefaultValue;
+                options.Data.TryAdd(data.Key, data.Value.DefaultValue);
             }
         });
         return builder;

@@ -10,7 +10,7 @@ public class WebApplicationBuilderTest
     public void TestInitializeAppConfiguration()
     {
         var builder = WebApplication.CreateBuilder();
-        string env = "Production";
+        string env = "Development";
         builder.Services.Configure<MasaAppConfigureOptions>(options =>
         {
             options.Environment = env;
