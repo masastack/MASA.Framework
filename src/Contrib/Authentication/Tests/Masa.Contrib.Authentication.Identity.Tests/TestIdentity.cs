@@ -338,4 +338,42 @@ public class TestIdentity
         Assert.AreEqual("env", identityClaimOptions.Value.Environment);
         Assert.AreEqual("https://masastack.com/security/identity/claims/age", identityClaimOptions.Value.GetClaimType("Age"));
     }
+
+    [TestMethod]
+    public void TestIdentityByYaml()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentityModel(DataType.Yml.ToString());
+        services.AddYaml();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var yamlSerializer = serviceProvider.GetRequiredService<IYamlSerializer>();
+        var roles = new List<int>()
+        {
+            1, 3, 7, 12
+        };
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new List<ClaimsIdentity>()
+            {
+                new(new List<Claim>()
+                {
+                    new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new(ClaimType.DEFAULT_USER_ROLE, yamlSerializer.Serialize(roles))
+                })
+            })
+        };
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+
+        var userRoles = userContext.GetUserRoles<int>().ToList();
+        Assert.AreEqual(4, userRoles.Count);
+        Assert.AreEqual(true, userRoles.Contains(1));
+        Assert.AreEqual(true, userRoles.Contains(3));
+        Assert.AreEqual(true, userRoles.Contains(7));
+        Assert.AreEqual(true, userRoles.Contains(12));
+    }
 }
