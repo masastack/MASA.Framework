@@ -3,29 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class AddThirdPartyUserModel
+public class AddThirdPartyUserModel : AddUserModel
 {
-    public string? Account { get; set; }
+    public Guid? UserId { get; set; }
 
-    public string? Name { get; set; }
+    public string ThridPartyIdentity { get; set; } = "";
 
-    public string DisplayName { get; set; }
-
-    public string? IdCard { get; set; }
-
-    public string? CompanyName { get; set; }
-
-    public string? PhoneNumber { get; set; }
-
-    public string? Email { get; set; }
-
-    public string? Password { get; set; }
-
-    public GenderTypes Gender { get; set; }
-
-    public string ThridPartyIdentity { get; set; }
-
-    public object? ExtendedData { get; set; }
+    public object ExtendedData { get; set; }
 
     public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
 }

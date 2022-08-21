@@ -41,7 +41,13 @@ public interface IUserService
 
     Task UpdatePasswordAsync(UpdateUserPasswordModel user);
 
-    Task UpdateAvatarAsync(UpdateUserAvatarModel user);
+    Task UpdateUserAvatarAsync(UpdateUserAvatarModel user);
+
+    Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff);
+
+    Task SendMobileVerificationCodeAsync(SendMobileVerificationCodeModel code);
+
+    Task UpdateUserPhoneNumberAsync(UpdateUserPhoneNumberModel user);
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
