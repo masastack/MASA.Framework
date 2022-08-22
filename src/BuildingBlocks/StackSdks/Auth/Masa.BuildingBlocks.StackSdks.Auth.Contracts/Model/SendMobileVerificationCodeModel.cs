@@ -3,8 +3,12 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpsertUserModel : AddUserModel
+public class SendMobileVerificationCodeModel
 {
-    public Guid Id { get; set; }
-}
+    public string PhoneNumber { get; set; }
 
+    public SendMobileVerificationCodeModel(string phoneNumber)
+    {
+        PhoneNumber = phoneNumber;
+    }
+}
