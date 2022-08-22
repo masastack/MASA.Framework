@@ -21,42 +21,59 @@ public static class WebApplicationBuilderExtensions
 
         MasaAppConfigureOptionsRelation optionsRelation = new();
         action?.Invoke(optionsRelation);
-        IConfiguration configuration = builder.Configuration;
+        IConfiguration? migrateConfiguration = null;
         bool initialized = false;
         builder.Services.Configure<MasaAppConfigureOptions>(options =>
         {
             if (!initialized)
             {
                 var masaConfiguration = builder.Services.BuildServiceProvider().GetService<IMasaConfiguration>();
-                if (masaConfiguration != null) configuration = masaConfiguration.Local;
+                if (masaConfiguration != null) migrateConfiguration = masaConfiguration.Local;
                 initialized = true;
             }
 
-
             if (string.IsNullOrWhiteSpace(options.AppId))
-                options.AppId = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.AppId)].Variable,
-                    () => optionsRelation.Data[nameof(options.AppId)].DefaultValue);
-            else
-                options.Data[nameof(options.AppId)] = options.AppId;
+                options.AppId = GetConfigurationValue(
+                    optionsRelation.GetValue(nameof(options.AppId)),
+                    builder.Configuration,
+                    migrateConfiguration);
 
             if (string.IsNullOrWhiteSpace(options.Environment))
-                options.Environment = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Environment)].Variable,
-                    () => optionsRelation.Data[nameof(options.Environment)].DefaultValue);
-            else
-                options.Data[nameof(options.Environment)] = options.Environment;
+                options.Environment = GetConfigurationValue(
+                    optionsRelation.GetValue(nameof(options.Environment)),
+                    builder.Configuration,
+                    migrateConfiguration);
 
             if (string.IsNullOrWhiteSpace(options.Cluster))
-                options.Cluster = configuration.GetConfigurationValue(optionsRelation.Data[nameof(options.Cluster)].Variable,
-                    () => optionsRelation.Data[nameof(options.Cluster)].DefaultValue);
-            else
-                options.Data[nameof(options.Cluster)] = options.Cluster;
+                options.Cluster = GetConfigurationValue(
+                    optionsRelation.GetValue(nameof(options.Cluster)),
+                    builder.Configuration,
+                    migrateConfiguration);
 
-            foreach (var data in optionsRelation.Data)
+            foreach (var key in optionsRelation.GetKeys())
             {
-                options.Data.TryAdd(data.Key, data.Value.DefaultValue);
+                options.TryAdd(key, GetConfigurationValue(
+                    optionsRelation.GetValue(key),
+                    builder.Configuration,
+                    migrateConfiguration));
             }
         });
         return builder;
+    }
+
+    private static string GetConfigurationValue((string Variable, string DefaultValue) defaultConfig,
+        IConfiguration configuration,
+        IConfiguration? migrateConfiguration)
+    {
+        var value = configuration[defaultConfig.Variable];
+        if (!string.IsNullOrWhiteSpace(value))
+            return value;
+
+        if (migrateConfiguration != null)
+            value = migrateConfiguration[defaultConfig.Variable];
+        if (string.IsNullOrWhiteSpace(value))
+            value = defaultConfig.DefaultValue;
+        return value;
     }
 
     public static WebApplicationBuilder AddMasaConfiguration(

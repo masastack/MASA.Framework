@@ -104,319 +104,319 @@ public class DccTest
         Assert.IsTrue(serviceProvider.GetServices<IConfigurationApiManage>().Count() == 1);
     }
 
-    [TestMethod]
-    public void TestUseDccAndNullDccConfigurationOption()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() => null!, option =>
-        {
-            option.AppId = "Test";
-            option.Environment = "Test";
-            option.ConfigObjects = new List<string>() { "Te" };
-        }, null));
-    }
+    // [TestMethod]
+    // public void TestUseDccAndNullDccConfigurationOption()
+    // {
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() => null!, option =>
+    //     {
+    //         option.AppId = "Test";
+    //         option.Environment = "Test";
+    //         option.ConfigObjects = new List<string>() { "Te" };
+    //     }, null));
+    // }
 
-    [TestMethod]
-    public void TestCustomCaller()
-    {
-        var response = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = string.Empty,
-            ConfigFormat = ConfigFormats.Text
-        });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
+    // [TestMethod]
+    // public void TestCustomCaller()
+    // {
+    //     var response = JsonSerializer.Serialize(new PublishRelease()
+    //     {
+    //         Content = string.Empty,
+    //         ConfigFormat = ConfigFormats.Text
+    //     });
+    //     Mock<IMemoryCacheClient> memoryCacheClient = new();
+    //     memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+    //         .Returns(() => response);
+    //
+    //     var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+    //         memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+    //     _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+    //     _masaConfigurationBuilder.Object.UseDcc(() => new DccConfigurationOptions()
+    //     {
+    //         ManageServiceAddress = "https://github.com",
+    //         RedisOptions = new RedisConfigurationOptions
+    //         {
+    //             Servers = new List<RedisServerOptions>()
+    //             {
+    //                 new()
+    //                 {
+    //                     Host = "localhost",
+    //                     Port = 6379
+    //                 }
+    //             }
+    //         }
+    //     }, option =>
+    //     {
+    //         option.AppId = "Test";
+    //         option.Environment = "Test";
+    //         option.ConfigObjects = new List<string>()
+    //         {
+    //             "Settings"
+    //         };
+    //     }, null, jsonSerializerOption =>
+    //     {
+    //         jsonSerializerOption.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+    //     }, option =>
+    //     {
+    //         option.UseHttpClient("CustomHttpClient", builder =>
+    //         {
+    //             builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
+    //         });
+    //     });
+    //     var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
+    //     Assert.IsNotNull(caller);
+    // }
+    //
+    // [TestMethod]
+    // public void TestUseDccAndEmptyDccServiceAddress()
+    // {
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "",
+    //         };
+    //     }, null!, null), "DccServiceAddress");
+    // }
+    //
+    // [TestMethod]
+    // public void TestUseDccAndErrorDccService()
+    // {
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = null!
+    //             }
+    //         };
+    //     }, null!, null), "Servers");
+    //
+    //     _services = new ServiceCollection();
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //             }
+    //         };
+    //     }, null!, null), "Servers");
+    //
+    //     _services = new ServiceCollection();
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "",
+    //                         Port = 8080
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, null!, null), "Servers");
+    //
+    //     _services = new ServiceCollection();
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "localhost",
+    //                         Port = -1
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, null!, null), "Servers");
+    // }
+    //
+    // [TestMethod]
+    // public void TestUseDccAndErrorDefaultSectionOption()
+    // {
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "localhost",
+    //                         Port = 6379
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, null!, null), "defaultSectionOptions");
+    // }
+    //
+    // [TestMethod]
+    // public void TestUseDccAndErrorExpansionSectionOptions()
+    // {
+    //     Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Production");
+    //
+    //     _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "localhost",
+    //                         Port = 6379
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, option =>
+    //     {
+    //         option.AppId = "Test";
+    //         option.ConfigObjects = new List<string>()
+    //         {
+    //             "Brand"
+    //         };
+    //     }, option =>
+    //     {
+    //         option.ExpandSections = new List<DccSectionOptions>()
+    //         {
+    //             new()
+    //             {
+    //                 AppId = "Test",
+    //                 ConfigObjects = new List<string>()
+    //                 {
+    //                     "Settings"
+    //                 }
+    //             }
+    //         };
+    //     }), "The current section already exists, no need to mount repeatedly");
+    //
+    //     var builder = WebApplication.CreateBuilder();
+    //     builder = builder.InitializeAppConfiguration();
+    //     _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(builder.Services).Verifiable();
+    //     Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "localhost",
+    //                         Port = 6379
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, option =>
+    //     {
+    //         option.AppId = "Test";
+    //         option.ConfigObjects = new List<string>()
+    //         {
+    //             "Brand"
+    //         };
+    //     }, option =>
+    //     {
+    //         option.ExpandSections = new List<DccSectionOptions>()
+    //         {
+    //             new()
+    //             {
+    //                 AppId = "Test2",
+    //                 ConfigObjects = new List<string>()
+    //                 {
+    //                     "Settings"
+    //                 }
+    //             },
+    //             new()
+    //             {
+    //                 AppId = "Test2",
+    //                 ConfigObjects = new List<string>()
+    //                 {
+    //                     "Settings"
+    //                 }
+    //             }
+    //         };
+    //     }), "The current section already exists, no need to mount repeatedly");
+    // }
 
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-        _masaConfigurationBuilder.Object.UseDcc(() => new DccConfigurationOptions()
-        {
-            ManageServiceAddress = "https://github.com",
-            RedisOptions = new RedisConfigurationOptions
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Host = "localhost",
-                        Port = 6379
-                    }
-                }
-            }
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.Environment = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Settings"
-            };
-        }, null, jsonSerializerOption =>
-        {
-            jsonSerializerOption.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-        }, option =>
-        {
-            option.UseHttpClient("CustomHttpClient", builder =>
-            {
-                builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
-            });
-        });
-        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
-        Assert.IsNotNull(caller);
-    }
-
-    [TestMethod]
-    public void TestUseDccAndEmptyDccServiceAddress()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "",
-            };
-        }, null!, null), "DccServiceAddress");
-    }
-
-    [TestMethod]
-    public void TestUseDccAndErrorDccService()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = null!
-                }
-            };
-        }, null!, null), "Servers");
-
-        _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions
-                {
-                    Servers = new List<RedisServerOptions>()
-                }
-            };
-        }, null!, null), "Servers");
-
-        _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "",
-                            Port = 8080
-                        }
-                    }
-                }
-            };
-        }, null!, null), "Servers");
-
-        _services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = -1
-                        }
-                    }
-                }
-            };
-        }, null!, null), "Servers");
-    }
-
-    [TestMethod]
-    public void TestUseDccAndErrorDefaultSectionOption()
-    {
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, null!, null), "defaultSectionOptions");
-    }
-
-    [TestMethod]
-    public void TestUseDccAndErrorExpansionSectionOptions()
-    {
-        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Production");
-
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(_services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, option =>
-        {
-            option.ExpandSections = new List<DccSectionOptions>()
-            {
-                new()
-                {
-                    AppId = "Test",
-                    ConfigObjects = new List<string>()
-                    {
-                        "Settings"
-                    }
-                }
-            };
-        }), "The current section already exists, no need to mount repeatedly");
-
-        var builder = WebApplication.CreateBuilder();
-        builder = builder.InitializeAppConfiguration();
-        _masaConfigurationBuilder.Setup(builder => builder.Services).Returns(builder.Services).Verifiable();
-        Assert.ThrowsException<ArgumentNullException>(() => _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, option =>
-        {
-            option.ExpandSections = new List<DccSectionOptions>()
-            {
-                new()
-                {
-                    AppId = "Test2",
-                    ConfigObjects = new List<string>()
-                    {
-                        "Settings"
-                    }
-                },
-                new()
-                {
-                    AppId = "Test2",
-                    ConfigObjects = new List<string>()
-                    {
-                        "Settings"
-                    }
-                }
-            };
-        }), "The current section already exists, no need to mount repeatedly");
-    }
-
-    [DataTestMethod]
-    [DataRow("Development", "Default", "WebApplication1", "Brand")]
-    public void TestUseDccAndSuccess(string environment, string cluster, string appId, string configObject)
-    {
-        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Test");
-        var brand = new Brands("Microsoft");
-        var response = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
-        });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
-
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-
-        _masaConfigurationBuilder.Object.UseDcc(() =>
-        {
-            return new DccConfigurationOptions()
-            {
-                ManageServiceAddress = "https://github.com",
-                RedisOptions = new RedisConfigurationOptions()
-                {
-                    Servers = new List<RedisServerOptions>()
-                    {
-                        new()
-                        {
-                            Host = "localhost",
-                            Port = 6379
-                        }
-                    }
-                }
-            };
-        }, option =>
-        {
-            option.AppId = "Test";
-            option.ConfigObjects = new List<string>()
-            {
-                "Brand"
-            };
-        }, null);
-        var optionFactory = _services.BuildServiceProvider().GetRequiredService<IOptionsFactory<MasaMemoryCacheOptions>>();
-        var option = optionFactory.Create(DEFAULT_CLIENT_NAME);
-
-        Assert.IsTrue(option.SubscribeKeyType == SubscribeKeyTypes.SpecificPrefix);
-
-        Assert.IsTrue(option.SubscribeKeyPrefix == DEFAULT_SUBSCRIBE_KEY_PREFIX);
-    }
+    // [DataTestMethod]
+    // [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    // public void TestUseDccAndSuccess(string environment, string cluster, string appId, string configObject)
+    // {
+    //     Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Test");
+    //     var brand = new Brands("Microsoft");
+    //     var response = JsonSerializer.Serialize(new PublishRelease()
+    //     {
+    //         Content = JsonSerializer.Serialize(brand),
+    //         ConfigFormat = ConfigFormats.Json
+    //     });
+    //     Mock<IMemoryCacheClient> memoryCacheClient = new();
+    //     memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+    //         .Returns(() => response);
+    //
+    //     var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+    //         memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+    //     _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+    //
+    //     _masaConfigurationBuilder.Object.UseDcc(() =>
+    //     {
+    //         return new DccConfigurationOptions()
+    //         {
+    //             ManageServiceAddress = "https://github.com",
+    //             RedisOptions = new RedisConfigurationOptions()
+    //             {
+    //                 Servers = new List<RedisServerOptions>()
+    //                 {
+    //                     new()
+    //                     {
+    //                         Host = "localhost",
+    //                         Port = 6379
+    //                     }
+    //                 }
+    //             }
+    //         };
+    //     }, option =>
+    //     {
+    //         option.AppId = "Test";
+    //         option.ConfigObjects = new List<string>()
+    //         {
+    //             "Brand"
+    //         };
+    //     }, null);
+    //     var optionFactory = _services.BuildServiceProvider().GetRequiredService<IOptionsFactory<MasaMemoryCacheOptions>>();
+    //     var option = optionFactory.Create(DEFAULT_CLIENT_NAME);
+    //
+    //     Assert.IsTrue(option.SubscribeKeyType == SubscribeKeyTypes.SpecificPrefix);
+    //
+    //     Assert.IsTrue(option.SubscribeKeyPrefix == DEFAULT_SUBSCRIBE_KEY_PREFIX);
+    // }
 
     [TestMethod]
     public void TestDccConfigurationOptions()

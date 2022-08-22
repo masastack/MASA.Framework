@@ -3,16 +3,9 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
-public class DccConfigurationOptions
+public class DccConfigurationOptions : DccExpandSectionOptions
 {
     public RedisConfigurationOptions RedisOptions { get; set; }
-
-    /// <summary>
-    /// public config id
-    /// </summary>
-    public string PublicId { get; set; } = default!;
-
-    public string? PublicSecret { get; set; }
 
     public string ManageServiceAddress { get; set; } = default!;
 
@@ -20,4 +13,11 @@ public class DccConfigurationOptions
     /// The prefix of Dcc PubSub, it is not recommended to modify
     /// </summary>
     public string? SubscribeKeyPrefix { get; set; }
+
+    /// <summary>
+    /// public config id
+    /// </summary>
+    public string? PublicId { get; set; } = default!;
+
+    public string? PublicSecret { get; set; }
 }

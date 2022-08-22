@@ -12,4 +12,6 @@ internal static class Constants
     internal const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
 
     internal const string DATA_DICTIONARY_SECTION_NAME = "DataDictionary";
+
+    internal const string DEFAULT_PUBLIC_ID = "public-$Config";
 }

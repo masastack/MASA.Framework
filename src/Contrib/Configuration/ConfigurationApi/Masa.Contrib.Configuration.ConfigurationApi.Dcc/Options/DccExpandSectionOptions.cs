@@ -6,6 +6,11 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 public class DccExpandSectionOptions
 {
     /// <summary>
+    /// Default section information
+    /// </summary>
+    public DccSectionOptions? DefaultSection { get; set; }
+
+    /// <summary>
     /// Expansion section information
     /// </summary>
     public List<DccSectionOptions>? ExpandSections { get; set; }

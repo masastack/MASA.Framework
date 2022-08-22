@@ -5,11 +5,11 @@ namespace Masa.BuildingBlocks.Configuration.Options;
 
 public class MasaAppConfigureOptionsRelation
 {
-    public Dictionary<string, (string Variable, string DefaultValue)> Data { get; }
+    private Dictionary<string, (string Variable, string DefaultValue)> Data { get; set; }
 
     public MasaAppConfigureOptionsRelation()
     {
-        Data = new Dictionary<string, (string Variable, string DefaultValue)>()
+        Data = new Dictionary<string, (string Variable, string DefaultValue)>(StringComparer.OrdinalIgnoreCase)
         {
             {
                 nameof(MasaAppConfigureOptions.AppId),
@@ -27,11 +27,28 @@ public class MasaAppConfigureOptionsRelation
         };
     }
 
-    public void SetData(Dictionary<string, (string Variable, string DefaultValue)> datas)
+    public MasaAppConfigureOptionsRelation SetOptionsRelation(string key, string variable, string defaultValue)
     {
-        foreach (var data in datas)
-        {
-            Data[data.Key] = data.Value;
-        }
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException(nameof(key));
+
+        if (string.IsNullOrEmpty(variable))
+            throw new ArgumentException(nameof(variable));
+
+        if (string.IsNullOrEmpty(defaultValue))
+            throw new ArgumentException(nameof(defaultValue));
+
+        Data[key] = (variable, defaultValue);
+        return this;
+    }
+
+    internal string[] GetKeys() => Data.Select(kvp => kvp.Key).ToArray();
+
+    internal (string Variable, string DefaultValue) GetValue(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException(nameof(key));
+
+        return Data[key];
     }
 }

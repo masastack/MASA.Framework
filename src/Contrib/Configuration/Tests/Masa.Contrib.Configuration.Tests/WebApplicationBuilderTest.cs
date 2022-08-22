@@ -19,8 +19,8 @@ public class WebApplicationBuilderTest
         var serviceProvider = builder.Services.BuildServiceProvider();
         var masaAppConfigureOptions = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()!;
 
-        Assert.IsTrue(masaAppConfigureOptions.Value.Data.Count == 3);
+        Assert.IsTrue(masaAppConfigureOptions.Value.Length == 3);
         Assert.IsTrue(masaAppConfigureOptions.Value.Environment == env);
-        Assert.IsTrue(masaAppConfigureOptions.Value.Data[nameof(MasaAppConfigureOptions.Environment)] == env);
+        Assert.IsTrue(masaAppConfigureOptions.Value.GetValue(nameof(MasaAppConfigureOptions.Environment)) == env);
     }
 }
