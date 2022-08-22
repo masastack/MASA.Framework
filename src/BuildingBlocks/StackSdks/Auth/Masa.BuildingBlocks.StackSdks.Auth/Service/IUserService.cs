@@ -19,7 +19,7 @@ public interface IUserService
 
     Task<UserModel?> AddAsync(AddUserModel user);
 
-    Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user);
+    Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
     Task<UserModel?> UpsertAsync(UpsertUserModel user);
 

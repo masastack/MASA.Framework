@@ -20,10 +20,10 @@ public class UserService : IUserService
         return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
-    public async Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user)
+    public async Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user)
     {
-        var requestUri = $"api/user/addThirdPartyUser";
-        return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user);
+        var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
+        return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user);
     }
 
     public async Task<UserModel?> UpsertAsync(UpsertUserModel user)

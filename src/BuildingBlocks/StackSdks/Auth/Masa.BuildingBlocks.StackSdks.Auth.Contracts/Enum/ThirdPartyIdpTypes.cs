@@ -5,7 +5,8 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 
 public enum ThirdPartyIdpTypes
 {
-    WeiXin = 1,
-    Github = 2,
-    Ldap = 3,
+    Other = 1,
+    WeiXin = 2,
+    Github = 3,
+    Ldap = 4, 
 }

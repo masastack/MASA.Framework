@@ -3,24 +3,8 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpsertUserModel
+public class UpsertUserModel : AddUserModel
 {
     public Guid Id { get; set; }
-
-    public string? Account { get; set; }
-
-    public string? Name { get; set; }
-
-    public string? DisplayName { get; set; }
-
-    public string? IdCard { get; set; }
-
-    public string? CompanyName { get; set; }
-
-    public string? PhoneNumber { get; set; }
-
-    public string? Email { get; set; }
-
-    public GenderTypes Gender { get; set; }
 }
 

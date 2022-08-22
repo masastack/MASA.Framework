@@ -3,10 +3,8 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class AddThirdPartyUserModel : AddUserModel
+public class UpsertThirdPartyUserModel : UpsertUserModel
 {
-    public Guid? UserId { get; set; }
-
     public string ThridPartyIdentity { get; set; } = "";
 
     public object ExtendedData { get; set; }

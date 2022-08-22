@@ -26,15 +26,15 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestAddThirdPartyUserAsync()
     {
-        var addUser = new AddThirdPartyUserModel();
+        var addUser = new UpsertThirdPartyUserModel();
         var user = new UserModel();
-        var requestUri = $"api/user/addThirdPartyUser";
+        var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
-        var result = await userService.AddThirdPartyUserAsync(addUser);
-        caller.Verify(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
+        var result = await userService.UpsertThirdPartyUserAsync(addUser);
+        caller.Verify(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
