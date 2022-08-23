@@ -7,5 +7,5 @@ internal static class StaticConfig
 {
     public static string AppId { get; set; }
 
-    public static string PublicId => "public-$Config";
+    public static string PublicId { get; set; }
 }

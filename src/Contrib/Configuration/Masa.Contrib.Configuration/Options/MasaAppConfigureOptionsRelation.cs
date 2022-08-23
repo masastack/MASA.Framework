@@ -1,15 +1,15 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Configuration.Options;
 
 public class MasaAppConfigureOptionsRelation
 {
-    public Dictionary<string, (string Variable, string DefaultValue)> Data { get; set; }
+    private Dictionary<string, (string Variable, string DefaultValue)> Data { get; set; }
 
     public MasaAppConfigureOptionsRelation()
     {
-        Data = new Dictionary<string, (string Variable, string DefaultValue)>()
+        Data = new Dictionary<string, (string Variable, string DefaultValue)>(StringComparer.OrdinalIgnoreCase)
         {
             {
                 nameof(MasaAppConfigureOptions.AppId),
@@ -25,5 +25,30 @@ public class MasaAppConfigureOptionsRelation
                 (nameof(MasaAppConfigureOptions.Cluster), "Default")
             }
         };
+    }
+
+    public MasaAppConfigureOptionsRelation SetOptionsRelation(string key, string variable, string defaultValue)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException($"{nameof(key)} cannot be empty", nameof(key));
+
+        if (string.IsNullOrEmpty(variable))
+            throw new ArgumentException($"{nameof(variable)} cannot be empty", nameof(variable));
+
+        if (string.IsNullOrEmpty(defaultValue))
+            throw new ArgumentException($"{nameof(defaultValue)} cannot be empty", nameof(defaultValue));
+
+        Data[key] = (variable, defaultValue);
+        return this;
+    }
+
+    internal string[] GetKeys() => Data.Select(kvp => kvp.Key).ToArray();
+
+    internal (string Variable, string DefaultValue) GetValue(string key)
+    {
+        if (string.IsNullOrEmpty(key))
+            throw new ArgumentException($"{nameof(key)} cannot be empty", nameof(key));
+
+        return Data[key];
     }
 }

@@ -10,23 +10,21 @@
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    }
-  },
-  "AppId": "DccTest",
-  "Environment": "Test",
-  "Cluster": "Default",
-  "ConfigObjects": [
-    "Test1"
-  ],
-  "Sectet": "",
-  "ExpandSections": [
-    {
-      "AppId": "DccTest2",
-      "Environment": "Test2",
-      "Cluster": "Default",
-      "ConfigObjects": [
-        "Test3"
-      ]
-    }
-  ]
+    },
+    "AppId": "DccTest",
+    "Environment": "Test",
+    "Cluster": "Default",
+    "ConfigObjects": [ "Test1" ],
+    "Sectet": "",
+    "ExpandSections": [
+      {
+        "AppId": "DccTest2",
+        "Environment": "Test2",
+        "Cluster": "Default",
+        "ConfigObjects": [
+          "Test3"
+        ]
+      }
+    ]
+  }
 }

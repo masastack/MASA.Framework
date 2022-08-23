@@ -27,7 +27,7 @@ appsettings.json
 {
   //Dcc配置，扩展Configuration能力，支持远程配置
   "DccOptions": {
-    "ManageServiceAddress ": "http://localhost:8890",
+    "ManageServiceAddress": "http://localhost:8890",
     "RedisOptions": {
       "Servers": [
         {
@@ -37,13 +37,15 @@ appsettings.json
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    }
-  },
-  "AppId": "Replace-With-Your-AppId",
-  "Environment": "Development",
-  "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationApi:<Replace-With-Your-AppId>节点下
-  "Secret": "", //Dcc App 秘钥
-  "Cluster": "Default"
+    },
+    "PublicId": "PublicId",
+    "PublicSecret": "PublicSecret",
+    "AppId": "Replace-With-Your-AppId",
+    "Environment": "Development",
+    "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationApi:<Replace-With-Your-AppId>节点下
+    "Secret": "", //Dcc App 秘钥
+    "Cluster": "Default"
+  }
 }
 
 ```

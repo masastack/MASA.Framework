@@ -20,6 +20,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         : base(loggerFactory)
     {
         _client = client;
+
         foreach (var sectionOption in sectionOptions)
         {
             Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -30,8 +31,8 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
     {
         foreach (var configObject in sectionOption.ConfigObjects)
         {
-            string key = $"{sectionOption.Environment!}-{sectionOption.Cluster!}-{sectionOption.AppId}-{configObject}".ToLower();
-            var result = await _client.GetRawAsync(sectionOption.Environment!, sectionOption.Cluster!, sectionOption.AppId, configObject, (val) =>
+            string key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
+            var result = await _client.GetRawAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
             {
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
                 {
@@ -45,28 +46,26 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
         }
     }
 
-    private IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
+    private static IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
     {
         if (raw == null)
             return new Dictionary<string, string>();
 
-        switch (configurationType)
+        return configurationType switch
         {
-            case ConfigurationTypes.Json:
-                return SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw));
-            case ConfigurationTypes.Properties:
-                return SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!);
-            case ConfigurationTypes.Text:
-                return new Dictionary<string, string>()
-                {
-                    { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw ?? "" }
-                };
-            default:
-                throw new NotSupportedException(nameof(configurationType));
-        }
+            ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            ConfigurationTypes.Properties => SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
+            ConfigurationTypes.Text => new Dictionary<string, string>
+            {
+                    { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw }
+                },
+            ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+            _ => throw new NotSupportedException(nameof(configurationType)),
+        };
     }
 
-    private IDictionary<string, string> SecondaryFormat(
+    private static IDictionary<string, string> SecondaryFormat(
         string appId,
         string configObject,
         IDictionary<string, string> data)
