@@ -71,10 +71,7 @@ public static class MasaConfigurationExtensions
 
         var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
         var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-        builder.AddRepository(new DccConfigurationRepository(new List<DccSectionOptions>
-            {
-                dccConfigurationOptions.DefaultSection
-            }.Concat(dccConfigurationOptions.ExpandSections),
+        builder.AddRepository(new DccConfigurationRepository(dccConfigurationOptions.GetAllSections(),
             configurationApiClient, loggerFactory));
         return builder;
     }
