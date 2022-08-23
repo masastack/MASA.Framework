@@ -146,7 +146,7 @@ public static class MasaConfigurationExtensions
 
         if (dccConfigurationOptions.ExpandSections.Any(sectionOption
                 => sectionOption.AppId == dccConfigurationOptions.DefaultSection.AppId))
-            throw new ArgumentException("The extension AppId cannot be the same as the default AppId", nameof(dccConfigurationOptions));
+            throw new ArgumentException("The extension AppId cannot be the same as the default AppId", nameof(dccOptions));
 
         foreach (var sectionOption in dccConfigurationOptions.ExpandSections)
         {
@@ -171,16 +171,15 @@ public static class MasaConfigurationExtensions
             throw new ArgumentNullException(nameof(dccOptions), "ManageServiceAddress cannot be empty");
 
         if (!dccOptions.RedisOptions.Servers.Any())
-            throw new ArgumentException("The Redis configuration cannot be empty",
-                nameof(dccOptions.RedisOptions.Servers));
+            throw new ArgumentException("The Redis configuration cannot be empty", nameof(dccOptions));
 
         if (dccOptions.RedisOptions.Servers.Any(service => string.IsNullOrEmpty(service.Host) || service.Port <= 0))
             throw new ArgumentException(
                 "The Redis server address cannot be empty, and the Redis port must be grather than 0",
-                nameof(dccOptions.RedisOptions.Servers));
+                nameof(dccOptions));
 
         if (dccOptions.ExpandSections.Any(dccSectionOptions => string.IsNullOrWhiteSpace(dccSectionOptions.AppId)))
-            throw new ArgumentException("sections with an empty AppId are not allowed", nameof(dccOptions.ExpandSections));
+            throw new ArgumentException("sections with an empty AppId are not allowed", nameof(dccOptions));
 
         if (dccOptions.ExpandSections.DistinctBy(dccSectionOptions => dccSectionOptions.AppId).Count() != dccOptions.ExpandSections.Count)
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
