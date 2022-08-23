@@ -25,6 +25,20 @@ public class DccSectionOptions
 
     public string? Secret { get; set; }
 
+    public DccSectionOptions()
+    {
+
+    }
+
+    public DccSectionOptions(string appId, string environment, string cluster, List<string> configObjects, string? secret) : this()
+    {
+        AppId = appId;
+        Environment = environment;
+        Cluster = cluster;
+        ConfigObjects = configObjects;
+        Secret = secret ?? string.Empty;
+    }
+
     public void ComplementConfigObjects(IDistributedCacheClient distributedCacheClient)
     {
         if (!ConfigObjects.Any())
@@ -33,20 +47,18 @@ public class DccSectionOptions
         }
     }
 
-    public void ComplementAndCheckAppId(string defaultValue, bool isCheck = true)
+    public void ComplementAndCheckAppId(string defaultValue)
     {
-        if (IsSetValue(isCheck, AppId)) AppId = defaultValue;
+        if (string.IsNullOrWhiteSpace(AppId)) AppId = defaultValue;
     }
 
-    public void ComplementAndCheckEnvironment(string defaultValue, bool isCheck = true)
+    public void ComplementAndCheckEnvironment(string defaultValue)
     {
-        if (IsSetValue(isCheck, Environment)) Environment = defaultValue;
+        if (string.IsNullOrWhiteSpace(Environment)) Environment = defaultValue;
     }
 
-    public void ComplementAndCheckCluster(string defaultValue, bool isCheck = true)
+    public void ComplementAndCheckCluster(string defaultValue)
     {
-        if (IsSetValue(isCheck, Cluster)) Cluster = defaultValue;
+        if (string.IsNullOrWhiteSpace(Cluster)) Cluster = defaultValue;
     }
-
-    private static bool IsSetValue(bool isCheck, string? value) => !isCheck || string.IsNullOrWhiteSpace(value);
 }
