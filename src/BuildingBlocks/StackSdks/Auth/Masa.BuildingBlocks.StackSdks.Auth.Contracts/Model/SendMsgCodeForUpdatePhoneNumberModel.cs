@@ -3,12 +3,15 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class SendMobileVerificationCodeModel
+public class SendMsgCodeForUpdatePhoneNumberModel
 {
+    public Guid UserId { get; set; }
+
     public string PhoneNumber { get; set; }
 
-    public SendMobileVerificationCodeModel(string phoneNumber)
+    public SendMsgCodeForUpdatePhoneNumberModel(Guid userId, string phoneNumber)
     {
+        UserId = userId;
         PhoneNumber = phoneNumber;
     }
 }

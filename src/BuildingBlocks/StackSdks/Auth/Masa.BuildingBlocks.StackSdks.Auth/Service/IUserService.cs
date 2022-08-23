@@ -45,9 +45,13 @@ public interface IUserService
 
     Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff);
 
-    Task SendMobileVerificationCodeAsync(SendMobileVerificationCodeModel code);
+    Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel model);
 
-    Task UpdateUserPhoneNumberAsync(UpdateUserPhoneNumberModel user);
+    Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model);
+
+    Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel model);
+
+    Task UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user);
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
@@ -60,5 +64,7 @@ public interface IUserService
     Task<T?> GetUserSystemDataAsync<T>(string systemId);
 
     Task<bool> DisableUserAsync(DisableUserModel user);
+
+    Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
 }
 
