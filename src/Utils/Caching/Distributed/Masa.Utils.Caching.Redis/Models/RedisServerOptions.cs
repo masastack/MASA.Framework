@@ -8,6 +8,7 @@ namespace Masa.Utils.Caching.Redis.Models;
 /// </summary>
 public class RedisServerOptions
 {
+    private const string DEFAULT_REDIS_HOST = "localhost";
     private const int DEFAULT_REDIS_PORT = 6379;
 
     /// <summary>
@@ -25,6 +26,8 @@ public class RedisServerOptions
     /// </summary>
     public RedisServerOptions()
     {
+        Host = DEFAULT_REDIS_HOST;
+        Port = DEFAULT_REDIS_PORT;
     }
 
     /// <summary>
@@ -63,9 +66,7 @@ public class RedisServerOptions
     public RedisServerOptions(string host, int port)
     {
         if (string.IsNullOrWhiteSpace(host))
-        {
             throw new ArgumentNullException(nameof(host));
-        }
 
         Host = host;
         Port = port;

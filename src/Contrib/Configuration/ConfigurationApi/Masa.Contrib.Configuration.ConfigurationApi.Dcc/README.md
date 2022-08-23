@@ -37,13 +37,15 @@ appsettings.json
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    }
+    },
+    "PublicId": "PublicId",
+    "PublicSecret": "PublicSecret",
+    "AppId": "Replace-With-Your-AppId",
+    "Environment": "Development",
+    "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationApi:<Replace-With-Your-AppId> node
+    "Secret": "", //Dcc App key
+    "Cluster": "Default"
   },
-  "AppId": "Replace-With-Your-AppId",
-  "Environment": "Development",
-  "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationApi:<Replace-With-Your-AppId> node
-  "Secret": "", //Dcc App key
-  "Cluster": "Default"
 }
 
 ```
@@ -66,9 +68,9 @@ public class RedisOptions : ConfigurationApiMasaConfigurationOptions
     public override string? ObjectName { get; init; } = "Redis";
 
     public string Host { get; set; }
-    
+
     public int Port { get; set; }
-    
+
     public int DefaultDatabase { get; set; }
 }
 
@@ -79,7 +81,7 @@ public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
     /// </summary>
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
-    
+
     /// <summary>
     /// The environment name.
     /// Get from the environment variable ASPNETCORE_ENVIRONMENT when Environment is null or empty

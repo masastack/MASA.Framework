@@ -28,10 +28,4 @@ internal static class ConfigurationExtensions
             configurationBuilder.Add(configurationSource);
         return configurationBuilder;
     }
-
-    public static string GetConfigurationValue(this IConfiguration configuration, string key, Func<string> func)
-    {
-        var configurationValue = configuration[key];
-        return string.IsNullOrWhiteSpace(configurationValue) ? func() : configurationValue;
-    }
 }
