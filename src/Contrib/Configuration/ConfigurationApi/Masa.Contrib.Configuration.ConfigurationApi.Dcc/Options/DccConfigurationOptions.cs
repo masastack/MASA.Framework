@@ -26,7 +26,7 @@ public class DccConfigurationOptions
     /// <summary>
     /// Expansion section information
     /// </summary>
-    public List<DccSectionOptions> ExpandSections { get; set; } = new();
+    public List<DccSectionOptions> ExpandSections { get; set; }
 
     public DccConfigurationOptions()
     {
