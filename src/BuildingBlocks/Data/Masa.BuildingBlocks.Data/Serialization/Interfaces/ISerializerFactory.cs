@@ -3,9 +3,6 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface ISerializerFactory
+public interface ISerializerFactory : IMasaFactory<ISerializer>
 {
-    public ISerializer Create();
-
-    ISerializer Create(string name);
 }
