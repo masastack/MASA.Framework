@@ -45,11 +45,11 @@ public interface IUserService
 
     Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff);
 
-    Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel code);
+    Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel model);
 
-    Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel code);
+    Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model);
 
-    Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel code);
+    Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel model);
 
     Task UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user);
 
