@@ -20,10 +20,10 @@ public class UserService : IUserService
         return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
-    public async Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user)
+    public async Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user)
     {
-        var requestUri = $"api/user/addThirdPartyUser";
-        return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user);
+        var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
+        return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user);
     }
 
     public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
@@ -130,13 +130,35 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, user);
     }
 
-    public async Task UpdateAvatarAsync(UpdateUserAvatarModel user)
+    public async Task UpdateUserAvatarAsync(UpdateUserAvatarModel user)
     {
         if (user.Id == Guid.Empty)
         {
             user.Id = _userContext.GetUserId<Guid>();
         }
         var requestUri = $"api/user/updateAvatar";
+        await _caller.PutAsync(requestUri, user);
+    }
+
+    public async Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff)
+    {
+        if (staff.UserId == Guid.Empty)
+        {
+            staff.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/staff/updateAvatar";
+        await _caller.PutAsync(requestUri, staff);
+    }
+
+    public async Task SendMobileVerificationCodeAsync(SendMobileVerificationCodeModel code)
+    {
+        var requestUri = $"api/user/sendMobileVerificationCode";
+        await _caller.PostAsync(requestUri, code);
+    }
+
+    public async Task UpdateUserPhoneNumberAsync(UpdateUserPhoneNumberModel user)
+    {
+        var requestUri = $"api/user/updateUserPhoneNumber";
         await _caller.PutAsync(requestUri, user);
     }
 
