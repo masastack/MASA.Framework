@@ -3,12 +3,14 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public sealed class CacheEntry<T> : CacheEntryOptions
+public class CacheEntry<T> : CacheEntryOptions<T>
 {
-    public T Value { get; set; }
+    public T Value { get; }
 
     public CacheEntry(T value)
-        => Value = value;
+    {
+        Value = value;
+    }
 
     public CacheEntry(T value, DateTimeOffset absoluteExpiration) : this(value)
         => AbsoluteExpiration = absoluteExpiration;

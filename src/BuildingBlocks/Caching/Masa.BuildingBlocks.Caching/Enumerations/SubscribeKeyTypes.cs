@@ -3,7 +3,14 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class PublishOptions : BasePubSubOptions
+/// <summary>
+/// The subscribe key type.
+/// </summary>
+public enum SubscribeKeyTypes
 {
-    public object Value { get; set; }
+    ValueTypeFullName = 1,
+
+    ValueTypeFullNameAndKey = 2,
+
+    SpecificPrefix = 3
 }

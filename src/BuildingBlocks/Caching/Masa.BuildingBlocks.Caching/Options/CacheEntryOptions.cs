@@ -52,9 +52,40 @@ public class CacheEntryOptions
             _slidingExpiration = value;
         }
     }
+
+    /// <summary>
+    /// The default value does not expire
+    /// </summary>
+    public static CacheEntryOptions Default = new()
+    {
+        AbsoluteExpiration = null,
+        AbsoluteExpirationRelativeToNow = null,
+        SlidingExpiration = null
+    };
+
+    public CacheEntryOptions() { }
+
+    public CacheEntryOptions(DateTimeOffset absoluteExpiration)
+        => AbsoluteExpiration = absoluteExpiration;
+
+    public CacheEntryOptions(TimeSpan absoluteExpirationRelativeToNow)
+        => AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow;
 }
 
 public class CacheEntryOptions<T> : CacheEntryOptions
 {
     public Action<T?>? ValueChanged { get; set; }
+
+    public CacheEntryOptions()
+    {
+    }
+
+    public CacheEntryOptions(DateTimeOffset absoluteExpiration) : base(absoluteExpiration)
+    {
+    }
+
+    public CacheEntryOptions(TimeSpan absoluteExpirationRelativeToNow) : base(absoluteExpirationRelativeToNow)
+    {
+
+    }
 }

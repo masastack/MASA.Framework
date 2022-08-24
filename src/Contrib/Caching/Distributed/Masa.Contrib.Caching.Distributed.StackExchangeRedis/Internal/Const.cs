@@ -31,6 +31,22 @@ internal sealed class Const
                 end
                 return 1";
 
+    public const string SET_MULTIPLE_SCRIPT = @"
+                local count = 0
+                for i, key in ipairs(KEYS) do
+                  redis.call('HSET', key, 'absexp', ARGV[1], 'sldexp', ARGV[2], 'data', ARGV[i+3])
+                  if ARGV[3] ~= '-1' then
+                    redis.call('EXPIRE', key, ARGV[3])
+                  end
+                  count = count + 1
+                end
+                return count";
+
+    public const string SET_EXPIRE_SCRIPT = @"
+        local result = @data
+        for index=1,@length,2 do redis.call('expire', result[index], result[index + 1]) end;
+        return 1";
+
     public const string GET_LIST_SCRIPT = @"local result = {}
         for index,val in pairs(@keys) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
         return result";
@@ -40,5 +56,10 @@ internal sealed class Const
     public const string GET_KEY_AND_VALUE_SCRIPT = @"local ks = redis.call('KEYS', @keypattern)
         local result = {}
         for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
+        return result";
+
+    public const string GET_EXPIRATION_VALUE_SCRIPT = @"
+        local result = {}
+        for index,val in pairs(@keys) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hget', @absolute, @sliding) end
         return result";
 }

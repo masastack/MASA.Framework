@@ -19,7 +19,10 @@ public class DistributedCacheClientTest : TestBase
     {
         string key = "test";
         int value = 1;
-        await _distributedCacheClient.SetAsync(key, value);
+        await _distributedCacheClient.SetAsync(key, value, new CacheEntryOptions<int>()
+        {
+            SlidingExpiration = TimeSpan.FromDays(1)
+        });
 
         var list = (await _distributedCacheClient.GetListAsync<int>(key)).ToList();
         Assert.AreEqual(1, list.Count);

@@ -45,7 +45,7 @@ public interface ICacheClient
 
     Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? options = null);
 
-    void Refresh(string key);
+    void Refresh(params string[] keys);
 
-    Task RefreshAsync(string key);
+    Task RefreshAsync(params string[] keys);
 }
