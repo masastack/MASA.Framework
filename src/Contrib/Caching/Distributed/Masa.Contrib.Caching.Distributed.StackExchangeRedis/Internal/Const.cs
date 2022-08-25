@@ -59,7 +59,25 @@ internal sealed class Const
         return result";
 
     public const string GET_EXPIRATION_VALUE_SCRIPT = @"
-        local result = {}
-        for index,val in pairs(@keys) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hget', @absolute, @sliding) end
-        return result";
+        local count = 0
+        local expire = -1
+        local re = 0
+        local temp = {}
+        for index,val in ipairs(KEYS) do
+          if(redis.call('EXISTS', val) == 1) then
+            count = count +1
+            temp = redis.call('hmget', val, 'absexp', 'sldexp');
+            if(temp[2] ~= '-1' and temp[2] ~= false) then
+              if(temp[1] ~= '-1' and temp[1] ~= false) then
+                if(tonumber(temp[1]) < tonumber(temp[2])) then expire = temp[1]
+                else expire = temp[2] end
+              else expire = temp[2] end
+            elseif(temp[1] ~= '-1' and temp[1] ~= false) then expire = temp[1]
+            else expire = '-1' end
+          if(expire ~= '-1') then
+            redis.call('EXPIRE', val, expire)
+          else redis.call('PERSIST', val) end
+          end
+        end
+        return count";
 }

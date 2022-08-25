@@ -26,16 +26,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     {
         CheckIsNullOrWhiteSpace(key, nameof(key));
 
-        var redisValue = GetAndRefresh(key, getData: true);
-        return ConvertToValue<T>(redisValue);
+        return GetAndRefresh<T>(key);
     }
 
     public async Task<T?> GetAsync<T>(string key)
     {
         CheckIsNullOrWhiteSpace(key, nameof(key));
 
-        var redisValue = await GetAndRefreshAsync(key, getData: true);
-        return ConvertToValue<T>(redisValue);
+        return await GetAndRefreshAsync<T>(key);
     }
 
     public T? Get<T>(string key, Action<T?> valueChanged)
@@ -44,15 +42,15 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
         var value = Get<T>(key);
 
-        if (value != null)
-        {
-            var channel = FormatSubscribeChannel<T>(key);
+        if (value == null)
+            return value;
 
-            Subscribe(channel, new CombinedCacheEntryOptions<T>
-            {
-                ValueChanged = valueChanged
-            });
-        }
+        var channel = FormatSubscribeChannel<T>(key);
+
+        Subscribe(channel, new CombinedCacheEntryOptions<T>
+        {
+            ValueChanged = valueChanged
+        });
         return value;
     }
 
@@ -61,15 +59,15 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         CheckIsNullOrWhiteSpace(key, nameof(key));
         var value = await GetAsync<T>(key);
 
-        if (value != null)
-        {
-            var channel = FormatSubscribeChannel<T>(key);
+        if (value == null)
+            return value;
 
-            Subscribe(channel, new CombinedCacheEntryOptions<T>
-            {
-                ValueChanged = valueChanged
-            });
-        }
+        var channel = FormatSubscribeChannel<T>(key);
+
+        Subscribe(channel, new CombinedCacheEntryOptions<T>
+        {
+            ValueChanged = valueChanged
+        });
         return value;
     }
 
@@ -77,7 +75,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        return GetAndRefresh<T>(keys);
+        return GetListAndRefresh<T>(keys);
     }
 
     public async Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
@@ -93,17 +91,11 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
         ArgumentNullException.ThrowIfNull(setter, nameof(setter));
 
-        var redisValue = GetAndRefresh(key, true);
-
-        T? value = ConvertToValue<T>(redisValue);
-        if (value == null)
+        return GetAndRefresh<T>(key, () =>
         {
             var cacheEntry = setter();
-
             Set(key, cacheEntry.Value, cacheEntry);
-        }
-
-        return value;
+        });
     }
 
     public async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter)
@@ -112,17 +104,11 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
         ArgumentNullException.ThrowIfNull(setter, nameof(setter));
 
-        var redisValue = await GetAndRefreshAsync(key, true);
-
-        T? value = ConvertToValue<T>(redisValue);
-        if (value == null)
+        return await GetAndRefreshAsync<T>(key, async () =>
         {
             var cacheEntry = setter();
-
             await SetAsync(key, cacheEntry.Value, cacheEntry);
-        }
-
-        return value;
+        });
     }
 
     public void Set<T>(string key, T value, DateTimeOffset absoluteExpiration)
@@ -207,26 +193,10 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     }
 
     public void Refresh(params string[] keys)
-    {
-        var expirationList = GetExpirationList(keys);
+        => Db.ScriptEvaluate(Const.GET_EXPIRATION_VALUE_SCRIPT, keys.Select(key => (RedisKey)key).ToArray());
 
-        var options = expirationList
-            .Select(opt => new RefreshCacheOptions(opt.Key, opt.AbsExpr, opt.SldExpr, RedisValue.Null))
-            .ToList();
-
-        RefreshCore(options);
-    }
-
-    public async Task RefreshAsync(params string[] keys)
-    {
-        var expirationList = await GetExpirationListAsync(keys);
-
-        var options = expirationList
-            .Select(opt => new RefreshCacheOptions(opt.Key, opt.AbsExpr, opt.SldExpr, RedisValue.Null))
-            .ToList();
-
-        await RefreshCoreAsync(options);
-    }
+    public Task RefreshAsync(params string[] keys)
+        => Db.ScriptEvaluateAsync(Const.GET_EXPIRATION_VALUE_SCRIPT, keys.Select(key => (RedisKey)key).ToArray());
 
     public void Remove(params string[] keys)
     {
@@ -404,7 +374,8 @@ end";
         {
             absoluteExpiration?.Ticks ?? Const.DEADLINE_LASTING,
             cacheEntryOptions.SlidingExpiration?.Ticks ?? Const.DEADLINE_LASTING,
-            TimeHelper.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions) ?? Const.DEADLINE_LASTING,
+            TimeHelper.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions.SlidingExpiration) ??
+            Const.DEADLINE_LASTING,
         };
         if (func != null)
             redisValues.AddRange(func.Invoke());
@@ -412,20 +383,7 @@ end";
         return redisValues.ToArray();
     }
 
-    private RedisValue GetAndRefresh(string key, bool getData, CommandFlags flags = CommandFlags.None)
-    {
-        if (string.IsNullOrWhiteSpace(key))
-            throw new ArgumentNullException(nameof(key));
-
-        var results = getData ? Db.HashMemberGet(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY, Const.DATA_KEY) :
-            Db.HashMemberGet(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY);
-
-        var options = MapMetadata(key, results);
-        Refresh(options, flags);
-        return options.Value;
-    }
-
-    private List<T?> GetAndRefresh<T>(string[] keys, CommandFlags flags = CommandFlags.None)
+    private List<T?> GetListAndRefresh<T>(string[] keys, CommandFlags flags = CommandFlags.None)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -447,42 +405,59 @@ end";
         return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
-    private async Task<RedisValue> GetAndRefreshAsync(string key, bool getData, CommandFlags flags = CommandFlags.None)
+    private T? GetAndRefresh<T>(string key, Action? action = null, CommandFlags flags = CommandFlags.None)
     {
-        if (key == null)
-            throw new ArgumentNullException(nameof(key));
+        var results = Db.HashMemberGet(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY, Const.DATA_KEY);
 
-        var results = getData ?
-            await Db.HashMemberGetAsync(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY, Const.DATA_KEY)
-                .ConfigureAwait(false) :
-            await Db.HashMemberGetAsync(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY).ConfigureAwait(false);
+        var result = GetAndRefreshByArrayRedisValue<T>(results, key);
+        if (result.Value != null)
+            Refresh(result.DataCacheOptions, flags);
+        else if (action != null)
+            action.Invoke();
 
-        var options = MapMetadata(key, results);
-        await RefreshAsync(options, flags).ConfigureAwait(false);
-        return options.Value;
+        return result.Value;
     }
 
-    private void Refresh(RefreshCacheOptions refreshCacheOptions, CommandFlags flags)
+    private async Task<T?> GetAndRefreshAsync<T>(string key, Func<Task>? func = null, CommandFlags flags = CommandFlags.None)
     {
-        new CacheEntryOptions
-        {
-            AbsoluteExpiration = refreshCacheOptions.AbsExpr,
-            SlidingExpiration = refreshCacheOptions.SldExpr,
-        }.RefreshCore(refreshCacheOptions.Key, (k, expr) => Task.FromResult(Db.KeyExpire(k, expr, flags)));
+        var results = await Db.HashMemberGetAsync(
+            key,
+            Const.ABSOLUTE_EXPIRATION_KEY,
+            Const.SLIDING_EXPIRATION_KEY,
+            Const.DATA_KEY);
+
+        var result = GetAndRefreshByArrayRedisValue<T>(results, key);
+
+        if (result.Value != null)
+            await RefreshAsync(result.DataCacheOptions, flags);
+        else if (func != null)
+            await func.Invoke();
+
+        return result.Value;
+    }
+
+    private (T? Value, DataCacheOptions DataCacheOptions) GetAndRefreshByArrayRedisValue<T>(
+        RedisValue[] redisValue,
+        string key)
+    {
+        var options = MapMetadata(key, redisValue);
+        var value = ConvertToValue<T>(options.Value);
+        return (value, options);
+    }
+
+    private void Refresh(DataCacheOptions dataCacheOptions, CommandFlags flags)
+    {
+        var result = dataCacheOptions.Refresh();
+        if (result.State) Db.KeyExpire(dataCacheOptions.Key, result.Expire, flags);
     }
 
     private async Task RefreshAsync(
-        RefreshCacheOptions refreshCacheOptions,
+        DataCacheOptions dataCacheOptions,
         CommandFlags flags,
         CancellationToken token = default)
     {
-        new CacheEntryOptions()
-        {
-            AbsoluteExpiration = refreshCacheOptions.AbsExpr,
-            SlidingExpiration = refreshCacheOptions.SldExpr,
-        }.RefreshCore(refreshCacheOptions.Key, async (k, expr)
-            => await Db.KeyExpireAsync(k, expr, flags).ConfigureAwait(false), token);
-        await Task.CompletedTask;
+        var result = dataCacheOptions.Refresh(token);
+        if (result.State) await Db.KeyExpireAsync(dataCacheOptions.Key, result.Expire, flags).ConfigureAwait(false);
     }
 
     private string FormatSubscribeChannel<T>(string key) =>
@@ -492,32 +467,29 @@ end";
 
     private void Subscribe<T>(string channel, CombinedCacheEntryOptions<T>? options = null)
     {
+        if (_subscribeChannels.Contains(channel))
+            return;
+
         lock (_locker)
         {
-            if (!_subscribeChannels.Contains(channel))
+            if (_subscribeChannels.Contains(channel))
+                return;
+
+            Subscribe<T>(channel, (subscribeOptions) =>
             {
-                lock (_locker)
+                switch (subscribeOptions.Operation)
                 {
-                    if (!_subscribeChannels.Contains(channel))
-                    {
-                        Subscribe<T>(channel, (subscribeOptions) =>
-                        {
-                            switch (subscribeOptions.Operation)
-                            {
-                                case SubscribeOperation.Set:
-                                case SubscribeOperation.Remove:
-                                    break;
-                                default:
-                                    throw new NotImplementedException();
-                            }
-
-                            options?.ValueChanged?.Invoke(subscribeOptions.Value);
-                        });
-
-                        _subscribeChannels.Add(channel);
-                    }
+                    case SubscribeOperation.Set:
+                    case SubscribeOperation.Remove:
+                        break;
+                    default:
+                        throw new NotImplementedException();
                 }
-            }
+
+                options?.ValueChanged?.Invoke(subscribeOptions.Value);
+            });
+
+            _subscribeChannels.Add(channel);
         }
     }
 }

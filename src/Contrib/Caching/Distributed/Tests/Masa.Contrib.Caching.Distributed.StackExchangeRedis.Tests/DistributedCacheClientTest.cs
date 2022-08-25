@@ -12,6 +12,9 @@ public class DistributedCacheClientTest : TestBase
     public void Initialize()
     {
         _distributedCacheClient = new DistributedCacheClient(GetConfigurationOptions(), GetJsonSerializerOptions());
+
+        _distributedCacheClient.Set("test", 1);
+        _distributedCacheClient.Set("test2", 2);
     }
 
     [TestMethod]
@@ -28,5 +31,12 @@ public class DistributedCacheClientTest : TestBase
         Assert.AreEqual(1, list.Count);
         Assert.AreEqual(1, list[0]);
         //todo: Waiting to delete data
+    }
+
+    [DataTestMethod]
+    [DataRow("test", "test2")]
+    public async Task TestRefreshAsync(params string[] keys)
+    {
+        await _distributedCacheClient.RefreshAsync(keys);
     }
 }

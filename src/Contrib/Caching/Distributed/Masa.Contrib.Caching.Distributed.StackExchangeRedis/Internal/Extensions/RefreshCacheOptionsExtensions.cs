@@ -5,50 +5,28 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 internal static class RefreshCacheOptionsExtensions
 {
-    internal static bool RefreshCore(
-        this CacheEntryOptions options,
-        string key,
-        Func<string, TimeSpan?, Task<bool>> func,
+    internal static (bool State, TimeSpan? Expire) Refresh(
+        this RefreshCacheOptions options,
         CancellationToken token = default)
     {
         token.ThrowIfCancellationRequested();
 
-        // Note Refresh has no effect if there is just an absolute expiration (or neither).
-        if (options.SlidingExpiration.HasValue)
+        if (options.SldExpr.HasValue)
         {
             TimeSpan? expr;
-            if (options.AbsoluteExpiration.HasValue)
+            if (options.AbsExpr.HasValue)
             {
-                var relExpr = options.AbsoluteExpiration.Value - DateTimeOffset.Now;
-                expr = relExpr <= options.SlidingExpiration.Value ? relExpr : options.SlidingExpiration;
+                var relExpr = options.AbsExpr.Value - DateTimeOffset.Now;
+                expr = relExpr <= options.SldExpr.Value ? relExpr : options.SldExpr;
             }
             else
             {
-                expr = options.SlidingExpiration;
+                expr = options.SldExpr;
             }
 
-            return func.Invoke(key, expr).ConfigureAwait(false).GetAwaiter().GetResult();
+            return (true, expr);
         }
 
-        return false;
-    }
-
-    internal static DateTimeOffset? GetAbsoluteExpiration(this CacheEntryOptions? options, DateTimeOffset? creationTime)
-    {
-        if (options == null)
-            return null;
-
-        creationTime ??= DateTimeOffset.UtcNow;
-
-        if (options.AbsoluteExpiration.HasValue && options.AbsoluteExpiration <= creationTime)
-            throw new ArgumentOutOfRangeException(
-                nameof(CacheEntryOptions.AbsoluteExpiration),
-                options.AbsoluteExpiration.Value,
-                "The absolute expiration value must be in the future.");
-
-        if (options.AbsoluteExpirationRelativeToNow.HasValue)
-            return creationTime.Value.Add(options.AbsoluteExpirationRelativeToNow.Value);
-
-        return options.AbsoluteExpiration;
+        return (false, null);
     }
 }

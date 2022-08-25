@@ -8,18 +8,18 @@ internal static class TimeHelper
     public static long? GetExpirationInSeconds(
         DateTimeOffset creationTime,
         DateTimeOffset? absoluteExpiration,
-        CacheEntryOptions options)
+        TimeSpan? slidingExpiration)
     {
-        if (absoluteExpiration.HasValue && options.SlidingExpiration.HasValue)
+        if (absoluteExpiration.HasValue && slidingExpiration.HasValue)
             return (long)Math.Min(
                 (absoluteExpiration.Value - creationTime).TotalSeconds,
-                options.SlidingExpiration.Value.TotalSeconds);
+                slidingExpiration.Value.TotalSeconds);
 
         if (absoluteExpiration.HasValue)
             return (long)(absoluteExpiration.Value - creationTime).TotalSeconds;
 
-        if (options is { SlidingExpiration: { } })
-            return (long)options.SlidingExpiration.Value.TotalSeconds;
+        if (slidingExpiration.HasValue)
+            return (long)slidingExpiration.Value.TotalSeconds;
 
         return null;
     }

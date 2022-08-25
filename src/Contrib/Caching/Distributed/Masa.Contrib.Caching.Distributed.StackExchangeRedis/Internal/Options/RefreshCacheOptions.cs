@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal class RefreshCacheOptions
+public class RefreshCacheOptions
 {
     public string Key { get; }
 
@@ -11,13 +11,10 @@ internal class RefreshCacheOptions
 
     public TimeSpan? SldExpr { get; }
 
-    public RedisValue Value { get; }
-
-    public RefreshCacheOptions(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr, RedisValue value)
+    public RefreshCacheOptions(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr)
     {
         Key = key;
         AbsExpr = absExpr;
         SldExpr = sldExpr;
-        Value = value;
     }
 }
