@@ -21,7 +21,7 @@ jobs:
         dotnet-version: '6.0.x'
         include-prerelease: true
     - name: dependencies
-      run: git clone -b $GITHUB_REF_NAME https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
+      run: git clone -b 0.5.0 https://github.com/masastack/MASA.BuildingBlocks.git ./src/BuildingBlocks/MASA.BuildingBlocks
 
     - name: restore
       run: dotnet restore
