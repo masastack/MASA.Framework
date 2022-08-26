@@ -25,7 +25,8 @@ internal sealed class Const
     // ARGV[4] = data - byte[]
     // this order should not change LUA script depends on it
     public const string SET_SCRIPT = @"
-                redis.call('HSET', KEYS[1], 'absexp', ARGV[1], 'sldexp', ARGV[2], 'data', ARGV[4])
+                redis.call('HSET', KEYS[1], '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2], '" +
+        DATA_KEY + @"', ARGV[4])
                 if ARGV[3] ~= '-1' then
                   redis.call('EXPIRE', KEYS[1], ARGV[3])
                 end
@@ -34,7 +35,8 @@ internal sealed class Const
     public const string SET_MULTIPLE_SCRIPT = @"
                 local count = 0
                 for i, key in ipairs(KEYS) do
-                  redis.call('HSET', key, 'absexp', ARGV[1], 'sldexp', ARGV[2], 'data', ARGV[i+3])
+                  redis.call('HSET', key, '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2], '" +
+        DATA_KEY + @"', ARGV[i+3])
                   if ARGV[3] ~= '-1' then
                     redis.call('EXPIRE', key, ARGV[3])
                   end
@@ -48,7 +50,7 @@ internal sealed class Const
         return 1";
 
     public const string GET_LIST_SCRIPT = @"local result = {}
-        for index,val in pairs(@keys) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
+        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
         return result";
 
     public const string GET_KEYS_SCRIPT = @"return redis.call('keys', @pattern)";
@@ -59,25 +61,35 @@ internal sealed class Const
         return result";
 
     public const string GET_EXPIRATION_VALUE_SCRIPT = @"
-        local count = 0
-        local expire = -1
-        local re = 0
-        local temp = {}
-        for index,val in ipairs(KEYS) do
-          if(redis.call('EXISTS', val) == 1) then
-            count = count +1
-            temp = redis.call('hmget', val, 'absexp', 'sldexp');
-            if(temp[2] ~= '-1' and temp[2] ~= false) then
-              if(temp[1] ~= '-1' and temp[1] ~= false) then
-                if(tonumber(temp[1]) < tonumber(temp[2])) then expire = temp[1]
-                else expire = temp[2] end
-              else expire = temp[2] end
-            elseif(temp[1] ~= '-1' and temp[1] ~= false) then expire = temp[1]
-            else expire = '-1' end
-          if(expire ~= '-1') then
-            redis.call('EXPIRE', val, expire)
-          else redis.call('PERSIST', val) end
-          end
-        end
-        return count";
+        local result = {}
+        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hget', '" +
+        ABSOLUTE_EXPIRATION_KEY + "', '" + SLIDING_EXPIRATION_KEY + @"') end
+        return result";
+
+    // KEYS[1] = = key
+    // ARGV[1] = absolute-expiration - ticks as long (-1 for none)
+    // ARGV[2] = sliding-expiration - ticks as long (-1 for none)
+    // ARGV[3] = relative-expiration (long, in seconds, -1 for none) - Min(absolute-expiration - Now, sliding-expiration)
+    // this order should not change LUA script depends on it
+    public const string SET_EXPIRATION_SCRIPT = @"
+                redis.call('HSET', KEYS[1], '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2])
+                if ARGV[3] ~= '-1' then
+                  redis.call('EXPIRE', KEYS[1], ARGV[3])
+                else
+                  redis.call('PERSIST', KEYS[1])
+                end
+                return 1";
+
+    public const string SET_MULTIPLE_EXPIRATION_SCRIPT = @"
+                local count = 0
+                for i, key in ipairs(KEYS) do
+                  redis.call('HSET', key, '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2])
+                  if ARGV[3] ~= '-1' then
+                    redis.call('EXPIRE', key, ARGV[3])
+                  else
+                    redis.call('PERSIST', key)
+                  end
+                  count = count + 1
+                end
+                return count";
 }

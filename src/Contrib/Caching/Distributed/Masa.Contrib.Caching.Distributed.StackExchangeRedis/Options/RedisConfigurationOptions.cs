@@ -81,4 +81,28 @@ public class RedisConfigurationOptions : CacheEntryOptions
         AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow;
         SlidingExpiration = options.SlidingExpiration;
     }
+
+    public static implicit operator ConfigurationOptions(RedisConfigurationOptions options)
+    {
+        var configurationOptions = new ConfigurationOptions
+        {
+            AbortOnConnectFail = options.AbortOnConnectFail,
+            AllowAdmin = options.AllowAdmin,
+            ChannelPrefix = options.ChannelPrefix,
+            ClientName = options.ClientName,
+            ConnectRetry = options.ConnectRetry,
+            ConnectTimeout = options.ConnectTimeout,
+            DefaultDatabase = options.DefaultDatabase,
+            Password = options.Password,
+            Proxy = options.Proxy,
+            Ssl = options.Ssl,
+            SyncTimeout = options.SyncTimeout
+        };
+
+        foreach (var server in options.Servers)
+        {
+            configurationOptions.EndPoints.Add(server.Host, server.Port);
+        }
+        return configurationOptions;
+    }
 }

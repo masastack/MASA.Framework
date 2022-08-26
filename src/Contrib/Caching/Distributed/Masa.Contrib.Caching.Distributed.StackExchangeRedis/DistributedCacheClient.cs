@@ -3,24 +3,27 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-/// <summary>
-/// todo: waiting for optimization
-/// </summary>
 public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCacheClient
 {
-    private readonly SubscribeConfigurationOptions _subscribeConfigurationOptions;
+    private SubscribeConfigurationOptions _subscribeConfigurationOptions;
     private readonly object _locker = new();
     private readonly IList<string> _subscribeChannels = new List<string>();
 
     public DistributedCacheClient(
-        ConfigurationOptions options,
-        JsonSerializerOptions jsonSerializerOptions,
-        SubscribeConfigurationOptions? subscribeConfigurationOptions = null,
-        CacheEntryOptions? cacheEntryOptions = null)
-        : base(options, jsonSerializerOptions, cacheEntryOptions)
+        IOptionsMonitor<DistributedRedisCacheOptions> defaultOptionsMonitor,
+        DistributedRedisCacheOptions? cacheOptions)
+        : base(defaultOptionsMonitor, cacheOptions)
     {
-        _subscribeConfigurationOptions = subscribeConfigurationOptions ?? SubscribeConfigurationOptions.Default;
+        defaultOptionsMonitor.OnChange(option =>
+        {
+            if (cacheOptions == null || cacheOptions.SubscribeConfigurationOptions == null)
+                _subscribeConfigurationOptions = option.SubscribeConfigurationOptions!;
+        });
+        _subscribeConfigurationOptions = cacheOptions?.SubscribeConfigurationOptions ??
+            defaultOptionsMonitor.CurrentValue.SubscribeConfigurationOptions!;
     }
+
+    #region Get
 
     public T? Get<T>(string key)
     {
@@ -75,14 +78,22 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        return GetListAndRefresh<T>(keys);
+        var list = GetList(keys, true);
+
+        RefreshCore(list);
+
+        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
     public async Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        return await GetAndRefreshAsync<T>(keys);
+        var list = await GetListAsync(keys, true);
+
+        await RefreshCoreAsync(list);
+
+        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
     public T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter)
@@ -110,6 +121,57 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
             await SetAsync(key, cacheEntry.Value, cacheEntry);
         });
     }
+
+    /// <summary>
+    /// Only get the key, do not trigger the update expiration time policy
+    /// </summary>
+    /// <param name="keyPattern">keyPattern, such as: app_*</param>
+    /// <returns></returns>
+    public List<string> GetKeys(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
+        var cacheResult = Db.ScriptEvaluate(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull)
+            return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    /// <summary>
+    /// Only get the key, do not trigger the update expiration time policy
+    /// </summary>
+    /// <param name="keyPattern">keyPattern, such as: app_*</param>
+    /// <returns></returns>
+    public async Task<List<string>> GetKeysAsync(string keyPattern)
+    {
+        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
+        var cacheResult = await Db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
+        if (cacheResult.IsNull) return new List<string>();
+
+        return ((string[])cacheResult).ToList();
+    }
+
+    public List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern)
+    {
+        var list = GetListByKeyPattern(keyPattern);
+
+        RefreshCore(list);
+
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
+    }
+
+    public async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern)
+    {
+        var list = await GetListByKeyPatternAsync(keyPattern);
+
+        await RefreshCoreAsync(list);
+
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
+    }
+
+    #endregion
+
+    #region Set
 
     public void Set<T>(string key, T value, DateTimeOffset absoluteExpiration)
         => Set(key, value, new CacheEntryOptions<T>(absoluteExpiration));
@@ -192,11 +254,27 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         );
     }
 
-    public void Refresh(params string[] keys)
-        => Db.ScriptEvaluate(Const.GET_EXPIRATION_VALUE_SCRIPT, keys.Select(key => (RedisKey)key).ToArray());
+    #endregion
 
-    public Task RefreshAsync(params string[] keys)
-        => Db.ScriptEvaluateAsync(Const.GET_EXPIRATION_VALUE_SCRIPT, keys.Select(key => (RedisKey)key).ToArray());
+    #region Refresh
+
+    public void Refresh(params string[] keys)
+    {
+        var list = GetList(keys, false);
+
+        RefreshCore(list);
+    }
+
+    public async Task RefreshAsync(params string[] keys)
+    {
+        var list = await GetListAsync(keys, false);
+
+        await RefreshCoreAsync(list);
+    }
+
+    #endregion
+
+    #region Remove
 
     public void Remove(params string[] keys)
     {
@@ -212,6 +290,10 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return Db.KeyDeleteAsync(keys.Select(key => (RedisKey)key).ToArray());
     }
 
+    #endregion
+
+    #region Exist
+
     public bool Exists(string key)
     {
         CheckIsNullOrWhiteSpace(key, nameof(key));
@@ -226,52 +308,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return Db.KeyExistsAsync(key);
     }
 
-    /// <summary>
-    /// Only get the key, do not trigger the update expiration time policy
-    /// </summary>
-    /// <param name="keyPattern">keyPattern, such as: app_*</param>
-    /// <returns></returns>
-    public List<string> GetKeys(string keyPattern)
-    {
-        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
-        var cacheResult = Db.ScriptEvaluate(prepared, new { pattern = keyPattern });
-        if (cacheResult.IsNull)
-            return new List<string>();
+    #endregion
 
-        return ((string[])cacheResult).ToList();
-    }
-
-    /// <summary>
-    /// Only get the key, do not trigger the update expiration time policy
-    /// </summary>
-    /// <param name="keyPattern">keyPattern, such as: app_*</param>
-    /// <returns></returns>
-    public async Task<List<string>> GetKeysAsync(string keyPattern)
-    {
-        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
-        var cacheResult = await Db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
-        if (cacheResult.IsNull) return new List<string>();
-
-        return ((string[])cacheResult).ToList();
-    }
-
-    public List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern)
-    {
-        var list = GetListByKeyPattern(keyPattern);
-
-        RefreshCore(list);
-
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
-    }
-
-    public async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern)
-    {
-        var list = await GetListByKeyPatternAsync(keyPattern);
-
-        await RefreshCoreAsync(list);
-
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
-    }
+    #region PubSub
 
     public void Publish(string channel, Action<PublishOptions> setup)
     {
@@ -306,6 +345,10 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         });
     }
 
+    #endregion
+
+    #region Hash
+
     public Task<long> HashIncrementAsync(string key, long value = 1)
     {
         if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
@@ -313,13 +356,15 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return Db.HashIncrementAsync(key, Const.DATA_KEY, value);
     }
 
-    public async Task<long> HashDecrementAsync(string key, long value = 1)
+    public async Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0L)
     {
         if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
 
+        if (defaultMinVal < 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than or equal to 0");
+
         var script = $@"
 local result = redis.call('HGET', KEYS[1], KEYS[2])
-if tonumber(result) >= {value} then
+if tonumber(result) > {defaultMinVal} then
     result = redis.call('HINCRBY', KEYS[1], KEYS[2], {0 - value})
     return result
 else
@@ -329,6 +374,10 @@ end";
 
         return result;
     }
+
+    #endregion
+
+    #region Expire
 
     public bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpiration));
@@ -344,26 +393,73 @@ end";
 
     public bool KeyExpire(string key, CacheEntryOptions? options = null)
     {
-        var cacheEntryOptions = GetCacheEntryOptions(options);
-        if (cacheEntryOptions.SlidingExpiration == null)
-        {
-            var dateTimeOffset = cacheEntryOptions.GetAbsoluteExpiration(DateTimeOffset.Now);
-            Db.KeyExpire(key, dateTimeOffset?.Offset);
-        }
-        return cacheEntryOptions.RefreshCore(key, async (k, expr) => await Db.KeyExpireAsync(k, expr).ConfigureAwait(false));
+        CheckIsNullOrWhiteSpace(key, nameof(key));
+
+        var result = Db.ScriptEvaluate(
+            Const.SET_EXPIRATION_SCRIPT,
+            new RedisKey[] { key },
+            GetRedisValues(options)
+        );
+        if (result.IsNull)
+            return false;
+
+        return (long?)result == 1;
     }
 
-    public Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
+    public bool KeyExpire(string[] keys, CacheEntryOptions? options = null)
     {
-        var cacheEntryOptions = GetCacheEntryOptions(options);
-        if (cacheEntryOptions.SlidingExpiration == null)
-        {
-            var dateTimeOffset = cacheEntryOptions.GetAbsoluteExpiration(DateTimeOffset.Now);
-            Db.KeyExpire(key, dateTimeOffset?.Offset);
-        }
-        return Task.FromResult(
-            cacheEntryOptions.RefreshCore(key, async (k, expr) => await Db.KeyExpireAsync(k, expr).ConfigureAwait(false)));
+        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+
+        var redisKeys = keys.Select(key => (RedisKey)key).ToArray();
+
+        var result = Db.ScriptEvaluate(
+            Const.SET_MULTIPLE_SCRIPT,
+            redisKeys,
+            GetRedisValues(GetCacheEntryOptions(options))
+        );
+
+        if (result.IsNull)
+            return false;
+
+        return (long?)result == 1;
     }
+
+    public async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
+    {
+        CheckIsNullOrWhiteSpace(key, nameof(key));
+
+        var result = await Db.ScriptEvaluateAsync(
+            Const.SET_EXPIRATION_SCRIPT,
+            new RedisKey[] { key },
+            GetRedisValues(options)
+        );
+        if (result.IsNull)
+            return false;
+
+        return (long?)result == 1;
+    }
+
+    public async Task<bool> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+
+        var redisKeys = keys.Select(key => (RedisKey)key).ToArray();
+
+        var result = await Db.ScriptEvaluateAsync(
+            Const.SET_MULTIPLE_SCRIPT,
+            redisKeys,
+            GetRedisValues(GetCacheEntryOptions(options))
+        );
+
+        if (result.IsNull)
+            return false;
+
+        return (long?)result == 1;
+    }
+
+    #endregion
+
+    #region private methods
 
     private RedisValue[] GetRedisValues(CacheEntryOptions? options, Func<RedisValue[]>? func = null)
     {
@@ -383,33 +479,15 @@ end";
         return redisValues.ToArray();
     }
 
-    private List<T?> GetListAndRefresh<T>(string[] keys, CommandFlags flags = CommandFlags.None)
-    {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
-
-        var list = GetList(keys);
-
-        RefreshCore(list);
-
-        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
-    }
-
-    private async Task<List<T?>> GetAndRefreshAsync<T>(string[] keys, CommandFlags flags = CommandFlags.None)
-    {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
-
-        var list = await GetListAsync(keys);
-
-        await RefreshCoreAsync(list);
-
-        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
-    }
-
     private T? GetAndRefresh<T>(string key, Action? action = null, CommandFlags flags = CommandFlags.None)
     {
-        var results = Db.HashMemberGet(key, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY, Const.DATA_KEY);
+        var results = Db.HashMemberGet(
+            key,
+            Const.ABSOLUTE_EXPIRATION_KEY,
+            Const.SLIDING_EXPIRATION_KEY,
+            Const.DATA_KEY);
 
-        var result = GetAndRefreshByArrayRedisValue<T>(results, key);
+        var result = GetByArrayRedisValue<T>(results, key);
         if (result.Value != null)
             Refresh(result.DataCacheOptions, flags);
         else if (action != null)
@@ -426,7 +504,7 @@ end";
             Const.SLIDING_EXPIRATION_KEY,
             Const.DATA_KEY);
 
-        var result = GetAndRefreshByArrayRedisValue<T>(results, key);
+        var result = GetByArrayRedisValue<T>(results, key);
 
         if (result.Value != null)
             await RefreshAsync(result.DataCacheOptions, flags);
@@ -436,7 +514,7 @@ end";
         return result.Value;
     }
 
-    private (T? Value, DataCacheOptions DataCacheOptions) GetAndRefreshByArrayRedisValue<T>(
+    private (T? Value, DataCacheOptions DataCacheOptions) GetByArrayRedisValue<T>(
         RedisValue[] redisValue,
         string key)
     {
@@ -445,9 +523,11 @@ end";
         return (value, options);
     }
 
+    #region Refresh
+
     private void Refresh(DataCacheOptions dataCacheOptions, CommandFlags flags)
     {
-        var result = dataCacheOptions.Refresh();
+        var result = dataCacheOptions.GetExpiration();
         if (result.State) Db.KeyExpire(dataCacheOptions.Key, result.Expire, flags);
     }
 
@@ -456,9 +536,11 @@ end";
         CommandFlags flags,
         CancellationToken token = default)
     {
-        var result = dataCacheOptions.Refresh(token);
+        var result = dataCacheOptions.GetExpiration(null, token);
         if (result.State) await Db.KeyExpireAsync(dataCacheOptions.Key, result.Expire, flags).ConfigureAwait(false);
     }
+
+    #endregion
 
     private string FormatSubscribeChannel<T>(string key) =>
         SubscribeHelper.FormatSubscribeChannel<T>(key,
@@ -492,4 +574,7 @@ end";
             _subscribeChannels.Add(channel);
         }
     }
+
+    #endregion
+
 }

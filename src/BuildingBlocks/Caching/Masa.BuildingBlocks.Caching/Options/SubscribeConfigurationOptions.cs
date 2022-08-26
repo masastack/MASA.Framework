@@ -7,10 +7,5 @@ public class SubscribeConfigurationOptions
 {
     public SubscribeKeyTypes SubscribeKeyTypes { get; set; }
 
-    public string SubscribeKeyPrefix { get; set; }
-
-    public static SubscribeConfigurationOptions Default = new()
-    {
-        SubscribeKeyTypes = SubscribeKeyTypes.ValueTypeFullName
-    };
+    public string SubscribeKeyPrefix { get; set; } = string.Empty;
 }

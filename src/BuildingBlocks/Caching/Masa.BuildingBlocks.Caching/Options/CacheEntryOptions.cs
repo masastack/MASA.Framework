@@ -10,11 +10,13 @@ public class CacheEntryOptions
 
     /// <summary>
     /// Gets or sets an absolute expiration date for the cache entry.
+    /// When coexisting with AbsoluteExpirationRelativeToNow, use AbsoluteExpirationRelativeToNow first
     /// </summary>
     public DateTimeOffset? AbsoluteExpiration { get; set; }
 
     /// <summary>
     /// Gets or sets an absolute expiration time, relative to now.
+    /// When coexisting with AbsoluteExpiration, use AbsoluteExpirationRelativeToNow first
     /// </summary>
     public TimeSpan? AbsoluteExpirationRelativeToNow
     {
@@ -52,16 +54,6 @@ public class CacheEntryOptions
             _slidingExpiration = value;
         }
     }
-
-    /// <summary>
-    /// The default value does not expire
-    /// </summary>
-    public static CacheEntryOptions Default = new()
-    {
-        AbsoluteExpiration = null,
-        AbsoluteExpirationRelativeToNow = null,
-        SlidingExpiration = null
-    };
 
     public CacheEntryOptions() { }
 

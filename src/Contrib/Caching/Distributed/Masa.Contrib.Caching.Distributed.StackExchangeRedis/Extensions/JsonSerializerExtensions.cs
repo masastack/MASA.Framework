@@ -32,7 +32,7 @@ public static class JsonSerializerExtensions
     /// An explicit cast or assignment to other types is supported provided there is a custom converter for that type.
     /// When deserializing <see cref="JsonTokenType.Null"/>, <see langword="null"/> is returned.
     /// </remarks>
-    public static void EnableDynamicTypes(this JsonSerializerOptions options)
+    public static JsonSerializerOptions EnableDynamicTypes(this JsonSerializerOptions options)
     {
         if (options == null)
         {
@@ -40,5 +40,6 @@ public static class JsonSerializerExtensions
         }
 
         options.Converters.Add(new DynamicObjectConverter());
+        return options;
     }
 }

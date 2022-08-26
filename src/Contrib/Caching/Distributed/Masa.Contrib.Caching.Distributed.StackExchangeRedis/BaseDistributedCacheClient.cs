@@ -5,22 +5,34 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public abstract class BaseDistributedCacheClient
 {
-    protected readonly IConnectionMultiplexer? Connection;
-    protected readonly ISubscriber Subscriber;
-    protected readonly IDatabase Db;
-    protected readonly JsonSerializerOptions JsonSerializerOptions;
-    protected readonly CacheEntryOptions? CacheEntryOptions;
+    protected ISubscriber Subscriber;
+    protected IDatabase Db;
+    protected JsonSerializerOptions JsonSerializerOptions;
+    private CacheEntryOptions _cacheEntryOptions;
 
-    protected BaseDistributedCacheClient(
-        ConfigurationOptions options,
-        JsonSerializerOptions jsonSerializerOptions,
-        CacheEntryOptions? cacheEntryOptions)
+    protected BaseDistributedCacheClient(IOptionsMonitor<DistributedRedisCacheOptions> defaultOptionsMonitor,
+        DistributedRedisCacheOptions? cacheOptions)
     {
-        Connection = ConnectionMultiplexer.Connect(options);
-        Db = Connection.GetDatabase();
-        Subscriber = Connection.GetSubscriber();
-        JsonSerializerOptions = jsonSerializerOptions;
-        CacheEntryOptions = cacheEntryOptions;
+        IConnectionMultiplexer? connection =
+            ConnectionMultiplexer.Connect(cacheOptions?.Options ?? defaultOptionsMonitor.CurrentValue.Options!);
+        defaultOptionsMonitor.OnChange(opt =>
+        {
+            if (cacheOptions == null || cacheOptions.Options == null)
+            {
+                connection = ConnectionMultiplexer.Connect(opt.Options!);
+                Db = connection.GetDatabase();
+                Subscriber = connection.GetSubscriber();
+            }
+            if (cacheOptions?.JsonSerializerOptions == null)
+                JsonSerializerOptions = opt.JsonSerializerOptions!;
+
+            if (cacheOptions?.JsonSerializerOptions == null)
+                _cacheEntryOptions = opt.CacheEntryOptions!;
+        });
+        Db = connection.GetDatabase();
+        Subscriber = connection.GetSubscriber();
+        JsonSerializerOptions = cacheOptions?.JsonSerializerOptions ?? defaultOptionsMonitor.CurrentValue.JsonSerializerOptions!;
+        _cacheEntryOptions = cacheOptions?.CacheEntryOptions ?? defaultOptionsMonitor.CurrentValue.CacheEntryOptions!;
     }
 
     protected T? ConvertToValue<T>(RedisValue value)
@@ -31,22 +43,14 @@ public abstract class BaseDistributedCacheClient
         return default;
     }
 
-    public static void CheckIsNullOrWhiteSpace(string value, string name)
+    protected static void CheckIsNullOrWhiteSpace(string value, string name)
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new ArgumentNullException(name);
     }
 
-    public CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
-    {
-        if (options != null)
-            return options;
-
-        if (CacheEntryOptions != null)
-            return CacheEntryOptions;
-
-        return CacheEntryOptions.Default;
-    }
+    protected CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
+        => options ?? _cacheEntryOptions;
 
     protected void PublishCore(string channel, Action<PublishOptions> setup, Func<string, string, Task> func)
     {
@@ -64,21 +68,6 @@ public abstract class BaseDistributedCacheClient
         func.Invoke(channel, message);
     }
 
-    internal async Task RefreshCoreAsync(
-        List<DataCacheOptions> options,
-        CancellationToken token = default)
-    {
-        var awaitRefreshOptions = GetKeyAndExpireList(options, token);
-        if (awaitRefreshOptions.Count > 0)
-        {
-            string script = Const.SET_EXPIRE_SCRIPT.Replace("@data", GetSetExpireArrayOnLua(awaitRefreshOptions));
-            await Db.ScriptEvaluateAsync(LuaScript.Prepare(script), new
-            {
-                length = awaitRefreshOptions.Count * 2
-            });
-        }
-    }
-
     internal void RefreshCore(List<DataCacheOptions> options, CancellationToken token = default)
     {
         var awaitRefreshOptions = GetKeyAndExpireList(options, token);
@@ -93,41 +82,19 @@ public abstract class BaseDistributedCacheClient
         }
     }
 
-    internal List<(string Key, DateTimeOffset? AbsExpr, TimeSpan? SldExpr)> GetExpirationList(params string[] keys)
+    internal async Task RefreshCoreAsync(
+        List<DataCacheOptions> options,
+        CancellationToken token = default)
     {
-        var arrayRedisResult = Db.ScriptEvaluate(
-            LuaScript.Prepare(
-                Const.GET_EXPIRATION_VALUE_SCRIPT.Replace("@keys", "{" + string.Join(',', keys.Select(key => $"'{key}'")) + "}")), new
-            {
-                absolute = Const.ABSOLUTE_EXPIRATION_KEY,
-                sliding = Const.SLIDING_EXPIRATION_KEY
-            });
-        return GetExpirationListCore(arrayRedisResult.ToDictionary());
-    }
-
-    internal async Task<List<(string Key, DateTimeOffset? AbsExpr, TimeSpan? SldExpr)>> GetExpirationListAsync(params string[] keys)
-    {
-        var arrayRedisResult = await Db.ScriptEvaluateAsync(
-            LuaScript.Prepare(
-                Const.GET_EXPIRATION_VALUE_SCRIPT.Replace("@keys", "{" + string.Join(',', keys.Select(key => $"'{key}'")) + "}")), new
-            {
-                absolute = Const.ABSOLUTE_EXPIRATION_KEY,
-                sliding = Const.SLIDING_EXPIRATION_KEY
-            });
-        return GetExpirationListCore(arrayRedisResult.ToDictionary());
-    }
-
-    private List<(string Key, DateTimeOffset? AbsExpr, TimeSpan? SldExpr)> GetExpirationListCore(
-        Dictionary<string, RedisResult> arrayRedisResult)
-    {
-        List<(string Key, DateTimeOffset? AbsExpr, TimeSpan? SldExpr)> list = new();
-        foreach (var redisResult in arrayRedisResult)
+        var awaitRefreshOptions = GetKeyAndExpireList(options, token);
+        if (awaitRefreshOptions.Count > 0)
         {
-            var byteArray = (RedisValue[])redisResult.Value;
-            var options = MapMetadataByAutomatic(redisResult.Key, byteArray);
-            list.Add((redisResult.Key, options.AbsExpr, options.SldExpr));
+            string script = Const.SET_EXPIRE_SCRIPT.Replace("@data", GetSetExpireArrayOnLua(awaitRefreshOptions));
+            await Db.ScriptEvaluateAsync(LuaScript.Prepare(script), new
+            {
+                length = awaitRefreshOptions.Count * 2
+            });
         }
-        return list;
     }
 
     internal List<DataCacheOptions> GetListByKeyPattern(string keyPattern)
@@ -162,23 +129,23 @@ public abstract class BaseDistributedCacheClient
         return list;
     }
 
-    internal List<DataCacheOptions> GetList(string[] keys)
+    internal List<DataCacheOptions> GetList(string[] keys, bool getData)
     {
+        string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = Db
-            .ScriptEvaluate(LuaScript.Prepare(GetListScript(keys)))
+            .ScriptEvaluate(script, keys.Select(key => (RedisKey)key).ToArray())
             .ToDictionary();
         return GetListByArrayRedisResult(arrayRedisResult);
     }
 
-    internal async Task<List<DataCacheOptions>> GetListAsync(string[] keys)
+    internal async Task<List<DataCacheOptions>> GetListAsync(string[] keys, bool getData)
     {
+        string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = (await Db
-            .ScriptEvaluateAsync(LuaScript.Prepare(GetListScript(keys)))).ToDictionary();
+                .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()))
+            .ToDictionary();
         return GetListByArrayRedisResult(arrayRedisResult);
     }
-
-    private string GetListScript(string[] keys)
-        => Const.GET_LIST_SCRIPT.Replace("@keys", "{" + string.Join(',', keys.Select(key => $"'{key}'")) + "}");
 
     private List<DataCacheOptions> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult)
     {
@@ -197,19 +164,14 @@ public abstract class BaseDistributedCacheClient
     {
         List<KeyValuePair<string, TimeSpan?>> list = new();
 
-        var cacheEntryOptionsList = options.Select(opt => new KeyValuePair<string, CacheEntryOptions>(opt.Key, new CacheEntryOptions()
+        DateTimeOffset? creationTime = DateTimeOffset.UtcNow;
+        foreach (var option in options)
         {
-            SlidingExpiration = opt.SldExpr,
-            AbsoluteExpiration = opt.AbsExpr
-        }));
-
-        foreach (var item in cacheEntryOptionsList)
-        {
-            item.Value.RefreshCore(item.Key, (k, expr) =>
+            var res = option.GetExpiration(creationTime, token);
+            if (res.State)
             {
-                list.Add(new KeyValuePair<string, TimeSpan?>(k, expr));
-                return Task.FromResult(false);
-            }, token);
+                list.Add(new KeyValuePair<string, TimeSpan?>(option.Key, res.Expire));
+            }
         }
         return list;
     }
@@ -218,23 +180,21 @@ public abstract class BaseDistributedCacheClient
         string key,
         RedisValue[] results)
     {
-        DateTimeOffset? absoluteExpiration = null;
-        TimeSpan? slidingExpiration = null;
         RedisValue data = results.Length > 2 ? results[2] : RedisValue.Null;
         var absoluteExpirationTicks = (long?)results[0];
-        if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != Const.DEADLINE_LASTING)
-            absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+        if (absoluteExpirationTicks is null or Const.DEADLINE_LASTING)
+            absoluteExpirationTicks = null;
 
         var slidingExpirationTicks = (long?)results[1];
-        if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != Const.DEADLINE_LASTING)
-            slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
-        return new DataCacheOptions(key, absoluteExpiration, slidingExpiration, data);
+        if (slidingExpirationTicks is null or Const.DEADLINE_LASTING)
+            slidingExpirationTicks = null;
+        return new DataCacheOptions(key, absoluteExpirationTicks, slidingExpirationTicks, data);
     }
 
     private static DataCacheOptions MapMetadataByAutomatic(string key, RedisValue[] results)
     {
-        DateTimeOffset? absoluteExpiration = null;
-        TimeSpan? slidingExpiration = null;
+        long? absoluteExpiration = null;
+        long? slidingExpiration = null;
         RedisValue data = RedisValue.Null;
 
         for (int index = 0; index < results.Length; index += 2)
@@ -244,7 +204,7 @@ public abstract class BaseDistributedCacheClient
                 var absoluteExpirationTicks = (long?)results[index + 1];
                 if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != Const.DEADLINE_LASTING)
                 {
-                    absoluteExpiration = new DateTimeOffset(absoluteExpirationTicks.Value, TimeSpan.Zero);
+                    absoluteExpiration = absoluteExpirationTicks.Value;
                 }
             }
             else if (results[index] == Const.SLIDING_EXPIRATION_KEY)
@@ -252,7 +212,7 @@ public abstract class BaseDistributedCacheClient
                 var slidingExpirationTicks = (long?)results[index + 1];
                 if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != Const.DEADLINE_LASTING)
                 {
-                    slidingExpiration = new TimeSpan(slidingExpirationTicks.Value);
+                    slidingExpiration = slidingExpirationTicks;
                 }
             }
             else if (results[index] == Const.DATA_KEY)

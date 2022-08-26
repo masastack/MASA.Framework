@@ -3,10 +3,10 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class CacheRelationOptions<TService> : MasaRelationOptions<TService>
+public class CacheRelationOptions<TService> : MasaRelationOptions<TService>
     where TService : class
 {
-    protected CacheRelationOptions(string name, Func<IServiceProvider, TService> func) : base(name)
+    public CacheRelationOptions(string name, Func<IServiceProvider, TService> func) : base(name)
     {
         Func = func;
     }

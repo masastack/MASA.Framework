@@ -11,7 +11,8 @@ public class DistributedCacheClientTest : TestBase
     [TestInitialize]
     public void Initialize()
     {
-        _distributedCacheClient = new DistributedCacheClient(GetConfigurationOptions(), GetJsonSerializerOptions());
+        //todo: waiting for initialization
+        // _distributedCacheClient = new DistributedCacheClient(GetConfigurationOptions(), GetJsonSerializerOptions());
 
         _distributedCacheClient.Set("test", 1);
         _distributedCacheClient.Set("test2", 2);

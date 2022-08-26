@@ -31,7 +31,14 @@ public interface IDistributedCacheClient : ICacheClient
 
     Task<long> HashIncrementAsync(string key, long value = 1L);
 
-    Task<long> HashDecrementAsync(string key, long value = 1L);
+    /// <summary>
+    /// Descending Hash
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">decrement increment, must be greater than 0</param>
+    /// <param name="defaultMinVal">critical value, must be greater than or equal to 0</param>
+    /// <returns></returns>
+    Task<long> HashDecrementAsync(string key, long value = 1L, long defaultMinVal = 0L);
 
     bool KeyExpire(string key, DateTimeOffset absoluteExpiration);
 
@@ -43,5 +50,9 @@ public interface IDistributedCacheClient : ICacheClient
 
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
+    bool KeyExpire(string[] keys, CacheEntryOptions? options = null);
+
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
+
+    Task<bool> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null);
 }
