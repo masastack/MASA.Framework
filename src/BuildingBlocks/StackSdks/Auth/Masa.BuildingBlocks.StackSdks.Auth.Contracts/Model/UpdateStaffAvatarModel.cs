@@ -7,7 +7,11 @@ public class UpdateStaffAvatarModel
 {
     public Guid UserId { get; set; }
 
-    public string Avatar { get; set; }
+    public string Avatar { get; set; } = "";
+
+    public UpdateStaffAvatarModel()
+    {
+    }
 
     public UpdateStaffAvatarModel(Guid userId, string avatar)
     {

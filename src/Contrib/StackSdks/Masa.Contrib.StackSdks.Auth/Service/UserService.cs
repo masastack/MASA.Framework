@@ -205,13 +205,13 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
     }
 
-    public async Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel model)
+    public async Task SendMsgCodeForVerifyPhoneNumberAsync(SendMsgCodeModel model)
     {
         if (model.UserId == Guid.Empty)
         {
             model.UserId = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/user/sendMsgCodeForVerification";
+        var requestUri = $"api/user/sendMsgCodeForVerifyPhoneNumber";
         await _caller.PostAsync(requestUri, model);
     }
 
@@ -225,7 +225,7 @@ public class UserService : IUserService
         return await _caller.PostAsync<bool>(requestUri, model);
     }
 
-    public async Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel model)
+    public async Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeModel model)
     {
         if (model.UserId == Guid.Empty)
         {

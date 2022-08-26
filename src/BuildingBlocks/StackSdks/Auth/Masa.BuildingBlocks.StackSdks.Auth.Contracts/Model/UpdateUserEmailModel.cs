@@ -3,19 +3,20 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpdateUserAvatarModel
+public class UpdateUserEmailModel
 {
     public Guid Id { get; set; }
 
-    public string Avatar { get; set; } = "";
+    public string Email { get; set; } = "";
 
-    public UpdateUserAvatarModel()
+    public UpdateUserEmailModel()
     {
+
     }
 
-    public UpdateUserAvatarModel(Guid id, string avatar)
+    public UpdateUserEmailModel(Guid id, string email)
     {
         Id = id;
-        Avatar = avatar;
+        Email = email;
     }
 }
