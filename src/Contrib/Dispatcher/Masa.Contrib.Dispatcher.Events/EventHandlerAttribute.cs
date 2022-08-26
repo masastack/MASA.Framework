@@ -112,10 +112,6 @@ public class EventHandlerAttribute : Attribute
 
     internal TaskInvokeDelegate? InvokeDelegate { get; private set; }
 
-    private object Instance { get; set; } = default!;
-
-    private object? EventHandler { get; set; }
-
     internal bool IsEventHandler => FailureLevels == FailureLevels.Throw || FailureLevels == FailureLevels.ThrowAndCancel;
 
     internal void BuildExpression()
@@ -127,8 +123,7 @@ public class EventHandlerAttribute : Attribute
     {
         if (InvokeDelegate != null)
         {
-            Instance = serviceProvider.GetRequiredService(InstanceType);
-            await InvokeDelegate.Invoke(Instance, @event);
+            await InvokeDelegate.Invoke(serviceProvider.GetRequiredService(InstanceType), @event);
         }
         else
         {
@@ -140,23 +135,15 @@ public class EventHandlerAttribute : Attribute
     {
         if (!IsCancel)
         {
-            if (EventHandler == null)
-            {
-                var handlers = serviceProvider.GetServices<IEventHandler<TEvent>>();
-                var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
-                EventHandler = handler;
-            }
-            await ((IEventHandler<TEvent>)EventHandler).HandleAsync(@event);
+            var handlers = serviceProvider.GetServices<IEventHandler<TEvent>>();
+            var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
+            await handler.HandleAsync(@event);
         }
         else
         {
-            if (EventHandler == null)
-            {
-                var handlers = serviceProvider.GetServices<ISagaEventHandler<TEvent>>();
-                var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
-                EventHandler = handler;
-            }
-            await ((ISagaEventHandler<TEvent>)EventHandler).CancelAsync(@event);
+            var handlers = serviceProvider.GetServices<ISagaEventHandler<TEvent>>();
+            var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
+            await handler.CancelAsync(@event);
         }
     }
 

@@ -81,4 +81,35 @@ public class TestDispatcher : TestBase
             Price = 9.9m,
         });
     }
+
+    [TestMethod]
+    public async Task TestEventBusOnConcurrencyAsync()
+    {
+        var serviceProvider = ServiceProvider;
+        var @event = new RegisterUserEvent()
+        {
+            Name = Guid.NewGuid().ToString(),
+            Age = 18
+        };
+        var tasks = new ConcurrentBag<Task>();
+
+        var testCount = 1000L;
+        Parallel.For(1L, testCount + 1, i =>
+        {
+            tasks.Add(AddUserAsync(serviceProvider, @event));
+        });
+
+        await Task.WhenAll(tasks);
+
+        var customizeDbContext = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<CustomDbContext>();
+        var count = customizeDbContext.Set<User>().Count();
+        Assert.IsTrue(count == testCount);
+    }
+
+    private async Task AddUserAsync(IServiceProvider serviceProvider, RegisterUserEvent @event)
+    {
+        await using var scope = serviceProvider.CreateAsyncScope();
+        var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+        await eventBus.PublishAsync(@event);
+    }
 }
