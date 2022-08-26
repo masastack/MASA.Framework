@@ -60,7 +60,7 @@ internal class DispatcherBase
 
             strategyOptions.SetStrategy(dispatchHandler);
 
-            await executionStrategy.ExecuteAsync(strategyOptions, @event, async (@event) =>
+            await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
                 Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.GetEventId());
                 await dispatchHandler.ExcuteAction(serviceProvider, @event);
