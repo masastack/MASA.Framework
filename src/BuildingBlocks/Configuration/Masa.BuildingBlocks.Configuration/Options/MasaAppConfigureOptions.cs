@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Configuration.Options;
@@ -11,12 +11,18 @@ public class MasaAppConfigureOptions
 
     public string Cluster { get => GetValue(nameof(Cluster)); set => Data[nameof(Cluster)] = value; }
 
-    public Dictionary<string, string> Data { get; set; } = new();
+    private Dictionary<string, string> Data { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
-    private string GetValue(string key)
+    public int Length => Data.Count;
+
+    public string GetValue(string key) => GetValue(key, () => string.Empty);
+
+    public string GetValue(string key, Func<string> defaultFunc)
     {
         if (Data.ContainsKey(key)) return Data[key];
 
-        return string.Empty;
+        return defaultFunc.Invoke();
     }
+
+    public void TryAdd(string key, string value) => Data.TryAdd(key, value);
 }

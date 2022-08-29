@@ -1,71 +1,63 @@
 ﻿﻿中 | [EN](README.md)
 
-[![codecov](https://codecov.io/gh/masastack/MASA.Contrib/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Contrib)
+[![codecov](https://codecov.io/gh/masastack/MASA.Framework/branch/main/graph/badge.svg?token=87TPNHUHW2)](https://codecov.io/gh/masastack/MASA.Framework)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=masastack_MASA.Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=masastack_MASA.Framework)
 
-# MASA.Contrib
 
-MASA.Contrib是基于[MASA.BuildingBlocks](https://github.com/masastack/MASA.BuildingBlocks)提供开放, 社区驱动的可重用组件，用于构建网格应用程序。这些组件将被[MASA Stack](https://github.com/masastack)和[MASA Labs](https://github.com/masalabs)等项目使用。
+
+# MASA.Framework
+
+.NET下一代微服务开发框架，提供基于分布式应用运行时--Dapr云原生最佳实践，能够快速实现分布式、微服务、DDD，SaaS等现代应用开发
+
+![Framework](https://s2.loli.net/2022/08/08/ZVT7De239abvYnw.png)
+
+
+
+## 文档
+
+[https://docs.masastack.com/Framework/guide/concepts.html](https://docs.masastack.com/Framework/guide/concepts.html)
 
 
 
 ## 路线图
-* [发行说明](https://github.com/masastack/MASA.Contrib/releases)
-* [最新路线图](https://github.com/masastack/MASA.Contrib/issues/42)
+
+* [发行说明](https://github.com/masastack/MASA.Framework/releases)
+* [最新路线图](https://github.com/masastack/MASA.Framework/issues/101)
 
 
 
 ## 特性
-* AutoComplete: 使搜索更简单
-  * [ElasticSearch](./src/SearchEngine/Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch/README.zh-CN.md)
-* Configuration: 配置中心
-  * [Configuration核心、提供本地配置](./src/Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
-  * ConfigurationAPI
-    * [Dcc](./src/Configuration/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
-* [CQRS](./src/ReadWriteSplitting/Cqrs/Masa.Contrib.ReadWriteSplitting.Cqrs/README.zh-CN.md)
-* Data:
-  * [EntityFrameworkCore](./src/Data/Masa.Contrib.Data.EFCore/README.zh-CN.md)
-    * [SqlServer](./src/Data/Masa.Contrib.Data.EFCore.SqlServer/README.zh-CN.md)
-    * [Pomelo.MySql](./src/Data/Masa.Contrib.Data.EFCore.Pomelo.MySql/README.zh-CN.md): 推荐
-    * [MySql](./src/Data/Masa.Contrib.Data.EFCore.MySql/README.zh-CN.md)
-    * [Sqlite](./src/Data/Masa.Contrib.Data.EFCore.Sqlite/README.zh-CN.md)
-    * [Cosmos](./src/Data/Masa.Contrib.Data.EFCore.Cosmos/README.zh-CN.md)
-    * [InMemory](./src/Data/Masa.Contrib.Data.EFCore.InMemory/README.zh-CN.md)
-    * [Oracle](./src/Data/Masa.Contrib.Data.EFCore.Oracle/README.zh-CN.md)
-    * [PostgreSql](./src/Data/Masa.Contrib.Data.EFCore.PostgreSql/README.zh-CN.md)
-  * [Data.Contracts.EF](./src/Data/Masa.Contrib.Data.Contracts.EFCore/): 数据规约
-  * UoW: 工作单元
-    * [EFCore](./src/Data/Masa.Contrib.Data.UoW.EFCore/README.zh-CN.md)
-  * IdGenerator: 唯一ID生成器
-    * [NormalGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.NormalGuid/README.zh-CN.md): 普通的Guid
-    * [SequentialGuid](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.SequentialGuid/README.zh-CN.md): 有序的Guid
-    * [Snowflake](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake/README.zh-CN.md): Single version snowflake id
-    * [Snowflake.Distributed.Redis](./src/Data/IdGenerator/Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis/README.zh-CN.md): 分布式雪花id
-  * Mapping: 对象映射
-    * [Mapster](./src/Data/Mapping/Masa.Contrib.Data.Mapping.Mapster/README.zh-CN.md)
-* [DDD](./src/Ddd/Masa.Contrib.Ddd.Domain/README.zh-CN.md)
-  * [Ddd.Domain.Repository.EF](./src/Ddd/Masa.Contrib.Ddd.Domain.Repository.EFCore/README.zh-CN.md): 提供仓储服务
-* Dispatcher
-  * [EventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.Events/README.zh-CN.md): 进程内事件
-  * [IntegrationEventBus](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.Dapr/README.zh-CN.md): 跨进程事件
-    * [IntegrationEvents.EventLogs.EF](./src/Dispatcher/Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore/README.zh-CN.md): 为跨进程事件提供消息管理服务
-* Isolation: 支持物理隔离、逻辑隔离
-  * [UoW.EF](./src/Isolation/Masa.Contrib.Isolation.UoW.EFCore/README.zh-CN.md)
-  * [MultiEnvironment](./src/Isolation/Masa.Contrib.Isolation.MultiEnvironment/README.zh-CN.md): 多环境
-  * [MultiTenant](./src/Isolation/Masa.Contrib.Isolation.MultiTenant/README.zh-CN.md): 多租户
-* [MinimalAPI](./src/Service/Masa.Contrib.Service.MinimalAPIs/README.zh-CN.md): 支持类似Controller的API分类聚合
-* Storage: 云存储
-  * [阿里云存储](./src/Storage/Masa.Contrib.Storage.ObjectStorage.Aliyun/README.zh-CN.md)
-* 业务能力
-  * [Auth](./src/StackSdks/Masa.Contrib.StackSdks.Auth/README.zh-CN.md): 权限认证
-  * [Dcc](./src/StackSdks/Masa.Contrib.StackSdks.Dcc/README.zh-CN.md): 分布式配置中心
-  * [PM](./src/StackSdks/Masa.Contrib.StackSdks.Pm/README.zh-CN.md): 项目管理
-  * [Scheduler](./src/StackSdks/Masa.Contrib.StackSdks.Scheduler/README.zh-CN.md): 分布式调度中心
-  * [TSC](./src/StackSdks/Masa.Contrib.StackSdks.Tsc/README.zh-CN.md): 故障排除平台
+
+以下是Framework提供的构件块能力：
+
+![feature.png](https://s2.loli.net/2022/08/08/ELBPiYvSj6KwNg8.png)
 
 
-## 如何克隆
+
+## 快速使用
+
+### 必要条件
+
+* 安装[.NET SDK 6.0](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0)
+
+#### 安装模板
+
+``` shell
+dotnet new --install Masa.Template
 ```
-git clone --recursive https://github.com/masastack/MASA.Contrib.git
+
+#### 创建项目
+
+``` shell
+dotnet new masafx -o Masa.Framework.Demo
+```
+
+> 或通过Visual Studio选择`MASA Framework Project`模板进行创建
+
+#### 启动项目
+
+``` shell
+dotnet run
 ```
 
 
@@ -77,7 +69,7 @@ git clone --recursive https://github.com/masastack/MASA.Contrib.git
 3. Commit with commit message, like `feat(Isolation): Support physical isolation, logical isolation`
 4. Create Pull Request
 
-如果你希望参与贡献，欢迎 [Pull Request](https://github.com/masastack/MASA.BuildingBlocks/pulls)，或给我们 [报告 Bug](https://github.com/masastack/MASA.BuildingBlocks/issues/new) 。
+如果你希望参与贡献，欢迎 [Pull Request](https://github.com/masastack/MASA.Framework/pulls)，或给我们 [报告 Bug](https://github.com/masastack/MASA.Framework/issues/new) 。
 
 
 
@@ -85,8 +77,8 @@ git clone --recursive https://github.com/masastack/MASA.Contrib.git
 
 感谢所有为本项目做出过贡献的朋友。
 
-<a href="https://github.com/masastack/MASA.Contrib/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=masastack/MASA.Contrib" />
+<a href="https://github.com/masastack/MASA.Framework/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=masastack/MASA.Framework" />
 </a>
 
 
@@ -99,6 +91,6 @@ git clone --recursive https://github.com/masastack/MASA.Contrib.git
 
 ## ☀️ 许可声明
 
-[![MASA.Contrib](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
+[![MASA.Framework](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](/LICENSE.txt)
 
 Copyright (c) 2021-present MASA Stack

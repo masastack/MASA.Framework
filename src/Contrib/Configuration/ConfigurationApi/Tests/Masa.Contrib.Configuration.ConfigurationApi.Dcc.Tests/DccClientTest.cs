@@ -432,33 +432,140 @@ addresses:
         Assert.IsTrue(ret.Id == newBrand.Id && ret.Name == newBrand.Name);
     }
 
-    // [DataTestMethod]
-    // [DataRow("Test", "Default", "DccTest", "Brand")]
-    // public async Task GetAsyncByProperty(string environment, string cluster, string appId, string configObject)
-    // {
-    //     var brand = new List<Property>()
-    //     {
-    //         new()
-    //         {
-    //             Key = "Id",
-    //             Value = Guid.NewGuid().ToString(),
-    //         },
-    //         new()
-    //         {
-    //             Key = "Name",
-    //             Value = "Microsoft"
-    //         }
-    //     };
-    //     _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
-    //     {
-    //         ConfigFormat = ConfigFormats.Properties,
-    //         Content = brand.Serialize(_jsonSerializerOptions)
-    //     }.Serialize(_jsonSerializerOptions)).Verifiable();
-    //     var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
-    //     var ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
-    //     Assert.IsNotNull(ret);
-    //
-    //     Assert.IsTrue(ret.Id.ToString() == brand.Where(b => b.Key == "Id").Select(t => t.Value).FirstOrDefault() &&
-    //         ret.Name == brand.Where(b => b.Key == "Name").Select(t => t.Value).FirstOrDefault());
-    // }
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestSingleSection(string environment, string cluster, string appId, string configObject)
+    {
+        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
+        var brand = new Brands("Microsoft");
+        var response = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = brand.Serialize(_jsonSerializerOptions),
+            ConfigFormat = ConfigFormats.Text
+        });
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+            .Returns(() => response);
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+
+        Assert.IsTrue(
+            configurationApiClient
+                .GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
+                .GetAwaiter()
+                .GetResult().Raw == brand.Serialize(_jsonSerializerOptions));
+        trigger.Execute();
+    }
+
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
+    {
+        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Dictionary<string, string> masaDic = new Dictionary<string, string>()
+        {
+            { "Id", Guid.NewGuid().ToString() },
+            { "Name", "Masa" }
+        };
+        var response = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = masaDic.Serialize(_jsonSerializerOptions),
+            ConfigFormat = ConfigFormats.Json
+        });
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+            .Returns(() => response);
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+
+        Assert.IsTrue(
+            configurationApiClient.GetRawAsync(
+                environment,
+                cluster,
+                appId,
+                configObject,
+                It.IsAny<Action<string>>()).Result.Raw == masaDic.Serialize(_jsonSerializerOptions));
+    }
+
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
+    {
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
+
+        var response = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = "Test",
+            ConfigFormat = ConfigFormats.Text
+        });
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+            .Returns(() => response);
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+
+        Assert.IsTrue(configurationApiClient.GetRawAsync(
+            environment,
+            cluster,
+            appId,
+            configObject,
+            It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == "Test");
+    }
+
+    [DataTestMethod]
+    [DataRow("Development", "Default", "WebApplication1", "Brand")]
+    public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
+    {
+        Mock<IMemoryCacheClient> memoryCacheClient = new();
+
+        var response = JsonSerializer.Serialize(new PublishRelease()
+        {
+            Content = null,
+            ConfigFormat = ConfigFormats.Text
+        });
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+            .Returns(() => response);
+        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+
+        Assert.IsTrue(configurationApiClient.GetRawAsync(
+            environment,
+            cluster,
+            appId,
+            configObject,
+            It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == null);
+    }
+
+    [DataTestMethod]
+    [DataRow("Test", "Default", "DccTest", "Brand")]
+    public async Task GetAsyncByProperty(string environment, string cluster, string appId, string configObject)
+    {
+        var brand = new List<Property>()
+        {
+            new()
+            {
+                Key = "Id",
+                Value = Guid.NewGuid().ToString(),
+            },
+            new()
+            {
+                Key = "Name",
+                Value = "Microsoft"
+            }
+        };
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
+        {
+            ConfigFormat = ConfigFormats.Properties,
+            Content = brand.Serialize(_jsonSerializerOptions)
+        }.Serialize(_jsonSerializerOptions)).Verifiable();
+        var client = new ConfigurationApiClient(_serviceProvider, _client.Object, _jsonSerializerOptions, _dccSectionOptions, null);
+        var ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
+        Assert.IsNotNull(ret);
+
+        Assert.IsTrue(ret.Id.ToString() == brand.Where(b => b.Key == "Id").Select(t => t.Value).FirstOrDefault() &&
+            ret.Name == brand.Where(b => b.Key == "Name").Select(t => t.Value).FirstOrDefault());
+    }
 }

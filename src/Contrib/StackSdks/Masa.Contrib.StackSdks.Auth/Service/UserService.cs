@@ -20,10 +20,10 @@ public class UserService : IUserService
         return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user);
     }
 
-    public async Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user)
+    public async Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user)
     {
-        var requestUri = $"api/user/addThirdPartyUser";
-        return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user);
+        var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
+        return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user);
     }
 
     public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
@@ -130,6 +130,26 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, user);
     }
 
+    public async Task UpdateUserAvatarAsync(UpdateUserAvatarModel user)
+    {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/updateAvatar";
+        await _caller.PutAsync(requestUri, user);
+    }
+
+    public async Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff)
+    {
+        if (staff.UserId == Guid.Empty)
+        {
+            staff.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/staff/updateAvatar";
+        await _caller.PutAsync(requestUri, staff);
+    }
+
     public async Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user)
     {
         if (user.Id == Guid.Empty)
@@ -142,6 +162,10 @@ public class UserService : IUserService
 
     public async Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel staff)
     {
+        if (staff.UserId == Guid.Empty)
+        {
+            staff.UserId = _userContext.GetUserId<Guid>();
+        }
         var requestUri = $"api/staff/updateBasicInfo";
         await _caller.PutAsync(requestUri, staff);
     }
@@ -179,6 +203,46 @@ public class UserService : IUserService
     {
         var requestUri = $"api/user/getListByAccount";
         return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
+    }
+
+    public async Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel model)
+    {
+        if (model.UserId == Guid.Empty)
+        {
+            model.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/sendMsgCodeForVerification";
+        await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model)
+    {
+        if (model.UserId == Guid.Empty)
+        {
+            model.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/verifyMsgCode";
+        return await _caller.PostAsync<bool>(requestUri, model);
+    }
+
+    public async Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel model)
+    {
+        if (model.UserId == Guid.Empty)
+        {
+            model.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/sendMsgCodeForUpdatePhoneNumber";
+        await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user)
+    {
+        if (user.Id == Guid.Empty)
+        {
+            user.Id = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/updateUserPhoneNumber";
+        await _caller.PutAsync(requestUri, user);
     }
 }
 

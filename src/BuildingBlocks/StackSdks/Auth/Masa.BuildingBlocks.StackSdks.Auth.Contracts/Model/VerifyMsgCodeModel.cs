@@ -3,15 +3,15 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpdateStaffBasicInfoModel
+public class VerifyMsgCodeModel
 {
     public Guid UserId { get; set; }
 
-    public string DisplayName { get; set; } = "";
+    public string Code { get; set; }
 
-    public string? PhoneNumber { get; set; }
-
-    public string? Email { get; set; }
-
-    public GenderTypes Gender { get; set; }
+    public VerifyMsgCodeModel(Guid userId, string code)
+    {
+        UserId = userId;
+        Code = code;
+    }
 }

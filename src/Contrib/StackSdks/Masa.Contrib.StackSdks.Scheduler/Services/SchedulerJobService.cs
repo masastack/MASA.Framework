@@ -66,7 +66,7 @@ public class SchedulerJobService : ISchedulerJobService
 
     public async Task<SchedulerJobModel?> GetSchedulerJobQueryByIdentityAsync(GetSchedulerJobByIdentityRequest request)
     {
-        var requestUri = $"{API}/getSchedulerJobQueryByIdentityAsync";
+        var requestUri = $"{API}/getSchedulerJobQueryByIdentity";
         return await _caller.GetAsync<SchedulerJobModel?>(requestUri, request);
     }
 

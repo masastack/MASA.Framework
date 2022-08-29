@@ -19,7 +19,7 @@ public interface IUserService
 
     Task<UserModel?> AddAsync(AddUserModel user);
 
-    Task<UserModel?> AddThirdPartyUserAsync(AddThirdPartyUserModel user);
+    Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
     Task<UserModel?> UpsertAsync(UpsertUserModel user);
 
@@ -41,6 +41,18 @@ public interface IUserService
 
     Task UpdatePasswordAsync(UpdateUserPasswordModel user);
 
+    Task UpdateUserAvatarAsync(UpdateUserAvatarModel user);
+
+    Task UpdateStaffAvatarAsync(UpdateStaffAvatarModel staff);
+
+    Task SendMsgCodeForVerificationAsync(SendMsgCodeForVerificationModel model);
+
+    Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model);
+
+    Task SendMsgCodeForUpdatePhoneNumberAsync(SendMsgCodeForUpdatePhoneNumberModel model);
+
+    Task UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user);
+
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
     Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
@@ -52,5 +64,7 @@ public interface IUserService
     Task<T?> GetUserSystemDataAsync<T>(string systemId);
 
     Task<bool> DisableUserAsync(DisableUserModel user);
+
+    Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
 }
 

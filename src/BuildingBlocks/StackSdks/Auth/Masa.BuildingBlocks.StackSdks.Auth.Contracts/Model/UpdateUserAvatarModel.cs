@@ -3,8 +3,15 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpsertUserModel : AddUserModel
+public class UpdateUserAvatarModel
 {
     public Guid Id { get; set; }
-}
 
+    public string Avatar { get; set; }
+
+    public UpdateUserAvatarModel(Guid id, string avatar)
+    {
+        Id = id;
+        Avatar = avatar;
+    }
+}

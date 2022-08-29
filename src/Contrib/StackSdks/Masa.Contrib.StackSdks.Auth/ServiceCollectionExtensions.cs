@@ -13,7 +13,9 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
-            }).AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>();
+            })
+            .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>()
+            .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         });
     }
 
@@ -26,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
+        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddCaller(callerOptions);
 
         services.AddScoped<IAuthClient>(serviceProvider =>

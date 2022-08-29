@@ -7,7 +7,7 @@ public class SubjectModel
 {
     public Guid SubjectId { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public string? DisplayName { get; set; }
 
@@ -21,12 +21,12 @@ public class SubjectModel
 
     public SubjectModel()
     {
-        Name = "";
+        DisplayName = "";
     }
 
     public SubjectModel(
         Guid subjectId,
-        string name,
+        string? name,
         string? displayName,
         string? avatar,
         string? phoneNumber,
