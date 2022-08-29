@@ -125,4 +125,105 @@ public class HttpClientCallerTest
         Assert.IsTrue(res.Code == response.Code);
         requestMessage.Verify(r => r.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()), Times.Once);
     }
+
+    [TestMethod]
+    public async Task TestResponseAsync()
+    {
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("null")
+        };
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<object?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<int?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<Guid?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<DateTime?>(httpResponseMessage));
+
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<int>(httpResponseMessage) == 0);
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<Guid>(httpResponseMessage) == default);
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<DateTime>(httpResponseMessage) == default);
+    }
+
+    [TestMethod]
+    public async Task TestResponseIsIntAsync()
+    {
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(1.ToString())
+        };
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+
+        var res = await defaultResponseMessage.ProcessResponseAsync<int>(httpResponseMessage);
+        Assert.IsNotNull(res);
+        Assert.IsTrue(res == 1);
+
+        var res2 = await defaultResponseMessage.ProcessResponseAsync<int?>(httpResponseMessage);
+        Assert.IsNotNull(res2);
+        Assert.IsTrue(res2 == 1);
+    }
+
+    [TestMethod]
+    public async Task TestResponseIsGuidAsync()
+    {
+        Guid id = Guid.NewGuid();
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(id.ToString())
+        };
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+
+        var res = await defaultResponseMessage.ProcessResponseAsync<Guid?>(httpResponseMessage);
+        Assert.IsNotNull(res);
+        Assert.IsTrue(res == id);
+
+        var res2 = await defaultResponseMessage.ProcessResponseAsync<Guid>(httpResponseMessage);
+        Assert.IsNotNull(res2);
+        Assert.IsTrue(res2 == id);
+    }
+
+    [TestMethod]
+    public async Task TestResponseIsDateTimeAsync()
+    {
+        var date = DateTime.Now;
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(date.ToString("yyyy-MM-dd HH:mm:ss"))
+        };
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+
+        var res = await defaultResponseMessage.ProcessResponseAsync<DateTime?>(httpResponseMessage);
+        Assert.IsNotNull(res);
+        Assert.IsTrue(res.Value.ToString("yyyy-MM-dd HH:mm:ss") == date.ToString("yyyy-MM-dd HH:mm:ss"));
+
+        var res2 = await defaultResponseMessage.ProcessResponseAsync<DateTime>(httpResponseMessage);
+        Assert.IsNotNull(res2);
+        Assert.IsTrue(res2.ToString("yyyy-MM-dd HH:mm:ss") == date.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
 }

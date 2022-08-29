@@ -15,6 +15,7 @@ public class DefaultXmlResponseMessage : IResponseMessage
     public async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
+        var responseType = typeof(TResponse);
         if (response.IsSuccessStatusCode)
         {
             switch (response.StatusCode)
@@ -25,32 +26,39 @@ public class DefaultXmlResponseMessage : IResponseMessage
                 case (HttpStatusCode)MasaHttpStatusCode.UserFriendlyException:
                     throw new UserFriendlyException(await response.Content.ReadAsStringAsync(cancellationToken));
                 default:
-                    if (typeof(TResponse) == typeof(Guid) || typeof(TResponse) == typeof(Guid?))
+                    if (responseType == typeof(Guid) || responseType == typeof(Guid?))
                     {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        if (string.IsNullOrEmpty(content))
-                            return (TResponse)(object?)null!;
+                        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+                        if (IsNullOrEmpty(content))
+                            return default;
 
-                        return (TResponse?)(object)Guid.Parse(content.Replace("\"", ""));
+                        return (TResponse?)(object)Guid.Parse(content);
                     }
-                    if (typeof(TResponse) == typeof(DateTime) || typeof(TResponse) == typeof(DateTime?))
+                    if (responseType == typeof(DateTime) || responseType == typeof(DateTime?))
                     {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        if (string.IsNullOrEmpty(content))
-                            return (TResponse)(object?)null!;
+                        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+                        if (IsNullOrEmpty(content))
+                            return default;
 
-                        return (TResponse?)(object)DateTime.Parse(content.Replace("\"", ""));
+                        return (TResponse?)(object)DateTime.Parse(content);
                     }
-                    if (typeof(TResponse).GetInterfaces().Any(type => type == typeof(IConvertible)))
+                    if (responseType.GetInterfaces().Any(type => type == typeof(IConvertible)) ||
+                        (responseType.IsGenericType && responseType.GenericTypeArguments.Length == 1 && responseType
+                            .GenericTypeArguments[0].GetInterfaces().Any(type => type == typeof(IConvertible))))
                     {
                         var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        return (TResponse)Convert.ChangeType(content, typeof(TResponse));
+                        if (IsNullOrEmpty(content))
+                            return default;
+
+                        if (responseType.IsGenericType)
+                            return (TResponse?)Convert.ChangeType(content, responseType.GenericTypeArguments[0]);
+
+                        return (TResponse?)Convert.ChangeType(content, responseType);
                     }
                     try
                     {
                         var res = await response.Content.ReadAsStringAsync(cancellationToken);
-                        return XmlUtils.Deserialize<TResponse>(res) ??
-                            throw new ArgumentException("The response cannot be empty or there is an error in deserialization");
+                        return XmlUtils.Deserialize<TResponse>(res);
                     }
                     catch (Exception exception)
                     {
@@ -88,4 +96,6 @@ public class DefaultXmlResponseMessage : IResponseMessage
 
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
+
+    private static bool IsNullOrEmpty(string value) => string.IsNullOrEmpty(value) || value == "null";
 }
