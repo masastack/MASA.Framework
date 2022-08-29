@@ -125,4 +125,27 @@ public class HttpClientCallerTest
         Assert.IsTrue(res.Code == response.Code);
         requestMessage.Verify(r => r.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()), Times.Once);
     }
+
+    [TestMethod]
+    public async Task TestResponseAsync()
+    {
+        HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent("null")
+        };
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<object?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<int?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<Guid?>(httpResponseMessage));
+
+        Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<DateTime?>(httpResponseMessage));
+    }
 }

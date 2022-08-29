@@ -27,30 +27,34 @@ public class DefaultXmlResponseMessage : IResponseMessage
                 default:
                     if (typeof(TResponse) == typeof(Guid) || typeof(TResponse) == typeof(Guid?))
                     {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        if (string.IsNullOrEmpty(content))
+                        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+                        if (IsNullOrEmpty(content))
                             return (TResponse)(object?)null!;
 
-                        return (TResponse?)(object)Guid.Parse(content.Replace("\"", ""));
+                        return (TResponse?)(object)Guid.Parse(content);
                     }
                     if (typeof(TResponse) == typeof(DateTime) || typeof(TResponse) == typeof(DateTime?))
                     {
-                        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-                        if (string.IsNullOrEmpty(content))
+                        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+                        if (IsNullOrEmpty(content))
                             return (TResponse)(object?)null!;
 
-                        return (TResponse?)(object)DateTime.Parse(content.Replace("\"", ""));
+                        return (TResponse?)(object)DateTime.Parse(content);
                     }
-                    if (typeof(TResponse).GetInterfaces().Any(type => type == typeof(IConvertible)))
+                    if (typeof(TResponse).GetInterfaces().Any(type => type == typeof(IConvertible)) ||
+                        (typeof(TResponse).IsGenericType && typeof(TResponse).GenericTypeArguments.Length == 1 && typeof(TResponse)
+                            .GenericTypeArguments[0].GetInterfaces().Any(type => type == typeof(IConvertible))))
                     {
                         var content = await response.Content.ReadAsStringAsync(cancellationToken);
+                        if (IsNullOrEmpty(content))
+                            return (TResponse)(object?)null!;
+
                         return (TResponse)Convert.ChangeType(content, typeof(TResponse));
                     }
                     try
                     {
                         var res = await response.Content.ReadAsStringAsync(cancellationToken);
-                        return XmlUtils.Deserialize<TResponse>(res) ??
-                            throw new ArgumentException("The response cannot be empty or there is an error in deserialization");
+                        return XmlUtils.Deserialize<TResponse>(res);
                     }
                     catch (Exception exception)
                     {
@@ -88,4 +92,6 @@ public class DefaultXmlResponseMessage : IResponseMessage
 
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
+
+    private bool IsNullOrEmpty(string value) => string.IsNullOrEmpty(value) || value == "null";
 }
