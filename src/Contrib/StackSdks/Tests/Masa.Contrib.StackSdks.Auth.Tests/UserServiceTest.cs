@@ -329,15 +329,15 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task SendMsgCodeForVerifyPhoneNumberAsync()
+    public async Task SendMsgCodeAsync()
     {
         var code = new SendMsgCodeModel();
-        var requestUri = $"api/user/sendMsgCodeForVerifyPhoneNumber";
+        var requestUri = $"api/user/sendMsgCode";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
-        await userService.SendMsgCodeForVerifyPhoneNumberAsync(code);
+        await userService.SendMsgCodeAsync(code);
         caller.Verify(provider => provider.PostAsync(requestUri, code, true, default), Times.Once);
     }
 
@@ -355,29 +355,16 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestSendMsgCodeForUpdatePhoneNumberAsync()
-    {
-        var code = new SendMsgCodeModel(default, "15168440403", SendMsgCodeTypes.UpdatePhoneNumber);
-        var requestUri = $"api/user/sendMsgCodeForUpdatePhoneNumber";
-        var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
-        await userService.SendMsgCodeForUpdatePhoneNumberAsync(code);
-        caller.Verify(provider => provider.PostAsync(requestUri, code, true, default), Times.Once);
-    }
-
-    [TestMethod]
     public async Task TestUpdateUserPhoneNumberAsync()
     {
         var user = new UpdateUserPhoneNumberModel(Guid.NewGuid(), "15168440403", "123453");
-        var requestUri = $"api/user/updateUserPhoneNumber";
+        var requestUri = $"api/user/updatePhoneNumber";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
+        caller.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
         await userService.UpdatePhoneNumberAsync(user);
-        caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
+        caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
     }
 
 
