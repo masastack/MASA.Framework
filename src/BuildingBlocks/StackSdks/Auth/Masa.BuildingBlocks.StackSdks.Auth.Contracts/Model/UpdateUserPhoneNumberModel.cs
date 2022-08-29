@@ -7,9 +7,13 @@ public class UpdateUserPhoneNumberModel
 {
     public Guid Id { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = "";
 
-    public string VerificationCode { get; set; }
+    public string VerificationCode { get; set; } = "";
+
+    public UpdateUserPhoneNumberModel()
+    {
+    }
 
     public UpdateUserPhoneNumberModel(Guid id, string phoneNumber, string verificationCode)
     {
