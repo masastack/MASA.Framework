@@ -147,6 +147,10 @@ public class HttpClientCallerTest
         Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<Guid?>(httpResponseMessage));
 
         Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<DateTime?>(httpResponseMessage));
+
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<int>(httpResponseMessage) == 0);
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<Guid>(httpResponseMessage) == default);
+        Assert.IsTrue(await defaultResponseMessage.ProcessResponseAsync<DateTime>(httpResponseMessage) == default);
     }
 
     [TestMethod]
