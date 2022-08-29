@@ -3,10 +3,20 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpsertUserModel : AddUserModel
+public class UpdateUserEmailModel
 {
     public Guid Id { get; set; }
 
-    public List<string> RoleNames { get; set; } = new();
-}
+    public string Email { get; set; } = "";
 
+    public UpdateUserEmailModel()
+    {
+
+    }
+
+    public UpdateUserEmailModel(Guid id, string email)
+    {
+        Id = id;
+        Email = email;
+    }
+}
