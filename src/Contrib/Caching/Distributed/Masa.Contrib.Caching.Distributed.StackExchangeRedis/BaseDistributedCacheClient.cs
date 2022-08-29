@@ -5,34 +5,46 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public abstract class BaseDistributedCacheClient
 {
+    protected static Guid UniquelyIdentifies;
     protected ISubscriber Subscriber;
     protected IDatabase Db;
-    protected JsonSerializerOptions JsonSerializerOptions;
-    private CacheEntryOptions _cacheEntryOptions;
+    protected readonly JsonSerializerOptions JsonSerializerOptions;
+    protected CacheEntryOptions CacheEntryOptions;
 
-    protected BaseDistributedCacheClient(IOptionsMonitor<DistributedRedisCacheOptions> defaultOptionsMonitor,
-        DistributedRedisCacheOptions? cacheOptions)
+    static BaseDistributedCacheClient() => UniquelyIdentifies = Guid.NewGuid();
+
+    protected BaseDistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
+        CacheEntryOptions? cacheEntryOptions,
+        JsonSerializerOptions? jsonSerializerOptions)
     {
-        IConnectionMultiplexer? connection =
-            ConnectionMultiplexer.Connect(cacheOptions?.Options ?? defaultOptionsMonitor.CurrentValue.Options!);
-        defaultOptionsMonitor.OnChange(opt =>
-        {
-            if (cacheOptions == null || cacheOptions.Options == null)
-            {
-                connection = ConnectionMultiplexer.Connect(opt.Options!);
-                Db = connection.GetDatabase();
-                Subscriber = connection.GetSubscriber();
-            }
-            if (cacheOptions?.JsonSerializerOptions == null)
-                JsonSerializerOptions = opt.JsonSerializerOptions!;
-
-            if (cacheOptions?.JsonSerializerOptions == null)
-                _cacheEntryOptions = opt.CacheEntryOptions!;
-        });
+        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(GetRedisConfigurationOptions(redisConfigurationOptions));
         Db = connection.GetDatabase();
         Subscriber = connection.GetSubscriber();
-        JsonSerializerOptions = cacheOptions?.JsonSerializerOptions ?? defaultOptionsMonitor.CurrentValue.JsonSerializerOptions!;
-        _cacheEntryOptions = cacheOptions?.CacheEntryOptions ?? defaultOptionsMonitor.CurrentValue.CacheEntryOptions!;
+
+        JsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
+        if (cacheEntryOptions == null)
+            CacheEntryOptions = new CacheEntryOptions();
+        else
+            CacheEntryOptions = new CacheEntryOptions
+            {
+                AbsoluteExpiration = cacheEntryOptions.AbsoluteExpiration,
+                AbsoluteExpirationRelativeToNow = cacheEntryOptions.AbsoluteExpirationRelativeToNow,
+                SlidingExpiration = cacheEntryOptions.SlidingExpiration
+            };
+    }
+
+    private RedisConfigurationOptions GetRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    {
+        if (redisConfigurationOptions.Servers.Any())
+            return redisConfigurationOptions;
+
+        return new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            }
+        };
     }
 
     protected T? ConvertToValue<T>(RedisValue value)
@@ -43,14 +55,8 @@ public abstract class BaseDistributedCacheClient
         return default;
     }
 
-    protected static void CheckIsNullOrWhiteSpace(string value, string name)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentNullException(name);
-    }
-
     protected CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
-        => options ?? _cacheEntryOptions;
+        => options ?? CacheEntryOptions;
 
     protected void PublishCore(string channel, Action<PublishOptions> setup, Func<string, string, Task> func)
     {
@@ -58,7 +64,7 @@ public abstract class BaseDistributedCacheClient
 
         ArgumentNullException.ThrowIfNull(setup, nameof(setup));
 
-        var options = new PublishOptions();
+        var options = new PublishOptions(UniquelyIdentifies);
         setup.Invoke(options);
 
         if (string.IsNullOrWhiteSpace(options.Key))

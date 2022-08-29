@@ -5,6 +5,8 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 internal sealed class Const
 {
+    public const string DEFAULT_REDIS_SECTION_NAME = "RedisConfig";
+
     public const string DEFAULT_REDIS_HOST = "localhost";
 
     public const int DEFAULT_REDIS_PORT = 6379;

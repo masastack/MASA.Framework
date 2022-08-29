@@ -14,4 +14,12 @@ public abstract class BasePubSubOptions
     /// Gets or sets the key.
     /// </summary>
     public string Key { get; set; } = default!;
+
+    /// <summary>
+    /// Unique identifier, used to confirm whether the sender and the subscriber are the same client
+    /// </summary>
+    public Guid UniquelyIdentifies { get; private set; }
+
+    public BasePubSubOptions(Guid uniquelyIdentifies)
+        => UniquelyIdentifies = uniquelyIdentifies;
 }

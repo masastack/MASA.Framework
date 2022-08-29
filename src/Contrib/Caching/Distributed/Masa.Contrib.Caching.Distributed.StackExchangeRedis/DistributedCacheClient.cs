@@ -5,73 +5,27 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCacheClient
 {
-    private SubscribeConfigurationOptions _subscribeConfigurationOptions;
-    private readonly object _locker = new();
-    private readonly IList<string> _subscribeChannels = new List<string>();
-
-    public DistributedCacheClient(
-        IOptionsMonitor<DistributedRedisCacheOptions> defaultOptionsMonitor,
-        DistributedRedisCacheOptions? cacheOptions)
-        : base(defaultOptionsMonitor, cacheOptions)
+    public DistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
+        CacheEntryOptions? cacheEntryOptions,
+        JsonSerializerOptions? jsonSerializerOptions)
+        : base(redisConfigurationOptions, cacheEntryOptions, jsonSerializerOptions)
     {
-        defaultOptionsMonitor.OnChange(option =>
-        {
-            if (cacheOptions == null || cacheOptions.SubscribeConfigurationOptions == null)
-                _subscribeConfigurationOptions = option.SubscribeConfigurationOptions!;
-        });
-        _subscribeConfigurationOptions = cacheOptions?.SubscribeConfigurationOptions ??
-            defaultOptionsMonitor.CurrentValue.SubscribeConfigurationOptions!;
     }
 
     #region Get
 
     public T? Get<T>(string key)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return GetAndRefresh<T>(key);
     }
 
     public async Task<T?> GetAsync<T>(string key)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return await GetAndRefreshAsync<T>(key);
-    }
-
-    public T? Get<T>(string key, Action<T?> valueChanged)
-    {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
-
-        var value = Get<T>(key);
-
-        if (value == null)
-            return value;
-
-        var channel = FormatSubscribeChannel<T>(key);
-
-        Subscribe(channel, new CombinedCacheEntryOptions<T>
-        {
-            ValueChanged = valueChanged
-        });
-        return value;
-    }
-
-    public async Task<T?> GetAsync<T>(string key, Action<T?> valueChanged)
-    {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
-        var value = await GetAsync<T>(key);
-
-        if (value == null)
-            return value;
-
-        var channel = FormatSubscribeChannel<T>(key);
-
-        Subscribe(channel, new CombinedCacheEntryOptions<T>
-        {
-            ValueChanged = valueChanged
-        });
-        return value;
     }
 
     public IEnumerable<T?> GetList<T>(params string[] keys)
@@ -98,7 +52,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     public T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         ArgumentNullException.ThrowIfNull(setter, nameof(setter));
 
@@ -111,7 +65,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     public async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         ArgumentNullException.ThrowIfNull(setter, nameof(setter));
 
@@ -187,7 +141,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     public void Set<T>(string key, T value, CacheEntryOptions<T>? options = null)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
@@ -201,7 +155,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     public async Task SetAsync<T>(string key, T value, CacheEntryOptions<T>? options = null)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         ArgumentNullException.ThrowIfNull(value, nameof(value));
 
@@ -281,6 +235,12 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
         Db.KeyDelete(keys.Select(key => (RedisKey)key).ToArray());
+
+        Parallel.ForEach(keys, key => Publish(key, options =>
+        {
+            options.Operation = SubscribeOperation.Remove;
+            options.Key = key;
+        }));
     }
 
     public Task RemoveAsync(params string[] keys)
@@ -296,14 +256,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     public bool Exists(string key)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return Db.KeyExists(key);
     }
 
     public Task<bool> ExistsAsync(string key)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return Db.KeyExistsAsync(key);
     }
@@ -332,6 +292,8 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         Subscriber.Subscribe(channel, (_, message) =>
         {
             var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            if (options != null)
+                options.IsPublishClient = options.UniquelyIdentifies == UniquelyIdentifies;
             handler(options!);
         });
     }
@@ -341,6 +303,8 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return Subscriber.SubscribeAsync(channel, (_, message) =>
         {
             var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            if (options != null)
+                options.IsPublishClient = options.UniquelyIdentifies == UniquelyIdentifies;
             handler(options!);
         });
     }
@@ -393,7 +357,7 @@ end";
 
     public bool KeyExpire(string key, CacheEntryOptions? options = null)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         var result = Db.ScriptEvaluate(
             Const.SET_EXPIRATION_SCRIPT,
@@ -413,7 +377,7 @@ end";
         var redisKeys = keys.Select(key => (RedisKey)key).ToArray();
 
         var result = Db.ScriptEvaluate(
-            Const.SET_MULTIPLE_SCRIPT,
+            Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
             redisKeys,
             GetRedisValues(GetCacheEntryOptions(options))
         );
@@ -426,7 +390,7 @@ end";
 
     public async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
     {
-        CheckIsNullOrWhiteSpace(key, nameof(key));
+        key.CheckIsNullOrWhiteSpace(nameof(key));
 
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_EXPIRATION_SCRIPT,
@@ -458,6 +422,13 @@ end";
     }
 
     #endregion
+
+    public void RefreshRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    {
+        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfigurationOptions);
+        Db = connection.GetDatabase();
+        Subscriber = connection.GetSubscriber();
+    }
 
     #region private methods
 
@@ -542,39 +513,5 @@ end";
 
     #endregion
 
-    private string FormatSubscribeChannel<T>(string key) =>
-        SubscribeHelper.FormatSubscribeChannel<T>(key,
-            _subscribeConfigurationOptions.SubscribeKeyTypes,
-            _subscribeConfigurationOptions.SubscribeKeyPrefix);
-
-    private void Subscribe<T>(string channel, CombinedCacheEntryOptions<T>? options = null)
-    {
-        if (_subscribeChannels.Contains(channel))
-            return;
-
-        lock (_locker)
-        {
-            if (_subscribeChannels.Contains(channel))
-                return;
-
-            Subscribe<T>(channel, (subscribeOptions) =>
-            {
-                switch (subscribeOptions.Operation)
-                {
-                    case SubscribeOperation.Set:
-                    case SubscribeOperation.Remove:
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-
-                options?.ValueChanged?.Invoke(subscribeOptions.Value);
-            });
-
-            _subscribeChannels.Add(channel);
-        }
-    }
-
     #endregion
-
 }

@@ -6,4 +6,8 @@ namespace Masa.BuildingBlocks.Caching;
 public class PublishOptions : BasePubSubOptions
 {
     public object Value { get; set; }
+
+    public PublishOptions(Guid uniquelyIdentifies) : base(uniquelyIdentifies)
+    {
+    }
 }

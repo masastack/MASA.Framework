@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
         services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<DefaultMultilevelCacheClientFactory>().Create());
+            => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
         return services;
     }
 }

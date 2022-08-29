@@ -6,32 +6,51 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddStackExchangeRedisCache(this IServiceCollection services,
-        DistributedRedisCacheOptions? distributedRedisCacheOptions)
+        RedisConfigurationOptions redisConfigurationOptions,
+        CacheEntryOptions? cacheEntryOptions = null)
         => services.AddStackExchangeRedisCache(
             Microsoft.Extensions.Options.Options.DefaultName,
-            distributedRedisCacheOptions);
+            redisConfigurationOptions,
+            cacheEntryOptions);
 
     public static IServiceCollection AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
-        DistributedRedisCacheOptions? distributedRedisCacheOptions)
+        string redisSectionName = "RedisConfig",
+        CacheEntryOptions? cacheEntryOptions = null,
+        JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.AddStackExchangeRedisCacheCore(out bool isSkip);
-        if (isSkip) return services;
+        services.AddStackExchangeRedisCacheCore();
+
+        services.TryAddConfigure<RedisConfigurationOptions>(redisSectionName);
 
         services.Configure<DistributedCacheFactoryOptions>(options =>
         {
-            // todo: execute only once
-            // if (options.Options.Any(opt => opt.Name == name))
-            //     return;
+            if (options.Options.Any(opt => opt.Name == name))
+                return;
 
             var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, serviceProvider =>
             {
-                var distributedCacheClient = new DistributedCacheClient(
-                    serviceProvider.GetRequiredService<IOptionsMonitor<DistributedRedisCacheOptions>>(),
-                    distributedRedisCacheOptions
-                );
+                IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptionsMonitor =
+                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
 
+                redisConfigurationOptionsMonitor.OnChange((option, optionName) =>
+                {
+                    if (optionName == name)
+                    {
+                        var func = options.Options.First(opt => opt.Name == name);
+
+                        var client = func.Func.Invoke(serviceProvider);
+                        if (client is DistributedCacheClient redisClient)
+                            redisClient.RefreshRedisConfigurationOptions(option);
+                    }
+                });
+
+                var distributedCacheClient = new DistributedCacheClient(
+                    redisConfigurationOptionsMonitor.Get(name),
+                    cacheEntryOptions,
+                    jsonSerializerOptions
+                );
                 return distributedCacheClient;
             });
             options.Options.Add(cacheRelationOptions);
@@ -40,43 +59,109 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static void AddStackExchangeRedisCacheCore(this IServiceCollection services, out bool isSkip)
+    public static IServiceCollection AddStackExchangeRedisCache(
+        this IServiceCollection services,
+        string name,
+        RedisConfigurationOptions redisConfigurationOptions,
+        CacheEntryOptions? cacheEntryOptions = null,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        services.AddStackExchangeRedisCacheCore();
+
+        services.Configure<DistributedCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, serviceProvider =>
+            {
+                var distributedCacheClient = new DistributedCacheClient(
+                    redisConfigurationOptions,
+                    cacheEntryOptions,
+                    jsonSerializerOptions
+                );
+                return distributedCacheClient;
+            });
+            options.Options.Add(cacheRelationOptions);
+        });
+
+        return services;
+    }
+
+    private static void AddStackExchangeRedisCacheCore(this IServiceCollection services)
     {
         if (services.Any(service => service.ImplementationType == typeof(RedisProvider)))
         {
-            isSkip = true;
+            return;
         }
-
-        isSkip = false;
+        services.TryAddConfigure<RedisConfigurationOptions>("");
         services.AddSingleton<RedisProvider>();
 
-        services.AddDefaultConfigurationByStackExchangeRedisCache();
+        // services.AddDefaultConfigurationByStackExchangeRedisCache(sectionName);
         services.AddCachingCore();
     }
 
-    public static IServiceCollection AddDefaultConfigurationByStackExchangeRedisCache(this IServiceCollection services)
+    public static IServiceCollection TryAddConfigure<TOptions>(
+        this IServiceCollection services,
+        string sectionName)
+        where TOptions : class
     {
-        services.Configure<DistributedRedisCacheOptions>(options =>
-        {
-            options.Options ??= new RedisConfigurationOptions()
+        services.AddOptions();
+        var serviceProvider = services.BuildServiceProvider();
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
+            serviceProvider.GetService<IConfiguration>();
+        if (configuration == null)
+            return services;
+
+        string name = Microsoft.Extensions.Options.Options.DefaultName;
+        var configurationSection = configuration.GetSection(sectionName);
+        if (!configurationSection.Exists())
+            return services;
+
+        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
+            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
+        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
+            configuration, _ =>
             {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                }
-            };
-
-            options.JsonSerializerOptions ??= new JsonSerializerOptions().EnableDynamicTypes();
-
-            options.SubscribeConfigurationOptions ??= new SubscribeConfigurationOptions()
-            {
-                SubscribeKeyTypes = SubscribeKeyTypes.ValueTypeFullNameAndKey
-            };
-
-            options.CacheEntryOptions ??= new CacheEntryOptions();
-        });
+            }));
         return services;
     }
+
+    // private static RedisConfigurationOptions GetRedisConfigurationOptions(this IServiceCollection services, string sectionName)
+    // {
+    //     var serviceProvider = services.BuildServiceProvider();
+    //     IConfiguration configuration;
+    //     if (services.Any(d => d.ServiceType == typeof(IMasaConfiguration)))
+    //     {
+    //         var redisConfigurationOptions = serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>().Value;
+    //         if (redisConfigurationOptions.Servers.Any())
+    //             return redisConfigurationOptions;
+    //
+    //         configuration = serviceProvider.GetRequiredService<IMasaConfiguration>().Local;
+    //     }
+    //     else
+    //     {
+    //         configuration = serviceProvider.GetRequiredService<IConfiguration>();
+    //     }
+    //     var configurationSection = configuration.GetSection(sectionName);
+    //     if (!configurationSection.Exists())
+    //     {
+    //         return new RedisConfigurationOptions()
+    //         {
+    //             Servers = new List<RedisServerOptions>()
+    //             {
+    //                 new()
+    //             }
+    //         };
+    //     }
+    //     return configurationSection.Get<RedisConfigurationOptions>() ?? new RedisConfigurationOptions()
+    //     {
+    //         Servers = new List<RedisServerOptions>()
+    //         {
+    //             new()
+    //         }
+    //     };
+    // }
 
     private sealed class RedisProvider
     {

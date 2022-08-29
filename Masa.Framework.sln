@@ -551,6 +551,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7958FEC3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests", "src\Contrib\Caching\Distributed\Tests\Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests\Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests.csproj", "{4485AEB4-303D-4DED-B667-F188EE237A21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Caching.MultilevelCache", "src\Contrib\Caching\Masa.Contrib.Caching.MultilevelCache\Masa.Contrib.Caching.MultilevelCache.csproj", "{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1935,6 +1937,14 @@ Global
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Release|x64.ActiveCfg = Release|Any CPU
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Release|x64.Build.0 = Release|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Debug|x64.Build.0 = Debug|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Release|x64.ActiveCfg = Release|Any CPU
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2206,6 +2216,7 @@ Global
 		{AA7D8CBE-5222-4109-BFC5-545813A4CB67} = {B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}
 		{7958FEC3-EF97-4C37-82BB-C780A6DBDBC9} = {B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}
 		{4485AEB4-303D-4DED-B667-F188EE237A21} = {7958FEC3-EF97-4C37-82BB-C780A6DBDBC9}
+		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1} = {2BAF3BB2-A14C-4591-AD9C-10084B14B05D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

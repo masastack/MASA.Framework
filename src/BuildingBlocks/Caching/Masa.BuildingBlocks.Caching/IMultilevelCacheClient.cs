@@ -5,6 +5,10 @@ namespace Masa.BuildingBlocks.Caching;
 
 public interface IMultilevelCacheClient : ICacheClient
 {
+    T? Get<T>(string key, Action<T?> valueChanged);
+
+    Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
+
     void Remove<T>(params string[] keys);
 
     Task RemoveAsync<T>(params string[] keys);

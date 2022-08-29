@@ -9,10 +9,6 @@ public interface ICacheClient
 
     Task<T?> GetAsync<T>(string key);
 
-    T? Get<T>(string key, Action<T?> valueChanged);
-
-    Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
-
     IEnumerable<T?> GetList<T>(params string[] keys);
 
     Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
