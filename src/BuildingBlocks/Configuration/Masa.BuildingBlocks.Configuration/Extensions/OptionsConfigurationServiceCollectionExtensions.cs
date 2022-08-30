@@ -12,12 +12,14 @@ public static class OptionsConfigurationServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="sectionName"></param>
     /// <param name="name"></param>
+    /// <param name="isRoot"></param>
     /// <typeparam name="TOptions"></typeparam>
     /// <returns></returns>
     public static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services,
         string sectionName,
-        string? name = null)
+        string? name = null,
+        bool isRoot = false)
         where TOptions : class
     {
         services.AddOptions();
@@ -32,14 +34,7 @@ public static class OptionsConfigurationServiceCollectionExtensions
         if (!configurationSection.Exists())
             return services;
 
-        services.Configure<TOptions>(name, configurationSection);
-
-        // services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(
-        //     new ConfigurationChangeTokenSource<TOptions>(name, configuration));
-        // services.AddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
-        //     configuration, _ =>
-        //     {
-        //     }));
+        services.Configure<TOptions>(name, isRoot ? configuration : configurationSection);
         return services;
     }
 }

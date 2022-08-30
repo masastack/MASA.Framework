@@ -85,5 +85,5 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services)
         where TOptions : class
-        => services.TryAddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION);
+        => services.TryAddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION, isRoot: true);
 }
