@@ -11,11 +11,13 @@ public static class OptionsConfigurationServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="sectionName"></param>
+    /// <param name="name"></param>
     /// <typeparam name="TOptions"></typeparam>
     /// <returns></returns>
     public static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services,
-        string sectionName)
+        string sectionName,
+        string? name = null)
         where TOptions : class
     {
         services.AddOptions();
@@ -25,17 +27,19 @@ public static class OptionsConfigurationServiceCollectionExtensions
         if (configuration == null)
             return services;
 
-        string name = Microsoft.Extensions.Options.Options.DefaultName;
+        name ??= Microsoft.Extensions.Options.Options.DefaultName;
         var configurationSection = configuration.GetSection(sectionName);
         if (!configurationSection.Exists())
             return services;
 
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
-            configuration, _ =>
-            {
-            }));
+        services.Configure<TOptions>(name, configurationSection);
+
+        // services.AddSingleton<IOptionsChangeTokenSource<TOptions>>(
+        //     new ConfigurationChangeTokenSource<TOptions>(name, configuration));
+        // services.AddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
+        //     configuration, _ =>
+        //     {
+        //     }));
         return services;
     }
 }

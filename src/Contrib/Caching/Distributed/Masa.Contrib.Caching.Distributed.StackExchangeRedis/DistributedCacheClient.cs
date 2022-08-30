@@ -5,6 +5,21 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCacheClient
 {
+    public DistributedCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
+        string name,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+        : this(redisConfigurationOptions.Get(name), jsonSerializerOptions)
+    {
+        redisConfigurationOptions.OnChange((option, optionName) =>
+        {
+            //todo:
+            if (optionName == name)
+            {
+                RefreshRedisConfigurationOptions(option);
+            }
+        });
+    }
+
     public DistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
         : base(redisConfigurationOptions, jsonSerializerOptions)
@@ -409,14 +424,21 @@ end";
 
     #endregion
 
-    public void RefreshRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    #region private methods
+
+    private void RefreshRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
     {
         IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfigurationOptions);
         Db = connection.GetDatabase();
         Subscriber = connection.GetSubscriber();
-    }
 
-    #region private methods
+        CacheEntryOptions = new CacheEntryOptions
+        {
+            AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = redisConfigurationOptions.SlidingExpiration
+        };
+    }
 
     private RedisValue[] GetRedisValues(CacheEntryOptions? options, Func<RedisValue[]>? func = null)
     {

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Builder;
+
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 [TestClass]
@@ -64,5 +66,43 @@ public class StackExchangeRedisCacheTest
         Assert.AreEqual(null, distributedCacheClient.Get<string>(key + "2"));
         distributedCacheClient.Remove(key);
         distributedCacheClient2.Remove(key + "2");
+    }
+
+    [TestMethod]
+    public void TestAddStackExchangeRedisCacheByAppsettings()
+    {
+        var builder = WebApplication.CreateBuilder();
+        var services = builder.Services;
+        services.AddStackExchangeRedisCache("test");
+
+        var serviceProvider = services.BuildServiceProvider();
+        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClient>();
+        string key = "test_1";
+        distributedCacheClient.Set(key, "test_content");
+        Assert.IsTrue(distributedCacheClient.Exists(key));
+
+        var oldContent = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
+        File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"),
+            JsonSerializer.Serialize(new RedisConfigurationOptions()
+            {
+                Servers = new List<RedisServerOptions>()
+                {
+                    new("localhost", 6379)
+                },
+                DefaultDatabase = 1
+            }));
+
+        Thread.Sleep(5000);
+        distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
+
+        var exist = distributedCacheClient.Exists(key);
+
+        Assert.IsFalse(exist);
+
+        File.WriteAllText(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")), oldContent);
+
+        Thread.Sleep(5000);
+
+        distributedCacheClient.Remove(key);
     }
 }

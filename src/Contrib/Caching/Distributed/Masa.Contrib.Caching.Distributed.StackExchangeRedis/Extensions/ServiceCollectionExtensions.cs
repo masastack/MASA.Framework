@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddStackExchangeRedisCacheCore();
 
-        services.TryAddConfigure<RedisConfigurationOptions>(redisSectionName);
+        services.TryAddConfigure<RedisConfigurationOptions>(redisSectionName, name);
 
         services.Configure<DistributedCacheFactoryOptions>(options =>
         {
@@ -28,23 +28,9 @@ public static class ServiceCollectionExtensions
 
             var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, serviceProvider =>
             {
-                IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptionsMonitor =
-                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
-
-                redisConfigurationOptionsMonitor.OnChange((option, optionName) =>
-                {
-                    if (optionName == name)
-                    {
-                        var func = options.Options.First(opt => opt.Name == name);
-
-                        var client = func.Func.Invoke(serviceProvider);
-                        if (client is DistributedCacheClient redisClient)
-                            redisClient.RefreshRedisConfigurationOptions(option);
-                    }
-                });
-
                 var distributedCacheClient = new DistributedCacheClient(
-                    redisConfigurationOptionsMonitor.Get(name),
+                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
+                    name,
                     jsonSerializerOptions
                 );
                 return distributedCacheClient;

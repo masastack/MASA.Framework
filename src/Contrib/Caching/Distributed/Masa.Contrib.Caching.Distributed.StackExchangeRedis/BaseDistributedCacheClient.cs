@@ -9,7 +9,7 @@ public abstract class BaseDistributedCacheClient
     protected ISubscriber Subscriber;
     protected IDatabase Db;
     protected readonly JsonSerializerOptions JsonSerializerOptions;
-    protected readonly CacheEntryOptions CacheEntryOptions;
+    protected CacheEntryOptions CacheEntryOptions;
 
     static BaseDistributedCacheClient() => UniquelyIdentifies = Guid.NewGuid();
 
