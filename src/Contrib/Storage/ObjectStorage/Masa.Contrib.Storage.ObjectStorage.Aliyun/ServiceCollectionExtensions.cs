@@ -101,30 +101,6 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static IServiceCollection TryAddConfigure<TOptions>(
-        this IServiceCollection services,
-        string sectionName)
-        where TOptions : class
-    {
-        var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
-            serviceProvider.GetService<IConfiguration>();
-
-        if (configuration == null)
-            return services;
-
-        string name = Microsoft.Extensions.Options.Options.DefaultName;
-        services.AddOptions();
-        var configurationSection = configuration.GetSection(sectionName);
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configurationSection));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
-            configurationSection, _ =>
-            {
-            }));
-        return services;
-    }
-
     private static IOptionsMonitor<AliyunStorageConfigureOptions> GetAliyunStorageConfigurationOption(IServiceProvider serviceProvider)
         => serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
 

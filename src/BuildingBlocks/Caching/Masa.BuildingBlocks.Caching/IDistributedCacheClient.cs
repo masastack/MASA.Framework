@@ -50,9 +50,9 @@ public interface IDistributedCacheClient : ICacheClient
 
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
-    bool KeyExpire(string[] keys, CacheEntryOptions? options = null);
+    long KeyExpire(string[] keys, CacheEntryOptions? options = null);
 
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 
-    Task<bool> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null);
+    Task<long> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null);
 }

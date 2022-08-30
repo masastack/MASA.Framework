@@ -10,7 +10,7 @@ internal sealed class JsonDynamicNumber : JsonDynamicType
 {
     private Type? _type;
     private object _value;
-    private object? _lastValue = null;
+    private object? _lastValue;
 
     public JsonDynamicNumber(object? value, JsonSerializerOptions options) : base(options)
     {

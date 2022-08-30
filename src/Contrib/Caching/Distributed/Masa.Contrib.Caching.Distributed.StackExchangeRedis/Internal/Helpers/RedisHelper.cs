@@ -8,10 +8,10 @@ internal static class RedisHelper
     public static T? ConvertToValue<T>(this RedisValue redisValue, JsonSerializerOptions jsonSerializerOptions)
     {
         var type = typeof(T);
-        var compressMode = GetCompressMode(type);
+        var compressMode = GetCompressMode(type,out Type actualType);
 
         if (compressMode == CompressMode.None)
-            return (T?)Convert.ChangeType(redisValue, type);
+            return (T?)Convert.ChangeType(redisValue, actualType);
 
         var byteValue = (byte[])redisValue;
         if (byteValue == null || byteValue.Length == 0)
@@ -51,7 +51,7 @@ internal static class RedisHelper
     {
         var type = typeof(T);
         dynamic redisValue;
-        switch (GetCompressMode(type))
+        switch (GetCompressMode(type,out Type actualType))
         {
             case CompressMode.None:
                 redisValue = value!;
@@ -64,7 +64,7 @@ internal static class RedisHelper
                 redisValue = Compress(Encoding.UTF8.GetBytes(jsonString));
                 break;
         }
-        return ConvertToRedisValue(type, redisValue);
+        return ConvertToRedisValue(actualType, redisValue);
     }
 
     private static byte[] Compress(byte[] data)
@@ -88,9 +88,30 @@ internal static class RedisHelper
         return value;
     }
 
-    private static CompressMode GetCompressMode(this Type type)
+    private static List<Type> noneTypeList = new()
     {
-        switch (Type.GetTypeCode(type))
+        typeof(Byte?),
+        typeof(SByte?),
+        typeof(UInt16?),
+        typeof(UInt32?),
+        typeof(UInt64?),
+        typeof(Int16?),
+        typeof(Int32?),
+        typeof(Int64?),
+        typeof(Double?),
+        typeof(Single?),
+        typeof(Decimal?)
+    };
+
+    private static CompressMode GetCompressMode(this Type type, out Type actualType)
+    {
+        if (type.IsGenericType && noneTypeList.Contains(type))
+            actualType = type.GenericTypeArguments[0];
+        else
+            actualType = type;
+
+
+        switch (Type.GetTypeCode(actualType))
         {
             case TypeCode.Byte:
             case TypeCode.SByte:

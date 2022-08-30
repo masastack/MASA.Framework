@@ -5,11 +5,20 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 public class TestBase
 {
-    protected ConfigurationOptions GetConfigurationOptions()
+    protected RedisConfigurationOptions GetConfigurationOptions()
     {
-        var configurationOptions = new ConfigurationOptions();
-        configurationOptions.EndPoints.Add("localhost", 6379);
-        return configurationOptions;
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        redisConfigurationOptions.Servers.Add(new RedisServerOptions());
+        return redisConfigurationOptions;
+    }
+
+    protected CacheEntryOptions GetCacheEntryOptions()
+    {
+        var cacheEntryOptions = new CacheEntryOptions()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+        };
+        return cacheEntryOptions;
     }
 
     protected JsonSerializerOptions GetJsonSerializerOptions()

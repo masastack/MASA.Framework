@@ -9,28 +9,26 @@ public abstract class BaseDistributedCacheClient
     protected ISubscriber Subscriber;
     protected IDatabase Db;
     protected readonly JsonSerializerOptions JsonSerializerOptions;
-    protected CacheEntryOptions CacheEntryOptions;
+    protected readonly CacheEntryOptions CacheEntryOptions;
 
     static BaseDistributedCacheClient() => UniquelyIdentifies = Guid.NewGuid();
 
     protected BaseDistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
-        CacheEntryOptions? cacheEntryOptions,
         JsonSerializerOptions? jsonSerializerOptions)
     {
-        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(GetRedisConfigurationOptions(redisConfigurationOptions));
+        var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);
+        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Db = connection.GetDatabase();
         Subscriber = connection.GetSubscriber();
 
         JsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
-        if (cacheEntryOptions == null)
-            CacheEntryOptions = new CacheEntryOptions();
-        else
-            CacheEntryOptions = new CacheEntryOptions
-            {
-                AbsoluteExpiration = cacheEntryOptions.AbsoluteExpiration,
-                AbsoluteExpirationRelativeToNow = cacheEntryOptions.AbsoluteExpirationRelativeToNow,
-                SlidingExpiration = cacheEntryOptions.SlidingExpiration
-            };
+
+        CacheEntryOptions = new CacheEntryOptions
+        {
+            AbsoluteExpiration = redisConfiguration.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = redisConfiguration.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = redisConfiguration.SlidingExpiration
+        };
     }
 
     private RedisConfigurationOptions GetRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)

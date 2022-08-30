@@ -86,38 +86,4 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
         where TOptions : class
         => services.TryAddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION);
-
-    /// <summary>
-    /// Only consider using MasaConfiguration and database configuration using local configuration
-    /// When using MasaConfiguration and the database configuration is stored in ConfigurationApi, you need to specify the mapping relationship in Configuration by yourself
-    /// </summary>
-    /// <param name="services"></param>
-    /// <param name="sectionName"></param>
-    /// <typeparam name="TOptions"></typeparam>
-    /// <returns></returns>
-    private static IServiceCollection TryAddConfigure<TOptions>(
-        this IServiceCollection services,
-        string sectionName)
-        where TOptions : class
-    {
-        services.AddOptions();
-        var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
-            serviceProvider.GetService<IConfiguration>();
-        if (configuration == null)
-            return services;
-
-        string name = Microsoft.Extensions.Options.Options.DefaultName;
-        var configurationSection = configuration.GetSection(sectionName);
-        if (!configurationSection.Exists())
-            return services;
-
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
-            configuration, _ =>
-            {
-            }));
-        return services;
-    }
 }

@@ -74,6 +74,9 @@ internal sealed class Const
     // ARGV[3] = relative-expiration (long, in seconds, -1 for none) - Min(absolute-expiration - Now, sliding-expiration)
     // this order should not change LUA script depends on it
     public const string SET_EXPIRATION_SCRIPT = @"
+                local exist = redis.call('EXISTS',KEYS[1])
+                if(exist ~= 1) then
+                  return 0 end
                 redis.call('HSET', KEYS[1], '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2])
                 if ARGV[3] ~= '-1' then
                   redis.call('EXPIRE', KEYS[1], ARGV[3])
@@ -85,13 +88,15 @@ internal sealed class Const
     public const string SET_MULTIPLE_EXPIRATION_SCRIPT = @"
                 local count = 0
                 for i, key in ipairs(KEYS) do
-                  redis.call('HSET', key, '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2])
-                  if ARGV[3] ~= '-1' then
-                    redis.call('EXPIRE', key, ARGV[3])
-                  else
-                    redis.call('PERSIST', key)
+                  if(redis.call('EXISTS', key) == 1) then
+                    redis.call('HSET', key, '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2])
+                    if ARGV[3] ~= '-1' then
+                      redis.call('EXPIRE', key, ARGV[3])
+                    else
+                      redis.call('PERSIST', key)
+                    end
+                    count = count + 1
                   end
-                  count = count + 1
                 end
                 return count";
 }

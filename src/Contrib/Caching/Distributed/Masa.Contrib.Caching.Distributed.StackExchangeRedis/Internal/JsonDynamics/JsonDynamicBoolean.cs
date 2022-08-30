@@ -9,12 +9,10 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 internal sealed class JsonDynamicBoolean : JsonDynamicType
 {
     private object _value;
-    private Type? _type;
 
     public JsonDynamicBoolean(bool value, JsonSerializerOptions options) : base(options)
     {
         _value = value;
-        _type = typeof(bool);
     }
 
     public override T? GetValue<T>() where T : default
@@ -27,7 +25,6 @@ internal sealed class JsonDynamicBoolean : JsonDynamicType
     public override void SetValue(object value)
     {
         _value = value;
-        _type = value.GetType();
     }
 
     protected override bool TryConvert(Type returnType, out object? result)
@@ -44,7 +41,6 @@ internal sealed class JsonDynamicBoolean : JsonDynamicType
         }
 
         result = _value = JsonSerializer.Deserialize($"\"{Value}\"", returnType, Options)!;
-        _type = result?.GetType()!;
         return true;
     }
 

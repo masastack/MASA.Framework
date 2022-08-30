@@ -60,7 +60,7 @@ public class RedisServerOptions
         if (string.IsNullOrWhiteSpace(host))
             throw new ArgumentNullException(nameof(host));
 
-        if (Port <= 0)
+        if (port <= 0)
             throw new ArgumentOutOfRangeException(nameof(port), $"{nameof(port)} must be greater than 0");
 
         Host = host;

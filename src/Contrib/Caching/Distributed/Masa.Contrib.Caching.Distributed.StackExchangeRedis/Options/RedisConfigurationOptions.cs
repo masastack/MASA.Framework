@@ -65,23 +65,6 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// </summary>
     public int SyncTimeout { get; set; } = 1000;
 
-    public void Initialize(RedisConfigurationOptions options)
-    {
-        Servers = options.Servers;
-        ClientName = options.ClientName;
-        ChannelPrefix = options.ChannelPrefix;
-        ConnectRetry = options.ConnectRetry;
-        ConnectTimeout = options.ConnectTimeout;
-        DefaultDatabase = options.DefaultDatabase;
-        Password = options.Password;
-        Proxy = options.Proxy;
-        Ssl = options.Ssl;
-        SyncTimeout = options.SyncTimeout;
-        AbsoluteExpiration = options.AbsoluteExpiration;
-        AbsoluteExpirationRelativeToNow = options.AbsoluteExpirationRelativeToNow;
-        SlidingExpiration = options.SlidingExpiration;
-    }
-
     public static implicit operator ConfigurationOptions(RedisConfigurationOptions options)
     {
         var configurationOptions = new ConfigurationOptions
