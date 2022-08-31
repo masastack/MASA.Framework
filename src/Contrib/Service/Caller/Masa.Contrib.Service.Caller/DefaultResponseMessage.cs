@@ -44,19 +44,22 @@ public class DefaultResponseMessage : IResponseMessage
 
                         return (TResponse?)(object)DateTime.Parse(content);
                     }
+
+                    var actualType = Nullable.GetUnderlyingType(responseType);
+
                     if (responseType.GetInterfaces().Any(type => type == typeof(IConvertible)) ||
-                        (responseType.IsGenericType && responseType.GenericTypeArguments.Length == 1 && responseType
-                            .GenericTypeArguments[0].GetInterfaces().Any(type => type == typeof(IConvertible))))
+                        (actualType != null && actualType.GetInterfaces().Any(type => type == typeof(IConvertible))))
                     {
                         var content = await response.Content.ReadAsStringAsync(cancellationToken);
                         if (IsNullOrEmpty(content))
                             return default;
 
-                        if (responseType.IsGenericType)
-                            return (TResponse?)Convert.ChangeType(content, responseType.GenericTypeArguments[0]);
+                        if (actualType != null)
+                            return (TResponse?)Convert.ChangeType(content, actualType);
 
                         return (TResponse?)Convert.ChangeType(content, responseType);
                     }
+
                     try
                     {
                         return await response.Content.ReadFromJsonAsync<TResponse>(_options.JsonSerializerOptions, cancellationToken);
