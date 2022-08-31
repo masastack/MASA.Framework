@@ -308,4 +308,31 @@ public class ConfigurationTest
         var localConfiguration = builder.GetMasaConfiguration().Local;
         Assert.IsTrue(localConfiguration[key] == value);
     }
+
+    [TestMethod]
+    public void TestMasaConfigurationByName()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.AddMasaConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
+                .AddJsonFile("rabbitMq.json", true, true);
+            configurationBuilder.UseMasaOptions(option =>
+            {
+                option.MappingLocal<RedisOptions>();
+                option.MappingLocal<RedisOptions>("RedisOptions2", "RedisOptions2");
+            });
+        }, typeof(ConfigurationTest).Assembly);
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var options = serviceProvider.GetService<IOptionsSnapshot<RedisOptions>>();
+        Assert.IsNotNull(options);
+        Assert.AreEqual("localhost", options.Value.Ip);
+        Assert.AreEqual("", options.Value.Password);
+        Assert.AreEqual(6379, options.Value.Port);
+
+        var options2 = options.Get("RedisOptions2");
+        Assert.AreEqual("127.0.0.1", options2.Ip);
+        Assert.AreEqual("123456", options2.Password);
+        Assert.AreEqual(6378, options2.Port);
+    }
 }
