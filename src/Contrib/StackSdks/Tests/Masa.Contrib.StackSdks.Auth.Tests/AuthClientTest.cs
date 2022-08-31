@@ -12,6 +12,7 @@ public class AuthClientTest
         var services = new ServiceCollection();
         services.AddMasaIdentityModel();
         services.AddAuthClient("https://localhost:18102");
+        services.AddScoped<TokenProvider>();
         var authClient = services.BuildServiceProvider().GetRequiredService<IAuthClient>();
 
         Assert.IsNotNull(authClient);
