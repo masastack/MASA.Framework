@@ -8,7 +8,7 @@ internal static class RedisHelper
     public static T? ConvertToValue<T>(this RedisValue redisValue, JsonSerializerOptions jsonSerializerOptions)
     {
         var type = typeof(T);
-        var compressMode = GetCompressMode(type,out Type actualType);
+        var compressMode = GetCompressMode(type, out Type actualType);
 
         if (compressMode == CompressMode.None)
             return (T?)Convert.ChangeType(redisValue, actualType);
@@ -51,7 +51,7 @@ internal static class RedisHelper
     {
         var type = typeof(T);
         dynamic redisValue;
-        switch (GetCompressMode(type,out Type actualType))
+        switch (GetCompressMode(type, out Type actualType))
         {
             case CompressMode.None:
                 redisValue = value!;
@@ -88,28 +88,9 @@ internal static class RedisHelper
         return value;
     }
 
-    private static List<Type> noneTypeList = new()
-    {
-        typeof(Byte?),
-        typeof(SByte?),
-        typeof(UInt16?),
-        typeof(UInt32?),
-        typeof(UInt64?),
-        typeof(Int16?),
-        typeof(Int32?),
-        typeof(Int64?),
-        typeof(Double?),
-        typeof(Single?),
-        typeof(Decimal?)
-    };
-
     private static CompressMode GetCompressMode(this Type type, out Type actualType)
     {
-        if (type.IsGenericType && noneTypeList.Contains(type))
-            actualType = type.GenericTypeArguments[0];
-        else
-            actualType = type;
-
+        actualType = Nullable.GetUnderlyingType(type) ?? type;
 
         switch (Type.GetTypeCode(actualType))
         {
