@@ -12,7 +12,6 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     {
         redisConfigurationOptions.OnChange((option, optionName) =>
         {
-            //todo:
             if (optionName == name)
             {
                 RefreshRedisConfigurationOptions(option);

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Builder;
-
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 [TestClass]
@@ -72,6 +70,7 @@ public class StackExchangeRedisCacheTest
     public void TestAddStackExchangeRedisCacheByAppsettings()
     {
         var builder = WebApplication.CreateBuilder();
+        var rootPath = builder.Environment.ContentRootPath;
         var services = builder.Services;
         services.AddStackExchangeRedisCache("test");
 
@@ -81,27 +80,30 @@ public class StackExchangeRedisCacheTest
         distributedCacheClient.Set(key, "test_content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
 
-        var oldContent = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"));
-        File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json"),
-            JsonSerializer.Serialize(new RedisConfigurationOptions()
+        var oldContent = File.ReadAllText(Path.Combine(rootPath, "appsettings.json"));
+        File.WriteAllText(Path.Combine(rootPath, "appsettings.json"),
+            JsonSerializer.Serialize(new
             {
-                Servers = new List<RedisServerOptions>()
+                RedisConfig = new RedisConfigurationOptions()
                 {
-                    new("localhost", 6379)
-                },
-                DefaultDatabase = 1
+                    Servers = new List<RedisServerOptions>()
+                    {
+                        new("localhost", 6379)
+                    },
+                    DefaultDatabase = 1
+                }
             }));
 
-        Thread.Sleep(5000);
+        Thread.Sleep(3000);
         distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
 
         var exist = distributedCacheClient.Exists(key);
 
         Assert.IsFalse(exist);
 
-        File.WriteAllText(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "appsettings.json")), oldContent);
+        File.WriteAllText(Path.Combine(Path.Combine(rootPath, "appsettings.json")), oldContent);
 
-        Thread.Sleep(5000);
+        Thread.Sleep(3000);
 
         distributedCacheClient.Remove(key);
     }
