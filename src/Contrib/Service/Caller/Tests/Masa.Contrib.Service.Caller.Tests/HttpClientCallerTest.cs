@@ -154,6 +154,72 @@ public class HttpClientCallerTest
     }
 
     [TestMethod]
+    public async Task TestResponseIsStringArrayAsync()
+    {
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var result = await defaultResponseMessage.ProcessResponseAsync<List<string>>(GetHttpResponseMessage());
+        Assert.IsNotNull(result);
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual("test", result[0]);
+
+        var result2 = (await defaultResponseMessage.ProcessResponseAsync<string[]?>(GetHttpResponseMessage()))?.ToList();
+        Assert.IsNotNull(result2);
+        Assert.AreEqual(1, result2.Count);
+        Assert.AreEqual("test", result2[0]);
+
+        HttpResponseMessage GetHttpResponseMessage()
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(new List<string>()
+                {
+                    "test"
+                }))
+            };
+        }
+    }
+
+    [TestMethod]
+    public async Task TestResponseIsIntArrayAsync()
+    {
+        var services = new ServiceCollection();
+        services.Configure<CallerFactoryOptions>(option =>
+        {
+            option.JsonSerializerOptions = new JsonSerializerOptions();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var result = await defaultResponseMessage.ProcessResponseAsync<List<int>>(GetHttpResponseMessage());
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.Count);
+        Assert.AreEqual(1, result[0]);
+        Assert.AreEqual(2, result[1]);
+
+        var result2 = (await defaultResponseMessage.ProcessResponseAsync<int[]?>(GetHttpResponseMessage()))?.ToList();
+        Assert.IsNotNull(result2);
+        Assert.AreEqual(2, result2.Count);
+        Assert.AreEqual(1, result2[0]);
+        Assert.AreEqual(2, result2[1]);
+
+        HttpResponseMessage GetHttpResponseMessage()
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(new List<int>()
+                {
+                    1, 2
+                }))
+            };
+        }
+    }
+
+    [TestMethod]
     public async Task TestResponseIsIntAsync()
     {
         HttpResponseMessage httpResponseMessage = new HttpResponseMessage(HttpStatusCode.OK)
