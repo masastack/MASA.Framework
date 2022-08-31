@@ -14,8 +14,7 @@ public static class ServiceCollectionExtensions
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
             })
-            .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>()
-            .AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>();
         });
     }
 
@@ -28,13 +27,17 @@ public static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
-        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddCaller(callerOptions);
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
+            var tokenProvider = serviceProvider.GetRequiredService<TokenProvider>();
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+            callProvider.ConfigRequestMessage(httpRequestMessage =>
+            {
+                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+            });
             var authClient = new AuthClient(callProvider, userContext);
             return authClient;
         });
