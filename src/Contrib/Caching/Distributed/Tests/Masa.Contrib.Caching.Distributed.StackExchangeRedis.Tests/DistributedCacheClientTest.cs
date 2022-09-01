@@ -191,6 +191,36 @@ public class DistributedCacheClientTest : TestBase
         _distributedCacheClient.RemoveAsync(key);
     }
 
+    [DataTestMethod]
+    [DataRow("cache_test_sync")]
+    public void SetByStringArray(string key)
+    {
+        string[] values = new string[] { "test", "test2" };
+        _distributedCacheClient.Remove(key);
+        _distributedCacheClient.Set(key, values);
+
+        var actualValues = _distributedCacheClient.Get<string[]>(key);
+        Assert.IsNotNull(actualValues);
+        Assert.AreEqual(values.Length, actualValues.Length);
+        Assert.IsTrue(actualValues.Contains("test") && actualValues.Contains("test2"));
+        _distributedCacheClient.RemoveAsync(key);
+    }
+
+    [DataTestMethod]
+    [DataRow("cache_test_sync")]
+    public void SetByStringCollection(string key)
+    {
+        List<string> values = new List<string>() { "test", "test2" };
+        _distributedCacheClient.Remove(key);
+        _distributedCacheClient.Set(key, values);
+
+        var actualValues = _distributedCacheClient.Get<string[]>(key);
+        Assert.IsNotNull(actualValues);
+        Assert.AreEqual(values.Count, actualValues.Length);
+        Assert.IsTrue(actualValues.Contains("test") && actualValues.Contains("test2"));
+        _distributedCacheClient.RemoveAsync(key);
+    }
+
     [TestMethod]
     public void SetList()
     {
