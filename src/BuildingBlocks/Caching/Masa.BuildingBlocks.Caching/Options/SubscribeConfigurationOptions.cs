@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Caching;
 
 public class SubscribeConfigurationOptions
 {
-    public SubscribeKeyTypes SubscribeKeyTypes { get; set; }
+    public SubscribeKeyType SubscribeKeyTypes { get; set; }
 
     public string SubscribeKeyPrefix { get; set; } = string.Empty;
 }

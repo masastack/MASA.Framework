@@ -6,7 +6,7 @@ namespace Masa.BuildingBlocks.Caching;
 /// <summary>
 /// The subscribe key type.
 /// </summary>
-public enum SubscribeKeyTypes
+public enum SubscribeKeyType
 {
     ValueTypeFullName = 1,
 

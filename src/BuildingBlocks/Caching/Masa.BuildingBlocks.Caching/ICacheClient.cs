@@ -11,7 +11,11 @@ public interface ICacheClient
 
     IEnumerable<T?> GetList<T>(params string[] keys);
 
+    IEnumerable<T?> GetList<T>(IEnumerable<string> keys);
+
     Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
+
+    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys);
 
     T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter);
 
@@ -43,5 +47,9 @@ public interface ICacheClient
 
     void Refresh(params string[] keys);
 
+    void Refresh(IEnumerable<string> keys);
+
     Task RefreshAsync(params string[] keys);
+
+    Task RefreshAsync(IEnumerable<string> keys);
 }

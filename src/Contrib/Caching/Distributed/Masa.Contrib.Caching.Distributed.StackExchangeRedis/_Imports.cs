@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Configuration;
+global using Masa.Contrib.Caching.Distributed;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

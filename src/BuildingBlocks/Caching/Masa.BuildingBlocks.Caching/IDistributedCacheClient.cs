@@ -7,7 +7,11 @@ public interface IDistributedCacheClient : ICacheClient
 {
     void Remove(params string[] keys);
 
+    void Remove(IEnumerable<string> keys);
+
     Task RemoveAsync(params string[] keys);
+
+    Task RemoveAsync(IEnumerable<string> keys);
 
     bool Exists(string key);
 
@@ -50,9 +54,9 @@ public interface IDistributedCacheClient : ICacheClient
 
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
-    long KeyExpire(string[] keys, CacheEntryOptions? options = null);
+    long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
 
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 
-    Task<long> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null);
+    Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null);
 }

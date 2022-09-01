@@ -133,7 +133,7 @@ public abstract class BaseDistributedCacheClient
         return list;
     }
 
-    internal List<DataCacheOptions> GetList(string[] keys, bool getData)
+    internal List<DataCacheOptions> GetList(IEnumerable<string> keys, bool getData)
     {
         string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = Db
@@ -142,7 +142,7 @@ public abstract class BaseDistributedCacheClient
         return GetListByArrayRedisResult(arrayRedisResult);
     }
 
-    internal async Task<List<DataCacheOptions>> GetListAsync(string[] keys, bool getData)
+    internal async Task<List<DataCacheOptions>> GetListAsync(IEnumerable<string> keys, bool getData)
     {
         string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = (await Db
@@ -161,6 +161,8 @@ public abstract class BaseDistributedCacheClient
         }
         return list;
     }
+
+    protected static IEnumerable<string> GetKeys(params string[] keys)=> keys;
 
     private static List<KeyValuePair<string, TimeSpan?>> GetKeyAndExpireList(
         List<DataCacheOptions> options,

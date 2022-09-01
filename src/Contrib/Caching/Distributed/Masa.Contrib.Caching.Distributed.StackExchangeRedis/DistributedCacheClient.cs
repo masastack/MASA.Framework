@@ -42,6 +42,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     }
 
     public IEnumerable<T?> GetList<T>(params string[] keys)
+        => GetList<T>(GetKeys(keys));
+
+    public IEnumerable<T?> GetList<T>(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -52,7 +55,10 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
-    public async Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
+    public Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
+        => GetListAsync<T>(GetKeys(keys));
+
+    public async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -223,13 +229,19 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     #region Refresh
 
     public void Refresh(params string[] keys)
+        => Refresh(GetKeys(keys));
+
+    public void Refresh(IEnumerable<string> keys)
     {
         var list = GetList(keys, false);
 
         RefreshCore(list);
     }
 
-    public async Task RefreshAsync(params string[] keys)
+    public Task RefreshAsync(params string[] keys)
+        => RefreshAsync(GetKeys(keys));
+
+    public async Task RefreshAsync(IEnumerable<string> keys)
     {
         var list = await GetListAsync(keys, false);
 
@@ -241,6 +253,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     #region Remove
 
     public void Remove(params string[] keys)
+        => Remove(GetKeys(keys));
+
+    public void Remove(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -254,6 +269,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     }
 
     public Task RemoveAsync(params string[] keys)
+        => RemoveAsync(GetKeys(keys));
+
+    public Task RemoveAsync(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -378,7 +396,7 @@ end";
         return (long?)result == 1;
     }
 
-    public long KeyExpire(string[] keys, CacheEntryOptions? options = null)
+    public long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -406,7 +424,7 @@ end";
         return (long)result == 1;
     }
 
-    public async Task<long> KeyExpireAsync(string[] keys, CacheEntryOptions? options = null)
+    public async Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
