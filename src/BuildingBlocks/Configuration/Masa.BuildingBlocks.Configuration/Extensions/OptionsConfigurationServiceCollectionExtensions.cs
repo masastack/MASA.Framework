@@ -15,7 +15,7 @@ public static class OptionsConfigurationServiceCollectionExtensions
     /// <param name="isRoot"></param>
     /// <typeparam name="TOptions"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection TryAddConfigure<TOptions>(
+    public static IServiceCollection AddConfigure<TOptions>(
         this IServiceCollection services,
         string sectionName,
         string? name = null,

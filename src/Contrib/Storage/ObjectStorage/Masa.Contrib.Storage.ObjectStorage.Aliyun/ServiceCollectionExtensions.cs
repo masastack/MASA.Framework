@@ -20,8 +20,8 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrEmpty(sectionName))
             throw new ArgumentException(sectionName, nameof(sectionName));
 
-        services.TryAddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
-        services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
+        services.AddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
+        services.AddConfigure<AliyunStorageConfigureOptions>(sectionName);
         services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
             => new DefaultAliyunStorageOptionProvider(GetAliyunStorageConfigurationOption(serviceProvider)));
         services.TryAddSingleton<IClientContainer>(serviceProvider

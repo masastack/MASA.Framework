@@ -9,23 +9,39 @@ public interface IMultilevelCacheClient : ICacheClient
 
     Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
 
+    T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
+
+    Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
+
+    void Refresh<T>(params string[] keys);
+
+    void Refresh<T>(IEnumerable<string> keys);
+
+    Task RefreshAsync<T>(params string[] keys);
+
+    Task RefreshAsync<T>(IEnumerable<string> keys);
+
     void Remove<T>(params string[] keys);
+
+    void Remove<T>(IEnumerable<string> keys);
 
     Task RemoveAsync<T>(params string[] keys);
 
-    void Set<T>(string key, T value, CacheEntryOptions<T>? distributedOptions, CacheEntryOptions<T>? memoryOptions);
+    Task RemoveAsync<T>(IEnumerable<string> keys);
 
-    Task SetAsync<T>(string key, T value, CacheEntryOptions<T>? distributedOptions, CacheEntryOptions<T>? memoryOptions);
+    void Set<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    void Set<T>(string key, T value, CombinedCacheEntryOptions<T>? options);
+    Task SetAsync<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions<T>? options);
+    void Set<T>(string key, T value, CombinedCacheEntryOptions? options);
 
-    void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? distributedOptions, CacheEntryOptions<T>? memoryOptions);
+    Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? distributedOptions, CacheEntryOptions<T>? memoryOptions);
+    void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions<T>? options);
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions<T>? options);
+    void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
+
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
 }

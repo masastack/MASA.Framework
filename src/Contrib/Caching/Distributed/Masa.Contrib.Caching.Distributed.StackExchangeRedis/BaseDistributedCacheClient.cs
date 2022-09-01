@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-public abstract class BaseDistributedCacheClient
+public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClient
 {
     protected static Guid UniquelyIdentifies;
     protected ISubscriber Subscriber;
@@ -161,8 +161,6 @@ public abstract class BaseDistributedCacheClient
         }
         return list;
     }
-
-    protected static IEnumerable<string> GetKeys(params string[] keys)=> keys;
 
     private static List<KeyValuePair<string, TimeSpan?>> GetKeyAndExpireList(
         List<DataCacheModel> models,

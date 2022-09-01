@@ -28,6 +28,9 @@ internal static class RedisHelper
         return JsonSerializer.Deserialize<T>(value, jsonSerializerOptions);
     }
 
+    public static RedisKey[] GetRedisKeys(this IEnumerable<string> keys)
+        => keys.Select(key => (RedisKey)key).ToArray();
+
     public static byte[] Decompress(byte[] data)
     {
         using (MemoryStream ms = new MemoryStream(data))

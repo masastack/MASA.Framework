@@ -39,7 +39,8 @@ public class StackExchangeRedisCacheTest
             {
                 new("localhost")
             }
-        }).AddStackExchangeRedisCache("test2", new RedisConfigurationOptions()
+        });
+        services.AddStackExchangeRedisCache("test2", new RedisConfigurationOptions()
         {
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCacheClient
+public class DistributedCacheClient : BaseDistributedCacheClient
 {
     public DistributedCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
         string name,
@@ -27,24 +27,21 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region Get
 
-    public T? Get<T>(string key)
+    public override T? Get<T>(string key) where T : default
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return GetAndRefresh<T>(key);
     }
 
-    public async Task<T?> GetAsync<T>(string key)
+    public override async Task<T?> GetAsync<T>(string key) where T : default
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return await GetAndRefreshAsync<T>(key);
     }
 
-    public IEnumerable<T?> GetList<T>(params string[] keys)
-        => GetList<T>(GetKeys(keys));
-
-    public IEnumerable<T?> GetList<T>(IEnumerable<string> keys)
+    public override IEnumerable<T?> GetList<T>(IEnumerable<string> keys) where T : default
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -55,10 +52,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
-    public Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
-        => GetListAsync<T>(GetKeys(keys));
-
-    public async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys)
+    public override async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys) where T : default
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
@@ -69,7 +63,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
     }
 
-    public T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter)
+    public override T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter) where T : default
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -83,7 +77,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         });
     }
 
-    public async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter)
+    public override async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter) where T : default
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -102,7 +96,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     /// </summary>
     /// <param name="keyPattern">keyPattern, such as: app_*</param>
     /// <returns></returns>
-    public List<string> GetKeys(string keyPattern)
+    public override List<string> GetKeys(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
         var cacheResult = Db.ScriptEvaluate(prepared, new { pattern = keyPattern });
@@ -114,14 +108,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
     /// </summary>
     /// <param name="keyPattern">keyPattern, such as: app_*</param>
     /// <returns></returns>
-    public async Task<List<string>> GetKeysAsync(string keyPattern)
+    public override async Task<List<string>> GetKeysAsync(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
         var cacheResult = await Db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
         return ((string[])cacheResult).ToList();
     }
 
-    public List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern)
+    public override List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern) where T : default
     {
         var list = GetListByKeyPattern(keyPattern);
 
@@ -130,7 +124,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
     }
 
-    public async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern)
+    public override async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern) where T : default
     {
         var list = await GetListByKeyPatternAsync(keyPattern);
 
@@ -143,19 +137,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region Set
 
-    public void Set<T>(string key, T value, DateTimeOffset absoluteExpiration)
-        => Set(key, value, new CacheEntryOptions<T>(absoluteExpiration));
-
-    public Task SetAsync<T>(string key, T value, DateTimeOffset absoluteExpiration)
-        => SetAsync(key, value, new CacheEntryOptions<T>(absoluteExpiration));
-
-    public void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
-        => Set(key, value, new CacheEntryOptions<T>(absoluteExpirationRelativeToNow));
-
-    public Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow)
-        => SetAsync(key, value, new CacheEntryOptions<T>(absoluteExpirationRelativeToNow));
-
-    public void Set<T>(string key, T value, CacheEntryOptions<T>? options = null)
+    public override void Set<T>(string key, T value, CacheEntryOptions? options = null) where T : default
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -169,7 +151,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
             GetRedisValues(options, () => new[] { bytesValue }));
     }
 
-    public async Task SetAsync<T>(string key, T value, CacheEntryOptions<T>? options = null)
+    public override async Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null)
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -184,42 +166,28 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         ).ConfigureAwait(false);
     }
 
-    public void SetList<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration)
-        => SetList(keyValues, new CacheEntryOptions<T>(absoluteExpiration));
-
-    public Task SetListAsync<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration)
-        => SetListAsync(keyValues, new CacheEntryOptions<T>(absoluteExpiration));
-
-    public void SetList<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow)
-        => SetList(keyValues, new CacheEntryOptions<T>(absoluteExpirationRelativeToNow));
-
-    public Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow)
-        => SetListAsync(keyValues, new CacheEntryOptions<T>(absoluteExpirationRelativeToNow));
-
-    public void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? options = null)
+    public override void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
     {
         ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
 
-        var redisKeys = keyValues.Select(item => (RedisKey)item.Key).ToArray();
         var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
 
         Db.ScriptEvaluate(
             Const.SET_MULTIPLE_SCRIPT,
-            redisKeys,
+            keyValues.Select(item => item.Key).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
     }
 
-    public async Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? options = null)
+    public override async Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
     {
         ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
 
-        var redisKeys = keyValues.Select(item => (RedisKey)item.Key).ToArray();
         var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
 
         await Db.ScriptEvaluateAsync(
             Const.SET_MULTIPLE_SCRIPT,
-            redisKeys,
+            keyValues.Select(item => item.Key).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
     }
@@ -228,20 +196,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region Refresh
 
-    public void Refresh(params string[] keys)
-        => Refresh(GetKeys(keys));
-
-    public void Refresh(IEnumerable<string> keys)
+    public override void Refresh(IEnumerable<string> keys)
     {
         var list = GetList(keys, false);
 
         RefreshCore(list);
     }
 
-    public Task RefreshAsync(params string[] keys)
-        => RefreshAsync(GetKeys(keys));
-
-    public async Task RefreshAsync(IEnumerable<string> keys)
+    public override async Task RefreshAsync(IEnumerable<string> keys)
     {
         var list = await GetListAsync(keys, false);
 
@@ -252,14 +214,11 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region Remove
 
-    public void Remove(params string[] keys)
-        => Remove(GetKeys(keys));
-
-    public void Remove(IEnumerable<string> keys)
+    public override void Remove(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        Db.KeyDelete(keys.Select(key => (RedisKey)key).ToArray());
+        Db.KeyDelete(keys.GetRedisKeys());
 
         Parallel.ForEach(keys, key => Publish(key, options =>
         {
@@ -268,28 +227,25 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         }));
     }
 
-    public Task RemoveAsync(params string[] keys)
-        => RemoveAsync(GetKeys(keys));
-
-    public Task RemoveAsync(IEnumerable<string> keys)
+    public override Task RemoveAsync(IEnumerable<string> keys)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        return Db.KeyDeleteAsync(keys.Select(key => (RedisKey)key).ToArray());
+        return Db.KeyDeleteAsync(keys.GetRedisKeys());
     }
 
     #endregion
 
     #region Exist
 
-    public bool Exists(string key)
+    public override bool Exists(string key)
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
         return Db.KeyExists(key);
     }
 
-    public Task<bool> ExistsAsync(string key)
+    public override Task<bool> ExistsAsync(string key)
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -300,7 +256,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region PubSub
 
-    public void Publish(string channel, Action<PublishOptions> setup)
+    public override void Publish(string channel, Action<PublishOptions> setup)
     {
         PublishCore(channel, setup, (c, message) =>
         {
@@ -309,13 +265,13 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         });
     }
 
-    public async Task PublishAsync(string channel, Action<PublishOptions> setup)
+    public override async Task PublishAsync(string channel, Action<PublishOptions> setup)
     {
         PublishCore(channel, setup, async (c, message) => await Subscriber.PublishAsync(c, message));
         await Task.CompletedTask;
     }
 
-    public void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler)
+    public override void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler)
     {
         Subscriber.Subscribe(channel, (_, message) =>
         {
@@ -326,7 +282,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
         });
     }
 
-    public Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> handler)
+    public override Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> handler)
     {
         return Subscriber.SubscribeAsync(channel, (_, message) =>
         {
@@ -341,14 +297,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient, IDistributedCa
 
     #region Hash
 
-    public Task<long> HashIncrementAsync(string key, long value = 1)
+    public override Task<long> HashIncrementAsync(string key, long value = 1)
     {
         if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
 
         return Db.HashIncrementAsync(key, Const.DATA_KEY, value);
     }
 
-    public async Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0L)
+    public override async Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0L)
     {
         if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
 
@@ -371,19 +327,7 @@ end";
 
     #region Expire
 
-    public bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
-        => KeyExpire(key, new CacheEntryOptions(absoluteExpiration));
-
-    public Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration)
-        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpiration));
-
-    public bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow)
-        => KeyExpire(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
-
-    public Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
-        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
-
-    public bool KeyExpire(string key, CacheEntryOptions? options = null)
+    public override bool KeyExpire(string key, CacheEntryOptions? options = null)
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -396,22 +340,20 @@ end";
         return (long?)result == 1;
     }
 
-    public long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null)
+    public override long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        var redisKeys = keys.Select(key => (RedisKey)key).ToArray();
-
         var result = Db.ScriptEvaluate(
             Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
-            redisKeys,
+            keys.GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options))
         );
 
         return (long)result;
     }
 
-    public async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
+    public override async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
     {
         key.CheckIsNullOrWhiteSpace(nameof(key));
 
@@ -424,15 +366,13 @@ end";
         return (long)result == 1;
     }
 
-    public async Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null)
+    public override async Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys, nameof(keys));
 
-        var redisKeys = keys.Select(key => (RedisKey)key).ToArray();
-
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
-            redisKeys,
+            keys.GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options))
         );
 

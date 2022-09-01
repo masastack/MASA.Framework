@@ -5,6 +5,18 @@ namespace Masa.BuildingBlocks.Caching;
 
 public interface IDistributedCacheClient : ICacheClient
 {
+    T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter);
+
+    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter);
+
+    void Refresh(params string[] keys);
+
+    void Refresh(IEnumerable<string> keys);
+
+    Task RefreshAsync(params string[] keys);
+
+    Task RefreshAsync(IEnumerable<string> keys);
+
     void Remove(params string[] keys);
 
     void Remove(IEnumerable<string> keys);

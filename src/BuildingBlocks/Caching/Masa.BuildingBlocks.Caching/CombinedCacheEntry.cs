@@ -3,9 +3,9 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class CombinedCacheEntryOptions
+public class CombinedCacheEntry<T>
 {
     public CacheEntryOptions? MemoryCacheEntryOptions { get; set; }
 
-    public CacheEntryOptions? DistributedCacheEntryOptions { get; set; }
+    public Func<CacheEntry<T>> DistributedCacheEntryFunc { get; set; }
 }

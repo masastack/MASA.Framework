@@ -17,10 +17,6 @@ public interface ICacheClient
 
     Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys);
 
-    T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter);
-
-    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter);
-
     void Set<T>(string key, T value, DateTimeOffset absoluteExpiration);
 
     Task SetAsync<T>(string key, T value, DateTimeOffset absoluteExpiration);
@@ -29,9 +25,9 @@ public interface ICacheClient
 
     Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
 
-    void Set<T>(string key, T value, CacheEntryOptions<T>? options = null);
+    void Set<T>(string key, T value, CacheEntryOptions? options = null);
 
-    Task SetAsync<T>(string key, T value, CacheEntryOptions<T>? options = null);
+    Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null);
 
     void SetList<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
 
@@ -41,15 +37,7 @@ public interface ICacheClient
 
     Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
 
-    void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? options = null);
+    void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions<T>? options = null);
-
-    void Refresh(params string[] keys);
-
-    void Refresh(IEnumerable<string> keys);
-
-    Task RefreshAsync(params string[] keys);
-
-    Task RefreshAsync(IEnumerable<string> keys);
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 }

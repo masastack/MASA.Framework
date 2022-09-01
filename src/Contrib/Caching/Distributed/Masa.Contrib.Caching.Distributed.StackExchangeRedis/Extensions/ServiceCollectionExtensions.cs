@@ -5,21 +5,29 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddStackExchangeRedisCache(this IServiceCollection services,
+    public static ICachingBuilder AddStackExchangeRedisCache(this IServiceCollection services,
         RedisConfigurationOptions redisConfigurationOptions)
         => services.AddStackExchangeRedisCache(
             Microsoft.Extensions.Options.Options.DefaultName,
             redisConfigurationOptions);
 
-    public static IServiceCollection AddStackExchangeRedisCache(
+    /// <summary>
+    /// Add distributed Redis cache
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="name"></param>
+    /// <param name="redisSectionName">redis node name, not required, default: RedisConfig(Use local configuration)</param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <returns></returns>
+    public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.AddStackExchangeRedisCacheCore();
+        services.AddDistributedCacheCore();
 
-        services.TryAddConfigure<RedisConfigurationOptions>(redisSectionName, name);
+        services.AddConfigure<RedisConfigurationOptions>(redisSectionName, name);
 
         services.Configure<DistributedCacheFactoryOptions>(options =>
         {
@@ -38,16 +46,16 @@ public static class ServiceCollectionExtensions
             options.Options.Add(cacheRelationOptions);
         });
 
-        return services;
+        return new CachingBuilder(services, name);
     }
 
-    public static IServiceCollection AddStackExchangeRedisCache(
+    public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.AddStackExchangeRedisCacheCore();
+        services.AddDistributedCacheCore();
 
         services.Configure<DistributedCacheFactoryOptions>(options =>
         {
@@ -65,21 +73,6 @@ public static class ServiceCollectionExtensions
             options.Options.Add(cacheRelationOptions);
         });
 
-        return services;
-    }
-
-    private static void AddStackExchangeRedisCacheCore(this IServiceCollection services)
-    {
-        if (services.Any(service => service.ImplementationType == typeof(RedisProvider)))
-        {
-            return;
-        }
-        services.AddSingleton<RedisProvider>();
-        services.AddCachingCore();
-    }
-
-    private sealed class RedisProvider
-    {
-
+        return new CachingBuilder(services, name);
     }
 }
