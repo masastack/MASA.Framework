@@ -485,7 +485,7 @@ end";
 
         var result = GetByArrayRedisValue<T>(results, key);
         if (result.Value != null)
-            Refresh(result.DataCacheOptions, flags);
+            Refresh(result.model, flags);
         else if (func != null)
             result.Value = func.Invoke();
 
@@ -503,37 +503,37 @@ end";
         var result = GetByArrayRedisValue<T>(results, key);
 
         if (result.Value != null)
-            await RefreshAsync(result.DataCacheOptions, flags);
+            await RefreshAsync(result.model, flags);
         else if (func != null)
             result.Value = await func.Invoke();
 
         return result.Value;
     }
 
-    private (T? Value, DataCacheOptions DataCacheOptions) GetByArrayRedisValue<T>(
+    private (T? Value, DataCacheModel model) GetByArrayRedisValue<T>(
         RedisValue[] redisValue,
         string key)
     {
-        var options = MapMetadata(key, redisValue);
-        var value = ConvertToValue<T>(options.Value);
-        return (value, options);
+        var model = MapMetadata(key, redisValue);
+        var value = ConvertToValue<T>(model.Value);
+        return (value, model);
     }
 
     #region Refresh
 
-    private void Refresh(DataCacheOptions dataCacheOptions, CommandFlags flags)
+    private void Refresh(DataCacheModel model, CommandFlags flags)
     {
-        var result = dataCacheOptions.GetExpiration();
-        if (result.State) Db.KeyExpire(dataCacheOptions.Key, result.Expire, flags);
+        var result = model.GetExpiration();
+        if (result.State) Db.KeyExpire(model.Key, result.Expire, flags);
     }
 
     private async Task RefreshAsync(
-        DataCacheOptions dataCacheOptions,
+        DataCacheModel model,
         CommandFlags flags,
         CancellationToken token = default)
     {
-        var result = dataCacheOptions.GetExpiration(null, token);
-        if (result.State) await Db.KeyExpireAsync(dataCacheOptions.Key, result.Expire, flags).ConfigureAwait(false);
+        var result = model.GetExpiration(null, token);
+        if (result.State) await Db.KeyExpireAsync(model.Key, result.Expire, flags).ConfigureAwait(false);
     }
 
     #endregion

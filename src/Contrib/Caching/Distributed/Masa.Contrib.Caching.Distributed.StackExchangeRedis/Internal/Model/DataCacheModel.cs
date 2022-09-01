@@ -6,7 +6,7 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 /// <summary>
 /// Data stored to Redis
 /// </summary>
-internal class DataCacheOptions
+internal class DataCacheModel
 {
     public string Key { get; }
 
@@ -16,7 +16,7 @@ internal class DataCacheOptions
 
     public RedisValue Value { get; }
 
-    public DataCacheOptions(string key, long? absoluteExpiration, long? slidingExpiration, RedisValue value)
+    public DataCacheModel(string key, long? absoluteExpiration, long? slidingExpiration, RedisValue value)
     {
         Key = key;
         AbsoluteExpiration = absoluteExpiration;

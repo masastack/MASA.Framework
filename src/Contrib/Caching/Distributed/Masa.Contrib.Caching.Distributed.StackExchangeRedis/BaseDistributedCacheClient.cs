@@ -72,9 +72,9 @@ public abstract class BaseDistributedCacheClient
         func.Invoke(channel, message);
     }
 
-    internal void RefreshCore(List<DataCacheOptions> options, CancellationToken token = default)
+    internal void RefreshCore(List<DataCacheModel> models, CancellationToken token = default)
     {
-        var awaitRefreshOptions = GetKeyAndExpireList(options, token);
+        var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
             string script =
@@ -87,10 +87,10 @@ public abstract class BaseDistributedCacheClient
     }
 
     internal async Task RefreshCoreAsync(
-        List<DataCacheOptions> options,
+        List<DataCacheModel> models,
         CancellationToken token = default)
     {
-        var awaitRefreshOptions = GetKeyAndExpireList(options, token);
+        var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
             string script = Const.SET_EXPIRE_SCRIPT.Replace("@data", GetSetExpireArrayOnLua(awaitRefreshOptions));
@@ -101,11 +101,11 @@ public abstract class BaseDistributedCacheClient
         }
     }
 
-    internal List<DataCacheOptions> GetListByKeyPattern(string keyPattern)
+    internal List<DataCacheModel> GetListByKeyPattern(string keyPattern)
         => GetListCoreByKeyPattern(keyPattern, (script, parameters) => Db.ScriptEvaluate(LuaScript.Prepare(script), parameters)
             .ToDictionary());
 
-    internal Task<List<DataCacheOptions>> GetListByKeyPatternAsync(string keyPattern)
+    internal Task<List<DataCacheModel>> GetListByKeyPatternAsync(string keyPattern)
         => Task.FromResult(GetListCoreByKeyPattern(keyPattern, (script, parameters) => Db
             .ScriptEvaluateAsync(LuaScript.Prepare(script), parameters)
             .ConfigureAwait(false)
@@ -113,7 +113,7 @@ public abstract class BaseDistributedCacheClient
             .GetResult()
             .ToDictionary()));
 
-    private List<DataCacheOptions> GetListCoreByKeyPattern(
+    private List<DataCacheModel> GetListCoreByKeyPattern(
         string keyPattern,
         Func<string, object, Dictionary<string, RedisResult>> func)
     {
@@ -124,7 +124,7 @@ public abstract class BaseDistributedCacheClient
                 keypattern = keyPattern
             });
 
-        List<DataCacheOptions> list = new List<DataCacheOptions>();
+        List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
         {
             var byteArray = (RedisValue[])redisResult.Value;
@@ -133,7 +133,7 @@ public abstract class BaseDistributedCacheClient
         return list;
     }
 
-    internal List<DataCacheOptions> GetList(IEnumerable<string> keys, bool getData)
+    internal List<DataCacheModel> GetList(IEnumerable<string> keys, bool getData)
     {
         string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = Db
@@ -142,7 +142,7 @@ public abstract class BaseDistributedCacheClient
         return GetListByArrayRedisResult(arrayRedisResult);
     }
 
-    internal async Task<List<DataCacheOptions>> GetListAsync(IEnumerable<string> keys, bool getData)
+    internal async Task<List<DataCacheModel>> GetListAsync(IEnumerable<string> keys, bool getData)
     {
         string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = (await Db
@@ -151,9 +151,9 @@ public abstract class BaseDistributedCacheClient
         return GetListByArrayRedisResult(arrayRedisResult);
     }
 
-    private List<DataCacheOptions> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult)
+    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult)
     {
-        List<DataCacheOptions> list = new List<DataCacheOptions>();
+        List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
         {
             var byteArray = (RedisValue[])redisResult.Value;
@@ -165,24 +165,24 @@ public abstract class BaseDistributedCacheClient
     protected static IEnumerable<string> GetKeys(params string[] keys)=> keys;
 
     private static List<KeyValuePair<string, TimeSpan?>> GetKeyAndExpireList(
-        List<DataCacheOptions> options,
+        List<DataCacheModel> models,
         CancellationToken token)
     {
         List<KeyValuePair<string, TimeSpan?>> list = new();
 
         DateTimeOffset? creationTime = DateTimeOffset.UtcNow;
-        foreach (var option in options)
+        foreach (var model in models)
         {
-            var res = option.GetExpiration(creationTime, token);
+            var res = model.GetExpiration(creationTime, token);
             if (res.State)
             {
-                list.Add(new KeyValuePair<string, TimeSpan?>(option.Key, res.Expire));
+                list.Add(new KeyValuePair<string, TimeSpan?>(model.Key, res.Expire));
             }
         }
         return list;
     }
 
-    internal static DataCacheOptions MapMetadata(
+    internal static DataCacheModel MapMetadata(
         string key,
         RedisValue[] results)
     {
@@ -194,10 +194,10 @@ public abstract class BaseDistributedCacheClient
         var slidingExpirationTicks = (long?)results[1];
         if (slidingExpirationTicks is null or Const.DEADLINE_LASTING)
             slidingExpirationTicks = null;
-        return new DataCacheOptions(key, absoluteExpirationTicks, slidingExpirationTicks, data);
+        return new DataCacheModel(key, absoluteExpirationTicks, slidingExpirationTicks, data);
     }
 
-    private static DataCacheOptions MapMetadataByAutomatic(string key, RedisValue[] results)
+    private static DataCacheModel MapMetadataByAutomatic(string key, RedisValue[] results)
     {
         long? absoluteExpiration = null;
         long? slidingExpiration = null;
@@ -226,7 +226,7 @@ public abstract class BaseDistributedCacheClient
                 data = results[index + 1];
             }
         }
-        return new DataCacheOptions(key, absoluteExpiration, slidingExpiration, data);
+        return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
     }
 
     private static string GetSetExpireArrayOnLua(IEnumerable<KeyValuePair<string, TimeSpan?>> keyValuePairs)
