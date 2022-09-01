@@ -12,9 +12,10 @@ public class MasaRelationOptions
     /// </summary>
     /// <typeparam name="TModel"></typeparam>
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
+    /// <param name="name"></param>
     /// <returns></returns>
-    public MasaRelationOptions MappingLocal<TModel>(string? section = null) where TModel : class
-        => Mapping<TModel>(SectionTypes.Local, null!, section);
+    public MasaRelationOptions MappingLocal<TModel>(string? section = null, string? name = null) where TModel : class
+        => Mapping<TModel>(SectionTypes.Local, null!, section, name);
 
     /// <summary>
     /// Map Section relationship By ConfigurationApi
@@ -22,9 +23,11 @@ public class MasaRelationOptions
     /// <typeparam name="TModel"></typeparam>
     /// <param name="parentSection">The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType</param>
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
+    /// <param name="name"></param>
     /// <returns></returns>
-    public MasaRelationOptions MappingConfigurationApi<TModel>(string parentSection, string? section = null) where TModel : class
-        => Mapping<TModel>(SectionTypes.ConfigurationApi, parentSection, section);
+    public MasaRelationOptions MappingConfigurationApi<TModel>(string parentSection, string? section = null, string? name = null)
+        where TModel : class
+        => Mapping<TModel>(SectionTypes.ConfigurationApi, parentSection, section, name);
 
     /// <summary>
     /// Map Section relationship
@@ -33,13 +36,16 @@ public class MasaRelationOptions
     /// <param name="sectionType"></param>
     /// <param name="parentSection">parent section, local section is the name of the locally configured section, and ConfigurationApi is the name of the Appid where the configuration is located</param>
     /// <param name="section">The default is null, which is consistent with the mapping class name</param>
+    /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public MasaRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null) where TModel : class
+    public MasaRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
+        where TModel : class
     {
+        name ??= Options.DefaultName;
         section ??= typeof(TModel).Name;
 
-        if (Relations.Any(relation => relation.SectionType == sectionType && relation.Section == section))
+        if (Relations.Any(relation => relation.SectionType == sectionType && relation.Section == section && relation.Name == name))
             throw new ArgumentOutOfRangeException(nameof(section), "The current section already has a configuration");
 
         Relations.Add(new ConfigurationRelationOptions()
@@ -47,7 +53,8 @@ public class MasaRelationOptions
             SectionType = sectionType,
             ParentSection = parentSection,
             Section = section,
-            ObjectType = typeof(TModel)
+            ObjectType = typeof(TModel),
+            Name = name
         });
         return this;
     }
