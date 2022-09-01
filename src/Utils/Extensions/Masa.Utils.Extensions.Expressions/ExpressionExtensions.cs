@@ -7,26 +7,26 @@ public static class ExpressionExtensions
 {
     public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
     {
-        return first.Compose(second, Expression.And);
+        return first.Compose(second, Expression.AndAlso);
     }
 
     public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> first, bool isCompose, Expression<Func<T, bool>>? second)
     {
         if (isCompose && second != null)
-            return first.Compose(second, Expression.And);
+            return first.Compose(second, Expression.AndAlso);
 
         return first;
     }
 
     public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> first, Expression<Func<T, bool>> second)
     {
-        return first.Compose(second, Expression.Or);
+        return first.Compose(second, Expression.OrElse);
     }
 
     public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> first, bool isCompose, Expression<Func<T, bool>>? second)
     {
         if (isCompose && second != null)
-            return first.Compose(second, Expression.Or);
+            return first.Compose(second, Expression.OrElse);
 
         return first;
     }
