@@ -52,7 +52,7 @@ internal static class RedisHelper
 
     public static RedisValue ConvertFromValue<T>(this T value, JsonSerializerOptions jsonSerializerOptions)
     {
-        var type = typeof(T);
+        var type = value?.GetType() ?? typeof(T);
         dynamic redisValue;
         switch (GetCompressMode(type, out Type actualType))
         {
