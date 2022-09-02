@@ -48,7 +48,7 @@ public abstract class UserContext : IUserSetter, IUserContext
 
     public IDisposable Change<TIdentityUser>(TIdentityUser identityUser) where TIdentityUser : IIdentityUser
     {
-        ArgumentNullException.ThrowIfNull(identityUser,nameof(identityUser));
+        ArgumentNullException.ThrowIfNull(identityUser);
 
         var userModelType = identityUser.GetType();
         var user = GetUser(userModelType);
