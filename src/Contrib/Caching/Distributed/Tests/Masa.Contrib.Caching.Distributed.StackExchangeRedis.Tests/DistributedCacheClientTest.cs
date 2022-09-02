@@ -400,7 +400,10 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("test3")]
     public void TestRefresh(params string[] keys)
     {
-        _distributedCacheClient.KeyExpire(keys, new CacheEntryOptions(TimeSpan.FromHours(1)));
+        _distributedCacheClient.KeyExpire(keys, new CacheEntryOptions(TimeSpan.FromHours(1))
+        {
+            SlidingExpiration = TimeSpan.FromSeconds(600)
+        });
         _distributedCacheClient.Refresh(keys);
     }
 
@@ -671,5 +674,23 @@ public class DistributedCacheClientTest : TestBase
 
         Thread.Sleep(3000);
         Assert.IsTrue(timer == 1);
+    }
+
+    [TestMethod]
+    public void TestGetExpirationInSeconds()
+    {
+        DateTimeOffset creationTime = DateTimeOffset.Now;
+
+        Assert.AreEqual(null, DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, null, null));
+
+        Assert.AreEqual(1, DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, creationTime.AddSeconds(1), null));
+
+        Assert.AreEqual(5, DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, null, TimeSpan.FromSeconds(5)));
+
+        Assert.AreEqual(2,
+            DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, creationTime.AddSeconds(2), TimeSpan.FromSeconds(5)));
+
+        Assert.AreEqual(1,
+            DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, creationTime.AddSeconds(3), TimeSpan.FromSeconds(1)));
     }
 }

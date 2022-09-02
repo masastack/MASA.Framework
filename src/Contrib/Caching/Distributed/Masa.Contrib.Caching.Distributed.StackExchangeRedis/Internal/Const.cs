@@ -47,8 +47,7 @@ internal sealed class Const
                 return count";
 
     public const string SET_EXPIRE_SCRIPT = @"
-        local result = @data
-        for index=1,@length,2 do redis.call('expire', result[index], result[index + 1]) end;
+        for index,key in ipairs(KEYS) do redis.call('expire', key, ARGV[index]) end;
         return 1";
 
     public const string GET_LIST_SCRIPT = @"local result = {}
@@ -64,8 +63,7 @@ internal sealed class Const
 
     public const string GET_EXPIRATION_VALUE_SCRIPT = @"
         local result = {}
-        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hget', '" +
-        ABSOLUTE_EXPIRATION_KEY + "', '" + SLIDING_EXPIRATION_KEY + @"') end
+        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hmget', val,'" + ABSOLUTE_EXPIRATION_KEY + "', '" + SLIDING_EXPIRATION_KEY + @"') end
         return result";
 
     // KEYS[1] = = key

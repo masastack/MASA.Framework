@@ -77,12 +77,10 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
-            string script =
-                Const.SET_EXPIRE_SCRIPT.Replace("@data", GetSetExpireArrayOnLua(awaitRefreshOptions));
-            Db.ScriptEvaluate(LuaScript.Prepare(script), new
-            {
-                length = awaitRefreshOptions.Count * 2
-            });
+            Db.ScriptEvaluate(Const.SET_EXPIRE_SCRIPT,
+                awaitRefreshOptions.Select(item => item.Key).GetRedisKeys(),
+                awaitRefreshOptions.Select(item => (RedisValue)(item.Value?.TotalSeconds ?? -1)).ToArray()
+            );
         }
     }
 
@@ -93,11 +91,10 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
-            string script = Const.SET_EXPIRE_SCRIPT.Replace("@data", GetSetExpireArrayOnLua(awaitRefreshOptions));
-            await Db.ScriptEvaluateAsync(LuaScript.Prepare(script), new
-            {
-                length = awaitRefreshOptions.Count * 2
-            });
+            await Db.ScriptEvaluateAsync(Const.SET_EXPIRE_SCRIPT,
+                awaitRefreshOptions.Select(item => item.Key).GetRedisKeys(),
+                awaitRefreshOptions.Select(item => (RedisValue)(item.Value?.TotalSeconds ?? -1)).ToArray()
+            );
         }
     }
 
@@ -139,7 +136,7 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         var arrayRedisResult = Db
             .ScriptEvaluate(script, keys.Select(key => (RedisKey)key).ToArray())
             .ToDictionary();
-        return GetListByArrayRedisResult(arrayRedisResult);
+        return GetListByArrayRedisResult(arrayRedisResult, getData);
     }
 
     internal async Task<List<DataCacheModel>> GetListAsync(IEnumerable<string> keys, bool getData)
@@ -148,16 +145,16 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         var arrayRedisResult = (await Db
                 .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()))
             .ToDictionary();
-        return GetListByArrayRedisResult(arrayRedisResult);
+        return GetListByArrayRedisResult(arrayRedisResult, getData);
     }
 
-    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult)
+    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
     {
         List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
         {
             var byteArray = (RedisValue[])redisResult.Value;
-            list.Add(MapMetadataByAutomatic(redisResult.Key, byteArray));
+            list.Add(getData ? MapMetadataByAutomatic(redisResult.Key, byteArray) : MapMetadata(redisResult.Key, byteArray));
         }
         return list;
     }
@@ -226,7 +223,4 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         }
         return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
     }
-
-    private static string GetSetExpireArrayOnLua(IEnumerable<KeyValuePair<string, TimeSpan?>> keyValuePairs)
-        => "{" + string.Join(',', keyValuePairs.Select(kv => $"'{kv.Key}','{kv.Value?.TotalSeconds ?? -1}'")) + "}";
 }

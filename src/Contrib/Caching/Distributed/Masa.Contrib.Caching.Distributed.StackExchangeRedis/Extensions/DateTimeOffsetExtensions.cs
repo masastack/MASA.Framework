@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal static class TimeHelper
+public static class DateTimeOffsetExtensions
 {
     public static long? GetExpirationInSeconds(
         DateTimeOffset creationTime,

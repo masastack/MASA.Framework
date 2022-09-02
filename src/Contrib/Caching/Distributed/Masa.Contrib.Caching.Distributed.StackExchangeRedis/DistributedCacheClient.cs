@@ -406,7 +406,7 @@ end";
         {
             absoluteExpiration?.Ticks ?? Const.DEADLINE_LASTING,
             cacheEntryOptions.SlidingExpiration?.Ticks ?? Const.DEADLINE_LASTING,
-            TimeHelper.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions.SlidingExpiration) ??
+            DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions.SlidingExpiration) ??
             Const.DEADLINE_LASTING,
         };
         if (func != null)
@@ -479,5 +479,4 @@ end";
     #endregion
 
     #endregion
-
 }
