@@ -6,6 +6,7 @@
     <MicrosoftTeskSdkPackageVersion>16.9.4</MicrosoftTeskSdkPackageVersion>
     <CoverletPackageVersion>3.0.2</CoverletPackageVersion>
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
+    <NSubstitutePackageVersion>4.4.0</NSubstitutePackageVersion>
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
     <DaprPackageVersion>1.5.0</DaprPackageVersion>
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>

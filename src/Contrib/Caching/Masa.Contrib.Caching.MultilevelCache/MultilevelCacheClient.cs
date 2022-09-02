@@ -59,16 +59,20 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
-        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
+        if (_memoryCache.TryGetValue(formattedKey, out T? value))
+            return value;
+
+        value = _distributedCacheClient.Get<T>(key);
+
+        SetCore(new SetOptions<T>()
         {
-            value = _distributedCacheClient.Get<T>(key);
+            FormattedKey = formattedKey,
+            Value = value,
+        });
 
-            _memoryCache.Set(formattedKey, value);
+        var channel = FormatSubscribeChannel<T>(key);
 
-            var channel = FormatSubscribeChannel<T>(key);
-
-            Subscribe<T>(channel);
-        }
+        Subscribe<T>(channel);
 
         return value;
     }
@@ -79,16 +83,20 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
-        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
+        if (_memoryCache.TryGetValue(formattedKey, out T? value))
+            return value;
+
+        value = await _distributedCacheClient.GetAsync<T>(key);
+
+        SetCore(new SetOptions<T>()
         {
-            value = await _distributedCacheClient.GetAsync<T>(key);
+            FormattedKey = formattedKey,
+            Value = value,
+        });
 
-            _memoryCache.Set(formattedKey, value);
+        var channel = FormatSubscribeChannel<T>(key);
 
-            var channel = FormatSubscribeChannel<T>(key);
-
-            Subscribe<T>(channel);
-        }
+        Subscribe<T>(channel);
 
         return value;
     }
@@ -183,7 +191,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
             var channel = FormatSubscribeChannel<T>(key);
 
-            Subscribe(channel, new SubscribeOptions2<T>()
+            Subscribe(channel, new SubscribeOptions<T>()
             {
                 ValueChanged = valueChanged
             });
@@ -206,7 +214,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
             var channel = FormatSubscribeChannel<T>(key);
 
-            Subscribe(channel, new SubscribeOptions2<T>()
+            Subscribe(channel, new SubscribeOptions<T>()
             {
                 ValueChanged = valueChanged
             });
@@ -449,7 +457,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     private void Subscribe<T>(
         string channel,
-        SubscribeOptions2<T>? options = null)
+        SubscribeOptions<T>? options = null)
     {
         if (_subscribeChannels.Contains(channel))
             return;

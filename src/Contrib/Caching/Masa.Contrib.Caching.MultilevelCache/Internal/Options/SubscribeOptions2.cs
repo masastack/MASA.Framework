@@ -3,10 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache;
 
-/// <summary>
-/// todo: 需要更改类名
-/// </summary>
-internal class SubscribeOptions2<T>
+internal class SubscribeOptions<T>
 {
     public CacheEntryOptions? MemoryCacheEntryOptions { get; set; }
 

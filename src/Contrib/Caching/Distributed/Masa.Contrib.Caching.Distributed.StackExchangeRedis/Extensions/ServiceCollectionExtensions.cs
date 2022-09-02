@@ -12,6 +12,14 @@ public static class ServiceCollectionExtensions
             redisConfigurationOptions);
 
     /// <summary>
+    /// Adds a default implementation for the <see cref="T:Masa.BuildingBlocks.Caching.IDistributedCacheClient" /> service.
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static ICachingBuilder AddStackExchangeRedisCache(this IServiceCollection services)
+        => services.AddStackExchangeRedisCache(Microsoft.Extensions.Options.Options.DefaultName);
+
+    /// <summary>
     /// Add distributed Redis cache
     /// </summary>
     /// <param name="services"></param>
