@@ -35,7 +35,7 @@ public static class RedisHelper
 
     public static RedisValue ConvertFromValue<T>(T value)
     {
-        var type = typeof(T);
+        var type = value?.GetType() ?? typeof(T);
         dynamic redisValue;
         switch (GetCompressMode(type))
         {
