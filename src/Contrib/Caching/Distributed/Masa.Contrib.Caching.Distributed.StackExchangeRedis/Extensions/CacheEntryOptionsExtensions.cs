@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal static class CacheEntryOptionsExtensions
+public static class CacheEntryOptionsExtensions
 {
-    internal static DateTimeOffset? GetAbsoluteExpiration(this CacheEntryOptions options, DateTimeOffset creationTime)
+    public static DateTimeOffset? GetAbsoluteExpiration(this CacheEntryOptions options, DateTimeOffset creationTime)
     {
         if (options.AbsoluteExpiration.HasValue && options.AbsoluteExpiration <= creationTime)
             throw new ArgumentOutOfRangeException(

@@ -693,4 +693,22 @@ public class DistributedCacheClientTest : TestBase
         Assert.AreEqual(1,
             DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, creationTime.AddSeconds(3), TimeSpan.FromSeconds(1)));
     }
+
+    [TestMethod]
+    public void TestGetAbsoluteExpiration()
+    {
+        var creationTime = DateTimeOffset.Now;
+        var options = new CacheEntryOptions();
+        Assert.AreEqual(null, options.GetAbsoluteExpiration(creationTime));
+
+        options = new CacheEntryOptions(TimeSpan.FromSeconds(100));
+
+        Assert.AreEqual(creationTime.Add(TimeSpan.FromSeconds(100)), options.GetAbsoluteExpiration(creationTime));
+
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+        {
+            options = new CacheEntryOptions(creationTime.AddSeconds(-1));
+            options.GetAbsoluteExpiration(creationTime);
+        });
+    }
 }
