@@ -15,4 +15,6 @@ public class ConfigurationRelationOptions
     /// Object type of mapping node relationship
     /// </summary>
     public Type ObjectType { get; set; } = default!;
+
+    public string Name { get; set; }
 }

@@ -16,7 +16,6 @@ public class PermissionService : IPermissionService
         _userContext = userContext;
     }
 
-    //todo remove userId param
     public async Task<bool> AuthorizedAsync(string appId, string code)
     {
         var userId = _userContext.GetUserId<Guid>();

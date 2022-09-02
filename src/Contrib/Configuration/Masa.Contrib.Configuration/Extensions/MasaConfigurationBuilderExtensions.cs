@@ -30,7 +30,8 @@ public static class MasaConfigurationBuilderExtensions
 
             var option = (IMasaConfigurationOptions)Activator.CreateInstance(optionType, !constructorInfo.IsPublic)!;
             var sectionName = option.Section ?? optionType.Name;
-            if (builder.Relations.Any(relation => relation.SectionType == option.SectionType && relation.Section == sectionName && relation.ObjectType == optionType))
+            var name = Options.DefaultName;
+            if (builder.Relations.Any(relation => relation.SectionType == option.SectionType && relation.Section == sectionName && relation.ObjectType == optionType && relation.Name == name))
             {
                 throw new ArgumentException(
                     "The section has been loaded, no need to load repeatedly, check whether there are duplicate sections or inheritance between auto-mapping classes");
@@ -40,7 +41,8 @@ public static class MasaConfigurationBuilderExtensions
                 SectionType = option.SectionType,
                 ParentSection = option.ParentSection,
                 Section = sectionName,
-                ObjectType = optionType
+                ObjectType = optionType,
+                Name = name
             });
         });
     }

@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
                 sectionNames.AddRange(relation.Section!.Split(ConfigurationPath.KeyDelimiter));
             }
 
-            services.ConfigureOption(configuration, sectionNames, relation.ObjectType);
+            services.ConfigureOption(configuration, sectionNames, relation.ObjectType, relation.Name);
         });
 
         return configuration;
@@ -83,7 +83,8 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration,
         List<string> sectionNames,
-        Type optionType)
+        Type optionType,
+        string name)
     {
         IConfigurationSection? configurationSection = null;
         foreach (var sectionName in sectionNames)
@@ -97,9 +98,9 @@ public static class ServiceCollectionExtensions
             throw new MasaException($"Check if the mapping section is correct，section name is [{configurationSection!.Path}]");
 
         var configurationChangeTokenSource =
-            Activator.CreateInstance(typeof(ConfigurationChangeTokenSource<>).MakeGenericType(optionType), string.Empty,
+            Activator.CreateInstance(typeof(ConfigurationChangeTokenSource<>).MakeGenericType(optionType), name,
                 configurationSection)!;
-        services.TryAdd(new ServiceDescriptor(typeof(IOptionsChangeTokenSource<>).MakeGenericType(optionType),
+        services.Add(new ServiceDescriptor(typeof(IOptionsChangeTokenSource<>).MakeGenericType(optionType),
             configurationChangeTokenSource));
 
         Action<BinderOptions> configureBinder = _ =>
@@ -107,9 +108,9 @@ public static class ServiceCollectionExtensions
         };
         var configureOptions =
             Activator.CreateInstance(typeof(NamedConfigureFromConfigurationOptions<>).MakeGenericType(optionType),
-                string.Empty,
+                name,
                 configurationSection, configureBinder)!;
-        services.TryAdd(new ServiceDescriptor(typeof(IConfigureOptions<>).MakeGenericType(optionType),
+        services.Add(new ServiceDescriptor(typeof(IConfigureOptions<>).MakeGenericType(optionType),
             configureOptions));
     }
 
