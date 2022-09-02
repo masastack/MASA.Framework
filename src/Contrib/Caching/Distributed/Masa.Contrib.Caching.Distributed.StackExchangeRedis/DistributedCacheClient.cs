@@ -29,21 +29,21 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override T? Get<T>(string key) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         return GetAndRefresh<T>(key);
     }
 
     public override async Task<T?> GetAsync<T>(string key) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         return await GetAndRefreshAsync<T>(key);
     }
 
     public override IEnumerable<T?> GetList<T>(IEnumerable<string> keys) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         var list = GetList(keys, true);
 
@@ -54,7 +54,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         var list = await GetListAsync(keys, true);
 
@@ -65,9 +65,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(setter, nameof(setter));
+        ArgumentNullException.ThrowIfNull(setter);
 
         return GetAndRefresh(key, () =>
         {
@@ -79,9 +79,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(setter, nameof(setter));
+        ArgumentNullException.ThrowIfNull(setter);
 
         return await GetAndRefreshAsync(key, async () =>
         {
@@ -139,9 +139,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override void Set<T>(string key, T value, CacheEntryOptions? options = null) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
         var bytesValue = value.ConvertFromValue(JsonSerializerOptions);
 
@@ -153,9 +153,9 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override async Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
         var bytesValue = value.ConvertFromValue(JsonSerializerOptions);
 
@@ -168,7 +168,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
+        ArgumentNullException.ThrowIfNull(keyValues);
 
         var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
 
@@ -181,7 +181,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override async Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
+        ArgumentNullException.ThrowIfNull(keyValues);
 
         var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
 
@@ -216,7 +216,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override void Remove(IEnumerable<string> keys)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         Db.KeyDelete(keys.GetRedisKeys());
 
@@ -229,7 +229,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override Task RemoveAsync(IEnumerable<string> keys)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         return Db.KeyDeleteAsync(keys.GetRedisKeys());
     }
@@ -240,14 +240,14 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override bool Exists(string key)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         return Db.KeyExists(key);
     }
 
     public override Task<bool> ExistsAsync(string key)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         return Db.KeyExistsAsync(key);
     }
@@ -329,7 +329,7 @@ end";
 
     public override bool KeyExpire(string key, CacheEntryOptions? options = null)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var result = Db.ScriptEvaluate(
             Const.SET_EXPIRATION_SCRIPT,
@@ -342,7 +342,7 @@ end";
 
     public override long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         var result = Db.ScriptEvaluate(
             Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
@@ -355,7 +355,7 @@ end";
 
     public override async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_EXPIRATION_SCRIPT,
@@ -368,7 +368,7 @@ end";
 
     public override async Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_MULTIPLE_EXPIRATION_SCRIPT,

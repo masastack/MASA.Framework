@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
 
     public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, MultilevelCacheOptions multilevelCacheOptions)
     {
-        ArgumentNullException.ThrowIfNull(cachingBuilder, nameof(cachingBuilder));
+        ArgumentNullException.ThrowIfNull(cachingBuilder);
 
         cachingBuilder.Services.AddMultilevelCacheCore();
 

@@ -12,7 +12,7 @@ internal abstract class JsonDynamicType : DynamicObject
 
     private protected JsonDynamicType(JsonSerializerOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         Options = options;
     }

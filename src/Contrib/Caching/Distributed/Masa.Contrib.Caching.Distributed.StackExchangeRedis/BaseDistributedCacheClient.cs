@@ -58,9 +58,9 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
 
     protected void PublishCore(string channel, Action<PublishOptions> setup, Func<string, string, Task> func)
     {
-        ArgumentNullException.ThrowIfNull(channel, nameof(channel));
+        ArgumentNullException.ThrowIfNull(channel);
 
-        ArgumentNullException.ThrowIfNull(setup, nameof(setup));
+        ArgumentNullException.ThrowIfNull(setup);
 
         var options = new PublishOptions(UniquelyIdentifies);
         setup.Invoke(options);

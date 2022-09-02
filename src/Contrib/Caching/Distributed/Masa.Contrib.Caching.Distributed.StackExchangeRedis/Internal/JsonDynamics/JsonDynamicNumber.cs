@@ -27,7 +27,7 @@ internal sealed class JsonDynamicNumber : JsonDynamicType
 
     public override void SetValue(object value)
     {
-        ArgumentNullException.ThrowIfNull(value, nameof(value));
+        ArgumentNullException.ThrowIfNull(value);
 
         _value = _lastValue = value;
         _type = value.GetType();

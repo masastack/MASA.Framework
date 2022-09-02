@@ -55,7 +55,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override T? Get<T>(string key) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -75,7 +75,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override async Task<T?> GetAsync<T>(string key) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -121,9 +121,9 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(combinedCacheEntry, nameof(combinedCacheEntry));
+        ArgumentNullException.ThrowIfNull(combinedCacheEntry);
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -146,9 +146,9 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override async Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
-        ArgumentNullException.ThrowIfNull(combinedCacheEntry, nameof(combinedCacheEntry));
+        ArgumentNullException.ThrowIfNull(combinedCacheEntry);
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -171,7 +171,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override T? Get<T>(string key, Action<T?> valueChanged) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -194,7 +194,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override async Task<T?> GetAsync<T>(string key, Action<T?> valueChanged) where T : default
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         var formattedKey = FormatMemoryCacheKey<T>(key);
 
@@ -221,7 +221,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override void Set<T>(string key, T value, CombinedCacheEntryOptions? options)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         _distributedCacheClient.Set(key, value, options?.DistributedCacheEntryOptions);
 
@@ -237,7 +237,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override async Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options)
     {
-        key.CheckIsNullOrWhiteSpace(nameof(key));
+        key.CheckIsNullOrWhiteSpace();
 
         await _distributedCacheClient.SetAsync(key, value, options?.DistributedCacheEntryOptions);
 
@@ -253,7 +253,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
+        ArgumentNullException.ThrowIfNull(keyValues);
 
         _distributedCacheClient.SetList(keyValues, options?.DistributedCacheEntryOptions);
 
@@ -265,7 +265,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override async Task SetListAsync<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options) where T : default
     {
-        ArgumentNullException.ThrowIfNull(keyValues, nameof(keyValues));
+        ArgumentNullException.ThrowIfNull(keyValues);
 
         await _distributedCacheClient.SetListAsync(keyValues, options?.DistributedCacheEntryOptions);
 
@@ -306,14 +306,14 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     public override void Remove<T>(IEnumerable<string> keys)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         Parallel.ForEach(keys, RemoveOne<T>);
     }
 
     public override Task RemoveAsync<T>(IEnumerable<string> keys)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         return Task.WhenAll(keys.Select(RemoveOneAsync<T>));
     }
@@ -326,7 +326,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         IEnumerable<string> keys,
         out List<(string Key, string MemoryCacheKey)> awaitCacheKeyItems)
     {
-        ArgumentNullException.ThrowIfNull(keys, nameof(keys));
+        ArgumentNullException.ThrowIfNull(keys);
 
         List<CacheItemModel<T>> list = new();
 
