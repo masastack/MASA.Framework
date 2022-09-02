@@ -12,7 +12,6 @@ global using Masa.BuildingBlocks.StackSdks.Auth.Service;
 global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Auth;
-global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

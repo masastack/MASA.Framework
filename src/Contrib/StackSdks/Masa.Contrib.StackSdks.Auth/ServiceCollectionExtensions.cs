@@ -31,13 +31,16 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
-            var tokenProvider = serviceProvider.GetRequiredService<TokenProvider>();
+            var tokenProvider = serviceProvider.GetService<TokenProvider>();
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            callProvider.ConfigRequestMessage(httpRequestMessage =>
+            if (tokenProvider != null)
             {
-                httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-            });
+                callProvider.ConfigRequestMessage(httpRequestMessage =>
+                {
+                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                });
+            }
             var authClient = new AuthClient(callProvider, userContext);
             return authClient;
         });
