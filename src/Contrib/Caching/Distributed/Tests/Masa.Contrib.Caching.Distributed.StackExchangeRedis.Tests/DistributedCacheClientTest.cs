@@ -195,7 +195,7 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("cache_test_sync")]
     public void SetByStringArray(string key)
     {
-        string[] values = new string[] { "test", "test2" };
+        string[] values = new[] { "test", "test2" };
         _distributedCacheClient.Remove(key);
         _distributedCacheClient.Set(key, values);
 

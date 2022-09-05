@@ -258,17 +258,16 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override void Publish(string channel, Action<PublishOptions> setup)
     {
-        PublishCore(channel, setup, (c, message) =>
-        {
-            Subscriber.Publish(c, message);
-            return Task.CompletedTask;
-        });
+        var options = GetAndCheckPublishOptions(channel, setup);
+        var message = JsonSerializer.Serialize(options, JsonSerializerOptions);
+        Subscriber.Publish(channel, message);
     }
 
     public override async Task PublishAsync(string channel, Action<PublishOptions> setup)
     {
-        PublishCore(channel, setup, async (c, message) => await Subscriber.PublishAsync(c, message));
-        await Task.CompletedTask;
+        var options = GetAndCheckPublishOptions(channel, setup);
+        var message = JsonSerializer.Serialize(options, JsonSerializerOptions);
+        await Subscriber.PublishAsync(channel, message);
     }
 
     public override void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler)

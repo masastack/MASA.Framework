@@ -60,7 +60,7 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
     protected CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
         => options ?? CacheEntryOptions;
 
-    protected void PublishCore(string channel, Action<PublishOptions> setup, Func<string, string, Task> func)
+    protected static PublishOptions GetAndCheckPublishOptions(string channel, Action<PublishOptions> setup)
     {
         ArgumentNullException.ThrowIfNull(channel);
 
@@ -69,11 +69,9 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         var options = new PublishOptions(UniquelyIdentifies);
         setup.Invoke(options);
 
-        if (string.IsNullOrWhiteSpace(options.Key))
-            throw new ArgumentNullException(nameof(options.Key));
+        options.Key.CheckIsNullOrWhiteSpace();
 
-        var message = JsonSerializer.Serialize(options, JsonSerializerOptions);
-        func.Invoke(channel, message);
+        return options;
     }
 
     internal void RefreshCore(List<DataCacheModel> models, CancellationToken token = default)
