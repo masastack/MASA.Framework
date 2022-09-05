@@ -45,11 +45,15 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         };
     }
 
-    protected T? ConvertToValue<T>(RedisValue value)
+    protected T? ConvertToValue<T>(RedisValue value, out bool isExist)
     {
         if (value.HasValue && !value.IsNullOrEmpty)
+        {
+            isExist = true;
             return value.ConvertToValue<T>(JsonSerializerOptions);
+        }
 
+        isExist = false;
         return default;
     }
 

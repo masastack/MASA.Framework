@@ -49,7 +49,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
         RefreshCore(list);
 
-        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
+        return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
     }
 
     public override async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys) where T : default
@@ -60,7 +60,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
         await RefreshCoreAsync(list);
 
-        return list.Select(option => ConvertToValue<T>(option.Value)).ToList();
+        return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
     }
 
     public override T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter) where T : default
@@ -121,7 +121,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
         RefreshCore(list);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _))).ToList();
     }
 
     public override async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern) where T : default
@@ -130,7 +130,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
         await RefreshCoreAsync(list);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value))).ToList();
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _))).ToList();
     }
 
     #endregion
@@ -423,9 +423,9 @@ end";
             Const.SLIDING_EXPIRATION_KEY,
             Const.DATA_KEY);
 
-        var result = GetByArrayRedisValue<T>(results, key);
+        var result = GetByArrayRedisValue<T>(results, key, out bool isExist);
 
-        if (result.Value != null)
+        if (isExist)
             Refresh(result.model, flags);
         else if (func != null)
             result.Value = func.Invoke();
@@ -441,9 +441,9 @@ end";
             Const.SLIDING_EXPIRATION_KEY,
             Const.DATA_KEY);
 
-        var result = GetByArrayRedisValue<T>(results, key);
+        var result = GetByArrayRedisValue<T>(results, key, out bool isExist);
 
-        if (result.Value != null)
+        if (isExist)
             await RefreshAsync(result.model, flags);
         else if (func != null)
             result.Value = await func.Invoke();
@@ -453,10 +453,11 @@ end";
 
     private (T? Value, DataCacheModel model) GetByArrayRedisValue<T>(
         RedisValue[] redisValue,
-        string key)
+        string key,
+        out bool isExist)
     {
         var model = MapMetadata(key, redisValue);
-        var value = ConvertToValue<T>(model.Value);
+        var value = ConvertToValue<T>(model.Value, out isExist);
         return (value, model);
     }
 
@@ -480,4 +481,5 @@ end";
     #endregion
 
     #endregion
+
 }

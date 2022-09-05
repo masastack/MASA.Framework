@@ -109,15 +109,25 @@ public class MultilevelCacheClientTest
         {
             DistributedCacheEntryFunc = () => new CacheEntry<decimal?>(99.9m)
         }));
+        Assert.AreEqual(99.9m, _multilevelCacheClient.GetOrSet("test102", new CombinedCacheEntry<decimal>()
+        {
+            DistributedCacheEntryFunc = () => new CacheEntry<decimal>(99.9m)
+        }));
 
         var guid = Guid.NewGuid();
-        Assert.AreEqual(guid, _multilevelCacheClient.GetOrSet("test102", new CombinedCacheEntry<Guid?>()
+        Assert.AreEqual(guid, _multilevelCacheClient.GetOrSet("test103", new CombinedCacheEntry<Guid?>()
         {
             DistributedCacheEntryFunc = () => new CacheEntry<Guid?>(guid, TimeSpan.FromSeconds(3))
         }));
+        Assert.AreEqual(guid, _multilevelCacheClient.GetOrSet("test104", new CombinedCacheEntry<Guid>()
+        {
+            DistributedCacheEntryFunc = () => new CacheEntry<Guid>(guid, TimeSpan.FromSeconds(3))
+        }));
         _multilevelCacheClient.Remove<string>("test100");
         _multilevelCacheClient.Remove<decimal?>("test101");
-        _multilevelCacheClient.Remove<Guid?>("test102");
+        _multilevelCacheClient.Remove<decimal>("test102");
+        _multilevelCacheClient.Remove<Guid?>("test103");
+        _multilevelCacheClient.Remove<Guid?>("test104");
     }
 
     [TestMethod]
