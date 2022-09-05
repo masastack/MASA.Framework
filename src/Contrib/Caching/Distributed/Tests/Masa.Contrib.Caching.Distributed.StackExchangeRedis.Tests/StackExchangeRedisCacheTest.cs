@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Reflection;
+
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 [TestClass]
@@ -107,5 +109,39 @@ public class StackExchangeRedisCacheTest
         Thread.Sleep(3000);
 
         distributedCacheClient.Remove(key);
+    }
+
+    [TestMethod]
+    public void TestAddStackExchangeRedisCacheRepeat()
+    {
+        var services = new ServiceCollection();
+        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+        {
+            DefaultDatabase = 1,
+            Servers = new List<RedisServerOptions>()
+            {
+                new("localhost")
+            }
+        });
+        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+        {
+            DefaultDatabase = 2,
+            Servers = new List<RedisServerOptions>()
+            {
+                new("localhost")
+            }
+        });
+        var serviceProvider = services.BuildServiceProvider();
+
+        var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
+        Assert.IsNotNull(distributedCacheClient);
+
+        Assert.IsTrue(distributedCacheClient is DistributedCacheClient redisClient);
+        var fieldInfo = typeof(DistributedCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        Assert.IsNotNull(fieldInfo);
+
+        var value = fieldInfo.GetValue((DistributedCacheClient)distributedCacheClient);
+        Assert.IsNotNull(value);
+        Assert.AreEqual(1, ((IDatabase)value).Database);
     }
 }

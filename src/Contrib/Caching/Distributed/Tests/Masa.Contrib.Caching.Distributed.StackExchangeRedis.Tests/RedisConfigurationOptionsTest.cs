@@ -48,4 +48,30 @@ public class RedisConfigurationOptionsTest
         Assert.AreEqual(TimeSpan.FromHours(1), redisConfigurationOptions.AbsoluteExpirationRelativeToNow);
         Assert.AreEqual(TimeSpan.FromHours(3), redisConfigurationOptions.SlidingExpiration);
     }
+
+    [TestMethod]
+    public void TestRedisServiceOptions()
+    {
+        var options = new RedisServerOptions("localhost", 6379);
+
+        Assert.AreEqual("localhost", options.Host);
+        Assert.AreEqual(6379, options.Port);
+
+        Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions("", 6379));
+        Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions(null!, 6379));
+        Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions(" ", 6379));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions("localhost", 0));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions("localhost", -6379));
+
+
+        options = new RedisServerOptions("localhost");
+
+        Assert.AreEqual("localhost", options.Host);
+        Assert.AreEqual(6379, options.Port);
+
+        options = new RedisServerOptions("127.0.0.1:6378");
+
+        Assert.AreEqual("127.0.0.1", options.Host);
+        Assert.AreEqual(6378, options.Port);
+    }
 }

@@ -30,8 +30,7 @@ public class RedisServerOptions
     /// <param name="host">The host.</param>
     public RedisServerOptions(string host)
     {
-        if (string.IsNullOrWhiteSpace(host))
-            throw new ArgumentNullException(nameof(host));
+        host.CheckIsNullOrWhiteSpace();
 
         var lastIndex = host.LastIndexOf(':');
         if (lastIndex > 0 && host.Length > lastIndex + 1)
@@ -57,8 +56,7 @@ public class RedisServerOptions
     /// <param name="port">The port.</param>
     public RedisServerOptions(string host, int port)
     {
-        if (string.IsNullOrWhiteSpace(host))
-            throw new ArgumentNullException(nameof(host));
+        host.CheckIsNullOrWhiteSpace();
 
         if (port <= 0)
             throw new ArgumentOutOfRangeException(nameof(port), $"{nameof(port)} must be greater than 0");

@@ -424,6 +424,7 @@ end";
             Const.DATA_KEY);
 
         var result = GetByArrayRedisValue<T>(results, key);
+
         if (result.Value != null)
             Refresh(result.model, flags);
         else if (func != null)
