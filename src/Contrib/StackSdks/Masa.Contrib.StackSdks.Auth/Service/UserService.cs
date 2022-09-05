@@ -14,22 +14,22 @@ public class UserService : IUserService
         _userContext = userContext;
     }
 
-    public async Task<UserModel?> AddAsync(AddUserModel user)
+    public async Task<UserModel> AddAsync(AddUserModel user)
     {
         var requestUri = $"api/user/addExternal";
-        return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user);
+        return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
-    public async Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user)
+    public async Task<UserModel> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user)
     {
         var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
-        return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user);
+        return await _caller.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
-    public async Task<UserModel?> UpsertAsync(UpsertUserModel user)
+    public async Task<UserModel> UpsertAsync(UpsertUserModel user)
     {
         var requestUri = $"api/user/upsertExternal";
-        return await _caller.PostAsync<UpsertUserModel, UserModel>(requestUri, user);
+        return await _caller.PostAsync<UpsertUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
     public async Task<List<StaffModel>> GetListByDepartmentAsync(Guid departmentId)
@@ -233,6 +233,12 @@ public class UserService : IUserService
         }
         var requestUri = $"api/user/updatePhoneNumber";
         return await _caller.PutAsync<bool>(requestUri, user);
+    }
+
+    public async Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn = true)
+    {
+        var requestUri = $"api/thirdPartyUser/addThirdPartyUser?whenExistReturn={whenExistReturn}";
+        return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 }
 

@@ -17,11 +17,13 @@ public interface IUserService
 
     Task<long> GetTotalByTeamAsync(Guid teamId);
 
-    Task<UserModel?> AddAsync(AddUserModel user);
+    Task<UserModel> AddAsync(AddUserModel user);
 
-    Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
+    Task<UserModel> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
-    Task<UserModel?> UpsertAsync(UpsertUserModel user);
+    Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user,bool whenExistReturn);
+
+    Task<UserModel> UpsertAsync(UpsertUserModel user);
 
     Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
