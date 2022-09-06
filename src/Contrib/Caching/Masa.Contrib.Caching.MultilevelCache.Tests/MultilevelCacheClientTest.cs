@@ -234,7 +234,7 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public void TestRefresh()
     {
-        List<string> keys = new List<string>()
+        var keys = new List<string>()
         {
             "test20"
         };
@@ -263,7 +263,7 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public async Task TestRefreshAsync()
     {
-        List<string> keys = new List<string>()
+        var keys = new List<string>()
         {
             "test20"
         };

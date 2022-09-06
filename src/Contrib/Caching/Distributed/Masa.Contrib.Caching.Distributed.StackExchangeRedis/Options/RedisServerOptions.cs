@@ -33,13 +33,10 @@ public class RedisServerOptions
         host.CheckIsNullOrWhiteSpace();
 
         var lastIndex = host.LastIndexOf(':');
-        if (lastIndex > 0 && host.Length > lastIndex + 1)
+        if (lastIndex > 0 && host.Length > lastIndex + 1 && int.TryParse(host.AsSpan(lastIndex + 1), out var port))
         {
-            if (int.TryParse(host.Substring(lastIndex + 1), out var port))
-            {
-                Host = host.Substring(0, lastIndex);
-                Port = port;
-            }
+            Host = host.Substring(0, lastIndex);
+            Port = port;
         }
 
         if (string.IsNullOrEmpty(Host))

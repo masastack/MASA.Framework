@@ -51,5 +51,5 @@ public abstract class AbstractCacheClient : ICacheClient
 
     public abstract Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 
-    protected IEnumerable<string> GetKeys(params string[] keys) => keys;
+    protected static IEnumerable<string> GetKeys(params string[] keys) => keys;
 }

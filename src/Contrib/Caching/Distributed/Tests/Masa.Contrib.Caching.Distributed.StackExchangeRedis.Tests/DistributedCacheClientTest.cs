@@ -405,6 +405,15 @@ public class DistributedCacheClientTest : TestBase
             SlidingExpiration = TimeSpan.FromSeconds(600)
         });
         _distributedCacheClient.Refresh(keys);
+
+        foreach (var key in keys)
+        {
+            var expireTimeSpan = _database.KeyTimeToLive(key);
+            if (expireTimeSpan != null)
+            {
+                Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 600 and >= 595);
+            }
+        }
     }
 
     [DataTestMethod]
@@ -412,9 +421,20 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("test3")]
     public async Task TestRefreshAsync(params string[] keys)
     {
-        await _distributedCacheClient.KeyExpireAsync(keys, new CacheEntryOptions(TimeSpan.FromHours(1)));
+        await _distributedCacheClient.KeyExpireAsync(keys, new CacheEntryOptions(TimeSpan.FromHours(1))
+        {
+            SlidingExpiration = TimeSpan.FromSeconds(600)
+        });
         await _distributedCacheClient.RefreshAsync(keys);
-        await _distributedCacheClient.KeyExpireAsync(keys, new CacheEntryOptions());
+
+        foreach (var key in keys)
+        {
+            var expireTimeSpan = _database.KeyTimeToLive(key);
+            if (expireTimeSpan != null)
+            {
+                Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 600 and >= 595);
+            }
+        }
     }
 
     [DataTestMethod]
@@ -443,7 +463,8 @@ public class DistributedCacheClientTest : TestBase
         var list = _distributedCacheClient.GetListByKeyPattern<string>(keyPattern);
         Assert.AreEqual(count, list.Count);
 
-        Assert.IsTrue(list.Count(x => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
+        Assert.IsTrue(list.Count(x
+            => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
     }
 
     [DataTestMethod]
@@ -453,7 +474,8 @@ public class DistributedCacheClientTest : TestBase
         var list = await _distributedCacheClient.GetListByKeyPatternAsync<string>(keyPattern);
         Assert.AreEqual(count, list.Count);
 
-        Assert.IsTrue(list.Count(x => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
+        Assert.IsTrue(list.Count(x
+            => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
     }
 
     [DataTestMethod]

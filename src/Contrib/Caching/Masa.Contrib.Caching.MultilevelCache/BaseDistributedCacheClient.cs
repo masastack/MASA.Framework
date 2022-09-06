@@ -5,9 +5,9 @@ namespace Masa.Contrib.Caching.MultilevelCache;
 
 public abstract class BaseDistributedCacheClient : AbstractMultilevelCacheClient
 {
-    public CacheEntryOptions? DefaultCacheEntryOptions;
+    public CacheEntryOptions? DefaultCacheEntryOptions { get; protected set; }
 
-    public BaseDistributedCacheClient(CacheEntryOptions? cacheEntryOptions)
+    protected BaseDistributedCacheClient(CacheEntryOptions? cacheEntryOptions)
     {
         DefaultCacheEntryOptions = cacheEntryOptions;
     }

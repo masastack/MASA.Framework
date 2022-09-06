@@ -38,6 +38,14 @@ public abstract class AbstractMultilevelCacheClient : AbstractCacheClient, IMult
             MemoryCacheEntryOptions = memoryOptions
         });
 
+    public override void Set<T>(string key, T value, CacheEntryOptions? options = null)
+        => Set(key, value, new CombinedCacheEntryOptions()
+        {
+            DistributedCacheEntryOptions = options
+        });
+
+    public abstract void Set<T>(string key, T value, CombinedCacheEntryOptions? options);
+
     public virtual Task SetAsync<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions)
         => SetAsync(key, value, new CombinedCacheEntryOptions()
         {
@@ -45,19 +53,11 @@ public abstract class AbstractMultilevelCacheClient : AbstractCacheClient, IMult
             MemoryCacheEntryOptions = memoryOptions
         });
 
-    public override void Set<T>(string key, T value, CacheEntryOptions? options = null)
-        => Set(key, value, new CombinedCacheEntryOptions()
-        {
-            DistributedCacheEntryOptions = options
-        });
-
     public override Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null)
         => SetAsync(key, value, new CombinedCacheEntryOptions()
         {
             DistributedCacheEntryOptions = options
         });
-
-    public abstract void Set<T>(string key, T value, CombinedCacheEntryOptions? options);
 
     public abstract Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options);
 
@@ -71,6 +71,14 @@ public abstract class AbstractMultilevelCacheClient : AbstractCacheClient, IMult
             MemoryCacheEntryOptions = memoryOptions
         });
 
+    public override void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
+        => SetList(keyValues, new CombinedCacheEntryOptions()
+        {
+            DistributedCacheEntryOptions = options
+        });
+
+    public abstract void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
+
     public virtual Task SetListAsync<T>(
         Dictionary<string, T?> keyValues,
         CacheEntryOptions? distributedOptions,
@@ -81,19 +89,11 @@ public abstract class AbstractMultilevelCacheClient : AbstractCacheClient, IMult
             MemoryCacheEntryOptions = memoryOptions
         });
 
-    public override void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
-        => SetList(keyValues, new CombinedCacheEntryOptions()
-        {
-            DistributedCacheEntryOptions = options
-        });
-
     public override Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
         => SetListAsync(keyValues, new CombinedCacheEntryOptions()
         {
             DistributedCacheEntryOptions = options
         });
-
-    public abstract void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
 
     public abstract Task SetListAsync<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
 }

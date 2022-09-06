@@ -20,6 +20,6 @@ public abstract class BasePubSubOptions
     /// </summary>
     public Guid UniquelyIdentifies { get; private set; }
 
-    public BasePubSubOptions(Guid uniquelyIdentifies)
+    protected BasePubSubOptions(Guid uniquelyIdentifies)
         => UniquelyIdentifies = uniquelyIdentifies;
 }

@@ -5,13 +5,11 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClient
 {
-    protected static Guid UniquelyIdentifies;
+    protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
     protected IDatabase Db;
     protected readonly JsonSerializerOptions JsonSerializerOptions;
     protected CacheEntryOptions CacheEntryOptions;
-
-    static BaseDistributedCacheClient() => UniquelyIdentifies = Guid.NewGuid();
 
     protected BaseDistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
@@ -31,7 +29,7 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         };
     }
 
-    private RedisConfigurationOptions GetRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    private static RedisConfigurationOptions GetRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
     {
         if (redisConfigurationOptions.Servers.Any())
             return redisConfigurationOptions;
@@ -112,7 +110,7 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
             .GetResult()
             .ToDictionary()));
 
-    private List<DataCacheModel> GetListCoreByKeyPattern(
+    private static List<DataCacheModel> GetListCoreByKeyPattern(
         string keyPattern,
         Func<string, object, Dictionary<string, RedisResult>> func)
     {
@@ -150,7 +148,7 @@ public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClien
         return GetListByArrayRedisResult(arrayRedisResult, getData);
     }
 
-    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
+    private static List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
     {
         List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)

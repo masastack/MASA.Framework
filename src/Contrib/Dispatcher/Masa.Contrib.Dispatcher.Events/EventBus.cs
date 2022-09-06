@@ -13,12 +13,9 @@ public class EventBus : IEventBus
 
     private readonly IUnitOfWork? _unitOfWork;
 
-    /// <summary>
-    /// todo: Awaiting change to documentation site path
-    /// </summary>
-    private const string LOAD_EVENT_HELP_LINK = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
+    private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
 
-    private readonly IInitializeServiceProvider _initializeServiceProvider;
+    public readonly IInitializeServiceProvider _initializeServiceProvider;
 
     public EventBus(IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
@@ -41,7 +38,7 @@ public class EventBus : IEventBus
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
             throw new NotSupportedException(
-                $"Getting \"{eventType.Name}\" relationship chain failed, see {LOAD_EVENT_HELP_LINK} for details. ");
+                $"Getting \"{eventType.Name}\" relationship chain failed, see {LoadEventHelpLink} for details. ");
         }
 
         if (_options.UnitOfWorkRelation[eventType])

@@ -58,15 +58,15 @@ public interface IDistributedCacheClient : ICacheClient
 
     bool KeyExpire(string key, DateTimeOffset absoluteExpiration);
 
-    Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration);
-
     bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow);
-
-    Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow);
 
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
     long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
+
+    Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration);
+
+    Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow);
 
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 

@@ -19,25 +19,25 @@ public interface ICacheClient
 
     void Set<T>(string key, T value, DateTimeOffset absoluteExpiration);
 
-    Task SetAsync<T>(string key, T value, DateTimeOffset absoluteExpiration);
-
     void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
 
-    Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
-
     void Set<T>(string key, T value, CacheEntryOptions? options = null);
+
+    Task SetAsync<T>(string key, T value, DateTimeOffset absoluteExpiration);
+
+    Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
 
     Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null);
 
     void SetList<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
-
     void SetList<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
-
     void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
+
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
+
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
 
     Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 }

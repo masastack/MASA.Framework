@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class SubscribeHelper
+public static class SubscribeHelper
 {
     /// <summary>
     /// Formats the memory cache key.
@@ -28,7 +28,7 @@ public class SubscribeHelper
 
         return key;
     }
-    
+
     /// <summary>
     /// Formats the subscribe channel.
     /// </summary>

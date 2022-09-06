@@ -305,9 +305,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     public override async Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0L)
     {
-        if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
-
-        if (defaultMinVal < 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than or equal to 0");
+        CheckParametersByHashDecrement(value, defaultMinVal);
 
         var script = $@"
 local result = redis.call('HGET', KEYS[1], KEYS[2])
@@ -320,6 +318,13 @@ end";
         var result = (long)await Db.ScriptEvaluateAsync(script, new RedisKey[] { key, Const.DATA_KEY });
 
         return result;
+    }
+
+    private static void CheckParametersByHashDecrement(long value = 1, long defaultMinVal = 0L)
+    {
+        if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
+
+        if (defaultMinVal < 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than or equal to 0");
     }
 
     #endregion

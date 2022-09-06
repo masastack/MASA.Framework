@@ -77,6 +77,29 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         return value;
     }
 
+    public override T? Get<T>(string key, Action<T?> valueChanged) where T : default
+    {
+        key.CheckIsNullOrWhiteSpace();
+
+        var formattedKey = FormatMemoryCacheKey<T>(key);
+
+        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
+        {
+            value = _distributedCacheClient.Get<T>(key);
+
+            _memoryCache.Set(formattedKey, value);
+
+            var channel = FormatSubscribeChannel<T>(key);
+
+            Subscribe(channel, new SubscribeOptions<T>()
+            {
+                ValueChanged = valueChanged
+            });
+        }
+
+        return value;
+    }
+
     public override async Task<T?> GetAsync<T>(string key) where T : default
     {
         key.CheckIsNullOrWhiteSpace();
@@ -97,6 +120,29 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         var channel = FormatSubscribeChannel<T>(key);
 
         Subscribe<T>(channel);
+
+        return value;
+    }
+
+    public override async Task<T?> GetAsync<T>(string key, Action<T?> valueChanged) where T : default
+    {
+        key.CheckIsNullOrWhiteSpace();
+
+        var formattedKey = FormatMemoryCacheKey<T>(key);
+
+        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
+        {
+            value = await _distributedCacheClient.GetAsync<T>(key);
+
+            _memoryCache.Set(formattedKey, value);
+
+            var channel = FormatSubscribeChannel<T>(key);
+
+            Subscribe(channel, new SubscribeOptions<T>()
+            {
+                ValueChanged = valueChanged
+            });
+        }
 
         return value;
     }
@@ -172,52 +218,6 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
             });
 
             await PubSubAsync(key, SubscribeOperation.Set, value);
-        }
-
-        return value;
-    }
-
-    public override T? Get<T>(string key, Action<T?> valueChanged) where T : default
-    {
-        key.CheckIsNullOrWhiteSpace();
-
-        var formattedKey = FormatMemoryCacheKey<T>(key);
-
-        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
-        {
-            value = _distributedCacheClient.Get<T>(key);
-
-            _memoryCache.Set(formattedKey, value);
-
-            var channel = FormatSubscribeChannel<T>(key);
-
-            Subscribe(channel, new SubscribeOptions<T>()
-            {
-                ValueChanged = valueChanged
-            });
-        }
-
-        return value;
-    }
-
-    public override async Task<T?> GetAsync<T>(string key, Action<T?> valueChanged) where T : default
-    {
-        key.CheckIsNullOrWhiteSpace();
-
-        var formattedKey = FormatMemoryCacheKey<T>(key);
-
-        if (!_memoryCache.TryGetValue(formattedKey, out T? value))
-        {
-            value = await _distributedCacheClient.GetAsync<T>(key);
-
-            _memoryCache.Set(formattedKey, value);
-
-            var channel = FormatSubscribeChannel<T>(key);
-
-            Subscribe(channel, new SubscribeOptions<T>()
-            {
-                ValueChanged = valueChanged
-            });
         }
 
         return value;

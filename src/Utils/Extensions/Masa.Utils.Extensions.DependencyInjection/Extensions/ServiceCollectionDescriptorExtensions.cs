@@ -111,7 +111,6 @@ public static class ServiceCollectionDescriptorExtensions
                 if (services[i].ServiceType == typeof(TService))
                 {
                     services.RemoveAt(i);
-                    break;
                 }
             }
         }

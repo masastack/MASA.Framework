@@ -52,18 +52,18 @@ public abstract class AbstractDistributedCacheClient : AbstractCacheClient, IDis
     public virtual bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpiration));
 
-    public virtual Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration)
-        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpiration));
-
     public virtual bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
-
-    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
-        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
 
     public abstract bool KeyExpire(string key, CacheEntryOptions? options = null);
 
     public abstract long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
+
+    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
+        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
+
+    public virtual Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration)
+        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpiration));
 
     public abstract Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 

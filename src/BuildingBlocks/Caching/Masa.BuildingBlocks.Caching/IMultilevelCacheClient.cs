@@ -31,17 +31,17 @@ public interface IMultilevelCacheClient : ICacheClient
 
     void Set<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    Task SetAsync<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
-
     void Set<T>(string key, T value, CombinedCacheEntryOptions? options);
+
+    Task SetAsync<T>(string key, T value, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
     Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options);
 
     void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
-
     void SetList<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
+
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? distributedOptions, CacheEntryOptions? memoryOptions);
 
     Task SetListAsync<T>(Dictionary<string, T?> keyValues, CombinedCacheEntryOptions? options);
 }

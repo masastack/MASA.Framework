@@ -7,7 +7,7 @@ public class TestBase
 {
     protected const string REDIS_HOST = "localhost";
 
-    protected RedisConfigurationOptions RedisConfigurationOptions
+    protected static RedisConfigurationOptions RedisConfigurationOptions
         => new()
         {
             Servers = new List<RedisServerOptions>()

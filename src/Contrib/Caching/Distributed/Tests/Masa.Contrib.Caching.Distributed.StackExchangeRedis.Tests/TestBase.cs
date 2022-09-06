@@ -7,14 +7,14 @@ public class TestBase
 {
     protected const string REDIS_HOST = "localhost";
 
-    protected RedisConfigurationOptions GetConfigurationOptions()
+    protected static RedisConfigurationOptions GetConfigurationOptions()
     {
         var redisConfigurationOptions = new RedisConfigurationOptions();
         redisConfigurationOptions.Servers.Add(new RedisServerOptions());
         return redisConfigurationOptions;
     }
 
-    protected CacheEntryOptions GetCacheEntryOptions()
+    protected static CacheEntryOptions GetCacheEntryOptions()
     {
         var cacheEntryOptions = new CacheEntryOptions()
         {
@@ -23,7 +23,7 @@ public class TestBase
         return cacheEntryOptions;
     }
 
-    protected JsonSerializerOptions GetJsonSerializerOptions()
+    protected static JsonSerializerOptions GetJsonSerializerOptions()
     {
         JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.EnableDynamicTypes();
