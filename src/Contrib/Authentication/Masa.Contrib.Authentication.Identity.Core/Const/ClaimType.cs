@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Authentication.Identity;
 
-public class ClaimType
+public static class ClaimType
 {
     public const string DEFAULT_USER_ID = ClaimTypes.NameIdentifier;
 
