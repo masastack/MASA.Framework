@@ -235,6 +235,37 @@ public class TestIdentity
     }
 
     [TestMethod]
+    public void TestChange()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentityModel();
+
+        var serviceProvider = services.BuildServiceProvider();
+        var userSetter = serviceProvider.GetService<IUserSetter>();
+        Assert.IsNotNull(userSetter);
+
+        IIdentityUser identityUser = new IdentityUser()
+        {
+            Id = "1"
+        };
+        using (userSetter.Change(identityUser))
+        {
+            var userContext = serviceProvider.GetService<IUserContext>();
+            Assert.IsNotNull(userContext);
+            Assert.AreEqual("1", userContext.UserId);
+
+            Assert.AreEqual(1, userContext.GetUserId<int>());
+        }
+
+        IIdentityUser? identityUser2 = null;
+
+        Assert.ThrowsException<ArgumentNullException>(() =>
+        {
+            userSetter.Change(identityUser2!);
+        });
+    }
+
+    [TestMethod]
     public void TestCustomerUserModelReturnTrueNameEqualLisi()
     {
         var services = new ServiceCollection();
