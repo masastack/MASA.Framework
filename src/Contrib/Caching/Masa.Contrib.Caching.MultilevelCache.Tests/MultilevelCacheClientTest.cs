@@ -30,8 +30,8 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public void TestGet()
     {
-        Assert.AreEqual("success", _multilevelCacheClient.Get<string>("test"));
-        Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test2"));
+        Assert.AreEqual("success", _multilevelCacheClient.Get<string>("test_multilevel_cache"));
+        Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
 
         Assert.ThrowsException<ArgumentException>(() => _multilevelCacheClient.Get<string>(string.Empty));
@@ -40,8 +40,8 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public async Task TestGetAsync()
     {
-        Assert.AreEqual("success", await _multilevelCacheClient.GetAsync<string>("test"));
-        Assert.AreEqual(99.99m, await _multilevelCacheClient.GetAsync<decimal>("test2"));
+        Assert.AreEqual("success", await _multilevelCacheClient.GetAsync<string>("test_multilevel_cache"));
+        Assert.AreEqual(99.99m, await _multilevelCacheClient.GetAsync<decimal>("test_multilevel_cache_2"));
         Assert.AreEqual(null, await _multilevelCacheClient.GetAsync<string>("test10"));
 
         await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _multilevelCacheClient.GetAsync<string>(string.Empty));
@@ -83,7 +83,7 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public void TestGetList()
     {
-        var list = _multilevelCacheClient.GetList<string>("test", "test10").ToList();
+        var list = _multilevelCacheClient.GetList<string>("test_multilevel_cache", "test10").ToList();
         Assert.AreEqual(2, list.Count);
         Assert.AreEqual("success", list[0]);
         Assert.AreEqual(null, list[1]);
@@ -92,7 +92,7 @@ public class MultilevelCacheClientTest: TestBase
     [TestMethod]
     public async Task TestGetListAsync()
     {
-        var list = (await _multilevelCacheClient.GetListAsync<string>("test", "test10")).ToList();
+        var list = (await _multilevelCacheClient.GetListAsync<string>("test_multilevel_cache", "test10")).ToList();
         Assert.AreEqual(2, list.Count);
         Assert.AreEqual("success", list[0]);
         Assert.AreEqual(null, list[1]);
@@ -291,7 +291,7 @@ public class MultilevelCacheClientTest: TestBase
 
     private void InitializeData()
     {
-        _distributedCacheClient.Set("test", "success");
-        _distributedCacheClient.Set("test2", 99.99m);
+        _distributedCacheClient.Set("test_multilevel_cache", "success");
+        _distributedCacheClient.Set("test_multilevel_cache_2", 99.99m);
     }
 }

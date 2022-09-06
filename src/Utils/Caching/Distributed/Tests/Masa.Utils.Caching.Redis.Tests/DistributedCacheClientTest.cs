@@ -33,8 +33,8 @@ public class DistributedCacheClientTest
         _cacheClient.Set("test2", "test2");
         _cacheClient.Set("redis1", "redis1");
         _cacheClient.Set("redis2", "redis2");
-        var keys = await _cacheClient.GetKeysAsync("test*");
-        Assert.AreEqual(2, keys.Count);
+        var keys = await _cacheClient.GetKeysAsync("test1*");
+        Assert.AreEqual(1, keys.Count);
     }
 
     [TestMethod]
@@ -43,7 +43,7 @@ public class DistributedCacheClientTest
         _cacheClient.Set("test1", "test1:Result");
         _cacheClient.Set("redis1", "redis1");
         _cacheClient.Set("redis2", "redis2");
-        var dictionary = _cacheClient.GetListByKeyPattern<string>("test*");
+        var dictionary = _cacheClient.GetListByKeyPattern<string>("test1*");
         Assert.AreEqual(1, dictionary.Count);
         Assert.IsTrue(dictionary["test1"] == "test1:Result");
     }
@@ -54,7 +54,7 @@ public class DistributedCacheClientTest
         _cacheClient.Set("test1", "test1:Result");
         _cacheClient.Set("redis1", "redis1");
         _cacheClient.Set("redis2", "redis2");
-        var dictionary = await _cacheClient.GetListByKeyPatternAsync<string>("test*");
+        var dictionary = await _cacheClient.GetListByKeyPatternAsync<string>("test1*");
         Assert.AreEqual(1, dictionary.Count);
         Assert.IsTrue(dictionary["test1"] == "test1:Result");
     }

@@ -16,8 +16,8 @@ public class DistributedCacheClientTest : TestBase
 
         _database = ConnectionMultiplexer.Connect(GetConfigurationOptions()).GetDatabase();
 
-        _distributedCacheClient.Set("test", "1");
-        _distributedCacheClient.Set("test2", Guid.Empty.ToString());
+        _distributedCacheClient.Set("test_caching", "1");
+        _distributedCacheClient.Set("test_caching_2", Guid.Empty.ToString());
     }
 
     [DataTestMethod]
@@ -195,14 +195,14 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("cache_test_sync")]
     public void SetByStringArray(string key)
     {
-        string[] values = new[] { "test", "test2" };
+        string[] values = new[] { "test1", "test2" };
         _distributedCacheClient.Remove(key);
         _distributedCacheClient.Set(key, values);
 
         var actualValues = _distributedCacheClient.Get<string[]>(key);
         Assert.IsNotNull(actualValues);
         Assert.AreEqual(values.Length, actualValues.Length);
-        Assert.IsTrue(actualValues.Contains("test") && actualValues.Contains("test2"));
+        Assert.IsTrue(actualValues.Contains("test1") && actualValues.Contains("test2"));
         _distributedCacheClient.RemoveAsync(key);
     }
 
@@ -210,14 +210,14 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("cache_test_sync")]
     public void SetByStringCollection(string key)
     {
-        List<string> values = new List<string>() { "test", "test2" };
+        List<string> values = new List<string>() { "test1", "test2" };
         _distributedCacheClient.Remove(key);
         _distributedCacheClient.Set(key, values);
 
         var actualValues = _distributedCacheClient.Get<string[]>(key);
         Assert.IsNotNull(actualValues);
         Assert.AreEqual(values.Count, actualValues.Length);
-        Assert.IsTrue(actualValues.Contains("test") && actualValues.Contains("test2"));
+        Assert.IsTrue(actualValues.Contains("test1") && actualValues.Contains("test2"));
         _distributedCacheClient.RemoveAsync(key);
     }
 
@@ -342,7 +342,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test", "test2")]
+    [DataRow("test_caching", "test_caching_2")]
     public void TestGetList(params string[] keys)
     {
         var list = _distributedCacheClient.GetList<string>(keys).ToList();
@@ -352,7 +352,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test", "test2")]
+    [DataRow("test_caching", "test_caching_2")]
     public async Task TestGetListAsync(params string[] keys)
     {
         var list = (await _distributedCacheClient.GetListAsync<string>(keys)).ToList();
@@ -396,7 +396,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test", "test2")]
+    [DataRow("test1", "test2")]
     [DataRow("test3")]
     public void TestRefresh(params string[] keys)
     {
@@ -408,7 +408,7 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("test", "test2")]
+    [DataRow("test1", "test2")]
     [DataRow("test3")]
     public async Task TestRefreshAsync(params string[] keys)
     {
@@ -418,17 +418,18 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("tes*", 2)]
-    [DataRow("test2*", 1)]
+    [DataRow("test_caching*", 2)]
+    [DataRow("test_caching_*", 1)]
     [DataRow("ce*", 0)]
     public void TestGetKeys(string keyPattern, int count)
     {
+        var list = _distributedCacheClient.GetKeys(keyPattern);
         Assert.AreEqual(count, _distributedCacheClient.GetKeys(keyPattern).Count);
     }
 
     [DataTestMethod]
-    [DataRow("tes*", 2)]
-    [DataRow("test2*", 1)]
+    [DataRow("test_caching*", 2)]
+    [DataRow("test_caching_*", 1)]
     [DataRow("ce*", 0)]
     public async Task TestGetKeysAsync(string keyPattern, int count)
     {
@@ -436,23 +437,23 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("tes*", 2)]
+    [DataRow("test_caching*", 2)]
     public void TestGetListByKeyPattern(string keyPattern, int count)
     {
         var list = _distributedCacheClient.GetListByKeyPattern<string>(keyPattern);
         Assert.AreEqual(count, list.Count);
 
-        Assert.IsTrue(list.Count(x => (x.Key == "test" && x.Value == "1") || (x.Key == "test2" && x.Value == Guid.Empty.ToString())) == 2);
+        Assert.IsTrue(list.Count(x => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
     }
 
     [DataTestMethod]
-    [DataRow("tes*", 2)]
+    [DataRow("test_caching*", 2)]
     public async Task TestGetListByKeyPatternAsync(string keyPattern, int count)
     {
         var list = await _distributedCacheClient.GetListByKeyPatternAsync<string>(keyPattern);
         Assert.AreEqual(count, list.Count);
 
-        Assert.IsTrue(list.Count(x => (x.Key == "test" && x.Value == "1") || (x.Key == "test2" && x.Value == Guid.Empty.ToString())) == 2);
+        Assert.IsTrue(list.Count(x => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
     }
 
     [DataTestMethod]
