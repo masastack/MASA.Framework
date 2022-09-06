@@ -5,11 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="$(MicrosoftPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Masa.Contrib.Authentication.Identity.Core\Masa.Contrib.Authentication.Identity.Core.csproj" />
   </ItemGroup>

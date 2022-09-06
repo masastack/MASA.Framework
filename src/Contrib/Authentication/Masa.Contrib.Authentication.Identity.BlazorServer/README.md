@@ -1,13 +1,13 @@
 [中](README.zh-CN.md) | EN
 
-## Authentication.Identity
+## Authentication.Identity.BlazorServer
 
-Provides `Identity` implementation for the project, supports `Mvc`, `Minimal APIs` projects
+Provides an `Identity` implementation for the project, supports the `Blazor Server` project
 
 Example:
 
 ``` C#
-Install-Package Masa.Contrib.Authentication.Identity
+Install-Package Masa.Contrib.Authentication.Identity.BlazorServer
 ```
 
 1. Modify `Program.cs`

@@ -1,13 +1,13 @@
 中 | [EN](README.md)
 
-## Authentication.Identity
+## Authentication.Identity.BlazorAssembly
 
-为项目提供了`Identity`实现，支持`Mvc`、`Minimal APIs`项目
+为项目提供了`Identity`实现，支持`Blazor Assembly`项目
 
 用例：
 
 ``` C#
-Install-Package Masa.Contrib.Authentication.Identity
+Install-Package Masa.Contrib.Authentication.Identity.BlazorAssembly
 ```
 
 1. 修改`Program.cs`
