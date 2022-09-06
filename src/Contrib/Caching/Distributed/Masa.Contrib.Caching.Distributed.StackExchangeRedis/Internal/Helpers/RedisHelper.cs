@@ -14,7 +14,7 @@ internal static class RedisHelper
             return (T?)Convert.ChangeType(redisValue, actualType);
 
         var byteValue = (byte[])redisValue;
-        if (byteValue is null || byteValue.Length == 0)
+        if (byteValue.Length == 0)
             return default;
 
         var value = Decompress(byteValue);

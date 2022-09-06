@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal sealed class Const
+internal static class Const
 {
     public const string DEFAULT_REDIS_SECTION_NAME = "RedisConfig";
 

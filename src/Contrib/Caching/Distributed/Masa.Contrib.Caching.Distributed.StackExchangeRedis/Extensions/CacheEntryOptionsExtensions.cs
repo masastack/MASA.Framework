@@ -9,7 +9,7 @@ public static class CacheEntryOptionsExtensions
     {
         if (options.AbsoluteExpiration.HasValue && options.AbsoluteExpiration <= creationTime)
             throw new ArgumentOutOfRangeException(
-                nameof(options.AbsoluteExpiration),
+                nameof(options),
                 options.AbsoluteExpiration.Value,
                 "The absolute expiration value must be in the future.");
 
