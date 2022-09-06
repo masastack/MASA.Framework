@@ -5,7 +5,7 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
 public class TestBase
 {
-    protected const string REDIS_HOST = "redis";
+    protected const string REDIS_HOST = "localhost";
 
     protected RedisConfigurationOptions RedisConfigurationOptions
         => new()
