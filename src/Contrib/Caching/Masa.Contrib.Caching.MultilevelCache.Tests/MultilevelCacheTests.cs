@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
 [TestClass]
-public class MultilevelCacheTests
+public class MultilevelCacheTests : TestBase
 {
     [TestMethod]
     public void TestAddMultilevelCache()
@@ -56,8 +56,8 @@ public class MultilevelCacheTests
     public void TestAddMultilevelCacheReturnIMultilevelCacheNotNull()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache().AddMultilevelCache();
-        builder.Services.AddStackExchangeRedisCache("test").AddMultilevelCache(new MultilevelCacheOptions()
+        builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache();
+        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheOptions()
         {
             CacheEntryOptions = new CacheEntryOptions()
             {
@@ -104,7 +104,7 @@ public class MultilevelCacheTests
     public void TestAddMultilevelCacheRepeat()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache("test")
+        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
             .AddMultilevelCache(new MultilevelCacheOptions()
             {
                 CacheEntryOptions = new CacheEntryOptions()

@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
 [TestClass]
-public class MultilevelCacheClientTest
+public class MultilevelCacheClientTest: TestBase
 {
     private IMemoryCache _memoryCache;
     private IDistributedCacheClient _distributedCacheClient;
@@ -14,7 +14,7 @@ public class MultilevelCacheClientTest
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache();
+        services.AddStackExchangeRedisCache(RedisConfigurationOptions);
         services.AddMemoryCache();
         var serviceProvider = services.BuildServiceProvider();
         _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();

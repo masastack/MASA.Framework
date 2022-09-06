@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 [TestClass]
-public class RedisConfigurationOptionsTest
+public class RedisConfigurationOptionsTest : TestBase
 {
     [TestMethod]
     public void Test()
@@ -14,8 +14,8 @@ public class RedisConfigurationOptionsTest
         {
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost"),
-                new("localhost", 6379)
+                new(REDIS_HOST),
+                new(REDIS_HOST, 6379)
             },
             AbortOnConnectFail = true,
             AllowAdmin = true,
@@ -52,21 +52,21 @@ public class RedisConfigurationOptionsTest
     [TestMethod]
     public void TestRedisServiceOptions()
     {
-        var options = new RedisServerOptions("localhost", 6379);
+        var options = new RedisServerOptions(REDIS_HOST, 6379);
 
-        Assert.AreEqual("localhost", options.Host);
+        Assert.AreEqual(REDIS_HOST, options.Host);
         Assert.AreEqual(6379, options.Port);
 
         Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions("", 6379));
         Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions(null!, 6379));
         Assert.ThrowsException<ArgumentException>(() => new RedisServerOptions(" ", 6379));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions("localhost", 0));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions("localhost", -6379));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, 0));
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new RedisServerOptions(REDIS_HOST, -6379));
 
 
-        options = new RedisServerOptions("localhost");
+        options = new RedisServerOptions(REDIS_HOST);
 
-        Assert.AreEqual("localhost", options.Host);
+        Assert.AreEqual(REDIS_HOST, options.Host);
         Assert.AreEqual(6379, options.Port);
 
         options = new RedisServerOptions("127.0.0.1:6378");

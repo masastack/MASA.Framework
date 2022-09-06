@@ -5,6 +5,8 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 public class TestBase
 {
+    protected const string REDIS_HOST = "redis";
+
     protected RedisConfigurationOptions GetConfigurationOptions()
     {
         var redisConfigurationOptions = new RedisConfigurationOptions();

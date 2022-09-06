@@ -1,12 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Reflection;
-
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 [TestClass]
-public class StackExchangeRedisCacheTest
+public class StackExchangeRedisCacheTest : TestBase
 {
     [TestMethod]
     public void TestAddStackExchangeRedisCache()
@@ -17,7 +15,7 @@ public class StackExchangeRedisCacheTest
             DefaultDatabase = 1,
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost")
+                new(REDIS_HOST)
             }
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -39,7 +37,7 @@ public class StackExchangeRedisCacheTest
             DefaultDatabase = 1,
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost")
+                new(REDIS_HOST)
             }
         });
         services.AddStackExchangeRedisCache("test2", new RedisConfigurationOptions()
@@ -47,7 +45,7 @@ public class StackExchangeRedisCacheTest
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost")
+                new(REDIS_HOST)
             }
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -91,7 +89,7 @@ public class StackExchangeRedisCacheTest
                 {
                     Servers = new List<RedisServerOptions>()
                     {
-                        new("localhost", 6379)
+                        new(REDIS_HOST, 6379)
                     },
                     DefaultDatabase = 1
                 }
@@ -120,7 +118,7 @@ public class StackExchangeRedisCacheTest
             DefaultDatabase = 1,
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost")
+                new(REDIS_HOST)
             }
         });
         services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
@@ -128,7 +126,7 @@ public class StackExchangeRedisCacheTest
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()
             {
-                new("localhost")
+                new(REDIS_HOST)
             }
         });
         var serviceProvider = services.BuildServiceProvider();
