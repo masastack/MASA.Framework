@@ -235,6 +235,18 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
+    public async Task<bool> LoginForPhoneNumberAsync(LoginForPhoneNumber login)
+    {
+        var requestUri = $"api/user/loginForPhoneNumber";
+        return await _caller.PostAsync<bool>(requestUri, login);
+    }
+
+    public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)
+    {
+        var requestUri = $"api/user/removeUserRoles";
+        await _caller.DeleteAsync(requestUri, user);
+    }
+
     public async Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn = true)
     {
         var requestUri = $"api/thirdPartyUser/addThirdPartyUser?whenExistReturn={whenExistReturn}";

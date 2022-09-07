@@ -66,5 +66,9 @@ public interface IUserService
     Task<bool> DisableUserAsync(DisableUserModel user);
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
+
+    Task<bool> LoginForPhoneNumberAsync(LoginForPhoneNumber login);
+
+    Task RemoveUserRolesAsync(RemoveUserRolesModel user);
 }
 

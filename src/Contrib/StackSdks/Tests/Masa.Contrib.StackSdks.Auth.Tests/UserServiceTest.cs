@@ -380,6 +380,32 @@ public class UserServiceTest
         caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
     }
 
+    [TestMethod]
+    public async Task TestLoginForPhoneNumberAsync()
+    {
+        var login = new LoginForPhoneNumber();
+        var requestUri = $"api/user/loginForPhoneNumber";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<bool>(requestUri, login, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.LoginForPhoneNumberAsync(login);
+        caller.Verify(provider => provider.PostAsync<bool>(requestUri, login, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveUserRolesAsync()
+    {
+        var user = new RemoveUserRolesModel();
+        var requestUri = $"api/user/removeUserRoles";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync(requestUri, user, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RemoveUserRolesAsync(user);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, user, true, default), Times.Once);
+    }
+
 
     [TestMethod]
     public async Task TestDisableUserAsync()
