@@ -575,6 +575,27 @@ public class UserServiceTest
         caller.Verify(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }
+
+    [TestMethod]
+    public async Task TestSetCurrentTeamAsyncAsync()
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var teamId = Guid.Parse("A659E0DD-1E9C-474D-8FE7-8BA6592D53D1");
+        var requestUri = $"api/staff/UpdateCurrentTeam";
+        var caller = new Mock<ICaller>();
+        var data = new UpdateCurrentTeamModel
+        {
+            UserId = userId,
+            TeamId = teamId
+        };
+        caller.Setup(provider => provider.PutAsync(requestUri, data, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.SetCurrentTeamAsync(teamId);
+        caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<object>(), true, default), Times.Once);
+    }
+
 }
 
 class SystemData
