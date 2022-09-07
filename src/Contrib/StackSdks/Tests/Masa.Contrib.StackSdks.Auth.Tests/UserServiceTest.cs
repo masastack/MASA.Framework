@@ -381,15 +381,15 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestLoginForPhoneNumberAsync()
+    public async Task TestLoginByPhoneNumberAsync()
     {
-        var login = new LoginForPhoneNumber();
-        var requestUri = $"api/user/loginForPhoneNumber";
+        var login = new LoginByPhoneNumberModel();
+        var requestUri = $"api/user/loginByPhoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<bool>(requestUri, login, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
-        await userService.LoginForPhoneNumberAsync(login);
+        await userService.LoginByPhoneNumberAsync(login);
         caller.Verify(provider => provider.PostAsync<bool>(requestUri, login, default), Times.Once);
     }
 

@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginForPhoneNumber
+public class LoginByPhoneNumberModel
 {
     public string PhoneNumber { get; set; } = "";
 

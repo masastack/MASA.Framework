@@ -235,9 +235,9 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
-    public async Task<bool> LoginForPhoneNumberAsync(LoginForPhoneNumber login)
+    public async Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
     {
-        var requestUri = $"api/user/loginForPhoneNumber";
+        var requestUri = $"api/user/loginByPhoneNumber";
         return await _caller.PostAsync<bool>(requestUri, login);
     }
 
