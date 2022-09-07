@@ -13,21 +13,9 @@ public class MasaUser : IIdentityUser
 
     public string[] Roles { get; set; }
 
-    public bool IsSuperAdmin
-    {
-        get
-        {
-            return Account?.ToLower() == "admin";
-        }
-    }
+    public bool IsSuperAdmin => Account?.ToLower() == "admin";
 
-    public bool IsStaff
-    {
-        get
-        {
-            return StaffId != Guid.Empty;
-        }
-    }
+    public bool IsStaff => StaffId != Guid.Empty;
 
     public Guid CurrentTeamId { get; set; }
 
