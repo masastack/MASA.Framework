@@ -26,11 +26,18 @@ public class OidcDbContextOptions
     }
 
     public async Task SeedStandardResourcesAsync()
-    {
-        var userClaim = ServiceProvider.GetRequiredService<IUserClaimRepository>();
-        var identityResourcerepository = ServiceProvider.GetRequiredService<IIdentityResourceRepository>();
-        await userClaim.AddStandardUserClaimsAsync();
-        await identityResourcerepository.AddStandardIdentityResourcesAsync();
+    {              
+        DbContext authDbContext = ServiceProvider.GetRequiredService<OidcDbContext>();
+        if(await authDbContext.Set<UserClaim>().AnyAsync() is false)
+        {
+            var userClaim = ServiceProvider.GetRequiredService<IUserClaimRepository>();
+            await userClaim.AddStandardUserClaimsAsync();
+        }
+        if(await authDbContext.Set<IdentityResource>().AnyAsync() is false)
+        {
+            var identityResourcerepository = ServiceProvider.GetRequiredService<IIdentityResourceRepository>();
+            await identityResourcerepository.AddStandardIdentityResourcesAsync();
+        }      
     }
 
     public async Task SyncCacheAsync()

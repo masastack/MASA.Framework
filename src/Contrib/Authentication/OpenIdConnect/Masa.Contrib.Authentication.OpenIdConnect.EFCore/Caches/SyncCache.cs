@@ -80,7 +80,8 @@ public class SyncCache
                     .Include(c => c.IdentityProviderRestrictions)
                     .Include(c => c.AllowedCorsOrigins)
                     .Include(c => c.ClientSecrets)
-                    .Include(c => c.AllowedScopes);
+                    .Include(c => c.AllowedScopes)
+                    .AsSplitQuery();
     }
 
     private IQueryable<IdentityResource> IdentityResourceQuery()
@@ -88,7 +89,8 @@ public class SyncCache
         return _context.Set<IdentityResource>()
                     .Include(idrs => idrs.UserClaims)
                     .ThenInclude(uc => uc.UserClaim)
-                    .Include(idrs => idrs.Properties);
+                    .Include(idrs => idrs.Properties)
+                    .AsSplitQuery();
     }
 
     private IQueryable<ApiScope> ApiScopeQuery()
@@ -96,7 +98,8 @@ public class SyncCache
         return _context.Set<ApiScope>()
                     .Include(apiScope => apiScope.UserClaims)
                     .ThenInclude(apiScope => apiScope.UserClaim)
-                    .Include(apiScope => apiScope.Properties);
+                    .Include(apiScope => apiScope.Properties)
+                    .AsSplitQuery();
     }
 
     private IQueryable<ApiResource> ApiResourceQuery()
@@ -106,6 +109,7 @@ public class SyncCache
                     .ThenInclude(userClaim => userClaim.UserClaim)
                     .Include(apiResource => apiResource.Properties)
                     .Include(apiResource => apiResource.ApiScopes)
-                    .ThenInclude(apiScope => apiScope.ApiScope);
+                    .ThenInclude(apiScope => apiScope.ApiScope)
+                    .AsSplitQuery();
     }
 }

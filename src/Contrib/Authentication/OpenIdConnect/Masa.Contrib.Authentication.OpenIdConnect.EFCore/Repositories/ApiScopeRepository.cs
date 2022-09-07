@@ -39,6 +39,7 @@ public class ApiScopeRepository : IApiScopeRepository
                          .Include(apiScope => apiScope.UserClaims)
                          .ThenInclude(apiScope => apiScope.UserClaim)
                          .Include(apiScope => apiScope.Properties)
+                         .AsSplitQuery()
                          .FirstOrDefaultAsync(apiScope => apiScope.Id == id);
 
         return apiScope;
