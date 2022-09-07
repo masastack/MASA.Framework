@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.StackSdks.Auth.Service;
-
 namespace Masa.Contrib.StackSdks.Auth.Tests;
 
 [TestClass]
@@ -24,7 +22,7 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestAddThirdPartyUserAsync()
+    public async Task TestUpsertThirdPartyAsync()
     {
         var addUser = new UpsertThirdPartyUserModel();
         var user = new UserModel();
@@ -35,6 +33,21 @@ public class UserServiceTest
         var userService = new UserService(caller.Object, userContext.Object);
         var result = await userService.UpsertThirdPartyUserAsync(addUser);
         caller.Verify(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    public async Task TestAddThirdPartyUserAsync()
+    {
+        var addUser = new AddThirdPartyUserModel();
+        var user = new UserModel();
+        var requestUri = $"api/thirdPartyUser/addThirdPartyUser?whenExistReturn={true}";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.AddThirdPartyUserAsync(addUser);
+        caller.Verify(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
 
@@ -365,6 +378,32 @@ public class UserServiceTest
         var userService = new UserService(caller.Object, userContext.Object);
         await userService.UpdatePhoneNumberAsync(user);
         caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestLoginByPhoneNumberAsync()
+    {
+        var login = new LoginByPhoneNumberModel();
+        var requestUri = $"api/user/loginByPhoneNumber";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<bool>(requestUri, login, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.LoginByPhoneNumberAsync(login);
+        caller.Verify(provider => provider.PostAsync<bool>(requestUri, login, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveUserRolesAsync()
+    {
+        var user = new RemoveUserRolesModel();
+        var requestUri = $"api/user/removeUserRoles";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync(requestUri, user, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RemoveUserRolesAsync(user);
+        caller.Verify(provider => provider.DeleteAsync(requestUri, user, true, default), Times.Once);
     }
 
 

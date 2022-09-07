@@ -17,11 +17,13 @@ public interface IUserService
 
     Task<long> GetTotalByTeamAsync(Guid teamId);
 
-    Task<UserModel?> AddAsync(AddUserModel user);
+    Task<UserModel> AddAsync(AddUserModel user);
 
-    Task<UserModel?> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
+    Task<UserModel> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
-    Task<UserModel?> UpsertAsync(UpsertUserModel user);
+    Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn = true);
+
+    Task<UserModel> UpsertAsync(UpsertUserModel user);
 
     Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
@@ -64,6 +66,10 @@ public interface IUserService
     Task<bool> DisableUserAsync(DisableUserModel user);
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
+
+    Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
+
+    Task RemoveUserRolesAsync(RemoveUserRolesModel user);
 
     Task SetCurrentTeamAsync(Guid teamId);
 }
