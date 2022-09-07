@@ -234,5 +234,16 @@ public class UserService : IUserService
         var requestUri = $"api/user/updatePhoneNumber";
         return await _caller.PutAsync<bool>(requestUri, user);
     }
+
+    public async Task SetCurrentTeamAsync(Guid teamId)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/staff/UpdateCurrentTeam";
+        await _caller.PutAsync(requestUri, new UpdateCurrentTeamModel
+        {
+            UserId = userId,
+            TeamId = teamId
+        });
+    }
 }
 

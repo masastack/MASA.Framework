@@ -64,5 +64,7 @@ public interface IUserService
     Task<bool> DisableUserAsync(DisableUserModel user);
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
+
+    Task SetCurrentTeamAsync(Guid teamId);
 }
 

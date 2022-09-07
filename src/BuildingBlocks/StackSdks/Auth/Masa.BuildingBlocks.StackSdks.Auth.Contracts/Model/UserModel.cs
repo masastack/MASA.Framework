@@ -33,6 +33,11 @@ public class UserModel
 
     public List<Guid> RoleIds { get; set; } = new();
 
+    public Guid? StaffId { get; set; }
+
+    //only for staff
+    public Guid? CurrentTeamId { get; set; }
+
     public DateTime CreationTime { get; set; }
 
     public UserModel()
