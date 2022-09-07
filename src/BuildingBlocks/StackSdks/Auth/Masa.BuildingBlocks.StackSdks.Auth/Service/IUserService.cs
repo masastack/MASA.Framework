@@ -21,7 +21,7 @@ public interface IUserService
 
     Task<UserModel> UpsertThirdPartyUserAsync(UpsertThirdPartyUserModel user);
 
-    Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user,bool whenExistReturn);
+    Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn);
 
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
