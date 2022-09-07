@@ -9,10 +9,10 @@ public class BaseRedis
     internal ConnectionMultiplexer Connection { get; }
     internal IDatabase Database { get; }
 
-    public BaseRedis(IDistributedCacheClient distributedCacheClient, IOptions<RedisConfigurationOptions> redisOptions)
+    public BaseRedis(IDistributedCacheClient distributedCacheClient, RedisConfigurationOptions redisOptions)
     {
         DistributedCacheClient = distributedCacheClient;
-        var options = GetConfigurationOptions(redisOptions.Value);
+        var options = GetConfigurationOptions(redisOptions);
         Connection = ConnectionMultiplexer.Connect(options);
         Database = Connection.GetDatabase(options.DefaultDatabase ?? 0);
     }

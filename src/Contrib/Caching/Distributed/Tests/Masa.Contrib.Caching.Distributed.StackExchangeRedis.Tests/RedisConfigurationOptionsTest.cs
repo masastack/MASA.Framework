@@ -74,4 +74,40 @@ public class RedisConfigurationOptionsTest : TestBase
         Assert.AreEqual("127.0.0.1", options.Host);
         Assert.AreEqual(6378, options.Port);
     }
+
+    [TestMethod]
+    public void TestDistributedRedisCacheOptions()
+    {
+        RedisConfigurationOptions? redisConfigurationOptions = null;
+        CacheEntryOptions? cacheEntryOptions = null;
+
+        var distributedRedisCacheOptions = new DistributedRedisCacheOptions()
+        {
+            Options = redisConfigurationOptions,
+            CacheEntryOptions = cacheEntryOptions
+        };
+        Assert.AreEqual(null, distributedRedisCacheOptions.Options);
+        Assert.AreEqual(null, distributedRedisCacheOptions.CacheEntryOptions);
+
+        redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            },
+            Password = "123456"
+        };
+        cacheEntryOptions = new CacheEntryOptions()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(10)
+        };
+        distributedRedisCacheOptions = new DistributedRedisCacheOptions()
+        {
+            Options = redisConfigurationOptions,
+            CacheEntryOptions = cacheEntryOptions
+        };
+
+        Assert.AreEqual(redisConfigurationOptions, distributedRedisCacheOptions.Options);
+        Assert.AreEqual(cacheEntryOptions, distributedRedisCacheOptions.CacheEntryOptions);
+    }
 }

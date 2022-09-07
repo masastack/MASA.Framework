@@ -90,6 +90,25 @@ public static class ServiceCollectionExtensions
     {
         services.AddDistributedCacheCore();
 
+        services.Configure<RedisConfigurationOptions>(name, options =>
+        {
+            options.AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration;
+            options.AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow;
+            options.SlidingExpiration = redisConfigurationOptions.SlidingExpiration;
+            options.Servers = redisConfigurationOptions.Servers;
+            options.AbortOnConnectFail = redisConfigurationOptions.AbortOnConnectFail;
+            options.AllowAdmin = redisConfigurationOptions.AllowAdmin;
+            options.ClientName = redisConfigurationOptions.ClientName;
+            options.ChannelPrefix = redisConfigurationOptions.ChannelPrefix;
+            options.ConnectRetry = redisConfigurationOptions.ConnectRetry;
+            options.ConnectTimeout = redisConfigurationOptions.ConnectTimeout;
+            options.DefaultDatabase = redisConfigurationOptions.DefaultDatabase;
+            options.Password = redisConfigurationOptions.Password;
+            options.Proxy = redisConfigurationOptions.Proxy;
+            options.Ssl = redisConfigurationOptions.Ssl;
+            options.SyncTimeout = redisConfigurationOptions.SyncTimeout;
+        });
+
         services.Configure<DistributedCacheFactoryOptions>(options =>
         {
             if (options.Options.Any(opt => opt.Name == name))

@@ -61,7 +61,7 @@ public static class JsonSerializerExtensions
 
         private protected JsonDynamicType(JsonSerializerOptions options)
         {
-            ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(options);
 
             Options = options;
         }
@@ -281,12 +281,10 @@ public static class JsonSerializerExtensions
     public sealed class JsonDynamicBoolean : JsonDynamicType
     {
         private object _value;
-        private Type? _type;
 
         public JsonDynamicBoolean(bool value, JsonSerializerOptions options) : base(options)
         {
             _value = value;
-            _type = typeof(bool);
         }
 
         public override T? GetValue<T>() where T : default
@@ -299,7 +297,6 @@ public static class JsonSerializerExtensions
         public override void SetValue(object value)
         {
             _value = value;
-            _type = value.GetType();
         }
 
         protected override bool TryConvert(Type returnType, out object? result)
@@ -316,7 +313,6 @@ public static class JsonSerializerExtensions
             }
 
             result = _value = JsonSerializer.Deserialize($"\"{Value}\"", returnType, Options)!;
-            _type = result?.GetType()!;
             return true;
         }
 

@@ -14,7 +14,7 @@ public class ApiScopeCache : IApiScopeCache
 
     public async Task<List<ApiScopeModel>> GetListAsync(IEnumerable<string> names)
     {
-        var keys = names.Select(name => FormatKey(name)).ToArray();
+        var keys = names.Select(FormatKey).ToArray();
         var apiScopes = await _memoryCacheClient.GetListAsync<ApiScopeModel>(keys);
         return apiScopes.Where(apiScope => apiScope is not null).ToList()!;
     }
@@ -37,8 +37,8 @@ public class ApiScopeCache : IApiScopeCache
 
     public async Task SetRangeAsync(IEnumerable<ApiScope> apiScopes)
     {
-        var map = apiScopes.ToDictionary(apiScope => FormatKey(apiScope), apiScope => apiScope.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = apiScopes.ToDictionary(FormatKey, apiScope => apiScope.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         // update list cache
         var list = await GetListAsync();
         list.SetRange(map.Values, item => item.Name);
@@ -56,8 +56,8 @@ public class ApiScopeCache : IApiScopeCache
 
     public async Task ResetAsync(IEnumerable<ApiScope> apiScopes)
     {
-        var map = apiScopes.ToDictionary(apiScope => FormatKey(apiScope), apiScope => apiScope.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = apiScopes.ToDictionary(FormatKey, apiScope => apiScope.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         await UpdateListAsync(map.Values);
     }
 

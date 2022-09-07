@@ -13,7 +13,7 @@ public class MachineClockIdGenerator : Snowflake.MachineClockIdGenerator
     public MachineClockIdGenerator(
         IDistributedCacheClient distributedCacheClient,
         IWorkerProvider workerProvider,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         DistributedIdGeneratorOptions distributedIdGeneratorOptions)
         : base(workerProvider, distributedIdGeneratorOptions.IdGeneratorOptions)
     {

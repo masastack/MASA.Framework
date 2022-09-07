@@ -25,7 +25,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     public DistributedWorkerProvider(
         IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         ILogger<DistributedWorkerProvider>? logger) : base(distributedCacheClient, redisOptions)
     {
         _uniquelyIdentifies ??= Guid.NewGuid().ToString();

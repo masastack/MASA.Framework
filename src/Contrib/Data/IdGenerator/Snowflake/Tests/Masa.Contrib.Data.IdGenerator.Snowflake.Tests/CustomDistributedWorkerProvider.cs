@@ -7,7 +7,7 @@ public class CustomDistributedWorkerProvider : DistributedWorkerProvider
 {
     public CustomDistributedWorkerProvider(IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         ILogger<DistributedWorkerProvider>? logger)
         : base(distributedCacheClient, distributedIdGeneratorOptions, redisOptions, logger)
     {
