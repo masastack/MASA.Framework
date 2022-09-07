@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
+
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage;
 
 public static class ServiceCollectionExtensions

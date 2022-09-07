@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
+
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Perfs;
 
 /// <summary>
@@ -18,14 +20,14 @@ public class DistributedBenchmarks
     public void GlobalSetup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
         {
-            opt.Password = "";
-            opt.DefaultDatabase = 2;
-            opt.Servers = new List<RedisServerOptions>()
+            Password = "",
+            DefaultDatabase = 2,
+            Servers = new List<RedisServerOptions>()
             {
                 new("127.0.0.1", 6379)
-            };
+            }
         });
         services.AddSnowflake(options =>
         {

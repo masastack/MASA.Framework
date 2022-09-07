@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     {
         cachingBuilder.Services.AddMultilevelCacheCore();
 
-        cachingBuilder.Services.AddConfigure<MultilevelCacheOptions>(sectionName);
+        cachingBuilder.Services.AddConfigure<MultilevelCacheOptions>(sectionName, cachingBuilder.Name);
 
         cachingBuilder.Services.Configure<MultilevelCacheFactoryOptions>(options =>
         {

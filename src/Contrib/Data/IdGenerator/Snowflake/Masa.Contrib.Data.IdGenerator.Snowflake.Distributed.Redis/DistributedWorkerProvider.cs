@@ -74,7 +74,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
             RefreshAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            DistributedCacheClient.Publish<long>(_channel, options =>
+            DistributedCacheClient.Publish(_channel, options =>
             {
                 options.Key = _uniquelyIdentifies!;
                 options.Value = _workerId.Value;

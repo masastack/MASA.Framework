@@ -5,7 +5,7 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 
 public class ApiScopeCache : IApiScopeCache
 {
-    IMemoryCacheClient _memoryCacheClient;
+    private readonly IMultilevelCacheClient _memoryCacheClient;
 
     public ApiScopeCache(MemoryCacheProvider memoryCacheProvider)
     {

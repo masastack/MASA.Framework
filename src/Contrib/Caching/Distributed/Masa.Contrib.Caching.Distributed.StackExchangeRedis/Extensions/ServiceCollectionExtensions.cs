@@ -5,6 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    public static ICachingBuilder AddStackExchangeRedisCache(
+        this IServiceCollection services,
+        Action<RedisConfigurationOptions> action)
+    {
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        action.Invoke(redisConfigurationOptions);
+        return services.AddStackExchangeRedisCache(
+            Microsoft.Extensions.Options.Options.DefaultName,
+            redisConfigurationOptions);
+    }
+
     public static ICachingBuilder AddStackExchangeRedisCache(this IServiceCollection services,
         RedisConfigurationOptions redisConfigurationOptions)
         => services.AddStackExchangeRedisCache(
@@ -55,6 +66,20 @@ public static class ServiceCollectionExtensions
         });
 
         return new CachingBuilder(services, name);
+    }
+
+    public static ICachingBuilder AddStackExchangeRedisCache(
+        this IServiceCollection services,
+        string name,
+        Action<RedisConfigurationOptions> action,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        action.Invoke(redisConfigurationOptions);
+        return services.AddStackExchangeRedisCache(
+            name,
+            redisConfigurationOptions,
+            jsonSerializerOptions);
     }
 
     public static ICachingBuilder AddStackExchangeRedisCache(

@@ -11,9 +11,8 @@ public static class IdGeneratorOptionsExtensions
         DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(snowflakeGeneratorOptions);
         action?.Invoke(distributedIdGeneratorOptions);
 
-        if (!snowflakeGeneratorOptions.Services.Any(service => service.ServiceType == typeof(IDistributedCacheClientFactory) &&
-                service.ImplementationType == typeof(RedisCacheClientFactory)))
-            throw new MasaException("Please add first using AddMasaRedisCache");
+        if (snowflakeGeneratorOptions.Services.All(service => service.ServiceType != typeof(IDistributedCacheClientFactory)))
+            throw new MasaException("Please add first using AddStackExchangeRedisCache");
 
         if (distributedIdGeneratorOptions.IdleTimeOut <= snowflakeGeneratorOptions.HeartbeatInterval)
         {

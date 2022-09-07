@@ -6,7 +6,7 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests;
 [TestClass]
 public class IdGeneratorTest
 {
-    private RedisCacheClient _redisCacheClient;
+    private IDistributedCacheClient _redisCacheClient;
     private IOptions<RedisConfigurationOptions> _redisOptions;
 
     /// <summary>
@@ -25,8 +25,7 @@ public class IdGeneratorTest
             }
         };
         _redisOptions = Options.Create(redisConfigurationOptions);
-        var options = GetConfigurationOptions(_redisOptions.Value);
-        _redisCacheClient = new RedisCacheClient(options);
+        _redisCacheClient = new DistributedCacheClient(redisConfigurationOptions);
         // var connection = await ConnectionMultiplexer.ConnectAsync(options);
         // var db = connection.GetDatabase(options.DefaultDatabase ?? 0);
         // db.KeyDelete("snowflake.current.workerid");
@@ -126,14 +125,14 @@ public class IdGeneratorTest
     public void TestErrorHeartbeatIntervalReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
         {
-            opt.Password = "";
-            opt.DefaultDatabase = 2;
-            opt.Servers = new List<RedisServerOptions>()
+            Password = "",
+            DefaultDatabase = 2,
+            Servers = new List<RedisServerOptions>()
             {
                 new("127.0.0.1", 6379)
-            };
+            }
         });
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
@@ -325,30 +324,6 @@ public class IdGeneratorTest
             GetWorkerIdMinInterval = 0
         };
         return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
-    }
-
-    private ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)
-    {
-        var configurationOptions = new ConfigurationOptions
-        {
-            AbortOnConnectFail = redisOptions.AbortOnConnectFail,
-            AllowAdmin = redisOptions.AllowAdmin,
-            ChannelPrefix = redisOptions.ChannelPrefix,
-            ClientName = redisOptions.ClientName,
-            ConnectRetry = redisOptions.ConnectRetry,
-            ConnectTimeout = redisOptions.ConnectTimeout,
-            DefaultDatabase = redisOptions.DefaultDatabase,
-            Password = redisOptions.Password,
-            Proxy = redisOptions.Proxy,
-            Ssl = redisOptions.Ssl,
-            SyncTimeout = redisOptions.SyncTimeout
-        };
-
-        foreach (var server in redisOptions.Servers)
-        {
-            configurationOptions.EndPoints.Add(server.Host, server.Port);
-        }
-        return configurationOptions;
     }
 
     [TestMethod]

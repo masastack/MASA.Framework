@@ -48,8 +48,10 @@ public class MultilevelCacheTests : TestBase
         Assert.IsNotNull(multilevelCacheOptions);
         Assert.IsNotNull(multilevelCacheOptions.Value);
 
-        Assert.AreEqual("masa", multilevelCacheOptions.Value.SubscribeKeyPrefix);
-        Assert.AreEqual(SubscribeKeyType.SpecificPrefix, multilevelCacheOptions.Value.SubscribeKeyType);
+        var option = multilevelCacheOptions.Get("test");
+        Assert.IsNotNull(option);
+        Assert.AreEqual("masa", option.SubscribeKeyPrefix);
+        Assert.AreEqual(SubscribeKeyType.SpecificPrefix, option.SubscribeKeyType);
     }
 
     [TestMethod]

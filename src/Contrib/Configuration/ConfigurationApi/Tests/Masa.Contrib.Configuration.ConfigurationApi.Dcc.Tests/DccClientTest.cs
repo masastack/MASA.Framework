@@ -6,7 +6,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 [TestClass]
 public class DccClientTest
 {
-    private Mock<IMemoryCacheClient> _client;
+    private Mock<IMultilevelCacheClient> _client;
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
@@ -16,7 +16,7 @@ public class DccClientTest
     [TestInitialize]
     public void Initialize()
     {
-        _client = new Mock<IMemoryCacheClient>();
+        _client = new ();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -443,7 +443,7 @@ addresses:
             Content = brand.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Text
         });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
@@ -462,8 +462,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
     {
-        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         Dictionary<string, string> masaDic = new Dictionary<string, string>()
         {
             { "Id", Guid.NewGuid().ToString() },
@@ -493,7 +492,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
@@ -518,7 +517,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
         var response = JsonSerializer.Serialize(new PublishRelease()
         {

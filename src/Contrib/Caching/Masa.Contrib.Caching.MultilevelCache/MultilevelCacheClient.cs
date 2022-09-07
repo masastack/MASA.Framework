@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.MultilevelCache;
@@ -16,7 +16,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         string name,
         bool isReset,
         IOptionsMonitor<MultilevelCacheOptions> multilevelCacheOptions,
-        IDistributedCacheClient distributedCacheClient) : base(multilevelCacheOptions.CurrentValue.CacheEntryOptions)
+        IDistributedCacheClient distributedCacheClient) : base(multilevelCacheOptions.Get(name).CacheEntryOptions)
     {
         _distributedCacheClient = distributedCacheClient;
 
@@ -34,16 +34,17 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
             }
         });
 
-        _memoryCache = new MemoryCache(multilevelCacheOptions.CurrentValue);
-        _subscribeKeyType = multilevelCacheOptions.CurrentValue.SubscribeKeyType;
-        _subscribeKeyPrefix = multilevelCacheOptions.CurrentValue.SubscribeKeyPrefix;
+        var options = multilevelCacheOptions.Get(name) ?? new MultilevelCacheOptions();
+        _memoryCache = new MemoryCache(options);
+        _subscribeKeyType = options.SubscribeKeyType;
+        _subscribeKeyPrefix = options.SubscribeKeyPrefix;
     }
 
     public MultilevelCacheClient(IMemoryCache memoryCache,
         IDistributedCacheClient distributedCacheClient,
         CacheEntryOptions? cacheEntryOptions,
         SubscribeKeyType subscribeKeyType,
-        string subscribeKeyPrefix) : base(cacheEntryOptions)
+        string subscribeKeyPrefix = "") : base(cacheEntryOptions)
     {
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;

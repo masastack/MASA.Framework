@@ -7,7 +7,7 @@ internal static class DccFactory
 {
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
-        IMemoryCacheClient client,
+        IMultilevelCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)

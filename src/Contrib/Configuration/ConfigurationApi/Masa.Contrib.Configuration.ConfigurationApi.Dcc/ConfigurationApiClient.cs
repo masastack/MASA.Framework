@@ -5,7 +5,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IMemoryCacheClient _client;
+    private readonly IMultilevelCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
 
@@ -15,7 +15,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     public ConfigurationApiClient(
         IServiceProvider serviceProvider,
-        IMemoryCacheClient client,
+        IMultilevelCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)

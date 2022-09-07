@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.MultilevelCache;
+
 namespace Masa.Contrib.Authentication.Oidc.Cache;
 
 public static class ServiceCollectionExtensions
@@ -15,10 +17,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddOidcCache(this IServiceCollection services, RedisConfigurationOptions options)
     {
-        services.AddMasaRedisCache(Constants.DEFAULT_CLIENT_NAME, options).AddMasaMemoryCache(options =>
+        services.AddStackExchangeRedisCache(Constants.DEFAULT_CLIENT_NAME, options).AddMultilevelCache(new MultilevelCacheOptions()
         {
-            options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
-            options.SubscribeKeyPrefix = Constants.DEFAULT_SUBSCRIBE_KEY_PREFIX;
+            SubscribeKeyType = SubscribeKeyType.SpecificPrefix,
+            SubscribeKeyPrefix = Constants.DEFAULT_SUBSCRIBE_KEY_PREFIX
         });
         services.AddSingleton<MemoryCacheProvider>();
         services.AddSingleton<IClientCache, ClientCache>();
