@@ -108,6 +108,8 @@ public class RedisConfigurationOptionsTest : TestBase
         };
 
         Assert.AreEqual(redisConfigurationOptions, distributedRedisCacheOptions.Options);
+        Assert.AreEqual(1,distributedRedisCacheOptions.Options.Servers.Count);
         Assert.AreEqual(cacheEntryOptions, distributedRedisCacheOptions.CacheEntryOptions);
+        Assert.IsNotNull(distributedRedisCacheOptions.CacheEntryOptions);
     }
 }
