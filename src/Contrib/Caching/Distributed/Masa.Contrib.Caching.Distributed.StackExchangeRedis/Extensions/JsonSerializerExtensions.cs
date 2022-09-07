@@ -43,10 +43,7 @@ public static class JsonSerializerExtensions
     /// </remarks>
     public static JsonSerializerOptions EnableDynamicTypes(this JsonSerializerOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         options.Converters.Add(new DynamicObjectConverter());
         return options;

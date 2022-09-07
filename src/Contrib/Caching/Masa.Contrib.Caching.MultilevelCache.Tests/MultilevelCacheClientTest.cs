@@ -1,10 +1,12 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
+
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
 [TestClass]
-public class MultilevelCacheClientTest: TestBase
+public class MultilevelCacheClientTest : TestBase
 {
     private IMemoryCache _memoryCache;
     private IDistributedCacheClient _distributedCacheClient;
@@ -287,6 +289,39 @@ public class MultilevelCacheClientTest: TestBase
                 _memoryCache.TryGetValue(SubscribeHelper.FormatMemoryCacheKey<string>(key), out _);
             });
         });
+    }
+
+    [TestMethod]
+    public void TestGetMemoryCacheEntryOptions()
+    {
+        CacheEntryOptions? cacheEntryOptions = null;
+        var customerDistributedCacheClient = new CustomerDistributedCacheClient(cacheEntryOptions);
+        var options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(new CacheEntryOptions()
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1),
+            SlidingExpiration = TimeSpan.FromHours(1)
+        });
+        Assert.IsNotNull(options);
+        Assert.AreEqual(TimeSpan.FromDays(1), options.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromHours(1), options.SlidingExpiration);
+        Assert.AreEqual(null, options.AbsoluteExpiration);
+
+        options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
+        Assert.IsNull(options);
+
+        DateTimeOffset dateNow = DateTimeOffset.Now.AddDays(2);
+        cacheEntryOptions = new CacheEntryOptions()
+        {
+            AbsoluteExpiration = dateNow,
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2),
+            SlidingExpiration = TimeSpan.FromHours(3)
+        };
+        customerDistributedCacheClient = new CustomerDistributedCacheClient(cacheEntryOptions);
+        options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
+        Assert.IsNotNull(options);
+        Assert.AreEqual(TimeSpan.FromDays(2), options.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromHours(3), options.SlidingExpiration);
+        Assert.AreEqual(dateNow, options.AbsoluteExpiration);
     }
 
     private void InitializeData()

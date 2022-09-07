@@ -3,10 +3,10 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal class CachingBuilder : ICachingBuilder
+public class CachingBuilder : ICachingBuilder
 {
     public IServiceCollection Services { get; }
-    
+
     public string Name { get; }
 
     public CachingBuilder(IServiceCollection services, string name)

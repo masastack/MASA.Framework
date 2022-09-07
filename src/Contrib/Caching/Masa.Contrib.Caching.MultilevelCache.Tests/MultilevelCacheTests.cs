@@ -58,7 +58,7 @@ public class MultilevelCacheTests : TestBase
     public void TestAddMultilevelCacheReturnIMultilevelCacheNotNull()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache();
+        builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache().AddMultilevelCache();
         builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheOptions()
         {
             CacheEntryOptions = new CacheEntryOptions()

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj" />
   </ItemGroup>
 
 </Project>
