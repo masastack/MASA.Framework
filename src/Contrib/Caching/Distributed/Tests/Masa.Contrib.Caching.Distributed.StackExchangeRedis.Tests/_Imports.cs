@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Caching;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using StackExchange.Redis;
 global using System.Dynamic;

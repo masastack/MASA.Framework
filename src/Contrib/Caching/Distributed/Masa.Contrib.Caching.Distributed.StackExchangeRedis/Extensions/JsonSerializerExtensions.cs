@@ -59,26 +59,21 @@ public static class JsonSerializerExtensions
     {
         public JsonSerializerOptions Options { get; private set; }
 
-        internal JsonDynamicType(JsonSerializerOptions options)
+        private protected JsonDynamicType(JsonSerializerOptions options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            Options = options;
+            Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public sealed override bool TryConvert(ConvertBinder binder, out object result)
+        public sealed override bool TryConvert(ConvertBinder binder, out object? result)
         {
             return TryConvert(binder.ReturnType, out result);
         }
 
-        public abstract T GetValue<T>();
+        public abstract T? GetValue<T>();
         public abstract void SetValue(object value);
-        protected abstract bool TryConvert(Type returnType, out object result);
+        protected abstract bool TryConvert(Type returnType, out object? result);
 
-        protected static bool TryConvertWithTypeConverter(object value, Type returnType, out object result)
+        protected static bool TryConvertWithTypeConverter(object value, Type returnType, out object? result)
         {
             TypeConverter converter = TypeDescriptor.GetConverter(value.GetType());
             if (converter.CanConvertTo(returnType))
@@ -107,7 +102,7 @@ public static class JsonSerializerExtensions
     public sealed class JsonDynamicString : JsonDynamicType
     {
         private object _value;
-        private Type _type;
+        private Type? _type;
 
         public JsonDynamicString(string value, JsonSerializerOptions options) : base(options)
         {
@@ -117,9 +112,9 @@ public static class JsonSerializerExtensions
 
         public override T GetValue<T>()
         {
-            bool success = TryConvert(typeof(T), out object result);
+            bool success = TryConvert(typeof(T), out object? result);
             Debug.Assert(success);
-            return (T)result;
+            return (result == null ? default : (T)result)!;
         }
 
         public override void SetValue(object value)
@@ -128,7 +123,7 @@ public static class JsonSerializerExtensions
             _type = value?.GetType();
         }
 
-        protected override bool TryConvert(Type returnType, out object result)
+        protected override bool TryConvert(Type returnType, out object? result)
         {
             if (returnType == _type)
             {
@@ -141,7 +136,7 @@ public static class JsonSerializerExtensions
                 return true;
             }
 
-            result = _value = JsonSerializer.Deserialize($"\"{_value}\"", returnType, Options);
+            result = _value = JsonSerializer.Deserialize($"\"{_value}\"", returnType, Options)!;
             _type = result?.GetType();
             return true;
         }
@@ -150,9 +145,9 @@ public static class JsonSerializerExtensions
 
         public static implicit operator string(JsonDynamicString obj)
         {
-            bool success = obj.TryConvert(typeof(string), out object result);
+            bool success = obj.TryConvert(typeof(string), out object? result);
             Debug.Assert(success);
-            return (string)result;
+            return result == null ? string.Empty : (string)result;
         }
     }
 
@@ -161,25 +156,20 @@ public static class JsonSerializerExtensions
     /// </summary>
     public sealed class JsonDynamicNumber : JsonDynamicType
     {
-        private Type _type = null;
-        private object _value = null;
-        private object _lastValue = null;
+        private Type? _type = null;
+        private object _value;
+        private object? _lastValue = null;
 
         public JsonDynamicNumber(object value, JsonSerializerOptions options) : base(options)
         {
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            _value = value;
+            _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         public override T GetValue<T>()
         {
-            if (TryConvert(typeof(T), out object result))
+            if (TryConvert(typeof(T), out object? result))
             {
-                return (T)result;
+                return (T)result!;
             }
 
             throw new InvalidOperationException($"Cannot change type {_value.GetType()} to {typeof(T)}.");
@@ -196,7 +186,7 @@ public static class JsonSerializerExtensions
             _type = value.GetType();
         }
 
-        protected override bool TryConvert(Type returnType, out object result)
+        protected override bool TryConvert(Type returnType, out object? result)
         {
             if (returnType == _type)
             {
@@ -289,7 +279,7 @@ public static class JsonSerializerExtensions
     public sealed class JsonDynamicBoolean : JsonDynamicType
     {
         private object _value;
-        private Type _type;
+        private Type? _type;
 
         public JsonDynamicBoolean(bool value, JsonSerializerOptions options) : base(options)
         {
@@ -299,9 +289,9 @@ public static class JsonSerializerExtensions
 
         public override T GetValue<T>()
         {
-            bool success = TryConvert(typeof(T), out object result);
+            bool success = TryConvert(typeof(T), out object? result);
             Debug.Assert(success);
-            return (T)result;
+            return (result == null ? default : (T)result)!;
         }
 
         public override void SetValue(object value)
@@ -310,9 +300,9 @@ public static class JsonSerializerExtensions
             _type = value?.GetType();
         }
 
-        protected override bool TryConvert(Type returnType, out object result)
+        protected override bool TryConvert(Type returnType, out object? result)
         {
-            if (returnType == _value.GetType())
+            if (returnType == _value!.GetType())
             {
                 result = _value; // Return cached value.
                 return true;
@@ -323,7 +313,7 @@ public static class JsonSerializerExtensions
                 return true;
             }
 
-            result = _value = JsonSerializer.Deserialize($"\"{Value}\"", returnType, Options);
+            result = _value = JsonSerializer.Deserialize($"\"{Value}\"", returnType, Options)!;
             _type = result?.GetType();
             return true;
         }
@@ -332,32 +322,31 @@ public static class JsonSerializerExtensions
 
         public static implicit operator bool(JsonDynamicBoolean obj)
         {
-            bool success = obj.TryConvert(typeof(bool), out object result);
+            bool success = obj.TryConvert(typeof(bool), out object? result);
             Debug.Assert(success);
-            return (bool)result;
+            return (result == null ? default : (bool)result)!;
         }
     }
 
     /// <summary>
     /// Supports dynamic objects.
     /// </summary>
-    public sealed class JsonDynamicObject : JsonDynamicType, IDictionary<string, object>
+    public sealed class JsonDynamicObject : JsonDynamicType, IDictionary<string, object?>
     {
-        private IDictionary<string, object> _value;
+        private readonly IDictionary<string, object?> _value;
 
         public JsonDynamicObject(JsonSerializerOptions options)
             : base(options)
         {
-            _value = new Dictionary<string, object>(options.PropertyNameCaseInsensitive ?
+            _value = new Dictionary<string, object?>(options.PropertyNameCaseInsensitive ?
                 StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, out object? result)
         {
             if (_value.TryGetValue(binder.Name, out result))
             {
-                JsonDynamicObject dynamicObj = result as JsonDynamicObject;
-                if (dynamicObj != null)
+                if (result is JsonDynamicObject dynamicObj)
                 {
                     return dynamicObj.TryConvert(binder.ReturnType, out result);
                 }
@@ -370,7 +359,7 @@ public static class JsonSerializerExtensions
             return true;
         }
 
-        protected override bool TryConvert(Type returnType, out object result)
+        protected override bool TryConvert(Type returnType, out object? result)
         {
             if (returnType.IsAssignableFrom(typeof(IDictionary<string, object>)))
             {
@@ -382,9 +371,9 @@ public static class JsonSerializerExtensions
             return false;
         }
 
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+        public override bool TrySetMember(SetMemberBinder binder, object? value)
         {
-            _value[binder.Name] = value;
+            _value[binder.Name] = value!;
             return true;
         }
 
@@ -394,40 +383,40 @@ public static class JsonSerializerExtensions
         public override void SetValue(object value) => throw new NotSupportedException();
 
         // IDictionary members.
-        public void Add(string key, object value) => _value.Add(key, value);
-        void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item) => _value.Add(item);
+        public void Add(string key, object? value) => _value.Add(key, value);
+        void ICollection<KeyValuePair<string, object?>>.Add(KeyValuePair<string, object?> item) => _value.Add(item);
         public void Clear() => _value.Clear();
-        bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item) => _value.Contains(item);
+        bool ICollection<KeyValuePair<string, object?>>.Contains(KeyValuePair<string, object?> item) => _value.Contains(item);
         public bool ContainsKey(string key) => _value.ContainsKey(key);
 
-        void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+        void ICollection<KeyValuePair<string, object?>>.CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
             => _value.CopyTo(array, arrayIndex);
 
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _value.GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() => _value.GetEnumerator();
         public bool Remove(string key) => _value.Remove(key);
-        bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item) => _value.Remove(item);
-        public object this[string key] { get => _value[key]; set => _value[key] = value; }
-        ICollection<string> IDictionary<string, object>.Keys => _value.Keys;
-        ICollection<object> IDictionary<string, object>.Values => _value.Values;
+        bool ICollection<KeyValuePair<string, object?>>.Remove(KeyValuePair<string, object?> item) => _value.Remove(item);
+        public object? this[string key] { get => _value[key]; set => _value[key] = value; }
+        ICollection<string> IDictionary<string, object?>.Keys => _value.Keys;
+        ICollection<object?> IDictionary<string, object?>.Values => _value.Values;
         public int Count => _value.Count;
-        bool ICollection<KeyValuePair<string, object>>.IsReadOnly => _value.IsReadOnly;
+        bool ICollection<KeyValuePair<string, object?>>.IsReadOnly => _value.IsReadOnly;
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_value).GetEnumerator();
-        public bool TryGetValue(string key, out object value) => _value.TryGetValue(key, out value);
+        public bool TryGetValue(string key, out object? value) => _value.TryGetValue(key, out value!);
     }
 
     /// <summary>
     /// Supports dynamic arrays.
     /// </summary>
-    public sealed class JsonDynamicArray : JsonDynamicType, IList<object>
+    public sealed class JsonDynamicArray : JsonDynamicType, IList<object?>
     {
-        private IList<object> _value;
+        private readonly IList<object?> _value;
 
         public JsonDynamicArray(JsonSerializerOptions options) : base(options)
         {
-            _value = new List<object>();
+            _value = new List<object?>();
         }
 
-        protected override bool TryConvert(Type returnType, out object result)
+        protected override bool TryConvert(Type returnType, out object? result)
         {
             if (returnType.IsAssignableFrom(typeof(IList<object>)))
             {
@@ -445,17 +434,17 @@ public static class JsonSerializerExtensions
         public override void SetValue(object value) => throw new NotSupportedException();
 
         // IList members.
-        public object this[int index] { get => _value[index]; set => _value[index] = value; }
+        public object? this[int index] { get => _value[index]; set => _value[index] = value; }
         public int Count => _value.Count;
-        bool ICollection<object>.IsReadOnly => _value.IsReadOnly;
-        public void Add(object item) => _value.Add(item);
+        bool ICollection<object?>.IsReadOnly => _value.IsReadOnly;
+        public void Add(object? item) => _value.Add(item);
         public void Clear() => _value.Clear();
-        public bool Contains(object item) => _value.Contains(item);
-        void ICollection<object>.CopyTo(object[] array, int arrayIndex) => _value.CopyTo(array, arrayIndex);
-        public IEnumerator<object> GetEnumerator() => _value.GetEnumerator();
-        public int IndexOf(object item) => _value.IndexOf(item);
-        public void Insert(int index, object item) => _value.Insert(index, item);
-        public bool Remove(object item) => _value.Remove(item);
+        public bool Contains(object? item) => _value.Contains(item);
+        void ICollection<object?>.CopyTo(object?[] array, int arrayIndex) => _value.CopyTo(array, arrayIndex);
+        public IEnumerator<object?> GetEnumerator() => _value.GetEnumerator();
+        public int IndexOf(object? item) => _value.IndexOf(item);
+        public void Insert(int index, object? item) => _value.Insert(index, item);
+        public bool Remove(object? item) => _value.Remove(item);
         public void RemoveAt(int index) => _value.RemoveAt(index);
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_value).GetEnumerator();
     }
@@ -473,12 +462,12 @@ public static class JsonSerializerExtensions
                 typeof(JsonDynamicType).IsAssignableFrom(typeToConvert);
         }
 
-        public override sealed object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public sealed override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
                 case JsonTokenType.String:
-                    return new JsonDynamicString(reader.GetString(), options);
+                    return new JsonDynamicString(reader.GetString() ?? string.Empty, options);
                 case JsonTokenType.StartArray:
                     var dynamicArray = new JsonDynamicArray(options);
                     ReadList(dynamicArray, ref reader, options);
@@ -509,8 +498,7 @@ public static class JsonSerializerExtensions
 
         public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
         {
-            JsonDynamicType dynamicType = value as JsonDynamicType;
-            if (dynamicType != null)
+            if (value is JsonDynamicType dynamicType)
             {
                 value = dynamicType.Value;
             }
@@ -528,7 +516,7 @@ public static class JsonSerializerExtensions
                     break;
                 }
 
-                object value = Read(ref reader, typeof(object), options);
+                object? value = Read(ref reader, typeof(object), options);
                 dynamicArray.Add(value);
             }
         }
@@ -548,10 +536,10 @@ public static class JsonSerializerExtensions
                     throw new JsonException();
                 }
 
-                string key = reader.GetString();
+                string key = reader.GetString() ?? string.Empty;
 
                 reader.Read();
-                object value = Read(ref reader, typeof(object), options);
+                object? value = Read(ref reader, typeof(object), options);
                 dynamicObject.Add(key, value);
             }
         }

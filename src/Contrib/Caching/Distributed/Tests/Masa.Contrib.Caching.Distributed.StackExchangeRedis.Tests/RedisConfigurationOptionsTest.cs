@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
@@ -108,7 +108,7 @@ public class RedisConfigurationOptionsTest : TestBase
         };
 
         Assert.AreEqual(redisConfigurationOptions, distributedRedisCacheOptions.Options);
-        Assert.AreEqual(1,distributedRedisCacheOptions.Options.Servers.Count);
+        Assert.AreEqual(1, distributedRedisCacheOptions.Options.Servers.Count);
         Assert.AreEqual(cacheEntryOptions, distributedRedisCacheOptions.CacheEntryOptions);
         Assert.IsNotNull(distributedRedisCacheOptions.CacheEntryOptions);
     }

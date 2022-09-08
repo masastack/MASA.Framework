@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
+  </ItemGroup>
+
 </Project>
