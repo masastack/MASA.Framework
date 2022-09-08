@@ -8,7 +8,6 @@ public class JsonSerializerTest
 {
     private enum MyCustomEnum
     {
-        Default = 0,
         FortyTwo = 42,
         Hello = 77
     }
@@ -16,7 +15,7 @@ public class JsonSerializerTest
     public static DateTime MyDateTime => new DateTime(2020, 7, 8);
     public static Guid MyGuid => new Guid("ed957609-cdfe-412f-88c1-02daca1b4f51");
 
-    private const string DynamicTestsJson =
+    private const string DYNAMIC_TESTS_JSON =
         "{\"MyString\":\"Hello\",\"MyNull\":null,\"MyBoolean\":true,\"MyArray\":[1,2],\"MyInt\":42,\"MyDateTime\":\"2020-07-08T00:00:00\",\"MyGuid\":\"ed957609-cdfe-412f-88c1-02daca1b4f51\",\"MyObject\":{\"MyString\":\"World\"}}";
 
     [TestMethod]
@@ -81,10 +80,10 @@ public class JsonSerializerTest
     {
         var options = new JsonSerializerOptions();
         options.EnableDynamicTypes();
-        dynamic obj = JsonSerializer.Deserialize<dynamic>("{}", options);
+        dynamic obj = JsonSerializer.Deserialize<dynamic>("{}", options)!;
 
         Assert.IsNotNull(obj);
-        Assert.AreEqual(null, obj!.NonExistingProperty);
+        Assert.AreEqual(null, obj.NonExistingProperty);
     }
 
     [TestMethod]
@@ -92,7 +91,7 @@ public class JsonSerializerTest
     {
         var options = new JsonSerializerOptions();
         options.EnableDynamicTypes();
-        dynamic obj = JsonSerializer.Deserialize<dynamic>("{\"MyProperty\":42}", options);
+        dynamic obj = JsonSerializer.Deserialize<dynamic>("{\"MyProperty\":42}", options)!;
 
         Assert.AreEqual(42, (int)obj.MyProperty);
         Assert.IsNull(obj.myproperty);
@@ -101,7 +100,7 @@ public class JsonSerializerTest
         options = new JsonSerializerOptions();
         options.EnableDynamicTypes();
         options.PropertyNameCaseInsensitive = true;
-        obj = JsonSerializer.Deserialize<dynamic>("{\"MyProperty\":42}", options);
+        obj = JsonSerializer.Deserialize<dynamic>("{\"MyProperty\":42}", options)!;
 
         Assert.AreEqual(42, (int)obj.MyProperty);
         Assert.AreEqual(42, (int)obj.myproperty);
@@ -114,7 +113,7 @@ public class JsonSerializerTest
         var options = new JsonSerializerOptions();
         options.EnableDynamicTypes();
 
-        dynamic obj = JsonSerializer.Deserialize<dynamic>("null", options);
+        dynamic? obj = JsonSerializer.Deserialize<dynamic>("null", options);
         Assert.IsNull(obj);
     }
 
@@ -126,13 +125,13 @@ public class JsonSerializerTest
         options.NumberHandling = JsonNumberHandling.AllowReadingFromString |
             JsonNumberHandling.AllowNamedFloatingPointLiterals;
 
-        dynamic obj = JsonSerializer.Deserialize<dynamic>("\"42\"", options);
-        Assert.IsTrue(typeof(JsonSerializerExtensions.JsonDynamicString) == obj.GetType());
+        dynamic obj = JsonSerializer.Deserialize<dynamic>("\"42\"", options)!;
+        Assert.IsTrue(typeof(JsonSerializerExtensions.JsonDynamicString) == obj.GetType()!);
 
         Assert.AreEqual(42, (int)obj);
 
-        obj = JsonSerializer.Deserialize<dynamic>("\"NaN\"", options);
-        Assert.IsTrue(typeof(JsonSerializerExtensions.JsonDynamicString) == obj.GetType());
+        obj = JsonSerializer.Deserialize<dynamic>("\"NaN\"", options)!;
+        Assert.IsTrue(typeof(JsonSerializerExtensions.JsonDynamicString) == obj.GetType()!);
         Assert.AreEqual(double.NaN, (double)obj);
         Assert.AreEqual(float.NaN, (float)obj);
     }
@@ -189,7 +188,7 @@ public class JsonSerializerTest
         options.EnableDynamicTypes();
         options.Converters.Add(new JsonStringEnumConverter());
 
-        dynamic obj = JsonSerializer.Deserialize<dynamic>(DynamicTestsJson, options);
+        dynamic obj = JsonSerializer.Deserialize<dynamic>(DYNAMIC_TESTS_JSON, options)!;
         Assert.IsInstanceOfType(obj, typeof(JsonSerializerExtensions.JsonDynamicObject));
         Assert.IsInstanceOfType(obj.MyArray, typeof(JsonSerializerExtensions.JsonDynamicArray));
 
@@ -199,7 +198,7 @@ public class JsonSerializerTest
 
         // Ensure we can enumerate
         int count = 0;
-        foreach (long value in obj.MyArray)
+        foreach (long _ in obj.MyArray)
         {
             count++;
         }
@@ -217,7 +216,7 @@ public class JsonSerializerTest
         options.EnableDynamicTypes();
         options.Converters.Add(new JsonStringEnumConverter());
 
-        dynamic obj = JsonSerializer.Deserialize<dynamic>(DynamicTestsJson, options)!;
+        dynamic obj = JsonSerializer.Deserialize<dynamic>(DYNAMIC_TESTS_JSON, options)!;
         Assert.IsInstanceOfType(obj, typeof(JsonSerializerExtensions.JsonDynamicObject));
 
         // JsonDynamicString has an implicit cast to string.
@@ -257,7 +256,7 @@ public class JsonSerializerTest
         Assert.AreEqual(MyCustomEnum.FortyTwo, (MyCustomEnum)obj.MyInt);
 
         // Verify floating point.
-        obj = JsonSerializer.Deserialize<dynamic>("4.2", options);
+        obj = JsonSerializer.Deserialize<dynamic>("4.2", options)!;
         Assert.IsInstanceOfType(obj, typeof(JsonSerializerExtensions.JsonDynamicNumber));
 
         double dbl = (double)obj;

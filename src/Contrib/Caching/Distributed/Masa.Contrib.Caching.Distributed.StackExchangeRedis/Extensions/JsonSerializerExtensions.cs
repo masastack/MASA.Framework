@@ -279,12 +279,10 @@ public static class JsonSerializerExtensions
     public sealed class JsonDynamicBoolean : JsonDynamicType
     {
         private object _value;
-        private Type? _type;
 
         public JsonDynamicBoolean(bool value, JsonSerializerOptions options) : base(options)
         {
             _value = value;
-            _type = typeof(bool);
         }
 
         public override T GetValue<T>()
@@ -297,7 +295,7 @@ public static class JsonSerializerExtensions
         public override void SetValue(object value)
         {
             _value = value;
-            _type = value?.GetType();
+            value?.GetType();
         }
 
         protected override bool TryConvert(Type returnType, out object? result)
@@ -314,7 +312,7 @@ public static class JsonSerializerExtensions
             }
 
             result = _value = JsonSerializer.Deserialize($"\"{Value}\"", returnType, Options)!;
-            _type = result?.GetType();
+            result?.GetType();
             return true;
         }
 
@@ -481,13 +479,7 @@ public static class JsonSerializerExtensions
                 case JsonTokenType.True:
                     return new JsonDynamicBoolean(true, options);
                 case JsonTokenType.Number:
-                    JsonElement jsonElement;
-                    using (JsonDocument document = JsonDocument.ParseValue(ref reader))
-                    {
-                        jsonElement = document.RootElement.Clone();
-                    }
-                    // In 6.0, this can be used instead for increased performance:
-                    //JsonElement jsonElement = JsonElement.ParseValue(ref reader);
+                    JsonElement jsonElement = JsonElement.ParseValue(ref reader);
                     return new JsonDynamicNumber(jsonElement, options);
                 case JsonTokenType.Null:
                     return null;
