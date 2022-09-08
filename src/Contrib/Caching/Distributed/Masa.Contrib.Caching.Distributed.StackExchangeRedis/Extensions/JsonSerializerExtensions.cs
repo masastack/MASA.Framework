@@ -12,6 +12,7 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 /// <remarks>
 /// It requires a reference to the "System.Linq.Expressions" assembly.
 /// </remarks>
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public static class JsonSerializerExtensions
 {
     /// <summary>
@@ -32,7 +33,7 @@ public static class JsonSerializerExtensions
     /// is returned which implements <see cref="System.Collections.IList{object}"/>.
     /// When deserializing <see cref="System.Text.Json.JsonTokenType.String"/>, <see cref="JsonDynamicString"/>
     /// is returned and supports an implicit cast to <see cref="string"/>.
-    /// An explicit cast or assignment to other types, such as <see cref="System.Text.Json.JsonTokenType.DateTime"/>,
+    /// An explicit cast or assignment to other types, such as <see cref="DateTime"/>,
     /// is supported provided there is a custom converter for that Type.
     /// When deserializing <see cref="System.Text.Json.JsonTokenType.Number"/>, <see cref="JsonDynamicNumber"/> is returned.
     /// An explicit cast or assignment is required to the appropriate number type, such as <see cref="decimal"/> or <see cref="long"/>.
