@@ -36,7 +36,7 @@ var user = new IdentityUser()
 };
 using(userSetter.Change(user))
 {
-     //What is obtained in the using scope is the changed user
+     //The obtained user information is Tom
 }
-//The user information obtained outside the using scope is the original logged in user
+//The user information obtained again is the original logged in user
 ```

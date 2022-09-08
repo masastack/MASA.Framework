@@ -36,7 +36,7 @@ var user = new IdentityUser()
 };
 using (userSetter.Change(user))
 {
-    //在using范围内中获取到的是变更后的用户
+    //获取到的用户信息为Tom
 }
-//在using范围之外获取到的用户信息为原始登录用户
+//再次获取到的用户信息为原始登录用户
 ```
