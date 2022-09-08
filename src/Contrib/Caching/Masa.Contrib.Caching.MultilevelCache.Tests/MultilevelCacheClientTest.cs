@@ -434,7 +434,7 @@ public class MultilevelCacheClientTest : TestBase
         _distributedCacheClient.Set("test_multilevel_cache_2", 99.99m);
     }
 
-    private IMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
+    private static IMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
         services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache();

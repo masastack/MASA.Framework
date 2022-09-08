@@ -167,18 +167,25 @@ public class JsonSerializerTest
     }
 
     [TestMethod]
-    public void JsonDynamicTypes_Deserialize()
+    public void JsonDynamicTypesDeserialize()
     {
         var options = new JsonSerializerOptions();
         options.EnableDynamicTypes();
 
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicType>("{}", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicArray>("[]", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicBoolean>("true", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicNumber>("0", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicNumber>("1.2", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicObject>("{}", options);
-        JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicString>("\"str\"", options);
+        dynamic? result = JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicType>("{}", options);
+        Assert.IsNotNull(result);
+        result = JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicArray>("[]", options);
+        Assert.IsNotNull(result);
+        result =JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicBoolean>("true", options);
+        Assert.IsNotNull(result);
+        result = JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicNumber>("0", options);
+        Assert.IsNotNull(result);
+        result =JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicNumber>("1.2", options);
+        Assert.IsNotNull(result);
+        result = JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicObject>("{}", options);
+        Assert.IsNotNull(result);
+        result = JsonSerializer.Deserialize<JsonSerializerExtensions.JsonDynamicString>("\"str\"", options);
+        Assert.IsNotNull(result);
     }
 
     [TestMethod]
