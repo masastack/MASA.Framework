@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Options;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
 [TestClass]
@@ -45,7 +47,8 @@ public class DccTest
     {
         _memoryCacheClientFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(), null!);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         Assert.ThrowsException<ArgumentNullException>(() =>
@@ -63,7 +66,8 @@ public class DccTest
                 SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             new JsonSerializerOptions()
             {
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -81,9 +85,11 @@ public class DccTest
                 SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             _jsonSerializerOptions);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             _jsonSerializerOptions);
         clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         Assert.IsTrue(clienties.Count() == 1);
@@ -126,7 +132,8 @@ public class DccTest
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object,
+            new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
         _masaConfigurationBuilder.Object.UseDcc(new DccOptions()
         {
@@ -160,53 +167,6 @@ public class DccTest
         });
         var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
         Assert.IsNotNull(caller);
-    }
-
-    [DataTestMethod]
-    [DataRow("Development", "Default", "WebApplication1", "Brand")]
-public void TestUseDccAndSuccess(string environment, string cluster, string appId, string configObject)
-    {
-        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Test");
-        var brand = new Brands("Microsoft");
-        var response = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
-        });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
-
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-
-        var dccOptions = new DccOptions()
-        {
-            ManageServiceAddress = "https://github.com",
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Host = "localhost",
-                        Port = 6379
-                    }
-                }
-            },
-
-            AppId = "Test",
-            ConfigObjects = new List<string>()
-            {
-                "Brand"
-            }
-        };
-        _masaConfigurationBuilder.Object.UseDcc(dccOptions, null, null);
-        var optionFactory = _services.BuildServiceProvider().GetRequiredService<IOptionsFactory<MasaMemoryCacheOptions>>();
-        var option = optionFactory.Create(DEFAULT_CLIENT_NAME);
-        Assert.IsTrue(option.SubscribeKeyType == SubscribeKeyTypes.SpecificPrefix);
-        Assert.IsTrue(option.SubscribeKeyPrefix == DEFAULT_SUBSCRIBE_KEY_PREFIX);
     }
 
     [DataTestMethod]
