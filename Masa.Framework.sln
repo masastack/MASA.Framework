@@ -547,6 +547,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{59BC0E0F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests.csproj", "{54B54704-58CD-4F05-89B0-6C1E0341F079}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.csproj", "{3EBC382E-2141-498D-80B0-7D20583EC75E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1923,6 +1925,14 @@ Global
 		{54B54704-58CD-4F05-89B0-6C1E0341F079}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54B54704-58CD-4F05-89B0-6C1E0341F079}.Release|x64.ActiveCfg = Release|Any CPU
 		{54B54704-58CD-4F05-89B0-6C1E0341F079}.Release|x64.Build.0 = Release|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Debug|x64.Build.0 = Debug|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Release|x64.ActiveCfg = Release|Any CPU
+		{3EBC382E-2141-498D-80B0-7D20583EC75E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2192,6 +2202,7 @@ Global
 		{97424EAF-BBBF-4062-B307-99AE10C646D6} = {2BAF3BB2-A14C-4591-AD9C-10084B14B05D}
 		{59BC0E0F-ECEF-4D40-81EC-0EE51CCF9070} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{54B54704-58CD-4F05-89B0-6C1E0341F079} = {59BC0E0F-ECEF-4D40-81EC-0EE51CCF9070}
+		{3EBC382E-2141-498D-80B0-7D20583EC75E} = {17B751BF-DB79-46B0-A61E-BB8A52919AC9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

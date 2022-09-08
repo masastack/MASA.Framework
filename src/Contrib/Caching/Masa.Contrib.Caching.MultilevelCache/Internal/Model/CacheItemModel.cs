@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 internal class CacheItemModel<T>
 {
     public string Key { get; set; }

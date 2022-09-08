@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Data.IdGenerator.Snowflake\Masa.Contrib.Data.IdGenerator.Snowflake.csproj" />
   </ItemGroup>
 
 </Project>

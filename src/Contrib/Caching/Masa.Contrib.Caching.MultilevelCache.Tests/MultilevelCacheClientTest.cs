@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
@@ -78,7 +78,8 @@ public class MultilevelCacheClientTest : TestBase
         });
         Assert.AreEqual(null, value);
 
-        await _multilevelCacheClient.SetAsync(key, "test2");
+        CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
+        await _multilevelCacheClient.SetAsync(key, "test2", combinedCacheEntryOptions);
         Thread.Sleep(3000);
         Assert.AreEqual("test2", value);
         await _multilevelCacheClient.RemoveAsync<string>(key);
@@ -176,7 +177,8 @@ public class MultilevelCacheClientTest : TestBase
         string key = "test20";
         var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         Assert.AreEqual(null, multilevelCacheClient.Get<string>(key));
-        multilevelCacheClient.Set(key, "success");
+        CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
+        multilevelCacheClient.Set(key, "success", combinedCacheEntryOptions);
         Assert.AreEqual("success", multilevelCacheClient.Get<string>(key));
         multilevelCacheClient.Remove<string>(key);
     }

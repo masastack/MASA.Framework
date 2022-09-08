@@ -238,7 +238,7 @@ public class DccTest
             {
                 new("localhost", 6379)
             }
-        }).AddMultilevelCache();
+        }).AddMultilevelCache(isReset: true);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
         string value = new PublishRelease()

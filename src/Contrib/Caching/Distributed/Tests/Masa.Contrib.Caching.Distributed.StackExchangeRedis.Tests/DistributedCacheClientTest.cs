@@ -734,5 +734,8 @@ public class DistributedCacheClientTest : TestBase
             options = new CacheEntryOptions(creationTime.AddSeconds(-1));
             options.GetAbsoluteExpiration(creationTime);
         });
+
+        options = new CacheEntryOptions(creationTime.AddSeconds(1));
+        Assert.AreEqual(creationTime.AddSeconds(1), options.GetAbsoluteExpiration(creationTime));
     }
 }
