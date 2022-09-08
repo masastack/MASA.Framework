@@ -14,6 +14,7 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
+global using Masa.Utils.Security.Cryptography;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -9,10 +9,11 @@ internal static class DccFactory
         IServiceProvider serviceProvider,
         IMultilevelCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
+        DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationApiClient(serviceProvider, client, jsonSerializerOptions, defaultSectionOption, expandSectionOptions);
+        return new ConfigurationApiClient(serviceProvider, client, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions);
     }
 
     public static IConfigurationApiManage CreateManage(
