@@ -30,5 +30,7 @@ internal class PublishRelease
 
     public string? FormatLabelCode { get; set; }
 
+    public bool Encryption { get; set; }
+
     public string? Content { get; set; }
 }

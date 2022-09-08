@@ -19,8 +19,8 @@ public static class MasaConfigurationExtensions
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         DccOptions dccOptions,
-        Action<JsonSerializerOptions>? jsonSerializerOptions,
-        Action<CallerOptions>? action)
+        Action<JsonSerializerOptions>? jsonSerializerOptions = null,
+        Action<CallerOptions>? action = null)
     {
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
@@ -58,6 +58,7 @@ public static class MasaConfigurationExtensions
         });
 
         TryAddConfigurationApiClient(services,
+            dccOptions,
             dccConfigurationOptions.DefaultSection,
             dccConfigurationOptions.ExpandSections,
             jsonSerializerOption);
@@ -77,6 +78,7 @@ public static class MasaConfigurationExtensions
     }
 
     public static IServiceCollection TryAddConfigurationApiClient(IServiceCollection services,
+        DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
@@ -91,6 +93,7 @@ public static class MasaConfigurationExtensions
                 serviceProvider,
                 client,
                 jsonSerializerOption,
+                dccOptions,
                 defaultSectionOption,
                 expansionSectionOptions);
         });

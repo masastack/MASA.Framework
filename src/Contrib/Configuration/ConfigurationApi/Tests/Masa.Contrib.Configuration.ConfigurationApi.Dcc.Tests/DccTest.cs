@@ -45,7 +45,7 @@ public class DccTest
     {
         _memoryCacheClientFactory.Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(), null!);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         Assert.ThrowsException<ArgumentNullException>(() =>
@@ -60,7 +60,7 @@ public class DccTest
                 SubscribeKeyTypes.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
             new JsonSerializerOptions()
             {
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -76,9 +76,9 @@ public class DccTest
                 SubscribeKeyTypes.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
             _jsonSerializerOptions);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
             _jsonSerializerOptions);
         clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         Assert.IsTrue(clienties.Count() == 1);
@@ -121,7 +121,7 @@ public class DccTest
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
         _masaConfigurationBuilder.Object.UseDcc(new DccOptions()
         {
@@ -173,7 +173,7 @@ public class DccTest
             .Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
         var dccOptions = new DccOptions()
@@ -218,7 +218,7 @@ public class DccTest
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
 
         var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(), memoryCacheClient.Object,
-            _jsonSerializerOptions, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+            _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
         _masaConfigurationBuilder.Object.UseDcc().UseDcc();
