@@ -21,6 +21,9 @@ public class DccOptions : DccSectionOptions
 
     public string? PublicSecret { get; set; }
 
+    /// <summary>
+    /// Key for global encryption config object
+    /// </summary>
     public string? ConfigObjectSecret { get; set; }
 
     /// <summary>
