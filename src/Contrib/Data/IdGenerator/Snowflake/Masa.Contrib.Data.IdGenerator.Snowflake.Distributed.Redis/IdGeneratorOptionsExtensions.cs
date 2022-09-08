@@ -9,7 +9,10 @@ public static class IdGeneratorOptionsExtensions
         Action<DistributedIdGeneratorOptions>? action = null)
     {
         var serviceProvider = snowflakeGeneratorOptions.Services.BuildServiceProvider();
-        var redisConfigurationOptions = serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>();
+        var redisConfigurationOptions = serviceProvider.GetService<IOptions<RedisConfigurationOptions>>();
+        if (redisConfigurationOptions == null)
+            throw new MasaException("Please add first using AddStackExchangeRedisCache");
+
         snowflakeGeneratorOptions.UseRedis(action, redisConfigurationOptions.Value);
     }
 
