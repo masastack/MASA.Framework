@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Caching;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
+global using Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.DependencyInjection;

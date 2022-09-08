@@ -22,6 +22,7 @@ public class DistributedCacheClientTest : TestBase
 
     [DataTestMethod]
     [DataRow("cache_test", "content")]
+    [DataRow("cache_test_2", "")]
     public async Task SetAsync(string key, string value)
     {
         await _distributedCacheClient.RemoveAsync(key);

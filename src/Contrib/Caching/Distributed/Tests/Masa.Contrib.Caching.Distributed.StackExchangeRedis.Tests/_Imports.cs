@@ -6,5 +6,7 @@ global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using StackExchange.Redis;
+global using System.Dynamic;
 global using System.Reflection;
 global using System.Text.Json;
+global using System.Text.Json.Serialization;

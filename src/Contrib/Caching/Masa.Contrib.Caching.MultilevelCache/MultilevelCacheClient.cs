@@ -88,7 +88,11 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         {
             value = _distributedCacheClient.Get<T>(key);
 
-            _memoryCache.Set(formattedKey, value);
+            SetCore(new SetOptions<T>()
+            {
+                FormattedKey = formattedKey,
+                Value = value,
+            });
 
             var channel = FormatSubscribeChannel<T>(key);
 
@@ -135,7 +139,11 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         {
             value = await _distributedCacheClient.GetAsync<T>(key);
 
-            _memoryCache.Set(formattedKey, value);
+            SetCore(new SetOptions<T>()
+            {
+                FormattedKey = formattedKey,
+                Value = value,
+            });
 
             var channel = FormatSubscribeChannel<T>(key);
 
@@ -367,7 +375,12 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
                 item.Value = value;
             }
 
-            _memoryCache.Set(cacheKeyItem.MemoryCacheKey, value);
+            SetCore(new SetOptions<T>()
+            {
+                FormattedKey = cacheKeyItem.MemoryCacheKey,
+                Value = value,
+            });
+
             var channel = FormatSubscribeChannel<T>(cacheKeyItem.Key);
             Subscribe<T>(channel);
         }
@@ -391,20 +404,20 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
     }
 
     private void SetListCore<T>(Dictionary<string, T> keyValues,
-        CacheEntryOptions? memoryCacheEntryOptions,
+        CacheEntryOptions? cacheEntryOptions,
         Action<KeyValuePair<string, T>>? action = null)
     {
-        var options = GetMemoryCacheEntryOptions(memoryCacheEntryOptions);
+        var memoryCacheEntryOptions = GetMemoryCacheEntryOptions(cacheEntryOptions);
         foreach (var item in keyValues)
         {
-            string formattedKey = FormatMemoryCacheKey<T>(item.Key!);
+            string formattedKey = FormatMemoryCacheKey<T>(item.Key);
             if (memoryCacheEntryOptions == null)
             {
                 _memoryCache.Set(formattedKey, item.Value);
             }
             else
             {
-                _memoryCache.Set(formattedKey, item.Value, options);
+                _memoryCache.Set(formattedKey, item.Value, memoryCacheEntryOptions);
             }
             action?.Invoke(item);
         }
@@ -477,7 +490,6 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
                         {
                             FormattedKey = subscribeOptions.Key,
                             Value = subscribeOptions.Value,
-                            MemoryCacheEntryOptions = options?.MemoryCacheEntryOptions
                         });
                         break;
                     case SubscribeOperation.Remove:
