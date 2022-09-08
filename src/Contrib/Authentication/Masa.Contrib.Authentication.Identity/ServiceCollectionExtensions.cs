@@ -3,6 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaIdentity(
