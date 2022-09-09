@@ -10,7 +10,20 @@ public class ThirdPartyIdpServiceTest
     public async Task TestSeedStandardResources1Async()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase("Test"));
+        var publisher = new Mock<IPublisher>();
+        serviceCollection.TryAddSingleton(serviceProvider => publisher.Object);
+        serviceCollection.AddDomainEventBus(dispatcherOptions =>
+        {
+            dispatcherOptions
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<TestDbContext>())
+            .UseEventBus(eventBusBuilder =>
+            {
+            })
+            .UseUoW<TestDbContext>(
+                dbOptions => dbOptions.UseInMemoryDatabase("Test"), false, false
+            )
+            .UseRepository<TestDbContext>();
+        });
         serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<TestDbContext>()));
 
         var userClaimRepository = new Mock<IUserClaimRepository>();
@@ -33,7 +46,20 @@ public class ThirdPartyIdpServiceTest
     public async Task TestSeedStandardResources2Async()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase("Test"));
+        var publisher = new Mock<IPublisher>();
+        serviceCollection.TryAddSingleton(serviceProvider => publisher.Object);
+        serviceCollection.AddDomainEventBus(dispatcherOptions =>
+        {
+            dispatcherOptions
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<TestDbContext>())
+            .UseEventBus(eventBusBuilder =>
+            {
+            })
+            .UseUoW<TestDbContext>(
+                dbOptions => dbOptions.UseInMemoryDatabase("Test"), false, false
+            )
+            .UseRepository<TestDbContext>();
+        });
         serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<TestDbContext>()));
 
         var userClaimRepository = new Mock<IUserClaimRepository>();
