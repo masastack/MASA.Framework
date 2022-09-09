@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 
 public enum AuthenticationTypes
 {
-    OAuth
+    OAuth = 1
 }

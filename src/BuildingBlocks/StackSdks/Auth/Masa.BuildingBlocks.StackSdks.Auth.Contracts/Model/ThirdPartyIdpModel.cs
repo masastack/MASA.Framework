@@ -20,4 +20,12 @@ public class ThirdPartyIdpModel
     public string Icon { get; set; }
 
     public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
+
+    public string CallbackPath { get; set; } = "";
+
+    public string AuthorizationEndpoint { get; set; } = "";
+
+    public string TokenEndpoint { get; set; } = "";
+
+    public string UserInformationEndpoint { get; set; } = "";
 }

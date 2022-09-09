@@ -84,14 +84,18 @@ public class UserClaimRepository : IUserClaimRepository
     public async Task AddStandardUserClaimsAsync()
     {
         var userClaims = new List<UserClaim>();
+        var existData = await _context.Set<UserClaim>()
+                                      .Where(userClaim => StandardUserClaims.Claims.ContainsKey(userClaim.Name))
+                                      .Select(userClaim => userClaim.Name)
+                                      .ToListAsync();
         foreach (var claim in StandardUserClaims.Claims)
         {
-            var exist = await GetCountAsync(userClaim => userClaim.Name == claim.Key) > 0;
+            var exist = existData.Any(name => name == claim.Key);
             if (exist) continue;
 
             userClaims.Add(new UserClaim(claim.Key, claim.Value));
         }
         await _repository.AddRangeAsync(userClaims);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();     
     }
 }

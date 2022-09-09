@@ -14,6 +14,8 @@ public class AuthClient : IAuthClient
         TeamService = new TeamService(caller, userContext);
         ProjectService = new ProjectService(caller, userContext);
         PermissionService = new PermissionService(caller, userContext);
+        CustomLoginService = new CustomLoginService(caller);
+        ThirdPartyIdpService = new ThirdPartyIdpService(caller);
     }
 
     public IUserService UserService { get; }
@@ -25,5 +27,9 @@ public class AuthClient : IAuthClient
     public IPermissionService PermissionService { get; }
 
     public IProjectService ProjectService { get; }
+
+    public ICustomLoginService CustomLoginService { get; }
+
+    public IThirdPartyIdpService ThirdPartyIdpService { get; }
 }
 

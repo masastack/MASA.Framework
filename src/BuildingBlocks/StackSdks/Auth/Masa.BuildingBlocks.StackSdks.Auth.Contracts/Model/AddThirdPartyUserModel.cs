@@ -3,11 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class AddThirdPartyUserModel : AddUserModel
+public class AddThirdPartyUserModel
 {
     public string ThridPartyIdentity { get; set; } = "";
 
     public object ExtendedData { get; set; }
 
     public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
+
+    public AddUserModel User { get; set; }
 }
