@@ -11,6 +11,8 @@ public abstract class ServiceBase : IService
 
     public string BaseUri { get; }
 
+
+
     public IServiceCollection Services { get; protected set; }
 
     protected ServiceBase(IServiceCollection services)
@@ -119,4 +121,5 @@ public abstract class ServiceBase : IService
     }
 
     #endregion
+
 }
