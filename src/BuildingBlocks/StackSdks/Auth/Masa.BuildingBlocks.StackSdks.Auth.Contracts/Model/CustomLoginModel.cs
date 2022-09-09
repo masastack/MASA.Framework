@@ -5,13 +5,13 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
 public class CustomLoginModel
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 
-    public string Title { get; set; }
+    public string Title { get; set; } = "";
 
-    public string ClientId { get; set; }
+    public string ClientId { get; set; } = "";
 
-    public List<ThirdPartyIdpModel> ThirdPartyIdps { get; set; }
+    public List<ThirdPartyIdpModel> ThirdPartyIdps { get; set; } = new();
 
-    public List<RegisterFieldModel> RegisterFields { get; set; }
+    public List<RegisterFieldModel> RegisterFields { get; set; } = new();
 }

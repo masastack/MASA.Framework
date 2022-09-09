@@ -14,7 +14,7 @@ public class CustomLoginService : ICustomLoginService
 
     public async Task<CustomLoginModel?> GetCustomLoginByClientIdAsync(string clientId)
     {
-        var requestUri = $"api/sso/customLogin/getCustomLoginByClientId";
+        var requestUri = $"api/sso/customLogin/getByClientId";
         return await _caller.GetAsync<object, CustomLoginModel>(requestUri, new { clientId });
     }
 }
