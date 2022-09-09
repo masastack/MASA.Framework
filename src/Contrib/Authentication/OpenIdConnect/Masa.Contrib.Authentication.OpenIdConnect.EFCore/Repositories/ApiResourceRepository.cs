@@ -41,7 +41,6 @@ public class ApiResourceRepository : IApiResourceRepository
                         .Include(apiResource => apiResource.Properties)
                         .Include(apiResource => apiResource.ApiScopes)
                         .ThenInclude(apiScope => apiScope.ApiScope)
-                        .AsSplitQuery()
                         .FirstOrDefaultAsync(apiResource => apiResource.Id == id);
 
         return apiResource;
