@@ -426,7 +426,7 @@ public class IdGeneratorTest
         return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions.Value, null);
     }
 
-    private long GetCurrentTimestamp(DateTime? dateTime = null)
+    private static long GetCurrentTimestamp(DateTime? dateTime = null)
         => new DateTimeOffset(dateTime ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
 
     #endregion
