@@ -5,12 +5,12 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test;
 
 public class TestDbContext : IsolationDbContext
 {
+    public DbSet<UserClaim> UserClaims { get; set; }
+
+    public DbSet<IdentityResource> IdentityResources { get; set; }
+
     public TestDbContext(MasaDbContextOptions<TestDbContext> options) : base(options)
     {
 
     }
-
-    public DbSet<UserClaim> UserClaims { get; set; }
-
-    public DbSet<IdentityResource> IdentityResources { get; set; }
 }
