@@ -70,5 +70,7 @@ public interface IUserService
     Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
 
     Task RemoveUserRolesAsync(RemoveUserRolesModel user);
+
+    Task SetCurrentTeamAsync(Guid teamId);
 }
 

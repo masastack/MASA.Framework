@@ -9,6 +9,8 @@ public class StaffModel
 
     public Guid UserId { get; set; }
 
+    public Guid? CurrentTeamId { get; set; }
+
     public string Department { get; set; } = "";
 
     public string Position { get; set; } = "";

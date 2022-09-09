@@ -93,7 +93,7 @@ public class IdentityClaimOptions
 
     public IdentityClaimOptions Mapping(string name, string claimType)
     {
-        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         Mappings.AddOrUpdate(name.ToLower(), (k) => claimType);
         return this;

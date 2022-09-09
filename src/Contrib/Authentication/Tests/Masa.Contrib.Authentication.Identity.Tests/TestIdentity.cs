@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+#pragma warning disable CS0618
+
 namespace Masa.Contrib.Authentication.Identity.Tests;
 
 [TestClass]
@@ -392,6 +394,47 @@ public class TestIdentity
                 new(new List<Claim>()
                 {
                     new(ClaimType.DEFAULT_USER_ID, "1"),
+                    new(ClaimType.DEFAULT_USER_NAME, "Jim"),
+                    new(ClaimType.DEFAULT_USER_ROLE, yamlSerializer.Serialize(roles))
+                })
+            })
+        };
+        var userContext = serviceProvider.GetService<IUserContext>();
+        Assert.IsNotNull(userContext);
+
+        var userRoles = userContext.GetUserRoles<int>().ToList();
+        Assert.AreEqual(4, userRoles.Count);
+        Assert.AreEqual(true, userRoles.Contains(1));
+        Assert.AreEqual(true, userRoles.Contains(3));
+        Assert.AreEqual(true, userRoles.Contains(7));
+        Assert.AreEqual(true, userRoles.Contains(12));
+    }
+
+    [TestMethod]
+    public void TestIdentityByYamlAndCustomerOptions()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaIdentityModel(DataType.Yml.ToString(), option =>
+        {
+            option.UserId = "sub";
+        });
+        services.AddYaml();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var yamlSerializer = serviceProvider.GetRequiredService<IYamlSerializer>();
+        var roles = new List<int>()
+        {
+            1, 3, 7, 12
+        };
+        var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+        httpContextAccessor.HttpContext = new DefaultHttpContext()
+        {
+            User = new ClaimsPrincipal(new List<ClaimsIdentity>()
+            {
+                new(new List<Claim>()
+                {
+                    new("sub", "1"),
                     new(ClaimType.DEFAULT_USER_NAME, "Jim"),
                     new(ClaimType.DEFAULT_USER_ROLE, yamlSerializer.Serialize(roles))
                 })

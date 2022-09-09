@@ -10,7 +10,7 @@ public class AuthClientTest
     public void TestAddAuthClient()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentityModel();
+        services.AddMasaIdentity();
         services.AddAuthClient("https://localhost:18102");
         services.AddScoped<TokenProvider>();
         var authClient = services.BuildServiceProvider().GetRequiredService<IAuthClient>();

@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Authentication.Identity.Const;
+namespace Masa.Contrib.Authentication.Identity;
 
-public class ClaimType
+public static class ClaimType
 {
     public const string DEFAULT_USER_ID = ClaimTypes.NameIdentifier;
 

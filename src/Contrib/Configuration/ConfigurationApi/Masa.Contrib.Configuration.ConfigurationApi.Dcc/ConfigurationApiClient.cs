@@ -8,6 +8,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     private readonly IMemoryCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
+    private readonly DccOptions _dccOptions;
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
@@ -17,6 +18,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
+        DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
@@ -24,6 +26,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        _dccOptions = dccOptions;
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)
@@ -212,6 +215,28 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         if (result == null || result.ConfigFormat == 0)
             throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is an unsupported type");
 
+        if (result.Encryption)
+        {
+            if (string.IsNullOrEmpty(_dccOptions.ConfigObjectSecret))
+            {
+                throw new ArgumentNullException(_dccOptions.ConfigObjectSecret, nameof(_dccOptions.ConfigObjectSecret));
+            }
+            result.Content = DecryptContent(_dccOptions.ConfigObjectSecret, result.Content);
+        }
+
         return result;
+    }
+
+    private static string? DecryptContent(string secret, string? content)
+    {
+        if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
+        {
+            var encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
+            return encryptContent;
+        }
+        else
+        {
+            return content;
+        }
     }
 }

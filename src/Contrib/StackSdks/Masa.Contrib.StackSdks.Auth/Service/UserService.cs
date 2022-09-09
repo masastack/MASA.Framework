@@ -252,5 +252,16 @@ public class UserService : IUserService
         var requestUri = $"api/thirdPartyUser/addThirdPartyUser?whenExistReturn={whenExistReturn}";
         return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
+
+    public async Task SetCurrentTeamAsync(Guid teamId)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        var requestUri = $"api/staff/UpdateCurrentTeam";
+        await _caller.PutAsync(requestUri, new UpdateCurrentTeamModel
+        {
+            UserId = userId,
+            TeamId = teamId
+        });
+    }
 }
 

@@ -3,8 +3,10 @@
 
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Data;
-global using Microsoft.AspNetCore.Http;
+global using Masa.Utils.Caching.Memory;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
-global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using System.Linq.Expressions;
+global using System.Reflection;
 global using System.Security.Claims;
