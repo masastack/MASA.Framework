@@ -22,7 +22,7 @@ public class UserClaimRepositoryTest
             {
             })
             .UseUoW<TestDbContext>(
-                dbOptions => dbOptions.UseInMemoryDatabase("Test"),false,false
+                dbOptions => dbOptions.UseInMemoryTestDatabase("TestAddStandardUserClaims"),false,false
             )
             .UseRepository<TestDbContext>();
         });

@@ -20,7 +20,7 @@ public class ThirdPartyIdpServiceTest
             {
             })
             .UseUoW<TestDbContext>(
-                dbOptions => dbOptions.UseInMemoryDatabase("Test"), false, false
+                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false, false
             )
             .UseRepository<TestDbContext>();
         });
@@ -56,7 +56,7 @@ public class ThirdPartyIdpServiceTest
             {
             })
             .UseUoW<TestDbContext>(
-                dbOptions => dbOptions.UseInMemoryDatabase("Test"), false, false
+                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources2"), false, false
             )
             .UseRepository<TestDbContext>();
         });
