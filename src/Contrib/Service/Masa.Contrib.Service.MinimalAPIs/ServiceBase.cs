@@ -5,13 +5,15 @@ namespace Microsoft.AspNetCore.Builder;
 
 public abstract class ServiceBase : IService
 {
-    private readonly ServiceProvider _serviceProvider = default!;
+    private readonly ServiceProvider _serviceProvider;
 
     public WebApplication App => _serviceProvider.GetRequiredService<WebApplication>();
 
-    public string BaseUri { get; }
+    public string? BaseUri { get; init; }
 
+    public virtual Url? Url { get; init; }
 
+    public virtual bool DisableRestful { get; init; } = MasaService.DisableRestful;
 
     public IServiceCollection Services { get; protected set; }
 
@@ -48,7 +50,7 @@ public abstract class ServiceBase : IService
     {
         customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = CombineUris(GetBaseUri(), customUri);
 
         return App.MapGet(pattern, handler);
     }
@@ -65,7 +67,7 @@ public abstract class ServiceBase : IService
     {
         customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = CombineUris(GetBaseUri(), customUri);
 
         return App.MapPost(pattern, handler);
     }
@@ -82,7 +84,7 @@ public abstract class ServiceBase : IService
     {
         customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = CombineUris(GetBaseUri(), customUri);
 
         return App.MapPut(pattern, handler);
     }
@@ -99,7 +101,7 @@ public abstract class ServiceBase : IService
     {
         customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = CombineUris(GetBaseUri(), customUri);
 
         return App.MapDelete(pattern, handler);
     }
@@ -122,4 +124,31 @@ public abstract class ServiceBase : IService
 
     #endregion
 
+    public virtual string GetBaseUri()
+    {
+        if (DisableRestful) return string.Empty;
+
+        return (string.IsNullOrWhiteSpace(BaseUri) ? this.Url?.ToString(GetType()) : BaseUri) ??
+            GetType().Name.ToLower().TrimEnd("Service".ToArray());
+    }
+
+    public void AutoMapRouter()
+    {
+        var type = GetType();
+        var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+        foreach (var method in methods)
+        {
+            var @delegate = Delegate.CreateDelegate(type, method);
+            MapRouter(method.Name, @delegate);
+        }
+    }
+
+    public virtual void MapRouter(string methodName, Delegate @delegate)
+    {
+        if (methodName.StartsWith("Get")) MapGet(@delegate);
+        else if (methodName.StartsWith("Add")) MapPost(@delegate);
+        else if (methodName.StartsWith("Update")) MapPut(@delegate);
+        else if (methodName.StartsWith("Upsert")) MapPost(@delegate);
+        else if (methodName.StartsWith("Remove")) MapDelete(@delegate);
+    }
 }
