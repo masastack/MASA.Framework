@@ -34,9 +34,6 @@ public class UserClaimRepositoryTest
         var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
         await dbContext.Set<UserClaim>().AddAsync(new("sub", "1"));
         var userClaims = await dbContext.Set<UserClaim>().ToListAsync();
-        if(userClaims.Count == 0)
-        {
-            throw new Exception("TestAddStandardUserClaimsAsync failed");
-        }
+        Assert.AreNotEqual(userClaims.Count, 0);       
     }
 }
