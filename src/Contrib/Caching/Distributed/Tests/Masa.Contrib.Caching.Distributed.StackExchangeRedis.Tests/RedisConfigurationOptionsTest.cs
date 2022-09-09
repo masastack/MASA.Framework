@@ -7,31 +7,9 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 public class RedisConfigurationOptionsTest : TestBase
 {
     [TestMethod]
-    public void Test()
+    public void TestRedisConfigurationOptionsAssign()
     {
-        DateTimeOffset absoluteExpiration = DateTimeOffset.UtcNow.AddDays(1);
-        var redisConfigurationOptions = new RedisConfigurationOptions()
-        {
-            Servers = new List<RedisServerOptions>()
-            {
-                new(REDIS_HOST),
-                new(REDIS_HOST, 6379)
-            },
-            AbortOnConnectFail = true,
-            AllowAdmin = true,
-            ClientName = "test",
-            ChannelPrefix = "ChannelPrefix",
-            ConnectRetry = 5,
-            ConnectTimeout = 3000,
-            DefaultDatabase = 1,
-            Password = "123456",
-            Proxy = Proxy.Twemproxy,
-            Ssl = true,
-            SyncTimeout = 3000,
-            AbsoluteExpiration = absoluteExpiration,
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
-            SlidingExpiration = TimeSpan.FromHours(3)
-        };
+        var redisConfigurationOptions = GetRedisConfigurationOptions(out DateTimeOffset absoluteExpiration);
         Assert.AreEqual(2, redisConfigurationOptions.Servers.Count);
         Assert.AreEqual(true, redisConfigurationOptions.AbortOnConnectFail);
         Assert.AreEqual(true, redisConfigurationOptions.AllowAdmin);
@@ -111,5 +89,55 @@ public class RedisConfigurationOptionsTest : TestBase
         Assert.AreEqual(1, distributedRedisCacheOptions.Options.Servers.Count);
         Assert.AreEqual(cacheEntryOptions, distributedRedisCacheOptions.CacheEntryOptions);
         Assert.IsNotNull(distributedRedisCacheOptions.CacheEntryOptions);
+    }
+
+    [TestMethod]
+    public void TestGetConfigurationOptions()
+    {
+        var redisConfigurationOptions = GetRedisConfigurationOptions(out _);
+        ConfigurationOptions configurationOptions = redisConfigurationOptions;
+        Assert.IsNotNull(configurationOptions);
+
+        Assert.AreEqual(redisConfigurationOptions.AbortOnConnectFail, configurationOptions.AbortOnConnectFail);
+        Assert.AreEqual(redisConfigurationOptions.AllowAdmin, configurationOptions.AllowAdmin);
+        Assert.AreEqual(redisConfigurationOptions.AsyncTimeout, configurationOptions.AsyncTimeout);
+        Assert.AreEqual(redisConfigurationOptions.ClientName, configurationOptions.ClientName);
+        Assert.AreEqual(redisConfigurationOptions.ChannelPrefix, configurationOptions.ChannelPrefix.ToString());
+        Assert.AreEqual(redisConfigurationOptions.ConnectRetry, configurationOptions.ConnectRetry);
+        Assert.AreEqual(redisConfigurationOptions.ConnectTimeout, configurationOptions.ConnectTimeout);
+        Assert.AreEqual(redisConfigurationOptions.DefaultDatabase, configurationOptions.DefaultDatabase);
+        Assert.AreEqual(redisConfigurationOptions.Password, configurationOptions.Password);
+        Assert.AreEqual(redisConfigurationOptions.Proxy, configurationOptions.Proxy);
+        Assert.AreEqual(redisConfigurationOptions.Ssl, configurationOptions.Ssl);
+        Assert.AreEqual(redisConfigurationOptions.SyncTimeout, configurationOptions.SyncTimeout);
+        Assert.AreEqual(2,configurationOptions.EndPoints.Count);
+    }
+
+    private static RedisConfigurationOptions GetRedisConfigurationOptions(out DateTimeOffset absoluteExpiration)
+    {
+        absoluteExpiration = DateTimeOffset.UtcNow.AddDays(1);
+        return new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new(REDIS_HOST,6378),
+                new(REDIS_HOST, 6379)
+            },
+            AbortOnConnectFail = true,
+            AllowAdmin = true,
+            AsyncTimeout = 5000,
+            ClientName = "test",
+            ChannelPrefix = "ChannelPrefix",
+            ConnectRetry = 5,
+            ConnectTimeout = 3000,
+            DefaultDatabase = 1,
+            Password = "123456",
+            Proxy = Proxy.Twemproxy,
+            Ssl = true,
+            SyncTimeout = 3000,
+            AbsoluteExpiration = absoluteExpiration,
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+            SlidingExpiration = TimeSpan.FromHours(3)
+        };
     }
 }

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
-public abstract class BaseIdGenerator: BaseIdGenerator<long>
+public abstract class BaseIdGenerator : BaseIdGenerator<long>
 {
     private readonly IWorkerProvider _workerProvider;
 

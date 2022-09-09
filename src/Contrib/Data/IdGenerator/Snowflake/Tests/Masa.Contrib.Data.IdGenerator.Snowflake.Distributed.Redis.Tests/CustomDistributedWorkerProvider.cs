@@ -17,4 +17,6 @@ public class CustomDistributedWorkerProvider : DistributedWorkerProvider
     {
         return Task.FromResult<long?>(null);
     }
+
+    public Task<long?> TestGetWorkerIdByLogOutAsync() => base.GetWorkerIdByLogOutAsync();
 }

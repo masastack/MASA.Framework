@@ -40,7 +40,7 @@ public static class MedallionBuilderExtensions
             =>
         {
             var redisOptions = serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>();
-            var connection = ConnectionMultiplexer.Connect(ConfigurationOptionsExtensions.GetConfigurationOptions(redisOptions.Value));
+            var connection = ConnectionMultiplexer.Connect((ConfigurationOptions)redisOptions.Value);
             return new RedisDistributedSynchronizationProvider(connection.GetDatabase(), options);
         });
     }

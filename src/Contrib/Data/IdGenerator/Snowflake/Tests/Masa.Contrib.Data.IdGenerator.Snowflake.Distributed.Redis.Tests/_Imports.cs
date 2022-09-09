@@ -14,3 +14,4 @@ global using NSubstitute;
 global using StackExchange.Redis;
 global using System.Collections.Concurrent;
 global using System.Reflection;
+global using Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Infrastructure;

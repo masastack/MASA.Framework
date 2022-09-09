@@ -21,6 +21,11 @@ public class RedisConfigurationOptions : CacheEntryOptions
     public bool AllowAdmin { get; set; }
 
     /// <summary>
+    /// Specifies the time in milliseconds that the system should allow for asynchronous operations (defaults: 5000)
+    /// </summary>
+    public int AsyncTimeout { get; set; } = 5000;
+
+    /// <summary>
     /// The client name to use for all connections
     /// </summary>
     public string ClientName { get; set; } = default!;
@@ -71,6 +76,7 @@ public class RedisConfigurationOptions : CacheEntryOptions
         {
             AbortOnConnectFail = options.AbortOnConnectFail,
             AllowAdmin = options.AllowAdmin,
+            AsyncTimeout = options.AsyncTimeout,
             ChannelPrefix = options.ChannelPrefix,
             ClientName = options.ClientName,
             ConnectRetry = options.ConnectRetry,

@@ -166,7 +166,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         return null;
     }
 
-    protected virtual async Task<long?> GetWorkerIdByInUseAsync()
+    public async Task<long?> GetWorkerIdByInUseAsync()
     {
         var entries = await Database.SortedSetRangeByScoreWithScoresAsync(
             _inUseWorkerKey,
