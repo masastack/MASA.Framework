@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.8" />
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.InMemory\Masa.Contrib.Data.EFCore.InMemory.csproj" />
+    <ProjectReference Include="..\..\..\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EFCore\Masa.Contrib.Ddd.Domain.Repository.EFCore.csproj" />
+    <ProjectReference Include="..\..\..\Ddd\Domain\Masa.Contrib.Ddd.Domain\Masa.Contrib.Ddd.Domain.csproj" />
+    <ProjectReference Include="..\..\..\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.csproj" />
+    <ProjectReference Include="..\..\..\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\..\..\Isolation\UoW\Masa.Contrib.Isolation.UoW.EFCore\Masa.Contrib.Isolation.UoW.EFCore.csproj" />
+    <ProjectReference Include="..\..\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EFCore\Masa.Contrib.Authentication.OpenIdConnect.EFCore.csproj" />
+  </ItemGroup>
+
+</Project>

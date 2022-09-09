@@ -26,7 +26,7 @@ public class OidcDbContextOptions
     }
 
     public async Task SeedStandardResourcesAsync()
-    {              
+    {
         DbContext authDbContext = ServiceProvider.GetRequiredService<OidcDbContext>();
         if(await authDbContext.Set<UserClaim>().AnyAsync() is false)
         {

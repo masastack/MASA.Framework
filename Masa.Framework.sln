@@ -537,15 +537,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Serializa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.ReadWriteSpliting.EventSourcing", "src\BuildingBlocks\ReadWriteSplitting\Masa.BuildingBlocks.ReadWriteSplitting.EventSourcing\Masa.BuildingBlocks.ReadWriteSpliting.EventSourcing.csproj", "{4FF4632A-4E93-40BF-8D01-843548560F76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.Core", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.Core\Masa.Contrib.Authentication.Identity.Core.csproj", "{FC5C0C14-236E-4709-8BCD-541197075426}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.Core", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.Core\Masa.Contrib.Authentication.Identity.Core.csproj", "{FC5C0C14-236E-4709-8BCD-541197075426}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.BlazorServer", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.BlazorServer\Masa.Contrib.Authentication.Identity.BlazorServer.csproj", "{77DC7576-25E6-49B4-B49E-34B59E484A2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorServer", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.BlazorServer\Masa.Contrib.Authentication.Identity.BlazorServer.csproj", "{77DC7576-25E6-49B4-B49E-34B59E484A2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly", "src\Contrib\Authentication\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.BlazorServer.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.BlazorServer.Tests\Masa.Contrib.Authentication.Identity.BlazorServer.Tests.csproj", "{583ECD6A-5960-4A60-833A-DB6DD93BE9C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorServer.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.BlazorServer.Tests\Masa.Contrib.Authentication.Identity.BlazorServer.Tests.csproj", "{583ECD6A-5960-4A60-833A-DB6DD93BE9C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test.csproj", "{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1947,6 +1949,14 @@ Global
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|x64.ActiveCfg = Release|Any CPU
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|x64.Build.0 = Release|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|x64.Build.0 = Debug|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|x64.ActiveCfg = Release|Any CPU
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2216,6 +2226,7 @@ Global
 		{9282075C-9C15-409B-BDC4-5EC2CB9EFA87} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{583ECD6A-5960-4A60-833A-DB6DD93BE9C3} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
+		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
