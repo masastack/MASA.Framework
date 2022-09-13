@@ -6,7 +6,7 @@ namespace Masa.Contrib.Service.MinimalAPIs;
 public class Url
 {
     /// <summary>
-    /// The prefix, the default is null, consistent with the global prefix, if it is string.Empty, the prefix is ignored
+    /// The prefix, the default is null, consistent with the global prefix, if it is string.Empty, the Prefix is ignored
     /// </summary>
     public string? Prefix { get; set; }
 
@@ -24,10 +24,17 @@ public class Url
     {
         var list = new List<string>()
         {
-            Prefix ?? MasaService.Prefix ?? string.Empty,
-            Version ?? MasaService.Version ?? string.Empty,
-            ServiceName ?? type.Name.ToLower().TrimEnd("Service".ToArray())
+            Prefix ?? MasaService.Prefix,
+            Version ?? MasaService.Version,
+            ServiceName ?? GetServiceName(type, "service")
         };
         return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)));
+    }
+
+    private string GetServiceName(Type type, string name)
+    {
+        var typeName = type.Name.ToLower();
+        var index = typeName.LastIndexOf(name, StringComparison.Ordinal);
+        return typeName.Remove(index);
     }
 }

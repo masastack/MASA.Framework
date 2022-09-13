@@ -3,11 +3,7 @@
 
 namespace Masa.Contrib.Service.MinimalAPIs;
 
-public static class MasaService
+internal static class InvokeBuilder
 {
-    public static bool DisableRestful = false;
 
-    public static string Prefix = string.Empty;
-
-    public static string Version = string.Empty;
 }

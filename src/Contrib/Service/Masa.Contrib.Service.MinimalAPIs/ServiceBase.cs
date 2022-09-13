@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Logging;
+
 namespace Microsoft.AspNetCore.Builder;
 
 public abstract class ServiceBase : IService
@@ -11,9 +13,9 @@ public abstract class ServiceBase : IService
 
     public string? BaseUri { get; init; }
 
-    public virtual Url? Url { get; init; }
+    public Url Url { get; init; } = new();
 
-    public virtual bool DisableRestful { get; init; } = MasaService.DisableRestful;
+    public bool DisableRestful { get; init; } = MasaService.DisableRestful;
 
     public IServiceCollection Services { get; protected set; }
 
@@ -23,18 +25,18 @@ public abstract class ServiceBase : IService
         _serviceProvider = services.BuildServiceProvider();
     }
 
-    protected ServiceBase(IServiceCollection services, string baseUri)
+    protected ServiceBase(IServiceCollection services, string baseUri) : this(services)
     {
         BaseUri = baseUri;
-        Services = services;
-        _serviceProvider = services.BuildServiceProvider();
     }
 
-    public TService? GetService<TService>() => _serviceProvider.GetService<TService>();
+    public TService? GetService<TService>() => GetServiceProvider().GetService<TService>();
 
-    public TService GetRequiredService<TService>()
-        where TService : notnull
-        => Services.BuildServiceProvider().GetRequiredService<TService>();
+    public TService GetRequiredService<TService>() where TService : notnull
+        => GetServiceProvider().GetRequiredService<TService>();
+
+    protected virtual IServiceProvider GetServiceProvider()
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? MasaApp.RootServiceProvider;
 
     #region Map GET,POST,PUT,DELETE
 
@@ -48,9 +50,9 @@ public abstract class ServiceBase : IService
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
+        customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(GetBaseUri(), customUri);
+        var pattern = CombineUris(BaseUri, customUri);
 
         return App.MapGet(pattern, handler);
     }
@@ -65,9 +67,9 @@ public abstract class ServiceBase : IService
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
+        customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(GetBaseUri(), customUri);
+        var pattern = CombineUris(BaseUri, customUri);
 
         return App.MapPost(pattern, handler);
     }
@@ -82,9 +84,9 @@ public abstract class ServiceBase : IService
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
+        customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(GetBaseUri(), customUri);
+        var pattern = CombineUris(BaseUri, customUri);
 
         return App.MapPut(pattern, handler);
     }
@@ -99,56 +101,100 @@ public abstract class ServiceBase : IService
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatAction(handler.Method.Name, trimEndAsync);
+        customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
 
-        var pattern = CombineUris(GetBaseUri(), customUri);
+        var pattern = CombineUris(BaseUri, customUri);
 
         return App.MapDelete(pattern, handler);
     }
 
-    private static string FormatAction(string action, bool trimEndAsync)
+    public static string FormatMethodName(string methodName, bool trimEndAsync)
     {
-        if (trimEndAsync && action.EndsWith("Async"))
+        if (trimEndAsync && methodName.EndsWith("Async"))
         {
-            var i = action.LastIndexOf("Async", StringComparison.Ordinal);
-            action = action[..i];
+            var i = methodName.LastIndexOf("Async", StringComparison.Ordinal);
+            methodName = methodName[..i];
         }
 
-        return action;
+        return methodName;
     }
 
-    private static string CombineUris(params string[] uris)
-    {
-        return string.Join("/", uris.Select(u => u.Trim('/')));
-    }
+    public static string CombineUris(params string[] uris)
+        => string.Join("/", uris.Select(u => u.Trim('/')));
 
     #endregion
 
-    public virtual string GetBaseUri()
+    protected virtual string GetBaseUri()
     {
         if (DisableRestful) return string.Empty;
 
-        return (string.IsNullOrWhiteSpace(BaseUri) ? this.Url?.ToString(GetType()) : BaseUri) ??
-            GetType().Name.ToLower().TrimEnd("Service".ToArray());
+        return string.IsNullOrWhiteSpace(BaseUri) ? Url.ToString(GetType()) : BaseUri;
     }
 
-    public void AutoMapRouter()
+    internal void AutoMapRouter()
     {
         var type = GetType();
-        var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+        var methods = type
+            .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(ExcludeMappingAttribute)))
+            .Concat(type
+                .GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(methodInfo => methodInfo.CustomAttributes.Any(attr => attr.AttributeType == typeof(IncludeMappingAttribute))));
+
         foreach (var method in methods)
         {
-            var @delegate = Delegate.CreateDelegate(type, method);
-            MapRouter(method.Name, @delegate);
+            var @delegate = CreateDelegate(method, this);
+
+            var attribute = method.GetCustomAttributes(typeof(IncludeMappingAttribute), true).FirstOrDefault();
+            string? pattern = null;
+            string? httpMethod = null;
+            if (attribute is not null && attribute is IncludeMappingAttribute includeMapping)
+            {
+                pattern = includeMapping.Pattern;
+                httpMethod = includeMapping.Method?.ToUpper();
+            }
+
+            pattern ??= CombineUris(GetBaseUri(), FormatMethodName(method.Name, true));
+            httpMethod ??= GetHttpMethod(method.Name);
+
+            if (httpMethod != null) MapMethods(@delegate, pattern, httpMethod);
         }
     }
 
-    public virtual void MapRouter(string methodName, Delegate @delegate)
+    protected virtual string? GetHttpMethod(string methodName)
     {
-        if (methodName.StartsWith("Get")) MapGet(@delegate);
-        else if (methodName.StartsWith("Add")) MapPost(@delegate);
-        else if (methodName.StartsWith("Update")) MapPut(@delegate);
-        else if (methodName.StartsWith("Upsert")) MapPost(@delegate);
-        else if (methodName.StartsWith("Remove")) MapDelete(@delegate);
+        if (methodName.StartsWith("Get", StringComparison.OrdinalIgnoreCase)) return "GET";
+
+        if (methodName.StartsWith("Add", StringComparison.OrdinalIgnoreCase) ||
+            methodName.StartsWith("Upsert", StringComparison.OrdinalIgnoreCase)) return "POST";
+
+        if (methodName.StartsWith("Update", StringComparison.OrdinalIgnoreCase)) return "PUT";
+
+        if (methodName.StartsWith("Remove", StringComparison.OrdinalIgnoreCase) ||
+            methodName.StartsWith("Delete", StringComparison.OrdinalIgnoreCase)) return "DELETE";
+
+        Logger?.LogDebug("Failed to get HttpMethod");
+
+        return null;
+    }
+
+    protected virtual ILogger<ServiceBase>? Logger => _serviceProvider.GetService<ILogger<ServiceBase>>();
+
+    private RouteHandlerBuilder MapMethods(Delegate handler, string pattern, string httpMethod)
+    {
+        if (httpMethod == "GET")
+        {
+            return App.MapGet(pattern, handler);
+        }
+        return App.MapMethods(pattern, new[] { httpMethod }, handler);
+    }
+
+    private static Delegate CreateDelegate(MethodInfo methodInfo, object targetInstance)
+    {
+        var type = Expression.GetDelegateType(methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType)
+            .Concat(new List<Type>
+                { methodInfo.ReturnType }).ToArray());
+        return Delegate.CreateDelegate(type, targetInstance, methodInfo);
     }
 }

@@ -10,9 +10,10 @@ public static class ServiceCollectionExtensions
     /// <para>Notice: this method must be last call.</para>
     /// </summary>
     /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
+    /// <param name="assemblies">The assembly collection where the MinimalApi service is located</param>
     /// <returns></returns>
-    public static WebApplication AddServices(this WebApplicationBuilder builder)
-        => builder.Services.AddServices(builder);
+    public static WebApplication AddServices(this WebApplicationBuilder builder, Assembly[]? assemblies = null)
+        => builder.Services.AddServices(builder, assemblies);
 
     /// <summary>
     /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
@@ -20,18 +21,23 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
     /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
+    /// <param name="assemblies">The assembly collection where the MinimalApi service is located</param>
     /// <returns></returns>
-    public static WebApplication AddServices(this IServiceCollection services, WebApplicationBuilder builder)
+    public static WebApplication AddServices(this IServiceCollection services, WebApplicationBuilder builder, Assembly[]? assemblies = null)
     {
         if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
         {
             services.AddSingleton<MinimalApisMarkerService>();
             services.TryAddScoped(sp => services);
 
-            services.AddSingleton(new Lazy<WebApplication>(() => builder.Build(), LazyThreadSafetyMode.ExecutionAndPublication))
+            services.AddSingleton(new Lazy<WebApplication>(builder.Build, LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
 
-            services.AddServices<ServiceBase>(true, AppDomain.CurrentDomain.GetAssemblies());
+            services.AddServices<ServiceBase>(true, (_, serviceInstance) =>
+            {
+                var instance = (ServiceBase)serviceInstance;
+                if (!instance.DisableRestful) instance.AutoMapRouter();
+            }, assemblies ?? AppDomain.CurrentDomain.GetAssemblies());
         }
 
         var serviceProvider = services.BuildServiceProvider();
