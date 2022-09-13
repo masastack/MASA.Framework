@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
                 builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
             })
             .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>();
+            callerOptions.Assemblies = new Assembly[] { };
         });
     }
 

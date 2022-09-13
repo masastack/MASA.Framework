@@ -22,6 +22,7 @@ public static class ServiceExtensions
             {
                 options.BaseAddress = tscServiceBaseUri;
             });
+            builder.Assemblies = new Assembly[] { };
         });
 
         services.AddSingleton<ITscClient>(serviceProvider =>
