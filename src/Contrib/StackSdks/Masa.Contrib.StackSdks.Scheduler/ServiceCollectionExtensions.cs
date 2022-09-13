@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Scheduler;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -16,6 +14,7 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
+            callerOptions.Assemblies = Array.Empty<Assembly>();
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
