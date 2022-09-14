@@ -47,6 +47,7 @@ public abstract class ServiceBase : IService
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    [Obsolete("It is recommended to map according to the automatic mapping rules")]
     protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
         customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
@@ -64,6 +65,7 @@ public abstract class ServiceBase : IService
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    [Obsolete("It is recommended to map according to the automatic mapping rules")]
     protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
         customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
@@ -81,6 +83,7 @@ public abstract class ServiceBase : IService
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    [Obsolete("It is recommended to map according to the automatic mapping rules")]
     protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
         customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
@@ -98,6 +101,7 @@ public abstract class ServiceBase : IService
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
     /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    [Obsolete("It is recommended to map according to the automatic mapping rules")]
     protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
         customUri ??= FormatMethodName(handler.Method.Name, trimEndAsync);
