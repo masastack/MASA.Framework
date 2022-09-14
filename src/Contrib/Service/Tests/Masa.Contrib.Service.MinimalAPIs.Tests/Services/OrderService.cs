@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public class OrderService: CustomServiceBase
 {
-    public OrderService(IServiceCollection services) : base(services, "/api/order")
+    public OrderService()
     {
         DisableRestful = true;
     }

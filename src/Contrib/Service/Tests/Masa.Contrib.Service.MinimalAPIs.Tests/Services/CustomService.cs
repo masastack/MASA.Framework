@@ -7,7 +7,7 @@ public class CustomService : CustomServiceBase
 {
     private readonly int _times;
 
-    public CustomService(IServiceCollection services) : base(services)
+    public CustomService()
     {
         _times++;
     }

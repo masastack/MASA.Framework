@@ -5,18 +5,14 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public abstract class CustomServiceBase : ServiceBase
 {
-    protected CustomServiceBase(IServiceCollection services) : base(services)
+    protected CustomServiceBase() : base(new ServiceCollection())
     {
     }
 
-    protected CustomServiceBase(IServiceCollection services, string baseUri) : base(services, baseUri)
+    protected CustomServiceBase(string baseUri) : base(baseUri)
     {
     }
 
-    public string TestGetBaseUri() => base.GetBaseUri();
-
-#pragma warning disable CA1822
-    [IncludeMapping("get")]
-    public string HealthChecks() => "success";
-#pragma warning restore CA1822
+    public string TestGetBaseUri(ServiceBaseOptions globalOptions) => base.GetBaseUri(globalOptions,
+        PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
 }

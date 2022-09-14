@@ -6,15 +6,4 @@ namespace Masa.Contrib.Service.MinimalAPIs;
 public static class MasaService
 {
     public static bool DisableRestful { get; set; }
-
-    public static string Prefix { get; set; }
-
-    public static string Version { get; set; }
-
-    static MasaService()
-    {
-        DisableRestful = false;
-        Prefix = string.Empty;
-        Version = string.Empty;
-    }
 }

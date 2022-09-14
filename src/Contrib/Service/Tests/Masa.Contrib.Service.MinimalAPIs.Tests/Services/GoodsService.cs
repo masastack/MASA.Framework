@@ -5,9 +5,9 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public class GoodsService : CustomServiceBase
 {
-    public GoodsService(IServiceCollection services) : base(services)
+    public GoodsService()
     {
-        Url.Prefix = "api";
-        Url.Version = "v2";
+        Prefix = "api";
+        Version = "v2";
     }
 }

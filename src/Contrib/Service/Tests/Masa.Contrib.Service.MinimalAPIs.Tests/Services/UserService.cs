@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public class UserService : CustomServiceBase
 {
-    public UserService(IServiceCollection services) : base(services, "/api/user")
+    public UserService()
     {
     }
 }
