@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Service.Caller.Options;
 
 public class CallerOptions
 {
-    public readonly List<CallerRelationOptions> Callers = new();
+    public List<CallerRelationOptions> Callers { get; set; } = new();
 
     public IServiceCollection Services { get; }
 
@@ -16,7 +16,7 @@ public class CallerOptions
         get => _assemblies;
         set
         {
-            ArgumentNullException.ThrowIfNull(value, nameof(Assemblies));
+            ArgumentNullException.ThrowIfNull(value);
 
             _assemblies = value;
         }
