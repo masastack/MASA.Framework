@@ -28,4 +28,8 @@ public class ThirdPartyIdpModel
     public string TokenEndpoint { get; set; } = "";
 
     public string UserInformationEndpoint { get; set; } = "";
+
+    public bool MapAll { get; private set; }
+
+    public Dictionary<string, string> JsonKeyMap { get; set; } = new();
 }
