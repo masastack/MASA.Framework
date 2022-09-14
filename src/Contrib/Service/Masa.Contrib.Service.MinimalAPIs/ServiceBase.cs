@@ -1,7 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.AspNetCore.Builder;
 
@@ -11,7 +10,7 @@ public abstract class ServiceBase : IService
 
     public WebApplication App => _serviceProvider.GetRequiredService<WebApplication>();
 
-    public string? BaseUri { get; init; }
+    public string BaseUri { get; init; }
 
     public Url Url { get; init; } = new();
 
