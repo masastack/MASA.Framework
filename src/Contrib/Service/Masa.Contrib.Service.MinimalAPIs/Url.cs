@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.MinimalAPIs;
@@ -31,7 +31,7 @@ public class Url
         return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)));
     }
 
-    private string GetServiceName(Type type, string name)
+    private static string GetServiceName(Type type, string name)
     {
         var typeName = type.Name.ToLower();
         var index = typeName.LastIndexOf(name, StringComparison.Ordinal);

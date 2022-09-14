@@ -15,6 +15,8 @@ public abstract class CustomServiceBase : ServiceBase
 
     public string TestGetBaseUri() => base.GetBaseUri();
 
+#pragma warning disable CA1822
     [IncludeMapping("get")]
     public string HealthChecks() => "success";
+#pragma warning restore CA1822
 }

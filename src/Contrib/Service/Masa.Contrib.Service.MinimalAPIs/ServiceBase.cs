@@ -148,7 +148,7 @@ public abstract class ServiceBase : IService
             var attribute = method.GetCustomAttributes(typeof(IncludeMappingAttribute), true).FirstOrDefault();
             string? pattern = null;
             string? httpMethod = null;
-            if (attribute is not null && attribute is IncludeMappingAttribute includeMapping)
+            if (attribute is IncludeMappingAttribute includeMapping)
             {
                 pattern = includeMapping.Pattern;
                 httpMethod = includeMapping.Method?.ToUpper();
@@ -180,13 +180,9 @@ public abstract class ServiceBase : IService
 
     protected virtual ILogger<ServiceBase>? Logger => _serviceProvider.GetService<ILogger<ServiceBase>>();
 
-    private RouteHandlerBuilder MapMethods(Delegate handler, string pattern, string httpMethod)
+    private void MapMethods(Delegate handler, string pattern, string httpMethod)
     {
-        if (httpMethod == "GET")
-        {
-            return App.MapGet(pattern, handler);
-        }
-        return App.MapMethods(pattern, new[] { httpMethod }, handler);
+        App.MapMethods(pattern, new[] { httpMethod }, handler);
     }
 
     private static Delegate CreateDelegate(MethodInfo methodInfo, object targetInstance)

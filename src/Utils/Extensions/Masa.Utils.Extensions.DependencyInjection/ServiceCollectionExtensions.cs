@@ -116,7 +116,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static IServiceCollection AddServices<TService>(this IServiceCollection services,
         bool autoFire,
-        Action<Type, object>? action = null,
+        Action<Type, object>? action,
         params Assembly[] assemblies)
         => (from type in assemblies.SelectMany(assembly => assembly.GetTypes())
             where !type.IsAbstract && BaseOf<TService>(type)

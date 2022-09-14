@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.MinimalAPIs.Tests;
@@ -47,16 +47,16 @@ public class ServiceBaseTest
 
     #region private methods
 
-    private CustomServiceBase GetCustomService(IServiceCollection? services = null)
+    private static CustomServiceBase GetCustomService(IServiceCollection? services = null)
         => new CustomService(services ?? new ServiceCollection());
 
-    private CustomServiceBase GetUserService(IServiceCollection? services = null)
+    private static CustomServiceBase GetUserService(IServiceCollection? services = null)
         => new UserService(services ?? new ServiceCollection());
 
-    private CustomServiceBase GetOrderService(IServiceCollection? services = null)
+    private static CustomServiceBase GetOrderService(IServiceCollection? services = null)
         => new OrderService(services ?? new ServiceCollection());
 
-    private CustomServiceBase GetGoodsService(IServiceCollection? services = null)
+    private static CustomServiceBase GetGoodsService(IServiceCollection? services = null)
         => new GoodsService(services ?? new ServiceCollection());
 
     #endregion
