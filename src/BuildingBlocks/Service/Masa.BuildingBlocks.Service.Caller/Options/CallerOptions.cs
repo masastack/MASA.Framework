@@ -28,6 +28,8 @@ public class CallerOptions
 
     public string? RequestIdKey { get; set; }
 
+    public bool DisableAutoRegistration { get; set; } = false;
+
     public CallerOptions(IServiceCollection services)
     {
         Services = services;
