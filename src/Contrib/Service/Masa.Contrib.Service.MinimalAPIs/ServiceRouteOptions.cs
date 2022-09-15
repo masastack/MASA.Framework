@@ -1,9 +1,9 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.MinimalAPIs;
 
-public class ServiceBaseOptions
+public class ServiceRouteOptions
 {
     /// <summary>
     /// The prefix, the default is null
@@ -16,6 +16,8 @@ public class ServiceBaseOptions
     /// Formatter is $"{Prefix}/{Version}/{ServiceName}", any one IsNullOrWhiteSpace would be ignored.
     /// </summary>
     public string? Version { get; set; }
+
+    public bool? AutoAppendId { get; set; }
 
     public bool? PluralizeServiceName { get; set; }
 

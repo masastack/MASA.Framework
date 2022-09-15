@@ -13,6 +13,6 @@ public abstract class CustomServiceBase : ServiceBase
     {
     }
 
-    public string TestGetBaseUri(ServiceBaseOptions globalOptions) => base.GetBaseUri(globalOptions,
+    public string TestGetBaseUri(ServiceRouteOptions globalOptions) => base.GetBaseUri(globalOptions,
         PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
 }

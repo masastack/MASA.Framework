@@ -9,7 +9,7 @@ public class ServiceBaseTest
     [TestMethod]
     public void TestGetBaseUri()
     {
-        var serviceMapOptions = new ServiceMapOptions();
+        var serviceMapOptions = new ServiceGlobalRouteOptions();
         var serviceBase = GetCustomService();
         Assert.AreEqual("api/v1/Custom", serviceBase.TestGetBaseUri(serviceMapOptions));
 

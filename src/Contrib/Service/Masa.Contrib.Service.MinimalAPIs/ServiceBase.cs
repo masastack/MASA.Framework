@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Routing.Patterns;
+
 namespace Microsoft.AspNetCore.Builder;
 
-public abstract class ServiceBase : ServiceBaseOptions, IService
+public abstract class ServiceBase : ServiceRouteOptions, IService
 {
     public WebApplication App => MasaApp.GetRequiredService<WebApplication>();
 
@@ -14,6 +16,8 @@ public abstract class ServiceBase : ServiceBaseOptions, IService
     public bool DisableRestful { get; init; } = MasaService.DisableRestful;
 
     public IServiceCollection Services => MasaApp.Services;
+
+    protected ServiceBase() { }
 
     protected ServiceBase(string baseUri)
     {
@@ -26,16 +30,51 @@ public abstract class ServiceBase : ServiceBaseOptions, IService
         => GetServiceProvider().GetRequiredService<TService>();
 
     protected virtual IServiceProvider GetServiceProvider()
-        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? MasaApp.RootServiceProvider;
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? Services.BuildServiceProvider();
 
-    protected virtual string GetBaseUri(ServiceBaseOptions globalOptions, PluralizationService pluralizationService)
+    internal void AutoMapRoute(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
+    {
+        var type = GetType();
+
+        var methodInfos = type
+            .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
+            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)));
+
+        foreach (var method in methodInfos)
+        {
+            var @delegate = CreateDelegate(method, this);
+
+            //todo RoutePatternAttribute
+
+            var pattern = CombineUris(GetBaseUri(globalOptions, pluralizationService), GetMethodName(method, globalOptions));
+            var httpMethod = GetHttpMethod(globalOptions, method.Name);
+
+            if (httpMethod != null)
+                App.MapMethods(pattern, new[] { httpMethod }, @delegate);
+            else
+                App.Map(pattern, @delegate);
+        }
+    }
+
+    private static Delegate CreateDelegate(MethodInfo methodInfo, object targetInstance)
+    {
+        var type = Expression.GetDelegateType(methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType)
+            .Concat(new List<Type>
+                { methodInfo.ReturnType }).ToArray());
+        return Delegate.CreateDelegate(type, targetInstance, methodInfo);
+    }
+
+    public static string CombineUris(params string[] uris)
+        => string.Join("/", uris.Select(u => u.Trim('/')));
+
+    protected virtual string GetBaseUri(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
     {
         if (DisableRestful) return string.Empty;
 
         return string.IsNullOrWhiteSpace(BaseUri) ? GetUrl(globalOptions, pluralizationService) : BaseUri;
     }
 
-    private string GetUrl(ServiceBaseOptions globalOptions, PluralizationService pluralizationService)
+    private string GetUrl(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
     {
         var list = new List<string>()
         {
@@ -59,29 +98,7 @@ public abstract class ServiceBase : ServiceBaseOptions, IService
         return pluralizationService.Pluralize(serviceName);
     }
 
-    internal void AutoMapRoute(ServiceBaseOptions globalOptions, PluralizationService pluralizationService)
-    {
-        var type = GetType();
-
-        var methodInfos = type
-            .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(ExcludeMappingAttribute)));
-
-        foreach (var method in methodInfos)
-        {
-            var @delegate = CreateDelegate(method, this);
-
-            var pattern = CombineUris(GetBaseUri(globalOptions, pluralizationService), GetMethodName(method));
-            var httpMethod = GetHttpMethod(globalOptions, method.Name);
-
-            if (httpMethod != null)
-                App.MapMethods(pattern, new[] { httpMethod }, @delegate);
-            else
-                App.Map(pattern, @delegate);
-        }
-    }
-
-    protected virtual string? GetHttpMethod(ServiceBaseOptions globalOptions, string methodName)
+    protected virtual string? GetHttpMethod(ServiceRouteOptions globalOptions, string methodName)
     {
         if (ExistPrefix(GetPrefixs ?? globalOptions.GetPrefixs!, methodName))
             return "GET";
@@ -98,40 +115,71 @@ public abstract class ServiceBase : ServiceBaseOptions, IService
         return null;
     }
 
-    public static bool ExistPrefix(string[] prefixs, string methodName)
-        => prefixs.Any(prefix => methodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-
-    private static Delegate CreateDelegate(MethodInfo methodInfo, object targetInstance)
-    {
-        var type = Expression.GetDelegateType(methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType)
-            .Concat(new List<Type>
-                { methodInfo.ReturnType }).ToArray());
-        return Delegate.CreateDelegate(type, targetInstance, methodInfo);
-    }
-
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    protected virtual string GetMethodName(MethodInfo methodInfo)
+    protected virtual string GetMethodName(MethodInfo methodInfo, ServiceRouteOptions globalOptions)
     {
-        var parameters = methodInfo.GetParameters();
-        if (parameters.Length >= 1 && parameters.Any(parameter => parameter.Name != null && parameter.Name.Equals("id", StringComparison.OrdinalIgnoreCase)))
-            return parameters[0].ParameterType.IsNullableType() ? "{id?}" : "{id}";
-
-        return FormatMethodName(methodInfo.Name);
-    }
-
-    public static string FormatMethodName(string methodName)
-    {
-        if (methodName.EndsWith("Async"))
+        if (!(AutoAppendId ?? globalOptions.AutoAppendId ?? false))
         {
-            var i = methodName.LastIndexOf("Async", StringComparison.Ordinal);
-            methodName = methodName[..i];
+            return FormatMethodName(globalOptions, methodInfo.Name);
         }
 
-        return methodName;
+        var parameters = methodInfo.GetParameters();
+        var idParameter = parameters.FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase));
+        if (idParameter != null)
+        {
+            var id = idParameter.ParameterType.IsNullableType() ? "{id?}" : "{id}";
+            return $"{FormatMethodName(globalOptions, methodInfo.Name)}/{id}";
+        }
+
+        return FormatMethodName(globalOptions, methodInfo.Name);
     }
 
-    public static string CombineUris(params string[] uris)
-        => string.Join("/", uris.Select(u => u.Trim('/')));
+    public string TryParseHttpMethod(ServiceRouteOptions globalOptions, string methodName)
+    {
+        var httpMethod = TryParseHttpMethod(globalOptions, methodName, out var newMethodName);
+
+        if (newMethodName.EndsWith("Async"))
+        {
+            var i = newMethodName.LastIndexOf("Async", StringComparison.Ordinal);
+            newMethodName = newMethodName[..i];
+        }
+
+        return newMethodName;
+    }
+
+    protected virtual (string? HttpMethod, string MethodName) TryParseHttpMethod(ServiceRouteOptions globalOptions, string methodName)
+    {
+        if (TrimPrefix(GetPrefixs ?? globalOptions.GetPrefixs!, methodName, out newMethodName))
+            return "GET";
+
+        if (TrimPrefix(PostPrefixs ?? globalOptions.PostPrefixs!, methodName, out newMethodName))
+            return "POST";
+
+        if (TrimPrefix(PutPrefixs ?? globalOptions.PutPrefixs!, methodName, out newMethodName))
+            return "PUT";
+
+        if (TrimPrefix(DeletePrefixs ?? globalOptions.DeletePrefixs!, methodName, out newMethodName))
+            return "DELETE";
+
+        newMethodName = methodName;
+        return null;
+    }
+
+    public bool TrimPrefix(string[] prefixs, string methodName, out string newMethodName)
+    {
+        var prefix = prefixs.FirstOrDefault(prefix => methodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+        if (prefix is not null)
+        {
+            newMethodName = methodName.Substring(prefix.Length - 1);
+            return true;
+        }
+        else
+        {
+            newMethodName = methodName;
+            return false;
+        }
+    }
 
     #region Obsolete
 

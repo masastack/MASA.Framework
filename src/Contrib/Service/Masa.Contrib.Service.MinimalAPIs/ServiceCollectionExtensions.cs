@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
     /// <returns></returns>
     public static WebApplication AddServices(
         this WebApplicationBuilder builder,
-        Action<ServiceMapOptions> action)
+        Action<ServiceGlobalRouteOptions> action)
         => builder.Services.AddServices(builder, action);
 
     /// <summary>
@@ -51,7 +51,7 @@ public static class ServiceCollectionExtensions
     public static WebApplication AddServices(
         this IServiceCollection services,
         WebApplicationBuilder builder,
-        Action<ServiceMapOptions> action)
+        Action<ServiceGlobalRouteOptions> action)
     {
         if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
         {
@@ -70,7 +70,7 @@ public static class ServiceCollectionExtensions
             MasaApp.Services = services;
 
             MasaApp.Build(services.BuildServiceProvider());
-            var serviceMapOptions = MasaApp.GetRequiredService<IOptions<ServiceMapOptions>>().Value;
+            var serviceMapOptions = MasaApp.GetRequiredService<IOptions<ServiceGlobalRouteOptions>>().Value;
             services.AddServices<ServiceBase>(true, (_, serviceInstance) =>
             {
                 var instance = (ServiceBase)serviceInstance;
