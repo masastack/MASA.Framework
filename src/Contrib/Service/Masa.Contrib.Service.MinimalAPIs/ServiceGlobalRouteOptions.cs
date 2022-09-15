@@ -13,7 +13,7 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
 
     public ServiceGlobalRouteOptions()
     {
-        DisableRestful = false;
+        DisableAutoMapRoute = false;
         Prefix = "api";
         Version = "v1";
         AutoAppendId = true;
