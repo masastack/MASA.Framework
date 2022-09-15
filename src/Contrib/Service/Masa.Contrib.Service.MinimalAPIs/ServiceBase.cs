@@ -13,6 +13,8 @@ public abstract class ServiceBase : IService
 
     public string? ServiceName { get; init; }
 
+    public Action<RouteHandlerBuilder>? RouteHandlerBuilder { get; init; }
+
     public IServiceCollection Services => MasaApp.Services;
 
 #pragma warning disable S4136
@@ -32,7 +34,7 @@ public abstract class ServiceBase : IService
     protected virtual IServiceProvider GetServiceProvider()
         => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? Services.BuildServiceProvider();
 
-    internal void AutoMapRoute(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
+    internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
     {
         var type = GetType();
 
@@ -68,18 +70,20 @@ public abstract class ServiceBase : IService
             if (pattern == null)
             {
                 methodName ??= newMethodName;
-                pattern = ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService), GetMethodName(method, methodName, globalOptions));
+                pattern = ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
+                    GetMethodName(method, methodName, globalOptions));
             }
-            MapMethods(pattern, httpMethod, handler);
+            var routeHandlerBuilder = MapMethods(pattern, httpMethod, handler);
+            (RouteHandlerBuilder ?? globalOptions.RouteHandlerBuilder)?.Invoke(routeHandlerBuilder);
         }
     }
 
-    void MapMethods(string pattern, string? httpMethod, Delegate handler)
+    RouteHandlerBuilder MapMethods(string pattern, string? httpMethod, Delegate handler)
     {
         if (httpMethod != null)
-            App.MapMethods(pattern, new[] { httpMethod }, handler);
-        else
-            App.Map(pattern, handler);
+            return App.MapMethods(pattern, new[] { httpMethod }, handler);
+
+        return App.Map(pattern, handler);
     }
 
     protected virtual string GetBaseUri(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
@@ -166,7 +170,7 @@ public abstract class ServiceBase : IService
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
-    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    /// <returns>A <see cref="Builder.RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     [Obsolete("It is recommended to map according to the automatic mapping rules")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
@@ -185,7 +189,7 @@ public abstract class ServiceBase : IService
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
-    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    /// <returns>A <see cref="Builder.RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     [Obsolete("It is recommended to map according to the automatic mapping rules")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
@@ -204,7 +208,7 @@ public abstract class ServiceBase : IService
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
-    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    /// <returns>A <see cref="Builder.RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     [Obsolete("It is recommended to map according to the automatic mapping rules")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
@@ -223,7 +227,7 @@ public abstract class ServiceBase : IService
     /// <param name="handler">The delegate executed when the endpoint is matched. It's name is a part of pattern if <see cref="customUri"/> is null.</param>
     /// <param name="customUri">The custom uri. It is a part of pattern if it is not null.</param>
     /// <param name="trimEndAsync">Determines whether to remove the string 'Async' at the end.</param>
-    /// <returns>A <see cref="RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
+    /// <returns>A <see cref="Builder.RouteHandlerBuilder"/> that can be used to further customize the endpoint.</returns>
     [Obsolete("It is recommended to map according to the automatic mapping rules")]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)

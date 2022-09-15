@@ -7,11 +7,14 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
 {
     public Assembly[] Assemblies { get; set; }
 
+    public Action<RouteHandlerBuilder>? RouteHandlerBuilder { get; set; }
+
     internal PluralizationService Pluralization { get; set; }
 
     public ServiceGlobalRouteOptions()
     {
-        DisableRestful = false;Prefix = "api";
+        DisableRestful = false;
+        Prefix = "api";
         Version = "v1";
         AutoAppendId = true;
         PluralizeServiceName = true;
