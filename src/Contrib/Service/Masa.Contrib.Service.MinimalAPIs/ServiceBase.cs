@@ -1,28 +1,28 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Routing.Patterns;
-
 namespace Microsoft.AspNetCore.Builder;
 
-public abstract class ServiceBase : ServiceRouteOptions, IService
+public abstract class ServiceBase : IService
 {
     public WebApplication App => MasaApp.GetRequiredService<WebApplication>();
 
     public string BaseUri { get; init; }
 
-    public string? ServiceName { get; init; }
+    public ServiceRouteOptions Route { get; } = new();
 
-    public bool DisableRestful { get; init; } = MasaService.DisableRestful;
+    public string? ServiceName { get; init; }
 
     public IServiceCollection Services => MasaApp.Services;
 
+#pragma warning disable S4136
     protected ServiceBase() { }
 
     protected ServiceBase(string baseUri)
     {
         BaseUri = baseUri;
     }
+#pragma warning restore S4136
 
     public TService? GetService<TService>() => GetServiceProvider().GetService<TService>();
 
@@ -38,53 +38,64 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
 
         var methodInfos = type
             .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)));
+            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)))
+            .Concat(type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                .Where(methodInfo => methodInfo.CustomAttributes.Any(attr => attr.AttributeType == typeof(RoutePatternAttribute))))
+            .Distinct();
 
         foreach (var method in methodInfos)
         {
-            var @delegate = CreateDelegate(method, this);
+            var handler = ServiceBaseHelper.CreateDelegate(method, this);
 
-            //todo RoutePatternAttribute
+            string? pattern = null;
+            string? httpMethod = null;
+            string? methodName = null;
+            var atttibute = method.GetCustomAttribute<RoutePatternAttribute>();
+            if (atttibute != null)
+            {
+                httpMethod = atttibute.HttpMethod;
+                if (atttibute.StartWithBaseUri)
+                    methodName = atttibute.Pattern;
+                else
+                    pattern = atttibute.Pattern;
+            }
 
-            var pattern = CombineUris(GetBaseUri(globalOptions, pluralizationService), GetMethodName(method, globalOptions));
-            var httpMethod = GetHttpMethod(globalOptions, method.Name);
+            string newMethodName = method.Name;
 
-            if (httpMethod != null)
-                App.MapMethods(pattern, new[] { httpMethod }, @delegate);
-            else
-                App.Map(pattern, @delegate);
+            if (httpMethod == null || pattern == null)
+                httpMethod = TryGetHttpMethod(globalOptions, ref newMethodName);
+
+            if (pattern == null)
+            {
+                methodName ??= newMethodName;
+                pattern = ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService), GetMethodName(method, methodName, globalOptions));
+            }
+            MapMethods(pattern, httpMethod, handler);
         }
     }
 
-    private static Delegate CreateDelegate(MethodInfo methodInfo, object targetInstance)
+    void MapMethods(string pattern, string? httpMethod, Delegate handler)
     {
-        var type = Expression.GetDelegateType(methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType)
-            .Concat(new List<Type>
-                { methodInfo.ReturnType }).ToArray());
-        return Delegate.CreateDelegate(type, targetInstance, methodInfo);
+        if (httpMethod != null)
+            App.MapMethods(pattern, new[] { httpMethod }, handler);
+        else
+            App.Map(pattern, handler);
     }
-
-    public static string CombineUris(params string[] uris)
-        => string.Join("/", uris.Select(u => u.Trim('/')));
 
     protected virtual string GetBaseUri(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
     {
-        if (DisableRestful) return string.Empty;
+        if (!string.IsNullOrWhiteSpace(BaseUri))
+            return BaseUri;
 
-        return string.IsNullOrWhiteSpace(BaseUri) ? GetUrl(globalOptions, pluralizationService) : BaseUri;
-    }
-
-    private string GetUrl(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
-    {
         var list = new List<string>()
         {
-            Prefix ?? globalOptions.Prefix ?? string.Empty,
-            Version ?? globalOptions.Version ?? string.Empty,
-            ServiceName ??
-            GetServiceName((PluralizeServiceName ?? globalOptions.PluralizeServiceName) is true ? pluralizationService : null)
+            Route.Prefix ?? globalOptions.Prefix ?? string.Empty,
+            Route.Version ?? globalOptions.Version ?? string.Empty,
+            ServiceName ?? GetServiceName(Route.PluralizeServiceName ?? globalOptions.PluralizeServiceName ?? false ? pluralizationService :
+                null)
         };
 
-        return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)));
+        return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)).Select(u => u.Trim('/')));
     }
 
     private string GetServiceName(PluralizationService? pluralizationService)
@@ -98,91 +109,42 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
         return pluralizationService.Pluralize(serviceName);
     }
 
-    protected virtual string? GetHttpMethod(ServiceRouteOptions globalOptions, string methodName)
-    {
-        if (ExistPrefix(GetPrefixs ?? globalOptions.GetPrefixs!, methodName))
-            return "GET";
-
-        if (ExistPrefix(PostPrefixs ?? globalOptions.PostPrefixs!, methodName))
-            return "POST";
-
-        if (ExistPrefix(PutPrefixs ?? globalOptions.PutPrefixs!, methodName))
-            return "PUT";
-
-        if (ExistPrefix(DeletePrefixs ?? globalOptions.DeletePrefixs!, methodName))
-            return "DELETE";
-
-        return null;
-    }
-
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    protected virtual string GetMethodName(MethodInfo methodInfo, ServiceRouteOptions globalOptions)
+    protected virtual string GetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
     {
-        if (!(AutoAppendId ?? globalOptions.AutoAppendId ?? false))
-        {
-            return FormatMethodName(globalOptions, methodInfo.Name);
-        }
+        if (!(Route.AutoAppendId ?? globalOptions.AutoAppendId ?? false))
+            return ServiceBaseHelper.TrimMethodName(methodName);
 
-        var parameters = methodInfo.GetParameters();
-        var idParameter = parameters.FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase));
+        var idParameter = methodInfo.GetParameters().FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase));
         if (idParameter != null)
         {
-            var id = idParameter.ParameterType.IsNullableType() ? "{id?}" : "{id}";
-            return $"{FormatMethodName(globalOptions, methodInfo.Name)}/{id}";
+            var id = idParameter.ParameterType.IsNullableType() || idParameter.HasDefaultValue ? "{id?}" : "{id}";
+            return $"{ServiceBaseHelper.TrimMethodName(methodName)}/{id}";
         }
 
-        return FormatMethodName(globalOptions, methodInfo.Name);
+        return ServiceBaseHelper.TrimMethodName(methodName);
     }
 
-    public string TryParseHttpMethod(ServiceRouteOptions globalOptions, string methodName)
+    protected virtual string? TryGetHttpMethod(ServiceRouteOptions globalOptions, ref string methodName)
     {
-        var httpMethod = TryParseHttpMethod(globalOptions, methodName, out var newMethodName);
-
-        if (newMethodName.EndsWith("Async"))
-        {
-            var i = newMethodName.LastIndexOf("Async", StringComparison.Ordinal);
-            newMethodName = newMethodName[..i];
-        }
-
-        return newMethodName;
-    }
-
-    protected virtual (string? HttpMethod, string MethodName) TryParseHttpMethod(ServiceRouteOptions globalOptions, string methodName)
-    {
-        if (TrimPrefix(GetPrefixs ?? globalOptions.GetPrefixs!, methodName, out newMethodName))
+        if (ServiceBaseHelper.TryParseHttpMethod(Route.GetPrefixs ?? globalOptions.GetPrefixs!, ref methodName))
             return "GET";
 
-        if (TrimPrefix(PostPrefixs ?? globalOptions.PostPrefixs!, methodName, out newMethodName))
+        if (ServiceBaseHelper.TryParseHttpMethod(Route.PostPrefixs ?? globalOptions.PostPrefixs!, ref methodName))
             return "POST";
 
-        if (TrimPrefix(PutPrefixs ?? globalOptions.PutPrefixs!, methodName, out newMethodName))
+        if (ServiceBaseHelper.TryParseHttpMethod(Route.PutPrefixs ?? globalOptions.PutPrefixs!, ref methodName))
             return "PUT";
 
-        if (TrimPrefix(DeletePrefixs ?? globalOptions.DeletePrefixs!, methodName, out newMethodName))
+        if (ServiceBaseHelper.TryParseHttpMethod(Route.DeletePrefixs ?? globalOptions.DeletePrefixs!, ref methodName))
             return "DELETE";
 
-        newMethodName = methodName;
         return null;
-    }
-
-    public bool TrimPrefix(string[] prefixs, string methodName, out string newMethodName)
-    {
-        var prefix = prefixs.FirstOrDefault(prefix => methodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-
-        if (prefix is not null)
-        {
-            newMethodName = methodName.Substring(prefix.Length - 1);
-            return true;
-        }
-        else
-        {
-            newMethodName = methodName;
-            return false;
-        }
     }
 
     #region Obsolete
 
+#pragma warning disable S4136
     [Obsolete("service can be ignored")]
     protected ServiceBase(IServiceCollection services)
     {
@@ -193,6 +155,7 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     {
 
     }
+#pragma warning restore S4136
 
     #region [Obsolete] Map GET,POST,PUT,DELETE
 
@@ -208,9 +171,9 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
         return App.MapGet(pattern, handler);
     }
@@ -227,9 +190,9 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
         return App.MapPost(pattern, handler);
     }
@@ -246,9 +209,9 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
         return App.MapPut(pattern, handler);
     }
@@ -265,9 +228,9 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= FormatMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
 
-        var pattern = CombineUris(BaseUri, customUri);
+        var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
         return App.MapDelete(pattern, handler);
     }
@@ -275,5 +238,4 @@ public abstract class ServiceBase : ServiceRouteOptions, IService
     #endregion
 
     #endregion
-
 }

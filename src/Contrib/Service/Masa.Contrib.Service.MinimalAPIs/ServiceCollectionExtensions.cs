@@ -59,10 +59,7 @@ public static class ServiceCollectionExtensions
 
             services.Configure(action);
 
-#pragma warning disable CA1822
-            //todo: Version 1.0 will be removed
-            services.TryAddScoped(sp => services);
-#pragma warning restore CA1822
+            services.TryAddScoped(sp => services);// Version 1.0 will be removed
 
             services.AddSingleton(new Lazy<WebApplication>(builder.Build, LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
@@ -74,7 +71,10 @@ public static class ServiceCollectionExtensions
             services.AddServices<ServiceBase>(true, (_, serviceInstance) =>
             {
                 var instance = (ServiceBase)serviceInstance;
-                if (!instance.DisableRestful) instance.AutoMapRoute(serviceMapOptions, serviceMapOptions.Pluralization);
+                if (instance.Route.DisableRestful ?? serviceMapOptions.DisableRestful ?? false)
+                    return;
+
+                instance.AutoMapRoute(serviceMapOptions, serviceMapOptions.Pluralization);
             }, serviceMapOptions.Assemblies);
         }
 

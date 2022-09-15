@@ -5,6 +5,8 @@ namespace Masa.Contrib.Service.MinimalAPIs;
 
 public class ServiceRouteOptions
 {
+    public bool? DisableRestful { get; set; }
+
     /// <summary>
     /// The prefix, the default is null
     /// Formatter is $"{Prefix}/{Version}/{ServiceName}", any one IsNullOrWhiteSpace would be ignored.

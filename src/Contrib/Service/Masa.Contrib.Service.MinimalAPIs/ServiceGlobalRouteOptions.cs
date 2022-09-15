@@ -11,15 +11,15 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
 
     public ServiceGlobalRouteOptions()
     {
-        Assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        Prefix = "api";
+        DisableRestful = false;Prefix = "api";
         Version = "v1";
-        PluralizeServiceName = false;
+        AutoAppendId = true;
+        PluralizeServiceName = true;
         GetPrefixs = new[] { "Get", "Select" };
         PostPrefixs = new[] { "Post", "Add", "Upsert", "Create" };
         PutPrefixs = new[] { "Put", "Update", "Modify" };
         DeletePrefixs = new[] { "Delete", "Remove" };
+        Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         Pluralization = PluralizationService.CreateService(CultureInfo.CreateSpecificCulture("en"));
-        AutoAppendId = true;
     }
 }

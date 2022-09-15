@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public abstract class CustomServiceBase : ServiceBase
 {
-    protected CustomServiceBase() : base(new ServiceCollection())
+    protected CustomServiceBase()
     {
     }
 

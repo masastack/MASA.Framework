@@ -7,7 +7,7 @@ public class GoodsService : CustomServiceBase
 {
     public GoodsService()
     {
-        Prefix = "api";
-        Version = "v2";
+        Route.Prefix = "api";
+        Route.Version = "v2";
     }
 }

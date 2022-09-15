@@ -8,6 +8,8 @@ public class RoutePatternAttribute : Attribute
 {
     public string Pattern { get; set; }
 
+    public string? HttpMethod { get; set; }
+
     public bool StartWithBaseUri { get; set; }
 
     public RoutePatternAttribute(string pattern, bool startWithBaseUri = false)
