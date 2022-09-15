@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.Assemblies = Array.Empty<Assembly>();
+            callerOptions.DisableAutoRegistration = true;
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
