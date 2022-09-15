@@ -17,4 +17,9 @@ public class ThirdPartyIdpService : IThirdPartyIdpService
         var requestUri = $"api/thirdPartyIdp/getAll";
         return await _caller.GetAsync<List<ThirdPartyIdpModel>>(requestUri) ?? new();
     }
+
+    public Task<List<ThirdPartyIdpModel>> GetAllThirdPartyIdpByCacheAsync()
+    {
+        throw new NotImplementedException();
+    }
 }
