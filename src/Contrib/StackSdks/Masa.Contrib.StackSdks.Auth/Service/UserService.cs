@@ -235,10 +235,10 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
-    public async Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
+    public async Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
     {
         var requestUri = $"api/user/loginByPhoneNumber";
-        return await _caller.PostAsync<bool>(requestUri, login);
+        return await _caller.PostAsync<UserModel>(requestUri, login) ?? throw new UserFriendlyException("login failed");
     }
 
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)

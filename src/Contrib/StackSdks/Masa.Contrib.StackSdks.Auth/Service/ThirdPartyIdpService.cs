@@ -12,14 +12,9 @@ public class ThirdPartyIdpService : IThirdPartyIdpService
         _caller = caller;
     }
 
-    public async Task<List<ThirdPartyIdpModel>> GetAllThirdPartyIdpAsync()
+    public async Task<List<ThirdPartyIdpModel>> GetAllAsync()
     {
         var requestUri = $"api/thirdPartyIdp/getAll";
         return await _caller.GetAsync<List<ThirdPartyIdpModel>>(requestUri) ?? new();
-    }
-
-    public Task<List<ThirdPartyIdpModel>> GetAllThirdPartyIdpByCacheAsync()
-    {
-        throw new NotImplementedException();
     }
 }

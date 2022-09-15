@@ -14,7 +14,7 @@ public class ThirdPartyIdpServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<List<ThirdPartyIdpModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var thirdPartyIdpService = new ThirdPartyIdpService(caller.Object);
-        var result = await thirdPartyIdpService.GetAllThirdPartyIdpAsync();
+        var result = await thirdPartyIdpService.GetAllAsync();
         caller.Verify(provider => provider.GetAsync<List<ThirdPartyIdpModel>>(requestUri, default), Times.Once);
     }
 }

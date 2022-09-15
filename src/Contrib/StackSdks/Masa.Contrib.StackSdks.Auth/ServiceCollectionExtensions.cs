@@ -5,9 +5,19 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress)
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, IConfiguration configuration, string? authServiceBaseAddress = null)
+    {
+        var redisOptions = configuration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
+        authServiceBaseAddress ??= configuration.GetValue<string>("$public.AppSettings:AuthClient:Url");
+        services.AddAuthClient(authServiceBaseAddress, redisOptions);
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress, RedisConfigurationOptions redisOptions)
     {
         ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
+
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
@@ -16,10 +26,10 @@ public static class ServiceCollectionExtensions
             })
             .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>();
             callerOptions.Assemblies = new Assembly[] { };
-        });
+        }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions, RedisConfigurationOptions redisOptions)
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
@@ -29,7 +39,14 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
         services.AddCaller(callerOptions);
+        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, redisOptions).AddMasaMemoryCache(options =>
+        {
+            options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
+            options.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
+        });
 
+        services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();
+        services.AddSingleton<ISsoClient, SsoClient>();
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
             var tokenProvider = serviceProvider.GetService<TokenProvider>();
