@@ -63,7 +63,7 @@ public abstract class ServiceBase : IService
             string newMethodName = method.Name;
 
             if (httpMethod == null || pattern == null)
-                httpMethod = TryGetHttpMethod(globalOptions, ref newMethodName);
+                httpMethod ??= TryGetHttpMethod(globalOptions, ref newMethodName);
 
             if (pattern == null)
             {
@@ -238,4 +238,5 @@ public abstract class ServiceBase : IService
     #endregion
 
     #endregion
+
 }
