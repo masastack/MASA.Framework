@@ -55,6 +55,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton<MinimalApisMarkerService>();
 
+            services.AddHttpContextAccessor();
             services.Configure(action);
 
             services.TryAddScoped(sp => services);// Version 1.0 will be removed

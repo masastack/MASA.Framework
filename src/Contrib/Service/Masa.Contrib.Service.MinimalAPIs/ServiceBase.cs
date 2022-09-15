@@ -32,7 +32,7 @@ public abstract class ServiceBase : IService
         => GetServiceProvider().GetRequiredService<TService>();
 
     protected virtual IServiceProvider GetServiceProvider()
-        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? Services.BuildServiceProvider();
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new ArgumentNullException("ServiceProvider");
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
     {
