@@ -8,4 +8,6 @@ public class LoginByPhoneNumberModel
     public string PhoneNumber { get; set; } = "";
 
     public string Code { get; set; } = "";
+
+    public bool RegisterLogin { get; set; }
 }
