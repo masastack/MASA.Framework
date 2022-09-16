@@ -7,7 +7,15 @@ public class UpdateUserBasicInfoModel
 {
     public Guid Id { get; set; }
 
-    public string DisplayName { get; set; }
+    public string DisplayName { get; set; } = "";
 
     public GenderTypes Gender { get; set; }
+
+    public string? CompanyName { get; set; }
+
+    public string? Department { get; set; }
+
+    public string? Position { get; set; }
+
+    public AddressValueModel Address { get; set; } = new();
 }
