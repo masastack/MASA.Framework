@@ -70,7 +70,7 @@ public static class ServiceCollectionExtensions
             services.AddServices<ServiceBase>(true, (_, serviceInstance) =>
             {
                 var instance = (ServiceBase)serviceInstance;
-                if (instance.Route.DisableRestful ?? serviceMapOptions.DisableRestful ?? false)
+                if (instance.Route.DisableAutoMapRoute ?? serviceMapOptions.DisableAutoMapRoute ?? false)
                     return;
 
                 instance.AutoMapRoute(serviceMapOptions, serviceMapOptions.Pluralization);
