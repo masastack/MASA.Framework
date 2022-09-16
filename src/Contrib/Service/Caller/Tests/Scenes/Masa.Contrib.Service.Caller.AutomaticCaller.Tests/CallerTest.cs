@@ -228,4 +228,22 @@ public class CallerTest
         tokenProvider.Token = "token";
         await customHeaderCaller.GetAsync();
     }
+
+    [TestMethod]
+    public void TestDisableAutoRegistration()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddCaller(option =>
+        {
+            option.DisableAutoRegistration = true;
+            option.UseHttpClient(clientBuilder =>
+            {
+                clientBuilder.BaseAddress = "https://github.com/masastack/MASA.Contrib";
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var callerFactoryOptions = serviceProvider.GetService<IOptions<CallerFactoryOptions>>();
+        Assert.IsNotNull(callerFactoryOptions);
+        Assert.AreEqual(1, callerFactoryOptions.Value.Options.Count);
+    }
 }
