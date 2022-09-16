@@ -15,19 +15,17 @@ public static class ServiceBaseHelper
 
     public static string CombineUris(params string[] uris) => string.Join("/", uris.Select(u => u.Trim('/')));
 
-    public static string TrimMethodName(string methodName)
+    public static string TrimEndMethodName(string methodName)
         => methodName.TrimEnd("Async", StringComparison.OrdinalIgnoreCase);
 
-    public static bool TryParseHttpMethod(string[] prefixs, ref string methodName)
+    public static string ParseMethodPrefix(string[] prefixes, string methodName)
     {
         var newMethodName = methodName;
-        var prefix = prefixs.FirstOrDefault(prefix => newMethodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        var prefix = prefixes.FirstOrDefault(prefix => newMethodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
 
         if (prefix is not null)
-        {
-            methodName = methodName.Substring(prefix.Length);
-            return true;
-        }
-        return false;
+            return prefix;
+
+        return string.Empty;
     }
 }

@@ -9,10 +9,17 @@ public abstract class ServiceBase : IService
 
     public string BaseUri { get; init; }
 
-    public ServiceRouteOptions Route { get; } = new();
+    public ServiceRouteOptions RouteOptions { get; } = new();
 
     public string? ServiceName { get; init; }
 
+    /// <summary>
+    /// Based on the RouteHandlerBuilder extension, it is used to extend the mapping method, such as
+    /// RouteHandlerBuilder = routeHandlerBuilder =>
+    /// {
+    ///     routeHandlerBuilder.RequireAuthorization("AtLeast21");
+    /// };
+    /// </summary>
     public Action<RouteHandlerBuilder>? RouteHandlerBuilder { get; init; }
 
     public IServiceCollection Services => MasaApp.Services;
@@ -54,20 +61,24 @@ public abstract class ServiceBase : IService
             string? pattern = null;
             string? httpMethod = null;
             string? methodName = null;
-            var atttibute = method.GetCustomAttribute<RoutePatternAttribute>();
-            if (atttibute != null)
+            var attribute = method.GetCustomAttribute<RoutePatternAttribute>();
+            if (attribute != null)
             {
-                httpMethod = atttibute.HttpMethod;
-                if (atttibute.StartWithBaseUri)
-                    methodName = atttibute.Pattern;
+                httpMethod = attribute.HttpMethod;
+                if (attribute.StartWithBaseUri)
+                    methodName = attribute.Pattern;
                 else
-                    pattern = atttibute.Pattern;
+                    pattern = attribute.Pattern;
             }
 
             string newMethodName = method.Name;
 
             if (httpMethod == null || pattern == null)
-                httpMethod ??= TryGetHttpMethod(globalOptions, ref newMethodName);
+            {
+                var result = ParseMethod(globalOptions, newMethodName);
+                httpMethod ??= result.HttpMethod;
+                newMethodName = result.MethodName;
+            }
 
             pattern ??= ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
                 methodName ?? GetMethodName(method, newMethodName, globalOptions));
@@ -91,9 +102,10 @@ public abstract class ServiceBase : IService
 
         var list = new List<string>()
         {
-            Route.Prefix ?? globalOptions.Prefix ?? string.Empty,
-            Route.Version ?? globalOptions.Version ?? string.Empty,
-            ServiceName ?? GetServiceName(Route.PluralizeServiceName ?? globalOptions.PluralizeServiceName ?? false ? pluralizationService :
+            RouteOptions.Prefix ?? globalOptions.Prefix ?? string.Empty,
+            RouteOptions.Version ?? globalOptions.Version ?? string.Empty,
+            ServiceName ?? GetServiceName(RouteOptions.PluralizeServiceName ?? globalOptions.PluralizeServiceName ?? false ?
+                pluralizationService :
                 null)
         };
 
@@ -112,34 +124,38 @@ public abstract class ServiceBase : IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected virtual string GetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
     {
-        if (!(Route.AutoAppendId ?? globalOptions.AutoAppendId ?? false))
-            return ServiceBaseHelper.TrimMethodName(methodName);
+        if (!(RouteOptions.AutoAppendId ?? globalOptions.AutoAppendId ?? false))
+            return ServiceBaseHelper.TrimEndMethodName(methodName);
 
         var idParameter = methodInfo.GetParameters().FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase));
         if (idParameter != null)
         {
             var id = idParameter.ParameterType.IsNullableType() || idParameter.HasDefaultValue ? "{id?}" : "{id}";
-            return $"{ServiceBaseHelper.TrimMethodName(methodName)}/{id}";
+            return $"{ServiceBaseHelper.TrimEndMethodName(methodName)}/{id}";
         }
 
-        return ServiceBaseHelper.TrimMethodName(methodName);
+        return ServiceBaseHelper.TrimEndMethodName(methodName);
     }
 
-    protected virtual string? TryGetHttpMethod(ServiceRouteOptions globalOptions, ref string methodName)
+    protected virtual (string? HttpMethod, string MethodName) ParseMethod(ServiceRouteOptions globalOptions, string methodName)
     {
-        if (ServiceBaseHelper.TryParseHttpMethod(Route.GetPrefixs ?? globalOptions.GetPrefixs!, ref methodName))
-            return "GET";
+        var prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.GetPrefixes ?? globalOptions.GetPrefixes!, methodName);
+        if (!string.IsNullOrEmpty(prefix))
+            return ("GET", methodName.Substring(prefix.Length));
 
-        if (ServiceBaseHelper.TryParseHttpMethod(Route.PostPrefixs ?? globalOptions.PostPrefixs!, ref methodName))
-            return "POST";
+        prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PostPrefixes ?? globalOptions.PostPrefixes!, methodName);
+        if (!string.IsNullOrEmpty(prefix))
+            return ("POST", methodName.Substring(prefix.Length));
 
-        if (ServiceBaseHelper.TryParseHttpMethod(Route.PutPrefixs ?? globalOptions.PutPrefixs!, ref methodName))
-            return "PUT";
+        prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PutPrefixes ?? globalOptions.PutPrefixes!, methodName);
+        if (!string.IsNullOrEmpty(prefix))
+            return ("PUT", methodName.Substring(prefix.Length));
 
-        if (ServiceBaseHelper.TryParseHttpMethod(Route.DeletePrefixs ?? globalOptions.DeletePrefixs!, ref methodName))
-            return "DELETE";
+        prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.DeletePrefixes ?? globalOptions.DeletePrefixes!, methodName);
+        if (!string.IsNullOrEmpty(prefix))
+            return ("DELETE", methodName.Substring(prefix.Length));
 
-        return null;
+        return (null, string.Empty);
     }
 
     #region Obsolete
@@ -171,7 +187,7 @@ public abstract class ServiceBase : IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapGet(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimEndMethodName(handler.Method.Name);
 
         var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
@@ -190,7 +206,7 @@ public abstract class ServiceBase : IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPost(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimEndMethodName(handler.Method.Name);
 
         var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
@@ -209,7 +225,7 @@ public abstract class ServiceBase : IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapPut(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimEndMethodName(handler.Method.Name);
 
         var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 
@@ -228,7 +244,7 @@ public abstract class ServiceBase : IService
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     protected RouteHandlerBuilder MapDelete(Delegate handler, string? customUri = null, bool trimEndAsync = true)
     {
-        customUri ??= ServiceBaseHelper.TrimMethodName(handler.Method.Name);
+        customUri ??= ServiceBaseHelper.TrimEndMethodName(handler.Method.Name);
 
         var pattern = ServiceBaseHelper.CombineUris(BaseUri, customUri);
 

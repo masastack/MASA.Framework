@@ -7,7 +7,7 @@
 ```C#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
-app.MapGet("/api/v1/IntegrationEvent/HelloWorld", () => "Hello World");
+app.MapGet("/api/v1/Demo/HelloWorld", () => "Hello World");
 app.Run();
 ```
 
@@ -27,7 +27,7 @@ var app = builder.Services.AddServices(builder);
 2. 自定义Service并继承ServiceBase，如：
 
 ```c#
-public class IntegrationEventService : ServiceBase
+public class DemoService : ServiceBase
 {
     public string HelloWorld()
     {

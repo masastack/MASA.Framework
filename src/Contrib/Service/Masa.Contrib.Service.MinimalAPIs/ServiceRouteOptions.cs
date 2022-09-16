@@ -23,11 +23,11 @@ public class ServiceRouteOptions
 
     public bool? PluralizeServiceName { get; set; }
 
-    public string[]? GetPrefixs { get; set; }
+    public string[]? GetPrefixes { get; set; }
 
-    public string[]? PostPrefixs { get; set; }
+    public string[]? PostPrefixes { get; set; }
 
-    public string[]? PutPrefixs { get; set; }
+    public string[]? PutPrefixes { get; set; }
 
-    public string[]? DeletePrefixs { get; set; }
+    public string[]? DeletePrefixes { get; set; }
 }

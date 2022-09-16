@@ -26,7 +26,7 @@ public class ServiceBaseTest
     [DataRow("Order/Get", "Order/Get")]
     public void TestFormatMethods(string methodName, string result)
     {
-        Assert.AreEqual(result, ServiceBaseHelper.TrimMethodName(methodName));
+        Assert.AreEqual(result, ServiceBaseHelper.TrimEndMethodName(methodName));
     }
 
     [TestMethod]
@@ -42,13 +42,12 @@ public class ServiceBaseTest
     }
 
     [DataTestMethod]
-    [DataRow("Update,Modify,Put", "AddGoods", "AddGoods", false)]
-    [DataRow("Add, Upsert, Create, AddGoods", "AddGoods", "Goods", true)]
-    public void TestTryParseHttpMethod(string prefixs, string methodName, string newMethodName, bool exist)
+    [DataRow("Update,Modify,Put", "AddGoods", "")]
+    [DataRow("Add, Upsert, Create, AddGoods", "AddGoods", "Add")]
+    public void TestTryParseHttpMethod(string prefixes, string methodName, string prefix)
     {
-        var result = ServiceBaseHelper.TryParseHttpMethod(prefixs.Split(','), ref methodName);
-        Assert.AreEqual(exist, result);
-        Assert.AreEqual(newMethodName, methodName);
+        var result = ServiceBaseHelper.ParseMethodPrefix(prefixes.Split(','), methodName);
+        Assert.AreEqual(prefix, result);
     }
 
     #region private methods
