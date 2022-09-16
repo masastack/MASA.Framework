@@ -102,9 +102,7 @@ public abstract class ServiceBase : IService
 
     private string GetServiceName(PluralizationService? pluralizationService)
     {
-        var typeName = GetType().Name;
-        var index = typeName.LastIndexOf("Service", StringComparison.OrdinalIgnoreCase);
-        var serviceName = typeName.Remove(index);
+        var serviceName = GetType().Name.TrimEnd("Service", StringComparison.OrdinalIgnoreCase);
         if (pluralizationService == null)
             return serviceName;
 
