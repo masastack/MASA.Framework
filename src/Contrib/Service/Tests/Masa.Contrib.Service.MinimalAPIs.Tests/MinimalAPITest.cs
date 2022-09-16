@@ -38,7 +38,7 @@ public class MinimalAPITest
 
         Assert.ReferenceEquals(customService.Services, _builder.Services);
 
-        Assert.ThrowsException<ArgumentNullException>(() => customService.GetRequiredService<IServiceProvider>());
+        Assert.ThrowsException<MasaException>(() => customService.GetRequiredService<IServiceProvider>());
 
         Assert.IsTrue(customService.GetTest2() == 1);
 

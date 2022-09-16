@@ -40,7 +40,7 @@ public abstract class ServiceBase : IService
 
 #pragma warning disable CA2208
     protected virtual IServiceProvider GetServiceProvider()
-        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new ArgumentNullException("ServiceProvider");
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new MasaException("Failed to get ServiceProvider of current request");
 #pragma warning restore CA2208
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
