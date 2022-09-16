@@ -1,9 +1,10 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.MinimalAPIs;
+namespace Microsoft.AspNetCore.Mvc;
 
-public static class MasaService
+[AttributeUsage(AttributeTargets.Method)]
+public class IgnoreRouteAttribute: Attribute
 {
-    public static bool DisableRestful { get; set; }
+
 }

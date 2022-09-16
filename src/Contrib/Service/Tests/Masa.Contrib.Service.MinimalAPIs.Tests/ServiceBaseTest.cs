@@ -9,15 +9,12 @@ public class ServiceBaseTest
     [TestMethod]
     public void TestGetBaseUri()
     {
-        var serviceMapOptions = new ServiceMapOptions();
+        var serviceMapOptions = new ServiceGlobalRouteOptions();
         var serviceBase = GetCustomService();
-        Assert.AreEqual("api/v1/Custom", serviceBase.TestGetBaseUri(serviceMapOptions));
+        Assert.AreEqual("api/v1/Customs", serviceBase.TestGetBaseUri(serviceMapOptions));
 
         serviceBase = GetUserService();
-        Assert.AreEqual("api/v1/User", serviceBase.TestGetBaseUri(serviceMapOptions));
-
-        serviceBase = GetOrderService();
-        Assert.AreEqual(string.Empty, serviceBase.TestGetBaseUri(serviceMapOptions));
+        Assert.AreEqual("api/v1/Users", serviceBase.TestGetBaseUri(serviceMapOptions));
 
         serviceBase = GetGoodsService();
         Assert.AreEqual("api/v2/Goods", serviceBase.TestGetBaseUri(serviceMapOptions));
@@ -29,7 +26,7 @@ public class ServiceBaseTest
     [DataRow("Order/Get", "Order/Get")]
     public void TestFormatMethods(string methodName, string result)
     {
-        Assert.AreEqual(result, ServiceBase.FormatMethodName(methodName));
+        Assert.AreEqual(result, ServiceBaseHelper.TrimEndMethodName(methodName));
     }
 
     [TestMethod]
@@ -41,7 +38,16 @@ public class ServiceBaseTest
             "v1",
             "order"
         };
-        Assert.AreEqual("api/v1/order", ServiceBase.CombineUris(uris));
+        Assert.AreEqual("api/v1/order", ServiceBaseHelper.CombineUris(uris));
+    }
+
+    [DataTestMethod]
+    [DataRow("Update,Modify,Put", "AddGoods", "")]
+    [DataRow("Add, Upsert, Create, AddGoods", "AddGoods", "Add")]
+    public void TestTryParseHttpMethod(string prefixes, string methodName, string prefix)
+    {
+        var result = ServiceBaseHelper.ParseMethodPrefix(prefixes.Split(','), methodName);
+        Assert.AreEqual(prefix, result);
     }
 
     #region private methods
@@ -51,9 +57,6 @@ public class ServiceBaseTest
 
     private static CustomServiceBase GetUserService()
         => new UserService();
-
-    private static CustomServiceBase GetOrderService()
-        => new OrderService();
 
     private static CustomServiceBase GetGoodsService()
         => new GoodsService();
