@@ -31,8 +31,10 @@ public abstract class ServiceBase : IService
     public TService GetRequiredService<TService>() where TService : notnull
         => GetServiceProvider().GetRequiredService<TService>();
 
+#pragma warning disable CA2208
     protected virtual IServiceProvider GetServiceProvider()
         => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new ArgumentNullException("ServiceProvider");
+#pragma warning restore CA2208
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
     {
@@ -67,12 +69,8 @@ public abstract class ServiceBase : IService
             if (httpMethod == null || pattern == null)
                 httpMethod ??= TryGetHttpMethod(globalOptions, ref newMethodName);
 
-            if (pattern == null)
-            {
-                methodName ??= newMethodName;
-                pattern = ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
-                    GetMethodName(method, methodName, globalOptions));
-            }
+            pattern ??= ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
+                methodName ?? GetMethodName(method, newMethodName, globalOptions));
             var routeHandlerBuilder = MapMethods(pattern, httpMethod, handler);
             (RouteHandlerBuilder ?? globalOptions.RouteHandlerBuilder)?.Invoke(routeHandlerBuilder);
         }
