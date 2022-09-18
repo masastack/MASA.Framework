@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public abstract class CustomServiceBase : ServiceBase
 {
-    protected CustomServiceBase() : base(new ServiceCollection())
+    protected CustomServiceBase()
     {
     }
 
@@ -13,6 +13,6 @@ public abstract class CustomServiceBase : ServiceBase
     {
     }
 
-    public string TestGetBaseUri(ServiceBaseOptions globalOptions) => base.GetBaseUri(globalOptions,
+    public string TestGetBaseUri(ServiceRouteOptions globalOptions) => base.GetBaseUri(globalOptions,
         PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
 }

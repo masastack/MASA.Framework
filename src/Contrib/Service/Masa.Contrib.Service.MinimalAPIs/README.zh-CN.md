@@ -7,7 +7,7 @@
 ```C#
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
-app.MapGet("/api/v1/helloworld", ()=>"Hello World");
+app.MapGet("/api/v1/Demo/HelloWorld", () => "Hello World");
 app.Run();
 ```
 
@@ -21,20 +21,14 @@ Install-Package Masa.Contrib.Service.MinimalAPIs
 
 ```c#
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Services
-                 .AddServices(builder);
+var app = builder.Services.AddServices(builder);
 ```
 
 2. 自定义Service并继承ServiceBase，如：
 
 ```c#
-public class IntegrationEventService : ServiceBase
+public class DemoService : ServiceBase
 {
-    public IntegrationEventService(IServiceCollection services) : base(services)
-    {
-        App.MapGet("/api/v1/payment/HelloWorld", HelloWorld);
-    }
-
     public string HelloWorld()
     {
         return "Hello World";
