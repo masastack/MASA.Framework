@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using IdentityModel.Client;
+
 namespace Masa.Contrib.StackSdks.Auth.Service;
 
 public class UserService : IUserService
@@ -235,10 +237,34 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
-    public async Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
+    public async Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
     {
         var requestUri = $"api/user/loginByPhoneNumber";
-        return await _caller.PostAsync<bool>(requestUri, login);
+        return await _caller.PostAsync<UserModel>(requestUri, login) ?? throw new UserFriendlyException("login failed");
+    }
+
+    public async Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
+    {
+        using var client = new HttpClient();
+        var disco = await client.GetDiscoveryDocumentAsync(address);
+        if (disco.IsError)
+            throw new UserFriendlyException(disco.Error);
+
+        var paramter = new Dictionary<string, string>
+        {
+            ["client_Id"] = login.ClientId,
+            ["client_secret"] = login.ClientSecret,
+            ["grant_type"] = "phone_code",
+            ["scope"] = string.Join(' ', login.Scope),
+            ["PhoneNumber"] = login.PhoneNumber,
+            ["code"] = login.Code
+        };
+
+        var tokenResponse = await client.RequestTokenRawAsync(disco.TokenEndpoint, new Parameters(paramter));
+        if (tokenResponse.IsError)
+            throw new UserFriendlyException(tokenResponse.Error);
+
+        return tokenResponse.AccessToken;
     }
 
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)

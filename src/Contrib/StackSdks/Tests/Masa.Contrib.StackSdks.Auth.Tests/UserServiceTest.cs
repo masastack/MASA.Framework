@@ -384,13 +384,14 @@ public class UserServiceTest
     public async Task TestLoginByPhoneNumberAsync()
     {
         var login = new LoginByPhoneNumberModel();
+        var user = new UserModel();
         var requestUri = $"api/user/loginByPhoneNumber";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<bool>(requestUri, login, default)).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, login, default)).ReturnsAsync(user).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
         await userService.LoginByPhoneNumberAsync(login);
-        caller.Verify(provider => provider.PostAsync<bool>(requestUri, login, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UserModel>(requestUri, login, default), Times.Once);
     }
 
     [TestMethod]

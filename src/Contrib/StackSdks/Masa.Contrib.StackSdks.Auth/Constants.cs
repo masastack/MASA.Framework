@@ -6,5 +6,6 @@ namespace Masa.Contrib.StackSdks.Auth;
 internal static class Constants
 {
     public const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.auth";
+    public const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.auth:";
 }
 

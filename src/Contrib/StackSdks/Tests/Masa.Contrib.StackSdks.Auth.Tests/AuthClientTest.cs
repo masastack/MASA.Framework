@@ -11,7 +11,7 @@ public class AuthClientTest
     {
         var services = new ServiceCollection();
         services.AddMasaIdentity();
-        services.AddAuthClient("https://localhost:18102");
+        services.AddAuthClient("https://localhost:18102", new());
         services.AddScoped<TokenProvider>();
         var authClient = services.BuildServiceProvider().GetRequiredService<IAuthClient>();
 
@@ -22,7 +22,7 @@ public class AuthClientTest
     public void TestAddAuthClientNoAddMasaIdentity()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<Exception>(() => services.AddAuthClient("https://localhost:18102"),
+        Assert.ThrowsException<Exception>(() => services.AddAuthClient("https://localhost:18102", new()),
             "Please add IMultiEnvironmentUserContext first.");
     }
 
@@ -30,14 +30,14 @@ public class AuthClientTest
     public void TestAddAuthClientShouldThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(authServiceBaseAddress: null!));
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(authServiceBaseAddress: null!, new()));
     }
 
     [TestMethod]
     public void TestAddAuthClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(callerOptions: null!));
+        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(callerOptions: null!, new()));
     }
 }
 

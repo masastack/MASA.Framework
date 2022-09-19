@@ -22,6 +22,7 @@ public static class ServiceExtensions
             {
                 options.BaseAddress = tscServiceBaseUri;
             });
+            builder.DisableAutoRegistration = true;
         });
 
         services.AddSingleton<ITscClient>(serviceProvider =>

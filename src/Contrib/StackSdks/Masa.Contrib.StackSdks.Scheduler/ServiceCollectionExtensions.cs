@@ -14,11 +14,11 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.DisableAutoRegistration = true;
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            callerOptions.DisableAutoRegistration = true;
         });
     }
 
