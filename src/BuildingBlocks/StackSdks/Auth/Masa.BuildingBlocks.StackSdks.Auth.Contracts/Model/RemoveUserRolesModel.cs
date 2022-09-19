@@ -7,5 +7,5 @@ public class RemoveUserRolesModel
 {
     public Guid Id { get; set; }
 
-    public List<string> RoleNames { get; set; }
+    public List<string> RoleCodes { get; set; }
 }
