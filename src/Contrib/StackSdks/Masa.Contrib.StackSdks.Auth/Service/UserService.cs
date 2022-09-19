@@ -207,26 +207,6 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
     }
 
-    public async Task SendMsgCodeAsync(SendMsgCodeModel model)
-    {
-        if (model.UserId == Guid.Empty)
-        {
-            model.UserId = _userContext.GetUserId<Guid>();
-        }
-        var requestUri = $"api/user/sendMsgCode";
-        await _caller.PostAsync(requestUri, model);
-    }
-
-    public async Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model)
-    {
-        if (model.UserId == Guid.Empty)
-        {
-            model.UserId = _userContext.GetUserId<Guid>();
-        }
-        var requestUri = $"api/user/verifyMsgCode";
-        return await _caller.PostAsync<bool>(requestUri, model);
-    }
-
     public async Task<bool> UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user)
     {
         if (user.Id == Guid.Empty)
@@ -288,6 +268,38 @@ public class UserService : IUserService
             UserId = userId,
             TeamId = teamId
         });
+    }
+
+    public async Task SendMsgCodeAsync(SendMsgCodeModel model)
+    {
+        if (model.UserId == Guid.Empty)
+        {
+            model.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/universal/send_sms";
+        await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task<bool> VerifyMsgCodeAsync(VerifyMsgCodeModel model)
+    {
+        if (model.UserId == Guid.Empty)
+        {
+            model.UserId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/verifyMsgCode";
+        return await _caller.PostAsync<bool>(requestUri, model);
+    }
+
+    public async Task SendEmailAsync(SendEmailModel model)
+    {
+        var requestUri = $"api/universal/send_email";
+        await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task RegisterAsync(RegisterModel model)
+    {
+        var requestUri = $"api/user/register";
+        await _caller.PostAsync(requestUri, model);
     }
 }
 

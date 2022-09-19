@@ -3,10 +3,10 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 
-public enum ThirdPartyIdpTypes
+public enum SendEmailTypes
 {
-    Customize = 1,
-    WeChat = 2,
-    GitHub = 3,
-    Ldap = 4,
+    Undefined,
+    Verifiy,
+    Register,
+    ForgotPassword
 }
