@@ -31,7 +31,7 @@ public class UserModel
 
     public AddressValueModel Address { get; set; } = new();
 
-    public List<string> RoleNames { get; set; } = new();
+    public List<RoleModel> Roles { get; set; } = new();
 
     public Guid? StaffId { get; set; }
 
