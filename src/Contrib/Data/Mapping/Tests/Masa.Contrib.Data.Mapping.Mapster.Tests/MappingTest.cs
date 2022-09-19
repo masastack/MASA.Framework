@@ -188,4 +188,59 @@ public class MappingTest : BaseMappingTest
         Assert.IsTrue(newUsers.Count == 1);
         Assert.IsTrue(newUsers[0].Name == "Jim");
     }
+
+    [TestMethod]
+    public void TestNested()
+    {
+        var user = new UserDto()
+        {
+            Id = 1,
+            Name = "test"
+        };
+        var user2 = new UserDto()
+        {
+            Id = 2,
+            Name = "test2",
+            User = user
+        };
+
+        MasaApp.Services = _services;
+        var newUser = user2.Map<UserDto>();
+
+        Assert.AreEqual(user2.Id, newUser.Id);
+        Assert.AreEqual(user2.Name, newUser.Name);
+        Assert.IsNotNull(newUser.User);
+        Assert.AreEqual(user.Id, newUser.User.Id);
+        Assert.AreEqual(user.Name, newUser.User.Name);
+    }
+
+    [TestMethod]
+    public void TestNested2()
+    {
+        var order = new OrderDto()
+        {
+            Id = 1,
+            Name = "test",
+            Address = new AddressItemDto()
+            {
+                Province = "Province1",
+                City = "City1",
+                Address = new AddressItemDto()
+                {
+                    Province = "Province2",
+                    City = "City2",
+                }
+            }
+        };
+
+        MasaApp.Services = _services;
+
+        var newOrder = order.Map<OrderDto>();
+
+        Assert.AreEqual(order.Id, newOrder.Id);
+        Assert.AreEqual(order.Name, newOrder.Name);
+        Assert.IsNotNull(newOrder.Address);
+        Assert.AreEqual(order.Address.Province, newOrder.Address.Province);
+        Assert.AreEqual(order.Address.City, newOrder.Address.City);
+    }
 }
