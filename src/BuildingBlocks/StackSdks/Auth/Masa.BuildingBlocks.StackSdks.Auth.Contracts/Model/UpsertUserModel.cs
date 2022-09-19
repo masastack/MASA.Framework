@@ -7,6 +7,6 @@ public class UpsertUserModel : AddUserModel
 {
     public Guid Id { get; set; }
 
-    public List<RoleModel> Roles { get; set; } = new();
+    public List<string> RoleCodes { get; set; } = new();
 }
 
