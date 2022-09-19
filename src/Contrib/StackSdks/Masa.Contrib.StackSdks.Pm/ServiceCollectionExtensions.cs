@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(pmServiceBaseAddress);
             });
-            callerOptions.Assemblies = new Assembly[] { };
+            callerOptions.DisableAutoRegistration = true;
         });
     }
 

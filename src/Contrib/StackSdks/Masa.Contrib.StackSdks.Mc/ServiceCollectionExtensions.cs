@@ -14,12 +14,11 @@ public static class ServiceCollectionExtensions
 
         return services.AddMcClient(callerOptions =>
         {
-            callerOptions.Assemblies = Array.Empty<Assembly>();
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-            callerOptions.Assemblies = new Assembly[] { };
+            callerOptions.DisableAutoRegistration = true;
         });
     }
 
