@@ -345,7 +345,7 @@ public class UserServiceTest
     public async Task SendMsgCodeAsync()
     {
         var code = new SendMsgCodeModel();
-        var requestUri = $"api/user/sendMsgCode";
+        var requestUri = $"api/universal/send_sms";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -596,6 +596,31 @@ public class UserServiceTest
         caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
 
+    [TestMethod]
+    public async Task TestSendEmailAsync()
+    {
+        var model = new SendEmailModel();
+        var requestUri = $"api/universal/send_email";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.SendEmailAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRegisterAsync()
+    {
+        var model = new RegisterModel();
+        var requestUri = $"api/user/register";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RegisterAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
 }
 
 class SystemData
