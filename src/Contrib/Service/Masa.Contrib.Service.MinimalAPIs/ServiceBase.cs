@@ -169,7 +169,6 @@ public abstract class ServiceBase : IService
     [Obsolete("service can be ignored")]
     protected ServiceBase(IServiceCollection services, string baseUri) : this(services)
     {
-
     }
 #pragma warning restore S4136
 
