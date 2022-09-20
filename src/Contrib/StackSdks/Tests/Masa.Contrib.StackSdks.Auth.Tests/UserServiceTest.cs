@@ -611,15 +611,28 @@ public class UserServiceTest
     }
 
     [TestMethod]
-    public async Task TestRegisterAsync()
+    public async Task TestRegisterByEmailAsyncegisterAsync()
     {
-        var model = new RegisterModel();
+        var model = new RegisterByEmailModel();
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
-        await userService.RegisterAsync(model);
+        await userService.RegisterByEmailAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRegisterByPhoneAsync()
+    {
+        var model = new RegisterByPhoneModel();
+        var requestUri = $"api/user/register";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RegisterByPhoneAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
 }
