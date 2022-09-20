@@ -29,7 +29,7 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             return;
 
         changeTracker.DetectChanges();
-        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete).ToList();
+        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete);
         foreach (var entity in entries)
         {
             var navigationEntries = entity.Navigations
