@@ -50,6 +50,76 @@ public class ServiceBaseTest
         Assert.AreEqual(prefix, result);
     }
 
+    [TestMethod]
+    public void TestGetMethodName()
+    {
+        var userService = GetUserService();
+        var methodInfo = typeof(UserService).GetMethod("Test");
+        Assert.IsNotNull(methodInfo);
+        string methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test/{id}", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test2");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test2/{id?}", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test3");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test3", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test4");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test4", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test5");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test5", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test6");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test6", methodName);
+
+        methodInfo = typeof(UserService).GetMethod("Test7");
+        Assert.IsNotNull(methodInfo);
+        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("Test7/{id?}", methodName);
+    }
+
+    [TestMethod]
+    public void TestConstructor()
+    {
+        var services = new ServiceCollection();
+        var baseUri = "https://www.github.com";
+        var goodsService = new GoodsService(services, baseUri);
+        Assert.AreEqual(baseUri, goodsService.BaseUri);
+    }
+
     #region private methods
 
     private static CustomServiceBase GetCustomService()
