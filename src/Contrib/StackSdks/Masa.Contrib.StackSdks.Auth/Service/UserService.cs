@@ -18,7 +18,7 @@ public class UserService : IUserService
 
     public async Task<UserModel> AddAsync(AddUserModel user)
     {
-        var requestUri = $"api/user/addExternal";
+        var requestUri = $"api/user/external";
         return await _caller.PostAsync<AddUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
@@ -78,26 +78,26 @@ public class UserService : IUserService
 
     public async Task<UserModel?> FindByAccountAsync(string account)
     {
-        var requestUri = $"api/user/findByAccount";
+        var requestUri = $"api/user/byAccount";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { account });
     }
 
     public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
     {
-        var requestUri = $"api/user/findByPhoneNumber";
+        var requestUri = $"api/user/byPhoneNumber";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { phoneNumber });
     }
 
     public async Task<UserModel?> FindByEmailAsync(string email)
     {
-        var requestUri = $"api/user/findByEmail";
+        var requestUri = $"api/user/byEmail";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { email });
     }
 
     public async Task<UserModel> GetCurrentUserAsync()
     {
         var id = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/user/findById";
+        var requestUri = $"api/user/byId/{id}";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { id }) ?? new();
     }
 
@@ -128,7 +128,7 @@ public class UserService : IUserService
         {
             user.Id = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/user/updatePassword";
+        var requestUri = $"api/user/password";
         await _caller.PutAsync(requestUri, user);
     }
 
@@ -138,7 +138,7 @@ public class UserService : IUserService
         {
             user.Id = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/user/updateAvatar";
+        var requestUri = $"api/user/avatar";
         await _caller.PutAsync(requestUri, user);
     }
 
@@ -158,7 +158,7 @@ public class UserService : IUserService
         {
             user.Id = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/user/updateBasicInfo";
+        var requestUri = $"api/user/basicInfo";
         await _caller.PutAsync(requestUri, user);
     }
 
@@ -181,7 +181,7 @@ public class UserService : IUserService
     public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/user/UserSystemData";
+        var requestUri = $"api/user/systemData";
         await _caller.PostAsync<object>(requestUri,
             new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(data) },
             true);
@@ -190,7 +190,7 @@ public class UserService : IUserService
     public async Task<T?> GetUserSystemDataAsync<T>(string systemId)
     {
         var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/user/GetUserSystemData";
+        var requestUri = $"api/user/systemData";
         var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
@@ -213,7 +213,7 @@ public class UserService : IUserService
         {
             user.Id = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/user/updatePhoneNumber";
+        var requestUri = $"api/user/phoneNumber";
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
@@ -249,7 +249,7 @@ public class UserService : IUserService
 
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)
     {
-        var requestUri = $"api/user/removeUserRoles";
+        var requestUri = $"api/user/userRoles";
         await _caller.DeleteAsync(requestUri, user);
     }
 
