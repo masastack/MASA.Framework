@@ -203,7 +203,7 @@ public class UserService : IUserService
 
     public async Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts)
     {
-        var requestUri = $"api/user/getListByAccount";
+        var requestUri = $"api/user/listByAccount";
         return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
     }
 
