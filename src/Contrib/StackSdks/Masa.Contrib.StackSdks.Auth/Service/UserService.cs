@@ -296,7 +296,13 @@ public class UserService : IUserService
         await _caller.PostAsync(requestUri, model);
     }
 
-    public async Task RegisterAsync(RegisterModel model)
+    public async Task RegisterByPhoneAsync(RegisterByPhoneModel model)
+    {
+        var requestUri = $"api/user/register";
+        await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task RegisterByEmailAsync(RegisterByEmailModel model)
     {
         var requestUri = $"api/user/register";
         await _caller.PostAsync(requestUri, model);

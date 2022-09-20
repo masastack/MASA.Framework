@@ -613,7 +613,7 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestRegisterAsync()
     {
-        var model = new RegisterModel();
+        var model = new RegisterByPhoneModel();
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();

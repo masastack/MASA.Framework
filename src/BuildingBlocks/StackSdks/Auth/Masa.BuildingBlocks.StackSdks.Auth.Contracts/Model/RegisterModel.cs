@@ -3,19 +3,11 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RegisterModel
+public abstract class RegisterModel
 {
-    public UserRegisterTypes UserRegisterType { get; set; }
-
-    public string Email { get; set; }
+    public string Account { get; set; }
 
     public string Password { get; set; }
-
-    public string PhoneNumber { get; set; }
-
-    public string Code { get; set; }
-
-    public string Account { get; set; }
 
     public string Avatar { get; set; }
 
