@@ -13,6 +13,16 @@ public abstract class CustomServiceBase : ServiceBase
     {
     }
 
+#pragma warning disable CS0618
+    public CustomServiceBase(IServiceCollection services, string baseUri) : base(services, baseUri)
+    {
+
+    }
+#pragma warning restore CS0618
+
     public string TestGetBaseUri(ServiceRouteOptions globalOptions) => base.GetBaseUri(globalOptions,
         PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
+
+    public string TestGetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
+        => base.GetMethodName(methodInfo, methodName, globalOptions);
 }

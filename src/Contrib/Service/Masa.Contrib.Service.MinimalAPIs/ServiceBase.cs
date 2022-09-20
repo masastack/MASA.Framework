@@ -127,7 +127,12 @@ public abstract class ServiceBase : IService
         if (!(RouteOptions.AutoAppendId ?? globalOptions.AutoAppendId ?? false))
             return ServiceBaseHelper.TrimEndMethodName(methodName);
 
-        var idParameter = methodInfo.GetParameters().FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase));
+        var idParameter = methodInfo.GetParameters().FirstOrDefault(p => p.Name!.Equals("id", StringComparison.OrdinalIgnoreCase) &&
+            p.GetCustomAttribute<FromBodyAttribute>() == null &&
+            p.GetCustomAttribute<FromFormAttribute>() == null &&
+            p.GetCustomAttribute<FromHeaderAttribute>() == null &&
+            p.GetCustomAttribute<FromQueryAttribute>() == null &&
+            p.GetCustomAttribute<FromServicesAttribute>() == null);
         if (idParameter != null)
         {
             var id = idParameter.ParameterType.IsNullableType() || idParameter.HasDefaultValue ? "{id?}" : "{id}";
@@ -167,7 +172,7 @@ public abstract class ServiceBase : IService
     }
 
     [Obsolete("service can be ignored")]
-    protected ServiceBase(IServiceCollection services, string baseUri) : this(services)
+    protected ServiceBase(IServiceCollection services, string baseUri) : this(baseUri)
     {
     }
 #pragma warning restore S4136
