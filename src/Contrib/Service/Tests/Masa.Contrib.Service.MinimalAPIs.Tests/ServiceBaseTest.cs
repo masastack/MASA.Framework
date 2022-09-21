@@ -18,6 +18,12 @@ public class ServiceBaseTest
 
         serviceBase = GetGoodsService();
         Assert.AreEqual("api/v2/Goods", serviceBase.TestGetBaseUri(serviceMapOptions));
+
+        serviceBase = GetCatalogService();
+        Assert.AreEqual("api/v1/catalog", serviceBase.TestGetBaseUri(serviceMapOptions));
+
+        var baseUri = "/api/catalog";
+        Assert.AreEqual(baseUri, new CatalogService(baseUri).TestGetBaseUri(serviceMapOptions));
     }
 
     [DataTestMethod]
@@ -120,6 +126,104 @@ public class ServiceBaseTest
         Assert.AreEqual(baseUri, goodsService.BaseUri);
     }
 
+    [DataTestMethod]
+    [DataRow("AddUser", false, false, "POST", "User")]
+    [DataRow("AddUser", false, true, "POST", "User")]
+    [DataRow("AddUser", false, null, "POST", "User")]
+    [DataRow("PostUser", false, false, "POST", "User")]
+    [DataRow("PostUser", false, true, "POST", "User")]
+    [DataRow("PostUser", false, null, "POST", "User")]
+    [DataRow("DeleteUser", false, false, "DELETE", "User")]
+    [DataRow("DeleteUser", false, true, "DELETE", "User")]
+    [DataRow("DeleteUser", false, null, "DELETE", "User")]
+    [DataRow("PutUser", false, false, "PUT", "User")]
+    [DataRow("PutUser", false, true, "PUT", "User")]
+    [DataRow("PutUser", false, null, "PUT", "User")]
+    [DataRow("GetUser", false, false, "GET", "User")]
+    [DataRow("GetUser", false, true, "GET", "User")]
+    [DataRow("GetUser", false, null, "GET", "User")]
+    [DataRow("AuditState", false, false, null, "AuditState")]
+    [DataRow("AuditState", false, true, null, "AuditState")]
+    [DataRow("AuditState", false, null, null, "AuditState")]
+    [DataRow("AddUser", null, false, "POST", "User")]
+    [DataRow("AddUser", null, true, "POST", "AddUser")]
+    [DataRow("AddUser", null, null, "POST", "User")]
+    [DataRow("PostUser", null, false, "POST", "User")]
+    [DataRow("PostUser", null, true, "POST", "PostUser")]
+    [DataRow("PostUser", null, null, "POST", "User")]
+    [DataRow("DeleteUser", null, false, "DELETE", "User")]
+    [DataRow("DeleteUser", null, true, "DELETE", "DeleteUser")]
+    [DataRow("DeleteUser", null, null, "DELETE", "User")]
+    [DataRow("PutUser", null, false, "PUT", "User")]
+    [DataRow("PutUser", null, true, "PUT", "PutUser")]
+    [DataRow("PutUser", null, null, "PUT", "User")]
+    [DataRow("GetUser", false, false, "GET", "User")]
+    [DataRow("GetUser", false, true, "GET", "User")]
+    [DataRow("GetUser", false, null, "GET", "User")]
+    [DataRow("AddUser", true, false, "POST", "AddUser")]
+    [DataRow("AddUser", true, true, "POST", "AddUser")]
+    [DataRow("AddUser", true, null, "POST", "AddUser")]
+    [DataRow("PostUser", true, false, "POST", "PostUser")]
+    [DataRow("PostUser", true, true, "POST", "PostUser")]
+    [DataRow("PostUser", true, null, "POST", "PostUser")]
+    [DataRow("DeleteUser", true, false, "DELETE", "DeleteUser")]
+    [DataRow("DeleteUser", true, true, "DELETE", "DeleteUser")]
+    [DataRow("DeleteUser", true, null, "DELETE", "DeleteUser")]
+    [DataRow("PutUser", true, false, "PUT", "PutUser")]
+    [DataRow("PutUser", true, true, "PUT", "PutUser")]
+    [DataRow("PutUser", true, null, "PUT", "PutUser")]
+    [DataRow("GetUser", true, false, "GET", "GetUser")]
+    [DataRow("GetUser", true, true, "GET", "GetUser")]
+    [DataRow("GetUser", true, null, "GET", "GetUser")]
+    [DataRow("AuditState", true, false, null, "AuditState")]
+    [DataRow("AuditState", true, true, null, "AuditState")]
+    [DataRow("AuditState", true, null, null, "AuditState")]
+    public void TestParseMethod(
+        string methodName,
+        bool? disableTrimStartMethodPrefix,
+        bool? globalDisableTrimStartMethodPrefix,
+        string? actualHttpMethod,
+        string actualMethodName)
+    {
+        var service = new UserService(disableTrimStartMethodPrefix);
+        var globalOptions = new ServiceGlobalRouteOptions()
+        {
+            DisableTrimMethodPrefix = globalDisableTrimStartMethodPrefix
+        };
+        var result = service.TestParseMethod(globalOptions, methodName);
+        Assert.AreEqual(actualHttpMethod, result.HttpMethod);
+        Assert.AreEqual(actualMethodName, result.MethodName);
+    }
+
+    [DataTestMethod]
+    [DataRow("", "", null)]
+    [DataRow("Post,Add", "", "Post,Add")]
+    [DataRow("Post,Insert", "Post,Add", "Post,Insert")]
+    [DataRow("", "Post,Add", "Post,Add")]
+    public void TestGetDefaultHttpMethods(string defaultHttpMethods, string globalDefaultHttpMethods, string? actualHttpMethods)
+    {
+        var globalOptions = new ServiceRouteOptions()
+        {
+            MapHttpMethodsForUnmatched = globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray()
+        };
+        var userService = new UserService(defaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray());
+
+        Assert.AreEqual(actualHttpMethods != null ?
+                actualHttpMethods.Split(',').Length : 0,
+            userService.TestGetDefaultHttpMethods(globalOptions).Length);
+    }
+
+    [DataTestMethod]
+    [DataRow(false, null)]
+    public void TestGetServiceName(bool enablePluralizeServiceName, string actualServiceName)
+    {
+        var service = GetCatalogService();
+        Assert.AreEqual("Catalog", service.TestGetServiceName(null));
+
+        var pluralizationService = PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en"));
+        Assert.AreEqual("Catalogs", service.TestGetServiceName(pluralizationService));
+    }
+
     #region private methods
 
     private static CustomServiceBase GetCustomService()
@@ -130,6 +234,9 @@ public class ServiceBaseTest
 
     private static CustomServiceBase GetGoodsService()
         => new GoodsService();
+
+    private static CustomServiceBase GetCatalogService()
+        => new CatalogService();
 
     #endregion
 

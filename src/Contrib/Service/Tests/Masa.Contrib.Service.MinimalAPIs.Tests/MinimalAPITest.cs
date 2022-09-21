@@ -27,8 +27,7 @@ public class MinimalAPITest
     public void AddService()
     {
         var app = _builder.AddServices();
-        Assert.IsTrue(_builder.Services.Any(service
-            => service.ServiceType == typeof(CustomService) && service.Lifetime == ServiceLifetime.Scoped));
+        Assert.IsTrue(_builder.Services.Any(service => service.ServiceType == typeof(CustomService) && service.Lifetime == ServiceLifetime.Scoped));
 
         var servicePrvider = _builder.Services.BuildServiceProvider();
         var customService = servicePrvider.GetService<CustomService>();

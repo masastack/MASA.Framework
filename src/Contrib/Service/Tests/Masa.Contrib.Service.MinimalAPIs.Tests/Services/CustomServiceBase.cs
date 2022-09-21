@@ -25,4 +25,13 @@ public abstract class CustomServiceBase : ServiceBase
 
     public string TestGetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
         => base.GetMethodName(methodInfo, methodName, globalOptions);
+
+    public (string? HttpMethod, string MethodName) TestParseMethod(ServiceRouteOptions globalOptions, string methodName)
+        => base.ParseMethod(globalOptions, methodName);
+
+    public string[] TestGetDefaultHttpMethods(ServiceRouteOptions globalOptions)
+        => base.GetDefaultHttpMethods(globalOptions);
+
+    public string TestGetServiceName(PluralizationService? pluralizationService)
+        => base.GetServiceName(pluralizationService);
 }

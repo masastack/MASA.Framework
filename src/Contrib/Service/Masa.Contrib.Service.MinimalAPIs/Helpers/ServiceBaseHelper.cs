@@ -18,7 +18,7 @@ public static class ServiceBaseHelper
     public static string TrimEndMethodName(string methodName)
         => methodName.TrimEnd("Async", StringComparison.OrdinalIgnoreCase);
 
-    public static string ParseMethodPrefix(string[] prefixes, string methodName)
+    public static string ParseMethodPrefix(IEnumerable<string> prefixes, string methodName)
     {
         var newMethodName = methodName;
         var prefix = prefixes.FirstOrDefault(prefix => newMethodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));

@@ -10,6 +10,16 @@ public class UserService : CustomServiceBase
 
     }
 
+    public UserService(bool? disableTrimStartMethodPrefix)
+    {
+        RouteOptions.DisableTrimMethodPrefix = disableTrimStartMethodPrefix;
+    }
+
+    public UserService(string[] defaultHttpMethods)
+    {
+        RouteOptions.MapHttpMethodsForUnmatched = defaultHttpMethods;
+    }
+
 #pragma warning disable CA1822
     public void Test(int id)
     {
