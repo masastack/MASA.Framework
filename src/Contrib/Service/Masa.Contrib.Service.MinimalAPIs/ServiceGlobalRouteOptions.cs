@@ -22,7 +22,7 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
         PostPrefixes = new List<string> { "Post", "Add", "Upsert", "Create", "Insert" };
         PutPrefixes = new List<string> { "Put", "Update", "Modify" };
         DeletePrefixes = new List<string> { "Delete", "Remove" };
-        DisableTrimStartMethodPrefix = false;
+        DisableTrimMethodPrefix = false;
         Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         Pluralization = PluralizationService.CreateService(CultureInfo.CreateSpecificCulture("en"));
     }

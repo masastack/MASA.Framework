@@ -119,11 +119,11 @@ public abstract class ServiceBase : IService
 
     protected virtual string[] GetDefaultHttpMethods(ServiceRouteOptions globalOptions)
     {
-        if (RouteOptions.DefaultHttpMethods.Length > 0)
-            return RouteOptions.DefaultHttpMethods;
+        if (RouteOptions.MapHttpMethodsForUnmatched.Length > 0)
+            return RouteOptions.MapHttpMethodsForUnmatched;
 
-        if (globalOptions.DefaultHttpMethods.Length > 0)
-            return globalOptions.DefaultHttpMethods;
+        if (globalOptions.MapHttpMethodsForUnmatched.Length > 0)
+            return globalOptions.MapHttpMethodsForUnmatched;
 
         return Array.Empty<string>();
     }
@@ -180,7 +180,7 @@ public abstract class ServiceBase : IService
 
         string ParseMethodName()
         {
-            if (RouteOptions.DisableTrimStartMethodPrefix ?? globalOptions.DisableTrimStartMethodPrefix ?? false)
+            if (RouteOptions.DisableTrimMethodPrefix ?? globalOptions.DisableTrimMethodPrefix ?? false)
                 return methodName;
 
             return methodName.Substring(prefix.Length);

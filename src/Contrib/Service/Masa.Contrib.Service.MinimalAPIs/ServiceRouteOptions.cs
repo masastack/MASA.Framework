@@ -34,10 +34,12 @@ public class ServiceRouteOptions
     /// <summary>
     /// Disable removing the request method prefix that matches the method name
     /// </summary>
-    public bool? DisableTrimStartMethodPrefix { get; set; }
+    public bool? DisableTrimMethodPrefix { get; set; }
 
     /// <summary>
-    /// The default request method, when it is an empty collection, will be mapped to Map
+    /// After matching request type by prefix fails
+    /// Use the request type when matching the request method based on the prefix fails
+    /// When the collection is empty, the default Post, Get, Put, Delete all support access
     /// </summary>
-    public string[] DefaultHttpMethods { get; set; } = Array.Empty<string>();
+    public string[] MapHttpMethodsForUnmatched { get; set; } = Array.Empty<string>();
 }

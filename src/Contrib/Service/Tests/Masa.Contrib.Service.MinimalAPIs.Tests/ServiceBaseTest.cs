@@ -188,7 +188,7 @@ public class ServiceBaseTest
         var service = new UserService(disableTrimStartMethodPrefix);
         var globalOptions = new ServiceGlobalRouteOptions()
         {
-            DisableTrimStartMethodPrefix = globalDisableTrimStartMethodPrefix
+            DisableTrimMethodPrefix = globalDisableTrimStartMethodPrefix
         };
         var result = service.TestParseMethod(globalOptions, methodName);
         Assert.AreEqual(actualHttpMethod, result.HttpMethod);
@@ -204,7 +204,7 @@ public class ServiceBaseTest
     {
         var globalOptions = new ServiceRouteOptions()
         {
-            DefaultHttpMethods = globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray()
+            MapHttpMethodsForUnmatched = globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray()
         };
         var userService = new UserService(defaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray());
 
