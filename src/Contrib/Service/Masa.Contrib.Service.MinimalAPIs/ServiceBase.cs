@@ -40,7 +40,8 @@ public abstract class ServiceBase : IService
 
 #pragma warning disable CA2208
     protected virtual IServiceProvider GetServiceProvider()
-        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new MasaException("Failed to get ServiceProvider of current request");
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ??
+            throw new MasaException("Failed to get ServiceProvider of current request");
 #pragma warning restore CA2208
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
@@ -110,21 +111,21 @@ public abstract class ServiceBase : IService
             return App.MapMethods(pattern, new[] { httpMethod }, handler);
 
         var httpMethods = GetDefaultHttpMethods(globalOptions);
-        if (httpMethods != null)
+        if (httpMethods.Length > 0)
             return App.MapMethods(pattern, httpMethods, handler);
 
         return App.Map(pattern, handler);
     }
 
-    protected virtual string[]? GetDefaultHttpMethods(ServiceRouteOptions globalOptions)
+    protected virtual string[] GetDefaultHttpMethods(ServiceRouteOptions globalOptions)
     {
-        if (RouteOptions.DefaultHttpMethods.Count > 0)
-            return RouteOptions.DefaultHttpMethods.ToArray();
+        if (RouteOptions.DefaultHttpMethods.Length > 0)
+            return RouteOptions.DefaultHttpMethods;
 
-        if (globalOptions.DefaultHttpMethods.Count > 0)
-            return globalOptions.DefaultHttpMethods.ToArray();
+        if (globalOptions.DefaultHttpMethods.Length > 0)
+            return globalOptions.DefaultHttpMethods;
 
-        return null;
+        return Array.Empty<string>();
     }
 
     protected virtual string GetServiceName(PluralizationService? pluralizationService)

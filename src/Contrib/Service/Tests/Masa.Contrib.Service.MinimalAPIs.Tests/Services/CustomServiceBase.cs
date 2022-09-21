@@ -29,7 +29,7 @@ public abstract class CustomServiceBase : ServiceBase
     public (string? HttpMethod, string MethodName) TestParseMethod(ServiceRouteOptions globalOptions, string methodName)
         => base.ParseMethod(globalOptions, methodName);
 
-    public string[]? TestGetDefaultHttpMethods(ServiceRouteOptions globalOptions)
+    public string[] TestGetDefaultHttpMethods(ServiceRouteOptions globalOptions)
         => base.GetDefaultHttpMethods(globalOptions);
 
     public string TestGetServiceName(PluralizationService? pluralizationService)

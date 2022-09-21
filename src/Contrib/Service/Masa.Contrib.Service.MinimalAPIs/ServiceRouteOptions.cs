@@ -39,5 +39,5 @@ public class ServiceRouteOptions
     /// <summary>
     /// The default request method, when it is an empty collection, will be mapped to Map
     /// </summary>
-    public List<string> DefaultHttpMethods { get; set; } = new();
+    public string[] DefaultHttpMethods { get; set; } = Array.Empty<string>();
 }

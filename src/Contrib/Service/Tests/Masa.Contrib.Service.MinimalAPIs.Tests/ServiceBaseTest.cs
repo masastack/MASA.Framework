@@ -204,14 +204,13 @@ public class ServiceBaseTest
     {
         var globalOptions = new ServiceRouteOptions()
         {
-            DefaultHttpMethods = globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToList()
+            DefaultHttpMethods = globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray()
         };
-        var userService = new UserService(defaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToList());
+        var userService = new UserService(defaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray());
 
-        if (actualHttpMethods != null)
-            Assert.AreEqual(actualHttpMethods.Split(',').Length, userService.TestGetDefaultHttpMethods(globalOptions)!.Length);
-        else
-            Assert.IsNull(userService.TestGetDefaultHttpMethods(globalOptions));
+        Assert.AreEqual(actualHttpMethods != null ?
+                actualHttpMethods.Split(',').Length : 0,
+            userService.TestGetDefaultHttpMethods(globalOptions).Length);
     }
 
     [DataTestMethod]

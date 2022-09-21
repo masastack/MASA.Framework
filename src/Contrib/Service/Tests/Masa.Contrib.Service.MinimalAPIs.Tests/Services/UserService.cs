@@ -15,7 +15,7 @@ public class UserService : CustomServiceBase
         RouteOptions.DisableTrimStartMethodPrefix = disableTrimStartMethodPrefix;
     }
 
-    public UserService(List<string> defaultHttpMethods)
+    public UserService(string[] defaultHttpMethods)
     {
         RouteOptions.DefaultHttpMethods = defaultHttpMethods;
     }
