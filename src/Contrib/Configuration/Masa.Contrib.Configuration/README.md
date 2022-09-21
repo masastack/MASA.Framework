@@ -59,7 +59,7 @@ public class RedisOptions : LocalMasaConfigurationOptions
 }
 
 //Use MasaConfiguration to take over Configuration, and mount the current Configuration to Local section by default
-builder.AddMasaConfiguration(configurationBuilder =>
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc(builder.Services);//Use Dcc to extend Configuration capabilities and support remote configuration
 });
@@ -70,7 +70,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 Or manually map node relationships：
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder =>
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc(builder.Services);//Use Dcc to extend Configuration capabilities and support remote configuration
 
@@ -115,7 +115,7 @@ app.Run();
 How to take over more local nodes？
 
 ```c#
-builder.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//In addition to the default ICongiguration, mount custom.json into the new Configuration
+builder.Services.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//In addition to the default ICongiguration, mount custom.json into the new Configuration
 ```
 
 Tip：

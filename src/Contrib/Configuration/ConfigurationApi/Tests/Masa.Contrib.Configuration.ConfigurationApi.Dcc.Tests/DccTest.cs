@@ -234,6 +234,7 @@ public class DccTest
         Assert.IsTrue(httpClient.BaseAddress!.ToString() == "http://localhost:6379/");
     }
 
+#pragma warning disable CS0618
     [TestMethod]
     public void TestMasaConfigurationByConfigurationAPIReturnKeyIsExist()
     {
@@ -290,6 +291,7 @@ public class DccTest
         var option = field!.GetValue(configurationApiClient);
         Assert.IsTrue(((DccSectionOptions)option!).Secret == "Secret");
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public void TestTypeConversionByDccOptions()
