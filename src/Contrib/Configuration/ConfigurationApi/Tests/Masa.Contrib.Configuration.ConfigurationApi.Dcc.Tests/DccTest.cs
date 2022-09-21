@@ -19,6 +19,7 @@ public class DccTest
     private const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.dcc:";
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
 
+#pragma warning disable CS0618
     [TestInitialize]
     public void Initialize()
     {
@@ -39,6 +40,7 @@ public class DccTest
             PropertyNameCaseInsensitive = true
         };
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public void TestTryAddConfigurationApiClient()
