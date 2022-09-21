@@ -23,11 +23,21 @@ public class ServiceRouteOptions
 
     public bool? PluralizeServiceName { get; set; }
 
-    public string[]? GetPrefixes { get; set; }
+    public List<string>? GetPrefixes { get; set; }
 
-    public string[]? PostPrefixes { get; set; }
+    public List<string>? PostPrefixes { get; set; }
 
-    public string[]? PutPrefixes { get; set; }
+    public List<string>? PutPrefixes { get; set; }
 
-    public string[]? DeletePrefixes { get; set; }
+    public List<string>? DeletePrefixes { get; set; }
+
+    /// <summary>
+    /// Disable removing the request method prefix that matches the method name
+    /// </summary>
+    public bool? DisableTrimStartMethodPrefix { get; set; }
+
+    /// <summary>
+    /// The default request method, when it is an empty collection, will be mapped to Map
+    /// </summary>
+    public List<string> DefaultHttpMethods { get; set; } = new();
 }

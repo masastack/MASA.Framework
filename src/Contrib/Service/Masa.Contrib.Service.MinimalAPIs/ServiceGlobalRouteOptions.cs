@@ -18,10 +18,11 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
         Version = "v1";
         AutoAppendId = true;
         PluralizeServiceName = true;
-        GetPrefixes = new[] { "Get", "Select" };
-        PostPrefixes = new[] { "Post", "Add", "Upsert", "Create" };
-        PutPrefixes = new[] { "Put", "Update", "Modify" };
-        DeletePrefixes = new[] { "Delete", "Remove" };
+        GetPrefixes = new List<string> { "Get", "Select", "Find" };
+        PostPrefixes = new List<string> { "Post", "Add", "Upsert", "Create", "Insert" };
+        PutPrefixes = new List<string> { "Put", "Update", "Modify" };
+        DeletePrefixes = new List<string> { "Delete", "Remove" };
+        DisableTrimStartMethodPrefix = false;
         Assemblies = AppDomain.CurrentDomain.GetAssemblies();
         Pluralization = PluralizationService.CreateService(CultureInfo.CreateSpecificCulture("en"));
     }
