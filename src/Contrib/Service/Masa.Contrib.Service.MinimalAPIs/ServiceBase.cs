@@ -40,7 +40,8 @@ public abstract class ServiceBase : IService
 
 #pragma warning disable CA2208
     protected virtual IServiceProvider GetServiceProvider()
-        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ?? throw new MasaException("Failed to get ServiceProvider of current request");
+        => MasaApp.GetService<IHttpContextAccessor>()?.HttpContext?.RequestServices ??
+            throw new MasaException("Failed to get ServiceProvider of current request");
 #pragma warning restore CA2208
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
@@ -82,17 +83,9 @@ public abstract class ServiceBase : IService
 
             pattern ??= ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
                 methodName ?? GetMethodName(method, newMethodName, globalOptions));
-            var routeHandlerBuilder = MapMethods(pattern, httpMethod, handler);
+            var routeHandlerBuilder = MapMethods(globalOptions, pattern, httpMethod, handler);
             (RouteHandlerBuilder ?? globalOptions.RouteHandlerBuilder)?.Invoke(routeHandlerBuilder);
         }
-    }
-
-    RouteHandlerBuilder MapMethods(string pattern, string? httpMethod, Delegate handler)
-    {
-        if (httpMethod != null)
-            return App.MapMethods(pattern, new[] { httpMethod }, handler);
-
-        return App.Map(pattern, handler);
     }
 
     protected virtual string GetBaseUri(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
@@ -112,7 +105,30 @@ public abstract class ServiceBase : IService
         return string.Join('/', list.Where(x => !string.IsNullOrWhiteSpace(x)).Select(u => u.Trim('/')));
     }
 
-    private string GetServiceName(PluralizationService? pluralizationService)
+    RouteHandlerBuilder MapMethods(ServiceRouteOptions globalOptions, string pattern, string? httpMethod, Delegate handler)
+    {
+        if (httpMethod != null)
+            return App.MapMethods(pattern, new[] { httpMethod }, handler);
+
+        var httpMethods = GetDefaultHttpMethods(globalOptions);
+        if (httpMethods.Length > 0)
+            return App.MapMethods(pattern, httpMethods, handler);
+
+        return App.Map(pattern, handler);
+    }
+
+    protected virtual string[] GetDefaultHttpMethods(ServiceRouteOptions globalOptions)
+    {
+        if (RouteOptions.MapHttpMethodsForUnmatched.Length > 0)
+            return RouteOptions.MapHttpMethodsForUnmatched;
+
+        if (globalOptions.MapHttpMethodsForUnmatched.Length > 0)
+            return globalOptions.MapHttpMethodsForUnmatched;
+
+        return Array.Empty<string>();
+    }
+
+    protected virtual string GetServiceName(PluralizationService? pluralizationService)
     {
         var serviceName = GetType().Name.TrimEnd("Service", StringComparison.OrdinalIgnoreCase);
         if (pluralizationService == null)
@@ -146,21 +162,29 @@ public abstract class ServiceBase : IService
     {
         var prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.GetPrefixes ?? globalOptions.GetPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("GET", methodName.Substring(prefix.Length));
+            return ("GET", ParseMethodName());
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PostPrefixes ?? globalOptions.PostPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("POST", methodName.Substring(prefix.Length));
+            return ("POST", ParseMethodName());
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PutPrefixes ?? globalOptions.PutPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("PUT", methodName.Substring(prefix.Length));
+            return ("PUT", ParseMethodName());
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.DeletePrefixes ?? globalOptions.DeletePrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("DELETE", methodName.Substring(prefix.Length));
+            return ("DELETE", ParseMethodName());
 
-        return (null, string.Empty);
+        return (null, methodName);
+
+        string ParseMethodName()
+        {
+            if (RouteOptions.DisableTrimMethodPrefix ?? globalOptions.DisableTrimMethodPrefix ?? false)
+                return methodName;
+
+            return methodName.Substring(prefix.Length);
+        }
     }
 
     #region Obsolete

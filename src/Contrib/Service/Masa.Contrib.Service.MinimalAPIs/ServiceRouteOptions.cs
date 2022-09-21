@@ -23,11 +23,23 @@ public class ServiceRouteOptions
 
     public bool? PluralizeServiceName { get; set; }
 
-    public string[]? GetPrefixes { get; set; }
+    public List<string>? GetPrefixes { get; set; }
 
-    public string[]? PostPrefixes { get; set; }
+    public List<string>? PostPrefixes { get; set; }
 
-    public string[]? PutPrefixes { get; set; }
+    public List<string>? PutPrefixes { get; set; }
 
-    public string[]? DeletePrefixes { get; set; }
+    public List<string>? DeletePrefixes { get; set; }
+
+    /// <summary>
+    /// Disable removing the request method prefix that matches the method name
+    /// </summary>
+    public bool? DisableTrimMethodPrefix { get; set; }
+
+    /// <summary>
+    /// After matching request type by prefix fails
+    /// Use the request type when matching the request method based on the prefix fails
+    /// When the collection is empty, the default Post, Get, Put, Delete all support access
+    /// </summary>
+    public string[] MapHttpMethodsForUnmatched { get; set; } = Array.Empty<string>();
 }
