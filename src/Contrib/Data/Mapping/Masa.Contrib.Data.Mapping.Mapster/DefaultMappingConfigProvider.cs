@@ -27,7 +27,11 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
     {
         TypeAdapterConfig adapterConfig = GetDefaultConfig(options);
 
-        var mapTypes = GetMapAndSelectorTypes(adapterConfig, sourceType, destinationType, options);
+        var mapTypes = GetMapAndSelectorTypes(adapterConfig,
+            sourceType,
+            destinationType,
+            options,
+            new List<(Type SourceType, Type DestinationType)>());
 
         foreach (var item in mapTypes)
         {
@@ -43,10 +47,13 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
         TypeAdapterConfig adapterConfig,
         Type sourceType,
         Type destinationType,
-        MapOptions? options)
+        MapOptions? options,
+        List<(Type SourceType, Type DestinationType)> mapList)
     {
-        if (!NeedAutomaticMap(sourceType, destinationType))
+        if (!NeedAutomaticMap(sourceType, destinationType) || mapList.Contains(new(sourceType, destinationType)))
             return new List<MapTypeOptions>();
+
+        mapList.Add(new(sourceType, destinationType));
 
         List<MapTypeOptions> mapTypes = new();
         var sourceProperties = sourceType.GetProperties().ToList();
@@ -82,8 +89,11 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
                 => p.Name.Equals(sourceProperty.Name, StringComparison.OrdinalIgnoreCase));
             if (destinationProperty != default)
             {
-                var subMapTypes = GetMapAndSelectorTypes(adapterConfig, sourceProperty.PropertyType,
-                    destinationProperty.DdestinationPropertyType, options);
+                var subMapTypes = GetMapAndSelectorTypes(adapterConfig,
+                    sourceProperty.PropertyType,
+                    destinationProperty.DdestinationPropertyType,
+                    options,
+                    mapList);
 
                 if (!subMapTypes.Any() || mapTypes.Any(option => subMapTypes.Any(subOption
                         => subOption.SourceType == option.SourceType && subOption.DestinationType == option.DestinationType)))
@@ -96,9 +106,15 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
         return mapTypes;
     }
 
-    private List<MapTypeOptions> GetMapAndSelectorTypes(TypeAdapterConfig adapterConfig, Type sourceType, Type destinationType,
-        MapOptions? options)
+    private List<MapTypeOptions> GetMapAndSelectorTypes(TypeAdapterConfig adapterConfig,
+        Type sourceType,
+        Type destinationType,
+        MapOptions? options,
+        List<(Type SourceType, Type DestinationType)> mapList)
     {
+        if (RuleMapIsExist(adapterConfig, sourceType, destinationType))
+            return new List<MapTypeOptions>();
+
         bool sourcePropertyIsEnumerable = IsCollection(sourceType);
         bool destinationPropertyIsEnumerable = IsCollection(destinationType);
         if (!sourcePropertyIsEnumerable && !destinationPropertyIsEnumerable)
@@ -107,7 +123,8 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
                 adapterConfig,
                 sourceType,
                 destinationType,
-                options);
+                options,
+                mapList);
             if (subMapTypes.Any()) return subMapTypes;
         }
         else if (sourcePropertyIsEnumerable && destinationPropertyIsEnumerable)
@@ -115,7 +132,8 @@ public class DefaultMappingConfigProvider : IMappingConfigProvider
             var subMapTypes = GetMapTypes(adapterConfig,
                 sourceType.GetGenericArguments()[0],
                 destinationType.GetGenericArguments()[0],
-                options);
+                options,
+                mapList);
 
             if (subMapTypes.Any()) return subMapTypes;
         }

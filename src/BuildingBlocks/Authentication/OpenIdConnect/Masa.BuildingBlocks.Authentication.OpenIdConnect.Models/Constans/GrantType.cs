@@ -16,4 +16,6 @@ public static class GrantType
     public const string RESOURCE_OWNER_PASSWORD = "password";
 
     public const string DEVICE_FLOW = "urn:ietf:params:oauth:grant-type:device_code";
+
+    public const string PHONE_CODE = "phone_code";
 }

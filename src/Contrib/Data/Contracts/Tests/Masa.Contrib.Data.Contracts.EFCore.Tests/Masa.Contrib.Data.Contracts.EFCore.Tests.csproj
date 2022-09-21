@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Data.Contracts.EFCore\Masa.Contrib.Data.Contracts.EFCore.csproj" />
   </ItemGroup>
 

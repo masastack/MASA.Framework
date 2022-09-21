@@ -12,7 +12,7 @@ public class GrantTypes
         new[] { GrantType.IMPLICIT, GrantType.CLIENT_CREDENTIALS };
 
     public static ICollection<string> Code =>
-        new[] { GrantType.AUTHORIZATION_CODE };
+        new[] { GrantType.AUTHORIZATION_CODE, GrantType.PHONE_CODE };
 
     public static ICollection<string> CodeAndClientCredentials =>
         new[] { GrantType.AUTHORIZATION_CODE, GrantType.CLIENT_CREDENTIALS };

@@ -67,10 +67,18 @@ public interface IUserService
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
 
-    Task<bool> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
+    Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
+
+    Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login);
 
     Task RemoveUserRolesAsync(RemoveUserRolesModel user);
 
     Task SetCurrentTeamAsync(Guid teamId);
+
+    Task SendEmailAsync(SendEmailModel model);
+
+    Task RegisterByPhoneAsync(RegisterByPhoneModel model);
+
+    Task RegisterByEmailAsync(RegisterByEmailModel model);
 }
 

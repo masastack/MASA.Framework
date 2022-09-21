@@ -5,6 +5,6 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 
 public enum StaffTypes
 {
-    InternalStaff = 1,
-    ExternalStaff
+    Internal = 1,
+    External
 }

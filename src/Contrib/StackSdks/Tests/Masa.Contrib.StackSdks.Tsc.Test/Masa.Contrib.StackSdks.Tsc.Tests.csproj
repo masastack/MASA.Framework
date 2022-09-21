@@ -10,7 +10,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
     <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />    
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

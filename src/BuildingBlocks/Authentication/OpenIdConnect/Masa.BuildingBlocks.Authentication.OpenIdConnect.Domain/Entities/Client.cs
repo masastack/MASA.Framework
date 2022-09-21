@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Constans;
+
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class Client : FullAggregateRoot<int, Guid>
@@ -126,16 +128,16 @@ public class Client : FullAggregateRoot<int, Guid>
             case ClientTypes.Web:
             case ClientTypes.Spa:
             case ClientTypes.Native:
-                AllowedGrantTypes = GrantTypeConsts.Code.Select(x => new ClientGrantType(x)).ToList();
+                AllowedGrantTypes = GrantTypes.Code.Select(x => new ClientGrantType(x)).ToList();
                 RequirePkce = true;
                 RequireClientSecret = false;
                 break;
             case ClientTypes.Machine:
-                AllowedGrantTypes = GrantTypeConsts.ClientCredentials.Select(x => new ClientGrantType(x)).ToList();
+                AllowedGrantTypes = GrantTypes.ClientCredentials.Select(x => new ClientGrantType(x)).ToList();
                 RequireClientSecret = true;
                 break;
             case ClientTypes.Device:
-                AllowedGrantTypes = GrantTypeConsts.DeviceFlow.Select(x => new ClientGrantType(x)).ToList();
+                AllowedGrantTypes = GrantTypes.DeviceFlow.Select(x => new ClientGrantType(x)).ToList();
                 RequireClientSecret = false;
                 break;
             default:

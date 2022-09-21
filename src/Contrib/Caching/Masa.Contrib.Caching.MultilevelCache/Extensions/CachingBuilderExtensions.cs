@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -41,6 +41,13 @@ public static class ServiceCollectionExtensions
         });
 
         return cachingBuilder;
+    }
+
+    public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, Action<MultilevelCacheOptions> action)
+    {
+        var multilevelCacheOptions = new MultilevelCacheOptions();
+        action.Invoke(multilevelCacheOptions);
+        return cachingBuilder.AddMultilevelCache(multilevelCacheOptions);
     }
 
     public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, MultilevelCacheOptions multilevelCacheOptions)

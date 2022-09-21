@@ -14,5 +14,9 @@ public interface IAuthClient
     IPermissionService PermissionService { get; }
 
     IProjectService ProjectService { get; }
+
+    ICustomLoginService CustomLoginService { get; }
+
+    IThirdPartyIdpService ThirdPartyIdpService { get; }
 }
 

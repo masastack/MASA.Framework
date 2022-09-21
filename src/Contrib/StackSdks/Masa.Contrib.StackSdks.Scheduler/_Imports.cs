@@ -18,4 +18,5 @@ global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
+global using System.Reflection;
 global using static Masa.Contrib.StackSdks.Scheduler.Constants;

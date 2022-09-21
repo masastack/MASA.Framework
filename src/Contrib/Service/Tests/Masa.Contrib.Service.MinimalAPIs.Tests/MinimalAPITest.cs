@@ -27,7 +27,8 @@ public class MinimalAPITest
     public void AddService()
     {
         var app = _builder.AddServices();
-        Assert.IsTrue(_builder.Services.Any(service => service.ServiceType == typeof(CustomService) && service.Lifetime == ServiceLifetime.Scoped));
+        Assert.IsTrue(_builder.Services.Any(service
+            => service.ServiceType == typeof(CustomService) && service.Lifetime == ServiceLifetime.Scoped));
 
         var servicePrvider = _builder.Services.BuildServiceProvider();
         var customService = servicePrvider.GetService<CustomService>();
@@ -37,15 +38,13 @@ public class MinimalAPITest
 
         Assert.ReferenceEquals(customService.Services, _builder.Services);
 
-        Assert.IsNotNull(customService.GetRequiredService<IServiceProvider>());
-        Assert.IsNotNull(customService.GetService<IServiceProvider>());
+        Assert.ThrowsException<MasaException>(() => customService.GetRequiredService<IServiceProvider>());
 
-        Assert.IsTrue(customService.Test() == 1);
+        Assert.IsTrue(customService.GetTest2() == 1);
 
         var newCustomService = servicePrvider.CreateScope().ServiceProvider.GetService<CustomService>();
         Assert.IsNotNull(newCustomService);
 
-        Assert.IsTrue(newCustomService.Test() == 1);
-
+        Assert.IsTrue(newCustomService.GetTest2() == 1);
     }
 }

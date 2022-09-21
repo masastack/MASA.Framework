@@ -11,7 +11,7 @@ public class UserServiceTest
     {
         var addUser = new AddUserModel();
         var user = new UserModel();
-        var requestUri = $"api/user/addExternal";
+        var requestUri = $"api/user/external";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<AddUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -185,7 +185,7 @@ public class UserServiceTest
     public async Task TestFindByAccountAsync(string account)
     {
         var data = new UserModel();
-        var requestUri = $"api/user/findByAccount";
+        var requestUri = $"api/user/byAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -203,7 +203,7 @@ public class UserServiceTest
         {
             PhoneNumber = phoneNumber
         };
-        var requestUri = $"api/user/findByPhoneNumber";
+        var requestUri = $"api/user/byPhoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -218,7 +218,7 @@ public class UserServiceTest
     public async Task TestFindByEmailAsync(string email)
     {
         var data = new UserModel();
-        var requestUri = $"api/user/findByEmail";
+        var requestUri = $"api/user/byEmail";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -233,7 +233,7 @@ public class UserServiceTest
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = new UserModel();
-        var requestUri = $"api/user/findById";
+        var requestUri = $"api/user/byId/{userId}";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -306,7 +306,7 @@ public class UserServiceTest
             NewPassword = "masa123",
             OldPassword = "masa123"
         };
-        var requestUri = $"api/user/updatePassword";
+        var requestUri = $"api/user/password";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -319,7 +319,7 @@ public class UserServiceTest
     public async Task TestUpdateUserAvatarAsync()
     {
         var user = new UpdateUserAvatarModel(default, "");
-        var requestUri = $"api/user/updateAvatar";
+        var requestUri = $"api/user/avatar";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -345,7 +345,7 @@ public class UserServiceTest
     public async Task SendMsgCodeAsync()
     {
         var code = new SendMsgCodeModel();
-        var requestUri = $"api/user/sendMsgCode";
+        var requestUri = $"api/universal/send_sms";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -371,7 +371,7 @@ public class UserServiceTest
     public async Task TestUpdateUserPhoneNumberAsync()
     {
         var user = new UpdateUserPhoneNumberModel(Guid.NewGuid(), "15168440403", "123453");
-        var requestUri = $"api/user/updatePhoneNumber";
+        var requestUri = $"api/user/phoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -384,20 +384,21 @@ public class UserServiceTest
     public async Task TestLoginByPhoneNumberAsync()
     {
         var login = new LoginByPhoneNumberModel();
+        var user = new UserModel();
         var requestUri = $"api/user/loginByPhoneNumber";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<bool>(requestUri, login, default)).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, login, default)).ReturnsAsync(user).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
         await userService.LoginByPhoneNumberAsync(login);
-        caller.Verify(provider => provider.PostAsync<bool>(requestUri, login, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UserModel>(requestUri, login, default), Times.Once);
     }
 
     [TestMethod]
     public async Task TestRemoveUserRolesAsync()
     {
         var user = new RemoveUserRolesModel();
-        var requestUri = $"api/user/removeUserRoles";
+        var requestUri = $"api/user/userRoles";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.DeleteAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -429,7 +430,7 @@ public class UserServiceTest
             DisplayName = "test",
             Gender = GenderTypes.Male,
         };
-        var requestUri = $"api/user/updateBasicInfo";
+        var requestUri = $"api/user/basicInfo";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -488,7 +489,7 @@ public class UserServiceTest
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var data = 1;
-        var requestUri = $"api/user/GetUserSystemData";
+        var requestUri = $"api/user/systemData";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
             .ReturnsAsync(data.ToString()).Verifiable();
@@ -509,7 +510,7 @@ public class UserServiceTest
             Name = "name",
             Value = "value"
         };
-        var requestUri = $"api/user/GetUserSystemData";
+        var requestUri = $"api/user/systemData";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, string>(requestUri, It.IsAny<object>(), default))
             .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
@@ -525,7 +526,7 @@ public class UserServiceTest
     public async Task TestIntSaveUserSystemDataAsync(string systemId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var requestUri = $"api/user/UserSystemData";
+        var requestUri = $"api/user/systemData";
         var value = 1;
         var data = new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(value) };
         var caller = new Mock<ICaller>();
@@ -542,7 +543,7 @@ public class UserServiceTest
     public async Task TestObjectSaveUserSystemDataAsync(string systemId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var requestUri = $"api/user/UserSystemData";
+        var requestUri = $"api/user/systemData";
         var value = new SystemData
         {
             Name = "name",
@@ -566,7 +567,7 @@ public class UserServiceTest
             new UserSimpleModel(Guid.NewGuid(), "account", "displayName")
         };
         var accounts = new List<string> { "account" };
-        var requestUri = $"api/user/getListByAccount";
+        var requestUri = $"api/user/listByAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -596,6 +597,44 @@ public class UserServiceTest
         caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
 
+    [TestMethod]
+    public async Task TestSendEmailAsync()
+    {
+        var model = new SendEmailModel();
+        var requestUri = $"api/universal/send_email";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.SendEmailAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRegisterByEmailAsyncegisterAsync()
+    {
+        var model = new RegisterByEmailModel();
+        var requestUri = $"api/user/register";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RegisterByEmailAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRegisterByPhoneAsync()
+    {
+        var model = new RegisterByPhoneModel();
+        var requestUri = $"api/user/register";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        await userService.RegisterByPhoneAsync(model);
+        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+    }
 }
 
 class SystemData

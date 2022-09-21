@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="IdentityModel" Version="6.1.0-preview.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
@@ -15,6 +16,8 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Auth\Masa.BuildingBlocks.StackSdks.Auth\Masa.BuildingBlocks.StackSdks.Auth.csproj" />
     <ProjectReference Include="..\..\..\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\..\Caching\Masa.Contrib.Caching.MultilevelCache\Masa.Contrib.Caching.MultilevelCache.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>

@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            callerOptions.DisableAutoRegistration = true;
         });
     }
 

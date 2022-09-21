@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
-        services.AddAutomaticCaller(callerOption);
+        if (!callerOption.DisableAutoRegistration) services.AddAutomaticCaller(callerOption);
         TryOrUpdate(services, callerOption);
         return services;
     }

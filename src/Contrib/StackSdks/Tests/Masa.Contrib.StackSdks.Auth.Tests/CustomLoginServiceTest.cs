@@ -11,7 +11,7 @@ public class CustomLoginServiceTest
     {
         var data = new CustomLoginModel();
         string clientId = Guid.NewGuid().ToString();
-        var requestUri = $"api/sso/customLogin/getCustomLoginByClientId";
+        var requestUri = $"api/sso/customLogin/getByClientId";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, CustomLoginModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var customLoginService = new CustomLoginService(caller.Object);

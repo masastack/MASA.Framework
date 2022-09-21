@@ -24,4 +24,7 @@ public static class TypeExtensions
 
     public static string GetGenericTypeName(this object @object)
         => @object.GetType().GetGenericTypeName();
+
+    public static bool IsNullableType(this Type type)
+        => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 }

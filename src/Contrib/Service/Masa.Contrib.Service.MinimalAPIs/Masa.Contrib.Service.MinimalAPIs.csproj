@@ -13,6 +13,8 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Service\Masa.BuildingBlocks.Service.MinimalAPIs\Masa.BuildingBlocks.Service.MinimalAPIs.csproj" />
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
+    <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,5 +8,5 @@ public enum ThirdPartyIdpTypes
     Customize = 1,
     WeChat = 2,
     GitHub = 3,
-    Ldap = 4, 
+    Ldap = 4,
 }
