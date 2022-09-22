@@ -2,13 +2,17 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.MySql
 
+Distributed lock based on `Masa.Contrib.Data.DistributedLock.Medallion` and `MySql`
+
 Example:
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.MySql
 ```
 
-1. Modify `Program`
+### Get Started
+
+1. Register lock, modify class `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,7 +21,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. Use distributed locks
+2. Use locks
 
 ``` C#
 IDistributedLock distributedLock;//Get `IDistributedLock` from DI

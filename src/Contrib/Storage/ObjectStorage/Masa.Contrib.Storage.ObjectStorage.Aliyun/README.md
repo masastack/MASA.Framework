@@ -15,7 +15,7 @@ support:
 * ObjectExistsAsync: Determine whether the object exists
 * DeleteObjectAsync: Delete object
 
-### Usage 1:
+### Usage 1
 
 1. Configure appsettings.json
 ``` C#
@@ -56,7 +56,7 @@ builder.Services.AddAliyunStorage();
      await serviceProvider.GetService<IClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
      ```
 
-### Usage 2:
+### Usage 2
 
 1. Add Aliyun Storage Service
 

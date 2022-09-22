@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion
 
-Masa.Contrib.Data.DistributedLock.Medallion是基于[DistributedLock](https://github.com/madelson/DistributedLock)的一个分布式锁
+Masa.Contrib.Data.DistributedLock.Medallion是基于[DistributedLock](https://github.com/madelson/DistributedLock)的一个分布式锁，它提供了以下实现，根据需要选择一种实现使用即可
 
 ## 实现
 
@@ -16,14 +16,16 @@ Masa.Contrib.Data.DistributedLock.Medallion是基于[DistributedLock](https://gi
 - [WaitHandles](../Masa.Contrib.Data.DistributedLock.Medallion.FileSystem/README.zh-CN.md)
 - [ZooKeeper](../Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper/README.zh-CN.md)
 
-## 用例:
+用例:
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion
-Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Redis//以Redis举例
+Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Redis //以Redis举例
 ```
 
-1. 修改类`Program`
+### 入门
+
+1. 注册锁，修改类`Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -32,7 +34,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. 使用分布式锁
+2. 使用锁
 
 ``` C#
 IDistributedLock distributedLock;//从DI获取`IDistributedLock`

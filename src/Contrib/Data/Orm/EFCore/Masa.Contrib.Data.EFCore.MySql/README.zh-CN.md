@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Data.EFCore.MySql
 Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```
 
-### 用法1:
+### 用法1
 
 1. 配置appsettings.json
 
@@ -31,7 +31,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 });
 ```
 
-### 用法2:
+### 用法2
 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>

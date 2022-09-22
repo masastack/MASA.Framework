@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 * ObjectExistsAsync: 判断对象是否存在
 * DeleteObjectAsync: 删除对象
 
-### 用法1:
+### 用法1
 
 1. 配置appsettings.json
 
@@ -78,7 +78,7 @@ builder.Services.AddAliyunStorage(aliyunStorageOptions);
 
 2. 从DI获取`IClient`，并使用相应的方法
 
-### 用法3:
+### 用法3
 
 1. 添加阿里云存储服务
 

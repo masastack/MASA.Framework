@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Data.EFCore.Sqlite
 Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol
 ```
 
-### Usage 1:
+### Usage 1
 
 1. Configure appsettings.json
 

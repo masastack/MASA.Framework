@@ -2,13 +2,15 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.WaitHandles
 
+Distributed lock based on `Masa.Contrib.Data.DistributedLock.Medallion` and `WaitHandles`（Because they are based on [`global WaitHandles in Windows`](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-createeventa?redirectedfrom=MSDN) distributed locks. This library is only for Windows）
+
 Example:
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.WaitHandles
 ```
 
-1. Modify `Program`
+1. Register lock, modify class `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,7 +19,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. Use distributed locks
+2. Use locks
 
 ``` C#
 IDistributedLock distributedLock;//Get `IDistributedLock` from DI
