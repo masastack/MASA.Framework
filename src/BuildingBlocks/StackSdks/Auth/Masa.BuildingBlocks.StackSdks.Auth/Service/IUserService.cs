@@ -74,5 +74,11 @@ public interface IUserService
     Task RemoveUserRolesAsync(RemoveUserRolesModel user);
 
     Task SetCurrentTeamAsync(Guid teamId);
+
+    Task SendEmailAsync(SendEmailModel model);
+
+    Task RegisterByPhoneAsync(RegisterByPhoneModel model);
+
+    Task RegisterByEmailAsync(RegisterByEmailModel model);
 }
 

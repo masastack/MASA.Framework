@@ -3,11 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RoleModel
+public abstract class RegisterModel
 {
-    public Guid Id { get; set; }
+    public string Account { get; set; }
 
-    public string Code { get; set; }
+    public string Password { get; set; }
 
-    public string Name { get; set; }
+    public string Avatar { get; set; }
+
+    public string DisplayName { get; set; }
 }

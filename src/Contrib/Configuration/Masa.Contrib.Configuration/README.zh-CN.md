@@ -65,7 +65,7 @@ public class RedisOptions : LocalMasaConfigurationOptions
 }
 
 //使用MasaConfiguration接管Configuration，默认会将当前的Configuration挂载到Local节点下
-builder.AddMasaConfiguration(configurationBuilder =>
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc();//使用Dcc 扩展Configuration能力，支持远程配置
 });
@@ -76,7 +76,7 @@ builder.AddMasaConfiguration(configurationBuilder =>
 或手动添加映射节点关系：
 
 ```C#
-builder.AddMasaConfiguration(configurationBuilder =>
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     //configurationBuilder.UseDcc();//使用Dcc 扩展Configuration能力，支持远程配置
 
@@ -120,7 +120,7 @@ app.Run();
 如何接管更多的本地节点？
 
 ```c#
-builder.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//除了默认的ICongiguration，还将custom.json挂载到新的Configuration中
+builder.Services.AddMasaConfiguration(builder => builder.AddJsonFile("custom.json", true, true));//除了默认的ICongiguration，还将custom.json挂载到新的Configuration中
 ```
 
 提示：

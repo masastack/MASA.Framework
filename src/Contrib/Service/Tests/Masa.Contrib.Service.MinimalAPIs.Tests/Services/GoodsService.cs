@@ -10,4 +10,8 @@ public class GoodsService : CustomServiceBase
         RouteOptions.Prefix = "api";
         RouteOptions.Version = "v2";
     }
+
+    public GoodsService(IServiceCollection services, string baseUri) : base(services, baseUri)
+    {
+    }
 }
