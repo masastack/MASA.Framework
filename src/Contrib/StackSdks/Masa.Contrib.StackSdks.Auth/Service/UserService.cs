@@ -276,7 +276,7 @@ public class UserService : IUserService
         {
             model.UserId = _userContext.GetUserId<Guid>();
         }
-        var requestUri = $"api/universal/send_sms";
+        var requestUri = $"api/message/sms";
         await _caller.PostAsync(requestUri, model);
     }
 
@@ -292,7 +292,7 @@ public class UserService : IUserService
 
     public async Task SendEmailAsync(SendEmailModel model)
     {
-        var requestUri = $"api/universal/send_email";
+        var requestUri = $"api/message/email";
         await _caller.PostAsync(requestUri, model);
     }
 
