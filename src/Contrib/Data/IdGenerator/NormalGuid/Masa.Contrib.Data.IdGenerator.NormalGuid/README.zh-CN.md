@@ -6,9 +6,11 @@ Masa.Contrib.Data.IdGenerator.NormalGuid是一个无序的Guid构造器，提供
 
 用例:
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Data.IdGenerator.NormalGuid
 ```
+
+### 入门
 
 1. 注册Guid构造器，修改`Program.cs`
 
@@ -19,8 +21,8 @@ builder.Services.AddSimpleGuidGenerator();
 2. 获取Id
 
 ```
-IGuidGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.GuidGenerator获取
+IGuidGenerator generator;// 通过DI获取
 generator.NewId();//创建唯一id
 ```
 
-> 通过
+> 或通过`MasaApp.GetRequiredService<IGuidGenerator>().NewId()`获取

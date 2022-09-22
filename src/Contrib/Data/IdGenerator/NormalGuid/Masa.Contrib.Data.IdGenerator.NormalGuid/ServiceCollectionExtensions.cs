@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
                 Func = serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>()
             });
         });
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

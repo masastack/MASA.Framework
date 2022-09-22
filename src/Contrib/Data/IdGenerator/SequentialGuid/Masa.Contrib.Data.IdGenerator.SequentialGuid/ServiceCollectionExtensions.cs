@@ -35,7 +35,7 @@ public static class ServiceCollectionExtensions
                 Func = serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>()
             });
         });
-
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

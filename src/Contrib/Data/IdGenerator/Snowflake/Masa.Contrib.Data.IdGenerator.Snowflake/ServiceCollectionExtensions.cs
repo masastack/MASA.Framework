@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
                     serviceProvider.GetService<ILogger<WorkerIdBackgroundServices>>()
                 )));
         }
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 
