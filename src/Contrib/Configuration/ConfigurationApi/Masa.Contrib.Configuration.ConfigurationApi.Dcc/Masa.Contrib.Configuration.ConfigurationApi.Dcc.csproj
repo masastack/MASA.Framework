@@ -19,7 +19,6 @@
     <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.DistributedMemory\Masa.Utils.Caching.DistributedMemory.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
     <ProjectReference Include="..\..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
-    <ProjectReference Include="..\..\..\Service\Caller\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>
 
 </Project>
