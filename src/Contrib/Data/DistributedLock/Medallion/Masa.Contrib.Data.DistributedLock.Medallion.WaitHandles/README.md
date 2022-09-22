@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.WaitHandles
 
-### Example:
+Example:
 
 ```c#
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.WaitHandles

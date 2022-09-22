@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.SqlServer
 
-## 用例:
+用例:
 
 ```c#
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.SqlServer

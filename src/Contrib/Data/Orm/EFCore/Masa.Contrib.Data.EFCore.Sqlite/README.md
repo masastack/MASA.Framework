@@ -2,9 +2,9 @@
 
 ## Masa.Contrib.Data.EFCore.Sqlite
 
-## Example:
+Example:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite
 Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```

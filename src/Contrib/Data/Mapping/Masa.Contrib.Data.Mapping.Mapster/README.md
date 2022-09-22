@@ -16,19 +16,19 @@ Masa.Contrib.Data.Mapping.Mapster is an object-to-object mapper based on [Mapste
 
 1. Install `Masa.Contrib.Data.Mapping.Mapster`
 
-    ````c#
+    ``` C#
     Install-Package Masa.Contrib.Data.Mapping.Mapster
-    ````
+    ```
 
 2. Using `Mapping`
 
-    ```` C#
+    ``` C#
     builder.Services.AddMapster();
-    ````
+    ```
 
 3. Mapping objects
 
-    ````
+    ``` C#
     IMapper mapper;// Get through DI
 
     var request = new
@@ -37,11 +37,11 @@ Masa.Contrib.Data.Mapping.Mapster is an object-to-object mapper based on [Mapste
         OrderItem = new OrderItem("Teach you to learn Dapr hand by hand", 49.9m)
     };
     var order = mapper.Map<Order>(request);// Map the request to a new object, Parameters with the same attribute name and type of the source object and the target object will be automatically mapped, or the constructor parameter name (case-insensitive) and type of the target object are the same as those of the source object, and they will be mapped through the constructor
-    ````
+    ```
 
     Mapping class `Order`:
 
-    ```` Order.cs
+    ``` Order.cs
     public class Order
     {
         public string Name { get; set; }
@@ -82,4 +82,4 @@ Masa.Contrib.Data.Mapping.Mapster is an object-to-object mapper based on [Mapste
             Number = number;
         }
     }
-    ````
+    ```

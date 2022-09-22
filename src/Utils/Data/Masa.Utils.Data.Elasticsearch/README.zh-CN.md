@@ -2,7 +2,7 @@
 
 ## Masa.Utils.Data.Elasticsearch
 
-## 用例:
+用例:
 
 ```c#
 Install-Package Masa.Utils.Data.Elasticsearch

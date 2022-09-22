@@ -2,9 +2,9 @@
 
 ## Masa.Contrib.Data.EFCore
 
-## Example:
+Example:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.SqlServer // SqlServer is used as an example here, you can also choose other implementations by yourself
 Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```
@@ -19,7 +19,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
     "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"
   }
 }
-````
+```
 
 2. Register `MasaDbContext`
 
@@ -44,7 +44,7 @@ Recommended usage:
 
 ### Data filter
 
-```` C#
+``` C#
 public async Task<string> GetAllAsync([FromServices] IRepository<Users> repository, [FromServices] IDataFilter dataFilter)
 {
     // Temporarily disable soft delete filtering
@@ -54,4 +54,4 @@ public async Task<string> GetAllAsync([FromServices] IRepository<Users> reposito
         return System.Text.Json.JsonSerializer.Serialize(list);
     }
 }
-````
+```

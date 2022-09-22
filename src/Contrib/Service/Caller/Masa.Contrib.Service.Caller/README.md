@@ -21,16 +21,16 @@ Masa.Contrib.Service.Caller is the basic class library of Caller, which provides
 >
 > A: Rewrite IRequestMessage and add the custom RequestMessage to the IServiceCollection before calling AddCaller
 
-  ```` C#
+  ``` C#
   services.AddSingleton<IRequestMessage, XmlRequestMessage>();
   services.AddCaller();
-  ````
+  ```
 
 > Q: If you want to handle custom StatusCode and throw exception information
 >
 > A: Rewrite IResponseMessage, add custom ResponseMessage to IServiceCollection before calling AddCaller
 
-  ```` C#
+  ``` C#
   services.AddSingleton<IResponseMessage, CustomResponseMessage>();
   services.AddCaller();
-  ````
+  ```

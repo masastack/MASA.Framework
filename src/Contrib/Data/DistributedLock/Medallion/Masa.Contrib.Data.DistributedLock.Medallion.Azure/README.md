@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.Azure
 
-### Example:
+Example:
 
 ```c#
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Azure

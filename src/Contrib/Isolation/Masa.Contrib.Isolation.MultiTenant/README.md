@@ -34,25 +34,25 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 * 1.3 Other tenants or hosts: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. Using Isolation.UoW.EF
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiTenant(),// Use tenant isolation
         dbOptions => dbOptions.UseSqlServer());
 });
-````
+```
 
 3. DbContext needs to inherit IsolationDbContext
 
-```` C#
+``` C#
 public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 }
-````
+```
 
 4. The class corresponding to the isolated table needs to implement IMultiTenant
 
@@ -76,14 +76,14 @@ You can also choose not to implement IMultiTenant when using physical isolation
   * If the resolution of the tenant fails, return the DefaultConnection directly
 * How to change the default tenant parameter name
 
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiTenant("tenant"),
         dbOptions => dbOptions.UseSqlServer());// Use tenant isolation
 });
-````
+```
 * The default parser is not easy to use, want to change the default parser?
 
 ```` C#

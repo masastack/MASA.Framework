@@ -2,9 +2,9 @@
 
 ## Masa.Contrib.Data.EFCore.Sqlite
 
-## 用例:
+用例:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite
 Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```

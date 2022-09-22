@@ -33,25 +33,25 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 * 1.3 When the current environment is another environment: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. Using Isolation.UoW.EF
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment(),
         dbOptions => dbOptions.UseSqlServer());
 });
-````
+```
 
 3. DbContext needs to inherit IsolationDbContext
 
-```` C#
+``` C#
 public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 }
-````
+```
 
 4. The class corresponding to the isolated table needs to implement IMultiEnvironment
 
@@ -73,17 +73,17 @@ You can also choose not to implement IMultiEnvironment when using physical isola
     * If the parsing environment fails, return DefaultConnection directly
 * How to change the default environment parameter name
 
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),// Use environment isolation
         dbOptions => dbOptions.UseSqlServer());
 });
-````
+```
 * How to change the parser
 
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
@@ -93,4 +93,4 @@ builder.Services.AddEventBus(eventBusBuilder =>
         }),
         dbOptions => dbOptions.UseSqlServer());// Use environment isolation
 });
-````
+```

@@ -2,18 +2,18 @@
 
 ## Masa.Contrib.Service.Caller.HttpClient
 
-## Example:
+Example:
 
-````c#
+``` C#
 Install-Package Masa.Contrib.Service.Caller
 Install-Package Masa.Contrib.Service.Caller.HttpClient
-````
+```
 
 ### Basic usage:
 
 1. Modify `Program.cs`
 
-    ```` C#
+    ``` C#
     builder.Services.AddCaller(options =>
     {
         options.UseHttpClient("UserCaller", clientBuilder =>
@@ -21,20 +21,20 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
             clientBuilder.BaseAddress = "http://localhost:5000" ;
         });
     });
-    ````
+    ```
 
 2. How to use:
 
-    ```` C#
+    ``` C#
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
         => caller.GetAsync<string>($"/Hello", new { Name = name }));
-    ````
+    ```
 
     > The interface address of the complete request is: http://localhost:5000/Hello?Name={name}
 
 3. When there are multiple HttpClients, modify `Program.cs`
 
-    ```` C#
+    ``` C#
     builder.Services.AddCaller(options =>
     {
         options.UseHttpClient("UserCaller", clientBuilder =>
@@ -46,11 +46,11 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
             clientBuilder.BaseAddress = "http://localhost:6000" ;
         });
     });
-    ````
+    ```
 
 4. How to use UserCaller or OrderCaller
 
-    ```` C#
+    ``` C#
     app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
         => caller.GetAsync<string>($"/Hello", new { Name = name }));// Get UserCaller
 
@@ -59,7 +59,7 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
         var caller = callerFactory.Create("OrderCaller");
         return caller.GetAsync<string>($"/Hello", new { Name = name });
     });
-    ````
+    ```
 
 > When multiple Callers are added, how to get the specified Caller?
 >> Get the Caller of the specified alias through the `Create` method of `CallerFactory`
@@ -71,13 +71,13 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 
 1. Modify `Program.cs`
 
-    ```` C#
+    ``` C#
     builder.Services.AddCaller();
-    ````
+    ```
 
 2. Add a new class `UserCaller`
 
-    ```` C#
+    ``` C#
     public class UserCaller: HttpClientCallerBase
     {
         protected override string BaseAddress { get; set; } = "http://localhost:5000";
@@ -93,11 +93,11 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
             httpClient.Timeout = TimeSpan.FromSeconds(5);
         }
     }
-    ````
+    ```
 
 3. How to use UserCaller
 
-    ```` C#
+    ``` C#
     app.MapGet("/Test/User/Hello", ([FromServices] UserCaller caller, string name)
         => caller.HelloAsync(name));
-    ````
+    ```

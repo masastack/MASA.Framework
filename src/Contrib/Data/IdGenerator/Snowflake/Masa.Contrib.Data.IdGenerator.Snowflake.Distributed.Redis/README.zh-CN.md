@@ -4,7 +4,7 @@
 
 Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis是基于`Masa.Contrib.Data.IdGenerator.Snowflake`的升级版，支持分布式部署，依赖于Redis提供WorkerId，支持在K8s下部署
 
-## 用例:
+用例:
 
 1. 安装`Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`、
 

@@ -8,7 +8,7 @@
 * 接管`UserFriendlyException`异常，并响应状态码为299，返回友好的错误信息
 * 默认处理所有异常，并对外输出`An error occur in masa framework`
 
-## 用例:
+用例:
 
 ``` C#
 Install-Package Masa.Utils.Exceptions

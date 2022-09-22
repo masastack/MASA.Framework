@@ -4,23 +4,23 @@
 
 Masa.Contrib.Data.IdGenerator.SimpleGuid is a simple guid constructor that provides a unique identifier of type Guid
 
-## Example:
+Example:
 
 1. Install `Masa.Contrib.Data.IdGenerator.SimpleGuid`
 
-     ````c#
+     ``` c#
      Install-Package Masa.Contrib.Data.IdGenerator.SimpleGuid
-     ````
+     ```
 
 2. Use `Masa.Contrib.Data.IdGenerator.SimpleGuid`
 
-     ```` C#
+     ``` C#
      builder.Services.AddSimpleGuidGenerator();
-     ````
+     ```
 
 3. Get Id
 
-     ````
+     ``` C#
      IGuidGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.GuidGenerator
      generator.NewId();//Create a unique id
-     ````
+     ```

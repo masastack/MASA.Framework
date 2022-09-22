@@ -2,12 +2,12 @@
 
 ## Masa.Contrib.Data.EFCore.Cosmos
 
-## Example:
+Example:
 
-````c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Cosmos
 Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
-````
+```
 
 ### Usage 1:
 
@@ -19,7 +19,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
     "DefaultConnection": "AccountKey=AccountKey;AccountEndpoint=AccountEndpoint;Database=Database" //or "ConnectionString=ConnectionString;Database=Database"
   }
 }
-````
+```
 
 2. Using MasaDbContext
 

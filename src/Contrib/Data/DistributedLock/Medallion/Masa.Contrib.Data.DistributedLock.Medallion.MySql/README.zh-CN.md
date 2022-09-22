@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLocking.Medallion.MySql
 
-## 用例:
+用例:
 
 ```c#
 Install-Package Masa.Contrib.Data.DistributedLocking.Medallion.MySql

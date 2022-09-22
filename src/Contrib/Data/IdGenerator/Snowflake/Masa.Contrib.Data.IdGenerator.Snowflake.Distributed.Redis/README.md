@@ -5,28 +5,28 @@
 Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis is based on `Masa.Contrib.Data.IdGenerator.Snowflake`
 The upgraded version supports distributed deployment, relies on Redis to provide WorkerId, and supports deployment under K8s
 
-## Example:
+Example:
 
 1. Install `Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`,
 
-    ````c#
+    ``` c#
     Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
-    ````
+    ```
 
 2. Use `Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`
 
-    ```` C#
+    ``` C#
     builder.Services.AddSnowflake(option => option.UseRedis());
-    ````
+    ```
 
     > Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
 
 3. Get id
 
-    ````
+    ``` C#
     ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
     generator.NewId();//Create a unique id
-    ````
+    ```
 
 ### Parameters:
 

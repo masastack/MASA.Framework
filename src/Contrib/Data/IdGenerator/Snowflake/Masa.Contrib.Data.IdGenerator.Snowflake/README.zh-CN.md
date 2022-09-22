@@ -4,7 +4,7 @@
 
 Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，提供long类型的唯一标识
 
-## 用例:
+用例:
 
 1. 安装`Masa.Contrib.Data.IdGenerator.Snowflake`
 

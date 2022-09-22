@@ -145,23 +145,23 @@ public class User : AutoCompleteDocument
 
 1. To delete a single document:
 
-   ```` C#
+   ``` C#
    public async Task<string> DeleteAsync([FromServices] IAutoCompleteClient client)
    {
        var response = await client.DeleteAsync(1);
        return System.Text.Json.JsonSerializer.Serialize(response);
    }
-   ````
+   ```
 
 2. To delete multiple documents:
 
-   ```` C#
+   ``` C#
    public async Task<string> DeleteAsync([FromServices] IAutoCompleteClient client)
    {
        var response = await client.DeleteAsync(new long[] { 1, 2 });
        return System.Text.Json.JsonSerializer.Serialize(response);
    }
-   ````
+   ```
 
 Plugins that need to be added by default:
 
@@ -175,12 +175,12 @@ Plugins that need to be added by default:
 
    We enable the compatibility mode by default, namely `EnableApiVersioningHeader(true)`, which supports the 8.* version very well, but will cause errors in some 7.*, in this case, you need to manually turn off the compatibility mode, that is, `EnableApiVersioningHeader(false)`.
 
-     ```` C#
+     ``` C#
      service.AddElasticsearchClient("es", option =>
      {
          option.UseNodes("http://localhost:9200")
              .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
      });
-     ````
+     ```
 
 [Why turn on compatibility mode? ](https://github.com/elastic/elasticsearch-net/issues/6154)

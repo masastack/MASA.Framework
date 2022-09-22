@@ -16,7 +16,7 @@ Masa.Contrib.Data.DistributedLock.Medallion is a distributed lock based on [Dist
 - [WaitHandles](../Masa.Contrib.Data.DistributedLock.Medallion.FileSystem/README.md)
 - [ZooKeeper](../Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper/README.md)
 
-### Example:
+Example:
 
 ```c#
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion

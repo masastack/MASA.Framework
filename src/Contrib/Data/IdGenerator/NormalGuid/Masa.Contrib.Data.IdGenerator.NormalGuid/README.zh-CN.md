@@ -4,7 +4,7 @@
 
 Masa.Contrib.Data.IdGenerator.NormalGuid是一个简单的Guid构造器，提供Guid类型的唯一标识
 
-## 用例:
+用例:
 
 1. 安装`Masa.Contrib.Data.IdGenerator.NormalGuid`
 
