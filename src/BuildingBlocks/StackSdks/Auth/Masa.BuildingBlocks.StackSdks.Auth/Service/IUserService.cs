@@ -79,6 +79,8 @@ public interface IUserService
 
     Task SendEmailAsync(SendEmailModel model);
 
-    Task RegisterAsync(RegisterModel model);
+    Task RegisterByPhoneAsync(RegisterByPhoneModel model);
+
+    Task RegisterByEmailAsync(RegisterByEmailModel model);
 }
 

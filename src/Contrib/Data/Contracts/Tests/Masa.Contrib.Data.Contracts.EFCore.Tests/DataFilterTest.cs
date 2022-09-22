@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Data.Contracts.EFCore.Tests;
@@ -43,5 +43,58 @@ public class DataFilterTest
         }
 
         Assert.IsFalse(_dataFilter.IsEnabled<ISoftDelete>());
+    }
+
+    [TestMethod]
+    public void TestSoftDelete()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(options =>
+        {
+            options.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        dbContext.Database.EnsureCreated();
+
+        DateTime createTime = DateTime.Now;
+        var student = new Student()
+        {
+            Id = 1,
+            Name = "Name",
+            Age = 18,
+            Address = new Address()
+            {
+                City = "city",
+                Street = "street",
+                LastLog = new LogItem()
+                {
+                    Level = (int)LogLevel.Information,
+                    Message = "Add Student",
+                    CreateTime = createTime
+                }
+            },
+            Hobbies = new List<Hobby>()
+            {
+                new()
+                {
+                    Name = "Hobby.Name",
+                    Description = "Hobby.Description"
+                }
+            }
+        };
+        dbContext.Set<Student>().Add(student);
+        dbContext.SaveChanges();
+
+        student = dbContext.Set<Student>().Include(s => s.Address).FirstOrDefault(s => s.Id == 1);
+        Assert.IsNotNull(student);
+        dbContext.Set<Student>().Remove(student);
+        var row = dbContext.SaveChanges();
+        Assert.IsTrue(row > 0);
+
+        var newStudent = dbContext.Set<Student>().IgnoreQueryFilters().FirstOrDefault(s => s.Id == student.Id);
+        Assert.IsNotNull(newStudent);
+
+        Assert.AreEqual(createTime, newStudent.Address.LastLog.CreateTime);
     }
 }

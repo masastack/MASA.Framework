@@ -32,7 +32,11 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
         var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete);
         foreach (var entity in entries)
         {
-            HandleNavigationEntry(entity.Navigations.Where(n => (n.Metadata is not ISkipNavigation) && !((IReadOnlyNavigation)n.Metadata).IsOnDependent));
+            var navigationEntries = entity.Navigations
+                .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
+                    !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null &&
+                    entries.All(e => e.Entity != navigationEntry.CurrentValue));
+            HandleNavigationEntry(navigationEntries);
 
             entity.State = EntityState.Modified;
             entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;

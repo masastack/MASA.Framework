@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
 public class RegisterFieldModel
 {
-    public RegisterFieldTypes RegisterFieldType { get; private set; }
+    public RegisterFieldTypes RegisterFieldType { get; set; }
 
-    public int Sort { get; private set; }
+    public int Sort { get; set; }
 
-    public bool Required { get; private set; }
+    public bool Required { get; set; }
 }

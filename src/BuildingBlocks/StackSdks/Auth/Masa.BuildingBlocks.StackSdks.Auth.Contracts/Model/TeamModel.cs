@@ -13,7 +13,7 @@ public class TeamModel
 
     public string Description { get; set; } = "";
 
-    public RoleModel Role { get; set; } = new();
+    public string Role { get; set; } = "";
 
     public int MemberCount { get; set; }
 }
