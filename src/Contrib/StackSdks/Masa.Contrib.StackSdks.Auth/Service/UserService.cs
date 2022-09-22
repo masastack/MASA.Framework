@@ -259,6 +259,12 @@ public class UserService : IUserService
         return await _caller.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, user) ?? throw new UserFriendlyException("operation failed");
     }
 
+    public async Task<UserModel?> GetThirdPartyUserAsync(GetThirdPartyUserModel model)
+    {
+        var requestUri = $"api/thirdPartyUser";
+        return await _caller.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model);
+    }
+
     public async Task SetCurrentTeamAsync(Guid teamId)
     {
         var userId = _userContext.GetUserId<Guid>();
