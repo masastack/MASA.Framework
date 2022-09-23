@@ -37,8 +37,8 @@ public class IntegrationEventLogEntityTypeConfiguration: IEntityTypeConfiguratio
         builder.Property(e => e.EventTypeName)
             .IsRequired();
 
-        builder.HasIndex(e => new { e.State, e.ModificationTime }, "index_state_modificationtime");
-        builder.HasIndex(e => new { e.State, e.TimesSent, e.ModificationTime }, "index_state_timessent_modificationtime");
-        builder.HasIndex(e => new { e.EventId, e.RowVersion }, "index_eventid_version");
+        builder.HasIndex(e => new { e.State, e.ModificationTime }, "IX_State_MTime");
+        builder.HasIndex(e => new { e.State, e.TimesSent, e.ModificationTime }, "IX_State_TimesSent_MTime");
+        builder.HasIndex(e => new { e.EventId, e.RowVersion }, "IX_EventId_Version");
     }
 }
