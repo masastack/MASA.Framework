@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"); //使用PostgreSQL数据库
 });
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/postgresql

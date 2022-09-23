@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseMySql("Server=localhost;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;", new MySqlServerVersion("5.7.26")); //Use MySql database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/mysql

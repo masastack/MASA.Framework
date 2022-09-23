@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"); //Use SqlServer database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/sql-server

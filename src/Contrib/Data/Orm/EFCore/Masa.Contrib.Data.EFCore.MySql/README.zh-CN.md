@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseMySQL("Server=localhost;port=3306;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;"); //使用MySQL数据库
 });
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/mysql

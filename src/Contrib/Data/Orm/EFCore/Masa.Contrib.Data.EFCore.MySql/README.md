@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseMySQL("Server=localhost;port=3306;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;"); //Use MySQL database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/mysql

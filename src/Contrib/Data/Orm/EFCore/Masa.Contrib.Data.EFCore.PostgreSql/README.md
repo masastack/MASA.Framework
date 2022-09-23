@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"); //Use PostgreSQL database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/postgresql

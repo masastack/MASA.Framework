@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"); //使用Oracle数据库
 });
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/oracle

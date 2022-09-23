@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"); //Use Oracle database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/oracle

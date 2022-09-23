@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlite("Data Source=test.db;"); //Using Sqlite database
 });
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/sqlite

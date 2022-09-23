@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity"); //使用SqlServer数据库
 });
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/sql-server

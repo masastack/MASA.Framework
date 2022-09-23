@@ -40,3 +40,5 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlite("Data Source=test.db;");//使用Sqlite数据库
 });
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/sqlite
