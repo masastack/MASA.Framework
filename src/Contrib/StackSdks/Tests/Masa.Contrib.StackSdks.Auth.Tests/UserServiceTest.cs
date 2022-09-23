@@ -345,7 +345,7 @@ public class UserServiceTest
     public async Task SendMsgCodeAsync()
     {
         var code = new SendMsgCodeModel();
-        var requestUri = $"api/universal/send_sms";
+        var requestUri = $"api/message/sms";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -601,7 +601,7 @@ public class UserServiceTest
     public async Task TestSendEmailAsync()
     {
         var model = new SendEmailModel();
-        var requestUri = $"api/universal/send_email";
+        var requestUri = $"api/message/email";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
