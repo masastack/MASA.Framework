@@ -23,6 +23,8 @@ public interface IUserService
 
     Task<UserModel> AddThirdPartyUserAsync(AddThirdPartyUserModel user, bool whenExistReturn = true);
 
+    Task<UserModel?> GetThirdPartyUserAsync(GetThirdPartyUserModel model);
+
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
     Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
