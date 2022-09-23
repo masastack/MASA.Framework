@@ -72,17 +72,17 @@ public abstract class ServiceBase : IService
                     pattern = attribute.Pattern;
             }
 
-            string newMethodName = method.Name;
+            string prefix = string.Empty;
 
-            if (httpMethod == null || pattern == null)
+            if (string.IsNullOrWhiteSpace(httpMethod) || string.IsNullOrWhiteSpace(pattern))
             {
-                var result = ParseMethod(globalOptions, newMethodName);
+                var result = ParseMethod(globalOptions, method.Name);
                 httpMethod ??= result.HttpMethod;
-                newMethodName = result.MethodName;
+                prefix = result.Prefix;
             }
 
             pattern ??= ServiceBaseHelper.CombineUris(GetBaseUri(globalOptions, pluralizationService),
-                methodName ?? GetMethodName(method, newMethodName, globalOptions));
+                methodName ?? GetMethodName(method, prefix, globalOptions));
             var routeHandlerBuilder = MapMethods(globalOptions, pattern, httpMethod, handler);
             (RouteHandlerBuilder ?? globalOptions.RouteHandlerBuilder)?.Invoke(routeHandlerBuilder);
         }
@@ -107,7 +107,7 @@ public abstract class ServiceBase : IService
 
     RouteHandlerBuilder MapMethods(ServiceRouteOptions globalOptions, string pattern, string? httpMethod, Delegate handler)
     {
-        if (httpMethod != null)
+        if (!string.IsNullOrWhiteSpace(httpMethod))
             return App.MapMethods(pattern, new[] { httpMethod }, handler);
 
         var httpMethods = GetDefaultHttpMethods(globalOptions);
@@ -138,8 +138,9 @@ public abstract class ServiceBase : IService
     }
 
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    protected virtual string GetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
+    protected virtual string GetMethodName(MethodInfo methodInfo, string prefix, ServiceRouteOptions globalOptions)
     {
+        var methodName = TrimMethodPrefix(methodInfo.Name);
         if (!(RouteOptions.AutoAppendId ?? globalOptions.AutoAppendId ?? false))
             return ServiceBaseHelper.TrimEndMethodName(methodName);
 
@@ -156,35 +157,35 @@ public abstract class ServiceBase : IService
         }
 
         return ServiceBaseHelper.TrimEndMethodName(methodName);
+
+        string TrimMethodPrefix(string name)
+        {
+            if (RouteOptions.DisableTrimMethodPrefix ?? globalOptions.DisableTrimMethodPrefix ?? false)
+                return name;
+
+            return name.Substring(prefix.Length);
+        }
     }
 
-    protected virtual (string? HttpMethod, string MethodName) ParseMethod(ServiceRouteOptions globalOptions, string methodName)
+    protected virtual (string? HttpMethod, string Prefix) ParseMethod(ServiceRouteOptions globalOptions, string methodName)
     {
         var prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.GetPrefixes ?? globalOptions.GetPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("GET", ParseMethodName());
+            return ("GET", prefix);
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PostPrefixes ?? globalOptions.PostPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("POST", ParseMethodName());
+            return ("POST", prefix);
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.PutPrefixes ?? globalOptions.PutPrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("PUT", ParseMethodName());
+            return ("PUT", prefix);
 
         prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.DeletePrefixes ?? globalOptions.DeletePrefixes!, methodName);
         if (!string.IsNullOrEmpty(prefix))
-            return ("DELETE", ParseMethodName());
+            return ("DELETE", prefix);
 
-        return (null, methodName);
-
-        string ParseMethodName()
-        {
-            if (RouteOptions.DisableTrimMethodPrefix ?? globalOptions.DisableTrimMethodPrefix ?? false)
-                return methodName;
-
-            return methodName.Substring(prefix.Length);
-        }
+        return (null, string.Empty);
     }
 
     #region Obsolete
