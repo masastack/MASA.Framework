@@ -6,10 +6,10 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 public enum RegisterFieldTypes
 {
     Account = 1,
-    Password,
-    Name,
-    DisplayName,
-    IdCard,
-    PhoneNumber,
-    Email
+    Password = 2,
+    Name = 3,
+    DisplayName = 4,
+    IdCard = 5,
+    PhoneNumber = 6,
+    Email = 7
 }
