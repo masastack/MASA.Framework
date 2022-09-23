@@ -3,11 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RegisterFieldModel
+public class GetThirdPartyUserModel
 {
-    public RegisterFieldTypes RegisterFieldType { get; set; }
+    public string ThridPartyIdentity { get; set; }
 
-    public int Sort { get; set; }
-
-    public bool Required { get; set; }
+    public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
 }

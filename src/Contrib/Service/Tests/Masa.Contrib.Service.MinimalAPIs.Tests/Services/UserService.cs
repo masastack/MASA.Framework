@@ -48,6 +48,11 @@ public class UserService : CustomServiceBase
     public void Test7([FromRoute] int? id)
     {
     }
+
+    public Task AddAsync()
+    {
+        return Task.CompletedTask;
+    }
 #pragma warning restore CA1822
 }
 

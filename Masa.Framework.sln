@@ -553,6 +553,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.DotNe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests", "src\Contrib\Data\IdGenerator\Snowflake\Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.csproj", "{DA451E5D-19A2-4658-9DF4-CAF8F7903488}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap.csproj", "{A6486486-382C-41B8-951B-BDA55AE0174B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1977,6 +1979,14 @@ Global
 		{DA451E5D-19A2-4658-9DF4-CAF8F7903488}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DA451E5D-19A2-4658-9DF4-CAF8F7903488}.Release|x64.ActiveCfg = Release|Any CPU
 		{DA451E5D-19A2-4658-9DF4-CAF8F7903488}.Release|x64.Build.0 = Release|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|x64.Build.0 = Debug|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.ActiveCfg = Release|Any CPU
+		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2249,6 +2259,7 @@ Global
 		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A} = {C2FAC276-9D6E-498A-BBA2-F3F14ADF4D0D}
 		{DA451E5D-19A2-4658-9DF4-CAF8F7903488} = {17B751BF-DB79-46B0-A61E-BB8A52919AC9}
+		{A6486486-382C-41B8-951B-BDA55AE0174B} = {258E4702-B414-4629-BD37-CAEE20BE052B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

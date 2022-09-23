@@ -31,7 +31,7 @@ Install-Package Masa.Contrib.Configuration.ConfigurationApi.Dcc // The ability o
 
 ``` json
 {
-  //custom configuration
+  //Custom configuration
   "Redis": {
     "Host": "localhost"
   },
@@ -123,7 +123,7 @@ IMasaConfiguration masaConfiguration;//Get IMasaConfiguration from DI
 masaConfiguration.Local["Redis:Host"];
 ```
 
-### hint
+### Tip
 
 Configuration automatically obtains classes that inherit LocalMasaConfigurationOptions by default, and maps node relationships to facilitate obtaining configuration information through IOptions, IOptionsSnapshot, and IOptionsMonitor
 

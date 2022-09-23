@@ -24,7 +24,6 @@ public static class ServiceCollectionExtensions
         IConfiguration? migrateConfiguration = null;
         bool initialized = false;
 
-        var sourceConfiguration = services.BuildServiceProvider().GetService<IConfiguration>();
         services.Configure<MasaAppConfigureOptions>(options =>
         {
             if (!initialized)
@@ -33,6 +32,7 @@ public static class ServiceCollectionExtensions
                 if (masaConfiguration != null) migrateConfiguration = masaConfiguration.Local;
                 initialized = true;
             }
+            var sourceConfiguration = services.BuildServiceProvider().GetService<IConfiguration>();
 
             if (string.IsNullOrWhiteSpace(options.AppId))
                 options.AppId = GetConfigurationValue(
@@ -84,11 +84,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
-        Action<IMasaConfigurationBuilder>? configureDelegate = null,
-        IConfigurationBuilder? configurationBuilder = null)
+        Action<IMasaConfigurationBuilder>? configureDelegate = null)
     {
         Action<ConfigurationOptions>? action = null;
-        return services.AddMasaConfiguration(configureDelegate, action, configurationBuilder);
+        return services.AddMasaConfiguration(configureDelegate, action);
     }
 
     public static IServiceCollection AddMasaConfiguration(
@@ -96,21 +95,12 @@ public static class ServiceCollectionExtensions
         params Assembly[] assemblies)
         => services.AddMasaConfiguration(
             null,
-            options => options.Assemblies = assemblies, null);
+            options => options.Assemblies = assemblies);
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
-        IConfigurationBuilder? configurationBuilder,
-        params Assembly[] assemblies)
-        => services.AddMasaConfiguration(
-            null,
-            options => options.Assemblies = assemblies, configurationBuilder);
-
-    public static IServiceCollection AddMasaConfiguration(
-        this IServiceCollection services,
-        Action<ConfigurationOptions>? action,
-        IConfigurationBuilder? configurationBuilder = null)
-        => services.AddMasaConfiguration(null, action, configurationBuilder);
+        Action<ConfigurationOptions>? action)
+        => services.AddMasaConfiguration(null, action);
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
@@ -118,28 +108,18 @@ public static class ServiceCollectionExtensions
         params Assembly[] assemblies)
         => services.AddMasaConfiguration(
             configureDelegate,
-            options => options.Assemblies = assemblies, null);
+            options => options.Assemblies = assemblies);
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        IConfigurationBuilder? configurationBuilder,
-        params Assembly[] assemblies)
-        => services.AddMasaConfiguration(
-            configureDelegate,
-            options => options.Assemblies = assemblies, configurationBuilder);
-
-    public static IServiceCollection AddMasaConfiguration(
-        this IServiceCollection services,
-        Action<IMasaConfigurationBuilder>? configureDelegate,
-        Action<ConfigurationOptions>? action,
-        IConfigurationBuilder? configurationBuilder = null)
+        Action<ConfigurationOptions>? action)
     {
         services.InitializeAppConfiguration();
 
         var sourceConfiguration = services.BuildServiceProvider().GetService<IConfiguration>();
 
-        configurationBuilder ??= sourceConfiguration as IConfigurationBuilder ??
+        var configurationBuilder = sourceConfiguration as IConfigurationBuilder ??
             (sourceConfiguration == null ? new ConfigurationBuilder() : new ConfigurationBuilder().AddConfiguration(sourceConfiguration));
 
         IConfigurationRoot masaConfiguration =
