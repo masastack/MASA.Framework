@@ -25,4 +25,11 @@ ISequentialGuidGenerator generator;// Get through DI
 generator.NewId();//Create a unique id
 ```
 
-> or Use `MasaApp.GetRequiredService<ISequentialGuidGenerator>().NewId()`
+> Or Use `MasaApp.GetRequiredService<ISequentialGuidGenerator>().NewId()`
+
+### Configure
+
+* SequentialGuidType: enumeration
+    * SequentialAsString: MySql, PostgreSql
+    * SequentialAsBinary: Oracle
+    * SequentialAtEnd: SqlServer (default)

@@ -37,6 +37,10 @@ public static class MasaApp
 
     public static void TrySetServiceCollection(IServiceCollection services)
     {
-        if (Services.Count == 0) Services = services;
+        if (Services.Count == 0)
+        {
+            Services = services;
+            _rootServiceProvider = null;
+        }
     }
 }

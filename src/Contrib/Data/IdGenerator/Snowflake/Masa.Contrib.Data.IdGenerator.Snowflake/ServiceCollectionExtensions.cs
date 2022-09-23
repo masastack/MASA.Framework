@@ -6,9 +6,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddSnowflake(this IServiceCollection services)
-        => services.AddSnowflake(null);
+        => services.AddSnowflake(Options.Options.DefaultName);
+
+    public static IServiceCollection AddSnowflake(this IServiceCollection services, string name)
+        => services.AddSnowflake(name, null);
 
     public static IServiceCollection AddSnowflake(this IServiceCollection services, Action<SnowflakeGeneratorOptions>? action)
+        => services.AddSnowflake(Options.Options.DefaultName, action);
+
+    public static IServiceCollection AddSnowflake(this IServiceCollection services, string name, Action<SnowflakeGeneratorOptions>? action)
     {
         var snowflakeGeneratorOptions = new SnowflakeGeneratorOptions(services);
         action?.Invoke(snowflakeGeneratorOptions);
@@ -34,9 +40,9 @@ public static class ServiceCollectionExtensions
 
         services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
         {
-            factoryOptions.Options.Add(new IdGeneratorRelationOptions(snowflakeGeneratorOptions.Name)
+            factoryOptions.Options.Add(new IdGeneratorRelationOptions(name)
             {
-                Func = serviceProvider => serviceProvider.GetRequiredService<IGuidGenerator>()
+                Func = serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>()
             });
         });
 
@@ -57,7 +63,7 @@ public static class ServiceCollectionExtensions
     private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
         services.BuildServiceProvider().GetRequiredService<TService>();
 
-    private static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
+    public static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
     {
         if (generatorOptions.BaseTime > DateTime.UtcNow)
             throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),

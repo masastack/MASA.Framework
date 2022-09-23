@@ -25,4 +25,4 @@ IGuidGenerator generator;// Get through DI
 generator.NewId();//Create a unique id
 ```
 
-> or Use `MasaApp.GetRequiredService<IGuidGenerator>().NewId()`
+> Or Use `MasaApp.GetRequiredService<IGuidGenerator>().NewId()`

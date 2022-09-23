@@ -59,8 +59,6 @@ public class SnowflakeGeneratorOptions
 
     public void EnableSupportDistributed() => SupportDistributed = true;
 
-    public string Name { get; set; } = Microsoft.Extensions.Options.Options.DefaultName;
-
     public SnowflakeGeneratorOptions(IServiceCollection services)
     {
         Services = services;

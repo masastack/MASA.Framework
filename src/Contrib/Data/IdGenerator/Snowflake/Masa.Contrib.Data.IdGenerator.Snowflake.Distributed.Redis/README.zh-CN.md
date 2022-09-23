@@ -6,26 +6,28 @@ Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis是基于`Masa.Contrib.
 
 用例:
 
-1. 安装`Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`、
+``` powershell
+Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
+```
 
-    ```c#
-    Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
-    ```
+### 入门
 
-2. 使用`Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`
+1. 注册雪花id构造器, 并使用Redis（支持分布式id），修改`Program.cs`
 
-    ``` C#
-    builder.Services.AddSnowflake(option => option.UseRedis());
-    ```
+``` C#
+builder.Services.AddSnowflake(option => option.UseRedis());
+```
 
-    > 由于依赖Redis，需使用[Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
+> 由于依赖Redis，需使用[Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
 
-3. 获取id
+2. 获取id
 
-    ```
-    ISnowflakeGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SnowflakeGenerator获取
-    generator.NewId();//创建唯一id
-    ```
+```
+ISnowflakeGenerator generator;// 通过DI获取
+generator.NewId();//创建唯一id
+```
+
+> 或通过`MasaApp.GetRequiredService<ISnowflakeGenerator>().NewId()`获取
 
 ### 参数:
 

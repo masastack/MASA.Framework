@@ -11,10 +11,11 @@
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis\Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.csproj" />
+    <ProjectReference Aliases="Snowflake" Include="..\..\Masa.Contrib.Data.IdGenerator.Snowflake\Masa.Contrib.Data.IdGenerator.Snowflake.csproj" />
   </ItemGroup>
 
 </Project>

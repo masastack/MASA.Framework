@@ -7,26 +7,28 @@ The upgraded version supports distributed deployment, relies on Redis to provide
 
 Example:
 
-1. Install `Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`,
+``` powershell
+Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
+```
 
-    ``` c#
-    Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
-    ```
+### Get Started
 
-2. Use `Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis`
+1. Register snowflake id constructor, and use Redis (support distributed id), modify `Program.cs`
 
-    ``` C#
-    builder.Services.AddSnowflake(option => option.UseRedis());
-    ```
+``` C#
+builder.Services.AddSnowflake(option => option.UseRedis());
+```
 
-    > Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
+> Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
 
 3. Get id
 
-    ``` C#
-    ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
-    generator.NewId();//Create a unique id
-    ```
+``` C#
+ISnowflakeGenerator generator;// Get it through DI
+generator.NewId();//Create a unique id
+```
+
+> Or Use `MasaApp.GetRequiredService<ISnowflakeGenerator>().NewId()`
 
 ### Parameters:
 
