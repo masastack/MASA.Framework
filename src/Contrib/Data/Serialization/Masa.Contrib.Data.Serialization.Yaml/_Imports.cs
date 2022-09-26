@@ -5,3 +5,5 @@ global using Masa.BuildingBlocks.Data;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using YamlDotNet.Serialization;
 global using YamlDotNet.Serialization.NamingConventions;
+global using Masa.Contrib.Data.Serialization.Yaml;
+global using Microsoft.Extensions.Options;

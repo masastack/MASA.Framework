@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer // SqlServer is used as an ex
 Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```
 
-### Basic usage
+### Get Started
 
 1. Configure `appsettings.json`
 

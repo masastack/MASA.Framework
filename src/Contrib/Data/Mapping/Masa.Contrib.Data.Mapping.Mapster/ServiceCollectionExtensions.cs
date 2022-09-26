@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IMappingConfigProvider>(_ => new DefaultMappingConfigProvider(mapOptions));
         services.TryAddSingleton<IMapper, DefaultMapper>();
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

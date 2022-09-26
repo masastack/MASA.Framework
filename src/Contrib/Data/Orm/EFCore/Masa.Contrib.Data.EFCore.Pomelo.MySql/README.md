@@ -21,7 +21,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
 }
 ```
 
-2. Using MasaDbContext
+2. Register `MasaDbContext`
 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>

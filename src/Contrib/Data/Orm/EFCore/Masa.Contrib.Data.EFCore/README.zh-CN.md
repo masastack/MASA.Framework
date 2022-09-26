@@ -9,7 +9,7 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //这里以SqlServer举例，
 Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```
 
-### 基本用法
+### 入门
 
 1. 配置`appsettings.json`
 

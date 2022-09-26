@@ -21,7 +21,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据
 }
 ```
 
-2. 使用MasaDbContext
+2. 注册`MasaDbContext`
 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>

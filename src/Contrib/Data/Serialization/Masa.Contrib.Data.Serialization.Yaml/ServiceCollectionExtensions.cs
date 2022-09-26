@@ -5,67 +5,92 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddYaml(this IServiceCollection services)
-        => services.AddYaml(
-            () => new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build(),
-            () => new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build());
-
-    public static IServiceCollection AddYaml(this IServiceCollection services,
-        Action<SerializerBuilder> serializerAction,
-        Action<DeserializerBuilder> deserializerAction)
+    public static YamlOptions DefaultYamlOptions = new()
     {
-        return services.AddYaml(() =>
+        Serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build(),
+        Deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build()
+    };
+
+    public static IServiceCollection AddYaml(this IServiceCollection services, Action<YamlOptions>? configure = null)
+    {
+        if (configure != null)
         {
-            var serializerBuilder = new SerializerBuilder();
-            serializerAction.Invoke(serializerBuilder);
-            return serializerBuilder.Build();
-        }, () =>
-        {
-            var deserializerBuilder = new DeserializerBuilder();
-            deserializerAction.Invoke(deserializerBuilder);
-            return deserializerBuilder.Build();
-        });
+            return services
+                .Configure(Options.Options.DefaultName, configure)
+                .AddYamlFactory(DataType.Yml.ToString(), Options.Options.DefaultName);
+        }
+
+        return services.AddYamlFactory(Options.Options.DefaultName, DefaultYamlOptions.Serializer, DefaultYamlOptions.Deserializer);
     }
 
-    public static IServiceCollection AddYaml(this IServiceCollection services,
-        Func<YamlDotNet.Serialization.ISerializer> serializerFunc,
-        Func<YamlDotNet.Serialization.IDeserializer> deserializerFunc)
+    public static IServiceCollection AddYaml(this IServiceCollection services, string name, Action<YamlOptions>? configure = null)
     {
-        if (services.Any(service => service.ImplementationType == typeof(YamlProvider)))
-            return services;
+        if (configure != null)
+        {
+            return services
+                .Configure(Options.Options.DefaultName, configure)
+                .AddYamlFactory(name, name);
+        }
 
-        services.AddSingleton<YamlProvider>();
+        return services.AddYamlFactory(name, DefaultYamlOptions.Serializer, DefaultYamlOptions.Deserializer);
+    }
 
-        services.AddSerializationCore();
+    private static IServiceCollection AddYamlFactory(this IServiceCollection services, string name, string optionName)
+    {
+        return services
+            .TryAddYamlCore()
+            .Configure<SerializerFactoryOptions>(options =>
+            {
+                options.MappingSerializer(name, serviceProvider =>
+                {
+                    var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
+                    return new DefaultYamlSerializer(optionsFactory.Create(optionName).Serializer);
+                });
+            })
+            .Configure<DeserializerFactoryOptions>(options =>
+            {
+                options.MappingDeserializer(name, serviceProvider =>
+                {
+                    var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
+                    return new DefaultYamlDeserializer(optionsFactory.Create(optionName).Deserializer);
+                });
+            });
+    }
 
-        string name = DataType.Yml.ToString();
-        services
-            .AddYamlCore(serializerFunc.Invoke(), deserializerFunc.Invoke())
+    private static IServiceCollection AddYamlFactory(this IServiceCollection services,
+        string name,
+        YamlDotNet.Serialization.ISerializer serializer,
+        YamlDotNet.Serialization.IDeserializer deserializer)
+    {
+        return services
+            .TryAddYamlCore(serializer, deserializer)
             .Configure<SerializerFactoryOptions>(options =>
             {
                 options
-                    .MappingSerializer(name,
-                        serviceProvider => serviceProvider.GetRequiredService<IYamlSerializer>());
+                    .MappingSerializer(name, _ => new DefaultYamlSerializer(serializer));
             })
             .Configure<DeserializerFactoryOptions>(options =>
             {
                 options
-                    .MappingDeserializer(name,
-                        serviceProvider => serviceProvider.GetRequiredService<IYamlDeserializer>());
+                    .MappingDeserializer(name, _ => new DefaultYamlDeserializer(deserializer));
             });
-        return services;
     }
 
-    private static IServiceCollection AddYamlCore(this IServiceCollection services,
-        YamlDotNet.Serialization.ISerializer serializer,
-        YamlDotNet.Serialization.IDeserializer deserializer)
+    private static IServiceCollection TryAddYamlCore(this IServiceCollection services,
+        YamlDotNet.Serialization.ISerializer? serializer = null,
+        YamlDotNet.Serialization.IDeserializer? deserializer = null)
     {
-        services.TryAddSingleton<IYamlSerializer>(_ => new DefaultYamlSerializer(serializer));
-        services.TryAddSingleton<IYamlDeserializer>(_ => new DefaultYamlDeserializer(deserializer));
+        services.TryAddSerializationCore();
+        services.TryAddSingleton<IYamlSerializer>(serviceProvider =>
+        {
+            var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
+            return new DefaultYamlSerializer(serializer ?? optionsFactory.Create(Options.Options.DefaultName).Serializer);
+        });
+        services.TryAddSingleton<IYamlDeserializer>(serviceProvider =>
+        {
+            var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
+            return new DefaultYamlDeserializer(deserializer ?? optionsFactory.Create(Options.Options.DefaultName).Deserializer);
+        });
         return services;
-    }
-
-    private sealed class YamlProvider
-    {
     }
 }

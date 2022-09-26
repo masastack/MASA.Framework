@@ -6,18 +6,20 @@ namespace Masa.Contrib.Authentication.Identity;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaIdentityCore(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        Action<JsonSerializerOptions>? configure = null)
         => services.AddMasaIdentityCore(_ =>
         {
 
-        });
+        }, configure);
 
     public static IServiceCollection AddMasaIdentityCore(
         this IServiceCollection services,
-        Action<IdentityClaimOptions> configureOptions)
+        Action<IdentityClaimOptions> configureOptions,
+        Action<JsonSerializerOptions>? configure = null)
     {
-        services.AddJson();
-        return services.AddMasaIdentityCore(DataType.Json.ToString(), configureOptions);
+        services.AddJson(Constants.DEFAULT_IDENTITY_NAME, configure);
+        return services.AddMasaIdentityCore(Constants.DEFAULT_IDENTITY_NAME, configureOptions);
     }
 
     public static IServiceCollection AddMasaIdentityCore(

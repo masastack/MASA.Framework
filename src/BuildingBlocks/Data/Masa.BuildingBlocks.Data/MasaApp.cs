@@ -19,6 +19,11 @@ public static class MasaApp
 
     public static IServiceCollection Services { get; set; } = new ServiceCollection();
 
+    /// <summary>
+    /// Global JsonSerializerOptions configuration
+    /// </summary>
+    public static JsonSerializerOptions? JsonSerializerOptions { get; set; }
+
     public static void Build() => Build(Services.BuildServiceProvider());
 
     public static void Build(IServiceProvider serviceProvider) => RootServiceProvider = serviceProvider;
