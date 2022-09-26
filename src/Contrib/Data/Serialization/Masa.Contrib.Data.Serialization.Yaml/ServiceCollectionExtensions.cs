@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
                 .AddYamlFactory(DataType.Yml.ToString(), Options.Options.DefaultName);
         }
 
-        return services.AddYamlFactory(Options.Options.DefaultName, DefaultYamlOptions.Serializer, DefaultYamlOptions.Deserializer);
+        return services.AddYamlFactory(DataType.Yml.ToString(), DefaultYamlOptions.Serializer, DefaultYamlOptions.Deserializer);
     }
 
     public static IServiceCollection AddYaml(this IServiceCollection services, string name, Action<YamlOptions>? configure = null)
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
         if (configure != null)
         {
             return services
-                .Configure(Options.Options.DefaultName, configure)
+                .Configure(name, configure)
                 .AddYamlFactory(name, name);
         }
 

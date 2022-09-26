@@ -16,6 +16,10 @@ public class YamlTest
         var deserializerUser = new DefaultYamlDeserializer(deserializer).Deserialize<User>(yaml);
         Assert.IsNotNull(deserializerUser);
         Assert.IsTrue(user.Age == deserializerUser.Age && user.Name == deserializerUser.Name);
+
+        deserializerUser = new DefaultYamlDeserializer(deserializer).Deserialize(yaml, typeof(User)) as User;
+        Assert.IsNotNull(deserializerUser);
+        Assert.IsTrue(user.Age == deserializerUser.Age && user.Name == deserializerUser.Name);
     }
 
     [TestMethod]
