@@ -8,12 +8,21 @@ internal static class DccFactory
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
+        Masa.BuildingBlocks.Data.ISerializer yamlSerializer,
+        Masa.BuildingBlocks.Data.IDeserializer yamlDeserializer,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationApiClient(serviceProvider, client, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions);
+        return new ConfigurationApiClient(serviceProvider,
+            client,
+            yamlSerializer,
+            yamlDeserializer,
+            jsonSerializerOptions,
+            dccOptions,
+            defaultSectionOption,
+            expandSectionOptions);
     }
 
     public static IConfigurationApiManage CreateManage(

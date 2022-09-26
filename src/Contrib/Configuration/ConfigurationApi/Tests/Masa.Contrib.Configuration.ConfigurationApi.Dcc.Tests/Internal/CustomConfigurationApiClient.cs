@@ -8,11 +8,13 @@ internal class CustomConfigurationApiClient : ConfigurationApiClient
     public CustomConfigurationApiClient(
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
+        Masa.BuildingBlocks.Data.ISerializer yamlSerializer,
+        Masa.BuildingBlocks.Data.IDeserializer yamlDeserializer,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
-        : base(serviceProvider, client, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions)
+        : base(serviceProvider, client, yamlSerializer, yamlDeserializer, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions)
     {
     }
 

@@ -12,11 +12,14 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
-    private readonly IDeserializer _deserializer = new DeserializerBuilder().Build();
+    private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
+    private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
 
     public ConfigurationApiClient(
         IServiceProvider serviceProvider,
         IMemoryCacheClient client,
+        Masa.BuildingBlocks.Data.ISerializer yamlSerializer,
+        Masa.BuildingBlocks.Data.IDeserializer yamlDeserializer,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
@@ -26,6 +29,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        _yamlSerializer = yamlSerializer;
+        _yamlDeserializer = yamlDeserializer;
         _dccOptions = dccOptions;
     }
 
@@ -175,10 +180,9 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             case ConfigFormats.Yaml:
                 try
                 {
-                    var yamlObject = _deserializer.Deserialize<object>(result.Content!);
+                    var yamlObject = _yamlDeserializer.Deserialize<object>(result.Content!);
 
-                    var serializer = new SerializerBuilder().JsonCompatible().Build();
-                    var json = serializer.Serialize(yamlObject);
+                    var json = _yamlSerializer.Serialize(yamlObject);
                     return (json, ConfigurationTypes.Yaml);
                 }
                 catch (Exception exception)

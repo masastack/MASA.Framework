@@ -41,6 +41,9 @@ public static class ServiceCollectionExtensions
             .TryAddYamlCore()
             .Configure<SerializerFactoryOptions>(options =>
             {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
                 options.MappingSerializer(name, serviceProvider =>
                 {
                     var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
@@ -49,6 +52,9 @@ public static class ServiceCollectionExtensions
             })
             .Configure<DeserializerFactoryOptions>(options =>
             {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
                 options.MappingDeserializer(name, serviceProvider =>
                 {
                     var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
@@ -66,11 +72,17 @@ public static class ServiceCollectionExtensions
             .TryAddYamlCore(serializer, deserializer)
             .Configure<SerializerFactoryOptions>(options =>
             {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
                 options
                     .MappingSerializer(name, _ => new DefaultYamlSerializer(serializer));
             })
             .Configure<DeserializerFactoryOptions>(options =>
             {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
                 options
                     .MappingDeserializer(name, _ => new DefaultYamlDeserializer(deserializer));
             });
