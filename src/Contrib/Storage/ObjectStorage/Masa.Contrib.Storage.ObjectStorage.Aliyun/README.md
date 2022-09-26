@@ -4,7 +4,7 @@
 
 Example：
 
-``` C#
+``` powershell
 Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 ```
 

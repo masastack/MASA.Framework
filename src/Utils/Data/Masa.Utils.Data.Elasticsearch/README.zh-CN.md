@@ -4,17 +4,19 @@
 
 用例:
 
-```c#
+``` powershell
 Install-Package Masa.Utils.Data.Elasticsearch
 ```
 
-#### 基本用法:
+### 入门
 
-使用Elasticsearch
+1. 注册`Elasticsearch`
 
 ``` C#
 builder.Services.AddElasticsearch("es", "http://localhost:9200"); // 或者builder.Services.AddElasticsearchClient("es", "http://localhost:9200");
 ```
+
+### 进阶
 
 #### 创建索引：
 
@@ -46,7 +48,7 @@ public async Task<string> DeleteIndexByAliasAsync([FromServices] IMasaElasticCli
 }
 ```
 
-### 绑定别名
+#### 绑定别名
 
 ``` C#
 public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient client)
@@ -58,7 +60,7 @@ public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient clien
 }
 ```
 
-### 解除别名绑定
+#### 解除别名绑定
 
 ``` C#
 public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient client)
@@ -72,7 +74,7 @@ public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient clien
 
 > 更多方法请查看[IMasaElasticClient](./IMasaElasticClient.cs)
 
-## 常见问题
+### 常见问题
 
 1. 出错提示为：`"Content-Type header [application/vnd.elasticsearch+json; compatible-with=7] is not supported"`
 

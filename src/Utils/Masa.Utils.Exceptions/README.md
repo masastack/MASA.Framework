@@ -10,7 +10,7 @@ Provides a model for handling web application exceptions
 
 Example:
 
-``` C#
+``` powershell
 Install-Package Masa.Utils.Exceptions
 ```
 

@@ -2,18 +2,21 @@
 
 ## Masa.Utils.Extensions.DependencyInjection
 
-### 引用包:
+用例：
 
-```c#
+``` powershell
 Install-Package Masa.Utils.Extensions.DependencyInjection
 ```
-### 用法:
+
+### 入门
 
 ```C#
 services.AddAutoInject();
 ```
 
-## 依赖接口:
+### 进阶
+
+#### 依赖接口:
 
 * ISingletonDependency: 注册生命周期为Singleton的服务
 * IScopedDependency: 注册生命周期为Scoped的服务
@@ -32,7 +35,7 @@ public interface IRepository<TEntity> : IScopedDependency
 
 > 因IRepository<TEntity>继承IScopedDependency，所以会将IRepository<TEntity>的生命周期为Scoped
 
-## 规则:
+#### 规则:
 
 扫描程序集中继承ISingletonDependency、IScopedDependency、ITransientDependency的接口以及类，并为其自动注册服务
 
@@ -98,14 +101,14 @@ public interface IRepository<TEntity> : IScopedDependency
 
     > 等价于: `service.AddSingleton<BaseRepository>();service.AddSingleton<UserRepository>();`
 
-## 特性:
+#### 特性:
 
 * IgnoreInjection: 忽略注入，用于排除不被自动注入
 * Dependency:
   * TryRegister: 设置true则仅当服务未注册时才会被注册，类似IServiceCollection的TryAdd ... 扩展方法
   * ReplaceServices: 设置true则替换之前已经注册过的服务，类似IServiceCollection的Replace ... 扩展方法.
 
-## 方法:
+#### 方法:
 
 * 扩展IServiceCollection
   * GetInstance<TService>(): 获取服务T的实例

@@ -2,15 +2,17 @@
 
 ## AutoComplete.ElasticSearch
 
+Based on `ElasticSearch`, providing input completion function
+
 Example：
 
-``` c#
+``` powershell
 Install-Package Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch
 ```
 
-Basic usage:
+### Get Started
 
-Using AutoComplete
+1. Register `AutoComplete`, modify `Program.cs`
 
 * Use the default model `AutoCompleteDocument<TValue>`, where TValue does not support classes
 
@@ -52,7 +54,9 @@ public class User : AutoCompleteDocument
 }
 ```
 
-##### Setting data (SetAsync)
+### Advanced
+
+#### Setting data (SetAsync)
 
 1. Set up a single document:
 
@@ -117,7 +121,7 @@ public class User : AutoCompleteDocument
     }
     ```
 
-##### Get data (GetAsync)
+#### Get data (GetAsync)
 
 1. Search by keyword:
 
@@ -141,7 +145,7 @@ public class User : AutoCompleteDocument
     }
     ```
 
-##### Delete document (DeleteAsync)
+#### Delete document (DeleteAsync)
 
 1. To delete a single document:
 
@@ -169,7 +173,7 @@ Plugins that need to be added by default:
 >
 > https://github.com/medcl/elasticsearch-analysis-pinyin
 
-## FAQ
+### FAQ
 
 1. The error message is: `"Content-Type header [application/vnd.elasticsearch+json; compatible-with=7] is not supported"`
 

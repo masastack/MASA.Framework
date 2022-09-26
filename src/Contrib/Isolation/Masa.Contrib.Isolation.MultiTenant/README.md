@@ -4,13 +4,16 @@
 
 Example：
 
-```C#
-Install-Package Masa.Contrib.Isolation.UoW.EFCore
+``` powershell
+Install-Package Masa.Contrib.Isolation.UoW.EFCore //Isolation work unit based on EFCore, please use Masa.Contrib.Data.UoW.EFCore if Isolation is not required
 Install-Package Masa.Contrib.Isolation.MultiTenant
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServer database usage
 ```
 
+### Get Started
+
 1. Configure `appsettings.json`
+
 ``` appsettings.json
 {
   "ConnectionStrings": {
@@ -34,6 +37,7 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 * 1.3 Other tenants or hosts: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. Using Isolation.UoW.EF
+
 ``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {

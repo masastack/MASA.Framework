@@ -10,7 +10,7 @@
 
 用例:
 
-``` C#
+``` powershell
 Install-Package Masa.Utils.Exceptions
 ```
 

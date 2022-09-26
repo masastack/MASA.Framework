@@ -4,11 +4,13 @@
 
 Example：
 
-```C#
-Install-Package Masa.Contrib.Isolation.UoW.EFCore
+``` powershell
+Install-Package Masa.Contrib.Isolation.UoW.EFCore //Isolation work unit based on EFCore, please use Masa.Contrib.Data.UoW.EFCore if Isolation is not required
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServer database usage
 ```
+
+### Get Started
 
 1. Configure `appsettings.json`
 ``` appsettings.json
@@ -57,7 +59,7 @@ public class CustomDbContext : IsolationDbContext
 
 You can also choose not to implement IMultiEnvironment when using physical isolation
 
-##### Summarize
+### Summarize
 
 * How is the environment resolved in the controller or MinimalAPI?
     * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)

@@ -6,20 +6,21 @@ Responsibilities:
 
 Assist in managing the dapr process to reduce the dependency on docker compose during development
 
-### Basic usage:
+Example：
 
-1. Install Masa.Utils.Development.Dapr.AspNetCore
-``` C#
+``` powershell
 Install-Package Masa.Utils.Development.Dapr.AspNetCore
 ```
 
-2. Add DaprStarter to assist in managing the dapr process (recommended to be used in the development environment)
+### Get Started
+
+1. Add DaprStarter to assist in managing the dapr process (recommended to be used in the development environment)
 
 ``` C#
 builder.Services.AddDaprStarter();
 ```
 
-### Advanced usage:
+### Advanced
 
 1. Specify the configuration in the code
 
@@ -36,7 +37,7 @@ builder.Services.AddDaprStarter(opt =>
 
 2. The configuration file specifies the configuration
 
-First step:
+Step 1:
 
 ``` appsettings.json
 {

@@ -10,20 +10,21 @@ Dapr Starter核心库
 
 dapr进程的启动、停止、刷新、dapr守护进程均由此类库提供
 
-### 用法：
+用例：
 
-1. 安装Masa.Utils.Development.Dapr.AspNetCore
-```C#
-Install-Package Masa.Utils.Development.Dapr.AspNetCore
+``` powershell
+Install-Package Masa.Utils.Development.Dapr
 ```
 
-2. 添加DaprStarter协助管理dapr进程（建议在开发环境使用）
+### 入门
 
-```C#
+1. 添加DaprStarter协助管理dapr进程（建议在开发环境使用）
+
+``` C#
 builder.Services.AddDaprStarterCore();
 ```
 
-3. 根据需要在指定位置注入IDaprProcess, 之后调用Start方法即可启动dapr进程或者交由Masa.Utils.Development.Dapr.AspNetCore管理dapr进程，相关文档可[查看](../Masa.Utils.Development.Dapr.AspNetCore/README.zh-CN.md)
+2. 根据需要在指定位置注入`IDaprProcess`, 之后调用Start方法即可启动`dapr`进程或者交由`Masa.Utils.Development.Dapr.AspNetCore`管理dapr进程，相关文档可[查看](../Masa.Utils.Development.Dapr.AspNetCore/README.zh-CN.md)
 
 例如：
 
@@ -58,7 +59,9 @@ public class DaprController : ControllerBase
 }
 ```
 
-## 注意
+### 进阶
+
+#### 注意
 
 1. 库中有使用到netstat命令，请确保netstat命令是可用的
 
@@ -82,7 +85,7 @@ apt-get install net-tools
    1. Dapr AppID遵循FQDN格式，其中包括目标命名空间
    2. FQDN是通过符号.来拼接域名的
 
-### 规则
+#### 规则
 
 dapr AppId命名规则默认：
 

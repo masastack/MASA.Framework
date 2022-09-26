@@ -1,22 +1,26 @@
 中 | [EN](README.md)
 
-### DomainEventBus
+## Masa.Contrib.Ddd.Domain
+
+提供基础设施，使得基于`领域驱动设计`的开发更容易实现
 
 用例：
 
-```c#
-Install-Package Masa.Contrib.Ddd.Domain
-Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore
+``` powershell
+Install-Package Masa.Contrib.Ddd.Domain // 提供领域事件，支持事件入队与发布
+Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore // 提供基于IRepository的默认实现，并支持自定义Repository的自动注入
 
-Install-Package Masa.Contrib.Dispatcher.Events
+Install-Package Masa.Contrib.Dispatcher.Events //提供进程内事件（本地事件），支持事件编排、Saga、中间件
 
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore
-Install-Package Masa.Contrib.Data.UoW.EFCore
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //提供基于Dapr的发件箱
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore //提供基于EFCore的本地消息表
+Install-Package Masa.Contrib.Data.UoW.EFCore //提供工作单元
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //提供基于EFCore的SqlServer实现
 ```
 
-1. 添加DomainEventBus
+### 入门
+
+1. 注册领域事件
 
 ```C#
 builder.Services
