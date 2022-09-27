@@ -5,7 +5,6 @@ namespace Masa.BuildingBlocks.Configuration;
 
 public static class ConfigurationApiExtensions
 {
-
     public static IConfiguration GetDefault(this IConfigurationApi configurationApi)
     {
         return configurationApi.Get(StaticConfig.AppId);
