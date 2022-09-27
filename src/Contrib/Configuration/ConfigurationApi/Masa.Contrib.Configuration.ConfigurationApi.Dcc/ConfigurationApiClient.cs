@@ -17,20 +17,20 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     public ConfigurationApiClient(
         IServiceProvider serviceProvider,
-        IMemoryCacheClient client,
-        Masa.BuildingBlocks.Data.ISerializer yamlSerializer,
-        Masa.BuildingBlocks.Data.IDeserializer yamlDeserializer,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
+        var client = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+        ArgumentNullException.ThrowIfNull(client);
+
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
-        _yamlSerializer = yamlSerializer;
-        _yamlDeserializer = yamlDeserializer;
+        _yamlSerializer = serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME);
+        _yamlDeserializer = serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME);
         _dccOptions = dccOptions;
     }
 

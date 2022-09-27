@@ -91,15 +91,8 @@ public static class MasaConfigurationExtensions
 
         services.TryAddSingleton(serviceProvider =>
         {
-            var client = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-
-            ArgumentNullException.ThrowIfNull(client, nameof(client));
-
             return DccFactory.CreateClient(
                 serviceProvider,
-                client,
-                serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME),
-                serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME),
                 jsonSerializerOption,
                 dccOptions,
                 defaultSectionOption,

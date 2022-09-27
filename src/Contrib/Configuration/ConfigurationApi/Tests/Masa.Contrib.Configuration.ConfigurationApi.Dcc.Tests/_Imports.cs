@@ -20,6 +20,7 @@ global using Masa.Utils.Caching.DistributedMemory;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.DistributedMemory.Models;
 global using Masa.Utils.Caching.Redis.Models;
+global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.Configuration;

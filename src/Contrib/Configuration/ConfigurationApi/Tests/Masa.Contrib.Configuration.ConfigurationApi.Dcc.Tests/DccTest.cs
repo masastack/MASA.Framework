@@ -6,7 +6,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 [TestClass]
 public class DccTest
 {
-    private string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
+    private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
     private Mock<IMasaConfigurationBuilder> _masaConfigurationBuilder;
     private JsonSerializerOptions _jsonSerializerOptions;
     private IServiceCollection _services;
@@ -18,8 +18,8 @@ public class DccTest
     private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
     private const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.dcc:";
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
-    private IYamlSerializer _serializer;
-    private IYamlDeserializer _deserializer;
+    private Masa.BuildingBlocks.Data.ISerializer _serializer;
+    private Masa.BuildingBlocks.Data.IDeserializer _deserializer;
 
 #pragma warning disable CS0618
     [TestInitialize]
@@ -43,6 +43,14 @@ public class DccTest
         };
         _serializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _deserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
+
+        var serializerFactory = new Mock<ISerializerFactory>();
+        var deserializerFactory = new Mock<IDeserializerFactory>();
+        serializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _serializer);
+        deserializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _deserializer);
+
+        _services.AddSingleton(_ => serializerFactory.Object);
+        _services.AddSingleton(_ => deserializerFactory.Object);
     }
 #pragma warning restore CS0618
 
@@ -126,11 +134,14 @@ public class DccTest
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
+        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
-            memoryCacheClient.Object,
-            _serializer,
-            _deserializer,
             _jsonSerializerOptions,
             new Mock<DccOptions>().Object,
             new Mock<DccSectionOptions>().Object,
@@ -185,11 +196,14 @@ public class DccTest
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
+        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
-            memoryCacheClient.Object,
-            _serializer,
-            _deserializer,
             _jsonSerializerOptions,
             new Mock<DccOptions>().Object,
             new Mock<DccSectionOptions>().Object,
@@ -236,12 +250,14 @@ public class DccTest
         });
         Mock<IMemoryCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
+        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
         var configurationApiClient = new ConfigurationApiClient(
             _services.BuildServiceProvider(),
-            memoryCacheClient.Object,
-            _serializer,
-            _deserializer,
             _jsonSerializerOptions,
             new Mock<DccOptions>().Object,
             new Mock<DccSectionOptions>().Object,

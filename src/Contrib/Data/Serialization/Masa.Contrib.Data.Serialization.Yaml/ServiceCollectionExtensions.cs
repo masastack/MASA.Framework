@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static YamlOptions DefaultYamlOptions = new()
+    private static readonly YamlOptions DefaultYamlOptions = new()
     {
         Serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build(),
         Deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build()

@@ -54,8 +54,7 @@ public class IdGeneratorTest
             count++;
         }
 
-        if (ids.Distinct().Count() != ids.Count)
-            throw new Exception("duplicate id");
+        Assert.IsTrue(ids.Distinct().Count() == ids.Count);
     }
 
     [TestMethod]
@@ -115,6 +114,8 @@ public class IdGeneratorTest
 
         if (ids.Distinct().Count() != ids.Count)
             throw new Exception("duplicate id");
+
+        Assert.IsTrue(ids.Distinct().Count() == ids.Count);
     }
 
     [TestMethod]
@@ -263,7 +264,7 @@ public class IdGeneratorTest
         return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
     }
 
-    private ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)
+    private static ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)
     {
         var configurationOptions = new ConfigurationOptions
         {
@@ -285,11 +286,5 @@ public class IdGeneratorTest
             configurationOptions.EndPoints.Add(server.Host, server.Port);
         }
         return configurationOptions;
-    }
-
-    [TestMethod]
-    public void TestCheckIdGeneratorOptions()
-    {
-        var services = new ServiceCollection();
     }
 }
