@@ -6,11 +6,13 @@
 
 Example：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore
 ```
 
-1. Add EventLogs.EF
+### Get Started
+
+1. Use local message table
 
 ```C#
 .AddIntegrationEventBus(options =>

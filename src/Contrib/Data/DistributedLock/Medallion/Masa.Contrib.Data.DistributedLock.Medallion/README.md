@@ -2,7 +2,7 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion
 
-Masa.Contrib.Data.DistributedLock.Medallion is a distributed lock based on [DistributedLock](https://github.com/madelson/DistributedLock)
+Masa.Contrib.Data.DistributedLock.Medallion is a distributed lock based on [DistributedLock](https://github.com/madelson/DistributedLock), it provides the following implementations, you can choose an implementation to use according to your needs
 
 ### Implementations
 
@@ -16,14 +16,16 @@ Masa.Contrib.Data.DistributedLock.Medallion is a distributed lock based on [Dist
 - [WaitHandles](../Masa.Contrib.Data.DistributedLock.Medallion.FileSystem/README.md)
 - [ZooKeeper](../Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper/README.md)
 
-### Example:
+Example:
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion
-Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Redis// an example of Redis
+Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Redis //an example of Redis
 ```
 
-1. Modify `Program`
+### Get Started
+
+1. Register lock, modify class `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -32,7 +34,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. Use distributed locks
+2. Use locks
 
 ``` C#
 IDistributedLock distributedLock;//Get `IDistributedLock` from DI

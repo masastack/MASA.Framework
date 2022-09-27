@@ -2,15 +2,19 @@
 
 ## Masa.Contrib.Ddd.Domain.Repository.EFCore
 
+Provides a default implementation based on IRepository and supports automatic injection of custom Repository
+
 Example：
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore
 ```
 
 > Advantages: The EF version of IRepository provides basic CRUD
 
-1. Add Repository.EF
+### Get Started
+
+1. Use Framework to provide default implementation of `EFCore` based Repository
 
 ```c#
 builder.Services

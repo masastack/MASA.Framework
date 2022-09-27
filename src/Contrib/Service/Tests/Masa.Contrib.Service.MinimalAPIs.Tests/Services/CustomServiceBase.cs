@@ -23,6 +23,15 @@ public abstract class CustomServiceBase : ServiceBase
     public string TestGetBaseUri(ServiceRouteOptions globalOptions) => base.GetBaseUri(globalOptions,
         PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
 
-    public string TestGetMethodName(MethodInfo methodInfo, string methodName, ServiceRouteOptions globalOptions)
-        => base.GetMethodName(methodInfo, methodName, globalOptions);
+    public string TestGetMethodName(MethodInfo methodInfo, string prefix, ServiceRouteOptions globalOptions)
+        => base.GetMethodName(methodInfo, prefix, globalOptions);
+
+    public (string? HttpMethod, string Prefix) TestParseMethod(ServiceRouteOptions globalOptions, string methodName)
+        => base.ParseMethod(globalOptions, methodName);
+
+    public string[] TestGetDefaultHttpMethods(ServiceRouteOptions globalOptions)
+        => base.GetDefaultHttpMethods(globalOptions);
+
+    public string TestGetServiceName(PluralizationService? pluralizationService)
+        => base.GetServiceName(pluralizationService);
 }

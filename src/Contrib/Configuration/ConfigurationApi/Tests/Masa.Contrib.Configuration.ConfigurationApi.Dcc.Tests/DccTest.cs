@@ -20,7 +20,10 @@ public class DccTest
     private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
     private const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.dcc:";
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
+    private Masa.BuildingBlocks.Data.ISerializer _serializer;
+    private Masa.BuildingBlocks.Data.IDeserializer _deserializer;
 
+#pragma warning disable CS0618
     [TestInitialize]
     public void Initialize()
     {
@@ -40,7 +43,18 @@ public class DccTest
         {
             PropertyNameCaseInsensitive = true
         };
+        _serializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
+        _deserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
+
+        var serializerFactory = new Mock<ISerializerFactory>();
+        var deserializerFactory = new Mock<IDeserializerFactory>();
+        serializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _serializer);
+        deserializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _deserializer);
+
+        _services.AddSingleton(_ => serializerFactory.Object);
+        _services.AddSingleton(_ => deserializerFactory.Object);
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public void TestTryAddConfigurationApiClient()
@@ -131,8 +145,17 @@ public class DccTest
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(),
-            memoryCacheClient.Object, _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object,
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+
+        var configurationApiClient = new ConfigurationApiClient(
+            _services.BuildServiceProvider(),
+            _jsonSerializerOptions,
+            new Mock<DccOptions>().Object,
+            new Mock<DccSectionOptions>().Object,
             new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
         _masaConfigurationBuilder.Object.UseDcc(new DccOptions()
@@ -181,9 +204,18 @@ public class DccTest
         });
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
-        var configurationApiClient = new ConfigurationApiClient(_services.BuildServiceProvider(), memoryCacheClient.Object,
-            _jsonSerializerOptions, new Mock<DccOptions>().Object, new Mock<DccSectionOptions>().Object, new List<DccSectionOptions>());
+        var configurationApiClient = new ConfigurationApiClient(
+            _services.BuildServiceProvider(),
+            _jsonSerializerOptions,
+            new Mock<DccOptions>().Object,
+            new Mock<DccSectionOptions>().Object,
+            new List<DccSectionOptions>());
         _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
 
         _masaConfigurationBuilder.Object.UseDcc().UseDcc();
@@ -199,6 +231,7 @@ public class DccTest
         Assert.IsTrue(httpClient.BaseAddress!.ToString() == "http://localhost:6379/");
     }
 
+#pragma warning disable CS0618
     [TestMethod]
     public void TestMasaConfigurationByConfigurationApiReturnKeyIsExist()
     {
@@ -263,6 +296,7 @@ public class DccTest
         var option = field!.GetValue(configurationApiClient);
         Assert.IsTrue(((DccSectionOptions)option!).Secret == "Secret");
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public void TestTypeConversionByDccOptions()

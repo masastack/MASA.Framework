@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Caching.MultilevelCache;
@@ -16,6 +17,7 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Enum
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Model;
 global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
+global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.Configuration;

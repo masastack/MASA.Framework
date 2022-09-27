@@ -1,14 +1,16 @@
 [中](README.zh-CN.md) | EN
 
-## EventBus
+## Masa.Contrib.Dispatcher.Events
+
+Provide in-process events (local events), support event orchestration, Saga, middleware, combined with `UoW` to ensure the atomicity of operations
 
 Example：
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.Events
 ```
 
-##### Basic usage：
+### Get Started
 
 1. Add EventBus
 
@@ -64,9 +66,9 @@ public class TransferHandler : IEventHandler<TransferEvent>
 }
 ```
 
-##### Advanced usage:
+### Advanced
 
-1. Handler arrangement:
+#### Handler arrangement:
 
 ```C#
 public class TransferHandler
@@ -85,7 +87,7 @@ public class TransferHandler
 }
 ```
 
-2. Support Saga mode
+#### Saga
 
 If there is an error in sending the deducted balance, try again 3 times. If it still fails, check whether the balance is deducted and ensure that there is no deduction and notify the transfer failure
 
@@ -145,9 +147,10 @@ public class TransferHandler : ISagaEventHandler<TransferEvent>
 > The return type of the method where the Handler is located only supports Task or void two types
 > The parameters of the constructor of the class where the Handler is located must support getting from DI
 
-3. Support Middleware
+#### Middleware
 
-   1. Custom Middleware
+1. Custom Middleware
+
 ```C#
 public class LoggingMiddleware<TEvent>
     : IMiddleware<TEvent> where TEvent : notnull, IEvent
@@ -162,18 +165,17 @@ public class LoggingMiddleware<TEvent>
     }
 }
 ```
-   2. Enable custom Middleware
-
+2. Enable custom Middleware
 
 ```C#
 builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)));
 ```
 
-4. Support Transaction
+#### Support Transaction
 
-> Used in conjunction with Contracts.EF and UnitOfWork, when Event implements ITransaction, the transaction will be automatically opened after the first CUD is executed, and the transaction will be submitted after all Handlers are executed. When an exception occurs in the transaction, the transaction will be automatically rolled back.
+Used in conjunction with Contracts.EF and UnitOfWork, when Event implements ITransaction, the transaction will be automatically opened after the first CUD is executed, and the transaction will be submitted after all Handlers are executed. When an exception occurs in the transaction, the transaction will be automatically rolled back.
 
-##### Performance Testing
+### Performance Testing
 
 BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
 11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
@@ -190,7 +192,7 @@ Runtime=.NET 6.0  IterationCount=100  RunStrategy=ColdStart
 | AddShoppingCartByEventBusAsync | 124.80 us | 346.93 us | 1,022.94 us | 8.650 us | 6.500 us | 10,202.4 us |
 |  AddShoppingCartByMediatRAsync | 110.57 us | 306.47 us |   903.64 us | 7.500 us | 5.300 us |  9,000.1 us |
 
-##### Summarize
+### Summarize
 
 IEventBus is the core of the event bus. It can be used with Cqrs, Uow, Masa.Contrib.Ddd.Domain.Repository.EFCore to automatically execute SaveChange (enable UoW) and Commit (enable UoW without closing transaction) operations after sending Command, And support to roll back the transaction after an exception occurs
 

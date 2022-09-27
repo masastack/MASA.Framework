@@ -3,79 +3,23 @@
 
 namespace Microsoft.AspNetCore.Builder;
 
+#pragma warning disable CS0618
 public static class WebApplicationBuilderExtensions
 {
+    [Obsolete("Use Services.InitializeAppConfiguration() instead")]
     public static WebApplicationBuilder InitializeAppConfiguration(this WebApplicationBuilder builder)
         => builder.InitializeAppConfiguration(null);
 
+    [Obsolete("Use Services.InitializeAppConfiguration() instead")]
     public static WebApplicationBuilder InitializeAppConfiguration(
         this WebApplicationBuilder builder,
         Action<MasaAppConfigureOptionsRelation>? action)
     {
-        if (builder.Services.Any(service => service.ImplementationType == typeof(InitializeAppConfigurationProvider)))
-            return builder;
-
-        builder.Services.AddSingleton<InitializeAppConfigurationProvider>();
-
-        MasaApp.Services = builder.Services;
-
-        MasaAppConfigureOptionsRelation optionsRelation = new();
-        action?.Invoke(optionsRelation);
-        IConfiguration? migrateConfiguration = null;
-        bool initialized = false;
-        builder.Services.Configure<MasaAppConfigureOptions>(options =>
-        {
-            if (!initialized)
-            {
-                var masaConfiguration = builder.Services.BuildServiceProvider().GetService<IMasaConfiguration>();
-                if (masaConfiguration != null) migrateConfiguration = masaConfiguration.Local;
-                initialized = true;
-            }
-
-            if (string.IsNullOrWhiteSpace(options.AppId))
-                options.AppId = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.AppId)),
-                    builder.Configuration,
-                    migrateConfiguration);
-
-            if (string.IsNullOrWhiteSpace(options.Environment))
-                options.Environment = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.Environment)),
-                    builder.Configuration,
-                    migrateConfiguration);
-
-            if (string.IsNullOrWhiteSpace(options.Cluster))
-                options.Cluster = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.Cluster)),
-                    builder.Configuration,
-                    migrateConfiguration);
-
-            foreach (var key in optionsRelation.GetKeys())
-            {
-                options.TryAdd(key, GetConfigurationValue(
-                    optionsRelation.GetValue(key),
-                    builder.Configuration,
-                    migrateConfiguration));
-            }
-        });
+        builder.Services.InitializeAppConfiguration(action);
         return builder;
     }
 
-    private static string GetConfigurationValue((string Variable, string DefaultValue) defaultConfig,
-        IConfiguration configuration,
-        IConfiguration? migrateConfiguration)
-    {
-        var value = configuration[defaultConfig.Variable];
-        if (!string.IsNullOrWhiteSpace(value))
-            return value;
-
-        if (migrateConfiguration != null)
-            value = migrateConfiguration[defaultConfig.Variable];
-        if (string.IsNullOrWhiteSpace(value))
-            value = defaultConfig.DefaultValue;
-        return value;
-    }
-
+    [Obsolete("Use Services.AddMasaConfiguration() instead")]
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate = null)
@@ -84,55 +28,47 @@ public static class WebApplicationBuilderExtensions
         return builder.AddMasaConfiguration(configureDelegate, action);
     }
 
+    [Obsolete("Use Services.AddMasaConfiguration() instead")]
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
         params Assembly[] assemblies)
-        => builder.AddMasaConfiguration(
-            null,
-            options => options.Assemblies = assemblies);
-
-    public static WebApplicationBuilder AddMasaConfiguration(
-        this WebApplicationBuilder builder,
-        Action<ConfigurationOptions>? action)
-        => builder.AddMasaConfiguration(null, action);
-
-    public static WebApplicationBuilder AddMasaConfiguration(
-        this WebApplicationBuilder builder,
-        Action<IMasaConfigurationBuilder>? configureDelegate,
-        params Assembly[] assemblies)
-        => builder.AddMasaConfiguration(
-            configureDelegate,
-            options => options.Assemblies = assemblies);
-
-    public static WebApplicationBuilder AddMasaConfiguration(
-        this WebApplicationBuilder builder,
-        Action<IMasaConfigurationBuilder>? configureDelegate,
-        Action<ConfigurationOptions>? action)
     {
-        builder.InitializeAppConfiguration();
-
-        IConfigurationRoot masaConfiguration =
-            builder.Services.CreateMasaConfiguration(
-                configureDelegate,
-                builder.Configuration,
-                action);
-
-        if (!masaConfiguration.Providers.Any())
-            return builder;
-
-        Microsoft.Extensions.Hosting.HostingHostBuilderExtensions.ConfigureAppConfiguration(
-            builder.Host,
-            configBuilder => configBuilder.Sources.Clear());
-        builder.Configuration.AddConfiguration(masaConfiguration);
-
+        builder.Services.AddMasaConfiguration(assemblies);
         return builder;
     }
 
+    [Obsolete("Use Services.AddMasaConfiguration() instead")]
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
+        Action<ConfigurationOptions>? action)
+    {
+        builder.Services.AddMasaConfiguration(action);
+        return builder;
+    }
+
+    [Obsolete("Use Services.AddMasaConfiguration() instead")]
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
+        Action<IMasaConfigurationBuilder>? configureDelegate,
+        params Assembly[] assemblies)
+    {
+        builder.Services.AddMasaConfiguration(
+            configureDelegate, assemblies);
+        return builder;
+    }
+
+    [Obsolete("Use Services.AddMasaConfiguration() instead")]
+    public static WebApplicationBuilder AddMasaConfiguration(
+        this WebApplicationBuilder builder,
+        Action<IMasaConfigurationBuilder>? configureDelegate,
+        Action<ConfigurationOptions>? action)
+    {
+        builder.Services.AddMasaConfiguration(configureDelegate, action);
+        return builder;
+    }
+
+    [Obsolete("Use Services.GetMasaConfiguration() instead")]
     public static IMasaConfiguration GetMasaConfiguration(this WebApplicationBuilder builder)
         => builder.Services.BuildServiceProvider().GetRequiredService<IMasaConfiguration>();
-
-    private sealed class InitializeAppConfigurationProvider
-    {
-
-    }
 }
+#pragma warning restore CS0618

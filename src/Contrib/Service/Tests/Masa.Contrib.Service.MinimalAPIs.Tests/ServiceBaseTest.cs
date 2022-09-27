@@ -18,6 +18,12 @@ public class ServiceBaseTest
 
         serviceBase = GetGoodsService();
         Assert.AreEqual("api/v2/Goods", serviceBase.TestGetBaseUri(serviceMapOptions));
+
+        serviceBase = GetCatalogService();
+        Assert.AreEqual("api/v1/catalog", serviceBase.TestGetBaseUri(serviceMapOptions));
+
+        var baseUri = "/api/catalog";
+        Assert.AreEqual(baseUri, new CatalogService(baseUri).TestGetBaseUri(serviceMapOptions));
     }
 
     [DataTestMethod]
@@ -56,7 +62,7 @@ public class ServiceBaseTest
         var userService = GetUserService();
         var methodInfo = typeof(UserService).GetMethod("Test");
         Assert.IsNotNull(methodInfo);
-        string methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        string methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -64,7 +70,7 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test2");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -72,7 +78,7 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test3");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -80,7 +86,7 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test4");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -88,7 +94,7 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test5");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -96,7 +102,7 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test6");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
@@ -104,11 +110,38 @@ public class ServiceBaseTest
 
         methodInfo = typeof(UserService).GetMethod("Test7");
         Assert.IsNotNull(methodInfo);
-        methodName = userService.TestGetMethodName(methodInfo, methodInfo.Name, new ServiceGlobalRouteOptions()
+        methodName = userService.TestGetMethodName(methodInfo, string.Empty, new ServiceGlobalRouteOptions()
         {
             AutoAppendId = true
         });
         Assert.AreEqual("Test7/{id?}", methodName);
+
+        methodName = userService.TestGetMethodName(methodInfo, "Test", new ServiceGlobalRouteOptions()
+        {
+            AutoAppendId = true
+        });
+        Assert.AreEqual("7/{id?}", methodName);
+    }
+
+    [DataTestMethod]
+    [DataRow(null, null, "")]
+    [DataRow(null, false, "")]
+    [DataRow(null, true, "Add")]
+    [DataRow(false, null, "")]
+    [DataRow(false, false, "")]
+    [DataRow(false, true, "")]
+    [DataRow(true, null, "Add")]
+    [DataRow(true, true, "Add")]
+    [DataRow(true, false, "Add")]
+    public void TestDisableTrimMethodPrefix(bool? disableTrimMethodPrefix, bool? globalDisableTrimMethodPrefix, string actualMethodName)
+    {
+        var userService = new UserService(disableTrimMethodPrefix);
+        var methodInfo = typeof(UserService).GetMethod("AddAsync");
+        var methodName = userService.TestGetMethodName(methodInfo!, "Add", new ServiceGlobalRouteOptions()
+        {
+            DisableTrimMethodPrefix = globalDisableTrimMethodPrefix
+        });
+        Assert.AreEqual(actualMethodName, methodName);
     }
 
     [TestMethod]
@@ -118,6 +151,55 @@ public class ServiceBaseTest
         var baseUri = "https://www.github.com";
         var goodsService = new GoodsService(services, baseUri);
         Assert.AreEqual(baseUri, goodsService.BaseUri);
+    }
+
+    [DataTestMethod]
+    [DataRow("AddUser", "POST", "Add")]
+    [DataRow("PostUser", "POST", "Post")]
+    [DataRow("DeleteUser", "DELETE", "Delete")]
+    [DataRow("PutUser", "PUT", "Put")]
+    [DataRow("GetUser", "GET", "Get")]
+    [DataRow("AuditState", null, "")]
+    public void TestParseMethod(
+        string methodName,
+        string? actualHttpMethod,
+        string actualPrefix)
+    {
+        var service = new UserService();
+        var globalOptions = new ServiceGlobalRouteOptions();
+        var result = service.TestParseMethod(globalOptions, methodName);
+        Assert.AreEqual(actualHttpMethod, result.HttpMethod);
+        Assert.AreEqual(actualPrefix, result.Prefix);
+    }
+
+    [DataTestMethod]
+    [DataRow("", "", null)]
+    [DataRow("Post,Add", "", "Post,Add")]
+    [DataRow("Post,Insert", "Post,Add", "Post,Insert")]
+    [DataRow("", "Post,Add", "Post,Add")]
+    public void TestGetDefaultHttpMethods(string defaultHttpMethods, string globalDefaultHttpMethods, string? actualHttpMethods)
+    {
+        var globalOptions = new ServiceRouteOptions()
+        {
+            MapHttpMethodsForUnmatched =
+                globalDefaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray()
+        };
+        var userService = new UserService(defaultHttpMethods.Split(',').Where(httpMethod => !string.IsNullOrEmpty(httpMethod)).ToArray());
+
+        Assert.AreEqual(actualHttpMethods != null ?
+                actualHttpMethods.Split(',').Length : 0,
+            userService.TestGetDefaultHttpMethods(globalOptions).Length);
+    }
+
+    [DataTestMethod]
+    [DataRow(false, null)]
+    public void TestGetServiceName(bool enablePluralizeServiceName, string actualServiceName)
+    {
+        var service = GetCatalogService();
+        Assert.AreEqual("Catalog", service.TestGetServiceName(null));
+
+        var pluralizationService = PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en"));
+        Assert.AreEqual("Catalogs", service.TestGetServiceName(pluralizationService));
     }
 
     #region private methods
@@ -130,6 +212,9 @@ public class ServiceBaseTest
 
     private static CustomServiceBase GetGoodsService()
         => new GoodsService();
+
+    private static CustomServiceBase GetCatalogService()
+        => new CatalogService();
 
     #endregion
 

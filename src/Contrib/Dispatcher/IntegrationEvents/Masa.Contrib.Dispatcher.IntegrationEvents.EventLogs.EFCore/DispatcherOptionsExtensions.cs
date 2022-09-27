@@ -11,9 +11,11 @@ public static class DispatcherOptionsExtensions
     /// </summary>
     /// <typeparam name="TDbContext"></typeparam>
     /// <param name="options"></param>
+    /// <param name="disableEntityTypeConfiguration">Disable configuration local message table configuration mapping relationship, default: false（If disabled, you need to configure the mapping manually）</param>
     /// <returns></returns>
     public static IDispatcherOptions UseEventLog<TDbContext>(
-        this IDispatcherOptions options) where TDbContext : MasaDbContext, IMasaDbContext
+        this IDispatcherOptions options,
+        bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext, IMasaDbContext
     {
         if (options.Services == null)
             throw new ArgumentNullException(nameof(options.Services));
@@ -25,8 +27,11 @@ public static class DispatcherOptionsExtensions
         options.Services.TryAddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
 
         //Add local message table model mapping
-        options.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IModelCreatingProvider),
-            typeof(IntegrationEventLogModelCreatingProvider), ServiceLifetime.Singleton));
+        if (!disableEntityTypeConfiguration)
+            options.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IModelCreatingProvider),
+                typeof(IntegrationEventLogModelCreatingProvider),
+                ServiceLifetime.Singleton));
+
         options.Services.TryAddScoped(typeof(IntegrationEventLogContext),
             serviceProvider => new IntegrationEventLogContext(serviceProvider.GetRequiredService<TDbContext>()));
         return options;

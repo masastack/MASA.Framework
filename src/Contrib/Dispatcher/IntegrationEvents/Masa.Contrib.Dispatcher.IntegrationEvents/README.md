@@ -4,14 +4,16 @@
 
 Example:
 
-``` C#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //Use cross-process
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //For example, use dapr to provide pub and sub capabilities, or you can choose other implementations by yourself
 Install-Package Masa.Contrib.Data.UoW.EFCore //Use UnitOfWork
 Install-Package Masa.Contrib.Data.EFCore.SqlServer // Use SqlServer
 ```
 
-1. Add IIntegrationEventBus
+### Get Started
+
+1. Register integration events (cross-process events)
 
 1.1 Specify the local message service
 

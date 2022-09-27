@@ -10,7 +10,7 @@ Masa.Contrib.Service.Caller是Caller的基础类库，提供了以下能力的�
 * `IResponseMessage`: 提供对响应数据处理的能力 (默认实现[`DefaultResponseMessage`](./DefaultResponseMessage.cs)) (Singleton)
 * `ITypeConvertor`: 提供类型转换的能力，为`ICaller`的`Get`请求支撑 (Singleton)
 
-## 总结
+### 总结
 
 `Masa.Contrib.Service.Caller`是Caller的基础类库，但不能单独使用，目前Caller支持了两种实现方式：
 

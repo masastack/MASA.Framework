@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.IdGenerator.Snowflake.Tests.Infrastructure;
+extern alias SnowflakeRedis;
 
-public class CustomerMachineClockIdGenerator : Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator
+namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Infrastructure;
+
+public class CustomerMachineClockIdGenerator : SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator
 {
     public CustomerMachineClockIdGenerator(IDistributedCacheClient distributedCacheClient,
         IWorkerProvider workerProvider,

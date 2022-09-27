@@ -52,6 +52,21 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestGetThirdPartyUserAsync()
+    {
+        var data = new UserModel();
+        var model = new GetThirdPartyUserModel();
+        var requestUri = $"api/thirdPartyUser";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model, default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.GetThirdPartyUserAsync(model);
+        caller.Verify(provider => provider.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model, default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     public async Task UpsertAsync()
     {
         var upsertUser = new UpsertUserModel();
@@ -345,7 +360,7 @@ public class UserServiceTest
     public async Task SendMsgCodeAsync()
     {
         var code = new SendMsgCodeModel();
-        var requestUri = $"api/universal/send_sms";
+        var requestUri = $"api/message/sms";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
@@ -601,7 +616,7 @@ public class UserServiceTest
     public async Task TestSendEmailAsync()
     {
         var model = new SendEmailModel();
-        var requestUri = $"api/universal/send_email";
+        var requestUri = $"api/message/email";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();

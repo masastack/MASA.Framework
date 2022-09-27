@@ -7,13 +7,16 @@ internal static class DccFactory
 {
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
-        IMultilevelCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationApiClient(serviceProvider, client, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions);
+        return new ConfigurationApiClient(serviceProvider,
+            jsonSerializerOptions,
+            dccOptions,
+            defaultSectionOption,
+            expandSectionOptions);
     }
 
     public static IConfigurationApiManage CreateManage(

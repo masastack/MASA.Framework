@@ -7,12 +7,11 @@ internal class CustomConfigurationApiClient : ConfigurationApiClient
 {
     public CustomConfigurationApiClient(
         IServiceProvider serviceProvider,
-        IMultilevelCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
-        : base(serviceProvider, client, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions)
+        : base(serviceProvider, jsonSerializerOptions, dccOptions, defaultSectionOption, expandSectionOptions)
     {
     }
 

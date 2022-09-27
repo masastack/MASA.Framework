@@ -4,28 +4,30 @@
 
 Masa.Contrib.Data.IdGenerator.Snowflake is an id constructor based on snowflake id, providing a unique identifier of long type
 
-## Example:
+Example:
 
-1. Install `Masa.Contrib.Data.IdGenerator.Snowflake`
+``` c#
+Install-Package Masa.Contrib.Data.IdGenerator.Snowflake
+```
 
-    ````c#
-    Install-Package Masa.Contrib.Data.IdGenerator.Snowflake
-    ````
+### Get Started
 
-2. Using `Masa.Contrib.Data.IdGenerator.Snowflake`
+1. Register snowflake id constructor, modify `Program.cs`
 
-    ```` C#
-    builder.Services.AddSnowflake();
-    ````
+``` C#
+builder.Services.AddSnowflake();
+```
 
-3. Set the value of WorkerId for the current service, add the value of the environment variable `WORKER_ID`, the range is: 0-1023 (2^MaxWorkerId-1)
+2. Set the value of WorkerId for the current service, add the value of the environment variable `WORKER_ID`, the range is: 0-1023 (2^MaxWorkerId-1)
 
-4. Get Id
+3. Get Id
 
-    ````
-    ISnowflakeGenerator generator;// Get it through DI, or get it through IdGeneratorFactory.SnowflakeGenerator
-    generator.NewId();//Create a unique id
-    ````
+``` C#
+ISnowflakeGenerator generator;// Get it through DI
+generator.NewId();//Create a unique id
+```
+
+> Or Use `MasaApp.GetRequiredService<ISnowflakeGenerator>().NewId()`
 
 ### Parameters and FAQs:
 

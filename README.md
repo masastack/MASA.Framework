@@ -45,13 +45,13 @@ The following are the building block abilities provided by the Framework:
 
 ``` shell
 dotnet new --install Masa.Template
-````
+```
 
 #### Create Project
 
 ``` shell
 dotnet new masafx -o Masa.Framework.Demo
-````
+```
 
 > Or Use the `MASA Framework Project` template to create through Visual Studio
 
@@ -59,7 +59,7 @@ dotnet new masafx -o Masa.Framework.Demo
 
 ``` shell
 dotnet run
-````
+```
 
 
 

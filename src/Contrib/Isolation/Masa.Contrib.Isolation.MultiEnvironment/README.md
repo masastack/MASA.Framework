@@ -4,11 +4,13 @@
 
 Example：
 
-```C#
-Install-Package Masa.Contrib.Isolation.UoW.EFCore
+``` powershell
+Install-Package Masa.Contrib.Isolation.UoW.EFCore //Isolation work unit based on EFCore, please use Masa.Contrib.Data.UoW.EFCore if Isolation is not required
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServer database usage
 ```
+
+### Get Started
 
 1. Configure `appsettings.json`
 ``` appsettings.json
@@ -33,31 +35,31 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 * 1.3 When the current environment is another environment: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. Using Isolation.UoW.EF
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment(),
         dbOptions => dbOptions.UseSqlServer());
 });
-````
+```
 
 3. DbContext needs to inherit IsolationDbContext
 
-```` C#
+``` C#
 public class CustomDbContext : IsolationDbContext
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 }
-````
+```
 
 4. The class corresponding to the isolated table needs to implement IMultiEnvironment
 
 You can also choose not to implement IMultiEnvironment when using physical isolation
 
-##### Summarize
+### Summarize
 
 * How is the environment resolved in the controller or MinimalAPI?
     * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
@@ -73,17 +75,17 @@ You can also choose not to implement IMultiEnvironment when using physical isola
     * If the parsing environment fails, return DefaultConnection directly
 * How to change the default environment parameter name
 
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
         isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),// Use environment isolation
         dbOptions => dbOptions.UseSqlServer());
 });
-````
+```
 * How to change the parser
 
-```` C#
+``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {
     eventBusBuilder.UseIsolationUoW<CustomDbContext>(
@@ -93,4 +95,4 @@ builder.Services.AddEventBus(eventBusBuilder =>
         }),
         dbOptions => dbOptions.UseSqlServer());// Use environment isolation
 });
-````
+```

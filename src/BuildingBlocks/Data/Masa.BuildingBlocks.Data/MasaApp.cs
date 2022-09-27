@@ -17,7 +17,12 @@ public static class MasaApp
         private set => _rootServiceProvider = value;
     }
 
-    public static IServiceCollection Services { get; set; }
+    public static IServiceCollection Services { get; set; } = new ServiceCollection();
+
+    /// <summary>
+    /// Global JsonSerializerOptions configuration
+    /// </summary>
+    public static JsonSerializerOptions? JsonSerializerOptions { get; set; }
 
     public static void Build() => Build(Services.BuildServiceProvider());
 
@@ -34,4 +39,13 @@ public static class MasaApp
 
     public static TService GetRequiredService<TService>(IServiceProvider serviceProvider) where TService : notnull
         => serviceProvider.GetRequiredService<TService>();
+
+    public static void TrySetServiceCollection(IServiceCollection services)
+    {
+        if (Services.Count == 0)
+        {
+            Services = services;
+            _rootServiceProvider = null;
+        }
+    }
 }

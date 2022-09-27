@@ -6,13 +6,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaIdentity(
-        this IServiceCollection services)
-        => AddMasaIdentityCore(services).AddMasaIdentityCore();
+        this IServiceCollection services,
+        Action<JsonSerializerOptions>? configure = null)
+        => AddMasaIdentityCore(services).AddMasaIdentityCore(configure);
 
     public static IServiceCollection AddMasaIdentity(
         this IServiceCollection services,
-        Action<IdentityClaimOptions> configureOptions)
-        => AddMasaIdentityCore(services).AddMasaIdentityCore(configureOptions);
+        Action<IdentityClaimOptions> configureOptions,
+        Action<JsonSerializerOptions>? configure = null)
+        => AddMasaIdentityCore(services).AddMasaIdentityCore(configureOptions, configure);
 
     public static IServiceCollection AddMasaIdentity(
         this IServiceCollection services,
