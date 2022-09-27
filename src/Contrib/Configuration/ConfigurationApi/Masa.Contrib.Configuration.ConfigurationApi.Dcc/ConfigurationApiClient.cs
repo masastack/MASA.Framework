@@ -5,7 +5,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IMemoryCacheClient _client;
+    private readonly IMultilevelCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
     private readonly DccOptions _dccOptions;
@@ -23,7 +23,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        var client = serviceProvider.GetRequiredService<IMemoryCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
         ArgumentNullException.ThrowIfNull(client);
 
         _client = client;

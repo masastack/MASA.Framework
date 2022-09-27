@@ -39,9 +39,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
         services.AddCaller(callerOptions);
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, redisOptions).AddMasaMemoryCache(options =>
+        services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, redisOptions).AddMultilevelCache(options =>
         {
-            options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
+            options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
             options.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
         });
 

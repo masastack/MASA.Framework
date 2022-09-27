@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.Configuration;
 
 public static class MasaConfigurationBuilderExtensions
 {
-    public static void UseMasaOptions(this IMasaConfigurationBuilder builder, Action<MasaRelationOptions> options)
+    public static void UseMasaOptions(this IMasaConfigurationBuilder builder, Action<MasaConfigurationRelationOptions> options)
     {
-        var relation = new MasaRelationOptions();
+        var relation = new MasaConfigurationRelationOptions();
         options.Invoke(relation);
         builder.AddRelations(relation.Relations.ToArray());
     }

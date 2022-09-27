@@ -7,7 +7,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 public class DccClientTest
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
-    private Mock<IMemoryCacheClient> _client;
+    private Mock<IMultilevelCacheClient> _client;
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
@@ -20,8 +20,8 @@ public class DccClientTest
     [TestInitialize]
     public void Initialize()
     {
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
-        _client = new Mock<IMemoryCacheClient>();
+        Mock<IMultilevelCacheClientFactory> multilevelCacheClientFactory = new();
+        _client = new Mock<IMultilevelCacheClient>();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -42,10 +42,10 @@ public class DccClientTest
         _trigger = new CustomTrigger(_jsonSerializerOptions);
         _serializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _deserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient("masa.contrib.configuration.configurationapi.dcc"))
+        multilevelCacheClientFactory
+            .Setup(factory => factory.Create("masa.contrib.configuration.configurationapi.dcc"))
             .Returns(() => _client.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
+        _services.AddSingleton(_ => multilevelCacheClientFactory.Object);
 
         var serializerFactory = new Mock<ISerializerFactory>();
         var deserializerFactory = new Mock<IDeserializerFactory>();
@@ -495,13 +495,13 @@ addresses:
             Content = brand.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Text
         });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
@@ -525,8 +525,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
     {
-        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         Dictionary<string, string> masaDic = new Dictionary<string, string>()
         {
             { "Id", Guid.NewGuid().ToString() },
@@ -540,9 +539,9 @@ addresses:
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
@@ -567,7 +566,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
@@ -577,9 +576,9 @@ addresses:
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
@@ -603,7 +602,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
         var response = JsonSerializer.Serialize(new PublishRelease()
         {
@@ -613,9 +612,9 @@ addresses:
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 

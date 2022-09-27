@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class DefaultIdGeneratorFactory : AbstractMasaFactory<IIdGenerator, IdGeneratorRelationOptions>,
+public class DefaultIdGeneratorFactory : MasaFactoryBase<IIdGenerator, IdGeneratorRelationOptions>,
     IIdGeneratorFactory
 {
     private IGuidGenerator? _guidGenerator;

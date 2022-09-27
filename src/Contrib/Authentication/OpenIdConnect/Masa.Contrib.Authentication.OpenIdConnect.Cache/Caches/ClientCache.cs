@@ -5,7 +5,7 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 
 public class ClientCache : IClientCache
 {
-    IMemoryCacheClient _memoryCacheClient;
+    private readonly IMultilevelCacheClient _memoryCacheClient;
 
     public ClientCache(MemoryCacheProvider memoryCacheProvider)
     {
@@ -19,7 +19,7 @@ public class ClientCache : IClientCache
 
     public async Task<List<ClientModel>> GetListAsync(IEnumerable<string> clientIds)
     {
-        var keys = clientIds.Select(clientId => FormatKey(clientId)).ToArray();
+        var keys = clientIds.Select(FormatKey).ToArray();
         var clients = await _memoryCacheClient.GetListAsync<ClientModel>(keys);
         return clients.Where(client => client is not null).ToList()!;
     }
@@ -36,14 +36,14 @@ public class ClientCache : IClientCache
 
     public async Task SetRangeAsync(IEnumerable<Client> clients)
     {
-        var data = clients.ToDictionary(client => FormatKey(client), client => client.ToModel());
-        await _memoryCacheClient.SetListAsync(data);
+        var data = clients.ToDictionary(FormatKey, client => client.ToModel());
+        await _memoryCacheClient.SetListAsync(data!);
     }
 
     public async Task ResetAsync(IEnumerable<Client> clients)
     {
-        var data = clients.ToDictionary(client => FormatKey(client), client => client.ToModel());
-        await _memoryCacheClient.SetListAsync(data);
+        var data = clients.ToDictionary(FormatKey, client => client.ToModel());
+        await _memoryCacheClient.SetListAsync(data!);
     }
 
     private string FormatKey(Client client)

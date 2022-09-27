@@ -3,11 +3,19 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
-public class CustomMemoryCacheClientFactory : IMemoryCacheClientFactory
+public class CustomMemoryCacheClientFactory : IMultilevelCacheClientFactory
 {
     private readonly IMemoryCache _memoryCache;
 
     public CustomMemoryCacheClientFactory(IMemoryCache memoryCache) => _memoryCache = memoryCache;
 
-    public IMemoryCacheClient CreateClient(string name) => new MemoryCacheClient(_memoryCache, null!, SubscribeKeyTypes.SpecificPrefix);
+    public IMultilevelCacheClient Create()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IMultilevelCacheClient Create(string name)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -9,7 +9,6 @@ public static class CallerOptionsExtensions
         Func<MasaHttpClientBuilder>? clientBuilder = null)
         => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
 
-
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,
         Func<MasaHttpClientBuilder>? clientBuilder = null)
@@ -26,7 +25,6 @@ public static class CallerOptionsExtensions
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         Action<MasaHttpClientBuilder>? clientBuilder)
         => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
-
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,

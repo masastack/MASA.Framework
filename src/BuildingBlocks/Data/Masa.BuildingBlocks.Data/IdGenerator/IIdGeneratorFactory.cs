@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IIdGeneratorFactory
+public interface IIdGeneratorFactory : IMasaFactory<IIdGenerator>
 {
     IGuidGenerator GuidGenerator { get; }
 
@@ -14,8 +14,4 @@ public interface IIdGeneratorFactory
     IIdGenerator<TOut> Create<TOut>() where TOut : notnull;
 
     IIdGenerator<TOut> Create<TOut>(string name) where TOut : notnull;
-
-    IIdGenerator Create();
-
-    IIdGenerator Create(string name);
 }

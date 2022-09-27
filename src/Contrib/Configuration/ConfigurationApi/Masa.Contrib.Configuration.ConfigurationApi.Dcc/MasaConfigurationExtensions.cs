@@ -28,7 +28,8 @@ public static class MasaConfigurationExtensions
 
         services.AddSingleton<DccConfigurationProvider>();
 
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, dccOptions.RedisOptions)
+        services
+            .AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, dccOptions.RedisOptions)
             .AddSharedMasaMemoryCache(dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
@@ -167,7 +168,7 @@ public static class MasaConfigurationExtensions
     }
 
     private static IDistributedCacheClient GetDistributedCacheClient(this IServiceProvider serviceProvider)
-        => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
+        => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
 
     private static void CheckDccConfigurationOptions(DccConfigurationOptions dccOptions)
     {
@@ -191,10 +192,10 @@ public static class MasaConfigurationExtensions
 
     private static ICachingBuilder AddSharedMasaMemoryCache(this ICachingBuilder builder, string subscribeKeyPrefix)
     {
-        builder.AddMasaMemoryCache(options =>
+        builder.AddMultilevelCache(new MultilevelCacheOptions()
         {
-            options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
-            options.SubscribeKeyPrefix = subscribeKeyPrefix;
+            SubscribeKeyType = SubscribeKeyType.SpecificPrefix,
+            SubscribeKeyPrefix = subscribeKeyPrefix
         });
 
         return builder;

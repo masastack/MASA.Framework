@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data;
 
-public class DefaultTypeConvertFactory : AbstractMasaFactory<ITypeConvertProvider, TypeConvertRelationOptions>,
+public class DefaultTypeConvertFactory : MasaFactoryBase<ITypeConvertProvider, TypeConvertRelationOptions>,
     ITypeConvertFactory
 {
     protected override string DefaultServiceNotFoundMessage

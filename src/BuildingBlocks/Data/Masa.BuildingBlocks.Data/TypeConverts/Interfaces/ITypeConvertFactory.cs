@@ -3,9 +3,6 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface ITypeConvertFactory
+public interface ITypeConvertFactory : IMasaFactory<ITypeConvertProvider>
 {
-    ITypeConvertProvider Create();
-
-    ITypeConvertProvider Create(string name);
 }

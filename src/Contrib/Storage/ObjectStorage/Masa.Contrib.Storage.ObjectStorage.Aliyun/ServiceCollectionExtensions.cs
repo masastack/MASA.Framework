@@ -20,8 +20,8 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrEmpty(sectionName))
             throw new ArgumentException(sectionName, nameof(sectionName));
 
-        services.TryAddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
-        services.TryAddConfigure<AliyunStorageConfigureOptions>(sectionName);
+        services.AddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
+        services.AddConfigure<AliyunStorageConfigureOptions>(sectionName);
         services.TryAddSingleton<IAliyunStorageOptionProvider>(serviceProvider
             => new DefaultAliyunStorageOptionProvider(GetAliyunStorageConfigurationOption(serviceProvider)));
         services.TryAddSingleton<IClientContainer>(serviceProvider
@@ -98,30 +98,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IBucketNameProvider, BucketNameProvider>();
         services.TryAddSingleton(typeof(IClientContainer<>), typeof(DefaultClientContainer<>));
         services.TryAddSingleton<IClientFactory, DefaultClientFactory>();
-        return services;
-    }
-
-    private static IServiceCollection TryAddConfigure<TOptions>(
-        this IServiceCollection services,
-        string sectionName)
-        where TOptions : class
-    {
-        var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
-            serviceProvider.GetService<IConfiguration>();
-
-        if (configuration == null)
-            return services;
-
-        string name = Microsoft.Extensions.Options.Options.DefaultName;
-        services.AddOptions();
-        var configurationSection = configuration.GetSection(sectionName);
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configurationSection));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(name,
-            configurationSection, _ =>
-            {
-            }));
         return services;
     }
 

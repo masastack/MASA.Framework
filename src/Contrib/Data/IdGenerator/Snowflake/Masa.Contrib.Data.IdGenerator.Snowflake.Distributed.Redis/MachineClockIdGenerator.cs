@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
@@ -6,19 +6,19 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class MachineClockIdGenerator : Snowflake.MachineClockIdGenerator
 {
     private readonly string _lastTimestampKey = "snowflake.last_timestamp";
-    private long _lastRefreshTimestamp = 0;
+    private long _lastRefreshTimestamp;
     private readonly long _refreshTimestampInterval;
     private readonly BaseRedis _redis;
 
     public MachineClockIdGenerator(
         IDistributedCacheClient distributedCacheClient,
         IWorkerProvider workerProvider,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         DistributedIdGeneratorOptions distributedIdGeneratorOptions)
         : base(workerProvider, distributedIdGeneratorOptions.IdGeneratorOptions)
     {
         _redis = new BaseRedis(distributedCacheClient, redisOptions);
-        _refreshTimestampInterval = distributedIdGeneratorOptions.IdGeneratorOptions.TimestampType == TimestampType.Milliseconds ?
+        _refreshTimestampInterval = distributedIdGeneratorOptions.IdGeneratorOptions.TimestampType == TimestampType.Seconds ?
             long.Parse(Math.Ceiling(distributedIdGeneratorOptions.RefreshTimestampInterval / 1000m)
                 .ToString(CultureInfo.InvariantCulture)) : distributedIdGeneratorOptions.RefreshTimestampInterval;
         if (_redis.Database.HashExists(_lastTimestampKey, GetHashField()))
