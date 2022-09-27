@@ -3,6 +3,7 @@
 
 global using Mapster;
 global using Mapster.Models;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.Mapping;
 global using Masa.BuildingBlocks.Data.Mapping.Options;
 global using Masa.BuildingBlocks.Data.Mapping.Options.Enum;

@@ -9,19 +9,49 @@ public static class ServiceCollectionExtensions
         => services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAtEnd);
 
     public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, SequentialGuidType guidType)
-        => services.AddSequentialGuidGenerator(guidType, Options.Options.DefaultName);
+        => services.AddSequentialGuidGenerator(Options.Options.DefaultName, guidType);
 
     public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, string name)
-        => services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAtEnd, name);
+        => services.AddSequentialGuidGenerator(name, SequentialGuidType.SequentialAtEnd);
 
-    public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, SequentialGuidType guidType, string name)
+    public static IServiceCollection AddSequentialGuidGenerator(this IServiceCollection services, string name, SequentialGuidType guidType)
+    {
+        services.AddSequentialGuidGeneratorCore(guidType, name);
+        MasaApp.TrySetServiceCollection(services);
+        return services;
+    }
+
+    public static IServiceCollection TestAddSequentialGuidGenerator(this IServiceCollection services)
+        => services.TestAddSequentialGuidGenerator(SequentialGuidType.SequentialAtEnd);
+
+    public static IServiceCollection TestAddSequentialGuidGenerator(this IServiceCollection services, SequentialGuidType guidType)
+        => services.TestAddSequentialGuidGenerator(Options.Options.DefaultName, guidType);
+
+    public static IServiceCollection TestAddSequentialGuidGenerator(this IServiceCollection services, string name)
+        => services.TestAddSequentialGuidGenerator(name, SequentialGuidType.SequentialAtEnd);
+
+    public static IServiceCollection TestAddSequentialGuidGenerator(
+        this IServiceCollection services,
+        string name,
+        SequentialGuidType guidType)
+    {
+        services.AddSequentialGuidGeneratorCore(guidType, name);
+        MasaApp.Services = services;
+        MasaApp.Build();
+        return services;
+    }
+
+    private static IServiceCollection AddSequentialGuidGeneratorCore(
+        this IServiceCollection services,
+        SequentialGuidType guidType,
+        string name)
     {
         if (services.Any(service => service.ImplementationType == typeof(SequentialGuidGeneratorProvider)))
             return services;
 
         services.AddSingleton<SequentialGuidGeneratorProvider>();
 
-        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        ArgumentNullException.ThrowIfNull(name);
 
         services.AddIdGeneratorCore();
         services.TryAddSingleton<ISequentialGuidGenerator>(_ => new SequentialGuidGenerator(guidType));
@@ -35,7 +65,6 @@ public static class ServiceCollectionExtensions
                 Func = serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>()
             });
         });
-
         return services;
     }
 

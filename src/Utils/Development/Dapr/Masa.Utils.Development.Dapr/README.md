@@ -10,20 +10,21 @@ Provide core support for Masa.Utils.Development.Dapr.AspNetCore
 
 The start, stop, refresh, and dapr daemon of the dapr process are provided by such libraries
 
-### Usage:
+Example：
 
-1. Install Masa.Utils.Development.Dapr.AspNetCore
-``` C#
-Install-Package Masa.Utils.Development.Dapr.AspNetCore
+``` powershell
+Install-Package Masa.Utils.Development.Dapr
 ```
 
-2. Add DaprStarter to assist in managing the dapr process (recommended to be used in the development environment)
+### Get Started
+
+1. Add DaprStarter to assist in managing the dapr process (recommended to be used in the development environment)
 
 ``` C#
 builder.Services.AddDaprStarterCore();
 ```
 
-3. Inject IDaprProcess at the specified location as needed, and then call the Start method to start the dapr process or hand it over to Masa.Utils.Development.Dapr.AspNetCore to manage the dapr process. Related documents can be found at [View](../Masa.Utils.Development.Dapr.AspNetCore/README.md)
+2. Inject IDaprProcess at the specified location as needed, and then call the Start method to start the dapr process or hand it over to Masa.Utils.Development.Dapr.AspNetCore to manage the dapr process. Related documents can be found at [View](../Masa.Utils.Development.Dapr.AspNetCore/README.md)
 
 Example：
 
@@ -58,7 +59,9 @@ public class DaprController : ControllerBase
 }
 ```
 
-## Notice
+### Advanced
+
+#### Notice
 
 1. The netstat command is used in the library, please make sure the netstat command is available
 
@@ -82,7 +85,7 @@ apt-get install net-tools
     1. Dapr AppID follows the FQDN format, which includes the target namespace
     2. FQDN is spliced with the symbol .
 
-### Rule
+#### Rule
 
 dapr AppId naming rules default:
 

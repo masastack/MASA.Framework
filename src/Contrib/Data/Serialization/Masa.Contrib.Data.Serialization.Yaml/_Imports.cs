@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data;
+global using Masa.Contrib.Data.Serialization.Yaml;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Options;
 global using YamlDotNet.Serialization;
 global using YamlDotNet.Serialization.NamingConventions;

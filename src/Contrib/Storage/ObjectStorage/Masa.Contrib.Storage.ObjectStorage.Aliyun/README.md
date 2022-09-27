@@ -4,9 +4,9 @@
 
 Example：
 
-````C#
+``` powershell
 Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
-````
+```
 
 support:
 * GetSecurityToken: Gets the security token(Sts RegionId and RoleArn and RoleSessionName are required)
@@ -15,10 +15,10 @@ support:
 * ObjectExistsAsync: Determine whether the object exists
 * DeleteObjectAsync: Delete object
 
-### Usage 1:
+### Usage 1
 
 1. Configure appsettings.json
-```` C#
+``` C#
 {
   "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
@@ -40,27 +40,27 @@ support:
     }
   }
 }
-````
+```
 
 2. Add Aliyun Storage Service
 
-````C#
+``` C#
 builder.Services.AddAliyunStorage();
-````
+```
 
 3. Get `IClient` from DI
 
-     ```` C#
+     ``` C#
      //upload files
      var fileStream = File.OpenRead("D://favicon.png");//Replace the local file path
      await serviceProvider.GetService<IClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
-     ````
+     ```
 
-### Usage 2:
+### Usage 2
 
 1. Add Aliyun Storage Service
 
-````C#
+``` C#
 var configuration = builder.Configuration;
 var aliyunStorageOptions = new AliyunStorageOptions(
     configuration["Aliyun:AccessKeyId"],
@@ -72,7 +72,7 @@ var aliyunStorageOptions = new AliyunStorageOptions(
     Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
 };
 builder.Services.AddAliyunStorage(aliyunStorageOptions);
-````
+```
 
 2. Get `IClient` from DI and use the corresponding method
 
@@ -80,7 +80,7 @@ builder.Services.AddAliyunStorage(aliyunStorageOptions);
 
 1. Add Aliyun Storage Service
 
-````C#
+``` C#
 var configuration = builder.Configuration;
 builder.Services.AddAliyunStorage(() =>
 {
@@ -94,7 +94,7 @@ builder.Services.AddAliyunStorage(() =>
         Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
     };
 });
-````
+```
 
 2. Get `IClient` from DI and use the corresponding method
 

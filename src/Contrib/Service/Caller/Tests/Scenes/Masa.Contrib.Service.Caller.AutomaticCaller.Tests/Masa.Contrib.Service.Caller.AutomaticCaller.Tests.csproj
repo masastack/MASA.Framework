@@ -22,7 +22,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Masa.Contrib.Service.Caller.DaprClient\Masa.Contrib.Service.Caller.DaprClient.csproj" />
     <ProjectReference Include="..\..\..\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
-    <ProjectReference Include="..\..\..\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>
 
 </Project>

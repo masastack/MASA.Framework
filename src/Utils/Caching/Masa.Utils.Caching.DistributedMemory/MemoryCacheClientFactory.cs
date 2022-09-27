@@ -9,9 +9,9 @@ public class MemoryCacheClientFactory : IMemoryCacheClientFactory
 
     private readonly IOptionsMonitor<MasaMemoryCacheOptions> _optionsMonitor;
 
-    private readonly ConcurrentDictionary<string, Lazy<MemoryCacheClient>> _clients;
+    private readonly ConcurrentDictionary<string, Lazy<IMemoryCacheClient>> _clients;
 
-    private readonly Func<string, Lazy<MemoryCacheClient>> _clientFactory;
+    private readonly Func<string, Lazy<IMemoryCacheClient>> _clientFactory;
 
     public MemoryCacheClientFactory(IServiceProvider services, IOptionsMonitor<MasaMemoryCacheOptions> optionsMonitor)
     {
@@ -23,18 +23,18 @@ public class MemoryCacheClientFactory : IMemoryCacheClientFactory
 
         _optionsMonitor = optionsMonitor;
 
-        _clients = new ConcurrentDictionary<string, Lazy<MemoryCacheClient>>();
+        _clients = new ConcurrentDictionary<string, Lazy<IMemoryCacheClient>>();
 
         _clientFactory = (name) =>
         {
-            return new Lazy<MemoryCacheClient>(() =>
+            return new Lazy<IMemoryCacheClient>(() =>
             {
                 return CreateClientHandler(name);
             });
         };
     }
 
-    public MemoryCacheClient CreateClient(string name)
+    public IMemoryCacheClient CreateClient(string name)
     {
         ArgumentNullException.ThrowIfNull(name);
 
@@ -43,7 +43,7 @@ public class MemoryCacheClientFactory : IMemoryCacheClientFactory
         return client.Value;
     }
 
-    internal MemoryCacheClient CreateClientHandler(string name)
+    internal IMemoryCacheClient CreateClientHandler(string name)
     {
         var options = _optionsMonitor.Get(name);
 

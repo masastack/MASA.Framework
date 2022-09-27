@@ -1,20 +1,24 @@
 [中](README.zh-CN.md) | EN
 
-### DomainEventBus
+## Masa.Contrib.Ddd.Domain
+
+Provides infrastructure to make development based on Domain Driven Design easier to achieve
 
 Example：
 
-```c#
-Install-Package Masa.Contrib.Ddd.Domain
-Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore
+``` powershell
+Install-Package Masa.Contrib.Ddd.Domain // Provide domain events, support event enqueue and release
+Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore // Provides a default implementation based on IRepository and supports automatic injection of custom Repository
 
-Install-Package Masa.Contrib.Dispatcher.Events
+Install-Package Masa.Contrib.Dispatcher.Events //Provide in-process events (local events), support event orchestration, Saga, middleware
 
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr
-Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore
-Install-Package Masa.Contrib.Data.UoW.EFCore
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //Provide Dapr-based outbox
+Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore //Provide EFCore-based local message table
+Install-Package Masa.Contrib.Data.UoW.EFCore //Provide unit of work
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //Provide EFCore-based SqlServer implementation
 ```
+
+### Get Started
 
 1. Add DomainEventBus
 

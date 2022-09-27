@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
             services.AddHttpContextAccessor();
             services.Configure(action);
 
-            services.TryAddScoped(sp => services);// Version 1.0 will be removed
+            services.TryAddScoped(sp => services); // Version 1.0 will be removed
 
             services.AddSingleton(new Lazy<WebApplication>(builder.Build, LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
@@ -79,6 +79,7 @@ public static class ServiceCollectionExtensions
 
         var serviceProvider = services.BuildServiceProvider();
         var app = serviceProvider.GetRequiredService<WebApplication>();
+        MasaApp.JsonSerializerOptions ??= app.Services.GetRequiredService<IOptions<JsonOptions>>().Value.JsonSerializerOptions;
         MasaApp.Build(app.Services);
         return app;
     }

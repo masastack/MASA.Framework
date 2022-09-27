@@ -2,13 +2,14 @@
 
 ## Masa.Contrib.Data.EFCore.Oracle
 
-## 用例:
+用例:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Oracle
+Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```
 
-#### 用法1:
+### 用法1
 
 1. 配置appsettings.json
 
@@ -20,14 +21,24 @@ Install-Package Masa.Contrib.Data.EFCore.Oracle
 }
 ```
 
-2. 使用MasaDbContext
+2. 注册`MasaDbContext`
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseOracle());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseOracle(); //使用Oracle数据库
+});
 ```
 
-#### 用法2:
+### 用法2
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseOracle("Data Source=MyOracleDB;Integrated Security=yes;"); //使用Oracle数据库
+});
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/oracle

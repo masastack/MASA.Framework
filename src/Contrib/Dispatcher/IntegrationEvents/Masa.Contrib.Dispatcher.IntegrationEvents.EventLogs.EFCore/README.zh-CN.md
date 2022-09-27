@@ -6,11 +6,13 @@
 
 用例：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore
 ```
 
-1. 使用EventLogs.EF
+### 入门
+
+1. 使用本地消息表
 
 ```C#
 .AddIntegrationEventBus(options =>

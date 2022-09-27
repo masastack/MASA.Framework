@@ -5,33 +5,96 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddJson(this IServiceCollection services)
+    public static IServiceCollection AddJson(this IServiceCollection services, Action<JsonSerializerOptions>? configure = null)
     {
-        if (services.Any(service => service.ImplementationType == typeof(JsonProvider)))
-            return services;
+        if (configure != null)
+            services
+                .Configure(Options.Options.DefaultName, configure)
+                .AddJsonFactory(DataType.Json.ToString(), Options.Options.DefaultName);
 
-        services.AddSingleton<JsonProvider>();
-
-        services.AddSerializationCore();
-        services.TryAddSingleton<IJsonSerializer, DefaultJsonSerializer>();
-        services.TryAddSingleton<IJsonDeserializer, DefaultJsonDeserializer>();
-        string name = DataType.Json.ToString();
-        services.Configure<SerializerFactoryOptions>(options =>
-        {
-            options
-                .MappingSerializer(name,
-                    serviceProvider => serviceProvider.GetRequiredService<IJsonSerializer>());
-        });
-        services.Configure<DeserializerFactoryOptions>(options =>
-        {
-            options
-                .MappingDeserializer(name,
-                    serviceProvider => serviceProvider.GetRequiredService<IJsonDeserializer>());
-        });
-        return services;
+        return services.AddJsonFactory(DataType.Json.ToString(), MasaApp.JsonSerializerOptions);
     }
 
-    private sealed class JsonProvider
+    public static IServiceCollection AddJson(this IServiceCollection services, string name, Action<JsonSerializerOptions>? configure = null)
     {
+        if (configure != null)
+        {
+            return services
+                .Configure(name, configure)
+                .AddJsonFactory(name, name);
+        }
+        return services.AddJsonFactory(name, MasaApp.JsonSerializerOptions);
+    }
+
+    private static IServiceCollection AddJsonFactory(
+        this IServiceCollection services,
+        string name,
+        JsonSerializerOptions? jsonSerializerOptions)
+    {
+        return services
+            .TryAddJsonCore(jsonSerializerOptions)
+            .Configure<SerializerFactoryOptions>(options =>
+            {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
+                options
+                    .MappingSerializer(name, _ => new DefaultJsonSerializer(jsonSerializerOptions));
+            })
+            .Configure<DeserializerFactoryOptions>(options =>
+            {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
+                options
+                    .MappingDeserializer(name, _ => new DefaultJsonDeserializer(jsonSerializerOptions));
+            });
+    }
+
+    private static IServiceCollection AddJsonFactory(this IServiceCollection services, string name, string optionName)
+    {
+        return services
+            .TryAddJsonCore()
+            .Configure<SerializerFactoryOptions>(options =>
+            {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
+                options.MappingSerializer(name, serviceProvider =>
+                {
+                    var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
+                    var jsonSerializerOptions = optionsFactory.Create(optionName);
+                    return new DefaultJsonSerializer(jsonSerializerOptions);
+                });
+            })
+            .Configure<DeserializerFactoryOptions>(options =>
+            {
+                if (options.Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                    return;
+
+                options.MappingDeserializer(name, serviceProvider =>
+                {
+                    var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
+                    var jsonSerializerOptions = optionsFactory.Create(optionName);
+                    return new DefaultJsonDeserializer(jsonSerializerOptions);
+                });
+            });
+    }
+
+    private static IServiceCollection TryAddJsonCore(this IServiceCollection services, JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        services.TryAddSerializationCore();
+
+        services.TryAddSingleton<IJsonSerializer>(serviceProvider =>
+        {
+            var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
+            return new DefaultJsonSerializer(jsonSerializerOptions ?? optionsFactory.Create(Options.Options.DefaultName));
+        });
+        services.TryAddSingleton<IJsonDeserializer>(serviceProvider =>
+        {
+            var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
+            return new DefaultJsonDeserializer(jsonSerializerOptions ?? optionsFactory.Create(Options.Options.DefaultName));
+        });
+        return services;
     }
 }

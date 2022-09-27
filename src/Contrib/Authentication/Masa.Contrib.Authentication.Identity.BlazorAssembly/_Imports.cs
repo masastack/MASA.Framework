@@ -6,3 +6,4 @@ global using Masa.Contrib.Authentication.Identity.BlazorAssembly;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Security.Claims;
+global using System.Text.Json;

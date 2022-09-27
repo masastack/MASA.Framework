@@ -2,11 +2,11 @@
 
 ## Masa.Contrib.Configuration.ConfigurationApi.Dcc
 
-作用:
+MasaConfiguration的远程能力的提供者（需配置Dcc）
 
 通过Dcc扩展IConfiguration管理远程配置的能力。
 
-```c#
+``` structure
 IConfiguration
 ├── Local                                本地节点（固定）
 ├── ConfigurationApi                     远程节点（固定 Dcc扩展其能力）
@@ -17,13 +17,16 @@ IConfiguration
 
 用例：
 
-```C#
-Install-Package Masa.Contrib.Configuration
-Install-Package Masa.Contrib.Configuration.ConfigurationApi.Dcc //提供远程配置的能力
+``` powershell
+Install-Package Masa.Contrib.Configuration //MasaConfiguration的核心
+Install-Package Masa.Contrib.Configuration.ConfigurationApi.Dcc //由Dcc提供远程配置的能力
 ```
 
-appsettings.json
-```
+### 入门:
+
+1. 修改`appsettings.json`，配置`Dcc`所需参数（远程能力）
+
+``` C#
 {
   //Dcc配置，扩展Configuration能力，支持远程配置
   "DccOptions": {
@@ -37,130 +40,87 @@ appsettings.json
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    },
-    "PublicId": "PublicId",
-    "PublicSecret": "PublicSecret",
-    "AppId": "Replace-With-Your-AppId",
-    "Environment": "Development",
-    "ConfigObjects": [ "Redis" ], //待挂载的对象名, 此处会将Redis配置挂载到ConfigurationApi:<Replace-With-Your-AppId>节点下
-    "Secret": "", //Dcc App 秘钥
-    "Cluster": "Default"
+    }
   }
 }
-
 ```
 
-```C#
-builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());//使用Dcc提供远程配置的能力
+2. 注册`MasaConfiguration`，并使用`Dcc`，修改`Program.cs`
 
+```C#
+builder.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc()
+});//使用Dcc提供远程配置的能力
+```
+
+3. 新建`RedisOptions`类，配置映射关系
+
+```
 /// <summary>
 /// 自动映射节点关系
 /// </summary>
 public class RedisOptions : ConfigurationApiMasaConfigurationOptions
 {
     /// <summary>
-    /// The app id.
+    /// 更换为Dcc平台上Redis配置所属AppId
     /// </summary>
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
+    /// <summary>
+    /// 更换为Dcc平台上Redis配置所属配置对象名称，不重写时与类名一致
+    /// </summary>
     [JsonIgnore]
     public override string? ObjectName { get; init; } = "Redis";
 
     public string Host { get; set; }
-    
+
     public int Port { get; set; }
-    
+
     public int DefaultDatabase { get; set; }
 }
-
-public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
-{
-    /// <summary>
-    /// The app id.
-    /// </summary>
-    [JsonIgnore]
-    public override string AppId { get; set; } = "Replace-With-Your-AppId";
-    
-    /// <summary>
-    /// The environment name.
-    /// Get from the environment variable ASPNETCORE_ENVIRONMENT when Environment is null or empty
-    /// </summary>
-    public string? Environment { get; set; } = null;
-
-    /// <summary>
-    /// The cluster name.
-    /// </summary>
-    public string? Cluster { get; set; }
-
-    public List<string> ConfigObjects { get; set; } = default!;
-
-    public string? Secret { get; set; }
-
-    /// <summary>
-    /// 将CustomDccSectionOptions挂载到根节点下
-    /// </summary>
-    [JsonIgnore]
-    public virtual string? Section => string.Empty;
-}
 ```
 
-如何使用配置：
+> 由于Redis配置在Dcc平台中，因此类需要继承`ConfigurationApiMasaConfigurationOptions`
 
-```c#
+4. 获取配置
+
+``` C#
 var app = builder.Build();
 
-//在程序入口处读取配置
-var redisHost = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("Redis:Host");
-
-app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
-    //推荐
+    //推荐（需要自动或手动映射节点关系后才能使用）
     return System.Text.Json.JsonSerializer.Serialize(option.Value);
 });
-
-app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> options) =>
-{
-    options.OnChange(option =>
-    {
-        //TODO 配置更新
-    });
-    return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
-});
-
-app.MapGet("/GetRedisHost2", ([FromServices] IConfiguration configuration) =>
-{
-    //从配置中心获取指定AppId下的指定配置对象（ConfigObject）的Host的配置值
-    //格式：ConfigurationApi:<自定义AppId>:<自定义的ConfigObject>:<参数名Host>
-    return configuration["ConfigurationApi:<Replace-With-Your-AppId>:Redis:Host"];
-});
-
-app.Run();
 ```
 
-如何更新配置
+### 进阶
 
+1. 手动指定映射关系，优势：无需更改原来类的继承关系
+
+```C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+    configurationBuilder.UseMasaOptions(options =>
+    {
+        options.MappingConfigurationApi<RedisOptions>("Replace-With-Your-AppId", "Redis"); //将RedisOptions绑定映射到ConfigurationApi:AppId:Redis节点
+    });
+});
+```
+
+2. 如何使用
+
+除了通过IOptions、IOptionsMonitor、IOptionsSnapshot之外，还支持通过`IMasaConfiguration`获取
 
 ```c#
-var app = builder.Build();
-
-app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
-                               [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               RedisOptions newRedis) =>
-{
-    //修改Dcc配置
-    return configurationAPIManage.UpdateAsync(option.Value.Environment,
-                                              option.Value.Cluster,
-                                              option.Value.AppId,
-                                              "<自定义-ConfigObject>"
-                                              ,newRedis);
-                                              //此处<自定义-ConfigObject>是Redis
-});
-
-app.Run();
+IMasaConfiguration masaConfiguration;//从DI获取IMasaConfiguration
+masaConfiguration.ConfigurationApi["<Replace-With-Your-AppId>:Redis:Host"];
 ```
 
-总结：
+### 总结
 
 Dcc为IConfiguration提供了远程配置的管理以及查看能力，IConfiguration完整的能力请查看[文档](../../Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
 
