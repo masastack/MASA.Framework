@@ -34,7 +34,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 推荐用法:
 
 - [SqlServer](../Masa.Contrib.Data.EFCore.SqlServer/README.zh-CN.md)
-- [Pomelo.MySql](../Masa.Contrib.Data.EFCore.Pomelo.MySql/README.zh-CN.md)：推荐使用
+- [Pomelo.MySql](../Masa.Contrib.Data.EFCore.Pomelo.MySql/README.zh-CN.md)：如果您使用的是mysql，建议使用
 - [MySql](../Masa.Contrib.Data.EFCore.MySql/README.zh-CN.md)
 - [Sqlite](../Masa.Contrib.Data.EFCore.Sqlite/README.zh-CN.md)
 - [Cosmos](../Masa.Contrib.Data.EFCore.Cosmos/README.zh-CN.md)
