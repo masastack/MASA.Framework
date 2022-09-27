@@ -5,18 +5,20 @@
 * `IMultilevelCacheClientFactory`: 多级缓存工厂，用于创建`IDistributedCacheClient` (Singleton)
 * `IDistributedCacheClient`: 多级缓存客户端 (Singleton)
 
-## Distributed.MultilevelCache
+## Masa.Contrib.Caching.MultilevelCache
 
 用例：
 
 ``` powershell
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ```
-### 用法1:
+### 入门
 
-1. 配置appsettings.json
+#### 用法1:
 
-``` C#
+1. 配置`appsettings.json`
+
+``` appsettings.json
 {
   // Redis分布式缓存配置
   "RedisConfig": {
@@ -43,23 +45,23 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
 
 2. 添加多级缓存
 
-```C#
+``` C#
 builder.Services.AddStackExchangeRedisCache()
                 .AddMultilevelCache();
 ```
 
 3. 从DI获取`IMultilevelCacheClient`
 
-    ``` C#
-    string key = "test_1";
-    multilevelCacheClient.Set(key, "test_content");
-    ```
+``` C#
+string key = "test_1";
+multilevelCacheClient.Set(key, "test_content");
+```
 
-### 用法2：
+#### 用法2：
 
 1. 添加多级缓存
 
-```C#
+``` C#
 var redisConfigurationOptions = new RedisConfigurationOptions()
 {
     DefaultDatabase = 1,
@@ -79,7 +81,7 @@ builder.Services
 
 2. 从DI获取`IMultilevelCacheClient`，并使用相应的方法
 
-    ``` C#
-    string key = "test_1";
-    multilevelCacheClient.Set(key, "test_content");
-    ```
+``` C#
+string key = "test_1";
+multilevelCacheClient.Set(key, "test_content");
+```

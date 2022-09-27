@@ -5,7 +5,7 @@
 * `IDistributedCacheClientFactory`: 分布式缓存工厂，用于创建`IDistributedCacheClient` (Singleton)
 * `IDistributedCacheClient`: 分布式缓存客户端 (Singleton)
 
-## Distributed.StackExchangeRedis
+## Masa.Contrib.Caching.Distributed.StackExchangeRedis
 
 用例：
 
@@ -13,7 +13,9 @@
 Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 ```
 
-### 用法1:
+### 入门
+
+#### 用法1:
 
 1. 配置`appsettings.json`
 
@@ -40,12 +42,12 @@ builder.Services.AddStackExchangeRedisCache();
 
 3. 从DI获取`IDistributedCacheClient`
 
-    ``` C#
-    string key = "test_1";
-    distributedCacheClient.Set(key, "test_content");
-    ```
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
 
-### 用法2：
+#### 用法2：
 
 1. 添加Redis缓存
 
@@ -63,12 +65,12 @@ builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
 
 2. 从DI获取`IDistributedCacheClient`，并使用相应的方法
 
-    ``` C#
-    string key = "test_1";
-    distributedCacheClient.Set(key, "test_content");
-    ```
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
 
-## 常见问题
+### 常见问题
 
 1. 绝对过期与滑动过期同时开启时，过期时间怎么算？
 

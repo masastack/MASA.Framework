@@ -13,11 +13,13 @@ Example:
 Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 ```
 
-### Usage 1:
+### Get Started
+
+#### Usage 1:
 
 1. Configure `appsettings.json`
 
-```` C#
+``` C#
 {
   "RedisConfig": {
     "Servers": [
@@ -30,26 +32,26 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
     "ConnectionPoolSize": 10
   }
 }
-````
+```
 
 2. Add Redis cache
 
-````C#
+``` C#
 builder.Services.AddStackExchangeRedisCache();
-````
+```
 
 3. Get `IDistributedCacheClient` from DI
 
-    ```` C#
-    string key = "test_1";
-    distributedCacheClient.Set(key, "test_content");
-    ````
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
 
-### Usage 2:
+#### Usage 2:
 
 1. Add Redis cache
 
-````C#
+``` C#
 builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
 {
     DefaultDatabase = 1,
@@ -59,16 +61,16 @@ builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
         new("localhost", 6379)
     }
 });
-````
+```
 
 2. Get `IDistributedCacheClient` from DI and use the corresponding method
 
-    ```` C#
-    string key = "test_1";
-    distributedCacheClient.Set(key, "test_content");
-    ````
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
 
-## common problem
+### common problem
 
 1. When absolute expiration and sliding expiration are enabled at the same time, how is the expiration time calculated?
 

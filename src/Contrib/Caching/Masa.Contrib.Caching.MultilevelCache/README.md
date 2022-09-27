@@ -5,7 +5,7 @@ Currently provides the ability of multi-level cache, which is composed of memory
 * `IMultilevelCacheClientFactory`: Multilevel cache factory for creating `IDistributedCacheClient` (Singleton)
 * `IDistributedCacheClient`: multi-level cache client (Singleton)
 
-## Distributed.MultilevelCache
+## Masa.Contrib.Caching.MultilevelCache
 
 Example:
 
@@ -13,9 +13,11 @@ Example:
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ````
 
-### Usage 1:
+### Get Started
 
-1. Configure appsettings.json
+#### Usage 1:
+
+1. Configure `appsettings.json`
 
 ``` C#
 {
@@ -56,7 +58,7 @@ string key = "test_1";
 multilevelCacheClient.Set(key, "test_content");
 ```
 
-### Usage 2:
+#### Usage 2:
 
 1. Add multi-level cache
 
@@ -80,7 +82,7 @@ builder.Services
 
 2. Get `IMultilevelCacheClient` from DI and use the corresponding method
 
-    ```` C#
-    string key = "test_1";
-    multilevelCacheClient.Set(key, "test_content");
-    ````
+```` C#
+string key = "test_1";
+multilevelCacheClient.Set(key, "test_content");
+````
