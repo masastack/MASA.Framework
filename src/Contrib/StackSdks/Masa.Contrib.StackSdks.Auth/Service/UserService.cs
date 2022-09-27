@@ -314,11 +314,11 @@ public class UserService : IUserService
         await _caller.PostAsync(requestUri, model);
     }
 
-    public async Task<bool> GetInEnvironmentAsync(string env, string phoneNumber)
+    public async Task<bool> HasPhoneNumberInEnvAsync(string env, string phoneNumber)
     {
         ArgumentNullException.ThrowIfNull(env);
         ArgumentNullException.ThrowIfNull(phoneNumber);
-        var requestUri = $"api/user/InEnvironment?env={env}&phoneNumber={phoneNumber}";
+        var requestUri = $"api/user/HasPhoneNumberInEnv?env={env}&phoneNumber={phoneNumber}";
         return await _caller.GetAsync<bool>(requestUri);
     }
 }
