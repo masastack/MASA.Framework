@@ -37,13 +37,13 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
 
     public abstract Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(string keyPattern);
 
-    public abstract void Publish(string channel, Action<PublishOptions> setup);
+    public abstract void Publish(string channel, Action<PublishOptions> options);
 
-    public abstract Task PublishAsync(string channel, Action<PublishOptions> setup);
+    public abstract Task PublishAsync(string channel, Action<PublishOptions> options);
 
-    public abstract void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler);
+    public abstract void Subscribe<T>(string channel, Action<SubscribeOptions<T>> options);
 
-    public abstract Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> handler);
+    public abstract Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options);
 
     public abstract Task<long> HashIncrementAsync(string key, long value = 1);
 

@@ -256,39 +256,39 @@ public class DistributedCacheClient : BaseDistributedCacheClient
 
     #region PubSub
 
-    public override void Publish(string channel, Action<PublishOptions> setup)
+    public override void Publish(string channel, Action<PublishOptions> options)
     {
-        var options = GetAndCheckPublishOptions(channel, setup);
-        var message = JsonSerializer.Serialize(options, JsonSerializerOptions);
+        var publishOptions = GetAndCheckPublishOptions(channel, options);
+        var message = JsonSerializer.Serialize(publishOptions, JsonSerializerOptions);
         Subscriber.Publish(channel, message);
     }
 
-    public override async Task PublishAsync(string channel, Action<PublishOptions> setup)
+    public override async Task PublishAsync(string channel, Action<PublishOptions> options)
     {
-        var options = GetAndCheckPublishOptions(channel, setup);
-        var message = JsonSerializer.Serialize(options, JsonSerializerOptions);
+        var publishOptions = GetAndCheckPublishOptions(channel, options);
+        var message = JsonSerializer.Serialize(publishOptions, JsonSerializerOptions);
         await Subscriber.PublishAsync(channel, message);
     }
 
-    public override void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler)
+    public override void Subscribe<T>(string channel, Action<SubscribeOptions<T>> options)
     {
         Subscriber.Subscribe(channel, (_, message) =>
         {
-            var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
-            if (options != null)
-                options.IsPublisherClient = options.UniquelyIdentifies == UniquelyIdentifies;
-            handler(options!);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            if (subscribeOptions != null)
+                subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
+            options(subscribeOptions!);
         });
     }
 
-    public override Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> handler)
+    public override Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options)
     {
         return Subscriber.SubscribeAsync(channel, (_, message) =>
         {
-            var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
-            if (options != null)
-                options.IsPublisherClient = options.UniquelyIdentifies == UniquelyIdentifies;
-            handler(options!);
+            var subscribeOptions = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
+            if (subscribeOptions != null)
+                subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
+            options(subscribeOptions!);
         });
     }
 

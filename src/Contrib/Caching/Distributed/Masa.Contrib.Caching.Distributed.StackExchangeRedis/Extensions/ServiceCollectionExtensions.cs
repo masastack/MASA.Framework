@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.AddDistributedCacheCore();
+        services.TryAddDistributedCacheCore();
 
         services.AddConfigure<RedisConfigurationOptions>(redisSectionName, name);
 
@@ -88,7 +88,7 @@ public static class ServiceCollectionExtensions
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.AddDistributedCacheCore();
+        services.TryAddDistributedCacheCore();
 
         services.Configure<RedisConfigurationOptions>(name, options =>
         {

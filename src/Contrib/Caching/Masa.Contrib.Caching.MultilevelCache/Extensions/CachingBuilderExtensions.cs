@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
         string sectionName = Const.DEFAULT_SECTION_NAME,
         bool isReset = false)
     {
-        cachingBuilder.Services.AddMultilevelCacheCore();
+        cachingBuilder.Services.TryAddMultilevelCacheCore();
 
         cachingBuilder.Services.AddConfigure<MultilevelCacheOptions>(sectionName, cachingBuilder.Name);
 
@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(cachingBuilder);
 
-        cachingBuilder.Services.AddMultilevelCacheCore();
+        cachingBuilder.Services.TryAddMultilevelCacheCore();
 
         cachingBuilder.Services.Configure<MultilevelCacheFactoryOptions>(options =>
         {
