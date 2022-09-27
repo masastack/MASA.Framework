@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,14 +17,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity.BlazorServer\Masa.Contrib.Authentication.Identity.BlazorServer.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity\Masa.Contrib.Authentication.Identity.csproj" />
   </ItemGroup>
 
 </Project>

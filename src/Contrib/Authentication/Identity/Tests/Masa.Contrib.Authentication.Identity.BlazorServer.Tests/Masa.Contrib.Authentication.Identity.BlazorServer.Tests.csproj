@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity.BlazorServer\Masa.Contrib.Authentication.Identity.BlazorServer.csproj" />
   </ItemGroup>
 
 </Project>
