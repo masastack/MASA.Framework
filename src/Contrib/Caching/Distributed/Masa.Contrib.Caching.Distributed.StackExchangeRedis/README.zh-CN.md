@@ -9,13 +9,13 @@
 
 用例：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 ```
 
 ### 用法1:
 
-1. 配置appsettings.json
+1. 配置`appsettings.json`
 
 ``` C#
 {

@@ -96,11 +96,11 @@ public class DistributedCacheClient : BaseDistributedCacheClient
     /// </summary>
     /// <param name="keyPattern">keyPattern, such as: app_*</param>
     /// <returns></returns>
-    public override List<string> GetKeys(string keyPattern)
+    public override IEnumerable<string> GetKeys(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
         var cacheResult = Db.ScriptEvaluate(prepared, new { pattern = keyPattern });
-        return ((string[])cacheResult).ToList();
+        return (string[])cacheResult;
     }
 
     /// <summary>
@@ -108,29 +108,29 @@ public class DistributedCacheClient : BaseDistributedCacheClient
     /// </summary>
     /// <param name="keyPattern">keyPattern, such as: app_*</param>
     /// <returns></returns>
-    public override async Task<List<string>> GetKeysAsync(string keyPattern)
+    public override async Task<IEnumerable<string>> GetKeysAsync(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
         var cacheResult = await Db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern });
-        return ((string[])cacheResult).ToList();
+        return (string[])cacheResult;
     }
 
-    public override List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern) where T : default
+    public override IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(string keyPattern) where T : default
     {
         var list = GetListByKeyPattern(keyPattern);
 
         RefreshCore(list);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _))).ToList();
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _)));
     }
 
-    public override async Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern) where T : default
+    public override async Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(string keyPattern) where T : default
     {
         var list = await GetListByKeyPatternAsync(keyPattern);
 
         await RefreshCoreAsync(list);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _))).ToList();
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _)));
     }
 
     #endregion
@@ -276,7 +276,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
         {
             var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
             if (options != null)
-                options.IsPublishClient = options.UniquelyIdentifies == UniquelyIdentifies;
+                options.IsPublisherClient = options.UniquelyIdentifies == UniquelyIdentifies;
             handler(options!);
         });
     }
@@ -287,7 +287,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
         {
             var options = JsonSerializer.Deserialize<SubscribeOptions<T>>(message);
             if (options != null)
-                options.IsPublishClient = options.UniquelyIdentifies == UniquelyIdentifies;
+                options.IsPublisherClient = options.UniquelyIdentifies == UniquelyIdentifies;
             handler(options!);
         });
     }

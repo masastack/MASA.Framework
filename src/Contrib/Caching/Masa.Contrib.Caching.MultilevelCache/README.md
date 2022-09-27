@@ -9,14 +9,15 @@ Currently provides the ability of multi-level cache, which is composed of memory
 
 Example:
 
-````C#
+```` powershell
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ````
+
 ### Usage 1:
 
 1. Configure appsettings.json
 
-```` C#
+``` C#
 {
   // Redis distributed cache configuration
   "RedisConfig": {
@@ -26,8 +27,7 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
         "Port": 6379
       }
     ],
-    "DefaultDatabase": 3,
-    "ConnectionPoolSize": 10
+    "DefaultDatabase": 3
   },
 
   // Multi-level cache global configuration, optional
@@ -40,41 +40,43 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
     }
   }
 }
-````
+```
 
 2. Add multi-level cache
 
-````C#
+``` C#
 builder.Services.AddStackExchangeRedisCache()
                 .AddMultilevelCache();
-````
+```
 
 3. Get `IMultilevelCacheClient` from DI
 
-    ```` C#
-    string key = "test_1";
-    multilevelCacheClient.Set(key, "test_content");
-    ````
+``` C#
+string key = "test_1";
+multilevelCacheClient.Set(key, "test_content");
+```
 
 ### Usage 2:
 
 1. Add multi-level cache
 
-````C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+``` C#
+var redisConfigurationOptions = new RedisConfigurationOptions()
 {
     DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
     Servers = new List<RedisServerOptions>()
     {
         new("localhost", 6379)
     }
-}).AddMultilevelCache(new MultilevelCacheOptions()
-{
-  SubscribeKeyPrefix = "masa",
-  SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
-});
-````
+};
+builder.Services
+    .AddStackExchangeRedisCache(redisConfigurationOptions)
+    .AddMultilevelCache(new MultilevelCacheOptions()
+    {
+        SubscribeKeyPrefix = "masa",
+        SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+    });
+```
 
 2. Get `IMultilevelCacheClient` from DI and use the corresponding method
 

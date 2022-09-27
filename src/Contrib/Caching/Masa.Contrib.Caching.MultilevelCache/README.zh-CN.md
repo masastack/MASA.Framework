@@ -9,7 +9,7 @@
 
 用例：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ```
 ### 用法1:
@@ -26,8 +26,7 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
         "Port": 6379
       }
     ],
-    "DefaultDatabase": 3,
-    "ConnectionPoolSize": 10
+    "DefaultDatabase": 3
   },
 
   // 多级缓存全局配置，非必填
@@ -61,19 +60,21 @@ builder.Services.AddStackExchangeRedisCache()
 1. 添加多级缓存
 
 ```C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+var redisConfigurationOptions = new RedisConfigurationOptions()
 {
     DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
     Servers = new List<RedisServerOptions>()
     {
         new("localhost", 6379)
     }
-}).AddMultilevelCache(new MultilevelCacheOptions()
-{
-  SubscribeKeyPrefix = "masa",
-  SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
-});
+};
+builder.Services
+    .AddStackExchangeRedisCache(redisConfigurationOptions)
+    .AddMultilevelCache(new MultilevelCacheOptions()
+    {
+        SubscribeKeyPrefix = "masa",
+        SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+    });
 ```
 
 2. 从DI获取`IMultilevelCacheClient`，并使用相应的方法

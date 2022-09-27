@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class DefaultDeserializerFactory : AbstractMasaFactory<IDeserializer, DeserializerRelationOptions>,
+public class DefaultDeserializerFactory : MasaFactoryBase<IDeserializer, DeserializerRelationOptions>,
     IDeserializerFactory
 {
     protected override string DefaultServiceNotFoundMessage => "Default deserializer not found, you need to add it, like services.AddJson()";

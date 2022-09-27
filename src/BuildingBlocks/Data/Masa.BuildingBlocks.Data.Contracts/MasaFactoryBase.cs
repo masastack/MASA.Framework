@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public abstract class AbstractMasaFactory<TService, TRelationOptions> : IMasaFactory<TService>
+public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory<TService>
     where TService : class
     where TRelationOptions : MasaRelationOptions<TService>
 {
@@ -13,7 +13,7 @@ public abstract class AbstractMasaFactory<TService, TRelationOptions> : IMasaFac
 
     protected readonly IServiceProvider ServiceProvider;
 
-    protected AbstractMasaFactory(IServiceProvider serviceProvider)
+    protected MasaFactoryBase(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
     }

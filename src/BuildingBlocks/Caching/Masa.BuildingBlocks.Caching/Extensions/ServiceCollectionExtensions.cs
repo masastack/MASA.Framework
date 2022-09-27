@@ -7,7 +7,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDistributedCacheCore(this IServiceCollection services)
     {
-        services.TryAddSingleton<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
+        services.TryAddSingleton<IDistributedCacheClientFactory, DistributedCacheClientFactoryBase>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
         return services;
@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMultilevelCacheCore(this IServiceCollection services)
     {
-        services.TryAddSingleton<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
+        services.TryAddSingleton<IMultilevelCacheClientFactory, MultilevelCacheClientFactoryBase>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
         return services;

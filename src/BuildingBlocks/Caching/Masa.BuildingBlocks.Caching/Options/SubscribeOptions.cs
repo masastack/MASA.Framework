@@ -13,7 +13,7 @@ public class SubscribeOptions<T> : BasePubSubOptions
     /// <summary>
     /// Is it a publisher client
     /// </summary>
-    public bool IsPublishClient { get; set; }
+    public bool IsPublisherClient { get; set; }
 
     public SubscribeOptions(Guid uniquelyIdentifies) : base(uniquelyIdentifies)
     {

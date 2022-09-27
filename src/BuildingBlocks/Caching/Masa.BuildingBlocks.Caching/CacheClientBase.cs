@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class AbstractCacheClient : ICacheClient
+public abstract class CacheClientBase : ICacheClient
 {
     public abstract T? Get<T>(string key);
 

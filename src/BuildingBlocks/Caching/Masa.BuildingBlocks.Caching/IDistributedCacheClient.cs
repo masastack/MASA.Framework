@@ -29,21 +29,21 @@ public interface IDistributedCacheClient : ICacheClient
 
     Task<bool> ExistsAsync(string key);
 
-    List<string> GetKeys(string keyPattern);
+    IEnumerable<string> GetKeys(string keyPattern);
 
-    Task<List<string>> GetKeysAsync(string keyPattern);
+    Task<IEnumerable<string>> GetKeysAsync(string keyPattern);
 
-    List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern);
+    IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(string keyPattern);
 
-    Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern);
+    Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(string keyPattern);
 
-    void Publish(string channel, Action<PublishOptions> setup);
+    void Publish(string channel, Action<PublishOptions> options);
 
-    Task PublishAsync(string channel, Action<PublishOptions> setup);
+    Task PublishAsync(string channel, Action<PublishOptions> options);
 
-    void Subscribe<T>(string channel, Action<SubscribeOptions<T>> handler);
+    void Subscribe<T>(string channel, Action<SubscribeOptions<T>> options);
 
-    Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> handler);
+    Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options);
 
     Task<long> HashIncrementAsync(string key, long value = 1L);
 
@@ -56,17 +56,17 @@ public interface IDistributedCacheClient : ICacheClient
     /// <returns></returns>
     Task<long> HashDecrementAsync(string key, long value = 1L, long defaultMinVal = 0L);
 
-    bool KeyExpire(string key, DateTimeOffset absoluteExpiration);
-
     bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow);
+
+    bool KeyExpire(string key, DateTimeOffset absoluteExpiration);
 
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
     long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
 
-    Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration);
-
     Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow);
+
+    Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration);
 
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 

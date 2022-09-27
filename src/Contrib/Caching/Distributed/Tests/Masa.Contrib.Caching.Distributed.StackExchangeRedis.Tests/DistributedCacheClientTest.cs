@@ -445,7 +445,7 @@ public class DistributedCacheClientTest : TestBase
     public void TestGetKeys(string keyPattern, int count)
     {
         var list = _distributedCacheClient.GetKeys(keyPattern);
-        Assert.AreEqual(count, _distributedCacheClient.GetKeys(keyPattern).Count);
+        Assert.AreEqual(count, _distributedCacheClient.GetKeys(keyPattern).Count());
     }
 
     [DataTestMethod]
@@ -454,15 +454,15 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("ce*", 0)]
     public async Task TestGetKeysAsync(string keyPattern, int count)
     {
-        Assert.AreEqual(count, (await _distributedCacheClient.GetKeysAsync(keyPattern)).Count);
+        Assert.AreEqual(count, (await _distributedCacheClient.GetKeysAsync(keyPattern)).Count());
     }
 
     [DataTestMethod]
     [DataRow("test_caching*", 2)]
     public void TestGetListByKeyPattern(string keyPattern, int count)
     {
-        var list = _distributedCacheClient.GetListByKeyPattern<string>(keyPattern);
-        Assert.AreEqual(count, list.Count);
+        var list = _distributedCacheClient.GetByKeyPattern<string>(keyPattern);
+        Assert.AreEqual(count, list.Count());
 
         Assert.IsTrue(list.Count(x
             => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
@@ -472,8 +472,8 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("test_caching*", 2)]
     public async Task TestGetListByKeyPatternAsync(string keyPattern, int count)
     {
-        var list = await _distributedCacheClient.GetListByKeyPatternAsync<string>(keyPattern);
-        Assert.AreEqual(count, list.Count);
+        var list = await _distributedCacheClient.GetByKeyPatternAsync<string>(keyPattern);
+        Assert.AreEqual(count, list.Count());
 
         Assert.IsTrue(list.Count(x
             => (x.Key == "test_caching" && x.Value == "1") || (x.Key == "test_caching_2" && x.Value == Guid.Empty.ToString())) == 2);
@@ -659,7 +659,7 @@ public class DistributedCacheClientTest : TestBase
         {
             timer++;
 
-            Assert.IsTrue(option.IsPublishClient);
+            Assert.IsTrue(option.IsPublisherClient);
             Assert.IsTrue(option.Value == value);
         });
 
@@ -684,7 +684,7 @@ public class DistributedCacheClientTest : TestBase
         {
             timer++;
 
-            Assert.IsTrue(option.IsPublishClient);
+            Assert.IsTrue(option.IsPublisherClient);
             Assert.IsTrue(option.Value == value);
         });
 

@@ -3,10 +3,10 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class DefaultCacheClientFactory<TService> : AbstractMasaFactory<TService, CacheRelationOptions<TService>>,
+public abstract class CacheClientFactoryBase<TService> : MasaFactoryBase<TService, CacheRelationOptions<TService>>,
     ICacheClientFactory<TService> where TService : class
 {
-    protected DefaultCacheClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected CacheClientFactoryBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 }

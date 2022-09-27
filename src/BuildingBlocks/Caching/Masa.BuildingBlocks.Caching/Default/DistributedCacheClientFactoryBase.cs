@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class DefaultDistributedCacheClientFactory : DefaultCacheClientFactory<IDistributedCacheClient>, IDistributedCacheClientFactory
+public class DistributedCacheClientFactoryBase : CacheClientFactoryBase<IDistributedCacheClient>, IDistributedCacheClientFactory
 {
     protected override string DefaultServiceNotFoundMessage
         => "Default DistributedCache not found, you need to add it, like services.AddStackExchangeRedisCache()";
@@ -14,7 +14,7 @@ public class DefaultDistributedCacheClientFactory : DefaultCacheClientFactory<ID
 
     private readonly IOptionsMonitor<DistributedCacheFactoryOptions> _optionsMonitor;
 
-    public DefaultDistributedCacheClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DistributedCacheClientFactoryBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
         _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<DistributedCacheFactoryOptions>>();
     }

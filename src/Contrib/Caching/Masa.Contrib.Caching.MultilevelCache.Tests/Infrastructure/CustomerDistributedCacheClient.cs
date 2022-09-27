@@ -3,9 +3,10 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
 
-public class CustomerDistributedCacheClient : BaseDistributedCacheClient
+public class CustomerDistributedCacheClient : MultilevelCacheClient
 {
-    public CustomerDistributedCacheClient(CacheEntryOptions? cacheEntryOptions) : base(cacheEntryOptions)
+    public CustomerDistributedCacheClient(CacheEntryOptions? cacheEntryOptions)
+        : base(cacheEntryOptions)
     {
     }
 

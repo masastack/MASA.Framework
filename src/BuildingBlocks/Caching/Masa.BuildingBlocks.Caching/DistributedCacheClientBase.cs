@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class AbstractDistributedCacheClient : AbstractCacheClient, IDistributedCacheClient
+public abstract class DistributedCacheClientBase : CacheClientBase, IDistributedCacheClient
 {
     public abstract T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter);
 
@@ -29,13 +29,13 @@ public abstract class AbstractDistributedCacheClient : AbstractCacheClient, IDis
 
     public abstract Task<bool> ExistsAsync(string key);
 
-    public abstract List<string> GetKeys(string keyPattern);
+    public abstract IEnumerable<string> GetKeys(string keyPattern);
 
-    public abstract Task<List<string>> GetKeysAsync(string keyPattern);
+    public abstract Task<IEnumerable<string>> GetKeysAsync(string keyPattern);
 
-    public abstract List<KeyValuePair<string, T?>> GetListByKeyPattern<T>(string keyPattern);
+    public abstract IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(string keyPattern);
 
-    public abstract Task<List<KeyValuePair<string, T?>>> GetListByKeyPatternAsync<T>(string keyPattern);
+    public abstract Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(string keyPattern);
 
     public abstract void Publish(string channel, Action<PublishOptions> setup);
 
@@ -49,21 +49,21 @@ public abstract class AbstractDistributedCacheClient : AbstractCacheClient, IDis
 
     public abstract Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0);
 
-    public virtual bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
-        => KeyExpire(key, new CacheEntryOptions(absoluteExpiration));
-
     public virtual bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
+
+    public virtual bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
+        => KeyExpire(key, new CacheEntryOptions(absoluteExpiration));
 
     public abstract bool KeyExpire(string key, CacheEntryOptions? options = null);
 
     public abstract long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
 
-    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
-        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
-
     public virtual Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration)
         => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpiration));
+
+    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
+        => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
 
     public abstract Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 

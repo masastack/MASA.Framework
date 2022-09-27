@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache;
 
-public class MultilevelCacheClient : BaseDistributedCacheClient
+public class MultilevelCacheClient : MultilevelCacheClientBase
 {
     private IMemoryCache _memoryCache;
     private readonly IDistributedCacheClient _distributedCacheClient;
@@ -12,11 +12,18 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
     private readonly object _locker = new();
     private readonly IList<string> _subscribeChannels = new List<string>();
 
+    public CacheEntryOptions? DefaultCacheEntryOptions { get; protected set; }
+
+    protected MultilevelCacheClient(CacheEntryOptions? cacheEntryOptions)
+    {
+        DefaultCacheEntryOptions = cacheEntryOptions;
+    }
+
     public MultilevelCacheClient(
         string name,
         bool isReset,
         IOptionsMonitor<MultilevelCacheOptions> multilevelCacheOptions,
-        IDistributedCacheClient distributedCacheClient) : base(multilevelCacheOptions.Get(name).CacheEntryOptions)
+        IDistributedCacheClient distributedCacheClient) : this(multilevelCacheOptions.Get(name).CacheEntryOptions)
     {
         _distributedCacheClient = distributedCacheClient;
 
@@ -44,7 +51,7 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
         IDistributedCacheClient distributedCacheClient,
         CacheEntryOptions? cacheEntryOptions,
         SubscribeKeyType subscribeKeyType,
-        string subscribeKeyPrefix = "") : base(cacheEntryOptions)
+        string subscribeKeyPrefix = "") : this(cacheEntryOptions)
     {
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;
@@ -337,7 +344,9 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
 
     #endregion
 
-    #region private methods
+    #region Private methods
+
+    protected static string FormatMemoryCacheKey<T>(string key) => SubscribeHelper.FormatMemoryCacheKey<T>(key);
 
     private List<CacheItemModel<T>> GetListCore<T>(
         IEnumerable<string> keys,
@@ -421,6 +430,25 @@ public class MultilevelCacheClient : BaseDistributedCacheClient
             }
             action?.Invoke(item);
         }
+    }
+
+    protected MemoryCacheEntryOptions? GetMemoryCacheEntryOptions(CacheEntryOptions? cacheEntryOptions)
+    {
+        var options = cacheEntryOptions ?? DefaultCacheEntryOptions;
+        if (options == null)
+            return null;
+
+        return CopyTo(options);
+    }
+
+    private static MemoryCacheEntryOptions CopyTo(CacheEntryOptions cacheEntryOptions)
+    {
+        return new()
+        {
+            AbsoluteExpiration = cacheEntryOptions.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = cacheEntryOptions.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = cacheEntryOptions.SlidingExpiration
+        };
     }
 
     private void RemoveOne<T>(string key)

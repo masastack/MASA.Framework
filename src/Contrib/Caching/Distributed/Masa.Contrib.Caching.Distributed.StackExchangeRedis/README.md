@@ -9,13 +9,13 @@ It is developed based on `StackExchangeRedis` and provides distributed caching c
 
 Example:
 
-````C#
+``` powershell
 Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
-````
+```
 
 ### Usage 1:
 
-1. Configure appsettings.json
+1. Configure `appsettings.json`
 
 ```` C#
 {

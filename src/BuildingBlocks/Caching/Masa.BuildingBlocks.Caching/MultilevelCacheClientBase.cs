@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class AbstractMultilevelCacheClient : AbstractCacheClient, IMultilevelCacheClient
+public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClient
 {
     public abstract T? Get<T>(string key, Action<T?> valueChanged);
 

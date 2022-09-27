@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-public abstract class BaseDistributedCacheClient : AbstractDistributedCacheClient
+public abstract class BaseDistributedCacheClient : DistributedCacheClientBase
 {
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
