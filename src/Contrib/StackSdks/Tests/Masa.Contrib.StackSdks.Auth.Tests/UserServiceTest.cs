@@ -650,6 +650,34 @@ public class UserServiceTest
         await userService.RegisterByPhoneAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
+
+    [TestMethod]
+    public async Task TestHasPasswordAsync()
+    {
+        var requestUri = $"api/user/hasPassword";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(true).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.HasPassword();
+        caller.Verify(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is true);
+    }
+
+    [TestMethod]
+    public async Task TestRegisterThirdPartyUserAsync()
+    {
+        var model = new RegisterThirdPartyUserModel();
+        var user = new UserModel();
+        var requestUri = $"api/thirdPartyUser/registerThirdPartyUser";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, model, default)).ReturnsAsync(user).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.RegisterThirdPartyUserAsync(model);
+        caller.Verify(provider => provider.PostAsync<UserModel>(requestUri, model, default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
 }
 
 class SystemData

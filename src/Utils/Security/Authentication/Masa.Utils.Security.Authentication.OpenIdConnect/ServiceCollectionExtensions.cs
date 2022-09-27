@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        return services.AddMasaOpenIdConnect(configuration.GetSection("$public.OIDC:AuthClient").Get<MasaOpenIdConnectOptions>());
+        return services.AddMasaOpenIdConnect(configuration.GetSection("$public.OIDC").Get<MasaOpenIdConnectOptions>());
     }
 
     public static IServiceCollection AddMasaOpenIdConnect(

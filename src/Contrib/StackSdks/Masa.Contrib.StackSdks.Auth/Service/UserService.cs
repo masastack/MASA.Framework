@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using IdentityModel.Client;
-
 namespace Masa.Contrib.StackSdks.Auth.Service;
 
 public class UserService : IUserService
@@ -312,6 +310,22 @@ public class UserService : IUserService
     {
         var requestUri = $"api/user/register";
         await _caller.PostAsync(requestUri, model);
+    }
+
+    public async Task<bool> HasPassword(Guid userId = default)
+    {
+        if (userId == Guid.Empty)
+        {
+            userId = _userContext.GetUserId<Guid>();
+        }
+        var requestUri = $"api/user/hasPassword";
+        return await _caller.GetAsync <bool>(requestUri, new { userId });
+    }
+
+    public async Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model)
+    {
+        var requestUri = $"api/thirdPartyUser/registerThirdPartyUser";
+        return await _caller.PostAsync<UserModel>(requestUri, model) ?? throw new UserFriendlyException("Register failed");
     }
 }
 
