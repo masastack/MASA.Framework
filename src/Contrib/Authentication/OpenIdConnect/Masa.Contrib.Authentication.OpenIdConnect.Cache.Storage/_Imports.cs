@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Models;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage.Stores;
+global using Masa.BuildingBlocks.Data;
 global using Masa.Contrib.Authentication.Oidc.Cache;
 global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Stores;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
