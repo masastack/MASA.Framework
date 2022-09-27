@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration;
 
-public class MasaRelationOptions
+public class MasaConfigurationRelationOptions
 {
     internal List<ConfigurationRelationOptions> Relations { get; } = new();
 
@@ -14,7 +14,7 @@ public class MasaRelationOptions
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public MasaRelationOptions MappingLocal<TModel>(string? section = null, string? name = null) where TModel : class
+    public MasaConfigurationRelationOptions MappingLocal<TModel>(string? section = null, string? name = null) where TModel : class
         => Mapping<TModel>(SectionTypes.Local, null!, section, name);
 
     /// <summary>
@@ -25,7 +25,7 @@ public class MasaRelationOptions
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public MasaRelationOptions MappingConfigurationApi<TModel>(string parentSection, string? section = null, string? name = null)
+    public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string parentSection, string? section = null, string? name = null)
         where TModel : class
         => Mapping<TModel>(SectionTypes.ConfigurationApi, parentSection, section, name);
 
@@ -39,7 +39,7 @@ public class MasaRelationOptions
     /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public MasaRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
+    public MasaConfigurationRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
         where TModel : class
     {
         name ??= Options.DefaultName;
