@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration;
+namespace Masa.BuildingBlocks.Configuration;
 
 public static class MasaConfigurationBuilderExtensions
 {
@@ -30,7 +30,7 @@ public static class MasaConfigurationBuilderExtensions
 
             var option = (IMasaConfigurationOptions)Activator.CreateInstance(optionType, !constructorInfo.IsPublic)!;
             var sectionName = option.Section ?? optionType.Name;
-            var name = Options.DefaultName;
+            var name = Microsoft.Extensions.Options.Options.DefaultName;
             if (builder.Relations.Any(relation => relation.SectionType == option.SectionType && relation.Section == sectionName && relation.ObjectType == optionType && relation.Name == name))
             {
                 throw new ArgumentException(
