@@ -15,7 +15,7 @@ internal static class DistributedCacheClientExtensions
 
         string partialKey =
             $"{environment}-{cluster}-{appId}".ToLower();
-        List<string> keys = distributedCacheClient.GetKeys($"{partialKey}*").ToList();
+        var keys = distributedCacheClient.GetKeys($"{partialKey}*");
         foreach (var key in keys)
         {
             var configObject = key.Split($"{partialKey}-", StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
