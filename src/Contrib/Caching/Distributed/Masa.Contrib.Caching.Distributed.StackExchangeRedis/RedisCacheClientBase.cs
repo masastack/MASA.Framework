@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-public abstract class BaseDistributedCacheClient : DistributedCacheClientBase
+public abstract class RedisCacheClientBase : DistributedCacheClientBase
 {
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
@@ -11,7 +11,7 @@ public abstract class BaseDistributedCacheClient : DistributedCacheClientBase
     protected readonly JsonSerializerOptions JsonSerializerOptions;
     protected CacheEntryOptions CacheEntryOptions;
 
-    protected BaseDistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
+    protected RedisCacheClientBase(RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
     {
         var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);

@@ -141,11 +141,11 @@ public class StackExchangeRedisCacheTest : TestBase
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
 
-        Assert.IsTrue(distributedCacheClient is DistributedCacheClient redisClient);
-        var fieldInfo = typeof(DistributedCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        Assert.IsTrue(distributedCacheClient is RedisCacheClient redisClient);
+        var fieldInfo = typeof(RedisCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.IsNotNull(fieldInfo);
 
-        var value = fieldInfo.GetValue((DistributedCacheClient)distributedCacheClient);
+        var value = fieldInfo.GetValue((RedisCacheClient)distributedCacheClient);
         Assert.IsNotNull(value);
         Assert.AreEqual(1, ((IDatabase)value).Database);
     }
@@ -163,11 +163,11 @@ public class StackExchangeRedisCacheTest : TestBase
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
 
-        Assert.IsTrue(distributedCacheClient is DistributedCacheClient redisClient);
-        var fieldInfo = typeof(DistributedCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        Assert.IsTrue(distributedCacheClient is RedisCacheClient redisClient);
+        var fieldInfo = typeof(RedisCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         Assert.IsNotNull(fieldInfo);
 
-        var value = fieldInfo.GetValue((DistributedCacheClient)distributedCacheClient);
+        var value = fieldInfo.GetValue((RedisCacheClient)distributedCacheClient);
         Assert.IsNotNull(value);
         Assert.AreEqual(6, ((IDatabase)value).Database);
     }

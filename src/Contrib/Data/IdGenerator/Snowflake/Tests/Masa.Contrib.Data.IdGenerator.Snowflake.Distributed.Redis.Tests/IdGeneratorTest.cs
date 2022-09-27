@@ -28,7 +28,7 @@ public class IdGeneratorTest
             }
         };
         _redisOptions = Options.Create(redisConfigurationOptions);
-        _redisCacheClient = new DistributedCacheClient(redisConfigurationOptions);
+        _redisCacheClient = new RedisCacheClient(redisConfigurationOptions);
         var options = (ConfigurationOptions)_redisOptions.Value;
         var connection = await ConnectionMultiplexer.ConnectAsync(options);
         _database = connection.GetDatabase(options.DefaultDatabase ?? 0);

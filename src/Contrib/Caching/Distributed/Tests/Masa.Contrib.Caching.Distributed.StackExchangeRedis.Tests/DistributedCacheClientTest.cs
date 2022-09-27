@@ -6,13 +6,13 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 [TestClass]
 public class DistributedCacheClientTest : TestBase
 {
-    private DistributedCacheClient _distributedCacheClient;
+    private RedisCacheClient _distributedCacheClient;
     private IDatabase _database;
 
     [TestInitialize]
     public void Initialize()
     {
-        _distributedCacheClient = new DistributedCacheClient(GetConfigurationOptions());
+        _distributedCacheClient = new RedisCacheClient(GetConfigurationOptions());
 
         _database = ConnectionMultiplexer.Connect(GetConfigurationOptions()).GetDatabase();
 

@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-public class DistributedCacheClient : BaseDistributedCacheClient
+public class RedisCacheClient : RedisCacheClientBase
 {
-    public DistributedCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
+    public RedisCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
         string name,
         JsonSerializerOptions? jsonSerializerOptions = null)
         : this(redisConfigurationOptions.Get(name), jsonSerializerOptions)
@@ -19,7 +19,7 @@ public class DistributedCacheClient : BaseDistributedCacheClient
         });
     }
 
-    public DistributedCacheClient(RedisConfigurationOptions redisConfigurationOptions,
+    public RedisCacheClient(RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
         : base(redisConfigurationOptions, jsonSerializerOptions)
     {

@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
 
             var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, serviceProvider =>
             {
-                var distributedCacheClient = new DistributedCacheClient(
+                var distributedCacheClient = new RedisCacheClient(
                     serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
                     name,
                     jsonSerializerOptions
@@ -116,7 +116,7 @@ public static class ServiceCollectionExtensions
 
             var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, _ =>
             {
-                var distributedCacheClient = new DistributedCacheClient(
+                var distributedCacheClient = new RedisCacheClient(
                     redisConfigurationOptions,
                     jsonSerializerOptions
                 );
