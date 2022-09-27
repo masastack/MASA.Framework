@@ -313,5 +313,13 @@ public class UserService : IUserService
         var requestUri = $"api/user/register";
         await _caller.PostAsync(requestUri, model);
     }
+
+    public async Task<bool> GetInEnvironmentAsync(string env, string phoneNumber)
+    {
+        ArgumentNullException.ThrowIfNull(env);
+        ArgumentNullException.ThrowIfNull(phoneNumber);
+        var requestUri = $"api/user/InEnvironment?env={env}&phoneNumber={phoneNumber}";
+        return await _caller.GetAsync<bool>(requestUri);
+    }
 }
 

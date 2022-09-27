@@ -82,5 +82,7 @@ public interface IUserService
     Task RegisterByPhoneAsync(RegisterByPhoneModel model);
 
     Task RegisterByEmailAsync(RegisterByEmailModel model);
+
+    Task<bool> GetInEnvironmentAsync(string env, string phoneNumber);
 }
 
