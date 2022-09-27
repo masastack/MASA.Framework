@@ -9,5 +9,5 @@ public class CustomMemoryCacheClientFactory : IMemoryCacheClientFactory
 
     public CustomMemoryCacheClientFactory(IMemoryCache memoryCache) => _memoryCache = memoryCache;
 
-    public MemoryCacheClient CreateClient(string name) => new(_memoryCache, null!, SubscribeKeyTypes.SpecificPrefix);
+    public IMemoryCacheClient CreateClient(string name) => new MemoryCacheClient(_memoryCache, null!, SubscribeKeyTypes.SpecificPrefix);
 }

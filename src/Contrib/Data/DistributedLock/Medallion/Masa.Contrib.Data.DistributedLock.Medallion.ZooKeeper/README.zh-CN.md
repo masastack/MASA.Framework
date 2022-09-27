@@ -2,13 +2,17 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper
 
-## 用例:
+基于`Masa.Contrib.Data.DistributedLock.Medallion`以及`ZooKeeper`实现的分布式锁
 
-```c#
+用例:
+
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper
 ```
 
-1. 修改类`Program`
+### 入门
+
+1. 注册锁，修改类`Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,7 +21,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. 使用分布式锁
+2. 使用锁
 
 ``` C#
 IDistributedLock distributedLock;//从DI获取`IDistributedLock`

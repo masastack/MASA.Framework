@@ -4,11 +4,13 @@
 
 用例：
 
-```C#
-Install-Package Masa.Contrib.Isolation.UoW.EFCore
+``` powershell
+Install-Package Masa.Contrib.Isolation.UoW.EFCore //基于EFCore实现Isolation的工作单元，不需要Isolation的请使用Masa.Contrib.Data.UoW.EFCore
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer数据库使用
 ```
+
+### 入门
 
 1. 配置`appsettings.json`
 ``` appsettings.json
@@ -58,7 +60,7 @@ public class CustomDbContext : IsolationDbContext
 
 采用物理隔离时也可以选择不实现IMultiEnvironment
 
-##### 总结
+### 总结
 
 * 控制器或MinimalAPI中环境如何解析？
     * 环境默认提供了7个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)

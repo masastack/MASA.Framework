@@ -2,13 +2,15 @@
 
 ## Masa.Contrib.Data.DistributedLock.Medallion.Oracle
 
-### Example:
+Distributed lock based on `Masa.Contrib.Data.DistributedLock.Medallion` and `Oracle`
 
-```c#
+Example:
+
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.Oracle
 ```
 
-1. Modify `Program`
+1. Register lock, modify class `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,7 +19,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. Use distributed locks
+2. Use locks
 
 ``` C#
 IDistributedLock distributedLock;//Get `IDistributedLock` from DI

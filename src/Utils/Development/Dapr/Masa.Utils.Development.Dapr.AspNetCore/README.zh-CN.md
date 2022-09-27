@@ -6,20 +6,21 @@
 
 协助管理dapr进程，用于开发时减少对docker compose的依赖
 
-### 基本用法：
+用例：
 
-1. 安装Masa.Utils.Development.Dapr.AspNetCore
-```C#
+``` powershell
 Install-Package Masa.Utils.Development.Dapr.AspNetCore
 ```
 
-2. 添加DaprStarter协助管理dapr进程（建议在开发环境使用）
+### 入门
+
+1添加DaprStarter协助管理dapr进程（建议在开发环境使用）
 
 ```C#
 builder.Services.AddDaprStarter();
 ```
 
-### 高级用法：
+### 进阶
 
 1. 代码中指定配置
 

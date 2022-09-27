@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;

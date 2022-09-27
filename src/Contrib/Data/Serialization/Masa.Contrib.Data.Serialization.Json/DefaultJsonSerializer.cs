@@ -5,9 +5,9 @@ namespace Masa.Contrib.Data.Serialization.Json;
 
 public class DefaultJsonSerializer : IJsonSerializer
 {
-    private readonly IOptions<JsonSerializerOptions>? _options;
+    private readonly JsonSerializerOptions? _options;
 
-    public DefaultJsonSerializer(IOptions<JsonSerializerOptions>? options = null) => _options = options;
+    public DefaultJsonSerializer(JsonSerializerOptions? options = null) => _options = options;
 
-    public string Serialize<TValue>(TValue value) => JsonSerializer.Serialize(value, _options?.Value);
+    public string Serialize<TValue>(TValue value) => JsonSerializer.Serialize(value, _options);
 }

@@ -5,13 +5,13 @@ namespace Masa.Contrib.Data.Serialization.Json;
 
 public class DefaultJsonDeserializer : IJsonDeserializer
 {
-    private readonly IOptions<JsonSerializerOptions>? _options;
+    private readonly JsonSerializerOptions? _options;
 
-    public DefaultJsonDeserializer(IOptions<JsonSerializerOptions>? options = null) => _options = options;
+    public DefaultJsonDeserializer(JsonSerializerOptions? options = null) => _options = options;
 
     public TValue? Deserialize<TValue>(string value)
-        => JsonSerializer.Deserialize<TValue>(value, _options?.Value);
+        => JsonSerializer.Deserialize<TValue>(value, _options);
 
     public object? Deserialize(string value, Type valueType)
-        => JsonSerializer.Deserialize(value, valueType, _options?.Value);
+        => JsonSerializer.Deserialize(value, valueType, _options);
 }

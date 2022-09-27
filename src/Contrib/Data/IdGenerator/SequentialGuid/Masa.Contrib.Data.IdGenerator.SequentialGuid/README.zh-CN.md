@@ -4,23 +4,32 @@
 
 Masa.Contrib.Data.IdGenerator.SequentialGuid是一个有序的Guid构造器，提供Guid类型的唯一标识
 
-## 用例:
+用例:
 
-1. 安装`Masa.Contrib.Data.IdGenerator.SequentialGuid`
+``` powershell
+Install-Package Masa.Contrib.Data.IdGenerator.SequentialGuid
+```
 
-    ```c#
-    Install-Package Masa.Contrib.Data.IdGenerator.SequentialGuid
-    ```
+### 入门
 
-2. 使用`Masa.Contrib.Data.IdGenerator.SequentialGuid`
+1. 注册Guid构造器，修改`Program.cs`
 
-    ``` C#
-    builder.Services.AddSequentialGuidGenerator();
-    ```
+``` C#
+builder.Services.AddSequentialGuidGenerator();
+```
 
-3. 获取Id
+2. 获取Id
 
-    ```
-    ISequentialGuidGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SequentialGuidGenerator获取
-    generator.NewId();//创建唯一id
-    ```
+```
+ISequentialGuidGenerator generator;// 通过DI获取
+generator.NewId();//创建唯一id
+```
+
+> 或通过`MasaApp.GetRequiredService<ISequentialGuidGenerator>().NewId()`获取
+
+### 配置
+
+* SequentialGuidType：枚举
+  * SequentialAsString: MySql、PostgreSql
+  * SequentialAsBinary: Oracle
+  * SequentialAtEnd: SqlServer (默认)

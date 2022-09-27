@@ -11,3 +11,4 @@ global using Microsoft.Extensions.Options;
 global using System.ComponentModel;
 global using System.Reflection;
 global using System.Runtime.Serialization;
+global using System.Text.Json;

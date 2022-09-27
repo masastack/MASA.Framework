@@ -9,7 +9,7 @@
 Install-Package Masa.Utils.Data.Prometheus
 ```
 
-### Example:
+Example:
 
 1. Inject
 

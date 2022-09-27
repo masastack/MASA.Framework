@@ -22,6 +22,11 @@ public class JsonTest
         Assert.IsNotNull(user);
         Assert.AreEqual(1, user.Id);
         Assert.AreEqual("John", user.Name);
+
+        user = new DefaultJsonDeserializer().Deserialize(json, typeof(User)) as User;
+        Assert.IsNotNull(user);
+        Assert.AreEqual(1, user.Id);
+        Assert.AreEqual("John", user.Name);
     }
 
     [TestMethod]
@@ -65,9 +70,34 @@ public class JsonTest
     public void TestAddMultiJsonReturnCountIs1()
     {
         var services = new ServiceCollection();
-        services.AddJson().AddJson();
+        services.AddJson(option =>
+        {
+            option.Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs);
+        }).AddJson();
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IJsonSerializer>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<IJsonDeserializer>().Count() == 1);
+    }
+
+    [TestMethod]
+    public void TestAddMultiJson2()
+    {
+        var services = new ServiceCollection();
+        services.AddJson("test", options =>
+        {
+            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+        }).AddJson("test");
+        var serviceProvider = services.BuildServiceProvider();
+        Assert.IsTrue(serviceProvider.GetServices<IJsonSerializer>().Count() == 1);
+
+        var user = new User(1, null!);
+        var json = serviceProvider.GetRequiredService<ISerializerFactory>().Create("test").Serialize(user);
+        Assert.AreEqual("{\"Id\":" + 1 + "}", json);
+
+        user = serviceProvider.GetRequiredService<IDeserializerFactory>().Create("test").Deserialize(json, typeof(User)) as User;
+        Assert.IsNotNull(user);
+
+        Assert.AreEqual(1, user.Id);
+        Assert.IsNull(user.Name);
     }
 }
