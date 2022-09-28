@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        return services.AddMasaOpenIdConnect(configuration.GetSection("$public.OIDC:AuthClient").Get<MasaOpenIdConnectOptions>());
+        return services.AddMasaOpenIdConnect(configuration.GetSection("$public.OIDC").Get<MasaOpenIdConnectOptions>());
     }
 
     public static IServiceCollection AddMasaOpenIdConnect(
@@ -99,6 +99,23 @@ public static class ServiceCollectionExtensions
                         {
                             context.HandleResponse();
                         }
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProviderForSignOut = context =>
+                    {
+                        if (context.Properties.Items.ContainsKey("env"))
+                        {
+                            context.ProtocolMessage.SetParameter("env",
+                                context.Properties.Items["env"]);
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnSignedOutCallbackRedirect = context =>
+                    {
                         return Task.CompletedTask;
                     }
                 };
