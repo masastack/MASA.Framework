@@ -95,6 +95,7 @@ public static class ServiceCollectionExtensions
             var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
             return new DefaultJsonDeserializer(jsonSerializerOptions ?? optionsFactory.Create(Options.Options.DefaultName));
         });
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

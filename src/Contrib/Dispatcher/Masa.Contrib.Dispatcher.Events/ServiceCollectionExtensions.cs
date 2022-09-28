@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
         Action<EventBusBuilder>? eventBusBuilder = null)
-        => services.AddEventBus(AppDomain.CurrentDomain.GetAssemblies(), eventBusBuilder);
+        => services.AddEventBus(MasaApp.GetAssemblies(), eventBusBuilder);
 
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
         services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<InitializeAppConfigurationProvider>();
 
-        MasaApp.Services = services;
+        MasaApp.TrySetServiceCollection(services);
 
         MasaAppConfigureOptionsRelation optionsRelation = new();
         action?.Invoke(optionsRelation);

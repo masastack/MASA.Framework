@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
             return schedulerClient;
         });
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

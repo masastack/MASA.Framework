@@ -40,7 +40,6 @@ public static class ServiceCollectionExtensions
             options.Options.Add(cacheRelationOptions);
         });
 
-        MasaApp.TrySetServiceCollection(cachingBuilder.Services);
         return cachingBuilder;
     }
 
@@ -77,7 +76,6 @@ public static class ServiceCollectionExtensions
             options.Options.Add(cacheRelationOptions);
         });
 
-        MasaApp.TrySetServiceCollection(cachingBuilder.Services);
         return cachingBuilder;
     }
 }

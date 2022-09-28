@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
             return mcCaching;
         });
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

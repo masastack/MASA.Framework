@@ -11,6 +11,8 @@ public static class ServiceCollectionExtensions
             return services;
 
         services.TryAddSingleton<IDistributedLock, DefaultLocalDistributedLock>();
+
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

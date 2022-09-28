@@ -15,13 +15,13 @@
       <PackageReference Include="Aliyun.OSS.SDK.NetCore" Version="2.13.0" />
       <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftPackageVersion)" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftPackageVersion)" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
       <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(MicrosoftPackageVersion)" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
+      <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
       <ProjectReference Include="..\..\..\..\BuildingBlocks\Storage\Masa.BuildingBlocks.Storage.ObjectStorage\Masa.BuildingBlocks.Storage.ObjectStorage.csproj" />
     </ItemGroup>
 

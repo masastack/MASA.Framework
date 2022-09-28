@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDomainEventBus(
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
-        => services.AddDomainEventBus(AppDomain.CurrentDomain.GetAssemblies(), options);
+        => services.AddDomainEventBus(MasaApp.GetAssemblies(), options);
 
     public static IServiceCollection AddDomainEventBus(
         this IServiceCollection services,
@@ -42,6 +42,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddScoped<IDomainEventBus, DomainEventBus>();
         services.TryAddScoped<IDomainService, DomainService>();
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

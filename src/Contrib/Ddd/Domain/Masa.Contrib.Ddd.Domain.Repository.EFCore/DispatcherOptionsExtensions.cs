@@ -21,6 +21,7 @@ public static class DispatcherOptionsExtensions
             throw new Exception("Please add UoW first.");
 
         options.Services.TryAddRepository<TDbContext>(options.Assemblies);
+        MasaApp.TrySetServiceCollection(options.Services);
         return options;
     }
 

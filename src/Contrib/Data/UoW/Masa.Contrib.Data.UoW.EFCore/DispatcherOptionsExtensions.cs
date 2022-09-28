@@ -75,6 +75,7 @@ public static class DispatcherOptionsExtensions
             services.AddMasaDbContext<TDbContext, TUserId>(optionsBuilder);
 
         services.AddScoped<ITransaction, Transaction>();
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

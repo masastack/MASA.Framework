@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\SearchEngine\Masa.BuildingBlocks.SearchEngine.AutoComplete\Masa.BuildingBlocks.SearchEngine.AutoComplete.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Data\Masa.Utils.Data.Elasticsearch\Masa.Utils.Data.Elasticsearch.csproj" />
   </ItemGroup>

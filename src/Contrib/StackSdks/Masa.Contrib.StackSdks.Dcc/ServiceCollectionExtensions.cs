@@ -28,5 +28,6 @@ public static class ServiceCollectionExtensions
 
             return new DccClient(client);
         });
+        MasaApp.TrySetServiceCollection(services);
     }
 }

@@ -6,7 +6,7 @@ namespace Masa.Contrib.Service.Caller;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCaller(this IServiceCollection services)
-        => services.AddCaller(AppDomain.CurrentDomain.GetAssemblies());
+        => services.AddCaller(MasaApp.GetAssemblies());
 
     public static IServiceCollection AddCaller(this IServiceCollection services, params Assembly[] assemblies)
         => services.AddCaller(options => options.Assemblies = assemblies);
@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         if (!callerOption.DisableAutoRegistration) services.AddAutomaticCaller(callerOption);
         TryOrUpdate(services, callerOption);
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

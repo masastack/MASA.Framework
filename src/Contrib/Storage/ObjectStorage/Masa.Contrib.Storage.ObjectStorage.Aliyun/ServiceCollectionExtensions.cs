@@ -98,6 +98,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IBucketNameProvider, BucketNameProvider>();
         services.TryAddSingleton(typeof(IClientContainer<>), typeof(DefaultClientContainer<>));
         services.TryAddSingleton<IClientFactory, DefaultClientFactory>();
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

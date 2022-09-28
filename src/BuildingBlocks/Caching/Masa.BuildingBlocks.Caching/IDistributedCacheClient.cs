@@ -9,12 +9,30 @@ public interface IDistributedCacheClient : ICacheClient
 
     Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     void Refresh(params string[] keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     void Refresh(IEnumerable<string> keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
     Task RefreshAsync(params string[] keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
     Task RefreshAsync(IEnumerable<string> keys);
 
     void Remove(params string[] keys);

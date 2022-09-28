@@ -103,6 +103,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
         services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IAutoCompleteFactory>().CreateClient());
         client.TryCreateIndexAsync(services.BuildServiceProvider().GetService<ILogger<IAutoCompleteClient>>(), option);
+
+        MasaApp.TrySetServiceCollection(services);
     }
 
     private static void TryAddAutoCompleteRelation(this IServiceCollection services, AutoCompleteRelations relation)

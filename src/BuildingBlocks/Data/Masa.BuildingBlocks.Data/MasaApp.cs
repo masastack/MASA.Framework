@@ -19,6 +19,8 @@ public static class MasaApp
 
     public static IServiceCollection Services { get; set; } = new ServiceCollection();
 
+    private static Assembly[]? Assemblies { get; set; }
+
     /// <summary>
     /// Global JsonSerializerOptions configuration
     /// </summary>
@@ -48,4 +50,24 @@ public static class MasaApp
             _rootServiceProvider = null;
         }
     }
+
+    /// <summary>
+    /// Set the global Assembly collection (only if Assembly is not assigned a value)
+    /// </summary>
+    /// <param name="assemblies"></param>
+    public static void TrySetAssemblies(params Assembly[] assemblies)
+    {
+        ArgumentNullException.ThrowIfNull(assemblies);
+
+        Assemblies ??= assemblies;
+    }
+
+    /// <summary>
+    /// Set the global Assembly collection
+    /// </summary>
+    /// <param name="assemblies"></param>
+    public static void SetAssemblies(params Assembly[] assemblies)
+        => Assemblies = assemblies;
+
+    public static Assembly[] GetAssemblies() => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
 }

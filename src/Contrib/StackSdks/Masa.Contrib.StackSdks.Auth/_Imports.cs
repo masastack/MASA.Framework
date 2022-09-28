@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Caching;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.BuildingBlocks.StackSdks.Auth;

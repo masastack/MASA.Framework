@@ -63,6 +63,8 @@ public static class ServiceCollectionExtensions
             return authClient;
         });
 
+        MasaApp.TrySetServiceCollection(services);
+
         return services;
     }
 }

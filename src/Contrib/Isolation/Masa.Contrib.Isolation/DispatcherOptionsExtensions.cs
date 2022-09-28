@@ -58,6 +58,8 @@ public static class DispatcherOptionsExtensions
             services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider), ServiceLifetime.Scoped));
         else
             services.TryAddScoped<IConnectionStringProvider, DefaultDbIsolationConnectionStringProvider>();
+
+        MasaApp.TrySetServiceCollection(services);
     }
 
     private static IServiceCollection TryAddConfigure<TOptions>(

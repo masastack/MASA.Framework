@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Caching;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.StackSdks.Dcc;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Model;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Service;

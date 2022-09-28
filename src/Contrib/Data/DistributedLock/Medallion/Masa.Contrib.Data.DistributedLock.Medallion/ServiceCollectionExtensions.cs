@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
             throw new MasaException("Please add IDistributedLockProvider first.");
 
         services.TryAddSingleton<IMasaDistributedLock, DefaultMedallionDistributedLock>();
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

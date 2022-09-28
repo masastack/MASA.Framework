@@ -13,12 +13,28 @@ public interface IMultilevelCacheClient : ICacheClient
 
     Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     void Refresh<T>(params string[] keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     void Refresh<T>(IEnumerable<string> keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     Task RefreshAsync<T>(params string[] keys);
 
+    /// <summary>
+    /// Flush cache time to live
+    /// </summary>
+    /// <param name="keys"></param>
     Task RefreshAsync<T>(IEnumerable<string> keys);
 
     void Remove<T>(params string[] keys);

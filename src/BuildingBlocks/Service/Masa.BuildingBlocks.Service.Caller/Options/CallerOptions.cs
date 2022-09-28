@@ -9,11 +9,11 @@ public class CallerOptions
 
     public IServiceCollection Services { get; }
 
-    private Assembly[] _assemblies = AppDomain.CurrentDomain.GetAssemblies();
+    private Assembly[]? _assemblies;
 
     public Assembly[] Assemblies
     {
-        get => _assemblies;
+        get => _assemblies ?? MasaApp.GetAssemblies();
         set
         {
             ArgumentNullException.ThrowIfNull(value);
