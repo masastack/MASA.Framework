@@ -23,9 +23,7 @@ public class NormalGuidGeneratorTest
     public void TestNormarlGuidByMasaAppReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSimpleGuidGenerator();
-
+        services.TestAddSimpleGuidGenerator();
         var idGenerator = MasaApp.GetService<IIdGenerator<Guid>>();
         Assert.IsNotNull(idGenerator);
         Assert.IsTrue(idGenerator.GetType() == typeof(NormalGuidGenerator));
@@ -37,10 +35,7 @@ public class NormalGuidGeneratorTest
     public void TestNormarlGuidByCustomNameReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSimpleGuidGenerator("normal");
-        MasaApp.Build();
-
+        services.TestAddSimpleGuidGenerator("normal");
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
         Assert.IsNotNull(idGeneratorFactory);
 
@@ -53,18 +48,24 @@ public class NormalGuidGeneratorTest
     public void TestNormarlGuidByNameIsNullReturnArgumentNullException()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddSimpleGuidGenerator(null!));
+        Assert.ThrowsException<ArgumentNullException>(() => services.TestAddSimpleGuidGenerator(null!));
     }
 
     [TestMethod]
     public void TestAddMultiSequentialGuidReturnIdGeneratorCountIs1()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSimpleGuidGenerator().AddSimpleGuidGenerator();
-        MasaApp.Build();
+        services.TestAddSimpleGuidGenerator().TestAddSimpleGuidGenerator();
 
         Assert.IsTrue(services.Count(d => d.ServiceType == typeof(IIdGenerator<Guid>)) == 1);
+    }
+
+    [TestMethod]
+    public void TestNewId()
+    {
+        var services = new ServiceCollection();
+        services.TestAddSimpleGuidGenerator();
+
+        Assert.AreNotEqual(Guid.Empty, MasaApp.GetRequiredService<IIdGenerator<Guid>>().NewId());
     }
 }

@@ -2,19 +2,19 @@
 
 ## Masa.Utils.Data.Elasticsearch
 
-## Example:
+Example:
 
-```c#
+``` powershell
 Install-Package Masa.Utils.Data.Elasticsearch
 ```
 
-#### Basic usage:
+### Get Started
 
-Using Elasticsearch
+1. Register `Elasticsearch`
 
-```` C#
+``` C#
 builder.Services.AddElasticsearch("es", "http://localhost:9200"); // or builder.Services.AddElasticsearchClient("es", "http://localhost:9200");
-````
+```
 
 #### Create index:
 
@@ -46,7 +46,7 @@ public async Task<string> DeleteIndexByAliasAsync([FromServices] IMasaElasticCli
 }
 ````
 
-### bind alias
+#### bind alias
 
 ```` C#
 public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient client)
@@ -58,7 +58,7 @@ public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient clien
 }
 ````
 
-### Unbind aliases
+#### Unbind aliases
 
 ```` C#
 public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient client)
@@ -72,7 +72,7 @@ public async Task<string> BindAliasAsync([FromServices] IMasaElasticClient clien
 
 > For more methods, please see [IMasaElasticClient](./IMasaElasticClient.cs)
 
-## FAQ
+### FAQ
 
 1. The error message is: `"Content-Type header [application/vnd.elasticsearch+json; compatible-with=7] is not supported"`
 

@@ -2,11 +2,11 @@
 
 ## Masa.Contrib.Configuration.ConfigurationApi.Dcc
 
-Effect:
+Provider of remote capabilities of MasaConfiguration (Dcc needs to be configured)
 
-Extend the ability of IConfiguration to manage remote configuration through Dcc.
+Extends IConfiguration's ability to manage remote configuration through Dcc.
 
-```c#
+``` structure
 IConfiguration
 ├── Local                                Local node (fixed)
 ├── ConfigurationApi                     Remote node (fixed Dcc to expand its capacity)
@@ -17,15 +17,18 @@ IConfiguration
 
 Example：
 
-```C#
-Install-Package Masa.Contrib.Configuration
+``` powershell
+Install-Package Masa.Contrib.Configuration //The core of MasaConfiguration
 Install-Package Masa.Contrib.Configuration.ConfigurationApi.Dcc //Provides the ability to remotely configure
 ```
 
-appsettings.json
-```
+### getting Started:
+
+1. Modify `appsettings.json` and configure the parameters required by `Dcc` (remote capability)
+
+``` C#
 {
-  //Dcc configuration, extended Configuration capabilities, support remote configuration
+  //Dcc configuration, expand Configuration capabilities, support remote configuration
   "DccOptions": {
     "ManageServiceAddress": "http://localhost:8890",
     "RedisOptions": {
@@ -37,33 +40,37 @@ appsettings.json
       ],
       "DefaultDatabase": 0,
       "Password": ""
-    },
-    "PublicId": "PublicId",
-    "PublicSecret": "PublicSecret",
-    "AppId": "Replace-With-Your-AppId",
-    "Environment": "Development",
-    "ConfigObjects": [ "Redis" ], //The name of the object to be mounted, the Redis configuration will be mounted here under the ConfigurationApi:<Replace-With-Your-AppId> node
-    "Secret": "", //Dcc App key
-    "Cluster": "Default"
-  },
+    }
+  }
 }
-
 ```
 
-```C#
-builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());//Ability to provide remote configuration using Dcc
+2. Register `MasaConfiguration`, and use `Dcc`, modify `Program.cs`
 
+``` C#
+builder.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc()
+});//Use Dcc to provide remote configuration capabilities
+```
+
+3. Create a new `RedisOptions` class and configure the mapping relationship
+
+```
 /// <summary>
 /// Automatically map node relationships
 /// </summary>
 public class RedisOptions : ConfigurationApiMasaConfigurationOptions
 {
     /// <summary>
-    /// The app id.
+    /// Replace with the AppId of the Redis configuration on the Dcc platform
     /// </summary>
     [JsonIgnore]
     public override string AppId { get; set; } = "Replace-With-Your-AppId";
 
+    /// <summary>
+    /// Replace with the name of the configuration object to which the Redis configuration on the Dcc platform belongs, which is the same as the class name when not rewritten
+    /// </summary>
     [JsonIgnore]
     public override string? ObjectName { get; init; } = "Redis";
 
@@ -73,104 +80,48 @@ public class RedisOptions : ConfigurationApiMasaConfigurationOptions
 
     public int DefaultDatabase { get; set; }
 }
-
-public class CustomDccSectionOptions : ConfigurationApiMasaConfigurationOptions
-{
-    /// <summary>
-    /// The app id.
-    /// </summary>
-    [JsonIgnore]
-    public override string AppId { get; set; } = "Replace-With-Your-AppId";
-
-    /// <summary>
-    /// The environment name.
-    /// Get from the environment variable ASPNETCORE_ENVIRONMENT when Environment is null or empty
-    /// </summary>
-    public string? Environment { get; set; } = null;
-
-    /// <summary>
-    /// The cluster name.
-    /// </summary>
-    public string? Cluster { get; set; }
-
-    public List<string> ConfigObjects { get; set; } = default!;
-
-    public string? Secret { get; set; }
-
-    /// <summary>
-    /// Mount CustomDccSectionOptions under the root node
-    /// </summary>
-    [JsonIgnore]
-    public virtual string? Section => string.Empty;
-}
 ```
 
-How to use configuration：
+> Since Redis is configured in the Dcc platform, the class needs to inherit `ConfigurationApiMasaConfigurationOptions`
 
-```c#
+4. Get configuration
+
+``` C#
 var app = builder.Build();
 
-//Read the configuration at the program entrance
-var redisHost = builder.GetMasaConfiguration().ConfigurationApi.GetDefault().GetValue<string>("Redis:Host");
-
-app.MapGet("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
+app.Map("/GetRedis", ([FromServices] IOptions<RedisOptions> option) =>
 {
-    //recommend
-    return System.Text.Json.JsonSerializer.Serialize(option.Value);//Or use IOptionsMonitor to support monitoring changes
+    //recommended (requires automatic or manual mapping of node relationships before it can be used)
+    return System.Text.Json.JsonSerializer.Serialize(option.Value);
 });
+```
 
-app.MapGet("/GetRedisByMonitor", ([FromServices] IOptionsMonitor<RedisOptions> options) =>
+### Advanced
+
+1. Manually specify the mapping relationship, advantage: no need to change the inheritance relationship of the original class
+
+``` C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
-    options.OnChange(option =>
+    configurationBuilder.UseDcc();
+    configurationBuilder.UseMasaOptions(options =>
     {
-        //TODO Configuration update
+        options.MappingConfigurationApi<RedisOptions>("Replace-With-Your-AppId", "Redis"); //Map RedisOptions binding to ConfigurationApi:AppId:Redis node
     });
-    return System.Text.Json.JsonSerializer.Serialize(option.CurrentValue);
 });
-
-app.MapGet("/GetRedisHost", ([FromServices] IConfiguration configuration) =>
-{
-    //Obtain the configuration value of the Host of the specified configuration object (ConfigObject) under the specified AppId from the configuration center
-    //Format ConfigurationApi:<Replace-With-Your-AppId>:<Your ConfigObject>:<parameter Host>
-    return configuration["ConfigurationApi:<Replace-With-Your-AppId>:Redis:Host"];
-});
-
-app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
-                               [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               RedisOptions newRedis) =>
-{
-    //Modify Dcc configuration
-    return configurationAPIManage.UpdateAsync(option.Value.Environment,
-                                              option.Value.Cluster,
-                                              option.Value.AppId,
-                                              "<Replace-With-Your-ConfigObject>",newRedis);//Here Replace-With-Your-ConfigObject is Redis
-});
-app.Run();
 ```
 
-How to update the configuration:
+2. How to use
 
-```c#
-var app = builder.Build();
+In addition to IOptions, IOptionsMonitor, and IOptionsSnapshot, it also supports getting through `IMasaConfiguration`
 
-app.MapPut("/UpdateRedis", ([FromServices] IConfigurationAPIManage configurationAPIManage,
-                               [FromServices] IOptions<CustomDccSectionOptions> configuration,
-                               RedisOptions newRedis) =>
-{
-    //Modify Dcc configuration
-    return configurationAPIManage.UpdateAsync(option.Value.Environment,
-                                              option.Value.Cluster,
-                                              option.Value.AppId,
-                                              "<Replace-With-Your-ConfigObject>"
-                                              ,newRedis);
-                                              //Here Replace-With-Your-ConfigObject is Redis
-});
-
-app.Run();
+``` c#
+IMasaConfiguration masaConfiguration;//Get IMasaConfiguration from DI
+masaConfiguration.ConfigurationApi["<Replace-With-Your-AppId>:Redis:Host"];
 ```
 
-Summarize：
+### Summarize
 
-Dcc provides remote configuration management and viewing capabilities for IConfiguration. For the complete capabilities of IConfiguration, please refer to the [document](../../Configuration/Masa.Contrib.Configuration/README.md)
+Dcc provides remote configuration management and viewing capabilities for IConfiguration. For the complete capabilities of IConfiguration, please refer to [document](../../Configuration/Masa.Contrib.Configuration/README.zh-CN.md)
 
-Redis here is remote configuration, which introduces the effect and usage of remote configuration after mounting to IConfiguration. This configuration has nothing to do with Redis in Masa.Contrib.Configuration. It just shows the use of the same configuration information in two sources. Ways and differences in mapping node relationships
+Here Redis is a remote configuration, which introduces the effect and usage of the remote configuration after it is mounted to IConfiguration. This configuration has nothing to do with Redis in MASA.Contrib.Configuration, but only shows the use of the same configuration information in two sources. Differences in methods and mapping node relationships

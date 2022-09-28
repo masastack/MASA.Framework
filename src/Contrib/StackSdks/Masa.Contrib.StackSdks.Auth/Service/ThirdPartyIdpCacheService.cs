@@ -6,9 +6,9 @@ namespace Masa.Contrib.StackSdks.Auth.Service;
 public class ThirdPartyIdpCacheService : IThirdPartyIdpCacheService
 {
     readonly ICallerFactory _callerFactory;
-    readonly IMemoryCacheClient _memoryCacheClient;
+    readonly IMultilevelCacheClient _memoryCacheClient;
 
-    public ThirdPartyIdpCacheService(ICallerFactory callerFactory, IMemoryCacheClient memoryCacheClient)
+    public ThirdPartyIdpCacheService(ICallerFactory callerFactory, IMultilevelCacheClient memoryCacheClient)
     {
         _callerFactory = callerFactory;
         _memoryCacheClient = memoryCacheClient;

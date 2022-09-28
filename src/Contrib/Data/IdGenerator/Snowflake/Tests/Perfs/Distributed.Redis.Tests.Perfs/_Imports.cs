@@ -7,5 +7,4 @@ global using BenchmarkDotNet.Engines;
 global using BenchmarkDotNet.Jobs;
 global using BenchmarkDotNet.Validators;
 global using Masa.BuildingBlocks.Data;
-global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.DependencyInjection;

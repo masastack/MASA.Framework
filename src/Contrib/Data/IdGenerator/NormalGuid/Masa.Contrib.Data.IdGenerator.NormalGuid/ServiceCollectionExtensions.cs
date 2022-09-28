@@ -10,7 +10,25 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddSimpleGuidGenerator(this IServiceCollection services, string name)
     {
-        ArgumentNullException.ThrowIfNull(name, nameof(name));
+        services.AddSimpleGuidGeneratorCore(name);
+        MasaApp.TrySetServiceCollection(services);
+        return services;
+    }
+
+    public static IServiceCollection TestAddSimpleGuidGenerator(this IServiceCollection services)
+        => services.TestAddSimpleGuidGenerator(Options.Options.DefaultName);
+
+    public static IServiceCollection TestAddSimpleGuidGenerator(this IServiceCollection services, string name)
+    {
+        services.AddSimpleGuidGeneratorCore(name);
+        MasaApp.Services = services;
+        MasaApp.Build();
+        return services;
+    }
+
+    private static IServiceCollection AddSimpleGuidGeneratorCore(this IServiceCollection services, string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
 
         if (services.Any(service => service.ImplementationType == typeof(SimpleGuidGeneratorProvider)))
             return services;

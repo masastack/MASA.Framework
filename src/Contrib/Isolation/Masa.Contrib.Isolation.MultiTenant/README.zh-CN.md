@@ -4,13 +4,16 @@
 
 用例：
 
-```C#
-Install-Package Masa.Contrib.Isolation.UoW.EFCore
+``` powershell
+Install-Package Masa.Contrib.Isolation.UoW.EFCore //基于EFCore实现Isolation的工作单元，不需要Isolation的请使用Masa.Contrib.Data.UoW.EFCore
 Install-Package Masa.Contrib.Isolation.MultiTenant
-Install-Package Masa.Contrib.Data.EFCore.SqlServer
+Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer数据库使用
 ```
 
+### 入门
+
 1. 配置`appsettings.json`
+
 ``` appsettings.json
 {
   "ConnectionStrings": {
@@ -34,6 +37,7 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer
 * 1.3 其他租户或宿主：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
 2. 使用Isolation.UoW.EF
+
 ``` C#
 builder.Services.AddEventBus(eventBusBuilder =>
 {

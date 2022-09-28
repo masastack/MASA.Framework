@@ -4,14 +4,16 @@
 
 用例：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents //使用跨进程事件
 Install-Package Masa.Contrib.Dispatcher.IntegrationEvents.Dapr //例如使用dapr提供pub、sub能力，也可自行选择其他实现
 Install-Package Masa.Contrib.Data.UoW.EFCore //使用工作单元
 Install-Package Masa.Contrib.Data.EFCore.SqlServer // 使用SqlServer
 ```
 
-1. 添加IIntegrationEventBus
+### 入门
+
+1. 注册集成事件（跨进程事件）
 
 1.1 指定本地消息服务
 

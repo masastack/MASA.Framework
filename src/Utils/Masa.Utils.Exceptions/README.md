@@ -8,9 +8,9 @@ Provides a model for handling web application exceptions
 * Take over the `UserFriendlyException` exception and respond with a status code of 299 and return a friendly error message
 * Handle all exceptions by default, and output `An error occur in masa framework` externally
 
-## Example:
+Example:
 
-``` C#
+``` powershell
 Install-Package Masa.Utils.Exceptions
 ```
 

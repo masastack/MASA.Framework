@@ -7,39 +7,24 @@ public static class ServiceCollectionExtensions
 {
     public static void AddDccClient(this IServiceCollection services)
     {
-        var options = AppSettings.GetModel<RedisConfigurationOptions>("DccOptions:RedisOptions");
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, options);
-
-        services.AddSingleton<IDccClient>(serviceProvider =>
-        {
-            var client = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
-            .CreateClient(DEFAULT_CLIENT_NAME);
-
-            return new DccClient(client);
-        });
+        var redisConfigurationOptions = AppSettings.GetModel<RedisConfigurationOptions>("DccOptions:RedisOptions");
+        services.AddDccClient(redisConfigurationOptions);
     }
 
     public static void AddDccClient(this IServiceCollection services, Action<RedisConfigurationOptions> options)
     {
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, options);
-
-        services.AddSingleton<IDccClient>(serviceProvider =>
-        {
-            var client = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
-            .CreateClient(DEFAULT_CLIENT_NAME);
-
-            return new DccClient(client);
-        });
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        options.Invoke(redisConfigurationOptions);
+        services.AddDccClient(redisConfigurationOptions);
     }
 
     public static void AddDccClient(this IServiceCollection services, RedisConfigurationOptions options)
     {
-        services.AddMasaRedisCache(DEFAULT_CLIENT_NAME, options);
+        services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, options);
 
         services.AddSingleton<IDccClient>(serviceProvider =>
         {
-            var client = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
-            .CreateClient(DEFAULT_CLIENT_NAME);
+            var client = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
 
             return new DccClient(client);
         });

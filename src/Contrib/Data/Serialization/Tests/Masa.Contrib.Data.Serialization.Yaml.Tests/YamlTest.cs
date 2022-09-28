@@ -16,6 +16,10 @@ public class YamlTest
         var deserializerUser = new DefaultYamlDeserializer(deserializer).Deserialize<User>(yaml);
         Assert.IsNotNull(deserializerUser);
         Assert.IsTrue(user.Age == deserializerUser.Age && user.Name == deserializerUser.Name);
+
+        deserializerUser = new DefaultYamlDeserializer(deserializer).Deserialize(yaml, typeof(User)) as User;
+        Assert.IsNotNull(deserializerUser);
+        Assert.IsTrue(user.Age == deserializerUser.Age && user.Name == deserializerUser.Name);
     }
 
     [TestMethod]
@@ -69,9 +73,11 @@ public class YamlTest
     {
         var services = new ServiceCollection();
         MasaApp.Services = services;
-        services.AddYaml(
-            serializer => serializer.WithNamingConvention(CamelCaseNamingConvention.Instance),
-            deserializer => deserializer.WithNamingConvention(CamelCaseNamingConvention.Instance));
+        services.AddYaml(options =>
+        {
+            options.Serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+            options.Deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
+        });
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());
         Assert.IsNotNull(MasaApp.GetService<IDeserializer>());

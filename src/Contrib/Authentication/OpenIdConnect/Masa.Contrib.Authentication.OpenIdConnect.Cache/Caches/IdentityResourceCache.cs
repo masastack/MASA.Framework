@@ -7,7 +7,7 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 [ExcludeFromCodeCoverage]
 public class IdentityResourceCache : IIdentityResourceCache
 {
-    IMemoryCacheClient _memoryCacheClient;
+    private readonly IMultilevelCacheClient _memoryCacheClient;
 
     public IdentityResourceCache(MemoryCacheProvider memoryCacheProvider)
     {
@@ -16,7 +16,7 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task<List<IdentityResourceModel>> GetListAsync(IEnumerable<string> names)
     {
-        var keys = names.Select(name => FormatKey(name)).ToArray();
+        var keys = names.Select(FormatKey).ToArray();
         var identityResources = await _memoryCacheClient.GetListAsync<IdentityResourceModel>(keys);
         return identityResources.Where(identityResource => identityResource is not null).ToList()!;
     }
@@ -39,8 +39,8 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task SetRangeAsync(IEnumerable<IdentityResource> identityResources)
     {
-        var map = identityResources.ToDictionary(identityResource => FormatKey(identityResource), identityResource => identityResource.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = identityResources.ToDictionary(FormatKey, identityResource => identityResource.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         // update list cache
         var list = await GetListAsync();
         list.SetRange(map.Values, item => item.Name);
@@ -58,8 +58,8 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task ResetAsync(IEnumerable<IdentityResource> identityResources)
     {
-        var map = identityResources.ToDictionary(identityResource => FormatKey(identityResource), identityResource => identityResource.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = identityResources.ToDictionary(FormatKey, identityResource => identityResource.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         await UpdateListAsync(map.Values);
     }
 

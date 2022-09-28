@@ -5,15 +5,27 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
 public static class IdGeneratorOptionsExtensions
 {
-    public static void UseRedis(this SnowflakeGeneratorOptions snowflakeGeneratorOptions, Action<DistributedIdGeneratorOptions>? action = null)
+    public static void UseRedis(this SnowflakeGeneratorOptions snowflakeGeneratorOptions,
+        Action<DistributedIdGeneratorOptions>? action = null)
+    {
+        var serviceProvider = snowflakeGeneratorOptions.Services.BuildServiceProvider();
+        var redisConfigurationOptions = serviceProvider.GetService<IOptions<RedisConfigurationOptions>>();
+        if (redisConfigurationOptions == null)
+            throw new MasaException("Please add first using AddStackExchangeRedisCache");
+
+        snowflakeGeneratorOptions.UseRedis(action, redisConfigurationOptions.Value);
+    }
+
+    public static void UseRedis(this SnowflakeGeneratorOptions snowflakeGeneratorOptions,
+        Action<DistributedIdGeneratorOptions>? action,
+        RedisConfigurationOptions redisConfigurationOptions)
     {
         snowflakeGeneratorOptions.EnableSupportDistributed();
         DistributedIdGeneratorOptions distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(snowflakeGeneratorOptions);
         action?.Invoke(distributedIdGeneratorOptions);
 
-        if (!snowflakeGeneratorOptions.Services.Any(service => service.ServiceType == typeof(IDistributedCacheClientFactory) &&
-                service.ImplementationType == typeof(RedisCacheClientFactory)))
-            throw new MasaException("Please add first using AddMasaRedisCache");
+        if (snowflakeGeneratorOptions.Services.All(service => service.ServiceType != typeof(IDistributedCacheClientFactory)))
+            throw new MasaException("Please add first using AddStackExchangeRedisCache");
 
         if (distributedIdGeneratorOptions.IdleTimeOut <= snowflakeGeneratorOptions.HeartbeatInterval)
         {
@@ -24,7 +36,7 @@ public static class IdGeneratorOptionsExtensions
         snowflakeGeneratorOptions.Services.TryAddSingleton<IWorkerProvider>(serviceProvider
             => new DistributedWorkerProvider(serviceProvider.GetRequiredService<IDistributedCacheClient>(),
                 distributedIdGeneratorOptions,
-                serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
+                redisConfigurationOptions,
                 serviceProvider.GetService<ILogger<DistributedWorkerProvider>>()));
 
         if (snowflakeGeneratorOptions.EnableMachineClock)
@@ -32,7 +44,7 @@ public static class IdGeneratorOptionsExtensions
             snowflakeGeneratorOptions.Services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
                 => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IDistributedCacheClient>(),
                     serviceProvider.GetRequiredService<IWorkerProvider>(),
-                    serviceProvider.GetRequiredService<IOptions<RedisConfigurationOptions>>(),
+                    redisConfigurationOptions,
                     distributedIdGeneratorOptions));
         }
     }

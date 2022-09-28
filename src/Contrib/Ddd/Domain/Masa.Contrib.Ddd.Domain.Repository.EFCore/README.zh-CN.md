@@ -2,15 +2,19 @@
 
 ## Masa.Contrib.Ddd.Domain.Repository.EFCore
 
+提供基于IRepository的默认实现，并支持自定义Repository的自动注入
+
 用例：
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Ddd.Domain.Repository.EFCore
 ```
 
 > 优势：IRepository的EF版实现，提供了基础的CRUD
 
-1. 添加Repository.EF
+### 入门
+
+1. 使用Framework提供基于`EFCore`的Repository的默认实现
 
 ```c#
 builder.Services

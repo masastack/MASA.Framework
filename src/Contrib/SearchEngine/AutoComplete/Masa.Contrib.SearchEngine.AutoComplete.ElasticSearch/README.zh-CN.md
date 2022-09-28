@@ -2,15 +2,17 @@
 
 ## AutoComplete.ElasticSearch
 
+基于`ElasticSearch`，提供输入完成的功能
+
 用例：
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch
 ```
 
-基本用法:
+### 入门
 
-使用AutoComplete
+1. 注册`AutoComplete`，修改`Program.cs`
 
 * 使用默认模型`AutoCompleteDocument<TValue>`，其中TValue仅支持简单类型
 
@@ -52,7 +54,9 @@ public class User : AutoCompleteDocument
 }
 ```
 
-##### 设置数据 (SetAsync)
+### 进阶
+
+#### 设置数据 (SetAsync)
 
 1. 设置单个文档:
 
@@ -117,7 +121,7 @@ public class User : AutoCompleteDocument
     }
     ```
 
-##### 获取数据 (GetAsync)
+#### 获取数据 (GetAsync)
 
 1. 根据关键字搜索:
 
@@ -169,7 +173,7 @@ public class User : AutoCompleteDocument
 >
 > https://github.com/medcl/elasticsearch-analysis-pinyin
 
-## 常见问题
+### 常见问题
 
 1. 出错提示为：`"Content-Type header [application/vnd.elasticsearch+json; compatible-with=7] is not supported"`
 

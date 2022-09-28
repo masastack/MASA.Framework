@@ -4,28 +4,30 @@
 
 Masa.Contrib.Data.IdGenerator.Snowflake是一个基于雪花id的id构造器，提供long类型的唯一标识
 
-## 用例:
+用例:
 
-1. 安装`Masa.Contrib.Data.IdGenerator.Snowflake`
+``` powershell
+Install-Package Masa.Contrib.Data.IdGenerator.Snowflake
+```
 
-    ```c#
-    Install-Package Masa.Contrib.Data.IdGenerator.Snowflake
-    ```
+### 入门
 
-2. 使用`Masa.Contrib.Data.IdGenerator.Snowflake`
+1. 注册雪花id构造器，修改`Program.cs`
 
-    ``` C#
-    builder.Services.AddSnowflake();
-    ```
+``` C#
+builder.Services.AddSnowflake();
+```
 
-3. 为当前服务设置WorkerId的值，添加环境变量`WORKER_ID`的值，其范围为：0-1023 (2^MaxWorkerId-1)
+2. 为当前服务设置WorkerId的值，添加环境变量`WORKER_ID`的值，其范围为: 0-1023 (2^MaxWorkerId-1)，默认: 0
 
-4. 获取Id
+3. 获取Id
 
-    ```
-    ISnowflakeGenerator generator;// 通过DI获取，或者通过IdGeneratorFactory.SnowflakeGenerator获取
-    generator.NewId();//创建唯一id
-    ```
+```
+ISnowflakeGenerator generator;// 通过DI获取
+generator.NewId();//创建唯一id
+```
+
+> 或通过`MasaApp.GetRequiredService<ISnowflakeGenerator>().NewId()`获取
 
 ### 参数及常见问题:
 

@@ -19,6 +19,31 @@ public class SequentialGuidGeneratorTest
     }
 
     [TestMethod]
+    public void TestNewId2()
+    {
+        var services = new ServiceCollection();
+        services.AddSequentialGuidGenerator();
+
+        Assert.AreNotEqual(Guid.Empty, MasaApp.GetRequiredService<IIdGenerator<Guid>>().NewId());
+    }
+
+    [TestMethod]
+    public void TestNewId3()
+    {
+        var services = new ServiceCollection();
+        services.AddSequentialGuidGenerator("test");
+        MasaApp.Services = services;
+        MasaApp.Build();
+        var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
+        Assert.IsNotNull(idGeneratorFactory);
+
+        var idGenerator = idGeneratorFactory.Create<Guid>("test");
+        Assert.IsNotNull(idGenerator);
+
+        Assert.AreNotEqual(Guid.Empty, idGenerator.NewId());
+    }
+
+    [TestMethod]
     public void TestSequentialGuidReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
@@ -35,8 +60,7 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByMasaAppReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAsString);
+        services.TestAddSequentialGuidGenerator(SequentialGuidType.SequentialAsString);
 
         var idGenerator = MasaApp.GetService<IIdGenerator<Guid>>();
         Assert.IsNotNull(idGenerator);
@@ -49,8 +73,7 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByDefaultReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator();
+        services.TestAddSequentialGuidGenerator();
         MasaApp.Build();
 
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
@@ -65,8 +88,7 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByCustomNameReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator(SequentialGuidType.SequentialAsString, "sequentialGuid");
+        services.TestAddSequentialGuidGenerator("sequentialGuid", SequentialGuidType.SequentialAsString);
         MasaApp.Build();
 
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
@@ -81,8 +103,7 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByCustomName2ReturnIdGeneratorIsNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator("sequentialGuid");
+        services.TestAddSequentialGuidGenerator("sequentialGuid");
         MasaApp.Build();
 
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
@@ -97,8 +118,7 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByErrorTypeReturnNotSupportedException()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator((SequentialGuidType)5, "sequentialGuid");
+        services.TestAddSequentialGuidGenerator("sequentialGuid", (SequentialGuidType)5);
         MasaApp.Build();
 
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
@@ -115,8 +135,7 @@ public class SequentialGuidGeneratorTest
     public void TestAddMultiSequentialGuidReturnIdGeneratorCountIs1()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        services.AddSequentialGuidGenerator().AddSequentialGuidGenerator();
+        services.TestAddSequentialGuidGenerator().TestAddSequentialGuidGenerator();
         MasaApp.Build();
 
         Assert.IsTrue(services.Count(d => d.ServiceType == typeof(IIdGenerator<Guid>)) == 1);
@@ -126,7 +145,6 @@ public class SequentialGuidGeneratorTest
     public void TestSequentialGuidByNameIsNullReturnArgumentNullException()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddSequentialGuidGenerator(null!));
+        Assert.ThrowsException<ArgumentNullException>(() => services.TestAddSequentialGuidGenerator(null!));
     }
 }

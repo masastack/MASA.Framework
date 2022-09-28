@@ -2,18 +2,21 @@
 
 ## Masa.Utils.Extensions.DependencyInjection
 
-### Reference package:
+Example：
 
-````c#
+``` powershell
 Install-Package Masa.Utils.Extensions.DependencyInjection
-````
-### Usage:
+```
+
+### Get Started
 
 ````C#
 services.AddAutoInject();
 ````
 
-## Dependent interface:
+### Advanced
+
+#### Dependent interface:
 
 * ISingletonDependency: registers a service whose lifecycle is Singleton
 * IScopedDependency: registers a service whose lifecycle is Scoped
@@ -32,7 +35,7 @@ public interface IRepository<TEntity> : IScopedDependency
 
 > Because IRepository<TEntity> inherits IScopedDependency, the life cycle of IRepository<TEntity> will be Scoped
 
-## Rule:
+#### Rule:
 
 Scan the interfaces and classes that inherit ISingletonDependency, IScopedDependency, and ITransientDependency in the assembly, and automatically register services for them
 
@@ -98,14 +101,14 @@ Scan the interfaces and classes that inherit ISingletonDependency, IScopedDepend
 
      > Equivalent to: `service.AddSingleton<BaseRepository>();service.AddSingleton<UserRepository>();`
 
-## Features:
+#### Features:
 
 * IgnoreInjection: Ignore injection, used to exclude not being injected automatically
 * Dependency:
     * TryRegister: Set true to be registered only when the service is not registered, similar to TryAdd of IServiceCollection... extension method
     * ReplaceServices: Set true to replace previously registered services, similar to the Replace... extension method of IServiceCollection.
 
-## Methods:
+#### Methods:
 
 * Extend IServiceCollection
 * GetInstance<TService>(): Get the instance of service T

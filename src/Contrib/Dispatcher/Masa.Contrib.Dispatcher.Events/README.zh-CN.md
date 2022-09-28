@@ -1,16 +1,18 @@
 中 | [EN](README.md)
 
-## EventBus
+## Masa.Contrib.Dispatcher.Events
+
+提供进程内事件（本地事件），支持事件编排、Saga、中间件，结合`UoW`使用，确保操作的原子性
 
 用例：
 
-```c#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.Events
 ```
 
-##### 基本用法：
+### 入门
 
-1. 添加EventBus
+1. 注册`EventBus`
 
 ```c#
 var builder = WebApplication.CreateBuilder(args);
@@ -64,9 +66,9 @@ public class TransferHandler : IEventHandler<TransferEvent>
 }
 ```
 
-##### 高级用法：
+### 进阶：
 
-1. Handler编排：
+#### Handler编排
 
 ```C#
 public class TransferHandler
@@ -85,7 +87,7 @@ public class TransferHandler
 }
 ```
 
-2. 支持Saga模式
+#### Saga
 
 假如扣减余额发送出错，则重试3次，如果仍然失败则校验余额是否扣减，确保无扣减后通知转账失败
 
@@ -145,9 +147,10 @@ public class TransferHandler : ISagaEventHandler<TransferEvent>
 > Handler所在的方法返回类型仅支持Task或void两种类型
 > Handler所在的类的构造函数的参数必须支持从DI中获取
 
-3. 支持Middleware
+#### Middleware
 
-   1. 自定义Middleware
+1. 自定义Middleware
+
 ```C#
 public class LoggingMiddleware<TEvent>
     : IMiddleware<TEvent> where TEvent : notnull, IEvent
@@ -162,17 +165,18 @@ public class LoggingMiddleware<TEvent>
     }
 }
 ```
-   2. 启用自定义Middleware
+
+2. 启用自定义Middleware
 
 ```C#
 builder.Services.AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(ValidatorMiddleware<>)));
 ```
 
-4. 支持Transaction
+#### 支持Transaction
 
-> 配合MASA.Contrib.Ddd.Domain.Repository.EF.Repository、UnitOfWork使用，当Event实现了ITransaction，会在执行Add、Update、Delete方法时自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
+配合MASA.Contrib.Ddd.Domain.Repository.EF.Repository、UnitOfWork使用，当Event实现了ITransaction，会在执行Add、Update、Delete方法时自动开启事务，且在Handler全部执行后提交事务，当事务出现异常后，会自动回滚事务
 
-##### 性能测试
+### 性能测试
 
 BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19043.1023 (21H1/May2021Update)
 11th Gen Intel Core i7-11700 2.50GHz, 1 CPU, 16 logical and 8 physical cores
@@ -189,7 +193,7 @@ Runtime=.NET 6.0  IterationCount=100  RunStrategy=ColdStart
 | AddShoppingCartByEventBusAsync | 124.80 us | 346.93 us | 1,022.94 us | 8.650 us | 6.500 us | 10,202.4 us |
 |  AddShoppingCartByMediatRAsync | 110.57 us | 306.47 us |   903.64 us | 7.500 us | 5.300 us |  9,000.1 us |
 
-##### 总结
+### 总结
 
 IEventBus是事件总线的核心，配合Cqrs、Uow、Masa.Contrib.Ddd.Domain.Repository.EF使用，可实现自动执行SaveChange（启用UoW）与Commit（启用UoW且无关闭事务）操作，并支持出现异常后，回滚事务
 

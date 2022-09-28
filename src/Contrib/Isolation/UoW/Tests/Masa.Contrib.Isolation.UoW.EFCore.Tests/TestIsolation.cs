@@ -297,6 +297,7 @@ public class TestIsolation : TestBase
             unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test7");
     }
 
+#pragma warning disable CS0618
     [TestMethod]
     public void TestUseMultiTenantAndAddMasaConfiguration()
     {
@@ -313,6 +314,7 @@ public class TestIsolation : TestBase
         Assert.IsNotNull(currentDbContextOptions);
         Assert.IsTrue(currentDbContextOptions.ConnectionString == "data source=test1");
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public async Task TestUseMultiTenantAndUseFilterAsync()

@@ -6,5 +6,6 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.Contrib.Authentication.Oidc.Cache;
-global using Masa.Utils.Caching.Redis.Models;
+global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -2,32 +2,43 @@
 
 ## Masa.Contrib.Data.EFCore.Sqlite
 
-## 用例:
+用例:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite
+Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```
 
-#### 用法1:
+### 用法1
 
 1. 配置appsettings.json
 
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"
+    "DefaultConnection": "Data Source=test.db;"
   }
 }
 ```
 
-2. 使用MasaDbContext
+2. 注册`MasaDbContext`
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter();//启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseSqlite();//使用Sqlite数据库
+});
 ```
 
-#### 用法2:
+### 用法2
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite("Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter();//启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseSqlite("Data Source=test.db;");//使用Sqlite数据库
+});
 ```
+
+> 链接字符串可参考：https://www.connectionstrings.com/sqlite

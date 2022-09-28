@@ -1,16 +1,21 @@
 中 | [EN](README.md)
 
-## UoW.EF
+## Masa.Contrib.Data.UoW.EFCore
+
+基于`EFCore`实现的工作单元
 
 用例：
 
-```C#
+``` powershell
 Install-Package Masa.Contrib.Dispatcher.Events
 Install-Package Masa.Contrib.Data.UoW.EFCore
 Install-Package Masa.Contrib.Data.EFCore.SqlServer
 ```
 
+### 入门
+
 1. 配置appsettings.json
+
 ``` appsettings.json
 {
   "ConnectionStrings": {

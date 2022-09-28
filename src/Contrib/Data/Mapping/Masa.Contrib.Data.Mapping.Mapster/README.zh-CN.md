@@ -12,75 +12,74 @@ Masa.Contrib.Data.Mapping.Mapster是基于[Mapster](https://github.com/MapsterMa
 
     > 最佳构造函数: 目标对象构造函数参数数量从大到小降序查找，参数名称一致（不区分大小写）且参数类型与源对象属性一致
 
-## 用例:
+用例:
 
-1. 安装`Masa.Contrib.Data.Mapping.Mapster`
+``` powershelll
+Install-Package Masa.Contrib.Data.Mapping.Mapster
+```
 
-    ```c#
-    Install-Package Masa.Contrib.Data.Mapping.Mapster
-    ```
+### 入门
 
-2. 使用`Mapping`
+1. 注册`Mapster`
 
-    ``` C#
-    builder.Services.AddMapster();
-    ```
+``` C#
+builder.Services.AddMapster();
+```
 
-3. 映射对象
+2. 映射对象
 
-    ```
-    IMapper mapper;// 通过DI获取
+```
+IMapper mapper;// 通过DI获取
 
-    var request = new
+var request = new
+{
+    Name = "Teach you to learn Dapr ……",
+    OrderItem = new OrderItem("Teach you to learn Dapr hand by hand", 49.9m)
+};
+var order = mapper.Map<Order>(request);// 将request映射到新的对象
+```
+
+映射类`Order`:
+
+``` Order.cs
+public class Order
+{
+    public string Name { get; set; }
+
+    public decimal TotalPrice { get; set; }
+
+    public List<OrderItem> OrderItems { get; set; }
+
+    public Order(string name)
     {
-        Name = "Teach you to learn Dapr ……",
-        OrderItem = new OrderItem("Teach you to learn Dapr hand by hand", 49.9m)
-    };
-    var order = mapper.Map<Order>(request);// 将request映射到新的对象
-
-    ```
-
-    映射类`Order`:
-
-    ``` Order.cs
-    public class Order
-    {
-        public string Name { get; set; }
-
-        public decimal TotalPrice { get; set; }
-
-        public List<OrderItem> OrderItems { get; set; }
-
-        public Order(string name)
-        {
-            Name = name;
-        }
-
-        public Order(string name, OrderItem orderItem) : this(name)
-        {
-            OrderItems = new List<OrderItem> { orderItem };
-            TotalPrice = OrderItems.Sum(item => item.Price * item.Number);
-        }
+        Name = name;
     }
 
-    public class OrderItem
+    public Order(string name, OrderItem orderItem) : this(name)
     {
-        public string Name { get; set; }
-
-        public decimal Price { get; set; }
-
-        public int Number { get; set; }
-
-        public OrderItem(string name, decimal price) : this(name, price, 1)
-        {
-
-        }
-
-        public OrderItem(string name, decimal price, int number)
-        {
-            Name = name;
-            Price = price;
-            Number = number;
-        }
+        OrderItems = new List<OrderItem> { orderItem };
+        TotalPrice = OrderItems.Sum(item => item.Price * item.Number);
     }
-    ```
+}
+
+public class OrderItem
+{
+    public string Name { get; set; }
+
+    public decimal Price { get; set; }
+
+    public int Number { get; set; }
+
+    public OrderItem(string name, decimal price) : this(name, price, 1)
+    {
+
+    }
+
+    public OrderItem(string name, decimal price, int number)
+    {
+        Name = name;
+        Price = price;
+        Number = number;
+    }
+}
+```

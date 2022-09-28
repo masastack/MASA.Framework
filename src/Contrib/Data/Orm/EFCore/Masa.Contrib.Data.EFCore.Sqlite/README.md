@@ -2,32 +2,43 @@
 
 ## Masa.Contrib.Data.EFCore.Sqlite
 
-## Example:
+Example:
 
-```c#
+``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite
+Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```
 
-##### Usage 1:
+### Usage 1
 
 1. Configure appsettings.json
 
 ``` appsettings.json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"
+    "DefaultConnection": "Data Source=test.db;"
   }
 }
 ```
 
-2. Using MasaDbContext
+2. Register `MasaDbContext`
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite());
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts.EFCore
+    optionsBuilder.UseSqlite(); //Using Sqlite database
+});
 ```
 
-##### Usage 2:
+### Usage 2
 
 ``` C#
-builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder => optionsBuilder.UseFilter().UseSqlite("Data Source=c:\mydb.db;Version=3;Password=P@ssw0rd;"));
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts.EFCore
+    optionsBuilder.UseSqlite("Data Source=test.db;"); //Using Sqlite database
+});
 ```
+
+> For the link string, please refer to: https://www.connectionstrings.com/sqlite

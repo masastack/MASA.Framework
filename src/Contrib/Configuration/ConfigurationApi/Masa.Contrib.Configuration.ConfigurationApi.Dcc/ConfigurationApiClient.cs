@@ -5,27 +5,32 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IMemoryCacheClient _client;
+    private readonly IMultilevelCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
     private readonly DccOptions _dccOptions;
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
-    private readonly IDeserializer _deserializer = new DeserializerBuilder().Build();
+    private readonly Masa.BuildingBlocks.Data.ISerializer _yamlSerializer;
+    private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
 
     public ConfigurationApiClient(
         IServiceProvider serviceProvider,
-        IMemoryCacheClient client,
         JsonSerializerOptions jsonSerializerOptions,
         DccOptions dccOptions,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {
+        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        ArgumentNullException.ThrowIfNull(client);
+
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        _yamlSerializer = serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME);
+        _yamlDeserializer = serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME);
         _dccOptions = dccOptions;
     }
 
@@ -175,10 +180,9 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             case ConfigFormats.Yaml:
                 try
                 {
-                    var yamlObject = _deserializer.Deserialize<object>(result.Content!);
+                    var yamlObject = _yamlDeserializer.Deserialize<object>(result.Content!);
 
-                    var serializer = new SerializerBuilder().JsonCompatible().Build();
-                    var json = serializer.Serialize(yamlObject);
+                    var json = _yamlSerializer.Serialize(yamlObject);
                     return (json, ConfigurationTypes.Yaml);
                 }
                 catch (Exception exception)

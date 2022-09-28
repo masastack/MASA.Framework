@@ -6,7 +6,7 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 [ExcludeFromCodeCoverage]
 public class ApiResourceCache : IApiResourceCache
 {
-    IMemoryCacheClient _memoryCacheClient;
+    private readonly IMultilevelCacheClient _memoryCacheClient;
 
     public ApiResourceCache(MemoryCacheProvider memoryCacheProvider)
     {
@@ -15,7 +15,7 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task<List<ApiResourceModel>> GetListAsync(IEnumerable<string> names)
     {
-        var keys = names.Select(name => FormatKey(name));
+        var keys = names.Select(FormatKey);
         var apiResources = await _memoryCacheClient.GetListAsync<ApiResourceModel>(keys.ToArray());
         return apiResources.Where(apiResource => apiResource is not null).ToList()!;
     }
@@ -38,8 +38,8 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task SetRangeAsync(IEnumerable<ApiResource> apiResources)
     {
-        var map = apiResources.ToDictionary(apiResource => FormatKey(apiResource), apiResource => apiResource.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = apiResources.ToDictionary(FormatKey, apiResource => apiResource.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         // update list cache
         var list = await GetListAsync();
         list.SetRange(map.Values, item => item.Name);
@@ -57,8 +57,8 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task ResetAsync(IEnumerable<ApiResource> apiResources)
     {
-        var map = apiResources.ToDictionary(apiResource => FormatKey(apiResource), apiResource => apiResource.ToModel());
-        await _memoryCacheClient.SetListAsync(map);
+        var map = apiResources.ToDictionary(FormatKey, apiResource => apiResource.ToModel());
+        await _memoryCacheClient.SetListAsync(map!);
         await UpdateListAsync(map.Values);
     }
 

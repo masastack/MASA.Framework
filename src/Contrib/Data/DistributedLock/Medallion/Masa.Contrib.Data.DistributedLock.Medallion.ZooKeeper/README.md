@@ -1,14 +1,18 @@
 [中](README.zh-CN.md) | EN
 
-## Masa.Contrib.Data.DistributedLock.Medallion.SqlServer
+## Masa.Contrib.Data.DistributedLock.Medallion.ZooKeeper
 
-### Example:
+Distributed lock based on `Masa.Contrib.Data.DistributedLock.Medallion` and `ZooKeeper`
 
-```c#
+Example:
+
+``` powershell
 Install-Package Masa.Contrib.Data.DistributedLock.Medallion.SqlServer
 ```
 
-1. Modify `Program`
+### Get Started
+
+1. Register lock, modify class `Program`
 
 ``` C#
 builder.Services.AddDistributedLock(medallionBuilder =>
@@ -17,7 +21,7 @@ builder.Services.AddDistributedLock(medallionBuilder =>
 });
 ```
 
-2. Use distributed locks
+2. Use locks
 
 ``` C#
 IDistributedLock distributedLock;//Get `IDistributedLock` from DI

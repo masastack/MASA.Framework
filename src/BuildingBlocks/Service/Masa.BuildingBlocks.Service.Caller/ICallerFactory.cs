@@ -3,9 +3,6 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public interface ICallerFactory
+public interface ICallerFactory: IMasaFactory<ICaller>
 {
-    ICaller Create();
-
-    ICaller Create(string name);
 }
