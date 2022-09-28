@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation;
 
-public class IsolationDbContextProvider : BaseDbConnectionStringProvider
+public class IsolationDbContextProvider : DbConnectionStringProviderBase
 {
     private readonly IOptionsMonitor<IsolationDbConnectionOptions> _options;
 

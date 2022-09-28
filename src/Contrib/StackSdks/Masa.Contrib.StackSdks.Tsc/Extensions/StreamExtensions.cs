@@ -1,6 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace System.IO;
 
 public static class StreamExtensions

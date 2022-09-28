@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Ddd.Domain.Repository.EFCore;
 
 public class Repository<TDbContext, TEntity> :
-    BaseRepository<TEntity>
+    RepositoryBase<TEntity>
     where TEntity : class, IEntity
     where TDbContext : DbContext, IMasaDbContext
 {
@@ -95,7 +95,7 @@ public class Repository<TDbContext, TEntity> :
     /// <param name="isDescending">true descending order, false ascending order, default: true</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending,
+    public override Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending = true,
         CancellationToken cancellationToken = default)
         => Context.Set<TEntity>().OrderBy(sortField, isDescending).Skip(skip).Take(take).ToListAsync(cancellationToken);
 

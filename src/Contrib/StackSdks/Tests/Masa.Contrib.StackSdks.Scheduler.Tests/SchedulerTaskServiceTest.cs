@@ -14,7 +14,7 @@ public class SchedulerTaskServiceTest
     [TestMethod]
     public async Task TestStopSchedulerTaskAsync()
     {
-        var requestData = new BaseSchedulerTaskRequest()
+        var requestData = new SchedulerTaskRequestBase()
         {
             TaskId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()
@@ -22,17 +22,17 @@ public class SchedulerTaskServiceTest
 
         var requestUri = $"{API}/stop";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default)).Verifiable();
+        caller.Setup(provider => provider.PutAsync<SchedulerTaskRequestBase>(requestUri, requestData, true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerTaskService.StopAsync(requestData);
-        caller.Verify(provider => provider.PutAsync<BaseSchedulerTaskRequest>(requestUri, requestData, true, default), Times.Once);
+        caller.Verify(provider => provider.PutAsync<SchedulerTaskRequestBase>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task TestStartSchedulerTaskAsync()
     {
-        var request = new BaseSchedulerTaskRequest()
+        var request = new SchedulerTaskRequestBase()
         {
             TaskId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()

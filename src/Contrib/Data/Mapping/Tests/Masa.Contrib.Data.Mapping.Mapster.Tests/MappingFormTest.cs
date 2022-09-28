@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
 
 [TestClass]
-public class MappingFormTest : BaseMappingTest
+public class MappingFormTest : MappingBaseTest
 {
     [TestMethod]
     public void TestUseShareModeReturnMapRuleIsExist()

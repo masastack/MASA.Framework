@@ -3,7 +3,7 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
-public class DbConnectionStringProvider : BaseDbConnectionStringProvider
+public class DbConnectionStringProvider : DbConnectionStringProviderBase
 {
     private readonly IOptionsMonitor<MasaDbConnectionOptions> _options;
 

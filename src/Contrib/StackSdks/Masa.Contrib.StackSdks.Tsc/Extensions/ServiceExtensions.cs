@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Tests")]
-
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtensions

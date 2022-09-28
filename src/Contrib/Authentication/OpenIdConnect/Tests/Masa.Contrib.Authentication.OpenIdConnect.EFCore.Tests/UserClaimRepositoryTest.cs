@@ -10,28 +10,28 @@ public class UserClaimRepositoryTest
     public async Task TestAddStandardUserClaimsAsync()
     {
         var serviceCollection = new ServiceCollection();       
-        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<TestDbContext>()));
+        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
         serviceCollection.AddScoped<IUserClaimRepository, UserClaimRepository>();
         var publisher = new Mock<IPublisher>();
         serviceCollection.TryAddSingleton(serviceProvider => publisher.Object);
         serviceCollection.AddDomainEventBus(dispatcherOptions =>
         {
             dispatcherOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<TestDbContext>())
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<TestDbContext>(
+            .UseUoW<CustomDbContext>(
                 dbOptions => dbOptions.UseInMemoryTestDatabase("TestAddStandardUserClaims"),false,false
             )
-            .UseRepository<TestDbContext>();
+            .UseRepository<CustomDbContext>();
         });
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var userClaimRepository = serviceProvider.GetRequiredService<IUserClaimRepository>();
         await userClaimRepository.AddStandardUserClaimsAsync();
 
-        var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Set<UserClaim>().AddAsync(new("sub", "1"));
         var userClaims = await dbContext.Set<UserClaim>().ToListAsync();
         Assert.AreNotEqual(0, userClaims.Count);       

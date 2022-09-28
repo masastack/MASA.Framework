@@ -3,7 +3,6 @@
 
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
-global using Masa.Contrib.Authentication.Oidc.Cache;
 global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Utils;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Microsoft.Extensions.DependencyInjection;

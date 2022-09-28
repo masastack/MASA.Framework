@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class SubscribeOptions<T> : BasePubSubOptions
+public class SubscribeOptions<T> : PubSubOptionsBase
 {
     /// <summary>
     /// Gets or sets the value.

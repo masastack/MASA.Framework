@@ -7,13 +7,13 @@ public interface ISchedulerJobService
 {
     Task<Guid> AddAsync(AddSchedulerJobRequest job);
 
-    Task<bool> StartAsync(BaseSchedulerJobRequest request);
+    Task<bool> StartAsync(SchedulerJobRequestBase request);
 
-    Task<bool> RemoveAsync(BaseSchedulerJobRequest request);
+    Task<bool> RemoveAsync(SchedulerJobRequestBase request);
 
-    Task<bool> EnableAsync(BaseSchedulerJobRequest request);
+    Task<bool> EnableAsync(SchedulerJobRequestBase request);
 
-    Task<bool> DisableAsync(BaseSchedulerJobRequest request);
+    Task<bool> DisableAsync(SchedulerJobRequestBase request);
 
     Task<SchedulerJobModel?> GetSchedulerJobQueryByIdentityAsync(GetSchedulerJobByIdentityRequest request);
 }

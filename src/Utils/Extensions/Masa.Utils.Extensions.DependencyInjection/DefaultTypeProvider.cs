@@ -3,7 +3,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public class DefaultTypeProvider : BaseTypeProvider
+public class DefaultTypeProvider : TypeProviderBase
 {
     public override List<ServiceDescriptorOptions> GetServiceDescriptors(List<Type> types)
         => GetServiceDescriptorCore(types, typeof(ISingletonDependency), ServiceLifetime.Singleton)

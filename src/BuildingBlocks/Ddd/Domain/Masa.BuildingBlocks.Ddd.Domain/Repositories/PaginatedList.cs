@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Repositories;
 
-public class PaginatedList<TEntity> : BasePaginatedList<TEntity>
+public class PaginatedList<TEntity> : PaginatedListBase<TEntity>
     where TEntity : class, IEntity
 {
 }

@@ -229,17 +229,17 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestRemoveSchedulerJobAsync()
     {
-        var requestData = new BaseSchedulerJobRequest()
+        var requestData = new SchedulerJobRequestBase()
         {
             JobId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()
         };
 
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default)).Verifiable();
+        caller.Setup(provider => provider.DeleteAsync<SchedulerJobRequestBase>(API, requestData, true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.RemoveAsync(requestData);
-        caller.Verify(provider => provider.DeleteAsync<BaseSchedulerJobRequest>(API, requestData, true, default), Times.Once);
+        caller.Verify(provider => provider.DeleteAsync<SchedulerJobRequestBase>(API, requestData, true, default), Times.Once);
 
         Assert.IsTrue(result);
     }
@@ -247,7 +247,7 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestStartSchedulerJobAsync()
     {
-        var requestData = new BaseSchedulerJobRequest()
+        var requestData = new SchedulerJobRequestBase()
         {
             JobId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()
@@ -255,17 +255,17 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/startJob";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default)).Verifiable();
+        caller.Setup(provider => provider.PutAsync<SchedulerJobRequestBase>(requestUri, requestData, true, default)).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.StartAsync(requestData);
-        caller.Verify(provider => provider.PutAsync<BaseSchedulerJobRequest>(requestUri, requestData, true, default), Times.Once);
+        caller.Verify(provider => provider.PutAsync<SchedulerJobRequestBase>(requestUri, requestData, true, default), Times.Once);
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public async Task TestEnableSchedulerJob()
     {
-        var requestData = new BaseSchedulerJobRequest()
+        var requestData = new SchedulerJobRequestBase()
         {
             JobId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()
@@ -283,7 +283,7 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestDisableSchedulerJob()
     {
-        var requestData = new BaseSchedulerJobRequest()
+        var requestData = new SchedulerJobRequestBase()
         {
             JobId = Guid.NewGuid(),
             OperatorId = Guid.NewGuid()

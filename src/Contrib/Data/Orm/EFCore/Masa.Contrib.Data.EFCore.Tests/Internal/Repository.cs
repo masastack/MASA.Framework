@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Data.EFCore.Tests.Internal;
@@ -12,7 +12,7 @@ internal sealed class Repository
     public Task<List<Student>> GetPaginatedListAsync(int skip, int take, CancellationToken cancellationToken = default)
         => _testDbContext.Set<Student>().Skip(skip).Take(take).ToListAsync(cancellationToken);
 
-    public async Task<BasePaginatedList<Student>> GetPaginatedListAsync(PaginatedOptions options, CancellationToken cancellationToken = default)
+    public async Task<PaginatedListBase<Student>> GetPaginatedListAsync(PaginatedOptions options, CancellationToken cancellationToken = default)
     {
         var result = await GetPaginatedListAsync(
             (options.Page - 1) * options.PageSize,
@@ -22,7 +22,7 @@ internal sealed class Repository
 
         var total = await GetCountAsync(cancellationToken);
 
-        return new BasePaginatedList<Student>()
+        return new PaginatedListBase<Student>()
         {
             Total = total,
             Result = result,

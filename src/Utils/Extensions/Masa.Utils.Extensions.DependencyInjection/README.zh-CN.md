@@ -80,7 +80,7 @@ public interface IRepository<TEntity> : IScopedDependency
   * 默认支持级联扫描注册服务，当前类的子类也会被注册
 
     ``` C#
-    public class BaseRepository : ISingletonDependency
+    public class RepositoryBase : ISingletonDependency
     {
 
     }
@@ -93,13 +93,13 @@ public interface IRepository<TEntity> : IScopedDependency
 
     }
 
-    public class UserRepository : BaseRepository
+    public class UserRepository : RepositoryBase
     {
 
     }
     ```
 
-    > 等价于: `service.AddSingleton<BaseRepository>();service.AddSingleton<UserRepository>();`
+    > 等价于: `service.AddSingleton<RepositoryBase>();service.AddSingleton<UserRepository>();`
 
 #### 特性:
 

@@ -38,7 +38,7 @@ public class SchedulerJobService : ISchedulerJobService
         return await _caller.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
     }
 
-    public async Task<bool> DisableAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> DisableAsync(SchedulerJobRequestBase request)
     {
         var requestData = new ChangeEnabledStatusRequest()
         {
@@ -51,7 +51,7 @@ public class SchedulerJobService : ISchedulerJobService
         return true;
     }
 
-    public async Task<bool> EnableAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> EnableAsync(SchedulerJobRequestBase request)
     {
         var requestData = new ChangeEnabledStatusRequest()
         {
@@ -70,14 +70,14 @@ public class SchedulerJobService : ISchedulerJobService
         return await _caller.GetAsync<SchedulerJobModel?>(requestUri, request);
     }
 
-    public async Task<bool> RemoveAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> RemoveAsync(SchedulerJobRequestBase request)
     {
         var requestUri = $"{API}";
         await _caller.DeleteAsync(requestUri, request);
         return true;
     }
 
-    public async Task<bool> StartAsync(BaseSchedulerJobRequest request)
+    public async Task<bool> StartAsync(SchedulerJobRequestBase request)
     {
         var requestUri = $"{API}/startJob";
         await _caller.PutAsync(requestUri, request);

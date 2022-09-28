@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Scheduler.Request;
 
-public class StartSchedulerTaskRequest : BaseSchedulerTaskRequest
+public class StartSchedulerTaskRequest : SchedulerTaskRequestBase
 {
     public bool IsManual { get; set; }
 }
