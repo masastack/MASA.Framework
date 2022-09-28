@@ -22,3 +22,4 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Net.Http.Headers;
 global using System.Text.Json;
 global using static Masa.Contrib.StackSdks.Auth.Constants;
+global using IdentityModel.Client;

@@ -1,11 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,12 +21,10 @@
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
+    <ProjectReference Include="..\..\..\..\..\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage\Masa.BuildingBlocks.Authentication.OpenIdConnect.Storage.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj" />
   </ItemGroup>
 

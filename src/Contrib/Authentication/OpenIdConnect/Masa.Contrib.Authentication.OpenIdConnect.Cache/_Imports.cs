@@ -14,3 +14,4 @@ global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Caching.MultilevelCache;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using System.Diagnostics.CodeAnalysis;
