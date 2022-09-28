@@ -9,11 +9,27 @@ public interface IMultilevelCacheClient : ICacheClient
 
     Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
 
-    T? GetOrSet<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions);
+    /// <summary>
+    /// get cache, set cache if cache does not exist
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
+    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    T? GetOrSet<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions = null);
 
     T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
-    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions);
+    /// <summary>
+    /// get cache, set cache if cache does not exist
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
+    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions = null);
 
     Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
