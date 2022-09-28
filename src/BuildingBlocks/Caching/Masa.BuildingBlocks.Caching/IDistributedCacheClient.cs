@@ -74,19 +74,61 @@ public interface IDistributedCacheClient : ICacheClient
     /// <returns></returns>
     Task<long> HashDecrementAsync(string key, long value = 1L, long defaultMinVal = 0L);
 
-    bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <returns></returns>
+    bool KeyExpire(string key, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <returns></returns>
     bool KeyExpire(string key, DateTimeOffset absoluteExpiration);
 
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <returns></returns>
     bool KeyExpire(string key, CacheEntryOptions? options = null);
 
     long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null);
 
-    Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <returns></returns>
+    Task<bool> KeyExpireAsync(string key, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <returns></returns>
     Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration);
 
+    /// <summary>
+    /// Set cache lifetime
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <returns></returns>
     Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);
 
+    /// <summary>
+    /// Batch setting cache lifetime
+    /// </summary>
+    /// <param name="keys">cache key</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <returns></returns>
     Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null);
 }

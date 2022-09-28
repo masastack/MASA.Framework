@@ -17,27 +17,105 @@ public interface ICacheClient
 
     Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys);
 
-    void Set<T>(string key, T value, DateTimeOffset absoluteExpiration);
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    void Set<T>(string key, T value, DateTimeOffset? absoluteExpiration);
 
-    void Set<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    void Set<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
     void Set<T>(string key, T value, CacheEntryOptions? options = null);
 
-    Task SetAsync<T>(string key, T value, DateTimeOffset absoluteExpiration);
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    Task SetAsync<T>(string key, T value, DateTimeOffset? absoluteExpiration);
 
-    Task SetAsync<T>(string key, T value, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    Task SetAsync<T>(string key, T value, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// set cache
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">cache value</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
     Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null);
 
-    void SetList<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    void SetList<T>(Dictionary<string, T?> keyValues, DateTimeOffset? absoluteExpiration);
 
-    void SetList<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    void SetList<T>(Dictionary<string, T?> keyValues, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
     void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, DateTimeOffset absoluteExpiration);
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="absoluteExpiration">absolute Expiration，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, DateTimeOffset? absoluteExpiration);
 
-    Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan absoluteExpirationRelativeToNow);
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="absoluteExpirationRelativeToNow">absolute Expiration Relative To Now，Permanently valid when null</param>
+    /// <typeparam name="T"></typeparam>
+    Task SetListAsync<T>(Dictionary<string, T?> keyValues, TimeSpan? absoluteExpirationRelativeToNow);
 
+    /// <summary>
+    /// Batch setting cache
+    /// </summary>
+    /// <param name="keyValues">A collection of key-value pairs</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
     Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null);
 }

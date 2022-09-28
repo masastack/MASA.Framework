@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace Masa.BuildingBlocks.Caching;
 
 public class CacheEntryOptions
@@ -57,10 +58,10 @@ public class CacheEntryOptions
 
     public CacheEntryOptions() { }
 
-    public CacheEntryOptions(DateTimeOffset absoluteExpiration)
+    public CacheEntryOptions(DateTimeOffset? absoluteExpiration)
         => AbsoluteExpiration = absoluteExpiration;
 
-    public CacheEntryOptions(TimeSpan absoluteExpirationRelativeToNow)
+    public CacheEntryOptions(TimeSpan? absoluteExpirationRelativeToNow)
         => AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow;
 }
 
@@ -72,11 +73,11 @@ public class CacheEntryOptions<T> : CacheEntryOptions
     {
     }
 
-    public CacheEntryOptions(DateTimeOffset absoluteExpiration) : base(absoluteExpiration)
+    public CacheEntryOptions(DateTimeOffset? absoluteExpiration) : base(absoluteExpiration)
     {
     }
 
-    public CacheEntryOptions(TimeSpan absoluteExpirationRelativeToNow) : base(absoluteExpirationRelativeToNow)
+    public CacheEntryOptions(TimeSpan? absoluteExpirationRelativeToNow) : base(absoluteExpirationRelativeToNow)
     {
 
     }

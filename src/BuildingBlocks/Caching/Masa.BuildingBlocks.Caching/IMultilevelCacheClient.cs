@@ -9,7 +9,11 @@ public interface IMultilevelCacheClient : ICacheClient
 
     Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
 
+    T? GetOrSet<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions);
+
     T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
+
+    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions);
 
     Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
