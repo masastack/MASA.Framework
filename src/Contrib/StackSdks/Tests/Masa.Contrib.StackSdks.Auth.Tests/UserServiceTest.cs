@@ -669,7 +669,7 @@ public class UserServiceTest
     {
         var model = new RegisterThirdPartyUserModel();
         var user = new UserModel();
-        var requestUri = $"api/thirdPartyUser/registerThirdPartyUser";
+        var requestUri = $"api/thirdPartyUser/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, model, default)).ReturnsAsync(user).Verifiable();
         var userContext = new Mock<IUserContext>();
