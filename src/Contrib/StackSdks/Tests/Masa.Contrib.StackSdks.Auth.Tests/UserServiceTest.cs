@@ -659,7 +659,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(true).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
-        var result = await userService.HasPassword();
+        var result = await userService.HasPasswordAsync();
         caller.Verify(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is true);
     }

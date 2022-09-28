@@ -312,7 +312,7 @@ public class UserService : IUserService
         await _caller.PostAsync(requestUri, model);
     }
 
-    public async Task<bool> HasPassword(Guid userId = default)
+    public async Task<bool> HasPasswordAsync(Guid userId = default)
     {
         if (userId == Guid.Empty)
         {

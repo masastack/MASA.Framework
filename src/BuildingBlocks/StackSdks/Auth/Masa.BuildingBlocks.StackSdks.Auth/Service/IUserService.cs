@@ -83,7 +83,7 @@ public interface IUserService
 
     Task RegisterByEmailAsync(RegisterByEmailModel model);
 
-    Task<bool> HasPassword(Guid userId = default);
+    Task<bool> HasPasswordAsync(Guid userId = default);
 
     Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model);
 }
