@@ -358,7 +358,7 @@ public class IsolationTest : TestBase
 
         customDbContext.Set<Tag>().Remove(tag);
         await customDbContext.SaveChangesAsync();
-        Assert.IsTrue(await customDbContext.Set<Tag>().AnyAsync());
+        Assert.IsFalse(await customDbContext.Set<Tag>().AnyAsync());
 
         var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
         using (dataFilter.Disable<ISoftDelete>())
