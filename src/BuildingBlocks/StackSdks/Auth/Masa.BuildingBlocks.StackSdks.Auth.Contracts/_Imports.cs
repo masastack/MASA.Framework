@@ -3,3 +3,4 @@
 
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
+global using System.ComponentModel;
