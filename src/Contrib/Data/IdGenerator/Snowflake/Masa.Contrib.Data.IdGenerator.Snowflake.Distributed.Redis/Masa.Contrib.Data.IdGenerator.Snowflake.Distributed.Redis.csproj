@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\Utils\Caching\Distributed\Masa.Utils.Caching.Redis\Masa.Utils.Caching.Redis.csproj" />
+      <ProjectReference Include="..\..\..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
       <ProjectReference Include="..\Masa.Contrib.Data.IdGenerator.Snowflake\Masa.Contrib.Data.IdGenerator.Snowflake.csproj" />
     </ItemGroup>
 

@@ -5,15 +5,15 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.Cache;
 
 public class MemoryCacheProvider
 {
-    readonly IMemoryCacheClientFactory _memoryCacheClientFactory;
+    readonly IMultilevelCacheClientFactory _clientFactory;
 
-    public MemoryCacheProvider(IMemoryCacheClientFactory memoryCacheClientFactory)
+    public MemoryCacheProvider(IMultilevelCacheClientFactory clientFactory)
     {
-        _memoryCacheClientFactory = memoryCacheClientFactory;
+        _clientFactory = clientFactory;
     }
 
-    public IMemoryCacheClient GetMemoryCacheClient()
+    public IMultilevelCacheClient GetMemoryCacheClient()
     {
-        return _memoryCacheClientFactory.CreateClient(Constants.DEFAULT_CLIENT_NAME);
+        return _clientFactory.Create(Constants.DEFAULT_CLIENT_NAME);
     }
 }

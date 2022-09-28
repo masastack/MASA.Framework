@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Options;
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
 [TestClass]
@@ -11,7 +13,7 @@ public class DccTest
     private JsonSerializerOptions _jsonSerializerOptions;
     private IServiceCollection _services;
 
-    private Mock<IMemoryCacheClientFactory> _memoryCacheClientFactory;
+    private Mock<IMultilevelCacheClientFactory> _memoryCacheClientFactory;
     private Mock<IDistributedCacheClientFactory> _distributedCacheClientFactory;
     private Mock<IMemoryCache> _memoryCache;
     private Mock<IDistributedCacheClient> _distributedCacheClient;
@@ -57,9 +59,10 @@ public class DccTest
     [TestMethod]
     public void TestTryAddConfigurationApiClient()
     {
-        _memoryCacheClientFactory.Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
+        _memoryCacheClientFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => null!).Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(), null!);
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(), null!);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiClient) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         Assert.ThrowsException<ArgumentNullException>(() =>
@@ -69,12 +72,16 @@ public class DccTest
 
         _services = new ServiceCollection();
         _memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
-            .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object,
-                SubscribeKeyTypes.ValueTypeFullNameAndKey))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
+            .Returns(() => new MultilevelCacheClient(
+                _memoryCache.Object,
+                _distributedCacheClient.Object,
+                null,
+                SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             new JsonSerializerOptions()
             {
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -85,14 +92,18 @@ public class DccTest
 
         _services = new ServiceCollection();
         _memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
-            .Returns(() => new MemoryCacheClient(_memoryCache.Object, _distributedCacheClient.Object,
-                SubscribeKeyTypes.ValueTypeFullNameAndKey))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
+            .Returns(() => new MultilevelCacheClient(_memoryCache.Object,
+                _distributedCacheClient.Object,
+                null,
+                SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             _jsonSerializerOptions);
-        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(), new List<DccSectionOptions>(),
+        MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
+            new List<DccSectionOptions>(),
             _jsonSerializerOptions);
         clienties = _services.BuildServiceProvider().GetServices<IConfigurationApiClient>();
         Assert.IsTrue(clienties.Count() == 1);
@@ -130,13 +141,13 @@ public class DccTest
             Content = string.Empty,
             ConfigFormat = ConfigFormats.Text
         });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
             .Returns(() => response);
 
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
@@ -183,63 +194,6 @@ public class DccTest
 
     [DataTestMethod]
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
-    public void TestUseDccAndSuccess(string environment, string cluster, string appId, string configObject)
-    {
-        Environment.SetEnvironmentVariable(DEFAULT_ENVIRONMENT_NAME, "Test");
-        var brand = new Brands("Microsoft");
-        var response = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
-        });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
-            .Returns(() => response);
-
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
-        var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
-            _jsonSerializerOptions,
-            new Mock<DccOptions>().Object,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-
-        var dccOptions = new DccOptions()
-        {
-            ManageServiceAddress = "https://github.com",
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Host = "localhost",
-                        Port = 6379
-                    }
-                }
-            },
-
-            AppId = "Test",
-            ConfigObjects = new List<string>()
-            {
-                "Brand"
-            }
-        };
-        _masaConfigurationBuilder.Object.UseDcc(dccOptions, null, null);
-        var optionFactory = _services.BuildServiceProvider().GetRequiredService<IOptionsFactory<MasaMemoryCacheOptions>>();
-        var option = optionFactory.Create(DEFAULT_CLIENT_NAME);
-        Assert.IsTrue(option.SubscribeKeyType == SubscribeKeyTypes.SpecificPrefix);
-        Assert.IsTrue(option.SubscribeKeyPrefix == DEFAULT_SUBSCRIBE_KEY_PREFIX);
-    }
-
-    [DataTestMethod]
-    [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestUseMultiDcc(string environment, string cluster, string appId, string configObject)
     {
         var brand = new Brands("Microsoft");
@@ -248,11 +202,11 @@ public class DccTest
             Content = JsonSerializer.Serialize(brand),
             ConfigFormat = ConfigFormats.Json
         });
-        Mock<IMemoryCacheClient> memoryCacheClient = new();
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
-        Mock<IMemoryCacheClientFactory> memoryCacheClientFactory = new();
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
@@ -279,27 +233,31 @@ public class DccTest
 
 #pragma warning disable CS0618
     [TestMethod]
-    public void TestMasaConfigurationByConfigurationAPIReturnKeyIsExist()
+    public void TestMasaConfigurationByConfigurationApiReturnKeyIsExist()
     {
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");
-        builder.Services.AddMemoryCache();
-        string key = "Development-Default-WebApplication1-Brand".ToLower();
-        builder.Services.AddSingleton<IMemoryCacheClientFactory>(serviceProvider =>
+        // builder.Services.AddMemoryCache();
+        builder.Services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, new RedisConfigurationOptions()
         {
-            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-            string value = new PublishRelease()
+            Servers = new List<RedisServerOptions>()
             {
-                Content = brand.Serialize(_jsonSerializerOptions),
-                ConfigFormat = ConfigFormats.Json
-            }.Serialize(_jsonSerializerOptions);
-            memoryCache.Set($"{key}String", value);
-            return new CustomMemoryCacheClientFactory(memoryCache);
-        });
+                new("localhost", 6379)
+            }
+        }).AddMultilevelCache();
+        string key = "Development-Default-WebApplication1-Brand".ToLower();
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        string value = new PublishRelease()
+        {
+            Content = brand.Serialize(_jsonSerializerOptions),
+            ConfigFormat = ConfigFormats.Json
+        }.Serialize(_jsonSerializerOptions);
+        multilevelCacheClient.Set(key, value);
 
         builder.AddMasaConfiguration(masaBuilder => masaBuilder.UseDcc());
 
-        var serviceProvider = builder.Services.BuildServiceProvider();
+        serviceProvider = builder.Services.BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetService<IMasaConfiguration>();
         Assert.IsTrue(masaConfiguration != null);
         var configuration = masaConfiguration!.ConfigurationApi;
@@ -313,22 +271,26 @@ public class DccTest
     {
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");
-        builder.Services.AddMemoryCache();
         string key = "Development-Default-WebApplication1-Brand".ToLower();
-        builder.Services.AddSingleton<IMemoryCacheClientFactory>(serviceProvider =>
+        builder.Services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, new RedisConfigurationOptions()
         {
-            var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-            string value = new PublishRelease()
+            Servers = new List<RedisServerOptions>()
             {
-                Content = brand.Serialize(_jsonSerializerOptions),
-                ConfigFormat = ConfigFormats.Json
-            }.Serialize(_jsonSerializerOptions);
-            memoryCache.Set($"{key}String", value);
-            return new CustomMemoryCacheClientFactory(memoryCache);
-        });
+                new("localhost", 6379)
+            }
+        }).AddMultilevelCache(isReset: true);
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        string value = new PublishRelease()
+        {
+            Content = brand.Serialize(_jsonSerializerOptions),
+            ConfigFormat = ConfigFormats.Json
+        }.Serialize(_jsonSerializerOptions);
+        multilevelCacheClient.Set(key, value);
+
         builder.AddMasaConfiguration(configurationBuilder => configurationBuilder.UseDcc());
 
-        var serviceProvider = builder.Services.BuildServiceProvider();
+        serviceProvider = builder.Services.BuildServiceProvider();
         var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
         var field = typeof(ConfigurationApiBase).GetField("_defaultSectionOption", BindingFlags.Instance | BindingFlags.NonPublic);
         var option = field!.GetValue(configurationApiClient);
@@ -571,52 +533,6 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestComplementAndCheckDccConfigurationOptionByRedisHostIsEmpty()
-    {
-        DccOptions dccOptions = new DccOptions()
-        {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Host = string.Empty
-                    }
-                }
-            }
-        };
-        Assert.ThrowsException<ArgumentNullException>(() =>
-        {
-            MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
-        });
-    }
-
-    [TestMethod]
-    public void TestComplementAndCheckDccConfigurationOptionByRedisPortLessThanZero()
-    {
-        DccOptions dccOptions = new DccOptions()
-        {
-            ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
-            RedisOptions = new RedisConfigurationOptions()
-            {
-                Servers = new List<RedisServerOptions>()
-                {
-                    new()
-                    {
-                        Port = -1
-                    }
-                }
-            }
-        };
-        Assert.ThrowsException<ArgumentException>(() =>
-        {
-            MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
-        });
-    }
-
-    [TestMethod]
     public void TestComplementAndCheckDccConfigurationOptionByRepeatAppId()
     {
         DccOptions dccOptions = new DccOptions()
@@ -681,7 +597,7 @@ public class DccTest
     private void MockDistributedCacheClientFactory()
     {
         _distributedCacheClientFactory
-            .Setup(factory => factory.CreateClient(DEFAULT_CLIENT_NAME))
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => _distributedCacheClient.Object)
             .Verifiable();
         _services.AddSingleton(_ => _distributedCacheClientFactory.Object);

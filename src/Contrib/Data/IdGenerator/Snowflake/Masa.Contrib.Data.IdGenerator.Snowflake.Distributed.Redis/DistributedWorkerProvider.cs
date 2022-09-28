@@ -25,7 +25,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     public DistributedWorkerProvider(
         IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         ILogger<DistributedWorkerProvider>? logger) : base(distributedCacheClient, redisOptions)
     {
         _uniquelyIdentifies ??= Guid.NewGuid().ToString();
@@ -74,7 +74,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
             RefreshAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-            DistributedCacheClient.Publish<long>(_channel, options =>
+            DistributedCacheClient.Publish(_channel, options =>
             {
                 options.Key = _uniquelyIdentifies!;
                 options.Value = _workerId.Value;
@@ -166,7 +166,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         return null;
     }
 
-    protected virtual async Task<long?> GetWorkerIdByInUseAsync()
+    public async Task<long?> GetWorkerIdByInUseAsync()
     {
         var entries = await Database.SortedSetRangeByScoreWithScoresAsync(
             _inUseWorkerKey,

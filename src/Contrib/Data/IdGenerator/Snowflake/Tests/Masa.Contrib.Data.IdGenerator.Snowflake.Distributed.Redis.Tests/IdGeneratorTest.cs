@@ -6,12 +6,15 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 [TestClass]
 public class IdGeneratorTest
 {
-    private RedisCacheClient _redisCacheClient;
+    private const string REDIS_HOST = "localhost";
+    private IDistributedCacheClient _redisCacheClient;
     private IOptions<RedisConfigurationOptions> _redisOptions;
+    private IDatabase _database;
+    private string _currentWorkerKey;
+    private string _inUseWorkerKey;
+    private string _logOutWorkerKey;
+    private string _getWorkerIdKey;
 
-    /// <summary>
-    /// Only supports local testing
-    /// </summary>
     [TestInitialize]
     public async Task InitRedisDataAsync()
     {
@@ -21,54 +24,37 @@ public class IdGeneratorTest
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()
             {
-                new("127.0.0.1", 6379)
+                new(REDIS_HOST)
             }
         };
         _redisOptions = Options.Create(redisConfigurationOptions);
-        var options = GetConfigurationOptions(_redisOptions.Value);
-        _redisCacheClient = new RedisCacheClient(options);
+        _redisCacheClient = new RedisCacheClient(redisConfigurationOptions);
+        var options = (ConfigurationOptions)_redisOptions.Value;
         var connection = await ConnectionMultiplexer.ConnectAsync(options);
-        var db = connection.GetDatabase(options.DefaultDatabase ?? 0);
-        db.KeyDelete("snowflake.current.workerid");
-        db.KeyDelete("snowflake.inuse.workerid");
-        db.KeyDelete("snowflake.logout.workerid");
-        db.KeyDelete("snowflake.get.workerid");
-    }
+        _database = connection.GetDatabase(options.DefaultDatabase ?? 0);
+        _currentWorkerKey = "snowflake.current.workerid";
+        _inUseWorkerKey = "snowflake.inuse.workerid";
+        _logOutWorkerKey = "snowflake.logout.workerid";
+        _getWorkerIdKey = "snowflake.get.workerid";
 
-    [TestMethod]
-    public void TestEnableMachineClock()
-    {
-        var services = new ServiceCollection();
-        services.AddSnowflake(opt =>
-        {
-            opt.EnableMachineClock = true;
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
-        int count = 1;
-        List<long> ids = new();
-        while (count < 500000)
-        {
-            var id = idGenerator.NewId();
-            ids.Add(id);
-            count++;
-        }
-
-        Assert.IsTrue(ids.Distinct().Count() == ids.Count);
+        _database.KeyDelete(_currentWorkerKey);
+        _database.KeyDelete(_inUseWorkerKey);
+        _database.KeyDelete(_logOutWorkerKey);
+        _database.KeyDelete(_getWorkerIdKey);
     }
 
     [TestMethod]
     public void TestErrorHeartbeatIntervalReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
         {
-            opt.Password = "";
-            opt.DefaultDatabase = 2;
-            opt.Servers = new List<RedisServerOptions>()
+            Password = "",
+            DefaultDatabase = 2,
+            Servers = new List<RedisServerOptions>()
             {
-                new("127.0.0.1", 6379)
-            };
+                new(REDIS_HOST)
+            }
         });
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
@@ -80,27 +66,92 @@ public class IdGeneratorTest
         });
     }
 
-    /// <summary>
-    /// Only supports local testing
-    /// </summary>
+    [TestMethod]
+    public void TestUseRedisAndNotUseRedis()
+    {
+        var services = new ServiceCollection();
+        var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
+        Assert.ThrowsException<MasaException>(() => snowflakeGeneratorOptions.UseRedis(),
+            "Please add first using AddStackExchangeRedisCache");
+    }
+
+    [TestMethod]
+    public void TestUseRedisAndNotUseRedisAndSpecialRedisConfigurationOptions()
+    {
+        var services = new ServiceCollection();
+        var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
+        Assert.ThrowsException<MasaException>(() => snowflakeGeneratorOptions.UseRedis(null, new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            }
+        }), "Please add first using AddStackExchangeRedisCache");
+    }
+
+    [TestMethod]
+    public void TestUseRedisAndNotUseRedisAndSpecialRedisConfigurationOptions2()
+    {
+        var services = new ServiceCollection();
+        var redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            Password = "",
+            DefaultDatabase = 2,
+            Servers = new List<RedisServerOptions>()
+            {
+                new(REDIS_HOST)
+            }
+        };
+        services.AddStackExchangeRedisCache(redisConfigurationOptions);
+        var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
+        snowflakeGeneratorOptions.HeartbeatInterval = 30 * 1000;
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions =>
+        {
+            distributedIdGeneratorOptions.IdleTimeOut = 10 * 1000;
+        }, redisConfigurationOptions));
+    }
+
+    [TestMethod]
+    public void TestUseRedisAndNotUseRedisAndSpecialRedisConfigurationOptions3()
+    {
+        var services = new ServiceCollection();
+        var redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            Password = "",
+            DefaultDatabase = 5,
+            Servers = new List<RedisServerOptions>()
+            {
+                new(REDIS_HOST)
+            }
+        };
+        services.AddStackExchangeRedisCache(redisConfigurationOptions);
+        var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
+        snowflakeGeneratorOptions.EnableMachineClock = true;
+        snowflakeGeneratorOptions.UseRedis(null, redisConfigurationOptions);
+
+        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        services.AddSingleton(distributedCacheClient);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var snowflakeGenerator = serviceProvider.GetService<ISnowflakeGenerator>();
+        Assert.IsNotNull(snowflakeGenerator);
+    }
+
     [TestMethod]
     public void TestDistributedSnowflake()
     {
         var services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
             opt.Servers = new List<RedisServerOptions>()
             {
-                new("127.0.0.1", 6379)
+                new(REDIS_HOST)
             };
         });
 
-        services.AddSnowflake(snowflakeGeneratorOptions =>
-        {
-            snowflakeGeneratorOptions.UseRedis();
-        });
+        services.AddSnowflake(option => option.UseRedis());
         var serviceProvider = services.BuildServiceProvider();
         var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         int count = 1;
@@ -112,32 +163,26 @@ public class IdGeneratorTest
             count++;
         }
 
-        if (ids.Distinct().Count() != ids.Count)
-            throw new Exception("duplicate id");
-
-        Assert.IsTrue(ids.Distinct().Count() == ids.Count);
+        Assert.AreEqual(ids.Count, ids.Distinct().Count());
     }
 
     [TestMethod]
     public async Task TestDistributedWorkerAsync()
     {
         var services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
             opt.Servers = new List<RedisServerOptions>()
             {
-                new("127.0.0.1", 6379)
+                new(REDIS_HOST)
             };
         });
 
-        services.AddSnowflake(snowflakeGeneratorOptions =>
+        services.AddSnowflake(distributedIdGeneratorOptions =>
         {
-            snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions =>
-            {
-                distributedIdGeneratorOptions.GetWorkerIdMinInterval = 0;
-            });
+            distributedIdGeneratorOptions.UseRedis(option => option.GetWorkerIdMinInterval = 0);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -154,27 +199,27 @@ public class IdGeneratorTest
         Assert.IsTrue(workerIds.Distinct().Count() == workerIds.Count && workerIds.Count == maxWorkerId + 1);
     }
 
-    /// <summary>
-    /// Only supports local testing
-    /// </summary>
     [TestMethod]
     public void TestDistributedWorkerAndEnableMachineClock()
     {
         var services = new ServiceCollection();
-        services.AddMasaRedisCache(opt =>
+        services.AddStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
             opt.Servers = new List<RedisServerOptions>()
             {
-                new("127.0.0.1", 6379)
+                new(REDIS_HOST)
             };
         });
 
-        services.AddSnowflake(snowflakeGeneratorOptions =>
+        services.AddSnowflake(distributedIdGeneratorOptions =>
         {
-            snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions => distributedIdGeneratorOptions.GetWorkerIdMinInterval = 0);
-            snowflakeGeneratorOptions.EnableMachineClock = true;
+            distributedIdGeneratorOptions.UseRedis(option =>
+            {
+                option.GetWorkerIdMinInterval = 0;
+            });
+            distributedIdGeneratorOptions.EnableMachineClock = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -188,16 +233,34 @@ public class IdGeneratorTest
         }
     }
 
-    /// <summary>
-    /// Only supports local testing
-    /// </summary>
+    [TestMethod]
+    public void TestDistributedWorkerAndNotUseRedis()
+    {
+        var services = new ServiceCollection();
+
+        Assert.ThrowsException<MasaException>(() =>
+        {
+            services.AddSnowflake(distributedIdGeneratorOptions =>
+            {
+                distributedIdGeneratorOptions.UseRedis(option =>
+                {
+                    option.GetWorkerIdMinInterval = 0;
+                });
+            });
+        });
+    }
+
     [TestMethod]
     public async Task TestGetWorkerIdAsync()
     {
-        var workerIdProvider = GetWorkerProvider(null);
+        var services = new ServiceCollection();
+        var workerIdProvider = GetWorkerProvider(services);
         List<long> workerIds = new();
         var errCount = 0;
-        var maxWorkerId = ~(-1L << 10);
+
+        var workerIdBits = 10;
+        var maxWorkerId = ~(-1L << workerIdBits);
+
         for (int index = 0; index <= maxWorkerId + 1; index++)
         {
             try
@@ -216,9 +279,6 @@ public class IdGeneratorTest
         Assert.IsTrue(errCount == 1);
     }
 
-    /// <summary>
-    /// Only supports local testing
-    /// </summary>
     [TestMethod]
     public async Task TestGetDistibutedLockFaieldAsync()
     {
@@ -231,7 +291,7 @@ public class IdGeneratorTest
         int laterTime = 0;
         try
         {
-            Parallel.For(0, maxWorkerId * 2, i =>
+            Parallel.For(0, maxWorkerId * 2, _ =>
             {
                 tasks.Add(GetWorkerIdAsync(null, workerIdBits));
             });
@@ -248,6 +308,107 @@ public class IdGeneratorTest
         Assert.IsTrue(laterTime > 0);
     }
 
+    [TestMethod]
+    public void TestBaseRedis()
+    {
+        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        var redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            },
+            DefaultDatabase = 2
+        };
+        var baseRedis = new BaseRedis(distributedCacheClient, redisConfigurationOptions);
+
+        var baseRedisType = typeof(BaseRedis);
+        var newDistributedCacheClient =
+            (IDistributedCacheClient)
+            baseRedisType.GetProperty("DistributedCacheClient", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(baseRedis)!;
+
+        Assert.AreEqual(distributedCacheClient, newDistributedCacheClient);
+
+        var dataBase = ((IDatabase)baseRedisType.GetProperty("Database", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(baseRedis)!);
+        Assert.AreEqual(2, dataBase.Database);
+    }
+
+    [TestMethod]
+    public async Task TestGetWorkerIdByLogOutAsync()
+    {
+        var services = new ServiceCollection();
+        var workerProvider = (CustomDistributedWorkerProvider)GetWorkerProvider(services);
+
+        _database.KeyDelete(_logOutWorkerKey);
+        var workerId = await workerProvider.TestGetWorkerIdByLogOutAsync();
+        Assert.IsNull(workerId);
+
+        await _database.SortedSetAddAsync(_logOutWorkerKey, 10, GetCurrentTimestamp());
+        workerId = await workerProvider.TestGetWorkerIdByLogOutAsync();
+        Assert.AreEqual(10, workerId);
+    }
+
+    [TestMethod]
+    public void TestTilNextMillis()
+    {
+        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        var workerProvider = Substitute.For<IWorkerProvider>();
+
+        int workerId = 1;
+        workerProvider.GetWorkerIdAsync().Returns(workerId);
+        var redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            Servers = new List<RedisServerOptions>()
+            {
+                new()
+            }
+        };
+        var distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(new SnowflakeGeneratorOptions(new ServiceCollection())
+        {
+            TimestampType = TimestampType.Milliseconds
+        })
+        {
+            RefreshTimestampInterval = 500
+        };
+        var machineClockIdGenerator = new CustomerMachineClockIdGenerator(
+            distributedCacheClient,
+            workerProvider,
+            redisConfigurationOptions,
+            distributedIdGeneratorOptions
+        );
+        long lastTimestamp = 500;
+        var result = machineClockIdGenerator.TestTilNextMillis(lastTimestamp);
+        Assert.AreEqual(501, result);
+
+        var dataBase = ConnectionMultiplexer.Connect(redisConfigurationOptions).GetDatabase(redisConfigurationOptions.DefaultDatabase);
+        string lastTimestampKey = "snowflake.last_timestamp";
+        Assert.AreEqual(result, dataBase.HashGet(lastTimestampKey, workerId));
+
+        dataBase.HashSet(lastTimestampKey, workerId, 10);
+
+        distributedIdGeneratorOptions = new DistributedIdGeneratorOptions(new SnowflakeGeneratorOptions(new ServiceCollection())
+        {
+            TimestampType = TimestampType.Seconds
+        })
+        {
+            RefreshTimestampInterval = 5000
+        };
+        machineClockIdGenerator = new CustomerMachineClockIdGenerator(
+            distributedCacheClient,
+            workerProvider,
+            redisConfigurationOptions,
+            distributedIdGeneratorOptions
+        );
+        result = machineClockIdGenerator.TestTilNextMillis(1);
+        Assert.AreEqual(2, result);
+        Assert.AreEqual(10, dataBase.HashGet(lastTimestampKey, workerId));
+        dataBase.HashDelete(lastTimestampKey, workerId);
+    }
+
+    #region private methods
+
     private Task<long> GetWorkerIdAsync(IServiceCollection? services, int workerIdBits)
         => GetWorkerProvider(services, workerIdBits).GetWorkerIdAsync();
 
@@ -261,30 +422,13 @@ public class IdGeneratorTest
         {
             GetWorkerIdMinInterval = 0
         };
-        return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions, null);
+
+        return new CustomDistributedWorkerProvider(_redisCacheClient, distributedIdGeneratorOptions, _redisOptions.Value, null);
     }
 
-    private static ConfigurationOptions GetConfigurationOptions(RedisConfigurationOptions redisOptions)
-    {
-        var configurationOptions = new ConfigurationOptions
-        {
-            AbortOnConnectFail = redisOptions.AbortOnConnectFail,
-            AllowAdmin = redisOptions.AllowAdmin,
-            ChannelPrefix = redisOptions.ChannelPrefix,
-            ClientName = redisOptions.ClientName,
-            ConnectRetry = redisOptions.ConnectRetry,
-            ConnectTimeout = redisOptions.ConnectTimeout,
-            DefaultDatabase = redisOptions.DefaultDatabase,
-            Password = redisOptions.Password,
-            Proxy = redisOptions.Proxy,
-            Ssl = redisOptions.Ssl,
-            SyncTimeout = redisOptions.SyncTimeout
-        };
+    private static long GetCurrentTimestamp(DateTime? dateTime = null)
+        => new DateTimeOffset(dateTime ?? DateTime.UtcNow).ToUnixTimeMilliseconds();
 
-        foreach (var server in redisOptions.Servers)
-        {
-            configurationOptions.EndPoints.Add(server.Host, server.Port);
-        }
-        return configurationOptions;
-    }
+    #endregion
+
 }

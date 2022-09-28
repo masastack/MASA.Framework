@@ -225,6 +225,7 @@ public class TestUnitOfWork : TestBase
         Assert.IsNotNull(serviecProvider.GetService<IUnitOfWork>());
     }
 
+#pragma warning disable CS0618
     [TestMethod]
     public void TestUnitOfWorkAndAddMasaConfiguationReturnUnitOfWorkIsNotNull()
     {
@@ -244,6 +245,7 @@ public class TestUnitOfWork : TestBase
             serviecProvider.GetRequiredService<IMasaConfiguration>().Local[
                 "ConnectionStrings:DefaultConnection"]);
     }
+#pragma warning restore CS0618
 
     [TestMethod]
     public async Task TestGetConnectionStringAndCurrentDbContextOptionsAsyncReturnTest1()

@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
-    <ProjectReference Include="..\..\..\..\Utils\Caching\Distributed\Masa.Utils.Caching.Redis\Masa.Utils.Caching.Redis.csproj" />
-    <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.DistributedMemory\Masa.Utils.Caching.DistributedMemory.csproj" />
+    <ProjectReference Include="..\..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\..\..\Caching\Masa.Contrib.Caching.MultilevelCache\Masa.Contrib.Caching.MultilevelCache.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
     <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
     <ProjectReference Include="..\..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />

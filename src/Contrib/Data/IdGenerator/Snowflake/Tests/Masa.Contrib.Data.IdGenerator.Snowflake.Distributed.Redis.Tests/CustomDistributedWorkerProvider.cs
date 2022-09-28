@@ -10,7 +10,7 @@ public class CustomDistributedWorkerProvider : DistributedWorkerProvider
 {
     public CustomDistributedWorkerProvider(IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
-        IOptions<RedisConfigurationOptions> redisOptions,
+        RedisConfigurationOptions redisOptions,
         ILoggerFactory? loggerFactory)
         : base(distributedCacheClient, distributedIdGeneratorOptions, redisOptions, loggerFactory?.CreateLogger<DistributedWorkerProvider>())
     {
@@ -20,4 +20,6 @@ public class CustomDistributedWorkerProvider : DistributedWorkerProvider
     {
         return Task.FromResult<long?>(null);
     }
+
+    public Task<long?> TestGetWorkerIdByLogOutAsync() => base.GetWorkerIdByLogOutAsync();
 }
