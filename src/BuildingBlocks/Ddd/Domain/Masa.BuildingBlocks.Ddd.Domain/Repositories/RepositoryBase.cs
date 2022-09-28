@@ -94,7 +94,7 @@ public abstract class RepositoryBase<TEntity> :
     /// <param name="isDescending">true descending order, false ascending order, default: true</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public abstract Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending, CancellationToken cancellationToken = default);
+    public abstract Task<List<TEntity>> GetPaginatedListAsync(int skip, int take, string sortField, bool isDescending = true, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get a paginated list after sorting according to skip and take

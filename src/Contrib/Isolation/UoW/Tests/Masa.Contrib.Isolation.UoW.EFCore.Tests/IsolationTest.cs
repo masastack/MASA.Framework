@@ -358,16 +358,16 @@ public class IsolationTest : TestBase
 
         customDbContext.Set<Tag>().Remove(tag);
         await customDbContext.SaveChangesAsync();
-        Assert.IsTrue(await customDbContext.Set<Tag>().CountAsync() == 0);
+        Assert.IsTrue(await customDbContext.Set<Tag>().AnyAsync());
 
         var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
         using (dataFilter.Disable<ISoftDelete>())
         {
-            Assert.IsTrue(await customDbContext.Set<Tag>().CountAsync() == 1);
+            Assert.IsTrue(await customDbContext.Set<Tag>().AnyAsync());
             tag = await customDbContext.Set<Tag>().FirstOrDefaultAsync(t => t.Id == tag.Id);
             Assert.IsNotNull(tag);
         }
     }
 
-    private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
+    private static string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
 }

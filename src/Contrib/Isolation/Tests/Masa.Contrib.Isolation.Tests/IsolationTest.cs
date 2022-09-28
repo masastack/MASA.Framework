@@ -149,10 +149,4 @@ public class IsolationTest
         Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
     }
-
-    [TestMethod]
-    public void TestUseIsolation9()
-    {
-
-    }
 }

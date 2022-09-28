@@ -79,7 +79,7 @@ public abstract class AutoCompleteClientBase : IAutoCompleteClient
     public abstract Task<DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken = default);
 
     public virtual Task<DeleteResponse> DeleteAsync<T>(T id, CancellationToken cancellationToken = default) where T : IComparable
-        => DeleteAsync(id.ToString() ?? throw new ArgumentNullException($"{id} is not null", nameof(id)), cancellationToken);
+        => DeleteAsync(id.ToString() ?? throw new ArgumentNullException(nameof(id), $"{id} is not null"), cancellationToken);
 
     public abstract Task<DeleteMultiResponse> DeleteAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default);
 
@@ -90,7 +90,7 @@ public abstract class AutoCompleteClientBase : IAutoCompleteClient
         if (!type.IsPrimitive && type != typeof(Guid) && type != typeof(string))
             throw new NotSupportedException("Unsupported types, id only supports simple types or guid, string");
 
-        return DeleteAsync(ids.Select(id => id.ToString() ?? throw new ArgumentNullException($"{id} is not null", nameof(id))),
+        return DeleteAsync(ids.Select(id => id.ToString() ?? throw new ArgumentNullException(nameof(id), $"{id} is not null")),
             cancellationToken);
     }
 }

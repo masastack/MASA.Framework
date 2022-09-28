@@ -3,14 +3,12 @@
 
 namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
 
-[TestClass]
 public class MappingBaseTest
 {
     protected IServiceCollection _services;
     protected IMapper _mapper = default!;
 
-    [TestInitialize]
-    public void Initialize()
+    protected MappingBaseTest()
     {
         _services = new ServiceCollection();
         _services.AddMapster();

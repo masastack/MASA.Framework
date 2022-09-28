@@ -274,5 +274,5 @@ public class UnitOfWorkTest : TestBase
         Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
     }
 
-    private string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
+    private static string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
 }

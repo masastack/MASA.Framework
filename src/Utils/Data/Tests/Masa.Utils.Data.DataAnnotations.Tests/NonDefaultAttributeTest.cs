@@ -47,7 +47,7 @@ namespace Masa.Utils.Data.DataAnnotations.Tests
             Assert.IsTrue(!isIdInvalid && !isNullableIdInvalid && !isAgeInvalid && !isFavroiteInvalid);
         }
 
-        private IList<ValidationResult> ValidateModel(object model)
+        private static IList<ValidationResult> ValidateModel(object model)
         {
             var validateResults = new List<ValidationResult>();
             var ctx = new ValidationContext(model);

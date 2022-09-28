@@ -3,13 +3,12 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-[TestClass]
-public class TestBase
+public abstract class TestBase
 {
     protected AliyunStorageOptions _aLiYunStorageOptions;
     protected const string HANG_ZHOUE_PUBLIC_ENDPOINT = "oss-cn-hangzhou.aliyuncs.com";
 
-    public TestBase()
+    protected TestBase()
     {
         _aLiYunStorageOptions = new AliyunStorageOptions(
             "AccessKeyId",

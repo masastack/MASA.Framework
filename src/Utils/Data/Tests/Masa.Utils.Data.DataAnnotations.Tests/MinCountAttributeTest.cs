@@ -64,7 +64,7 @@ namespace Masa.Utils.Data.DataAnnotations.Tests
             Assert.IsFalse(results.Any(u => u.MemberNames.Contains(nameof(User.Favorites))));
         }
 
-        private IList<ValidationResult> ValidateModel(object model)
+        private static IList<ValidationResult> ValidateModel(object model)
         {
             var validateResults = new List<ValidationResult>();
             var ctx = new ValidationContext(model);
