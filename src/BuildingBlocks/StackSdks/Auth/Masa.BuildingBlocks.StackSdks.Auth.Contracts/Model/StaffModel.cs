@@ -39,6 +39,8 @@ public class StaffModel
 
     public GenderTypes Gender { get; set; }
 
+    public bool Enabled { get; set; }
+
     public StaffModel()
     {
     }
@@ -59,7 +61,8 @@ public class StaffModel
         string phoneNumber,
         string email,
         AddressValueModel address,
-        GenderTypes gender)
+        GenderTypes gender,
+        bool enabled)
     {
         Id = id;
         UserId = userId;
@@ -77,6 +80,7 @@ public class StaffModel
         Email = email;
         Address = address;
         Gender = gender;
+        Enabled = enabled;
     }
 }
 
