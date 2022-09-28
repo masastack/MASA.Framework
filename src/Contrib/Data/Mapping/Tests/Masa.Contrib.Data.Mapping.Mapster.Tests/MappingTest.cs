@@ -204,7 +204,7 @@ public class MappingTest : BaseMappingTest
             User = user
         };
 
-        MasaApp.Services = _services;
+        MasaApp.SetServiceCollection(_services);
         var newUser = user2.Map<UserDto>();
 
         Assert.AreEqual(user2.Id, newUser.Id);
@@ -233,7 +233,7 @@ public class MappingTest : BaseMappingTest
             }
         };
 
-        MasaApp.Services = _services;
+        MasaApp.SetServiceCollection(_services);
 
         var newOrder = order.Map<OrderDto>();
 

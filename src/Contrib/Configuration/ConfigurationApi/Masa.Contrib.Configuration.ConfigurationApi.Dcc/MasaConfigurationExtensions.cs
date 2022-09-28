@@ -34,8 +34,9 @@ public static class MasaConfigurationExtensions
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
 
-        var jsonSerializerOption = MasaApp.JsonSerializerOptions != null ?
-            new JsonSerializerOptions(MasaApp.JsonSerializerOptions) { PropertyNameCaseInsensitive = true } :
+        var globalJsonSerializerOptions = MasaApp.GetJsonSerializerOptions();
+        var jsonSerializerOption = globalJsonSerializerOptions != null ?
+            new JsonSerializerOptions(globalJsonSerializerOptions) { PropertyNameCaseInsensitive = true } :
             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
         jsonSerializerOptions?.Invoke(jsonSerializerOption);

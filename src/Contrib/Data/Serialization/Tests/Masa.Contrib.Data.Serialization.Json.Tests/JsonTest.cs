@@ -51,7 +51,7 @@ public class JsonTest
     public void TestAddJsonByUseMasaAppReturnNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         services.AddJson();
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());

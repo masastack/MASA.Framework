@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection TestAddSimpleGuidGenerator(this IServiceCollection services, string name)
     {
         services.AddSimpleGuidGeneratorCore(name);
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         MasaApp.Build();
         return services;
     }

@@ -12,7 +12,7 @@ public class JsonRequestMessage : DefaultRequestMessage, IRequestMessage
         IOptions<CallerFactoryOptions>? options = null)
         : base(serviceProvider, options)
     {
-        _jsonSerializerOptions = Options?.JsonSerializerOptions ?? MasaApp.JsonSerializerOptions;
+        _jsonSerializerOptions = Options?.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions();
     }
 
     public virtual Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage)

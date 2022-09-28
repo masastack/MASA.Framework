@@ -17,14 +17,14 @@ public static class MasaApp
         private set => _rootServiceProvider = value;
     }
 
-    public static IServiceCollection Services { get; set; } = new ServiceCollection();
+    private static IServiceCollection Services { get; set; } = new ServiceCollection();
 
     private static Assembly[]? Assemblies { get; set; }
 
     /// <summary>
     /// Global JsonSerializerOptions configuration
     /// </summary>
-    public static JsonSerializerOptions? JsonSerializerOptions { get; set; }
+    private static JsonSerializerOptions? JsonSerializerOptions { get; set; }
 
     public static void Build() => Build(Services.BuildServiceProvider());
 
@@ -44,12 +44,16 @@ public static class MasaApp
 
     public static void TrySetServiceCollection(IServiceCollection services)
     {
-        if (Services.Count == 0)
-        {
-            Services = services;
-            _rootServiceProvider = null;
-        }
+        if (Services.Count == 0) SetServiceCollection(services);
     }
+
+    public static void SetServiceCollection(IServiceCollection services)
+    {
+        Services = services;
+        _rootServiceProvider = null;
+    }
+
+    public static IServiceCollection GetServices() => Services;
 
     /// <summary>
     /// Set the global Assembly collection (only if Assembly is not assigned a value)
@@ -70,4 +74,14 @@ public static class MasaApp
         => Assemblies = assemblies;
 
     public static Assembly[] GetAssemblies() => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+
+    public static void TrySetJsonSerializerOptions(JsonSerializerOptions jsonSerializerOptions)
+    {
+        if (JsonSerializerOptions == null) SetJsonSerializerOptions(jsonSerializerOptions);
+    }
+
+    public static void SetJsonSerializerOptions(JsonSerializerOptions jsonSerializerOptions)
+        => JsonSerializerOptions = jsonSerializerOptions;
+
+    public static JsonSerializerOptions? GetJsonSerializerOptions() => JsonSerializerOptions;
 }

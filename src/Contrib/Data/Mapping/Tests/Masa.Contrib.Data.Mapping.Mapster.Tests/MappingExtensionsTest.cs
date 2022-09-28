@@ -11,7 +11,7 @@ public class MappingExtensionsTest
     {
         var services = new ServiceCollection();
         services.AddMapster();
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
     }
 
     [TestMethod]

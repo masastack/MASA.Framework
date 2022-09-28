@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 extern alias Snowflake;
-using System.Threading.Tasks;
 using Snowflake.Microsoft.Extensions.DependencyInjection;
 using DefaultWorkerProvider = Snowflake::Masa.Contrib.Data.IdGenerator.Snowflake.DefaultWorkerProvider;
 using IWorkerProvider = Snowflake::Masa.Contrib.Data.IdGenerator.Snowflake.IWorkerProvider;
@@ -177,7 +176,7 @@ public class IdGeneratorTest
     {
         var services = new ServiceCollection();
         services.AddSnowflake();
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         MasaApp.Build();
         var factory = MasaApp.GetService<IIdGeneratorFactory>();
         Assert.IsNotNull(factory);

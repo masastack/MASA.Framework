@@ -22,7 +22,7 @@ public abstract class ServiceBase : IService
     /// </summary>
     public Action<RouteHandlerBuilder>? RouteHandlerBuilder { get; init; }
 
-    public IServiceCollection Services => MasaApp.Services;
+    public IServiceCollection Services => MasaApp.GetServices();
 
 #pragma warning disable S4136
     protected ServiceBase() { }

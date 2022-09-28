@@ -36,7 +36,7 @@ public static class ServiceCollectionExtensions
         SequentialGuidType guidType)
     {
         services.AddSequentialGuidGeneratorCore(guidType, name);
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         MasaApp.Build();
         return services;
     }
