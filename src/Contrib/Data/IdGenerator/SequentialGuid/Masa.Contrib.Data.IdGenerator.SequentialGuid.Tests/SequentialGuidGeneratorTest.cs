@@ -32,7 +32,7 @@ public class SequentialGuidGeneratorTest
     {
         var services = new ServiceCollection();
         services.AddSequentialGuidGenerator("test");
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         MasaApp.Build();
         var idGeneratorFactory = MasaApp.GetService<IIdGeneratorFactory>();
         Assert.IsNotNull(idGeneratorFactory);

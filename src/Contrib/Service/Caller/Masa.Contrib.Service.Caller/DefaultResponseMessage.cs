@@ -62,7 +62,9 @@ public class DefaultResponseMessage : IResponseMessage
 
                     try
                     {
-                        return await response.Content.ReadFromJsonAsync<TResponse>(_options.JsonSerializerOptions, cancellationToken);
+                        return await response.Content.ReadFromJsonAsync<TResponse>(
+                            _options.JsonSerializerOptions?? MasaApp.GetJsonSerializerOptions()
+                            , cancellationToken);
                     }
                     catch (Exception exception)
                     {

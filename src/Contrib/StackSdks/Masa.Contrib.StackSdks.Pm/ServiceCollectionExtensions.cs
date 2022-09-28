@@ -38,6 +38,7 @@ public static class ServiceCollectionExtensions
             return pmCaching;
         });
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

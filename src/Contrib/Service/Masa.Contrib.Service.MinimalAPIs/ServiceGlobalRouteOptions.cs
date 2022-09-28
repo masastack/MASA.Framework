@@ -23,7 +23,7 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
         PutPrefixes = new List<string> { "Put", "Update", "Modify" };
         DeletePrefixes = new List<string> { "Delete", "Remove" };
         DisableTrimMethodPrefix = false;
-        Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assemblies = MasaApp.GetAssemblies();
         Pluralization = PluralizationService.CreateService(CultureInfo.CreateSpecificCulture("en"));
     }
 }

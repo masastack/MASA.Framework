@@ -6,7 +6,7 @@ global using Aliyun.Acs.Core.Auth.Sts;
 global using Aliyun.Acs.Core.Profile;
 global using Aliyun.OSS;
 global using Aliyun.OSS.Util;
-global using Masa.BuildingBlocks.Configuration;
+global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Storage.ObjectStorage;
 global using Masa.BuildingBlocks.Storage.ObjectStorage.Response;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun;

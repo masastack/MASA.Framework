@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IApiResourceRepository, ApiResourceRepository>();
         services.AddScoped<SyncCache>();
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

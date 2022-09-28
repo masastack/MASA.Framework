@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
-        => services.AddDaprEventBus<TIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), options);
+        => services.AddDaprEventBus<TIntegrationEventLogService>(MasaApp.GetAssemblies(), options);
 
     [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(

@@ -53,7 +53,7 @@ public class YamlTest
     public void TestAddYamlByUseMasaAppReturnNotNull()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         services.AddYaml();
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());
@@ -72,7 +72,7 @@ public class YamlTest
     public void TestAddYamlByUseMasaAppReturnNotNull2()
     {
         var services = new ServiceCollection();
-        MasaApp.Services = services;
+        MasaApp.SetServiceCollection(services);
         services.AddYaml(options =>
         {
             options.Serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();

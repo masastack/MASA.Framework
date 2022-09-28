@@ -63,7 +63,7 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(new Lazy<WebApplication>(builder.Build, LazyThreadSafetyMode.ExecutionAndPublication))
                 .AddTransient(serviceProvider => serviceProvider.GetRequiredService<Lazy<WebApplication>>().Value);
 
-            MasaApp.Services = services;
+            MasaApp.TrySetServiceCollection(services);
 
             MasaApp.Build(services.BuildServiceProvider());
             var serviceMapOptions = MasaApp.GetRequiredService<IOptions<ServiceGlobalRouteOptions>>().Value;
@@ -79,7 +79,9 @@ public static class ServiceCollectionExtensions
 
         var serviceProvider = services.BuildServiceProvider();
         var app = serviceProvider.GetRequiredService<WebApplication>();
-        MasaApp.JsonSerializerOptions ??= app.Services.GetRequiredService<IOptions<JsonOptions>>().Value.JsonSerializerOptions;
+        if (MasaApp.GetJsonSerializerOptions() == null)
+            MasaApp.TrySetJsonSerializerOptions(app.Services.GetRequiredService<IOptions<JsonOptions>>().Value.JsonSerializerOptions);
+
         MasaApp.Build(app.Services);
         return app;
     }

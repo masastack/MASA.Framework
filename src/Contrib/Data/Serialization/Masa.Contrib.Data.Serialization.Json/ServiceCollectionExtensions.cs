@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
                 .Configure(Options.Options.DefaultName, configure)
                 .AddJsonFactory(DataType.Json.ToString(), Options.Options.DefaultName);
 
-        return services.AddJsonFactory(DataType.Json.ToString(), MasaApp.JsonSerializerOptions);
+        return services.AddJsonFactory(DataType.Json.ToString(), MasaApp.GetJsonSerializerOptions());
     }
 
     public static IServiceCollection AddJson(this IServiceCollection services, string name, Action<JsonSerializerOptions>? configure = null)
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
                 .Configure(name, configure)
                 .AddJsonFactory(name, name);
         }
-        return services.AddJsonFactory(name, MasaApp.JsonSerializerOptions);
+        return services.AddJsonFactory(name, MasaApp.GetJsonSerializerOptions());
     }
 
     private static IServiceCollection AddJsonFactory(
@@ -95,6 +95,7 @@ public static class ServiceCollectionExtensions
             var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<JsonSerializerOptions>>();
             return new DefaultJsonDeserializer(jsonSerializerOptions ?? optionsFactory.Create(Options.Options.DefaultName));
         });
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

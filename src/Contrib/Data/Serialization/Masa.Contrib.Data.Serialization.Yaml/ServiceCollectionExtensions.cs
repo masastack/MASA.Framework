@@ -103,6 +103,7 @@ public static class ServiceCollectionExtensions
             var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<YamlOptions>>();
             return new DefaultYamlDeserializer(deserializer ?? optionsFactory.Create(Options.Options.DefaultName).Deserializer);
         });
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

@@ -13,7 +13,7 @@ public class ConfigurationOptions
 
     public ConfigurationOptions()
     {
-        Assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assemblies = MasaApp.GetAssemblies();
         ExcludeConfigurationSourceTypes = Internal.ConfigurationExtensions.DefaultExcludeConfigurationSourceTypes;
         ExcludeConfigurationProviderTypes = Internal.ConfigurationExtensions.DefaultExcludeConfigurationProviderTypes;
     }

@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         Action<DispatcherOptions>? options = null)
-        => services.AddIntegrationEventBus(AppDomain.CurrentDomain.GetAssemblies(), options);
+        => services.AddIntegrationEventBus(MasaApp.GetAssemblies(), options);
 
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
@@ -82,6 +82,7 @@ public static class ServiceCollectionExtensions
         if (services.All(d => d.ServiceType != typeof(IPublisher)))
             throw new NotSupportedException($"{nameof(IPublisher)} has no implementing");
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 

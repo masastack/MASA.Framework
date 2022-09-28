@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPersistedGrantStore, PersistedGrantStore>();
         services.AddSingleton<IDeviceFlowStore, DeviceFlowStore>();
 
+        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 }

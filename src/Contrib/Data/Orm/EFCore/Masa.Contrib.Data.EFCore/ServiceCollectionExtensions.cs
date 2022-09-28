@@ -49,6 +49,7 @@ public static class ServiceCollectionExtensions
         where TDbContextImplementation : MasaDbContext, IMasaDbContext
         where TUserId : IComparable
     {
+        MasaApp.TrySetServiceCollection(services);
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();

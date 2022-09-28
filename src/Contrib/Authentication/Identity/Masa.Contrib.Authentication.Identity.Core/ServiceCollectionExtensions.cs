@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddMasaIdentityModelCore(this IServiceCollection services, string serializationName)
     {
+        MasaApp.TrySetServiceCollection(services);
         services.TryAddScoped(serviceProvider => new DefaultUserContext(
             serviceProvider.GetRequiredService<ITypeConvertFactory>().Create(serializationName),
             serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>(),
