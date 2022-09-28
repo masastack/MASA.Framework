@@ -7,6 +7,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 {
     private readonly IMultilevelCacheClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
     private readonly DccOptions _dccOptions;
 
@@ -28,6 +29,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         _client = client;
         _jsonSerializerOptions = jsonSerializerOptions;
+        _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
+        _dynamicJsonSerializerOptions.EnableDynamicTypes();
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
         _yamlSerializer = serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME);
         _yamlDeserializer = serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME);
@@ -57,12 +60,9 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         var value = await _taskJsonObjects.GetOrAdd(key, k => new Lazy<Task<object>>(async () =>
         {
-            var options = new JsonSerializerOptions(_jsonSerializerOptions);
-            options.EnableDynamicTypes();
-
             var result = await GetRawByKeyAsync(k, (value) =>
             {
-                var result = JsonSerializer.Deserialize<T>(value, options);
+                var result = JsonSerializer.Deserialize<T>(value, _dynamicJsonSerializerOptions);
 
                 var newValue = new Lazy<Task<object>>(() => Task.FromResult((object)result!));
                 _taskJsonObjects.AddOrUpdate(k, newValue, (_, _) => newValue);
@@ -76,7 +76,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 throw new FormatException(result.Raw);
             }
 
-            return JsonSerializer.Deserialize<T>(result.Raw, options) ?? throw new ArgumentException(nameof(configObject));
+            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(nameof(configObject));
         })).Value;
 
         return (T)value;
@@ -114,14 +114,11 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     {
         var value = _taskExpandoObjects.GetOrAdd(key, k => new Lazy<Task<ExpandoObject>>(async () =>
         {
-            var options = new JsonSerializerOptions(_jsonSerializerOptions);
-            options.EnableDynamicTypes();
-
             var raw = await GetRawByKeyAsync(k, value =>
             {
-                valueChanged?.Invoke(k, value, options);
+                valueChanged?.Invoke(k, value, _dynamicJsonSerializerOptions);
             });
-            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, options) ?? throw new ArgumentException(key);
+            return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
         })).Value;
 
         return await value;

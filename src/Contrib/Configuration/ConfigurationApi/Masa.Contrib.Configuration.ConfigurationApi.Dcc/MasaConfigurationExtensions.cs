@@ -34,10 +34,10 @@ public static class MasaConfigurationExtensions
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
 
-        var jsonSerializerOption = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        };
+        var jsonSerializerOption = MasaApp.JsonSerializerOptions != null ?
+            new JsonSerializerOptions(MasaApp.JsonSerializerOptions) { PropertyNameCaseInsensitive = true } :
+            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
         string callerName = DEFAULT_CLIENT_NAME;
         services.AddCaller(options =>

@@ -49,6 +49,9 @@ public static class JsonSerializerExtensions
             throw new ArgumentNullException(nameof(options));
         }
 
+        if (options.Converters.Any(jsonConverter => jsonConverter is DynamicObjectConverter))
+            return options;
+
         options.Converters.Add(new DynamicObjectConverter());
         return options;
     }
