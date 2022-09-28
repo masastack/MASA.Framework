@@ -27,8 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Utils\Caching\Distributed\Masa.Utils.Caching.Redis\Masa.Utils.Caching.Redis.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Utils\Caching\Masa.Utils.Caching.DistributedMemory\Masa.Utils.Caching.DistributedMemory.csproj" />
     <ProjectReference Include="..\..\..\..\..\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj" />
   </ItemGroup>

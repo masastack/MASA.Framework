@@ -23,7 +23,7 @@ public class MemoryCacheProviderTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddOidcCache(options);
         using var serviceProvider = serviceCollection.BuildServiceProvider();
-        MemoryCacheProvider? memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
+        MemoryCacheProvider memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
         var memoryCacheClient = memoryCacheProvider.GetMemoryCacheClient();
         Assert.IsNotNull(memoryCacheClient);
     }
