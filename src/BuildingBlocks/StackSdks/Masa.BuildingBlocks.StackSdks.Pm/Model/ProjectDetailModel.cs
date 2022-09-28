@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Pm.Model;
 
-public class ProjectDetailModel : BaseModel
+public class ProjectDetailModel : ModelBase
 {
     public int Id { get; set; }
 

@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Scheduler.Request;
 
-public class ChangeEnabledStatusRequest : BaseSchedulerJobRequest
+public class ChangeEnabledStatusRequest : SchedulerJobRequestBase
 {
     public bool Enabled { get; set; }
 }

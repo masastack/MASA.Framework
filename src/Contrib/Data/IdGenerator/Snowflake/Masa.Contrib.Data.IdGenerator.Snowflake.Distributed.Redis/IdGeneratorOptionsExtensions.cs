@@ -1,7 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
+// ReSharper disable once CheckNamespace
+namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
 public static class IdGeneratorOptionsExtensions
 {
@@ -42,7 +43,8 @@ public static class IdGeneratorOptionsExtensions
         if (snowflakeGeneratorOptions.EnableMachineClock)
         {
             snowflakeGeneratorOptions.Services.TryAddSingleton<ISnowflakeGenerator>(serviceProvider
-                => new MachineClockIdGenerator(serviceProvider.GetRequiredService<IDistributedCacheClient>(),
+                => new Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator(
+                    serviceProvider.GetRequiredService<IDistributedCacheClient>(),
                     serviceProvider.GetRequiredService<IWorkerProvider>(),
                     redisConfigurationOptions,
                     distributedIdGeneratorOptions));

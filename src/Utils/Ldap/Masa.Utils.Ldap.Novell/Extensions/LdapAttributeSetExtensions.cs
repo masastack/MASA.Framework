@@ -1,7 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Utils.Ldap.Novell.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Novell.Directory.Ldap;
 
 public static class LdapAttributeSetExtensions
 {

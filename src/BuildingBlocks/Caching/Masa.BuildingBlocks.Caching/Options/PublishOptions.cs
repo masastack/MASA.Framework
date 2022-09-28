@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class PublishOptions : BasePubSubOptions
+public class PublishOptions : PubSubOptionsBase
 {
     public object? Value { get; set; }
 

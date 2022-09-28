@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Tests")]
-namespace Masa.Contrib.Service.Caller;
+// ReSharper disable once CheckNamespace
+namespace Masa.BuildingBlocks.Service.Caller;
 
 internal static class CallerProviderExtensions
 {

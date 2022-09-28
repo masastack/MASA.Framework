@@ -3,9 +3,8 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete.Tests;
 
-public class CustomAutoCompleteClient : BaseAutoCompleteClient
+public class CustomAutoCompleteClient : AutoCompleteClientBase
 {
-
     public override Task<GetResponse<TAudoCompleteDocument>> GetBySpecifyDocumentAsync<TAudoCompleteDocument>(string keyword, AutoCompleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {

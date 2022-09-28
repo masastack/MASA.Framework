@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Pm.Model;
 
-public class ClusterDetailModel : BaseModel
+public class ClusterDetailModel : ModelBase
 {
     public int Id { get; set; }
 

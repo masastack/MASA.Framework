@@ -65,11 +65,11 @@ public class DependencyInjectionTest
         Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(UserService), typeof(BaseService)));
         Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(UserService), typeof(UserBaseService)));
 
-        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<>), typeof(BaseRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<>), typeof(BaseRepository<User>)));
-        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<User>), typeof(BaseRepository<User>)));
-        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(BaseRepository<>), typeof(IRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(BaseRepository<User>), typeof(IRepository<User>)));
+        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<>), typeof(RepositoryBase<>)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<>), typeof(RepositoryBase<User>)));
+        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<User>), typeof(RepositoryBase<User>)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(RepositoryBase<>), typeof(IRepository<>)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(RepositoryBase<User>), typeof(IRepository<User>)));
 
         Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<,>), typeof(UserRepository<>)));
         Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<>)));
@@ -94,11 +94,11 @@ public class DependencyInjectionTest
         Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(UserService), typeof(BaseService)));
         Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(UserService), typeof(UserBaseService)));
 
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<>), typeof(BaseRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<>), typeof(BaseRepository<User>)));
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<User>), typeof(BaseRepository<User>)));
-        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(BaseRepository<>), typeof(IRepository<>)));
-        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(BaseRepository<User>), typeof(IRepository<User>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<>), typeof(RepositoryBase<>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<>), typeof(RepositoryBase<User>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<User>), typeof(RepositoryBase<User>)));
+        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(RepositoryBase<>), typeof(IRepository<>)));
+        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(RepositoryBase<User>), typeof(IRepository<User>)));
 
         Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<,>), typeof(UserRepository<>)));
         Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<>)));

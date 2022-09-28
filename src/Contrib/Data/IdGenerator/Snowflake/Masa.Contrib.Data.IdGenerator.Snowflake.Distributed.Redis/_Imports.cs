@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Data;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
+global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Internal;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

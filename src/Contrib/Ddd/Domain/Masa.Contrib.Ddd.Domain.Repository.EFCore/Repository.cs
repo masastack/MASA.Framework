@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Ddd.Domain.Repository.EFCore;
 
 public class Repository<TDbContext, TEntity> :
-    BaseRepository<TEntity>
+    RepositoryBase<TEntity>
     where TEntity : class, IEntity
     where TDbContext : DbContext, IMasaDbContext
 {

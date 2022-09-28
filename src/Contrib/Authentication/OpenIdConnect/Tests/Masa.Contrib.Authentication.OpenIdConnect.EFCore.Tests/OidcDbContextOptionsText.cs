@@ -15,16 +15,16 @@ public class ThirdPartyIdpServiceTest
         serviceCollection.AddDomainEventBus(dispatcherOptions =>
         {
             dispatcherOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<TestDbContext>())
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<TestDbContext>(
+            .UseUoW<CustomDbContext>(
                 dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false, false
             )
-            .UseRepository<TestDbContext>();
+            .UseRepository<CustomDbContext>();
         });
-        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<TestDbContext>()));
+        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
 
         var userClaimRepository = new Mock<IUserClaimRepository>();
         userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
@@ -51,16 +51,16 @@ public class ThirdPartyIdpServiceTest
         serviceCollection.AddDomainEventBus(dispatcherOptions =>
         {
             dispatcherOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<TestDbContext>())
+            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<TestDbContext>(
+            .UseUoW<CustomDbContext>(
                 dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources2"), false, false
             )
-            .UseRepository<TestDbContext>();
+            .UseRepository<CustomDbContext>();
         });
-        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<TestDbContext>()));
+        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
 
         var userClaimRepository = new Mock<IUserClaimRepository>();
         userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
@@ -72,7 +72,7 @@ public class ThirdPartyIdpServiceTest
 
         serviceCollection.AddScoped<OidcDbContextOptions>();
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<TestDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Set<UserClaim>().AddAsync(new("sub","1"));
         await dbContext.Set<IdentityResource>().AddAsync(new("email","email","email",true,true,default,true,true));
         await dbContext.SaveChangesAsync();

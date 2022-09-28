@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Pm.Model;
 
-public class EnvironmentDetailModel : BaseModel
+public class EnvironmentDetailModel : ModelBase
 {
     public int Id { get; set; }
 

@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Data.Mapping.Mapster.Tests;
 
 [TestClass]
-public class MappingTest : BaseMappingTest
+public class MappingTest : MappingBaseTest
 {
     [TestMethod]
     public void TestCreateUserRequestMapToUserReturnUserNameEqualRequestName()

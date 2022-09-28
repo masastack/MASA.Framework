@@ -80,7 +80,7 @@ Scan the interfaces and classes that inherit ISingletonDependency, IScopedDepend
    * By default, the cascade scan registration service is supported, and subclasses of the current class will also be registered
 
      ```` C#
-     public class BaseRepository : ISingletonDependency
+     public class RepositoryBase : ISingletonDependency
      {
 
      }
@@ -93,13 +93,13 @@ Scan the interfaces and classes that inherit ISingletonDependency, IScopedDepend
 
      }
 
-     public class UserRepository : BaseRepository
+     public class UserRepository : RepositoryBase
      {
 
      }
      ````
 
-     > Equivalent to: `service.AddSingleton<BaseRepository>();service.AddSingleton<UserRepository>();`
+     > Equivalent to: `service.AddSingleton<RepositoryBase>();service.AddSingleton<UserRepository>();`
 
 #### Features:
 

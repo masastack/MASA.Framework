@@ -14,14 +14,14 @@ public class SchedulerTaskService : ISchedulerTaskService
         _caller = caller;
     }
 
-    public async Task<bool> StopAsync(BaseSchedulerTaskRequest request)
+    public async Task<bool> StopAsync(SchedulerTaskRequestBase request)
     {
         var requestUri = $"{API}/stop";
         await _caller.PutAsync(requestUri, request);
         return true;
     }
 
-    public async Task<bool> StartAsync(BaseSchedulerTaskRequest request)
+    public async Task<bool> StartAsync(SchedulerTaskRequestBase request)
     {
         var requestData = new StartSchedulerTaskRequest()
         {
