@@ -324,7 +324,7 @@ public class UserService : IUserService
 
     public async Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model)
     {
-        var requestUri = $"api/thirdPartyUser/registerThirdPartyUser";
+        var requestUri = $"api/thirdPartyUser/register";
         return await _caller.PostAsync<UserModel>(requestUri, model) ?? throw new UserFriendlyException("Register failed");
     }
 }

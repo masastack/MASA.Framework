@@ -12,4 +12,8 @@ public abstract class RegisterModel
     public string? Avatar { get; set; }
 
     public string? DisplayName { get; set; }
+
+    public string? Name { get; set; }
+
+    public string? IdCard { get; set; }
 }

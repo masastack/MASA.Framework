@@ -547,11 +547,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test", "src\Contrib\Authentication\Tests\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Test.csproj", "{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Extensions.DotNet.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.DotNet.Tests\Masa.Utils.Extensions.DotNet.Tests.csproj", "{9E9122FD-8E27-4524-862F-FFEFA97E404A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.DotNet.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.DotNet.Tests\Masa.Utils.Extensions.DotNet.Tests.csproj", "{9E9122FD-8E27-4524-862F-FFEFA97E404A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap.csproj", "{A6486486-382C-41B8-951B-BDA55AE0174B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap.csproj", "{A6486486-382C-41B8-951B-BDA55AE0174B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3F38DB7C-C385-4878-B48D-BA9645DB7225}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Tests.csproj", "{69FEDABE-8485-450C-A440-35DC2C911431}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Tests\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Tests.csproj", "{35E75C4C-B4DC-4645-9A32-8AC4F6206401}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests.csproj", "{94B3A01D-AECA-46EA-A46F-873F35739B3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1953,14 +1959,6 @@ Global
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|x64.ActiveCfg = Release|Any CPU
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C}.Release|x64.Build.0 = Release|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Debug|x64.Build.0 = Debug|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|x64.ActiveCfg = Release|Any CPU
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260}.Release|x64.Build.0 = Release|Any CPU
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -1977,6 +1975,30 @@ Global
 		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.ActiveCfg = Release|Any CPU
 		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.Build.0 = Release|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Debug|x64.Build.0 = Debug|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Release|x64.ActiveCfg = Release|Any CPU
+		{69FEDABE-8485-450C-A440-35DC2C911431}.Release|x64.Build.0 = Release|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Debug|x64.Build.0 = Debug|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Release|x64.ActiveCfg = Release|Any CPU
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401}.Release|x64.Build.0 = Release|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Debug|x64.Build.0 = Debug|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Release|x64.ActiveCfg = Release|Any CPU
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2246,9 +2268,12 @@ Global
 		{9282075C-9C15-409B-BDC4-5EC2CB9EFA87} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{583ECD6A-5960-4A60-833A-DB6DD93BE9C3} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
-		{F242EF1B-6951-4EE5-AF9C-CDC69D9A0260} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A} = {C2FAC276-9D6E-498A-BBA2-F3F14ADF4D0D}
 		{A6486486-382C-41B8-951B-BDA55AE0174B} = {258E4702-B414-4629-BD37-CAEE20BE052B}
+		{3F38DB7C-C385-4878-B48D-BA9645DB7225} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
+		{69FEDABE-8485-450C-A440-35DC2C911431} = {3F38DB7C-C385-4878-B48D-BA9645DB7225}
+		{35E75C4C-B4DC-4645-9A32-8AC4F6206401} = {3F38DB7C-C385-4878-B48D-BA9645DB7225}
+		{94B3A01D-AECA-46EA-A46F-873F35739B3A} = {3F38DB7C-C385-4878-B48D-BA9645DB7225}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

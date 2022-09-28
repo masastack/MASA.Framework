@@ -15,3 +15,4 @@ global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.Redis.Models;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using System.Diagnostics.CodeAnalysis;

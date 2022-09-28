@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Models;
 
+[ExcludeFromCodeCoverage]
 public static class Constants
 {
     public const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.auth";

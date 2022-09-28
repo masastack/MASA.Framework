@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Models;
 
+[ExcludeFromCodeCoverage]
 public static class CacheKeyConstants
 {
     public const string CLIENT_KEY = "oidc_client";

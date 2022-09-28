@@ -3,6 +3,8 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 
+
+[ExcludeFromCodeCoverage]
 public class IdentityResourceCache : IIdentityResourceCache
 {
     IMemoryCacheClient _memoryCacheClient;
