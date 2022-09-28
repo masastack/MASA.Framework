@@ -5,5 +5,6 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 
 public enum TeamTypes
 {
-    Normal = 1
+    [Description("Ordinary")]
+    Ordinary = 1
 }
