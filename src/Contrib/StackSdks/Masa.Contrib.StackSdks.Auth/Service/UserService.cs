@@ -327,5 +327,13 @@ public class UserService : IUserService
         var requestUri = $"api/thirdPartyUser/register";
         return await _caller.PostAsync<UserModel>(requestUri, model) ?? throw new UserFriendlyException("Register failed");
     }
+
+    public async Task<bool> HasPhoneNumberInEnvAsync(string env, string phoneNumber)
+    {
+        ArgumentNullException.ThrowIfNull(env);
+        ArgumentNullException.ThrowIfNull(phoneNumber);
+        var requestUri = $"api/user/HasPhoneNumberInEnv?env={env}&phoneNumber={phoneNumber}";
+        return await _caller.GetAsync<bool>(requestUri);
+    }
 }
 

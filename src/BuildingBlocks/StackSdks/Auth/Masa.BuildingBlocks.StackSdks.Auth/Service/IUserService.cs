@@ -86,5 +86,7 @@ public interface IUserService
     Task<bool> HasPasswordAsync(Guid userId = default);
 
     Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model);
+
+    Task<bool> HasPhoneNumberInEnvAsync(string env, string phoneNumber);
 }
 

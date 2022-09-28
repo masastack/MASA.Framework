@@ -100,6 +100,23 @@ public static class ServiceCollectionExtensions
                             context.HandleResponse();
                         }
                         return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProviderForSignOut = context =>
+                    {
+                        if (context.Properties.Items.ContainsKey("env"))
+                        {
+                            context.ProtocolMessage.SetParameter("env",
+                                context.Properties.Items["env"]);
+                        }
+                        return Task.CompletedTask;
+                    },
+                    OnRedirectToIdentityProvider = context =>
+                    {
+                        return Task.CompletedTask;
+                    },
+                    OnSignedOutCallbackRedirect = context =>
+                    {
+                        return Task.CompletedTask;
                     }
                 };
             });
