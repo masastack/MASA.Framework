@@ -650,6 +650,21 @@ public class UserServiceTest
         await userService.RegisterByPhoneAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
+
+    [TestMethod]
+    [DataRow("develop", "13566668888")]
+    public async Task TestHasPhoneNumberInEnvAsync(string env, string phoneNumber)
+    {
+        var requestUri = $"api/user/HasPhoneNumberInEnv?env={env}&phoneNumber={phoneNumber}";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<bool>(requestUri, default))
+            .ReturnsAsync(true).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.HasPhoneNumberInEnvAsync(env, phoneNumber);
+        Assert.IsTrue(result);
+        caller.Verify(provider => provider.GetAsync<bool>(requestUri, default), Times.Once);
+    }
 }
 
 class SystemData
