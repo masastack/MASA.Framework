@@ -9,32 +9,52 @@ public interface IMultilevelCacheClient : ICacheClient
 
     Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
 
+    /// <summary>
+    /// Get cache, set cache if cache does not exist
+    /// </summary>
+    /// <param name="key">Cache key</param>
+    /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
+    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    T? GetOrSet<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions = null);
+
     T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
+
+    /// <summary>
+    /// Get cache, set cache if cache does not exist
+    /// </summary>
+    /// <param name="key">Cache key</param>
+    /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
+    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions = null);
 
     Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
     /// <summary>
     /// Flush cache time to live
     /// </summary>
-    /// <param name="keys"></param>
+    /// <param name="keys">Set of cache keys</param>
     void Refresh<T>(params string[] keys);
 
     /// <summary>
     /// Flush cache time to live
     /// </summary>
-    /// <param name="keys"></param>
+    /// <param name="keys">Set of cache keys</param>
     void Refresh<T>(IEnumerable<string> keys);
 
     /// <summary>
     /// Flush cache time to live
     /// </summary>
-    /// <param name="keys"></param>
+    /// <param name="keys">Set of cache keys</param>
     Task RefreshAsync<T>(params string[] keys);
 
     /// <summary>
     /// Flush cache time to live
     /// </summary>
-    /// <param name="keys"></param>
+    /// <param name="keys">Set of cache keys</param>
     Task RefreshAsync<T>(IEnumerable<string> keys);
 
     void Remove<T>(params string[] keys);

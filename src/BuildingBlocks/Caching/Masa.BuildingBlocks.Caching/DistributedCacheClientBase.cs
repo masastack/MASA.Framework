@@ -49,7 +49,7 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
 
     public abstract Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0);
 
-    public virtual bool KeyExpire(string key, TimeSpan absoluteExpirationRelativeToNow)
+    public virtual bool KeyExpire(string key, TimeSpan? absoluteExpirationRelativeToNow)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
 
     public virtual bool KeyExpire(string key, DateTimeOffset absoluteExpiration)
@@ -62,7 +62,7 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
     public virtual Task<bool> KeyExpireAsync(string key, DateTimeOffset absoluteExpiration)
         => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpiration));
 
-    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan absoluteExpirationRelativeToNow)
+    public virtual Task<bool> KeyExpireAsync(string key, TimeSpan? absoluteExpirationRelativeToNow)
         => KeyExpireAsync(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
 
     public abstract Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null);

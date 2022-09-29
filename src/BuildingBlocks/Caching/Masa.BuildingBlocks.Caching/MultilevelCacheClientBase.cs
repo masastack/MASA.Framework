@@ -9,7 +9,22 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
 
     public abstract Task<T?> GetAsync<T>(string key, Action<T?> valueChanged);
 
+    public virtual T? GetOrSet<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc, CacheEntryOptions? memoryCacheEntryOptions = null)
+        => GetOrSet(key, new CombinedCacheEntry<T>()
+        {
+            DistributedCacheEntryFunc = distributedCacheEntryFunc,
+            MemoryCacheEntryOptions = memoryCacheEntryOptions
+        });
+
     public abstract T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
+
+    public virtual Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> distributedCacheEntryFunc,
+        CacheEntryOptions? memoryCacheEntryOptions = null)
+        => GetOrSetAsync(key, new CombinedCacheEntry<T>()
+        {
+            DistributedCacheEntryFunc = distributedCacheEntryFunc,
+            MemoryCacheEntryOptions = memoryCacheEntryOptions
+        });
 
     public abstract Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry);
 
