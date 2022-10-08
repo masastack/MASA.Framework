@@ -5,5 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Sso;
 
 internal interface IIdentityProvider
 {
+    Task<TokenResponse> RequestTokenAsync(TokenRequest tokenRequest);
 
+    Task<TokenRevocationResponse> RevokeTokenAsync(TokenRevocationRequest tokenRevocationRequest);
 }
