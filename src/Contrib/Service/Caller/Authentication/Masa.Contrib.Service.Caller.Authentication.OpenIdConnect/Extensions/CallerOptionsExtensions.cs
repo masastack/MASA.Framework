@@ -29,6 +29,24 @@ public static class CallerOptionsExtensions
     /// </summary>
     /// <param name="callerOptions"></param>
     /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
+    /// <param name="action">Extended Check Token</param>
+    /// <returns></returns>
+    public static CallerOptions UseAuthentication(
+        this CallerOptions callerOptions,
+        string defaultScheme,
+        Action<AuthenticationOptions>? action)
+    {
+        callerOptions.UseAuthentication(defaultScheme);
+        AuthenticationOptions authenticationOptions = new AuthenticationOptions(callerOptions.Services);
+        action?.Invoke(authenticationOptions);
+        return callerOptions;
+    }
+
+    /// <summary>
+    /// Caller uses Authentication
+    /// </summary>
+    /// <param name="callerOptions"></param>
+    /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
     /// <returns></returns>
     public static CallerOptions UseAuthentication(
         this CallerOptions callerOptions,

@@ -17,4 +17,18 @@ public class CallerOptionsExtensionsTest
         Assert.IsNotNull(serviceProvider.GetService<IAuthenticationService>());
         Assert.IsNull(serviceProvider.GetService<ITokenValidatorHandler>());
     }
+
+    [TestMethod]
+    public void TestUseAuthentication2()
+    {
+        CallerOptions callerOptions = new CallerOptions(new ServiceCollection());
+        callerOptions.UseAuthentication("Bearer", options =>
+        {
+        });
+
+        var serviceProvider = callerOptions.Services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<TokenProvider>());
+        Assert.IsNotNull(serviceProvider.GetService<IAuthenticationService>());
+        Assert.IsNull(serviceProvider.GetService<ITokenValidatorHandler>());
+    }
 }

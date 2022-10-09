@@ -8,7 +8,7 @@
 
 ``` powershell
 Install-Package Masa.Contrib.Service.Caller.HttpClient //Caller的实现，根据实际情况选择使用HttpClient或者DaprClient
-Install-Package Masa.Contrib.Service.Caller.Authentication.OpenIdConnect //需摇认证授权
+Install-Package Masa.Contrib.Service.Caller.Authentication.OpenIdConnect //需要认证授权
 ```
 
 ### 入门
@@ -22,7 +22,39 @@ builder.Services.AddCaller(options =>
 });
 ```
 
-2. 新增加类`UserCaller`，并继承`HttpClientCallerBase`，配置域地址
+2. 定义中间件为认证信息赋值 (非Blazor项目)
+
+``` C#
+public class TokenProviderMiddleware
+{
+    private readonly RequestDelegate _next;
+
+    public TokenProviderMiddleware(RequestDelegate next)
+    {
+        _next = next;
+    }
+
+    public async Task InvokeAsync(HttpContext httpContext)
+    {
+        var tokenProvider = httpContext.RequestServices.GetRequiredService<TokenProvider>();
+        tokenProvider.AccessToken = "{Replace-You-AccessToken}";//访问凭证赋值
+        tokenProvider.RefreshToken = "{Replace-You-RefreshToken}";//刷新凭证赋值
+        tokenProvider.IdToken = "{Replace-You-IdToken}";//身份凭证赋值
+        await _next.Invoke(httpContext);
+    }
+}
+```
+
+> Blazor项目不建议使用中间件赋值
+
+3. 使用中间件，修改`Program.cs`
+
+``` C#
+//在映射路由之前，确保进入方法前中间件已经执行
+app.UseMiddleware<TokenProviderMiddleware>();
+```
+
+4. 新增加类`UserCaller`，并继承`HttpClientCallerBase`，配置域地址
 
 ``` C#
 public class UserCaller: HttpClientCallerBase
@@ -33,7 +65,7 @@ public class UserCaller: HttpClientCallerBase
 }
 ```
 
-3. 如何使用UserCaller
+4. 如何使用UserCaller
 
 ``` C#
 app.MapGet("/Test/User/Hello", ([FromServices] UserCaller caller, string name)

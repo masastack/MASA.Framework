@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Jwt;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class JwtTokenValidatorOptions
 {
     public string AuthorityEndpoint { get; set; } = string.Empty;

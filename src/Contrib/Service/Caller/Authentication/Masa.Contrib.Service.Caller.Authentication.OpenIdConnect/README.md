@@ -8,7 +8,7 @@ Example:
 
 ``` c#
 Install-Package Masa.Contrib.Service.Caller.HttpClient //Caller implementation, choose to use HttpClient or DaprClient according to the actual situation
-Install-Package Masa.Contrib.Service.Caller.Authentication.OpenIdConnect //Requires authentication and authorization
+Install-Package Masa.Contrib.Service.Caller.Authentication.OpenIdConnect //Authentication and authorization required
 ```
 
 ### Get Started
@@ -22,7 +22,39 @@ builder.Services.AddCaller(options =>
 });
 ```
 
-2. Add a new class `UserCaller`, and inherit `HttpClientCallerBase` to configure the domain address
+2. Define middleware to assign value to authentication information (non-Blazor project)
+
+``` C#
+public class TokenProviderMiddleware
+{
+     private readonly RequestDelegate _next;
+
+     public TokenProviderMiddleware(RequestDelegate next)
+     {
+         _next = next;
+     }
+
+     public async Task InvokeAsync(HttpContext httpContext)
+     {
+         var tokenProvider = httpContext.RequestServices.GetRequiredService<TokenProvider>();
+         tokenProvider.AccessToken = "{Replace-You-AccessToken}";//Access credential assignment
+         tokenProvider.RefreshToken = "{Replace-You-RefreshToken}";//Refresh credential assignment
+         tokenProvider.IdToken = "{Replace-You-IdToken}";//Identity Credential Assignment
+         await _next.Invoke(httpContext);
+     }
+}
+```
+
+> The Blazor project does not recommend using middleware assignment
+
+3. Using middleware, modify `Program.cs`
+
+``` C#
+//Before mapping routes, make sure the middleware has been executed before entering the method
+app.UseMiddleware<TokenProviderMiddleware>();
+```
+
+4. Add a new class `UserCaller`, and inherit `HttpClientCallerBase` to configure the domain address
 
 ``` C#
 public class UserCaller: HttpClientCallerBase
@@ -33,7 +65,7 @@ public class UserCaller: HttpClientCallerBase
 }
 ```
 
-3. How to use UserCaller
+5. How to use UserCaller
 
 ``` C#
 app.MapGet("/Test/User/Hello", ([FromServices] UserCaller caller, string name)

@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class TokenProvider
 {
     public string? AccessToken { get; set; }
