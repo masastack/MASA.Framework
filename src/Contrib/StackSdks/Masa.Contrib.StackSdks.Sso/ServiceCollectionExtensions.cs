@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+using Masa.Contrib.StackSdks.Sso;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -16,17 +18,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMasaOpenIdConnect(
         this IServiceCollection services,
         MasaOpenIdConnectOptions masaOpenIdConnectOptions)
-    {
-        return services.AddMasaOpenIdConnect(masaOpenIdConnectOptions.Authority, masaOpenIdConnectOptions.ClientId,
-                masaOpenIdConnectOptions.ClientSecret, masaOpenIdConnectOptions.Scopes.ToArray());
-    }
-
-    public static IServiceCollection AddMasaOpenIdConnect(
-        this IServiceCollection services,
-        string authority,
-        string clinetId,
-        string clientSecret,
-        params string[] scopes)
     {
         services.AddHttpContextAccessor();
 
@@ -43,14 +34,14 @@ public static class ServiceCollectionExtensions
         })
         .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
         {
-            options.Authority = authority;
+            options.Authority = masaOpenIdConnectOptions.Authority;
             options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.SignOutScheme = OpenIdConnectDefaults.AuthenticationScheme;
             options.RequireHttpsMetadata = false;
-            options.ClientId = clinetId;
-            options.ClientSecret = clientSecret;
+            options.ClientId = masaOpenIdConnectOptions.ClientId;
+            options.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
             options.ResponseType = OpenIdConnectResponseType.Code;
-            foreach (var scope in scopes)
+            foreach (var scope in masaOpenIdConnectOptions.Scopes.ToArray())
             {
                 options.Scope.Add(scope);
             }
@@ -119,6 +110,23 @@ public static class ServiceCollectionExtensions
             options.FallbackPolicy = options.DefaultPolicy;
         });
 
+        services.AddSingleton(masaOpenIdConnectOptions);
+        services.AddJwtTokenValidator(options =>
+        {
+            options.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
+        });
+
+        services.AddScoped<IIdentityProvider, IdentityProvider>();
+        return services;
+    }
+
+    static IServiceCollection AddJwtTokenValidator(this IServiceCollection services,
+        Action<JwtTokenValidatorOptions> jwtTokenValidatorOptions)
+    {
+        var options = new JwtTokenValidatorOptions();
+        jwtTokenValidatorOptions.Invoke(options);
+        services.AddSingleton(options);
+        services.AddScoped<IJwtTokenValidator, JwtTokenValidator>();
         return services;
     }
 }

@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.StackSdks.Sso;
 
 public interface IJwtTokenValidator
 {
-    Task<ClaimsPrincipal?> ValidateAccessTokenAsync();
+    Task<(ClaimsPrincipal?, string accessToken)> ValidateAccessTokenAsync(string accessToken, string? refreshToken = null);
 }

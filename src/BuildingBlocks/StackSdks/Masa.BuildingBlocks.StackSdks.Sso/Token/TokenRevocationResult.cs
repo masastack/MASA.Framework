@@ -3,6 +3,6 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Sso.Token;
 
-public class TokenRevocationResponse
+public class TokenRevocationResult : ProtocolResult
 {
 }

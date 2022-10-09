@@ -3,6 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Sso.User;
 
-public class UserInfoResponse
+public class UserInfoResult : ProtocolResult
 {
+    public IEnumerable<Claim> Claims { get; private set; } = default!;
 }
