@@ -48,6 +48,7 @@ public abstract class CallerBase
 
     protected virtual void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
     {
-
+        var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
+        authenticationService?.ExecuteAsync(requestMessage);
     }
 }
