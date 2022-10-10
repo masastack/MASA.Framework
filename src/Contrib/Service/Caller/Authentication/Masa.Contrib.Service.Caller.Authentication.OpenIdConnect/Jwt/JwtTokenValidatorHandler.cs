@@ -54,7 +54,7 @@ public class JwtTokenValidatorHandler : ITokenValidatorHandler
                 var tokenResult = await tokenClient.RequestRefreshTokenAsync(tokenProvider.RefreshToken).ConfigureAwait(false);
                 if (tokenResult.IsError)
                 {
-                    _logger?.LogError(tokenResult.Error);
+                    _logger?.LogError("JwtTokenValidator failed, RefreshToken failed, Error Message: {Message}", tokenResult.Error);
                     throw new UserFriendlyException($"JwtTokenValidator failed, RefreshToken failed, Error Message: {tokenResult.Error}");
                 }
                 else
@@ -77,7 +77,7 @@ public class JwtTokenValidatorHandler : ITokenValidatorHandler
         }
     }
 
-    private List<SecurityKey> GetIssuerSigningKeys(DiscoveryDocumentResponse discoveryDocument)
+    private static List<SecurityKey> GetIssuerSigningKeys(DiscoveryDocumentResponse discoveryDocument)
     {
         var keys = new List<SecurityKey>();
         foreach (var webKey in discoveryDocument.KeySet.Keys)
