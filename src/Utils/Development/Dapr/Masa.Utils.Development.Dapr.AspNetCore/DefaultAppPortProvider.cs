@@ -9,7 +9,7 @@ public class DefaultAppPortProvider : IAppPortProvider
 
     public DefaultAppPortProvider(IServer server) => _server = server;
 
-    public ushort GetAppPort(bool? enableSsl)
+    public ushort GetAppPort()
     {
         var addresses = _server.Features.Get<IServerAddressesFeature>()?.Addresses;
         if (addresses is { IsReadOnly: false, Count: 0 })
@@ -18,7 +18,7 @@ public class DefaultAppPortProvider : IAppPortProvider
         var ports = addresses!
             .Select(address => new Uri(address))
             .Where(address
-                => (enableSsl is true && address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
+                => (address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
                 || address.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
             .Select(address => new
             {
@@ -26,17 +26,16 @@ public class DefaultAppPortProvider : IAppPortProvider
                 address.Port
             }).ToList();
 
-        if (enableSsl is true)
-        {
-            return ports
-                .Where(p => p.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
-                .Select(p => (ushort)p.Port)
-                .FirstOrDefault();
-        }
+        if (ports.Count == 1)
+            return ports.Select(p => (ushort)p.Port).FirstOrDefault();
 
-        return ports
-            .Where(p => p.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
-            .Select(p => (ushort)p.Port)
-            .FirstOrDefault();
+        var appPortItem = ports
+            .FirstOrDefault(p => p.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)) ?? ports
+            .FirstOrDefault(p => p.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase));
+
+        if (appPortItem != null)
+            return (ushort)appPortItem.Port;
+
+        throw new UserFriendlyException("Failed to get application port");
     }
 }
