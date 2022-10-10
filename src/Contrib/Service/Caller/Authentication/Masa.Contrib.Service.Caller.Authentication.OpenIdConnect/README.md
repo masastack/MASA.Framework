@@ -37,15 +37,15 @@ public class TokenProviderMiddleware
      public async Task InvokeAsync(HttpContext httpContext)
      {
          var tokenProvider = httpContext.RequestServices.GetRequiredService<TokenProvider>();
-         tokenProvider.AccessToken = "{Replace-You-AccessToken}";//Access credential assignment
-         tokenProvider.RefreshToken = "{Replace-You-RefreshToken}";//Refresh credential assignment
-         tokenProvider.IdToken = "{Replace-You-IdToken}";//Identity Credential Assignment
+         tokenProvider.AccessToken = "{Replace-Your-AccessToken}";//Access credential assignment
+         tokenProvider.RefreshToken = "{Replace-Your-RefreshToken}";//Refresh credential assignment
+         tokenProvider.IdToken = "{Replace-Your-IdToken}";//Identity Credential Assignment
          await _next.Invoke(httpContext);
      }
 }
 ```
 
-> The Blazor project does not recommend using middleware assignment
+> The Blazor Server project does not recommend using middleware assignment. You can obtain the current credentials and assign them through HttpContext in `_Host.cshtml`
 
 3. Using middleware, modify `Program.cs`
 

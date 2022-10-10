@@ -37,15 +37,15 @@ public class TokenProviderMiddleware
     public async Task InvokeAsync(HttpContext httpContext)
     {
         var tokenProvider = httpContext.RequestServices.GetRequiredService<TokenProvider>();
-        tokenProvider.AccessToken = "{Replace-You-AccessToken}";//访问凭证赋值
-        tokenProvider.RefreshToken = "{Replace-You-RefreshToken}";//刷新凭证赋值
-        tokenProvider.IdToken = "{Replace-You-IdToken}";//身份凭证赋值
+        tokenProvider.AccessToken = "{Replace-Your-AccessToken}";//访问凭证赋值
+        tokenProvider.RefreshToken = "{Replace-Your-RefreshToken}";//刷新凭证赋值
+        tokenProvider.IdToken = "{Replace-Your-IdToken}";//身份凭证赋值
         await _next.Invoke(httpContext);
     }
 }
 ```
 
-> Blazor项目不建议使用中间件赋值
+> Blazor Server项目不建议使用中间件赋值，可通过在`_Host.cshtml`中通过HttpContext获取当前凭证并赋值
 
 3. 使用中间件，修改`Program.cs`
 
