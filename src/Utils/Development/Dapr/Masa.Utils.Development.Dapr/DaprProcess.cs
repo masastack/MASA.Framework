@@ -11,7 +11,6 @@ public class DaprProcess : IDaprProcess
     private readonly IProcessProvider _processProvider;
     private readonly ILoggerFactory? _loggerFactory;
     private readonly ILogger<DaprProcess>? _logger;
-    private IProcess? _process;
     private DaprProcessStatus Status { get; set; }
     private System.Timers.Timer? _heartBeatTimer;
     private DaprCoreOptions? _successDaprOptions;
@@ -61,8 +60,7 @@ public class DaprProcess : IDaprProcess
             _logger?.LogDebug("{Name} process has exited", Const.DEFAULT_FILE_NAME);
         };
         _retryTime = 0;
-        var process = utils.Run(Const.DEFAULT_FILE_NAME, $"run {commandLineBuilder}", options.CreateNoWindow);
-        _process = new SystemProcess(process);
+        utils.Run(Const.DEFAULT_FILE_NAME, $"run {commandLineBuilder}", options.CreateNoWindow);
         if (_heartBeatTimer == null && options.EnableHeartBeat)
         {
             _heartBeatTimer = new System.Timers.Timer
@@ -127,18 +125,9 @@ public class DaprProcess : IDaprProcess
 
     private void StopCore(DaprCoreOptions? options, CancellationToken cancellationToken = default)
     {
-        _process?.Kill();
         if (options != null)
         {
-            List<DaprRuntimeOptions> daprList = _daprProvider.GetDaprList(options.AppId);
-            if (daprList.Any())
-            {
-                foreach (var dapr in daprList)
-                {
-                    _process = _processProvider.GetProcess(dapr.PId);
-                    _process.Kill();
-                }
-            }
+            _daprProvider.DaprStop(options.AppId);
             if (options.DaprHttpPort != null)
                 CheckPortAndKill(options.DaprHttpPort.Value);
             if (options.DaprGrpcPort != null)
@@ -168,7 +157,6 @@ public class DaprProcess : IDaprProcess
 
             _isFirst = true;
             _successDaprOptions = null;
-            _process = null;
             _logger?.LogDebug("Dapr configuration refresh, appid is {appid}, restarting dapr, please wait...", options.AppId);
             StartCore(GetDaprOptions(options), cancellationToken);
         }
