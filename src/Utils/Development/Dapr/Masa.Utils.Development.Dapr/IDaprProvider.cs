@@ -7,5 +7,7 @@ public interface IDaprProvider
 {
     List<DaprRuntimeOptions> GetDaprList(string appId);
 
+    void DaprStop(string appId);
+
     bool IsExist(string appId);
 }
