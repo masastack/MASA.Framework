@@ -216,20 +216,7 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-    {
-        byte[] iv =
-        {
-            0x12,
-            0x34,
-            0x56,
-            0x78,
-            0x90,
-            0xAB,
-            0xCD,
-            0xEF
-        };
-        EncryptFile(fileStream, outFilePath, key, iv, fillType, fillCharacter, encoding);
-    }
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, true, fillType, fillCharacter, encoding);
 
     /// <summary>
     /// DES encrypts the file stream and outputs the encrypted file
@@ -249,16 +236,7 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-    {
-        var currentEncoding = GetSafeEncoding(encoding);
-        var ivBuffer = currentEncoding.GetBytes(
-            GetSpecifiedLengthString(iv,
-                8,
-                () => throw new ArgumentException($"Please enter a 8-bit DES iv or allow {nameof(fillType)} to Left or Right"),
-                fillType,
-                fillCharacter));
-        EncryptFile(fileStream, outFilePath, key, ivBuffer, fillType, fillCharacter, encoding);
-    }
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, iv, true, fillType, fillCharacter, encoding);
 
     /// <summary>
     /// DES encrypts the file stream and outputs the encrypted file
@@ -278,38 +256,7 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-    {
-        if (iv.Length != 8)
-        {
-            throw new Exception($"The {nameof(iv)} length is invalid. The {nameof(iv)} iv length needs 8 bits！");
-        }
-
-        var currentEncoding = GetSafeEncoding(encoding);
-        using var fileStreamOut = new FileStream(outFilePath, FileMode.OpenOrCreate, FileAccess.Write);
-        fileStreamOut.SetLength(0);
-        byte[] buffers = new byte[100];
-        long readLength = 0;
-
-#pragma warning disable S2278
-        using var des = DES.Create();
-        des.Key = currentEncoding.GetBytes(
-            GetSpecifiedLengthString(key,
-                8,
-                () => throw new ArgumentException($"Please enter a 8-bit DES key or allow {nameof(fillType)} to Left or Right"),
-                fillType,
-                fillCharacter));
-        des.IV = iv;
-
-        using var cryptoStream = new CryptoStream(fileStreamOut, des.CreateEncryptor(),
-            CryptoStreamMode.Write);
-        while (readLength < fileStream.Length)
-        {
-            var length = fileStream.Read(buffers, 0, 100);
-            cryptoStream.Write(buffers, 0, length);
-            readLength += length;
-        }
-#pragma warning restore S2278
-    }
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, iv, true, fillType, fillCharacter, encoding);
 
     /// <summary>
     /// DES decrypts the file stream and outputs the source file
@@ -327,20 +274,7 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-    {
-        byte[] iv =
-        {
-            0x12,
-            0x34,
-            0x56,
-            0x78,
-            0x90,
-            0xAB,
-            0xCD,
-            0xEF
-        };
-        DecryptFile(fileStream, outFilePath, key, iv, fillType, fillCharacter, encoding);
-    }
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, false, fillType, fillCharacter, encoding);
 
     /// <summary>
     /// DES decrypts the file stream and outputs the source file
@@ -360,18 +294,7 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-    {
-        var currentEncoding = GetSafeEncoding(encoding);
-
-        var ivBuffer = currentEncoding.GetBytes(
-            GetSpecifiedLengthString(iv,
-                8,
-                () => throw new ArgumentException($"Please enter a 8-bit DES iv or allow {nameof(fillType)} to Left or Right"),
-                fillType,
-                fillCharacter));
-
-        DecryptFile(fileStream, outFilePath, key, ivBuffer, fillType, fillCharacter, currentEncoding);
-    }
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, iv, false, fillType, fillCharacter, encoding);
 
     /// <summary>
     /// DES decrypts the file stream and outputs the source file
@@ -391,6 +314,60 @@ public class DesUtils : EncryptBase
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
+        => EncryptOrDecryptFile(fileStream, outFilePath, key, iv, false, fillType, fillCharacter, encoding);
+
+    public static void EncryptOrDecryptFile(
+        FileStream fileStream,
+        string outFilePath,
+        string key,
+        bool isEncrypt,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        byte[] iv =
+        {
+            0x12,
+            0x34,
+            0x56,
+            0x78,
+            0x90,
+            0xAB,
+            0xCD,
+            0xEF
+        };
+        EncryptOrDecryptFile(fileStream, outFilePath, key, iv, isEncrypt, fillType, fillCharacter, encoding);
+    }
+
+    private static void EncryptOrDecryptFile(
+        FileStream fileStream,
+        string outFilePath,
+        string key,
+        string iv,
+        bool isEncrypt,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var currentEncoding = GetSafeEncoding(encoding);
+        var ivBuffer = currentEncoding.GetBytes(
+            GetSpecifiedLengthString(iv,
+                8,
+                () => throw new ArgumentException($"Please enter a 8-bit DES iv or allow {nameof(fillType)} to Left or Right"),
+                fillType,
+                fillCharacter));
+        EncryptOrDecryptFile(fileStream, outFilePath, key, ivBuffer, isEncrypt, fillType, fillCharacter, encoding);
+    }
+
+    private static void EncryptOrDecryptFile(
+        FileStream fileStream,
+        string outFilePath,
+        string key,
+        byte[] iv,
+        bool isEncrypt,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
     {
         if (iv.Length != 8)
         {
@@ -402,6 +379,7 @@ public class DesUtils : EncryptBase
         fileStreamOut.SetLength(0);
         byte[] buffers = new byte[100];
         long readLength = 0;
+
 #pragma warning disable S2278
         using var des = DES.Create();
         des.Key = currentEncoding.GetBytes(
@@ -411,7 +389,9 @@ public class DesUtils : EncryptBase
                 fillType,
                 fillCharacter));
         des.IV = iv;
-        using var cryptoStream = new CryptoStream(fileStreamOut, des.CreateDecryptor(),
+
+        using var cryptoStream = new CryptoStream(fileStreamOut,
+            isEncrypt ? des.CreateEncryptor() : des.CreateDecryptor(),
             CryptoStreamMode.Write);
         while (readLength < fileStream.Length)
         {
