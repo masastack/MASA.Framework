@@ -74,6 +74,7 @@ public class DesUtils : EncryptBase
         Encoding? encoding = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
+#pragma warning disable S2278
         var des = DES.Create();
         des.Key = currentEncoding.GetBytes(
             GetSpecifiedLengthString(key,
@@ -103,6 +104,7 @@ public class DesUtils : EncryptBase
         }
 
         return stringBuilder.ToString();
+#pragma warning restore S2278
     }
 
     /// <summary>
@@ -159,6 +161,7 @@ public class DesUtils : EncryptBase
         Encoding? encoding = null)
     {
         using var memoryStream = new MemoryStream();
+#pragma warning disable S2278
         using var des = DES.Create();
         var currentEncoding = GetSafeEncoding(encoding);
         des.Key = currentEncoding.GetBytes(
@@ -182,7 +185,7 @@ public class DesUtils : EncryptBase
                 for (int x = 0; x < content.Length / 2; x++)
                 {
                     int i = Convert.ToInt32(content.Substring(x * 2, 2), 16);
-                    buffers[x] = (byte) i;
+                    buffers[x] = (byte)i;
                 }
             }
 
@@ -194,6 +197,7 @@ public class DesUtils : EncryptBase
 
             return currentEncoding.GetString(ms.ToArray());
         }
+#pragma warning restore S2278
     }
 
     /// <summary>
@@ -285,6 +289,8 @@ public class DesUtils : EncryptBase
         fileStreamOut.SetLength(0);
         byte[] buffers = new byte[100];
         long readLength = 0;
+
+#pragma warning disable S2278
         using var des = DES.Create();
         des.Key = currentEncoding.GetBytes(
             GetSpecifiedLengthString(key,
@@ -302,6 +308,7 @@ public class DesUtils : EncryptBase
             cryptoStream.Write(buffers, 0, length);
             readLength += length;
         }
+#pragma warning restore S2278
     }
 
     /// <summary>
@@ -395,6 +402,7 @@ public class DesUtils : EncryptBase
         fileStreamOut.SetLength(0);
         byte[] buffers = new byte[100];
         long readLength = 0;
+#pragma warning disable S2278
         using var des = DES.Create();
         des.Key = currentEncoding.GetBytes(
             GetSpecifiedLengthString(key,
@@ -411,5 +419,6 @@ public class DesUtils : EncryptBase
             cryptoStream.Write(buffers, 0, length);
             readLength += length;
         }
+#pragma warning restore S2278
     }
 }

@@ -16,7 +16,7 @@ public class CouponHandler
     {
         _logger?.LogInformation("------Send Coupon------");
 
-        var num = new Random().Next(1, 3);
+        var num = Random.Shared.Next(1, 3);
         if (num % 2 == 0)
         {
             //throw new Exception("Failed to send coupons");
@@ -30,7 +30,7 @@ public class CouponHandler
     {
         _logger?.LogInformation("------Send Coupon Notice------");
 
-        var num = new Random().Next(1, 3);
+        var num = Random.Shared.Next(1, 3);
         if (num % 2 == 0)
         {
             //throw new Exception("Failed to send coupons");
@@ -44,7 +44,7 @@ public class CouponHandler
     {
         _logger?.LogInformation("------Cancel Send Coupon Notice------");
 
-        var num = new Random().Next(1, 3);
+        var num = Random.Shared.Next(1, 3);
         if (num % 2 == 0)
         {
             //throw new Exception("Failed to cancel send coupons");
