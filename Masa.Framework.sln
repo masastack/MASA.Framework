@@ -567,6 +567,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests.csproj", "{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect", "src\Contrib\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.csproj", "{9BB5CC86-C2E8-4859-9610-50DB263605A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests", "src\Contrib\Service\Caller\Authentication\Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests.csproj", "{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2015,6 +2023,22 @@ Global
 		{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8}.Release|x64.ActiveCfg = Release|Any CPU
 		{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8}.Release|x64.Build.0 = Release|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Debug|x64.Build.0 = Debug|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3}.Release|x64.Build.0 = Release|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Debug|x64.Build.0 = Debug|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|x64.ActiveCfg = Release|Any CPU
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2294,6 +2318,10 @@ Global
 		{C0E2763D-13C8-432F-8628-42BFAF57F0FF} = {3198630F-C09B-40AE-B9A1-E79249296E48}
 		{B4E3A1D7-371D-4B0B-A140-94B4F1C23435} = {59BC0E0F-ECEF-4D40-81EC-0EE51CCF9070}
 		{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8} = {59BC0E0F-ECEF-4D40-81EC-0EE51CCF9070}
+		{FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D} = {68491FED-7441-4B58-989D-DF6F198FC91A}
+		{9BB5CC86-C2E8-4859-9610-50DB263605A3} = {FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}
+		{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A} = {FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}
+		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02} = {8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
