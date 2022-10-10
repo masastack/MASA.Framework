@@ -5,10 +5,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDaprStarter(this IServiceCollection services)
-        => services.AddDaprStarter(_ =>
-        {
-        });
+    public static IServiceCollection AddDaprStarter(this IServiceCollection services,
+        string sectionName = nameof(DaprOptions),
+        bool isDelay = true)
+        => services.AddDaprStarter(services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetSection(sectionName), isDelay);
 
     public static IServiceCollection AddDaprStarter(
         this IServiceCollection services,

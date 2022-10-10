@@ -23,7 +23,7 @@ public class DaprBackgroundService : BackgroundService
         _options = options.CurrentValue;
         options.OnChange(daprOptions =>
         {
-            daprOptions.AppPort ??= _appPortProvider.GetAppPort(daprOptions.EnableSsl);
+            daprOptions.AppPort ??= _appPortProvider.GetAppPort();
             _daprProcess.Refresh(daprOptions);
         });
         _hostApplicationLifetime = hostApplicationLifetime;
@@ -44,7 +44,7 @@ public class DaprBackgroundService : BackgroundService
         else
         {
             _logger?.LogInformation("{Name} is Starting ...", nameof(DaprBackgroundService));
-            _options.AppPort ??= _appPortProvider.GetAppPort(_options.EnableSsl);
+            _options.AppPort ??= _appPortProvider.GetAppPort();
             _daprProcess.Start(_options, stoppingToken);
         }
     }
