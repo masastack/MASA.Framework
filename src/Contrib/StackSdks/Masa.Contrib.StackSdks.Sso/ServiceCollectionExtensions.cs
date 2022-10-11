@@ -114,7 +114,7 @@ public static class ServiceCollectionExtensions
             options.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
         });
 
-        services.AddScoped<IIdentityProvider, IdentityProvider>();
+        services.AddHttpClient<IIdentityProvider, IdentityProvider>();
         return services;
     }
 
