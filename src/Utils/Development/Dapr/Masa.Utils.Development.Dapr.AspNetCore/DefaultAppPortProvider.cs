@@ -34,7 +34,7 @@ public class DefaultAppPortProvider : IAppPortProvider
         return new(false, GetAppPort(ports, false));
     }
 
-    private ushort GetAppPort(List<ValueTuple<string, int>> ports, bool enableSsl)
+    private static ushort GetAppPort(List<ValueTuple<string, int>> ports, bool enableSsl)
     {
         if (enableSsl)
         {
