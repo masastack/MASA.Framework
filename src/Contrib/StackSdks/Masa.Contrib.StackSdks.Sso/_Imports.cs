@@ -7,6 +7,7 @@ global using Mapster;
 global using Masa.BuildingBlocks.StackSdks.Sso;
 global using Masa.BuildingBlocks.StackSdks.Sso.Token;
 global using Masa.BuildingBlocks.StackSdks.Sso.User;
+global using Masa.Contrib.StackSdks.Sso;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Authentication.OpenIdConnect;

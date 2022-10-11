@@ -563,9 +563,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests", "src\Contrib\Authentication\OpenIdConnect\Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.Tests.csproj", "{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Sso", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Sso\Masa.Contrib.StackSdks.Sso.csproj", "{AA44C9A7-DCBF-4745-8620-D1EF23D8DB83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Sso", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Sso\Masa.Contrib.StackSdks.Sso.csproj", "{AA44C9A7-DCBF-4745-8620-D1EF23D8DB83}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Sso", "src\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Sso\Masa.BuildingBlocks.StackSdks.Sso.csproj", "{B86730EA-5B4D-4330-A872-8188ED8C123C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Sso.Test", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Sso.Test\Masa.Contrib.StackSdks.Sso.Test.csproj", "{A5A8A224-A096-4B48-93EB-C4C95529F3C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2023,6 +2025,14 @@ Global
 		{B86730EA-5B4D-4330-A872-8188ED8C123C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B86730EA-5B4D-4330-A872-8188ED8C123C}.Release|x64.ActiveCfg = Release|Any CPU
 		{B86730EA-5B4D-4330-A872-8188ED8C123C}.Release|x64.Build.0 = Release|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2302,6 +2312,7 @@ Global
 		{0FA5E9F9-F2D0-46A3-8EA0-809B219B88E8} = {59BC0E0F-ECEF-4D40-81EC-0EE51CCF9070}
 		{AA44C9A7-DCBF-4745-8620-D1EF23D8DB83} = {383995FF-B661-4E15-A830-640FC5BA8A1F}
 		{B86730EA-5B4D-4330-A872-8188ED8C123C} = {8A9DBB76-6618-4982-87D7-6CBD8375EB15}
+		{A5A8A224-A096-4B48-93EB-C4C95529F3C7} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

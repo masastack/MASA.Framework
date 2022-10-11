@@ -3,7 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Sso.Token;
 
-public class TokenProfile : ProtocolProfile
+public class TokenProfile
 {
     public string GrantType { get; set; } = default!;
+
+    public List<KeyValuePair<string, string>> Parameters { get; set; } = new();
 }

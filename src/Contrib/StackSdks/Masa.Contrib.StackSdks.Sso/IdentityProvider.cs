@@ -34,19 +34,14 @@ public class IdentityProvider : IIdentityProvider
     public async Task<TokenResult> RequestTokenAsync(TokenProfile tokenProfile)
     {
         var disco = await GetDiscoveryDocumentAsync();
-        if (string.IsNullOrEmpty(tokenProfile.Address))
+        var response = await _httpClient.RequestTokenAsync(new TokenRequest
         {
-            tokenProfile.Address = disco.TokenEndpoint;
-        }
-        if (string.IsNullOrEmpty(tokenProfile.ClientId))
-        {
-            tokenProfile.ClientId = _masaOpenIdConnectOptions.ClientId;
-        }
-        if (string.IsNullOrEmpty(tokenProfile.ClientSecret))
-        {
-            tokenProfile.ClientSecret = _masaOpenIdConnectOptions.ClientSecret;
-        }
-        var response = await _httpClient.RequestTokenAsync(tokenProfile.Adapt<TokenRequest>());
+            Address = disco.TokenEndpoint,
+            ClientId = _masaOpenIdConnectOptions.ClientId,
+            ClientSecret = _masaOpenIdConnectOptions.ClientSecret,
+            GrantType = tokenProfile.GrantType,
+            Parameters = tokenProfile.Parameters.Adapt<Parameters>()
+        });
         return response.Adapt<TokenResult>();
     }
 
