@@ -5,7 +5,16 @@ namespace Microsoft.Extensions.Localization;
 
 public class MasaLocalizationOptions
 {
+    public string DefaultCultureName { get; set; }
+
     public Type DefaultResourceType { get; set; }
 
     public List<LanguageInfo> Languages { get; set; }
+
+    public LocalizationResourceDictionary Resources { get; }
+
+    public MasaLocalizationOptions()
+    {
+        Resources = new ();
+    }
 }
