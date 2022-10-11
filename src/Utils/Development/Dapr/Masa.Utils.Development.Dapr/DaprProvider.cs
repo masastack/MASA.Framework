@@ -49,6 +49,12 @@ public class DaprProvider : IDaprProvider
         return daprList.Where(dapr => dapr.AppId == appId).ToList();
     }
 
+    public void DaprStop(string appId)
+    {
+        var process = System.Diagnostics.Process.Start(@$"{Const.DEFAULT_FILE_NAME}", $"stop {appId}");
+        process.WaitForExit();
+    }
+
     public bool IsExist(string appId)
     {
         return GetDaprList(appId).Any();

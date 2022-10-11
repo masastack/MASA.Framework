@@ -23,7 +23,7 @@ public class DaprBackgroundService : BackgroundService
         _options = options.CurrentValue;
         options.OnChange(daprOptions =>
         {
-            daprOptions.AppPort ??= _appPortProvider.GetAppPort(daprOptions.EnableSsl);
+            CheckCompletionAppPort(daprOptions);
             _daprProcess.Refresh(daprOptions);
         });
         _hostApplicationLifetime = hostApplicationLifetime;
@@ -44,8 +44,37 @@ public class DaprBackgroundService : BackgroundService
         else
         {
             _logger?.LogInformation("{Name} is Starting ...", nameof(DaprBackgroundService));
-            _options.AppPort ??= _appPortProvider.GetAppPort(_options.EnableSsl);
+
+            CheckCompletionAppPort(_options);
+
             _daprProcess.Start(_options, stoppingToken);
+        }
+    }
+
+    private void CheckCompletionAppPort(DaprOptions daprOptions)
+    {
+        if (daprOptions.AppPort == null)
+        {
+            CompletionAppPort(daprOptions);
+        }
+    }
+
+    private void CompletionAppPort(DaprOptions daprOptions)
+    {
+        var item = _appPortProvider.GetAppPort(daprOptions.EnableSsl);
+        if (daprOptions.EnableSsl == null)
+        {
+            daprOptions.EnableSsl = item.EnableSsl;
+            daprOptions.AppPort = item.AppPort;
+        }
+        else if (daprOptions.EnableSsl == item.EnableSsl)
+        {
+            daprOptions.AppPort = item.AppPort;
+        }
+        else
+        {
+            throw new UserFriendlyException(
+                $"The current project does not support {(daprOptions.EnableSsl is true ? "Https" : "Http")}, Dapr failed to start");
         }
     }
 
