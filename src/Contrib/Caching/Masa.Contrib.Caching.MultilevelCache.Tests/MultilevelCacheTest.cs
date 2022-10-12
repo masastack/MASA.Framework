@@ -1,8 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Reflection;
-
+#pragma warning disable CS0618
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
 [TestClass]
@@ -213,3 +212,4 @@ public class MultilevelCacheTest : TestBase
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }
 }
+#pragma warning restore CS0618

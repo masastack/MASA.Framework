@@ -8,6 +8,11 @@ namespace Masa.Contrib.Caching.MultilevelCache;
 /// </summary>
 public class MultilevelCacheOptions : MemoryCacheOptions
 {
+    public CacheOptions GlobalCacheOptions { get; set; } = new()
+    {
+        CacheKeyType = CacheKeyType.None
+    };
+
     /// <summary>
     /// Gets or sets the <see cref="SubscribeKeyType"/>.
     /// </summary>

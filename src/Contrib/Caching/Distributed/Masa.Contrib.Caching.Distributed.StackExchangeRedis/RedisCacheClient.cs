@@ -15,6 +15,7 @@ public class RedisCacheClient : RedisCacheClientBase
             if (optionName == name)
             {
                 RefreshRedisConfigurationOptions(option);
+                GlobalCacheOptions = option.GlobalCacheOptions;
             }
         });
     }
@@ -27,66 +28,84 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Get
 
-    public override T? Get<T>(string key) where T : default
+    public override T? Get<T>(
+        string key,
+        Action<CacheOptions>? action = null) where T : default
     {
         key.CheckIsNullOrWhiteSpace();
 
-        return GetAndRefresh<T>(key);
+        return GetAndRefresh<T>(FormatCacheKey<T>(key, action));
     }
 
-    public override async Task<T?> GetAsync<T>(string key) where T : default
+    public override async Task<T?> GetAsync<T>(
+        string key,
+        Action<CacheOptions>? action = null) where T : default
     {
         key.CheckIsNullOrWhiteSpace();
 
-        return await GetAndRefreshAsync<T>(key);
+        return await GetAndRefreshAsync<T>(FormatCacheKey<T>(key, action));
     }
 
-    public override IEnumerable<T?> GetList<T>(IEnumerable<string> keys) where T : default
+    public override IEnumerable<T?> GetList<T>(
+        IEnumerable<string> keys,
+        Action<CacheOptions>? action = null) where T : default
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        var list = GetList(keys, true);
+        var list = GetList(FormatCacheKeys<T>(keys, action), true);
 
         RefreshCore(list);
 
         return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
     }
 
-    public override async Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys) where T : default
+    public override async Task<IEnumerable<T?>> GetListAsync<T>(
+        IEnumerable<string> keys,
+        Action<CacheOptions>? action = null)
+        where T : default
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        var list = await GetListAsync(keys, true);
+        var list = await GetListAsync(FormatCacheKeys<T>(keys, action), true);
 
         await RefreshCoreAsync(list);
 
         return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
     }
 
-    public override T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter) where T : default
+    public override T? GetOrSet<T>(
+        string key,
+        Func<CacheEntry<T>> setter,
+        Action<CacheOptions>? action = null) where T : default
     {
         key.CheckIsNullOrWhiteSpace();
 
         ArgumentNullException.ThrowIfNull(setter);
 
+        key = FormatCacheKey<T>(key, action);
         return GetAndRefresh(key, () =>
         {
             var cacheEntry = setter();
-            Set(key, cacheEntry.Value, cacheEntry);
+            SetCore(key, cacheEntry.Value, cacheEntry);
             return cacheEntry.Value;
         });
     }
 
-    public override async Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter) where T : default
+    public override async Task<T?> GetOrSetAsync<T>(
+        string key,
+        Func<CacheEntry<T>> setter,
+        Action<CacheOptions>? action = null)
+        where T : default
     {
         key.CheckIsNullOrWhiteSpace();
 
         ArgumentNullException.ThrowIfNull(setter);
 
+        key = FormatCacheKey<T>(key, action);
         return await GetAndRefreshAsync(key, async () =>
         {
             var cacheEntry = setter();
-            await SetAsync(key, cacheEntry.Value, cacheEntry);
+            await SetCoreAsync(key, cacheEntry.Value, cacheEntry);
             return cacheEntry.Value;
         });
     }
@@ -103,6 +122,14 @@ public class RedisCacheClient : RedisCacheClientBase
         return (string[])cacheResult;
     }
 
+    public override IEnumerable<string> GetKeys<T>(
+        string keyPattern,
+        Action<CacheOptions>? action = null)
+    {
+        keyPattern = FormatCacheKey<T>(keyPattern, action);
+        return GetKeys(keyPattern);
+    }
+
     /// <summary>
     /// Only get the key, do not trigger the update expiration time policy
     /// </summary>
@@ -115,8 +142,21 @@ public class RedisCacheClient : RedisCacheClientBase
         return (string[])cacheResult;
     }
 
-    public override IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(string keyPattern) where T : default
+    public override Task<IEnumerable<string>> GetKeysAsync<T>(
+        string keyPattern,
+        Action<CacheOptions>? action = null)
     {
+        keyPattern = FormatCacheKey<T>(keyPattern, action);
+        return GetKeysAsync(keyPattern);
+    }
+
+    public override IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(
+        string keyPattern,
+        Action<CacheOptions>? action = null)
+        where T : default
+    {
+        keyPattern = FormatCacheKey<T>(keyPattern, action);
+
         var list = GetListByKeyPattern(keyPattern);
 
         RefreshCore(list);
@@ -124,8 +164,11 @@ public class RedisCacheClient : RedisCacheClientBase
         return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _)));
     }
 
-    public override async Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(string keyPattern) where T : default
+    public override async Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(
+        string keyPattern,
+        Action<CacheOptions>? action = null) where T : default
     {
+        keyPattern = FormatCacheKey<T>(keyPattern, action);
         var list = await GetListByKeyPatternAsync(keyPattern);
 
         await RefreshCoreAsync(list);
@@ -137,13 +180,22 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Set
 
-    public override void Set<T>(string key, T value, CacheEntryOptions? options = null) where T : default
+    public override void Set<T>(
+        string key,
+        T value,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
     {
         key.CheckIsNullOrWhiteSpace();
 
+        SetCore(FormatCacheKey<T>(key, action), value, options);
+    }
+
+    private void SetCore<T>(string key, T value, CacheEntryOptions? options = null)
+    {
         ArgumentNullException.ThrowIfNull(value);
 
-        var bytesValue = value.ConvertFromValue(JsonSerializerOptions);
+        var bytesValue = value.ConvertFromValue(GlobalJsonSerializerOptions);
 
         Db.ScriptEvaluate(
             Const.SET_SCRIPT,
@@ -151,13 +203,22 @@ public class RedisCacheClient : RedisCacheClientBase
             GetRedisValues(options, () => new[] { bytesValue }));
     }
 
-    public override async Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null)
+    public override async Task SetAsync<T>(
+        string key,
+        T value,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
     {
         key.CheckIsNullOrWhiteSpace();
 
+        await SetCoreAsync(FormatCacheKey<T>(key, action), value, options);
+    }
+
+    private async Task SetCoreAsync<T>(string key, T value, CacheEntryOptions? options = null)
+    {
         ArgumentNullException.ThrowIfNull(value);
 
-        var bytesValue = value.ConvertFromValue(JsonSerializerOptions);
+        var bytesValue = value.ConvertFromValue(GlobalJsonSerializerOptions);
 
         await Db.ScriptEvaluateAsync(
             Const.SET_SCRIPT,
@@ -166,28 +227,34 @@ public class RedisCacheClient : RedisCacheClientBase
         ).ConfigureAwait(false);
     }
 
-    public override void SetList<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
+    public override void SetList<T>(
+        Dictionary<string, T?> keyValues,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null) where T : default
     {
         ArgumentNullException.ThrowIfNull(keyValues);
 
-        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
+        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(GlobalJsonSerializerOptions)).ToArray();
 
         Db.ScriptEvaluate(
             Const.SET_MULTIPLE_SCRIPT,
-            keyValues.Select(item => item.Key).GetRedisKeys(),
+            FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
     }
 
-    public override async Task SetListAsync<T>(Dictionary<string, T?> keyValues, CacheEntryOptions? options = null) where T : default
+    public override async Task SetListAsync<T>(
+        Dictionary<string, T?> keyValues,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null) where T : default
     {
         ArgumentNullException.ThrowIfNull(keyValues);
 
-        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(JsonSerializerOptions)).ToArray();
+        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(GlobalJsonSerializerOptions)).ToArray();
 
         await Db.ScriptEvaluateAsync(
             Const.SET_MULTIPLE_SCRIPT,
-            keyValues.Select(item => item.Key).GetRedisKeys(),
+            FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
     }
@@ -196,25 +263,31 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Refresh
 
-    public override void Refresh(IEnumerable<string> keys)
+    public override void Refresh(params string[] keys)
     {
         var list = GetList(keys, false);
 
         RefreshCore(list);
     }
 
-    public override async Task RefreshAsync(IEnumerable<string> keys)
+    public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+        => Refresh(FormatCacheKeys<T>(keys, action).ToArray());
+
+    public override async Task RefreshAsync(params string[] keys)
     {
         var list = await GetListAsync(keys, false);
 
         await RefreshCoreAsync(list);
     }
 
+    public override Task RefreshAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+        => RefreshAsync(FormatCacheKeys<T>(keys, action).ToArray());
+
     #endregion
 
     #region Remove
 
-    public override void Remove(IEnumerable<string> keys)
+    public override void Remove(params string[] keys)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -227,12 +300,18 @@ public class RedisCacheClient : RedisCacheClientBase
         }));
     }
 
-    public override Task RemoveAsync(IEnumerable<string> keys)
+    public override void Remove<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+        => Remove(FormatCacheKeys<T>(keys, action).ToArray());
+
+    public override Task RemoveAsync(params string[] keys)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
         return Db.KeyDeleteAsync(keys.GetRedisKeys());
     }
+
+    public override Task RemoveAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+        => RemoveAsync(FormatCacheKeys<T>(keys, action).ToArray());
 
     #endregion
 
@@ -245,12 +324,18 @@ public class RedisCacheClient : RedisCacheClientBase
         return Db.KeyExists(key);
     }
 
+    public override bool Exists<T>(string key, Action<CacheOptions>? action = null)
+        => Exists(FormatCacheKey<T>(key, action));
+
     public override Task<bool> ExistsAsync(string key)
     {
         key.CheckIsNullOrWhiteSpace();
 
         return Db.KeyExistsAsync(key);
     }
+
+    public override Task<bool> ExistsAsync<T>(string key, Action<CacheOptions>? action = null)
+        => ExistsAsync(FormatCacheKey<T>(key, action));
 
     #endregion
 
@@ -259,14 +344,14 @@ public class RedisCacheClient : RedisCacheClientBase
     public override void Publish(string channel, Action<PublishOptions> options)
     {
         var publishOptions = GetAndCheckPublishOptions(channel, options);
-        var message = JsonSerializer.Serialize(publishOptions, JsonSerializerOptions);
+        var message = JsonSerializer.Serialize(publishOptions, GlobalJsonSerializerOptions);
         Subscriber.Publish(channel, message);
     }
 
     public override async Task PublishAsync(string channel, Action<PublishOptions> options)
     {
         var publishOptions = GetAndCheckPublishOptions(channel, options);
-        var message = JsonSerializer.Serialize(publishOptions, JsonSerializerOptions);
+        var message = JsonSerializer.Serialize(publishOptions, GlobalJsonSerializerOptions);
         await Subscriber.PublishAsync(channel, message);
     }
 
@@ -296,14 +381,18 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Hash
 
-    public override Task<long> HashIncrementAsync(string key, long value = 1)
+    public override Task<long> HashIncrementAsync(string key, long value = 1, Action<CacheOptions>? action = null)
     {
         if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
 
-        return Db.HashIncrementAsync(key, Const.DATA_KEY, value);
+        return Db.HashIncrementAsync(FormatCacheKey<long>(key, action), Const.DATA_KEY, value);
     }
 
-    public override async Task<long> HashDecrementAsync(string key, long value = 1, long defaultMinVal = 0L)
+    public override async Task<long> HashDecrementAsync(
+        string key,
+        long value = 1L,
+        long defaultMinVal = 0L,
+        Action<CacheOptions>? action = null)
     {
         CheckParametersByHashDecrement(value, defaultMinVal);
 
@@ -315,7 +404,7 @@ if tonumber(result) > {defaultMinVal} then
 else
     return -1
 end";
-        var result = (long)await Db.ScriptEvaluateAsync(script, new RedisKey[] { key, Const.DATA_KEY });
+        var result = (long)await Db.ScriptEvaluateAsync(script, new RedisKey[] { FormatCacheKey<long>(key, action), Const.DATA_KEY });
 
         return result;
     }
@@ -344,7 +433,15 @@ end";
         return (long?)result == 1;
     }
 
-    public override long KeyExpire(IEnumerable<string> keys, CacheEntryOptions? options = null)
+    public override bool KeyExpire<T>(
+        string key,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
+        => KeyExpire(FormatCacheKey<T>(key, action), options);
+
+    public override long KeyExpire(
+        IEnumerable<string> keys,
+        CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -357,7 +454,15 @@ end";
         return (long)result;
     }
 
-    public override async Task<bool> KeyExpireAsync(string key, CacheEntryOptions? options = null)
+    public override long KeyExpire<T>(
+        IEnumerable<string> keys,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
+        => KeyExpire(FormatCacheKeys<T>(keys, action), options);
+
+    public override async Task<bool> KeyExpireAsync(
+        string key,
+        CacheEntryOptions? options = null)
     {
         key.CheckIsNullOrWhiteSpace();
 
@@ -370,7 +475,15 @@ end";
         return (long)result == 1;
     }
 
-    public override async Task<long> KeyExpireAsync(IEnumerable<string> keys, CacheEntryOptions? options = null)
+    public override Task<bool> KeyExpireAsync<T>(
+        string key,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
+        => KeyExpireAsync(FormatCacheKey<T>(key, action), options);
+
+    public override async Task<long> KeyExpireAsync(
+        IEnumerable<string> keys,
+        CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
@@ -383,6 +496,12 @@ end";
         return (long)result;
     }
 
+    public override Task<long> KeyExpireAsync<T>(
+        IEnumerable<string> keys,
+        CacheEntryOptions? options = null,
+        Action<CacheOptions>? action = null)
+        => KeyExpireAsync(FormatCacheKeys<T>(keys, action), options);
+
     #endregion
 
     #region private methods
@@ -393,7 +512,7 @@ end";
         Db = connection.GetDatabase();
         Subscriber = connection.GetSubscriber();
 
-        CacheEntryOptions = new CacheEntryOptions
+        GlobalCacheEntryOptions = new CacheEntryOptions
         {
             AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration,
             AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow,
@@ -486,4 +605,16 @@ end";
 
     #endregion
 
+    #region Private methods
+
+    private string FormatCacheKey<T>(string key, Action<CacheOptions>? action)
+        => CacheKeyHelper.FormatCacheKey<T>(key, GetCacheOptions(action).CacheKeyType!.Value);
+
+    private IEnumerable<string> FormatCacheKeys<T>(IEnumerable<string> keys, Action<CacheOptions>? action)
+    {
+        var cacheKeyType = GetCacheOptions(action).CacheKeyType!.Value;
+        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(key, cacheKeyType));
+    }
+
+    #endregion
 }

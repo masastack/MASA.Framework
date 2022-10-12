@@ -6,21 +6,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection TryAddDistributedCacheCore(this IServiceCollection services)
-    {
-        MasaApp.TrySetServiceCollection(services);
-        services.TryAddSingleton<IDistributedCacheClientFactory, DistributedCacheClientFactoryBase>();
-        services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
-        return services;
-    }
+    public static IServiceCollection AddDistributedCache(this IServiceCollection services, Action<DistributedCacheOptions> action)
+        => services.AddDistributedCache(Microsoft.Extensions.Options.Options.DefaultName, action);
 
-    public static IServiceCollection TryAddMultilevelCacheCore(this IServiceCollection services)
+    public static IServiceCollection AddDistributedCache(this IServiceCollection services, string name, Action<DistributedCacheOptions> action)
     {
-        MasaApp.TrySetServiceCollection(services);
-        services.TryAddSingleton<IMultilevelCacheClientFactory, MultilevelCacheClientFactoryBase>();
-        services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddDistributedCacheCore(services);
+        DistributedCacheOptions options = new(services, name);
+        action.Invoke(options);
         return services;
     }
 }

@@ -3,9 +3,9 @@
 
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
+global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Enums;
+global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Models;
 global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Utils;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Enums;
-global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Models;

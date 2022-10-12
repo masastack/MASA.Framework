@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -21,7 +22,10 @@ public static class ServiceCollectionExtensions
 
     public static void AddDccClient(this IServiceCollection services, RedisConfigurationOptions options)
     {
-        services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, options);
+        services.AddDistributedCache(DEFAULT_CLIENT_NAME, distributedCacheOptions =>
+        {
+            distributedCacheOptions.UseStackExchangeRedisCache(options);
+        });
 
         services.AddSingleton<IDccClient>(serviceProvider =>
         {

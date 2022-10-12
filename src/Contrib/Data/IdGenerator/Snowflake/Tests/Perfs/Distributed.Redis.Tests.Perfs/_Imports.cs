@@ -8,3 +8,4 @@ global using BenchmarkDotNet.Jobs;
 global using BenchmarkDotNet.Validators;
 global using Masa.BuildingBlocks.Data;
 global using Microsoft.Extensions.DependencyInjection;
+global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;

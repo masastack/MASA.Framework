@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
+#pragma warning disable CS0618
 [TestClass]
 public class MultilevelCacheClientTest : TestBase
 {
@@ -23,6 +24,7 @@ public class MultilevelCacheClientTest : TestBase
             _distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions(),
             "test");
         InitializeData();
     }
@@ -33,7 +35,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual("success", _multilevelCacheClient.Get<string>("test_multilevel_cache"));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
-        _memoryCache.Remove(SubscribeHelper.FormatMemoryCacheKey<decimal>("test_multilevel_cache_2"));
+        _memoryCache.Remove(CacheKeyHelper.FormatCacheKey<decimal>("test_multilevel_cache_2", CacheKeyType.TypeName));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
@@ -353,17 +355,18 @@ public class MultilevelCacheClientTest : TestBase
             distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions(),
             "test");
 
         multilevelCacheClient.Refresh<string>(keys);
 
         Received.InOrder(() =>
         {
-            distributedCacheClient.Refresh(keys);
+            distributedCacheClient.Refresh<string>(keys);
 
             Parallel.ForEach(keys, key =>
             {
-                _memoryCache.TryGetValue(SubscribeHelper.FormatMemoryCacheKey<string>(key), out _);
+                _memoryCache.TryGetValue(CacheKeyHelper.FormatCacheKey<string>(key, CacheKeyType.TypeName), out _);
             });
         });
     }
@@ -382,17 +385,18 @@ public class MultilevelCacheClientTest : TestBase
             distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions(),
             "test");
 
         await multilevelCacheClient.RefreshAsync<string>(keys);
 
         Received.InOrder(async () =>
         {
-            await distributedCacheClient.RefreshAsync(keys);
+            await distributedCacheClient.RefreshAsync<string>(keys);
 
             Parallel.ForEach(keys, key =>
             {
-                _memoryCache.TryGetValue(SubscribeHelper.FormatMemoryCacheKey<string>(key), out _);
+                _memoryCache.TryGetValue(CacheKeyHelper.FormatCacheKey<string>(key, CacheKeyType.TypeName), out _);
             });
         });
     }
@@ -446,3 +450,4 @@ public class MultilevelCacheClientTest : TestBase
         return multilevelCacheClient;
     }
 }
+#pragma warning restore CS0618

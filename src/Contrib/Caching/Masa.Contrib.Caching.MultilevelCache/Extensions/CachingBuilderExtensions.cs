@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+public static class CachingBuilderExtensions
 {
     /// <summary>
     /// Add multi-level cache
@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         string sectionName = Const.DEFAULT_SECTION_NAME,
         bool isReset = false)
     {
-        cachingBuilder.Services.TryAddMultilevelCacheCore();
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(cachingBuilder.Services);
 
         cachingBuilder.Services.AddConfigure<MultilevelCacheOptions>(sectionName, cachingBuilder.Name);
 
@@ -55,27 +55,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(cachingBuilder);
 
-        cachingBuilder.Services.TryAddMultilevelCacheCore();
-
-        cachingBuilder.Services.Configure<MultilevelCacheFactoryOptions>(options =>
-        {
-            if (options.Options.Any(opt => opt.Name == cachingBuilder.Name))
-                return;
-
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClient>(cachingBuilder.Name, serviceProvider =>
-            {
-                var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
-                var multilevelCacheClient = new MultilevelCacheClient(
-                    new MemoryCache(multilevelCacheOptions),
-                    distributedCacheClientFactory.Create(cachingBuilder.Name),
-                    multilevelCacheOptions.CacheEntryOptions,
-                    multilevelCacheOptions.SubscribeKeyType,
-                    multilevelCacheOptions.SubscribeKeyPrefix
-                );
-                return multilevelCacheClient;
-            });
-            options.Options.Add(cacheRelationOptions);
-        });
+        cachingBuilder.Services.AddMultilevelCache(cachingBuilder.Name, multilevelCacheOptions);
 
         return cachingBuilder;
     }

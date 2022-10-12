@@ -10,6 +10,7 @@
 用例：
 
 ``` powershell
+Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis //用于提供分布式缓存能力，这里以Redis为例
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ```
 ### 入门

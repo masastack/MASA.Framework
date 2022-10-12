@@ -6,6 +6,92 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Add distributed Redis cache
+    /// </summary>
+    /// <param name="distributedOptions"></param>
+    /// <param name="redisSectionName">redis node name, not required, default: RedisConfig(Use local configuration)</param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <returns></returns>
+    public static void UseStackExchangeRedisCache(
+        this DistributedCacheOptions distributedOptions,
+        string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedOptions.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedOptions.Name);
+
+        distributedOptions.Services.Configure<DistributedCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(distributedOptions.Name, serviceProvider =>
+            {
+                var distributedCacheClient = new RedisCacheClient(
+                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
+                    distributedOptions.Name,
+                    jsonSerializerOptions
+                );
+                return distributedCacheClient;
+            });
+            options.Options.Add(cacheRelationOptions);
+        });
+    }
+
+    public static void UseStackExchangeRedisCache(
+        this DistributedCacheOptions distributedOptions,
+        Action<RedisConfigurationOptions> action,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        var redisConfigurationOptions = new RedisConfigurationOptions();
+        action.Invoke(redisConfigurationOptions);
+        distributedOptions.UseStackExchangeRedisCache(redisConfigurationOptions, jsonSerializerOptions);
+    }
+
+    public static void UseStackExchangeRedisCache(this DistributedCacheOptions distributedOptions,
+        RedisConfigurationOptions redisConfigurationOptions,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedOptions.Services.Configure<RedisConfigurationOptions>(distributedOptions.Name, options =>
+        {
+            options.AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration;
+            options.AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow;
+            options.SlidingExpiration = redisConfigurationOptions.SlidingExpiration;
+            options.Servers = redisConfigurationOptions.Servers;
+            options.AbortOnConnectFail = redisConfigurationOptions.AbortOnConnectFail;
+            options.AllowAdmin = redisConfigurationOptions.AllowAdmin;
+            options.ClientName = redisConfigurationOptions.ClientName;
+            options.ChannelPrefix = redisConfigurationOptions.ChannelPrefix;
+            options.ConnectRetry = redisConfigurationOptions.ConnectRetry;
+            options.ConnectTimeout = redisConfigurationOptions.ConnectTimeout;
+            options.DefaultDatabase = redisConfigurationOptions.DefaultDatabase;
+            options.Password = redisConfigurationOptions.Password;
+            options.Proxy = redisConfigurationOptions.Proxy;
+            options.Ssl = redisConfigurationOptions.Ssl;
+            options.SyncTimeout = redisConfigurationOptions.SyncTimeout;
+        });
+
+        distributedOptions.Services.Configure<DistributedCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(distributedOptions.Name, _ =>
+            {
+                var distributedCacheClient = new RedisCacheClient(
+                    redisConfigurationOptions,
+                    jsonSerializerOptions
+                );
+                return distributedCacheClient;
+            });
+            options.Options.Add(cacheRelationOptions);
+        });
+    }
+
+    #region Obsolete
+
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         Action<RedisConfigurationOptions> action)
@@ -17,6 +103,8 @@ public static class ServiceCollectionExtensions
             redisConfigurationOptions);
     }
 
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(this IServiceCollection services,
         RedisConfigurationOptions redisConfigurationOptions)
         => services.AddStackExchangeRedisCache(
@@ -28,6 +116,8 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <returns></returns>
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(this IServiceCollection services)
         => services.AddStackExchangeRedisCache(Microsoft.Extensions.Options.Options.DefaultName);
 
@@ -39,36 +129,21 @@ public static class ServiceCollectionExtensions
     /// <param name="redisSectionName">redis node name, not required, default: RedisConfig(Use local configuration)</param>
     /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.TryAddDistributedCacheCore();
-
-        services.AddConfigure<RedisConfigurationOptions>(redisSectionName, name);
-
-        services.Configure<DistributedCacheFactoryOptions>(options =>
-        {
-            if (options.Options.Any(opt => opt.Name == name))
-                return;
-
-            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(name, serviceProvider =>
-            {
-                var distributedCacheClient = new RedisCacheClient(
-                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
-                    name,
-                    jsonSerializerOptions
-                );
-                return distributedCacheClient;
-            });
-            options.Options.Add(cacheRelationOptions);
-        });
-
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddDistributedCacheCore(services);
+        new DistributedCacheOptions(services, name).UseStackExchangeRedisCache(redisSectionName, jsonSerializerOptions);
         return new CachingBuilder(services, name);
     }
 
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
@@ -83,13 +158,15 @@ public static class ServiceCollectionExtensions
             jsonSerializerOptions);
     }
 
+    [Obsolete(
+        "AddStackExchangeRedisCache has expired, please use services.AddDistributedCache(options => options.UseStackExchangeRedisCache()) or services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddStackExchangeRedisCache(
         this IServiceCollection services,
         string name,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        services.TryAddDistributedCacheCore();
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddDistributedCacheCore(services);
 
         services.Configure<RedisConfigurationOptions>(name, options =>
         {
@@ -128,4 +205,7 @@ public static class ServiceCollectionExtensions
 
         return new CachingBuilder(services, name);
     }
+
+    #endregion
+
 }

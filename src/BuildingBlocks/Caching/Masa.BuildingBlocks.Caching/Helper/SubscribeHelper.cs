@@ -6,30 +6,6 @@ namespace Masa.BuildingBlocks.Caching;
 public static class SubscribeHelper
 {
     /// <summary>
-    /// Formats the memory cache key.
-    /// </summary>
-    /// <param name="key">The key.</param>
-    /// <returns>A string.</returns>
-    public static string FormatMemoryCacheKey<T>(string key)
-    {
-        var type = typeof(T);
-        if (type.IsGenericType)
-        {
-            var dictType = typeof(Dictionary<,>);
-            if (type.GetGenericTypeDefinition() == dictType)
-                key += type.Name + "[" + type.GetGenericArguments()[1].Name + "]";
-            else
-                key += type.Name + "[" + type.GetGenericArguments()[0].Name + "]";
-        }
-        else
-        {
-            key += typeof(T).Name;
-        }
-
-        return key;
-    }
-
-    /// <summary>
     /// Formats the subscribe channel.
     /// </summary>
     /// <param name="key">The key.</param>

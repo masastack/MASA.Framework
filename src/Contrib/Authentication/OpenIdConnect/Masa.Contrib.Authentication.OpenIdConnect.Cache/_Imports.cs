@@ -11,7 +11,5 @@ global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Models;
 global using Masa.Contrib.Authentication.OpenIdConnect.Cache.Utils;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
-global using Masa.Contrib.Caching.MultilevelCache;
 global using Microsoft.Extensions.Configuration;
-global using Microsoft.Extensions.DependencyInjection;
 global using System.Diagnostics.CodeAnalysis;

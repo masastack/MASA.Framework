@@ -5,8 +5,6 @@ namespace Masa.Contrib.Caching.MultilevelCache;
 
 internal class SetOptions<T>
 {
-    public string? Key { get; set; }
-
     public string? FormattedKey { get; set; }
 
     public T? Value { get; set; }

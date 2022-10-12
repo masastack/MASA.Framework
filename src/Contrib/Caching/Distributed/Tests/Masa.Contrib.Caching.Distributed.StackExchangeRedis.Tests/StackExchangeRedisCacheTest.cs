@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
+#pragma warning disable CS0618
 [TestClass]
 public class StackExchangeRedisCacheTest : TestBase
 {
@@ -10,14 +11,15 @@ public class StackExchangeRedisCacheTest : TestBase
     public void TestAddStackExchangeRedisCache()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(option =>
+        services.AddDistributedCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(option =>
         {
             option.DefaultDatabase = 1;
             option.Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST)
             };
-        });
+        }));
+
         var serviceProvider = services.BuildServiceProvider();
 
         var options = serviceProvider.GetService<IOptions<RedisConfigurationOptions>>();
@@ -184,3 +186,4 @@ public class StackExchangeRedisCacheTest : TestBase
         Assert.AreEqual("test", cachingBuilder.Name);
     }
 }
+#pragma warning restore CS0618

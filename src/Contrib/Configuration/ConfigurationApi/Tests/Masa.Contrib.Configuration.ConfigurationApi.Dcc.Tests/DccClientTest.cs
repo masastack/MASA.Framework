@@ -304,7 +304,7 @@ addresses:
         string key = "DccObjectName";
         bool isExecute = false;
         _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!))
+            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!, null))
             .ReturnsAsync(raw)
             .Callback((string value, Action<string> action) =>
             {
@@ -347,7 +347,7 @@ addresses:
             ConfigFormat = ConfigFormats.Json
         }, _jsonSerializerOptions);
         _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!))
+            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!, null))
             .ReturnsAsync(raw)
             .Callback((string str, Action<string> action) =>
             {
@@ -392,7 +392,7 @@ addresses:
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()))
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
             .ReturnsAsync(() => new PublishRelease()
             {
                 ConfigFormat = ConfigFormats.Properties,
@@ -436,7 +436,7 @@ addresses:
                 Value = Guid.NewGuid().ToString(),
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()))
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
             .ReturnsAsync(() => new PublishRelease
             {
                 ConfigFormat = ConfigFormats.Properties,
@@ -458,16 +458,18 @@ addresses:
         var brand = new Brands("Microsoft");
         var newBrand = new Brands("Microsoft2");
 
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
-        {
-            ConfigFormat = ConfigFormats.Json,
-            Content = brand.Serialize(_jsonSerializerOptions)
-        }.Serialize(_jsonSerializerOptions)).Callback((string str, Action<string> action) =>
-        {
-            _trigger.Formats = ConfigFormats.Json;
-            _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
-            _trigger.Action = action;
-        });
+        _client
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result).Returns(()
+                => new PublishRelease()
+                {
+                    ConfigFormat = ConfigFormats.Json,
+                    Content = brand.Serialize(_jsonSerializerOptions)
+                }.Serialize(_jsonSerializerOptions)).Callback((string str, Action<string> action) =>
+            {
+                _trigger.Formats = ConfigFormats.Json;
+                _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
+                _trigger.Action = action;
+            });
         var client = new ConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
         {
@@ -496,7 +498,8 @@ addresses:
             ConfigFormat = ConfigFormats.Text
         });
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -536,7 +539,8 @@ addresses:
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Json
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -573,7 +577,7 @@ addresses:
             Content = "Test",
             ConfigFormat = ConfigFormats.Text
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -609,7 +613,8 @@ addresses:
             Content = null,
             ConfigFormat = ConfigFormats.Text
         });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -651,11 +656,13 @@ addresses:
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => new PublishRelease()
-        {
-            ConfigFormat = ConfigFormats.Properties,
-            Content = brand.Serialize(_jsonSerializerOptions)
-        }.Serialize(_jsonSerializerOptions)).Verifiable();
+        _client
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            .Returns(() => new PublishRelease()
+            {
+                ConfigFormat = ConfigFormats.Properties,
+                Content = brand.Serialize(_jsonSerializerOptions)
+            }.Serialize(_jsonSerializerOptions)).Verifiable();
         var client = new ConfigurationApiClient(
             _serviceProvider,
             _jsonSerializerOptions,
