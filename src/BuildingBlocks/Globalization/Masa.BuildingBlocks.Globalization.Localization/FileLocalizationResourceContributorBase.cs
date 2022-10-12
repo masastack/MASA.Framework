@@ -9,25 +9,24 @@ public abstract class FileLocalizationResourceContributorBase : LocalizationReso
     private readonly ILogger<FileLocalizationResourceContributorBase>? _logger;
 
     public FileLocalizationResourceContributorBase(Type resourceType,
-        string cultureName,
         string filePath,
-        ILoggerFactory? loggerFactory) : base(resourceType, cultureName)
+        ILoggerFactory? loggerFactory) : base(resourceType)
     {
         _filePath = filePath;
         _logger = loggerFactory?.CreateLogger<FileLocalizationResourceContributorBase>();
     }
 
-    protected override Dictionary<string, LocalizedString> GetDictionaries()
+    protected override (string CultureName, Dictionary<string, LocalizedString> Dictionary) GetCultureNameAndDictionaries()
     {
         var fileContent = File.ReadAllText(_filePath);
         if (string.IsNullOrWhiteSpace(fileContent))
         {
             _logger?.LogWarning("File content is empty, the file is {file}", _filePath);
-            return new Dictionary<string, LocalizedString>();
+            return new("", new Dictionary<string, LocalizedString>());
         }
 
-        return ParseResourceFromFileContent(fileContent);
+        return ParseCultureNameAndResourceFromFileContent(fileContent);
     }
 
-    protected abstract Dictionary<string, LocalizedString> ParseResourceFromFileContent(string fileContent);
+    protected abstract (string CultureName, Dictionary<string, LocalizedString> Dictionary) ParseCultureNameAndResourceFromFileContent(string fileContent);
 }

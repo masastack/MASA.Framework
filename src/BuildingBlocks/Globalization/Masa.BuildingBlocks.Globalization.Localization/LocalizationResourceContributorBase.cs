@@ -9,21 +9,25 @@ public abstract class LocalizationResourceContributorBase : ILocalizationResourc
 
     public Type ResourceType { get; }
 
-    public string CultureName { get; }
+    public string CultureName { get; protected set; }
 
-    public LocalizationResourceContributorBase(Type resourceType, string cultureName)
+    public LocalizationResourceContributorBase(Type resourceType)
     {
         ResourceType = resourceType;
-        CultureName = cultureName;
     }
 
     public LocalizedString? GetOrNull(string name)
     {
-        _dictionaries ??= GetDictionaries();
+        if (_dictionaries == null)
+        {
+            var item = GetCultureNameAndDictionaries();
+            CultureName = item.CultureName;
+            _dictionaries = item.Dictionary;
+        }
         return GetOrNull(_dictionaries, name);
     }
 
-    protected abstract Dictionary<string, LocalizedString> GetDictionaries();
+    protected abstract (string CultureName, Dictionary<string, LocalizedString> Dictionary) GetCultureNameAndDictionaries();
 
     protected virtual LocalizedString? GetOrNull(Dictionary<string, LocalizedString> dictionaries, string name)
     {

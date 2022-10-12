@@ -9,15 +9,15 @@ public class JsonFileLocalizationResourceContributor : FileLocalizationResourceC
 
     public JsonFileLocalizationResourceContributor(
         Type resourceType,
-        string cultureName,
         string filePath,
         JsonSerializerOptions deserializeOptions,
-        ILoggerFactory? loggerFactory) : base(resourceType, cultureName, filePath, loggerFactory)
+        ILoggerFactory? loggerFactory) : base(resourceType, filePath, loggerFactory)
     {
         _deserializeOptions = deserializeOptions;
     }
 
-    protected override Dictionary<string, LocalizedString> ParseResourceFromFileContent(string fileContent)
+    protected override (string CultureName, Dictionary<string, LocalizedString> Dictionary) ParseCultureNameAndResourceFromFileContent(
+        string fileContent)
     {
         JsonLocalizationFile jsonFile;
         try
@@ -60,6 +60,6 @@ public class JsonFileLocalizationResourceContributor : FileLocalizationResourceC
                 string.Join(", ", duplicateNames));
         }
 
-        return dictionary;
+        return new(jsonFile.Culture, dictionary);
     }
 }

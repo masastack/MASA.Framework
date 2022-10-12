@@ -3,4 +3,7 @@
 
 global using Microsoft.Extensions.Localization;
 global using Microsoft.Extensions.Logging;
+global using System.Reflection;
 global using System.Text.Json;
+global using Masa.BuildingBlocks.Data;
+global using Microsoft.Extensions.DependencyInjection;

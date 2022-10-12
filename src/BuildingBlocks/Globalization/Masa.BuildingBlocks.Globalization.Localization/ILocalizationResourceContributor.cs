@@ -8,6 +8,8 @@ namespace Microsoft.Extensions.Localization;
 /// </summary>
 public interface ILocalizationResourceContributor
 {
+    string CultureName { get; }
+
     LocalizedString? GetOrNull(string name);
 
     void ResetResource();

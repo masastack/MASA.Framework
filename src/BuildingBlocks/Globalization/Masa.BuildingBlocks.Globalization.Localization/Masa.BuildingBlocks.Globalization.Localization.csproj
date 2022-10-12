@@ -10,4 +10,8 @@
       <PackageReference Include="Microsoft.Extensions.Localization" Version="$(MicrosoftPackageVersion)" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    </ItemGroup>
+
 </Project>

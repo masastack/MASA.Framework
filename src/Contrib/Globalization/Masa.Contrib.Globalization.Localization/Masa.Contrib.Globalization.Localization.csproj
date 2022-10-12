@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.Localization\Masa.BuildingBlocks.Globalization.Localization.csproj" />
+      <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
       <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
     </ItemGroup>
 

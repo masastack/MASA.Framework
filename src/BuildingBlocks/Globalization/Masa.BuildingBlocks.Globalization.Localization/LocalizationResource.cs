@@ -5,25 +5,24 @@ namespace Microsoft.Extensions.Localization;
 
 public class LocalizationResource
 {
-    /// <summary>
-    /// 语言、内容集合
-    /// </summary>
-    private Dictionary<string, ILocalizationResourceContributor> _dictionary { get; }
+    private List<ILocalizationResourceContributor> _dictionary { get; }
 
     public Type ResourceType { get; }
 
     public string? DefaultCultureName { get; }
-
-    // /// <summary>
-    // /// 用于获取父类的key、value
-    // /// </summary>
-    // public List<Type> BaseResourceTypes { get; set; }
 
     public LocalizationResource(Type resourceType, string? defaultCultureName)
     {
         _dictionary = new();
         ResourceType = resourceType;
         DefaultCultureName = defaultCultureName;
-        // BaseResourceTypes = new();
+    }
+
+    public void AddContributor(ILocalizationResourceContributor localizationResourceContributor)
+    {
+        if (_dictionary.Any(d => d.CultureName.Equals(localizationResourceContributor.CultureName, StringComparison.OrdinalIgnoreCase)))
+            throw new Exception($"The {localizationResourceContributor.CultureName} already exists with {ResourceType.FullName}");
+
+        _dictionary.Add(localizationResourceContributor);
     }
 }
