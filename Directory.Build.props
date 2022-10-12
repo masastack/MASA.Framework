@@ -26,7 +26,7 @@
     <Authors>masastack</Authors>
     <Copyright>© masastack Corporation. All rights reserved.</Copyright>
     <PackageIconUrl>packageIcon.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/masastack/MASA.Contrib</RepositoryUrl>
+    <RepositoryUrl>https://github.com/masastack/MASA.Framework</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryRoot>$(MSBuildThisFileDirectory)</RepositoryRoot>
