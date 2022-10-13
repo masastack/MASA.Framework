@@ -30,7 +30,7 @@ public class ExceptionHandlerMiddleware
         }
         catch (Exception exception)
         {
-            var masaExceptionContext = new MasaExceptionContext(exception, httpContext);
+            var masaExceptionContext = new MasaExceptionContext(exception, httpContext, serviceProvider);
             if (_options.ExceptionHandler != null)
             {
                 _options.ExceptionHandler.Invoke(masaExceptionContext);

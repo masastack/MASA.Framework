@@ -8,6 +8,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters;
 /// </summary>
 public class MvcGlobalExcetionFilter : IExceptionFilter
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
@@ -18,6 +19,7 @@ public class MvcGlobalExcetionFilter : IExceptionFilter
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
         ILogger<MvcGlobalExcetionFilter>? logger = null)
     {
+        _serviceProvider = serviceProvider;
         _options = options.Value;
         _masaExceptionHandler = ExceptionHandlerExtensions.GetMasaExceptionHandler(serviceProvider, _options.MasaExceptionHandlerType);
         _logRelationOptions = logRelationOptions.Value;
@@ -26,7 +28,7 @@ public class MvcGlobalExcetionFilter : IExceptionFilter
 
     public void OnException(ExceptionContext context)
     {
-        var masaExceptionContext = new MasaExceptionContext(context.Exception, context.HttpContext);
+        var masaExceptionContext = new MasaExceptionContext(context.Exception, context.HttpContext, _serviceProvider);
         if (_options.ExceptionHandler != null)
         {
             _options.ExceptionHandler.Invoke(masaExceptionContext);
