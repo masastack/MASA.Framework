@@ -198,17 +198,6 @@ public static class MasaConfigurationExtensions
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
     }
 
-    private static ICachingBuilder AddSharedMasaMemoryCache(this ICachingBuilder builder, string subscribeKeyPrefix)
-    {
-        builder.AddMultilevelCache(new MultilevelCacheOptions()
-        {
-            SubscribeKeyType = SubscribeKeyType.SpecificPrefix,
-            SubscribeKeyPrefix = subscribeKeyPrefix
-        });
-
-        return builder;
-    }
-
     private sealed class DccConfigurationProvider
     {
 

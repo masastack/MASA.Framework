@@ -6,6 +6,7 @@ using SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
 
+#pragma warning disable CS0618
 [TestClass]
 public class IdGeneratorTest
 {
@@ -435,3 +436,4 @@ public class IdGeneratorTest
     #endregion
 
 }
+#pragma warning restore CS0618

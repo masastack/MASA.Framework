@@ -19,29 +19,7 @@ public static class ServiceCollectionExtensions
         string sectionName = Const.DEFAULT_SECTION_NAME,
         bool isReset = false)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services);
-
-        services.AddConfigure<MultilevelCacheOptions>(sectionName, name);
-
-        services.Configure<MultilevelCacheFactoryOptions>(options =>
-        {
-            if (options.Options.Any(opt => opt.Name == name))
-                return;
-
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClient>(name, serviceProvider =>
-            {
-                var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
-                var multilevelCacheClient = new MultilevelCacheClient(
-                    name,
-                    isReset,
-                    serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheOptions>>(),
-                    distributedCacheClientFactory.Create(name)
-                );
-                return multilevelCacheClient;
-            });
-            options.Options.Add(cacheRelationOptions);
-        });
-
+        services.AddMultilevelCache(name, sectionName, isReset);
         var distributedCacheOptions = new DistributedCacheOptions(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
         return services;
@@ -59,7 +37,6 @@ public static class ServiceCollectionExtensions
         Action<DistributedCacheOptions> distributedCacheAction,
         Action<MultilevelCacheOptions>? action)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services);
         MultilevelCacheOptions multilevelCacheOptions = new();
         action?.Invoke(multilevelCacheOptions);
         services.AddMultilevelCache(name, multilevelCacheOptions);
@@ -68,13 +45,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    #region private methods
+    #region internal methods
 
-    internal static void AddMultilevelCache(this IServiceCollection service, string name, MultilevelCacheOptions multilevelCacheOptions)
+    internal static void AddMultilevelCache(this IServiceCollection services, string name, MultilevelCacheOptions multilevelCacheOptions)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(service);
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
 
-        service.Configure<MultilevelCacheFactoryOptions>(options =>
+        services.Configure<MultilevelCacheFactoryOptions>(options =>
         {
             if (options.Options.Any(opt => opt.Name == name))
                 return;
@@ -88,7 +65,35 @@ public static class ServiceCollectionExtensions
                     multilevelCacheOptions.CacheEntryOptions,
                     multilevelCacheOptions.SubscribeKeyType,
                     multilevelCacheOptions.GlobalCacheOptions,
-                    multilevelCacheOptions.SubscribeKeyPrefix
+                    multilevelCacheOptions.SubscribeKeyPrefix,
+                    serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(name)
+                );
+                return multilevelCacheClient;
+            });
+            options.Options.Add(cacheRelationOptions);
+        });
+    }
+
+    internal static void AddMultilevelCache(this IServiceCollection services, string name, string sectionName, bool isReset = false)
+    {
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
+
+        services.AddConfigure<MultilevelCacheOptions>(sectionName, name);
+
+        services.Configure<MultilevelCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClient>(name, serviceProvider =>
+            {
+                var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
+                var multilevelCacheClient = new MultilevelCacheClient(
+                    name,
+                    isReset,
+                    serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheOptions>>(),
+                    distributedCacheClientFactory.Create(name),
+                    serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(name)
                 );
                 return multilevelCacheClient;
             });

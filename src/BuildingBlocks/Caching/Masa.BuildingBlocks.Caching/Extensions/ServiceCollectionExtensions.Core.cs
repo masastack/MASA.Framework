@@ -8,21 +8,29 @@ namespace Masa.BuildingBlocks.Caching.Extensions;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection TryAddDistributedCacheCore(IServiceCollection services)
+    public static IServiceCollection TryAddDistributedCacheCore(IServiceCollection services, string name)
     {
         MasaApp.TrySetServiceCollection(services);
         services.TryAddSingleton<IDistributedCacheClientFactory, DistributedCacheClientFactoryBase>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
+
+        services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
+        services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
+        services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
         return services;
     }
 
-    public static IServiceCollection TryAddMultilevelCacheCore(IServiceCollection services)
+    public static IServiceCollection TryAddMultilevelCacheCore(IServiceCollection services, string name)
     {
         MasaApp.TrySetServiceCollection(services);
         services.TryAddSingleton<IMultilevelCacheClientFactory, MultilevelCacheClientFactoryBase>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
+
+        services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
+        services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
+        services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
         return services;
     }
 }

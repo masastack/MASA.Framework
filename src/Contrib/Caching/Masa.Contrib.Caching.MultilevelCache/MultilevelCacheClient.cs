@@ -5,6 +5,7 @@ namespace Masa.Contrib.Caching.MultilevelCache;
 
 public class MultilevelCacheClient : MultilevelCacheClientBase
 {
+    private readonly ITypeAliasProvider? _typeAliasProvider;
     private IMemoryCache _memoryCache;
     private readonly IDistributedCacheClient _distributedCacheClient;
     private SubscribeKeyType _subscribeKeyType;
@@ -17,16 +18,18 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private static Action<CacheOptions> CacheOptionsAction
         => options => options.CacheKeyType = CacheKeyType.None;
 
-    protected MultilevelCacheClient(CacheEntryOptions? cacheEntryOptions)
+    protected MultilevelCacheClient(CacheEntryOptions? cacheEntryOptions, ITypeAliasProvider? typeAliasProvider = null)
     {
         DefaultCacheEntryOptions = cacheEntryOptions;
+        _typeAliasProvider = typeAliasProvider;
     }
 
     public MultilevelCacheClient(
         string name,
         bool isReset,
         IOptionsMonitor<MultilevelCacheOptions> multilevelCacheOptions,
-        IDistributedCacheClient distributedCacheClient) : this(multilevelCacheOptions.Get(name).CacheEntryOptions)
+        IDistributedCacheClient distributedCacheClient,
+        ITypeAliasProvider? typeAliasProvider = null) : this(multilevelCacheOptions.Get(name).CacheEntryOptions, typeAliasProvider)
     {
         _distributedCacheClient = distributedCacheClient;
 
@@ -57,7 +60,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         CacheEntryOptions? cacheEntryOptions,
         SubscribeKeyType subscribeKeyType,
         CacheOptions globalCacheOptions,
-        string subscribeKeyPrefix = "") : this(cacheEntryOptions)
+        string subscribeKeyPrefix = "",
+        ITypeAliasProvider? typeAliasProvider = null) : this(cacheEntryOptions, typeAliasProvider)
     {
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;
@@ -388,12 +392,18 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     #region Private methods
 
     private string FormatCacheKey<T>(string key, Action<CacheOptions>? action)
-        => CacheKeyHelper.FormatCacheKey<T>(key, GetCacheOptions(action).CacheKeyType!.Value);
+        => CacheKeyHelper.FormatCacheKey<T>(
+            key,
+            GetCacheOptions(action).CacheKeyType!.Value,
+            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName));
 
     private IEnumerable<string> FormatCacheKeys<T>(IEnumerable<string> keys, Action<CacheOptions>? action)
     {
         var cacheKeyType = GetCacheOptions(action).CacheKeyType!.Value;
-        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(key, cacheKeyType));
+        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(
+            key,
+            cacheKeyType,
+            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)));
     }
 
     protected CacheOptions GetCacheOptions(Action<CacheOptions>? action)

@@ -5,10 +5,13 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class RedisCacheClient : RedisCacheClientBase
 {
+    private readonly ITypeAliasProvider? _typeAliasProvider;
+
     public RedisCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
         string name,
-        JsonSerializerOptions? jsonSerializerOptions = null)
-        : this(redisConfigurationOptions.Get(name), jsonSerializerOptions)
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        ITypeAliasProvider? typeAliasProvider = null)
+        : this(redisConfigurationOptions.Get(name), jsonSerializerOptions, typeAliasProvider)
     {
         redisConfigurationOptions.OnChange((option, optionName) =>
         {
@@ -21,9 +24,11 @@ public class RedisCacheClient : RedisCacheClientBase
     }
 
     public RedisCacheClient(RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions = null)
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        ITypeAliasProvider? typeAliasProvider = null)
         : base(redisConfigurationOptions, jsonSerializerOptions)
     {
+        _typeAliasProvider = typeAliasProvider;
     }
 
     #region Get
@@ -504,7 +509,7 @@ end";
 
     #endregion
 
-    #region private methods
+    #region Private methods
 
     private void RefreshRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
     {
@@ -603,18 +608,21 @@ end";
 
     #endregion
 
-    #endregion
-
-    #region Private methods
-
     private string FormatCacheKey<T>(string key, Action<CacheOptions>? action)
-        => CacheKeyHelper.FormatCacheKey<T>(key, GetCacheOptions(action).CacheKeyType!.Value);
+        => CacheKeyHelper.FormatCacheKey<T>(key,
+            GetCacheOptions(action).CacheKeyType!.Value,
+            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName));
 
     private IEnumerable<string> FormatCacheKeys<T>(IEnumerable<string> keys, Action<CacheOptions>? action)
     {
         var cacheKeyType = GetCacheOptions(action).CacheKeyType!.Value;
-        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(key, cacheKeyType));
+        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(
+            key,
+            cacheKeyType,
+            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)
+        ));
     }
 
     #endregion
+
 }

@@ -9,5 +9,14 @@ public enum CacheKeyType
     /// Keep it the same, use the key directly
     /// </summary>
     None = 1,
-    TypeName = 2
+
+    /// <summary>
+    /// Type name and key combination, Format: ${TypeName}.{key}
+    /// </summary>
+    TypeName,
+
+    /// <summary>
+    /// Type Alias and key combination, Format: ${TypeAliasName}{:}{key}
+    /// </summary>
+    TypeAlias
 }

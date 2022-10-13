@@ -5,14 +5,21 @@ namespace Masa.BuildingBlocks.Caching;
 
 public static class CacheKeyHelper
 {
-    public static string FormatCacheKey<T>(string key, CacheKeyType cacheKeyType)
+    public static string FormatCacheKey<T>(string key, CacheKeyType cacheKeyType, Func<string, string>? typeAliasFunc = null)
     {
         switch (cacheKeyType)
         {
             case CacheKeyType.None:
                 return key;
             case CacheKeyType.TypeName:
-                return GetTypeName<T>() + key;
+                return $"{GetTypeName<T>()}.{key}";
+            case CacheKeyType.TypeAlias:
+                if (typeAliasFunc == null)
+                    throw new NotImplementedException();
+
+                var typeName = GetTypeName<T>();
+                return typeAliasFunc.Invoke(typeName);
+
             default:
                 throw new NotImplementedException();
         }
@@ -29,7 +36,7 @@ public static class CacheKeyHelper
 
             return type.Name + "[" + type.GetGenericArguments()[0].Name + "]";
         }
-        
+
         return typeof(T).Name;
     }
 }

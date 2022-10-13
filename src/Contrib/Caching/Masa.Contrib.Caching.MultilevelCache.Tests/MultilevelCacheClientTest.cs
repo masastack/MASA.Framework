@@ -24,7 +24,10 @@ public class MultilevelCacheClientTest : TestBase
             _distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
-            new CacheOptions(),
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
         InitializeData();
     }
@@ -355,7 +358,10 @@ public class MultilevelCacheClientTest : TestBase
             distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
-            new CacheOptions(),
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
 
         multilevelCacheClient.Refresh<string>(keys);
@@ -385,7 +391,10 @@ public class MultilevelCacheClientTest : TestBase
             distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
-            new CacheOptions(),
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
 
         await multilevelCacheClient.RefreshAsync<string>(keys);
