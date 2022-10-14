@@ -306,7 +306,7 @@ addresses:
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!, null))
             .ReturnsAsync(raw)
-            .Callback((string value, Action<string> action) =>
+            .Callback((string value, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Text;
                 _trigger.Content = JsonSerializer.Serialize(new PublishRelease()
@@ -347,9 +347,9 @@ addresses:
             ConfigFormat = ConfigFormats.Json
         }, _jsonSerializerOptions);
         _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!, null))
+            .Setup(c => c.GetAsync<string>(key, It.IsAny<Action<string>>()!, null))
             .ReturnsAsync(raw)
-            .Callback((string str, Action<string> action) =>
+            .Callback((string str, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
                 _trigger.Content = JsonSerializer.Serialize(new PublishRelease()
@@ -398,7 +398,7 @@ addresses:
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
             }.Serialize(_jsonSerializerOptions))
-            .Callback((string value, Action<string> action) =>
+            .Callback((string value, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Properties;
                 _trigger.Content = new List<Property>()
@@ -459,17 +459,20 @@ addresses:
         var newBrand = new Brands("Microsoft2");
 
         _client
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result).Returns(()
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
+            .ReturnsAsync(()
                 => new PublishRelease()
                 {
                     ConfigFormat = ConfigFormats.Json,
                     Content = brand.Serialize(_jsonSerializerOptions)
-                }.Serialize(_jsonSerializerOptions)).Callback((string str, Action<string> action) =>
+                }.Serialize(_jsonSerializerOptions))
+            .Callback((string str, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
                 _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
                 _trigger.Action = action;
             });
+
         var client = new ConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
         {

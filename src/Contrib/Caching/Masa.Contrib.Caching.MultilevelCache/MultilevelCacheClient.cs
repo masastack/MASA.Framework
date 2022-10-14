@@ -155,7 +155,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            value = await _distributedCacheClient.GetAsync<T>(key);
+            value = await _distributedCacheClient.GetAsync<T>(formattedKey, CacheOptionsAction);
 
             SetCore(new SetOptions<T>()
             {
@@ -181,7 +181,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         List<T?> awaitValues = new();
         if (awaitCacheKeyItems.Count > 0)
         {
-            awaitValues = _distributedCacheClient.GetList<T>(awaitCacheKeyItems.Select(x => x.Key)).ToList();
+            awaitValues = _distributedCacheClient.GetList<T>(awaitCacheKeyItems.Select(x => x.Key), CacheOptionsAction).ToList();
         }
 
         return FillData(list, awaitCacheKeyItems, awaitValues);
@@ -195,7 +195,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         List<T?> awaitValues = new();
         if (awaitCacheKeyItems.Count > 0)
         {
-            awaitValues = (await _distributedCacheClient.GetListAsync<T>(awaitCacheKeyItems.Select(x => x.Key))).ToList();
+            awaitValues = (await _distributedCacheClient.GetListAsync<T>(awaitCacheKeyItems.Select(x => x.Key), CacheOptionsAction)).ToList();
         }
 
         return FillData(list, awaitCacheKeyItems, awaitValues);
@@ -240,7 +240,9 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            value = await _distributedCacheClient.GetOrSetAsync(formattedKey, combinedCacheEntry.DistributedCacheEntryFunc,
+            value = await _distributedCacheClient.GetOrSetAsync(
+                formattedKey,
+                combinedCacheEntry.DistributedCacheEntryFunc,
                 CacheOptionsAction);
 
             SetCore(new SetOptions<T>()
@@ -266,7 +268,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         var formattedKey = FormatCacheKey<T>(key, action);
 
-        _distributedCacheClient.Set(formattedKey, value, options?.DistributedCacheEntryOptions);
+        _distributedCacheClient.Set(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction);
 
         SetCore(new SetOptions<T>()
         {
@@ -284,7 +286,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         var formattedKey = FormatCacheKey<T>(key, action);
 
-        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions);
+        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction);
 
         SetCore(new SetOptions<T>()
         {
@@ -349,24 +351,22 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
     public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
     {
-        _distributedCacheClient.Refresh<T>(keys, action);
-
-        Parallel.ForEach(keys, key =>
+        var formattedKeys = FormatCacheKeys<T>(keys, action);
+        Parallel.ForEach(formattedKeys, key =>
         {
-            var formattedKey = FormatCacheKey<T>(key, action);
-            _memoryCache.TryGetValue(formattedKey, out _);
+            _memoryCache.TryGetValue(key, out _);
         });
+        _distributedCacheClient.Refresh<T>(formattedKeys, CacheOptionsAction);
     }
 
     public override async Task RefreshAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
     {
-        await _distributedCacheClient.RefreshAsync<T>(keys, action);
-
-        Parallel.ForEach(keys, key =>
+        var formattedKeys = FormatCacheKeys<T>(keys, action);
+        Parallel.ForEach(formattedKeys, key =>
         {
-            var formattedKey = FormatCacheKey<T>(key, action);
-            _memoryCache.TryGetValue(formattedKey, out _);
+            _memoryCache.TryGetValue(key, out _);
         });
+        await _distributedCacheClient.RefreshAsync<T>(formattedKeys, CacheOptionsAction);
     }
 
     #endregion

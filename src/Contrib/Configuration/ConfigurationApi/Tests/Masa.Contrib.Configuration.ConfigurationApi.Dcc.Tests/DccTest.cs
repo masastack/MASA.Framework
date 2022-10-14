@@ -273,15 +273,25 @@ public class DccTest
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");
         string key = "Development-Default-WebApplication1-Brand".ToLower();
-        builder.Services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, new RedisConfigurationOptions()
-        {
-            Servers = new List<RedisServerOptions>()
+        builder.Services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(new RedisConfigurationOptions()
             {
-                new("localhost", 6379)
+                Servers = new List<RedisServerOptions>()
+                {
+                    new("localhost", 6379)
+                }
+            }),
+            new MultilevelCacheOptions()
+            {
+                GlobalCacheOptions = new CacheOptions()
+                {
+                    CacheKeyType = CacheKeyType.None
+                }
             }
-        }).AddMultilevelCache(isReset: true);
+        );
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
         string value = new PublishRelease()
         {
             Content = brand.Serialize(_jsonSerializerOptions),

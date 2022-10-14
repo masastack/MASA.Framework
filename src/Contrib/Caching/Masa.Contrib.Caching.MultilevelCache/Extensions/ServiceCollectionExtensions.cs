@@ -91,7 +91,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string name,
         Action<DistributedCacheOptions> distributedCacheAction,
-        Action<TypeAliasOptions>? typeAliasOptionsAction = null,
+        Action<TypeAliasOptions>? typeAliasOptionsAction,
         Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null)
     {
         MultilevelCacheOptions multilevelCacheOptions = new();

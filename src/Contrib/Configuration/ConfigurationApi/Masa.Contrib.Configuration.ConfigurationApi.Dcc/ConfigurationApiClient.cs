@@ -76,7 +76,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 throw new FormatException(result.Raw);
             }
 
-            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(nameof(configObject));
+            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ??
+                throw new ArgumentException(nameof(configObject));
         })).Value;
 
         return (T)value;
