@@ -9,5 +9,6 @@ global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using Moq;
 global using NSubstitute;
 global using System.Reflection;

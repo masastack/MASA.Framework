@@ -195,7 +195,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         List<T?> awaitValues = new();
         if (awaitCacheKeyItems.Count > 0)
         {
-            awaitValues = (await _distributedCacheClient.GetListAsync<T>(awaitCacheKeyItems.Select(x => x.Key), CacheOptionsAction)).ToList();
+            awaitValues =
+                (await _distributedCacheClient.GetListAsync<T>(awaitCacheKeyItems.Select(x => x.Key), CacheOptionsAction)).ToList();
         }
 
         return FillData(list, awaitCacheKeyItems, awaitValues);

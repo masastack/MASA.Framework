@@ -351,11 +351,14 @@ public class MultilevelCacheClientTest : TestBase
         {
             "test20"
         };
-        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        Mock<IMemoryCache> memoryCache = new();
+        Mock<IDistributedCacheClient> distributedCacheClient = new();
+        distributedCacheClient.Setup(client => client.Refresh<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
+            .Verifiable();
+        memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
 
-        var memoryCache = Substitute.For<IMemoryCache>();
-        var multilevelCacheClient = new MultilevelCacheClient(memoryCache,
-            distributedCacheClient,
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
+            distributedCacheClient.Object,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
             new CacheOptions()
@@ -366,15 +369,9 @@ public class MultilevelCacheClientTest : TestBase
 
         multilevelCacheClient.Refresh<string>(keys);
 
-        Received.InOrder(() =>
-        {
-            distributedCacheClient.Refresh<string>(keys);
-
-            Parallel.ForEach(keys, key =>
-            {
-                _memoryCache.TryGetValue(CacheKeyHelper.FormatCacheKey<string>(key, CacheKeyType.TypeName), out _);
-            });
-        });
+        memoryCache.Verify(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny), Times.Once);
+        distributedCacheClient.Verify(client => client.Refresh<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()),
+            Times.Once);
     }
 
     [TestMethod]
@@ -384,11 +381,14 @@ public class MultilevelCacheClientTest : TestBase
         {
             "test20"
         };
-        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        Mock<IMemoryCache> memoryCache = new();
+        Mock<IDistributedCacheClient> distributedCacheClient = new();
+        distributedCacheClient.Setup(client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
+            .Verifiable();
+        memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
 
-        var memoryCache = Substitute.For<IMemoryCache>();
-        var multilevelCacheClient = new MultilevelCacheClient(memoryCache,
-            distributedCacheClient,
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
+            distributedCacheClient.Object,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
             new CacheOptions()
@@ -399,15 +399,8 @@ public class MultilevelCacheClientTest : TestBase
 
         await multilevelCacheClient.RefreshAsync<string>(keys);
 
-        Received.InOrder(async () =>
-        {
-            await distributedCacheClient.RefreshAsync<string>(keys);
-
-            Parallel.ForEach(keys, key =>
-            {
-                _memoryCache.TryGetValue(CacheKeyHelper.FormatCacheKey<string>(key, CacheKeyType.TypeName), out _);
-            });
-        });
+        memoryCache.Verify(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny), Times.Once);
+        distributedCacheClient.Verify(client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()), Times.Once);
     }
 
     [TestMethod]
