@@ -36,7 +36,7 @@ public class IdGeneratorTest
         var options = (ConfigurationOptions)_redisOptions.Value;
         var connection = await ConnectionMultiplexer.ConnectAsync(options);
         _database = connection.GetDatabase(options.DefaultDatabase ?? 0);
-        _currentWorkerKey = "snowflake.current.workerid";
+        _currentWorkerKey = "Int64.snowflake.current.workerid";
         _inUseWorkerKey = "snowflake.inuse.workerid";
         _logOutWorkerKey = "snowflake.logout.workerid";
         _getWorkerIdKey = "snowflake.get.workerid";
