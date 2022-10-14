@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace Masa.BuildingBlocks.Caching;
 
-public class CacheKeyAliasOptions
+public class TypeAliasOptions
 {
     /// <summary>
     /// Refresh TypeAlias minimum interval time
@@ -12,5 +12,5 @@ public class CacheKeyAliasOptions
     /// </summary>
     public long RefreshTypeAliasInterval { get; set; } = 30;
 
-    public Func<Dictionary<string, string>> GetAllTypeAliasFunc { get; set; }
+    public Func<Dictionary<string, string>>? GetAllTypeAliasFunc { get; set; }
 }

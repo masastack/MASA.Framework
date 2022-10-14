@@ -37,7 +37,10 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 2. 添加Redis缓存
 
 ```C#
-builder.Services.AddStackExchangeRedisCache();
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
 
 3. 从DI获取`IDistributedCacheClient`

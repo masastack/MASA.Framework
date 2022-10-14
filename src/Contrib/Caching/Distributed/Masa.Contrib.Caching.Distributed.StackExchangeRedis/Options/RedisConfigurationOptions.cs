@@ -72,7 +72,7 @@ public class RedisConfigurationOptions : CacheEntryOptions
 
     public CacheOptions GlobalCacheOptions { get; set; } = new()
     {
-        CacheKeyType = CacheKeyType.None
+        CacheKeyType = CacheKeyType.TypeName
     };
 
     public static implicit operator ConfigurationOptions(RedisConfigurationOptions options)

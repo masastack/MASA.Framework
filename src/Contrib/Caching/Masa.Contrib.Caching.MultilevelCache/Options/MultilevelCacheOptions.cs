@@ -10,7 +10,7 @@ public class MultilevelCacheOptions : MemoryCacheOptions
 {
     public CacheOptions GlobalCacheOptions { get; set; } = new()
     {
-        CacheKeyType = CacheKeyType.None
+        CacheKeyType = CacheKeyType.TypeName
     };
 
     /// <summary>

@@ -2,23 +2,24 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Caching;
 
 public class DefaultTypeAliasProvider : ITypeAliasProvider
 {
     private readonly object _lock = new();
     private ConcurrentDictionary<string, Lazy<string>>? _dicCache;
-    private readonly CacheKeyAliasOptions? _options;
+    private readonly TypeAliasOptions? _options;
     private DateTime? _lastDateTime;
 
-    public DefaultTypeAliasProvider(CacheKeyAliasOptions? options)
+    public DefaultTypeAliasProvider(TypeAliasOptions? options)
     {
         _options = options;
     }
 
     public string GetAliasName(string typeName)
     {
-        if (_options == null)
+        if (_options == null || _options.GetAllTypeAliasFunc == null)
             throw new NotImplementedException();
 
         start:
@@ -53,7 +54,7 @@ public class DefaultTypeAliasProvider : ITypeAliasProvider
             _dicCache?.Clear();
             _dicCache ??= new ConcurrentDictionary<string, Lazy<string>>();
 
-            var typeAliases = _options!.GetAllTypeAliasFunc.Invoke();
+            var typeAliases = _options!.GetAllTypeAliasFunc!.Invoke();
             foreach (var typeAlias in typeAliases)
             {
                 _dicCache[typeAlias.Key] = new Lazy<string>(typeAlias.Value);

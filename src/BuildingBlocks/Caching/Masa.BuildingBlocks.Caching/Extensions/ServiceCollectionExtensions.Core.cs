@@ -31,6 +31,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
         services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
+
+        TryAddDistributedCacheCore(services, name);
         return services;
     }
 }

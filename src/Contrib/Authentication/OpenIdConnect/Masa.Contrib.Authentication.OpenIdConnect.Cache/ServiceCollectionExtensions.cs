@@ -19,6 +19,7 @@ public static class ServiceCollectionExtensions
         services.AddMultilevelCache(
             Constants.DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(options),
+            null,
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;

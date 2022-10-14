@@ -15,7 +15,7 @@ public class TypeAliasFactoryOptions : MasaFactoryOptions<TypeAliasRelationOptio
         var typeAliasRelationOptions = new TypeAliasRelationOptions(
             name,
             serviceProvider
-                => new DefaultTypeAliasProvider(serviceProvider.GetService<IOptionsFactory<CacheKeyAliasOptions>>()?.Create(name))
+                => new DefaultTypeAliasProvider(serviceProvider.GetService<IOptionsFactory<TypeAliasOptions>>()?.Create(name))
         );
         Options.Add(typeAliasRelationOptions);
     }

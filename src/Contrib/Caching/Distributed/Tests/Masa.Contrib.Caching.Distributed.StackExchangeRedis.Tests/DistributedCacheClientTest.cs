@@ -738,4 +738,50 @@ public class DistributedCacheClientTest : TestBase
         options = new CacheEntryOptions(creationTime.AddSeconds(1));
         Assert.AreEqual(creationTime.AddSeconds(1), options.GetAbsoluteExpiration(creationTime));
     }
+
+    [TestMethod]
+    public void TestExists()
+    {
+        var configurationOptions = GetConfigurationOptions();
+        configurationOptions.GlobalCacheOptions = new CacheOptions()
+        {
+            CacheKeyType = CacheKeyType.TypeName
+        };
+        var distributedCacheClient = new RedisCacheClient(configurationOptions);
+        var key = "redis.exist";
+        distributedCacheClient.Set(key, "1");
+        Assert.IsFalse(distributedCacheClient.Exists(key));
+
+        Assert.IsTrue(distributedCacheClient.Exists<string>(key));
+        Assert.IsTrue(distributedCacheClient.Exists<string>(key));
+
+        distributedCacheClient.Remove(key);
+        Assert.IsTrue(distributedCacheClient.Exists<string>(key));
+
+        distributedCacheClient.Remove<string>(key);
+        Assert.IsFalse(distributedCacheClient.Exists<string>(key));
+    }
+
+    [TestMethod]
+    public async Task TestExistsAsync()
+    {
+        var configurationOptions = GetConfigurationOptions();
+        configurationOptions.GlobalCacheOptions = new CacheOptions()
+        {
+            CacheKeyType = CacheKeyType.TypeName
+        };
+        var distributedCacheClient = new RedisCacheClient(configurationOptions);
+        var key = "redis.exist";
+        await distributedCacheClient.SetAsync(key, "1");
+        Assert.IsFalse(await distributedCacheClient.ExistsAsync(key));
+
+        Assert.IsTrue(await distributedCacheClient.ExistsAsync<string>(key));
+        Assert.IsTrue(await distributedCacheClient.ExistsAsync<string>(key));
+
+        await distributedCacheClient.RemoveAsync(key);
+        Assert.IsTrue(await distributedCacheClient.ExistsAsync<string>(key));
+
+        await distributedCacheClient.RemoveAsync<string>(key);
+        Assert.IsFalse(await distributedCacheClient.ExistsAsync<string>(key));
+    }
 }

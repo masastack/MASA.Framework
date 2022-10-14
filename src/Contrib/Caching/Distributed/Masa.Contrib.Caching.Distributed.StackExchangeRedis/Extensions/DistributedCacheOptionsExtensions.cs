@@ -12,7 +12,7 @@ public static class DistributedCacheOptionsExtensions
     /// <param name="redisSectionName">redis node name, not required, default: RedisConfig(Use local configuration)</param>
     /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public static void UseStackExchangeRedisCache(
+    public static DistributedCacheOptions UseStackExchangeRedisCache(
         this DistributedCacheOptions distributedOptions,
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
@@ -36,10 +36,10 @@ public static class DistributedCacheOptionsExtensions
             });
             options.Options.Add(cacheRelationOptions);
         });
-
+        return distributedOptions;
     }
 
-    public static void UseStackExchangeRedisCache(
+    public static DistributedCacheOptions UseStackExchangeRedisCache(
         this DistributedCacheOptions distributedOptions,
         Action<RedisConfigurationOptions> action,
         JsonSerializerOptions? jsonSerializerOptions = null)
@@ -47,15 +47,19 @@ public static class DistributedCacheOptionsExtensions
         var redisConfigurationOptions = new RedisConfigurationOptions();
         action.Invoke(redisConfigurationOptions);
         distributedOptions.UseStackExchangeRedisCache(redisConfigurationOptions, jsonSerializerOptions);
+        return distributedOptions;
     }
 
-    public static void UseStackExchangeRedisCache(this DistributedCacheOptions distributedOptions,
+    public static DistributedCacheOptions UseStackExchangeRedisCache(this DistributedCacheOptions distributedOptions,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
-        => distributedOptions.Services.UseStackExchangeRedisCache(
+    {
+        distributedOptions.Services.UseStackExchangeRedisCache(
             distributedOptions.Name,
             redisConfigurationOptions,
             jsonSerializerOptions);
+        return distributedOptions;
+    }
 
     #region internal methods
 

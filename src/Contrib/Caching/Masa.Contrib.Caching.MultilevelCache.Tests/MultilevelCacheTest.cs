@@ -108,12 +108,12 @@ public class MultilevelCacheTest : TestBase
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
-            .AddMultilevelCache(new MultilevelCacheOptions()
+            .AddMultilevelCache(multilevelCacheOptions =>
             {
-                CacheEntryOptions = new CacheEntryOptions()
+                multilevelCacheOptions.CacheEntryOptions = new CacheEntryOptions()
                 {
                     SlidingExpiration = TimeSpan.FromSeconds(10)
-                }
+                };
             }).AddMultilevelCache(new MultilevelCacheOptions()
             {
                 CacheEntryOptions = new CacheEntryOptions()
@@ -210,6 +210,61 @@ public class MultilevelCacheTest : TestBase
         Assert.AreEqual(TimeSpan.FromSeconds(60), client.DefaultCacheEntryOptions.SlidingExpiration);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
+    }
+
+    [TestMethod]
+    public void TestFormatCacheKeyByTypeNameAlias()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(distributedCacheOptions =>
+                distributedCacheOptions.UseStackExchangeRedisCache(RedisConfigurationOptions),
+            typeAliasOptions =>
+            {
+                typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
+                {
+                    { "String", "s" }
+                };
+            },
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
+                {
+                    CacheKeyType = CacheKeyType.TypeAlias
+                };
+            }
+        );
+        var serviceProvider = services.BuildServiceProvider();
+        var factory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
+        Assert.IsNotNull(factory);
+        var multilevelCacheClient = factory.Create();
+        var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json"));
+        Assert.AreEqual("configuration json", value);
+        multilevelCacheClient.Remove<string>("configuration");
+    }
+
+
+    [TestMethod]
+    public void TestFormatCacheKeyByTypeNameAlias2()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddMultilevelCache(distributedCacheOptions =>
+                distributedCacheOptions.UseStackExchangeRedisCache(RedisConfigurationOptions),
+            typeAliasOptions =>
+            {
+                typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
+                {
+                    { "String", "s" }
+                };
+            }
+        );
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var factory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
+        Assert.IsNotNull(factory);
+        var multilevelCacheClient = factory.Create();
+        var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json"));
+
+        Assert.AreEqual("configuration json", value);
+        multilevelCacheClient.Remove<string>("configuration");
     }
 }
 #pragma warning restore CS0618

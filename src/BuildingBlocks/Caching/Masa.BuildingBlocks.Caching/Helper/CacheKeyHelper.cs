@@ -18,8 +18,7 @@ public static class CacheKeyHelper
                     throw new NotImplementedException();
 
                 var typeName = GetTypeName<T>();
-                return typeAliasFunc.Invoke(typeName);
-
+                return $"{typeAliasFunc.Invoke(typeName)}:{key}";
             default:
                 throw new NotImplementedException();
         }
