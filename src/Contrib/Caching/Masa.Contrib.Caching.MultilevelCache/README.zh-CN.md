@@ -47,8 +47,10 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
 2. 添加多级缓存
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache()
-                .AddMultilevelCache();
+builder.Services.AddMultilevelCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
 
 3. 从DI获取`IMultilevelCacheClient`
@@ -72,12 +74,13 @@ var redisConfigurationOptions = new RedisConfigurationOptions()
     }
 };
 builder.Services
-    .AddStackExchangeRedisCache(redisConfigurationOptions)
-    .AddMultilevelCache(new MultilevelCacheOptions()
-    {
-        SubscribeKeyPrefix = "masa",
-        SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
-    });
+       .AddMultilevelCache(
+           distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions),
+           new MultilevelCacheOptions()
+           {
+               SubscribeKeyPrefix = "masa",
+               SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+           });
 ```
 
 2. 从DI获取`IMultilevelCacheClient`，并使用相应的方法

@@ -55,14 +55,18 @@ distributedCacheClient.Set(key, "test_content");
 1. 添加Redis缓存
 
 ```C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
-    Servers = new List<RedisServerOptions>()
+    var redisConfigurationOptions = new RedisConfigurationOptions()
     {
-        new("localhost", 6379)
-    }
+        DefaultDatabase = 1,
+        ConnectionPoolSize = 10,
+        Servers = new List<RedisServerOptions>()
+        {
+            new("localhost", 6379)
+        }
+    };
+    distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions);
 });
 ```
 

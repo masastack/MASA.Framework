@@ -37,7 +37,10 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 2. Add Redis cache
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache();
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
 
 3. Get `IDistributedCacheClient` from DI
@@ -52,14 +55,18 @@ distributedCacheClient.Set(key, "test_content");
 1. Add Redis cache
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
-    Servers = new List<RedisServerOptions>()
+    var redisConfigurationOptions = new RedisConfigurationOptions()
     {
-        new("localhost", 6379)
-    }
+        DefaultDatabase = 1,
+        ConnectionPoolSize = 10,
+        Servers = new List<RedisServerOptions>()
+        {
+            new("localhost", 6379)
+        }
+    };
+    distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions);
 });
 ```
 

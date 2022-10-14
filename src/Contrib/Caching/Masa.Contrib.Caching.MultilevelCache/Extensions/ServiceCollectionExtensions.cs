@@ -65,6 +65,30 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
+        Action<DistributedCacheOptions> distributedCacheAction,
+        MultilevelCacheOptions multilevelCacheOptions,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
+        => services.AddMultilevelCache(
+            Microsoft.Extensions.Options.Options.DefaultName,
+            distributedCacheAction,
+            multilevelCacheOptions,
+            typeAliasOptionsAction);
+
+    public static IServiceCollection AddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        Action<DistributedCacheOptions> distributedCacheAction,
+        MultilevelCacheOptions multilevelCacheOptions,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
+    {
+        services.AddMultilevelCache(name, multilevelCacheOptions, typeAliasOptionsAction);
+        var distributedCacheOptions = new DistributedCacheOptions(services, name);
+        distributedCacheAction.Invoke(distributedCacheOptions);
+        return services;
+    }
+
+    public static IServiceCollection AddMultilevelCache(
+        this IServiceCollection services,
         string name,
         Action<DistributedCacheOptions> distributedCacheAction,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null,

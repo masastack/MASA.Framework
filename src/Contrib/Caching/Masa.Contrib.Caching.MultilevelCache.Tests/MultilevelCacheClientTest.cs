@@ -458,5 +458,21 @@ public class MultilevelCacheClientTest : TestBase
         var multilevelCacheClient = cacheClientFactory.Create("test");
         return multilevelCacheClient;
     }
+
+    [TestMethod]
+    public void TestMultilevelCache()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(),
+            new MultilevelCacheOptions()
+            {
+                SubscribeKeyPrefix = "masa",
+                SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+            });
+        var serviceProvider = services.BuildServiceProvider();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        Assert.IsNotNull(multilevelCacheClient);
+    }
 }
 #pragma warning restore CS0618
