@@ -6,29 +6,23 @@ namespace Microsoft.AspNetCore.Builder;
 public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
     private readonly ILogger<ExceptionHandlerMiddleware>? _logger;
 
     public ExceptionHandlerMiddleware(
         RequestDelegate next,
-        IServiceProvider serviceProvider,
         IOptions<MasaExceptionHandlerOptions> options,
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
         ILogger<ExceptionHandlerMiddleware>? logger = null)
     {
         _next = next;
         _options = options.Value;
-        _masaExceptionHandler =
-            Masa.Utils.Exceptions.Internal.ExceptionHandlerExtensions.GetMasaExceptionHandler(
-                serviceProvider,
-                _options.MasaExceptionHandlerType);
         _logRelationOptions = logRelationOptions.Value;
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext)
+    public async Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
         try
         {
@@ -36,14 +30,18 @@ public class ExceptionHandlerMiddleware
         }
         catch (Exception exception)
         {
-            var masaExceptionContext = new MasaExceptionContext(exception, httpContext);
+            var masaExceptionContext = new MasaExceptionContext(exception, httpContext, serviceProvider);
             if (_options.ExceptionHandler != null)
             {
                 _options.ExceptionHandler.Invoke(masaExceptionContext);
             }
-            else if (_masaExceptionHandler != null)
+            else
             {
-                _masaExceptionHandler.OnException(masaExceptionContext);
+                var masaExceptionHandler =
+                    Masa.Utils.Exceptions.Internal.ExceptionHandlerExtensions.GetMasaExceptionHandler(
+                        serviceProvider,
+                        _options.MasaExceptionHandlerType);
+                masaExceptionHandler?.OnException(masaExceptionContext);
             }
 
             if (httpContext.Response.HasStarted)
@@ -78,6 +76,4 @@ public class ExceptionHandlerMiddleware
             }
         }
     }
-
-
 }

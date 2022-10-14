@@ -6,12 +6,12 @@ namespace Microsoft.AspNetCore.Builder;
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<ExceptionHandlingMiddleware> _logger;
+    private readonly ILogger<ExceptionHandlingMiddleware>? _logger;
     private readonly MasaExceptionHandlingOptions _options;
 
     public ExceptionHandlingMiddleware(
         RequestDelegate next,
-        ILogger<ExceptionHandlingMiddleware> logger,
+        ILogger<ExceptionHandlingMiddleware>? logger,
         IOptions<MasaExceptionHandlingOptions> options)
     {
         _next = next;
@@ -38,13 +38,13 @@ public class ExceptionHandlingMiddleware
             if (exception is UserFriendlyException)
             {
                 var message = exception.Message;
-                _logger.LogError(exception, message);
+                _logger?.LogError(exception, message);
                 await httpContext.Response.WriteTextAsync((int)MasaHttpStatusCode.UserFriendlyException, message);
             }
             else if (exception is MasaException || _options.CatchAllException)
             {
                 var message = Constant.DEFAULT_EXCEPTION_MESSAGE;
-                _logger.LogError(exception, message);
+                _logger?.LogError(exception, message);
                 await httpContext.Response.WriteTextAsync((int)HttpStatusCode.InternalServerError, message);
             }
             else
