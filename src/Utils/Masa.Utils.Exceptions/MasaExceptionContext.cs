@@ -5,6 +5,8 @@ namespace System;
 
 public class MasaExceptionContext
 {
+    public IServiceProvider ServiceProvider { get; set; }
+
     public Exception Exception { get; set; }
 
     public HttpContext HttpContext { get; }
@@ -25,13 +27,14 @@ public class MasaExceptionContext
 
     public string ContentType { get; set; }
 
-    internal MasaExceptionContext(Exception exception, HttpContext httpContext)
+    internal MasaExceptionContext(Exception exception, HttpContext httpContext, IServiceProvider serviceProvider)
     {
         Exception = exception;
         HttpContext = httpContext;
         StatusCode = (int)MasaHttpStatusCode.UserFriendlyException;
         ExceptionHandled = false;
         ContentType = Constant.DEFAULT_HTTP_CONTENT_TYPE;
+        ServiceProvider = serviceProvider;
     }
 
     public void ToResult(
