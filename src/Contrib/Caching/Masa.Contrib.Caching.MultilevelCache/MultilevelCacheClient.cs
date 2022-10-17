@@ -12,7 +12,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private string _subscribeKeyPrefix;
     private readonly object _locker = new();
     private readonly IList<string> _subscribeChannels = new List<string>();
-    public CacheOptions GlobalCacheOptions;
+    private CacheOptions _globalCacheOptions;
     public CacheEntryOptions? DefaultCacheEntryOptions { get; protected set; }
 
     private static Action<CacheOptions> CacheOptionsAction
@@ -44,7 +44,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 _subscribeKeyType = option.SubscribeKeyType;
                 _subscribeKeyPrefix = option.SubscribeKeyPrefix;
                 DefaultCacheEntryOptions = option.CacheEntryOptions;
-                GlobalCacheOptions = option.GlobalCacheOptions;
+                _globalCacheOptions = option.GlobalCacheOptions;
             }
         });
 
@@ -52,7 +52,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         _memoryCache = new MemoryCache(options);
         _subscribeKeyType = options.SubscribeKeyType;
         _subscribeKeyPrefix = options.SubscribeKeyPrefix;
-        GlobalCacheOptions = options.GlobalCacheOptions;
+        _globalCacheOptions = options.GlobalCacheOptions;
     }
 
     public MultilevelCacheClient(IMemoryCache memoryCache,
@@ -66,7 +66,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;
         _subscribeKeyType = subscribeKeyType;
-        GlobalCacheOptions = globalCacheOptions;
+        _globalCacheOptions = globalCacheOptions;
         _subscribeKeyPrefix = subscribeKeyPrefix;
     }
 
@@ -415,7 +415,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             action.Invoke(cacheOptions);
             return cacheOptions;
         }
-        return GlobalCacheOptions;
+        return _globalCacheOptions;
     }
 
     private List<CacheItemModel<T>> GetListCore<T>(

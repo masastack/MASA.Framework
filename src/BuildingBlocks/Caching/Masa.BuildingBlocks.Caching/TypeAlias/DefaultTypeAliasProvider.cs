@@ -22,23 +22,21 @@ public class DefaultTypeAliasProvider : ITypeAliasProvider
         if (_options == null || _options.GetAllTypeAliasFunc == null)
             throw new NotImplementedException();
 
-        start:
-        if (_dicCache is { Count: > 0 })
+        if (_dicCache == null || _dicCache.IsEmpty)
         {
-            var aliasName = _dicCache.GetOrAdd(typeName, key => new Lazy<string>(() =>
-            {
-                RefreshTypeAlias();
-
-                if (_dicCache.TryGetValue(key, out var alias))
-                    return alias.Value;
-
-                throw new ArgumentNullException(key, $"not found type alias by {typeName}");
-
-            }, LazyThreadSafetyMode.ExecutionAndPublication));
-            return aliasName.Value;
+            RefreshTypeAlias();
         }
-        RefreshTypeAlias();
-        goto start;
+        var aliasName = _dicCache?.GetOrAdd(typeName, key => new Lazy<string>(() =>
+        {
+            RefreshTypeAlias();
+
+            if (_dicCache.TryGetValue(key, out var alias))
+                return alias.Value;
+
+            throw new ArgumentNullException(key, $"not found type alias by {typeName}");
+
+        }, LazyThreadSafetyMode.ExecutionAndPublication));
+        return aliasName?.Value ?? throw new ArgumentNullException(typeName, $"not found type alias by {typeName}");
     }
 
     private void RefreshTypeAlias()
