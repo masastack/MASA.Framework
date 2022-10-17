@@ -18,13 +18,14 @@ public class LocalizationResourceDictionary : Dictionary<Type, LocalizationResou
         return this[resourceType] = new LocalizationResource(resourceType, defaultCultureName);
     }
 
-    public LocalizationResource Get<TResource>()
+    public LocalizationResource? GetOrNull(Type resourceType)
     {
-        var resourceType = typeof(TResource);
-
         if (!ContainsKey(resourceType))
-            throw new Exception("Can not find a resource with given type: " + resourceType.FullName);
+            return null;
 
         return this[resourceType];
     }
+
+    public LocalizationResource? GetOrNull<TResource>()
+        => GetOrNull(typeof(TResource));
 }

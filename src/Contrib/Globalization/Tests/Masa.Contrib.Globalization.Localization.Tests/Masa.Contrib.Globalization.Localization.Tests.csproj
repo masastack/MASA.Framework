@@ -23,11 +23,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Globalization.Localization\Masa.Contrib.Globalization.Localization.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources" />
+    <None Remove="Resources\en.json" />
+    <Content Include="Resources\en.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="Resources\zh-Cn.json" />
+    <Content Include="Resources\zh-Cn.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

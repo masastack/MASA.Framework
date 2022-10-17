@@ -3,9 +3,9 @@
 
 namespace Microsoft.Extensions.Localization;
 
-public interface ILocalizationResourceContributor
+public interface IMasaStringLocalizerFactory
 {
-    string CultureName { get; }
+    IMasaStringLocalizer Create<TResourceSource>();
 
-    string? GetOrNull(string name);
+    IMasaStringLocalizer Create(Type resourceSource);
 }

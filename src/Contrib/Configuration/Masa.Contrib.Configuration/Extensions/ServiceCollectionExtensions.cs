@@ -136,7 +136,11 @@ public static class ServiceCollectionExtensions
         configurationBuilder.AddConfiguration(masaConfiguration);
 
         if (sourceConfiguration == null)
-            services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
+        {
+            var configurationManager = new ConfigurationManager();
+            configurationBuilder.AddConfiguration(configurationBuilder.Build());
+            services.AddSingleton<IConfiguration>(_ => configurationManager);
+        }
 
         return services;
     }

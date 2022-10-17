@@ -5,24 +5,34 @@ namespace Microsoft.Extensions.Localization;
 
 public class LocalizationResource
 {
-    private List<ILocalizationResourceContributor> _dictionary { get; }
+    private Dictionary<string, ILocalizationResourceContributor> _dictionary { get; }
 
     public Type ResourceType { get; }
 
-    public string? DefaultCultureName { get; }
+    public string? DefaultCultureName { get; internal set; }
 
     public LocalizationResource(Type resourceType, string? defaultCultureName)
     {
-        _dictionary = new();
+        _dictionary = new(StringComparer.OrdinalIgnoreCase);
         ResourceType = resourceType;
         DefaultCultureName = defaultCultureName;
     }
 
     public void AddContributor(ILocalizationResourceContributor localizationResourceContributor)
     {
-        if (_dictionary.Any(d => d.CultureName.Equals(localizationResourceContributor.CultureName, StringComparison.OrdinalIgnoreCase)))
+        if (_dictionary.Any(d => d.Key.Equals(localizationResourceContributor.CultureName, StringComparison.OrdinalIgnoreCase)))
             throw new Exception($"The {localizationResourceContributor.CultureName} already exists with {ResourceType.FullName}");
 
-        _dictionary.Add(localizationResourceContributor);
+        _dictionary.Add(localizationResourceContributor.CultureName, localizationResourceContributor);
+    }
+
+    public ILocalizationResourceContributor? GetResourceContributor(CultureInfo? cultureInfo = null)
+    {
+        var cultureName = cultureInfo?.Name ?? CultureInfo.CurrentUICulture.Name;
+
+        if (_dictionary.ContainsKey(cultureName))
+            return _dictionary[cultureName];
+
+        return null;
     }
 }

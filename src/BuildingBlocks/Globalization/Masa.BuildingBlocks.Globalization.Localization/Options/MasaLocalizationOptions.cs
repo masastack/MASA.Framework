@@ -17,4 +17,12 @@ public class MasaLocalizationOptions
     {
         Resources = new ();
     }
+
+    public void FormatResources()
+    {
+        foreach (var resource in Resources)
+        {
+            resource.Value.DefaultCultureName ??= DefaultCultureName;
+        }
+    }
 }
