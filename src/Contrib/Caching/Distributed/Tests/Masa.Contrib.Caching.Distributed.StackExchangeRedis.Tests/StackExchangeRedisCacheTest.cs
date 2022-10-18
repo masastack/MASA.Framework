@@ -342,5 +342,37 @@ public class StackExchangeRedisCacheTest : TestBase
         Assert.AreEqual("redis configuration2 json", value);
         distributedCacheClient.Remove<string>("redisConfiguration");
     }
+
+    [TestMethod]
+    public void TestFormatCacheKeyByTypeNameAlias4()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddDistributedCache(
+            distributedCacheOptions =>
+            {
+                distributedCacheOptions.UseStackExchangeRedisCache(builder.Configuration.GetSection("RedisConfig4"));
+            },
+            typeAliasOptions =>
+            {
+                typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
+                {
+                    { "String", "s" }
+                };
+            });
+        builder.Services.Configure((TypeAliasOptions options) =>
+        {
+            options.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
+            {
+                { "String", "s" }
+            };
+        });
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
+        Assert.IsNotNull(distributedCacheClient);
+
+        var value = distributedCacheClient.GetOrSet("redisConfiguration", () => new CacheEntry<string>("redis configuration2 json"));
+        Assert.AreEqual("redis configuration2 json", value);
+        distributedCacheClient.Remove<string>("redisConfiguration");
+    }
 }
 #pragma warning restore CS0618

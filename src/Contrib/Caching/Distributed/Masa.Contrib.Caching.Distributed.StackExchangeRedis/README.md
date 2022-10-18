@@ -77,6 +77,65 @@ string key = "test_1";
 distributedCacheClient.Set(key, "test_content");
 ```
 
+#### Usage 3 (used with Dcc):
+
+1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+``` C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+});
+```
+
+> Please [Reference](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+2 Use the configuration where redis is located
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache(builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}"));
+});
+```
+
+3. Get `IDistributedCacheClient` from DI and use the corresponding method
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### Usage 4 (used with Dcc):
+
+1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+``` C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<RedisConfigurationOptions>("Replace-Your-RedisOptions-AppId", "Replace-Your-RedisOptions-ConfigObjectName", "{Replace-Your-DistributedCacheName}"));
+});
+```
+
+> Please [Reference](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+2 Use the configuration where redis is located
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache());
+});
+```
+
+3. Get `IDistributedCacheClient` from DI and use the corresponding method
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
 ### common problem
 
 1. When absolute expiration and sliding expiration are enabled at the same time, how is the expiration time calculated?

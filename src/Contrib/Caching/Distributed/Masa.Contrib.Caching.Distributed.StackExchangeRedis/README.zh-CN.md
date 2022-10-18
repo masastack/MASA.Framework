@@ -39,7 +39,7 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 ```C#
 builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache(false);
+    distributedCacheOptions.UseStackExchangeRedisCache();
 });
 ```
 
@@ -71,6 +71,65 @@ builder.Services.AddDistributedCache(distributedCacheOptions =>
 ```
 
 2. 从DI获取`IDistributedCacheClient`，并使用相应的方法
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### 用法3 (结合Dcc使用)：
+
+1. 使用[Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+```C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+});
+```
+
+> Dcc配置使用请[参考](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+2 使用redis所在的配置
+
+```C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache(builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}"));
+});
+```
+
+3. 从DI获取`IDistributedCacheClient`，并使用相应的方法
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### 用法4 (结合Dcc使用)：
+
+1. 使用[Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+```C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<RedisConfigurationOptions>("Replace-Your-RedisOptions-AppId", "Replace-Your-RedisOptions-ConfigObjectName", "{Replace-Your-DistributedCacheName}"));
+});
+```
+
+> Dcc配置使用请[参考](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+2 使用redis所在的配置
+
+```C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache());
+});
+```
+
+3. 从DI获取`IDistributedCacheClient`，并使用相应的方法
 
 ``` C#
 string key = "test_1";

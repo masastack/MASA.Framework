@@ -18,8 +18,8 @@ public static class DistributedCacheOptionsExtensions
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        var configuration = distributedOptions.Services.GetLocalConfiguration(redisSectionName);
-        return distributedOptions.UseStackExchangeRedisCache(configuration, jsonSerializerOptions);
+        distributedOptions.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedOptions.Name);
+        return distributedOptions.UseStackExchangeRedisCache(jsonSerializerOptions);
     }
 
     /// <summary>
@@ -35,24 +35,7 @@ public static class DistributedCacheOptionsExtensions
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
         distributedOptions.Services.Configure<RedisConfigurationOptions>(distributedOptions.Name, configuration);
-        distributedOptions.Services.Configure<DistributedCacheFactoryOptions>(options =>
-        {
-            if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
-                return;
-
-            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(distributedOptions.Name, serviceProvider =>
-            {
-                var distributedCacheClient = new RedisCacheClient(
-                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
-                    distributedOptions.Name,
-                    jsonSerializerOptions,
-                    serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedOptions.Name)
-                );
-                return distributedCacheClient;
-            });
-            options.Options.Add(cacheRelationOptions);
-        });
-        return distributedOptions;
+        return distributedOptions.UseStackExchangeRedisCache(jsonSerializerOptions);
     }
 
     public static DistributedCacheOptions UseStackExchangeRedisCache(
@@ -79,6 +62,36 @@ public static class DistributedCacheOptionsExtensions
     }
 
     #region internal methods
+
+    /// <summary>
+    /// Add distributed Redis cache
+    /// </summary>
+    /// <param name="distributedOptions"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <returns></returns>
+    private static DistributedCacheOptions UseStackExchangeRedisCache(
+        this DistributedCacheOptions distributedOptions,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedOptions.Services.Configure<DistributedCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClient>(distributedOptions.Name, serviceProvider =>
+            {
+                var distributedCacheClient = new RedisCacheClient(
+                    serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
+                    distributedOptions.Name,
+                    jsonSerializerOptions,
+                    serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedOptions.Name)
+                );
+                return distributedCacheClient;
+            });
+            options.Options.Add(cacheRelationOptions);
+        });
+        return distributedOptions;
+    }
 
     internal static void UseStackExchangeRedisCache(
         this IServiceCollection services,

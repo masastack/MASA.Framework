@@ -164,8 +164,8 @@ public static class ServiceCollectionExtensions
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        var configuration = services.GetLocalConfiguration(sectionName);
-        services.AddMultilevelCache(name, configuration, isReset, typeAliasOptionsAction);
+        services.AddConfigure<MultilevelCacheOptions>(sectionName, name);
+        services.AddMultilevelCache(name, isReset, typeAliasOptionsAction);
     }
 
     private static void AddMultilevelCache(
@@ -175,9 +175,17 @@ public static class ServiceCollectionExtensions
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
-
         services.Configure<MultilevelCacheOptions>(name, configuration);
+        services.AddMultilevelCache(name, isReset, typeAliasOptionsAction);
+    }
+
+    private static void AddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        bool isReset = false,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
+    {
+        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
 
         services.Configure<MultilevelCacheFactoryOptions>(options =>
         {
