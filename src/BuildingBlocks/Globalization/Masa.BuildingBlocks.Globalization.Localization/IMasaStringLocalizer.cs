@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.Localization;
 
 public interface IMasaStringLocalizer
@@ -17,4 +19,8 @@ public interface IMasaStringLocalizer
     /// <param name="arguments">The values to format the string with.</param>
     /// <returns>The formatted string resource as a <see cref="T:Microsoft.Extensions.Localization.LocalizedString" />.</returns>
     string this[string name, params object[] arguments] { get; }
+
+    string T(string name);
+
+    string T(string name, params object[] arguments);
 }

@@ -1,11 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Microsoft.Extensions.Localization;
+namespace Masa.BuildingBlocks.Globalization.Localization;
 
-public class LanguageInfo
+public static class Const
 {
-    string CultureName { get; }
-
-    string DisplayName { get; }
+    public const string DEFAULT_LOCAL_SECTION = "Localization";
 }

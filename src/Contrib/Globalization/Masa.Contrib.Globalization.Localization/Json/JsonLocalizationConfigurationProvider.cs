@@ -6,15 +6,16 @@ namespace Masa.Contrib.Globalization.Localization;
 
 public class JsonLocalizationConfigurationProvider : FileLocalizationConfigurationProvider
 {
-    public JsonLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource) : base(configurationSource)
+    public JsonLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource)
+        : base(configurationSource)
     {
 
     }
 
-    protected override void AddFile(string basePath, string fileName)
+    protected override IConfigurationBuilder AddFile(IConfigurationBuilder configurationBuilder, string basePath, string cultureName)
     {
-        ConfigurationBuilder = ConfigurationBuilder
+        return configurationBuilder
             .SetBasePath(basePath)
-            .AddJsonFile(fileName, false, true);
+            .AddJsonFile(cultureName + ".json", false, true);
     }
 }

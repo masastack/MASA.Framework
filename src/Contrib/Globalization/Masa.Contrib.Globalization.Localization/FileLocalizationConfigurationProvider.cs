@@ -5,72 +5,58 @@ namespace Masa.Contrib.Globalization.Localization;
 
 public abstract class FileLocalizationConfigurationProvider : ConfigurationProvider
 {
-    protected IConfigurationBuilder ConfigurationBuilder;
     private readonly string _resourceType;
-    private readonly List<string> _filePaths;
+    private readonly string _languageDirectory;
+    private readonly IEnumerable<string> _cultureNames;
     private readonly bool _useMasaConfiguration;
     private readonly Dictionary<string, Dictionary<string, string>> _dictionary;
-    private readonly IConfiguration _configuration;
 
-    public FileLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource)
+    protected FileLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource)
     {
-        ConfigurationBuilder = new ConfigurationBuilder();
         _resourceType = configurationSource.ResourceType.Name;
-        _filePaths = configurationSource.LocalizationFilePaths;
+        _languageDirectory = configurationSource.LanguageDirectory;
+        _cultureNames = configurationSource.CultureNames;
         _useMasaConfiguration = configurationSource.UseMasaConfiguration;
         _dictionary = new();
-
-        _filePaths.ForEach(filePath =>
-        {
-            var file = new FileInfo(filePath);
-            AddFile(file.Directory!.FullName, file.Name);
-        });
-        _configuration = ConfigurationBuilder.Build();
-        ChangeToken.OnChange(() => _configuration.GetReloadToken(), Load);
     }
 
     public override void Load()
     {
-        _filePaths.ForEach(filePath =>
+        foreach (var cultureName in _cultureNames)
         {
-            var file = new FileInfo(filePath);
-            var configuration = InitializeConfiguration(file.Directory!.FullName, file.Name);
-            var culture = configuration.GetValue<string>(Const.CULTURE);
-            LocalizationResourceConfiguration.Dictionary[filePath] = culture;
-            var dictionary = configuration.ConvertToDictionary();
-            dictionary.Remove(Const.CULTURE);
-            _dictionary[FormatKey(culture)] = dictionary.ToDictionary(
-                keyValuePair => keyValuePair.Key.TrimStart($"{Const.TESTS}:"),
-                keyValuePair => keyValuePair.Value);
-        });
+            var configuration = InitializeConfiguration(_languageDirectory, cultureName);
+            if (configuration.GetSection("$DefaultCulture").Exists() && configuration.GetValue<bool>("$DefaultCulture"))
+            {
+                LocalizationResourceConfiguration.DefaultCultureName = cultureName;
+            }
+
+            _dictionary[FormatKey(cultureName)] = configuration.ConvertToDictionary();
+        }
 
         Data = FormatData();
     }
 
     private string FormatKey(string cultureName)
-        => _useMasaConfiguration ?
-            string.Join(ConfigurationPath.KeyDelimiter, new List<string>()
+    {
+        var list = _useMasaConfiguration ?
+            new List<string>()
             {
                 SectionTypes.Local.ToString(),
                 Const.DEFAULT_LOCAL_SECTION,
                 _resourceType,
                 cultureName
-            })
-            : string.Join(ConfigurationPath.KeyDelimiter, new List<string>()
+            } :
+            new List<string>()
             {
                 Const.DEFAULT_LOCAL_SECTION,
                 _resourceType,
                 cultureName
-            });
-
-    private IConfiguration InitializeConfiguration(string basePath, string fileName)
-    {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(basePath)
-            .AddJsonFile(fileName, false, true)
-            .Build();
-        return configuration;
+            };
+        return string.Join(ConfigurationPath.KeyDelimiter, list);
     }
+
+    private IConfiguration InitializeConfiguration(string basePath, string cultureName)
+        => AddFile(new ConfigurationBuilder(), basePath, cultureName).Build();
 
     private Dictionary<string, string> FormatData()
     {
@@ -85,5 +71,16 @@ public abstract class FileLocalizationConfigurationProvider : ConfigurationProvi
         return data;
     }
 
-    protected abstract void AddFile(string basePath, string fileName);
+    protected abstract IConfigurationBuilder AddFile(IConfigurationBuilder configurationBuilder, string basePath, string cultureName);
+
+    public void Initialize()
+    {
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        foreach (var cultureName in _cultureNames)
+        {
+            configurationBuilder = AddFile(configurationBuilder, _languageDirectory, cultureName);
+        }
+        var configuration = configurationBuilder.Build();
+        ChangeToken.OnChange(() => configuration.GetReloadToken(), Load);
+    }
 }

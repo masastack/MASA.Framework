@@ -2,6 +2,9 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
+using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+
 namespace Masa.BuildingBlocks.Configuration;
 
 public static class MasaConfigurationExtensions
@@ -148,8 +151,8 @@ public static class MasaConfigurationExtensions
             dccConfigurationOptions.ExpandSections.Add(publicSection);
         }
 
-        StaticConfig.AppId = dccConfigurationOptions.DefaultSection.AppId;
-        StaticConfig.PublicId = dccConfigurationOptions.PublicId;
+        DccConfig.AppId = dccConfigurationOptions.DefaultSection.AppId;
+        DccConfig.PublicId = dccConfigurationOptions.PublicId;
 
         if (dccConfigurationOptions.ExpandSections.Any(sectionOption
                 => sectionOption.AppId == dccConfigurationOptions.DefaultSection.AppId))

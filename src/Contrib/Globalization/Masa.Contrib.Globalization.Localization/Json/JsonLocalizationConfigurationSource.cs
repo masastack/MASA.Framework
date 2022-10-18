@@ -2,25 +2,35 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Globalization.Localization;
 
 public class JsonLocalizationConfigurationSource : IConfigurationSource
 {
     public Type ResourceType { get; }
 
-    public readonly List<string> LocalizationFilePaths;
+    public string LanguageDirectory { get; }
+
+    public IEnumerable<string> CultureNames { get; }
 
     public bool UseMasaConfiguration { get; }
 
-    public JsonLocalizationConfigurationSource(Type resourceType, List<string> localizationFilePaths, bool useMasaConfiguration)
+    public JsonLocalizationConfigurationSource(
+        Type resourceType,
+        string languageDirectory,
+        IEnumerable<string> cultureNames,
+        bool useMasaConfiguration)
     {
         ResourceType = resourceType;
-        LocalizationFilePaths = localizationFilePaths;
+        LanguageDirectory = languageDirectory;
+        CultureNames = cultureNames;
         UseMasaConfiguration = useMasaConfiguration;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new JsonLocalizationConfigurationProvider(this);
+        var configurationProvider = new JsonLocalizationConfigurationProvider(this);
+        configurationProvider.Initialize();
+        return configurationProvider;
     }
 }

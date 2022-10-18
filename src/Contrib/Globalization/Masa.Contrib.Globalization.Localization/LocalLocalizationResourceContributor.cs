@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Localization;
 
 public class LocalLocalizationResourceContributor : ILocalizationResourceContributor
@@ -14,12 +15,11 @@ public class LocalLocalizationResourceContributor : ILocalizationResourceContrib
     public LocalLocalizationResourceContributor(
         Type resourceType,
         string cultureName,
-        IConfiguration configuration,
-        IMasaConfiguration? masaConfiguration = null)
+        IConfiguration configuration)
     {
         ResourceType = resourceType;
         CultureName = cultureName;
-        _configuration = masaConfiguration?.Local ?? configuration;
+        _configuration = configuration;
     }
 
     public string? GetOrNull(string name)
@@ -27,7 +27,7 @@ public class LocalLocalizationResourceContributor : ILocalizationResourceContrib
         var section = _configuration.GetSection(Const.DEFAULT_LOCAL_SECTION)?.GetSection(ResourceType.Name)?.GetSection(CultureName);
         if (section != null && section.Exists())
         {
-            return section.GetValue<string>(name);
+            return section.GetValue<string>(name.Replace(".", ConfigurationPath.KeyDelimiter));
         }
         return null;
     }

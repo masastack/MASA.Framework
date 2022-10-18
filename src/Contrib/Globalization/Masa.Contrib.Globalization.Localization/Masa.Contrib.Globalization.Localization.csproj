@@ -1,16 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
-      <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.Localization\Masa.BuildingBlocks.Globalization.Localization.csproj" />
-      <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
-      <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.Localization\Masa.BuildingBlocks.Globalization.Localization.csproj" />
+    <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
+    <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
+  </ItemGroup>
 
 </Project>

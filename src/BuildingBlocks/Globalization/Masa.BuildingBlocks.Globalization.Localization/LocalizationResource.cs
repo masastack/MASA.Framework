@@ -1,27 +1,25 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Localization;
 
 public class LocalizationResource
 {
-    private Dictionary<string, ILocalizationResourceContributor> _dictionary { get; }
+    private readonly Dictionary<string, ILocalizationResourceContributor> _dictionary;
 
     public Type ResourceType { get; }
 
-    public string? DefaultCultureName { get; internal set; }
-
-    public LocalizationResource(Type resourceType, string? defaultCultureName)
+    public LocalizationResource(Type resourceType)
     {
         _dictionary = new(StringComparer.OrdinalIgnoreCase);
         ResourceType = resourceType;
-        DefaultCultureName = defaultCultureName;
     }
 
-    public void AddContributor(ILocalizationResourceContributor localizationResourceContributor)
+    public void AddContributor(string cultureName,ILocalizationResourceContributor localizationResourceContributor)
     {
-        if (_dictionary.Any(d => d.Key.Equals(localizationResourceContributor.CultureName, StringComparison.OrdinalIgnoreCase)))
-            throw new Exception($"The {localizationResourceContributor.CultureName} already exists with {ResourceType.FullName}");
+        if (_dictionary.ContainsKey(cultureName))
+            throw new ArgumentException($"The {cultureName} already exists with {ResourceType.FullName}");
 
         _dictionary.Add(localizationResourceContributor.CultureName, localizationResourceContributor);
     }

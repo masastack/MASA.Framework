@@ -1,14 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-// ReSharper disable once CheckNamespace
-namespace Masa.Contrib.Globalization.Localization;
+namespace Masa.Contrib.Globalization.Localization.Internal;
 
-public class Const
+internal static class Const
 {
-    public const string DEFAULT_LOCAL_SECTION = "Localization";
-
-    public const string CULTURE = "culture";
-
-    public const string TESTS = "texts";
+    internal const string SUPPORTED_CULTURES_FILE_NAME = "supportedCultures.json";
 }

@@ -1,21 +1,23 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.Localization;
 
+[Serializable]
 public class LocalizationResourceDictionary : Dictionary<Type, LocalizationResource>
 {
-    public LocalizationResource Add<TResource>(string? defaultCultureName = null)
+    public LocalizationResource Add<TResource>()
     {
-        return Add(typeof(TResource), defaultCultureName);
+        return Add(typeof(TResource));
     }
 
-    public LocalizationResource Add(Type resourceType, string? defaultCultureName = null)
+    public LocalizationResource Add(Type resourceType)
     {
         if (ContainsKey(resourceType))
-            throw new Exception("This resource is already added before: " + resourceType.FullName);
+            throw new ArgumentException("This resource is already added before: " + resourceType.FullName);
 
-        return this[resourceType] = new LocalizationResource(resourceType, defaultCultureName);
+        return this[resourceType] = new LocalizationResource(resourceType);
     }
 
     public LocalizationResource? GetOrNull(Type resourceType)
@@ -26,6 +28,5 @@ public class LocalizationResourceDictionary : Dictionary<Type, LocalizationResou
         return this[resourceType];
     }
 
-    public LocalizationResource? GetOrNull<TResource>()
-        => GetOrNull(typeof(TResource));
+    public LocalizationResource? GetOrNull<TResource>() => GetOrNull(typeof(TResource));
 }

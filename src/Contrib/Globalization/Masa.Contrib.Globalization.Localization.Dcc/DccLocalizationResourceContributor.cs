@@ -9,9 +9,15 @@ public class DccLocalizationResourceContributor : ILocalizationResourceContribut
 
     public string CultureName { get; }
 
-    public DccLocalizationResourceContributor(string appId, string configObject, IMasaConfiguration masaConfiguration)
+    public DccLocalizationResourceContributor(
+        string appId,
+        string configObject,
+        string cultureName,
+        IMasaConfiguration masaConfiguration)
     {
-        _configurationSection = masaConfiguration.ConfigurationApi.Get(appId).GetSection(configObject);
+        CultureName = cultureName;
+
+        _configurationSection = masaConfiguration.ConfigurationApi.Get(appId).GetSection($"{configObject}.{cultureName}");
     }
 
     public string? GetOrNull(string name)
@@ -20,7 +26,6 @@ public class DccLocalizationResourceContributor : ILocalizationResourceContribut
         {
             return _configurationSection.GetValue<string>(name);
         }
-
         return null;
     }
 }

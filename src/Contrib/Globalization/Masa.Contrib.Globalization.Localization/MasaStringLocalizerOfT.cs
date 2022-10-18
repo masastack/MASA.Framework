@@ -6,26 +6,26 @@ namespace Masa.Contrib.Globalization.Localization;
 public class MasaStringLocalizer<TResourceSource> : IMasaStringLocalizer<TResourceSource>
 {
     private readonly LocalizationResource? _localizationResource;
-    private readonly IStringLocalizer? _stringLocalizer;
-    private readonly string _defaultCultureName;
-    public virtual string this[string name] => GetLocalizedString(name);
+    public string this[string name] => GetLocalizedString(name);
 
-    public virtual string this[string name, params object[] arguments]
+    public string this[string name, params object[] arguments]
     {
         get
         {
             ArgumentNullException.ThrowIfNull(name);
 
             var value = this[name];
-            return string.Format(value, arguments);
+            return string.Format(CultureInfo.CurrentUICulture, value, arguments);
         }
     }
 
-    public MasaStringLocalizer(IStringLocalizerFactory? stringLocalizerFactory, IOptions<MasaLocalizationOptions> options)
+    public string T(string name) => this[name];
+
+    public string T(string name, params object[] arguments) => this[name, arguments];
+
+    public MasaStringLocalizer(IOptions<MasaLocalizationOptions> options)
     {
-        _stringLocalizer = stringLocalizerFactory?.Create(typeof(TResourceSource));
         _localizationResource = options.Value.Resources.GetOrNull<TResourceSource>();
-        _defaultCultureName = options.Value.DefaultCultureName;
     }
 
     private string GetLocalizedString(string name)
@@ -35,20 +35,17 @@ public class MasaStringLocalizer<TResourceSource> : IMasaStringLocalizer<TResour
         {
             return resourceContributor.GetOrNull(name) ?? GetLocalizedStringByDefaultCultureName(name);
         }
-        if (_stringLocalizer != null)
-        {
-            return _stringLocalizer.GetString(name);
-        }
         throw new NotImplementedException();
     }
 
     private string GetLocalizedStringByDefaultCultureName(string name)
     {
-        var resourceContributor = _localizationResource!.GetResourceContributor(new CultureInfo(_defaultCultureName));
-        if (resourceContributor != null)
+        if (!LocalizationResourceConfiguration.DefaultCultureName.IsNullOrWhiteSpace())
         {
-            return resourceContributor.GetOrNull(name) ?? name;
+            var resourceContributor =
+                _localizationResource!.GetResourceContributor(new CultureInfo(LocalizationResourceConfiguration.DefaultCultureName));
+            return resourceContributor?.GetOrNull(name) ?? name;
         }
-        throw new NotImplementedException();
+        return name;
     }
 }

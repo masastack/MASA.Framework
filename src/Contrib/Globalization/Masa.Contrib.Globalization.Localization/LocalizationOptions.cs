@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Globalization.Localization;
 
-internal static class LocalizationResourceConfiguration
+public class LocalizationOptions
 {
-    internal static Dictionary<string, string> Dictionary { get; set; } = new();
+
 }
