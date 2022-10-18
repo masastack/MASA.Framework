@@ -383,7 +383,8 @@ public class MultilevelCacheClientTest : TestBase
         };
         Mock<IMemoryCache> memoryCache = new();
         Mock<IDistributedCacheClient> distributedCacheClient = new();
-        distributedCacheClient.Setup(client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
+        distributedCacheClient.Setup(client
+                => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
             .Verifiable();
         memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
 
@@ -400,7 +401,8 @@ public class MultilevelCacheClientTest : TestBase
         await multilevelCacheClient.RefreshAsync<string>(keys);
 
         memoryCache.Verify(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny), Times.Once);
-        distributedCacheClient.Verify(client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()), Times.Once);
+        distributedCacheClient.Verify(
+            client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()), Times.Once);
     }
 
     [TestMethod]
@@ -445,7 +447,9 @@ public class MultilevelCacheClientTest : TestBase
     private static IMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache();
+        services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(_ =>
+        {
+        });
         var serviceProvider = services.BuildServiceProvider();
         var cacheClientFactory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         var multilevelCacheClient = cacheClientFactory.Create("test");
@@ -457,7 +461,9 @@ public class MultilevelCacheClientTest : TestBase
     {
         var services = new ServiceCollection();
         services.AddMultilevelCache(
-            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(),
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(_ =>
+            {
+            }),
             new MultilevelCacheOptions()
             {
                 SubscribeKeyPrefix = "masa",

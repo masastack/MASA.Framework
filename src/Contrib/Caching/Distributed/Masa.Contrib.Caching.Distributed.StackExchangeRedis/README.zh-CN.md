@@ -39,7 +39,7 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 ```C#
 builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache();
+    distributedCacheOptions.UseStackExchangeRedisCache(false);
 });
 ```
 

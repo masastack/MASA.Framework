@@ -15,7 +15,9 @@ public class MultilevelCacheTest : TestBase
         cachingBuilder.Name.Returns("test");
         cachingBuilder.Services.Returns(services);
 
-        cachingBuilder.AddMultilevelCache();
+        cachingBuilder.AddMultilevelCache(_ =>
+        {
+        });
 
         Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
         Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());

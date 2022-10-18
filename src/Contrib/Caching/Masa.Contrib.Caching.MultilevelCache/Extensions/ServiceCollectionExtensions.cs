@@ -1,6 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
+using Microsoft.Extensions.Configuration;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -58,6 +62,20 @@ public static class ServiceCollectionExtensions
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         services.AddMultilevelCache(name, sectionName, isReset, typeAliasOptionsAction);
+        var distributedCacheOptions = new DistributedCacheOptions(services, name);
+        distributedCacheAction.Invoke(distributedCacheOptions);
+        return services;
+    }
+
+    public static IServiceCollection AddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        Action<DistributedCacheOptions> distributedCacheAction,
+        IConfiguration configuration,
+        bool isReset = false,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
+    {
+        services.AddMultilevelCache(name, configuration, isReset, typeAliasOptionsAction);
         var distributedCacheOptions = new DistributedCacheOptions(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
         return services;
@@ -141,13 +159,25 @@ public static class ServiceCollectionExtensions
 
     internal static void AddMultilevelCache(
         this IServiceCollection services,
-        string name, string sectionName,
+        string name,
+        string sectionName,
+        bool isReset = false,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
+    {
+        var configuration = services.GetLocalConfiguration(sectionName);
+        services.AddMultilevelCache(name, configuration, isReset, typeAliasOptionsAction);
+    }
+
+    private static void AddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration,
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
 
-        services.AddConfigure<MultilevelCacheOptions>(sectionName, name);
+        services.Configure<MultilevelCacheOptions>(name, configuration);
 
         services.Configure<MultilevelCacheFactoryOptions>(options =>
         {

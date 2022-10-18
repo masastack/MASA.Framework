@@ -11,7 +11,7 @@ public enum CacheKeyType
     None = 1,
 
     /// <summary>
-    /// Type name and key combination, Format: ${TypeName}.{key}
+    /// Type's name(Type's full name with generic type name) and key combination
     /// </summary>
     TypeName,
 

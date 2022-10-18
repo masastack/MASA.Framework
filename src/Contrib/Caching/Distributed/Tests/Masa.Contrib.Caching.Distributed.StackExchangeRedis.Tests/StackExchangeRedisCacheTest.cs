@@ -197,11 +197,23 @@ public class StackExchangeRedisCacheTest : TestBase
     public void TestCachingBuilder()
     {
         var services = new ServiceCollection();
-        var cachingBuilder = services.AddStackExchangeRedisCache();
+        var cachingBuilder = services.AddStackExchangeRedisCache(options =>
+        {
+            options.Servers = new List<RedisServerOptions>()
+            {
+                new()
+            };
+        });
         Assert.AreEqual(Options.DefaultName, cachingBuilder.Name);
         Assert.AreEqual(services, cachingBuilder.Services);
 
-        cachingBuilder = services.AddStackExchangeRedisCache("test");
+        cachingBuilder = services.AddStackExchangeRedisCache("test", options =>
+        {
+            options.Servers = new List<RedisServerOptions>()
+            {
+                new()
+            };
+        });
         Assert.AreEqual("test", cachingBuilder.Name);
     }
 

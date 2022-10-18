@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
 namespace Masa.BuildingBlocks.Caching;
 
 public static class DistributedCacheOptionsExtensions
@@ -17,8 +18,23 @@ public static class DistributedCacheOptionsExtensions
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        distributedOptions.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedOptions.Name);
+        var configuration = distributedOptions.Services.GetLocalConfiguration(redisSectionName);
+        return distributedOptions.UseStackExchangeRedisCache(configuration, jsonSerializerOptions);
+    }
 
+    /// <summary>
+    /// Add distributed Redis cache
+    /// </summary>
+    /// <param name="distributedOptions"></param>
+    /// <param name="configuration"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <returns></returns>
+    public static DistributedCacheOptions UseStackExchangeRedisCache(
+        this DistributedCacheOptions distributedOptions,
+        IConfiguration configuration,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedOptions.Services.Configure<RedisConfigurationOptions>(distributedOptions.Name, configuration);
         distributedOptions.Services.Configure<DistributedCacheFactoryOptions>(options =>
         {
             if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
@@ -50,7 +66,8 @@ public static class DistributedCacheOptionsExtensions
         return distributedOptions;
     }
 
-    public static DistributedCacheOptions UseStackExchangeRedisCache(this DistributedCacheOptions distributedOptions,
+    public static DistributedCacheOptions UseStackExchangeRedisCache(
+        this DistributedCacheOptions distributedOptions,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
@@ -63,7 +80,8 @@ public static class DistributedCacheOptionsExtensions
 
     #region internal methods
 
-    internal static void UseStackExchangeRedisCache(this IServiceCollection services,
+    internal static void UseStackExchangeRedisCache(
+        this IServiceCollection services,
         string name,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
