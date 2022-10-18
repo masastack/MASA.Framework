@@ -8,10 +8,13 @@ public class MasaLocalizationOptions
 {
     public Type? DefaultResourceType { get; set; }
 
+    public List<LanguageInfo> Languages { get; set; }
+
     public LocalizationResourceDictionary Resources { get; }
 
     public MasaLocalizationOptions()
     {
-        Resources = new ();
+        Resources = new();
+        Languages = new();
     }
 }

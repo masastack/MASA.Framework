@@ -13,17 +13,13 @@ public static class LocalizationResourceExtensions
     public static LocalizationResource AddJson(
         this LocalizationResource localizationResource,
         string languageDirectory,
-        params string[] cultureNames)
+        params LanguageInfo[] languages)
     {
         languageDirectory = GetAndCheckLanguageDirectory(languageDirectory);
-        if (cultureNames.Length == 0)
-        {
-            cultureNames = GetCultureNames(languageDirectory).ToArray();
-        }
         var resourceContributors = GetResourceContributors(
             localizationResource,
             languageDirectory,
-            cultureNames);
+            languages);
         foreach (var resourceContributor in resourceContributors)
         {
             localizationResource.AddContributor(resourceContributor.CultureName, resourceContributor);
@@ -52,20 +48,12 @@ public static class LocalizationResourceExtensions
         return languageDirectory;
     }
 
-    private static List<string> GetCultureNames(string languageDirectory)
-    {
-        var supportCultureFilePath = Path.Combine(languageDirectory, Internal.Const.SUPPORTED_CULTURES_FILE_NAME);
-        var content = File.ReadAllText(supportCultureFilePath);
-        return System.Text.Json.JsonSerializer.Deserialize<List<string>>(content) ?? new List<string>()
-        {
-            "en-US"
-        };
-    }
+
 
     private static List<ILocalizationResourceContributor> GetResourceContributors(
         LocalizationResource localizationResource,
         string languageDirectory,
-        IEnumerable<string> cultureNames)
+        IEnumerable<LanguageInfo> languages)
     {
         _configuration ??= MasaApp.GetServices().BuildServiceProvider().GetService<IConfiguration>();
         _masaConfiguration ??=
@@ -78,17 +66,17 @@ public static class LocalizationResourceExtensions
         var useMasaConfiguration = _masaConfiguration != null;
         services.AddJsonLocalizationConfigurationSource(
             languageDirectory,
-            cultureNames,
+            languages,
             localizationResource.ResourceType,
             ref configuration,
             useMasaConfiguration);
         _configuration = configuration;
 
-        return cultureNames.Select
-            (cultureName => (ILocalizationResourceContributor)new LocalLocalizationResourceContributor
+        return languages.Select
+            (languageInfo => (ILocalizationResourceContributor)new LocalLocalizationResourceContributor
                 (
                     localizationResource.ResourceType,
-                    cultureName,
+                    languageInfo.Culture,
                     useMasaConfiguration ? _configuration!.GetSection(SectionTypes.Local.ToString()) : _configuration!
                 )
             )
@@ -98,7 +86,7 @@ public static class LocalizationResourceExtensions
     private static void AddJsonLocalizationConfigurationSource(
         this IServiceCollection services,
         string languageDirectory,
-        IEnumerable<string> cultureNames,
+        IEnumerable<LanguageInfo> languages,
         Type resourceType,
         ref IConfiguration? configuration,
         bool useMasaConfiguration)
@@ -119,7 +107,7 @@ public static class LocalizationResourceExtensions
         }
         var configurationBuilder = new ConfigurationBuilder();
         var jsonLocalizationConfigurationSource =
-            new JsonLocalizationConfigurationSource(resourceType, languageDirectory, cultureNames, useMasaConfiguration);
+            new JsonLocalizationConfigurationSource(resourceType, languageDirectory, languages.Select(l=>l.Culture), useMasaConfiguration);
         configurationBuilder.Add(jsonLocalizationConfigurationSource);
         var localizationConfiguration = configurationBuilder.Build();
         configurationManager.AddConfiguration(localizationConfiguration);

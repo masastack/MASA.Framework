@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Globalization.Localization;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Globalization.Localization.Dcc;
 global using Microsoft.Extensions.Configuration;

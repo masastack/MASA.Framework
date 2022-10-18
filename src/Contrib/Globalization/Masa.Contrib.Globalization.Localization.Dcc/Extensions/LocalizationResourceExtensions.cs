@@ -10,14 +10,14 @@ public static class LocalizationResourceExtensions
         this LocalizationResource localizationResource,
         string appId,
         string configObject,
-        params string[] cultureNames)
+        params LanguageInfo[] languages)
     {
         var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetRequiredService<IMasaConfiguration>();
-        foreach (var cultureName in cultureNames)
+        foreach (var language in languages)
         {
-            var resourceContributor = new DccLocalizationResourceContributor(appId, configObject, cultureName, masaConfiguration);
-            localizationResource.AddContributor(cultureName, resourceContributor);
+            var resourceContributor = new DccLocalizationResourceContributor(appId, configObject, language.Culture, masaConfiguration);
+            localizationResource.AddContributor(language.Culture, resourceContributor);
         }
         return localizationResource;
     }

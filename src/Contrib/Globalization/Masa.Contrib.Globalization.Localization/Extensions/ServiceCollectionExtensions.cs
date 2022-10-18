@@ -31,7 +31,8 @@ public static class ServiceCollectionExtensions
             options.DefaultResourceType ??= typeof(DefaultResource);
         });
         services.TryAddSingleton(typeof(IMasaStringLocalizer<>), typeof(MasaStringLocalizer<>));
-        services.AddSingleton<IMasaStringLocalizerFactory, MasaStringLocalizerFactory>();
+        services.TryAddSingleton<IMasaStringLocalizerFactory, MasaStringLocalizerFactory>();
+        services.TryAddSingleton<ILanguageProvider, DefaultLanguageProvider>();
 
         action?.Invoke(new Masa.Contrib.Globalization.Localization.LocalizationOptions());
 
