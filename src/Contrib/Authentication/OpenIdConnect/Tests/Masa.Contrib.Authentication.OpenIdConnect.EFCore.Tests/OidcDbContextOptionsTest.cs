@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Tests;
 
 [TestClass]
-public class ThirdPartyIdpServiceTest
+public class OidcDbContextOptionsTest
 {
     [TestMethod]
     public async Task TestSeedStandardResources1Async()

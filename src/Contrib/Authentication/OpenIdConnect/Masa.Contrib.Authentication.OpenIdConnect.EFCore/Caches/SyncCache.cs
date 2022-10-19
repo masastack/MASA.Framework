@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Caches;
 
+[ExcludeFromCodeCoverage]
 public class SyncCache
 {
     IClientCache _clientCache;
