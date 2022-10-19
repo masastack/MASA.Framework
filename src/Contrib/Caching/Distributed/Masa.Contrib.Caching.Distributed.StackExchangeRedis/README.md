@@ -17,41 +17,6 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 
 #### Usage 1:
 
-1. Configure `appsettings.json`
-
-``` C#
-{
-  "RedisConfig": {
-    "Servers": [
-      {
-        "Host": "localhost",
-        "Port": 6379
-      }
-    ],
-    "DefaultDatabase": 3,
-    "ConnectionPoolSize": 10
-  }
-}
-```
-
-2. Add Redis cache
-
-``` C#
-builder.Services.AddDistributedCache(distributedCacheOptions =>
-{
-    distributedCacheOptions.UseStackExchangeRedisCache();
-});
-```
-
-3. Get `IDistributedCacheClient` from DI
-
-``` C#
-string key = "test_1";
-distributedCacheClient.Set(key, "test_content");
-```
-
-#### Usage 2:
-
 1. Add Redis cache
 
 ``` C#
@@ -77,7 +42,45 @@ string key = "test_1";
 distributedCacheClient.Set(key, "test_content");
 ```
 
-#### Usage 3 (used with Dcc):
+#### Usage 2:
+
+1. Configure `appsettings.json`
+
+``` C#
+{
+  "RedisConfig": {
+    "Servers": [
+      {
+        "Host": "localhost",
+        "Port": 6379
+      }
+    ],
+    "DefaultDatabase": 3,
+    "ConnectionPoolSize": 10
+  }
+}
+```
+
+2. Add Redis cache
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    // Redis configuration information is obtained through `IOptionsMonitor<RedisConfigurationOptions>`
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
+```
+
+> By default, the `RedisConfig` node of the local configuration is read, and the configuration supports [`Options Mode`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options), which supports the `IOptionsMonitor<RedisConfigurationOptions>` to get Redis configuration information
+
+3. Get `IDistributedCacheClient` from DI
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### Usage 3:
 
 1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
 
@@ -95,7 +98,8 @@ builder.Services.AddMasaConfiguration(configurationBuilder =>
 ``` C#
 builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache(builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}"));
+    var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}");
+    distributedCacheOptions.UseStackExchangeRedisCache(configuration);
 });
 ```
 
@@ -106,7 +110,7 @@ string key = "test_1";
 distributedCacheClient.Set(key, "test_content");
 ```
 
-#### Usage 4 (used with Dcc):
+#### Usage 4:
 
 1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
 
@@ -114,6 +118,8 @@ distributedCacheClient.Set(key, "test_content");
 builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
     configurationBuilder.UseDcc();
+
+    // Use the manual mapping function provided by MasaConfiguration to support the option mode, and support to obtain Redis configuration information through IOptionsMonitor<RedisConfigurationOptions>
     configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<RedisConfigurationOptions>("Replace-Your-RedisOptions-AppId", "Replace-Your-RedisOptions-ConfigObjectName", "{Replace-Your-DistributedCacheName}"));
 });
 ```
@@ -125,9 +131,12 @@ builder.Services.AddMasaConfiguration(configurationBuilder =>
 ``` C#
 builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
+    // Redis configuration information is obtained through `IOptionsMonitor<RedisConfigurationOptions>`
     distributedCacheOptions.UseStackExchangeRedisCache());
 });
 ```
+
+> Since the local `RedisConfig` node does not exist, support [Options mode](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) is skipped by default (avoid providing options with MasaConfiguration [Options mode](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) repeat)
 
 3. Get `IDistributedCacheClient` from DI and use the corresponding method
 
