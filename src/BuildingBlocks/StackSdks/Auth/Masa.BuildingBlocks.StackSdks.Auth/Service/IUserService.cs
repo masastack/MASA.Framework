@@ -27,7 +27,7 @@ public interface IUserService
 
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
-    Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
+    Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
     Task<UserModel?> FindByAccountAsync(string account);
 
@@ -69,7 +69,7 @@ public interface IUserService
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
 
-    Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
+    Task<UserModel?> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
 
     Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login);
 
