@@ -16,11 +16,17 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddOidcCache(this IServiceCollection services, RedisConfigurationOptions options)
     {
-        services.AddStackExchangeRedisCache(Constants.DEFAULT_CLIENT_NAME, options).AddMultilevelCache(new MultilevelCacheOptions()
-        {
-            SubscribeKeyType = SubscribeKeyType.SpecificPrefix,
-            SubscribeKeyPrefix = Constants.DEFAULT_SUBSCRIBE_KEY_PREFIX
-        });
+        services.AddMultilevelCache(
+            Constants.DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(options),
+            null,
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
+                multilevelCacheOptions.SubscribeKeyPrefix = Constants.DEFAULT_SUBSCRIBE_KEY_PREFIX;
+            }
+        );
+
         services.AddSingleton<MemoryCacheProvider>();
         services.AddSingleton<IClientCache, ClientCache>();
         services.AddSingleton<IApiScopeCache, ApiScopeCache>();

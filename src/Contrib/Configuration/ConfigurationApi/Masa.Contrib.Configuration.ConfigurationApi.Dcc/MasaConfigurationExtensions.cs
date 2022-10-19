@@ -29,9 +29,15 @@ public static class MasaConfigurationExtensions
 
         services.AddSingleton<DccConfigurationProvider>();
 
-        services
-            .AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, dccOptions.RedisOptions)
-            .AddSharedMasaMemoryCache(dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX);
+        services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
+            null,
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
+                multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX;
+            });
 
         var dccConfigurationOptions = ComplementAndCheckDccConfigurationOption(builder, dccOptions);
 
@@ -190,17 +196,6 @@ public static class MasaConfigurationExtensions
 
         if (dccOptions.ExpandSections.DistinctBy(dccSectionOptions => dccSectionOptions.AppId).Count() != dccOptions.ExpandSections.Count)
             throw new ArgumentException("AppId cannot be repeated", nameof(dccOptions));
-    }
-
-    private static ICachingBuilder AddSharedMasaMemoryCache(this ICachingBuilder builder, string subscribeKeyPrefix)
-    {
-        builder.AddMultilevelCache(new MultilevelCacheOptions()
-        {
-            SubscribeKeyType = SubscribeKeyType.SpecificPrefix,
-            SubscribeKeyPrefix = subscribeKeyPrefix
-        });
-
-        return builder;
     }
 
     private sealed class DccConfigurationProvider

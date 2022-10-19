@@ -20,6 +20,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NSubstitute" Version="$(NSubstitutePackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

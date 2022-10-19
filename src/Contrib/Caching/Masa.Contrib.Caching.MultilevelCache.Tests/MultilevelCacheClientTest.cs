@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 
+#pragma warning disable CS0618
 [TestClass]
 public class MultilevelCacheClientTest : TestBase
 {
@@ -23,6 +24,10 @@ public class MultilevelCacheClientTest : TestBase
             _distributedCacheClient,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
         InitializeData();
     }
@@ -33,7 +38,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual("success", _multilevelCacheClient.Get<string>("test_multilevel_cache"));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
-        _memoryCache.Remove(SubscribeHelper.FormatMemoryCacheKey<decimal>("test_multilevel_cache_2"));
+        _memoryCache.Remove(CacheKeyHelper.FormatCacheKey<decimal>("test_multilevel_cache_2", CacheKeyType.TypeName));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
@@ -346,26 +351,27 @@ public class MultilevelCacheClientTest : TestBase
         {
             "test20"
         };
-        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        Mock<IMemoryCache> memoryCache = new();
+        Mock<IDistributedCacheClient> distributedCacheClient = new();
+        distributedCacheClient.Setup(client => client.Refresh<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
+            .Verifiable();
+        memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
 
-        var memoryCache = Substitute.For<IMemoryCache>();
-        var multilevelCacheClient = new MultilevelCacheClient(memoryCache,
-            distributedCacheClient,
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
+            distributedCacheClient.Object,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
 
         multilevelCacheClient.Refresh<string>(keys);
 
-        Received.InOrder(() =>
-        {
-            distributedCacheClient.Refresh(keys);
-
-            Parallel.ForEach(keys, key =>
-            {
-                _memoryCache.TryGetValue(SubscribeHelper.FormatMemoryCacheKey<string>(key), out _);
-            });
-        });
+        memoryCache.Verify(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny), Times.Once);
+        distributedCacheClient.Verify(client => client.Refresh<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()),
+            Times.Once);
     }
 
     [TestMethod]
@@ -375,26 +381,28 @@ public class MultilevelCacheClientTest : TestBase
         {
             "test20"
         };
-        var distributedCacheClient = Substitute.For<IDistributedCacheClient>();
+        Mock<IMemoryCache> memoryCache = new();
+        Mock<IDistributedCacheClient> distributedCacheClient = new();
+        distributedCacheClient.Setup(client
+                => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
+            .Verifiable();
+        memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
 
-        var memoryCache = Substitute.For<IMemoryCache>();
-        var multilevelCacheClient = new MultilevelCacheClient(memoryCache,
-            distributedCacheClient,
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
+            distributedCacheClient.Object,
             new CacheEntryOptions(TimeSpan.FromSeconds(10)),
             SubscribeKeyType.SpecificPrefix,
+            new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            },
             "test");
 
         await multilevelCacheClient.RefreshAsync<string>(keys);
 
-        Received.InOrder(async () =>
-        {
-            await distributedCacheClient.RefreshAsync(keys);
-
-            Parallel.ForEach(keys, key =>
-            {
-                _memoryCache.TryGetValue(SubscribeHelper.FormatMemoryCacheKey<string>(key), out _);
-            });
-        });
+        memoryCache.Verify(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny), Times.Once);
+        distributedCacheClient.Verify(
+            client => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()), Times.Once);
     }
 
     [TestMethod]
@@ -439,10 +447,31 @@ public class MultilevelCacheClientTest : TestBase
     private static IMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache();
+        services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(_ =>
+        {
+        });
         var serviceProvider = services.BuildServiceProvider();
         var cacheClientFactory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         var multilevelCacheClient = cacheClientFactory.Create("test");
         return multilevelCacheClient;
     }
+
+    [TestMethod]
+    public void TestMultilevelCache()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(_ =>
+            {
+            }),
+            new MultilevelCacheOptions()
+            {
+                SubscribeKeyPrefix = "masa",
+                SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+            });
+        var serviceProvider = services.BuildServiceProvider();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        Assert.IsNotNull(multilevelCacheClient);
+    }
 }
+#pragma warning restore CS0618

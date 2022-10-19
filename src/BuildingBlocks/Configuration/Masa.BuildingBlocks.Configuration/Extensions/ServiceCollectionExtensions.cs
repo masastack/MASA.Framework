@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class OptionsConfigurationServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Only consider using MasaConfiguration and database configuration using local configuration
@@ -37,5 +37,17 @@ public static class OptionsConfigurationServiceCollectionExtensions
 
         services.Configure<TOptions>(name, isRoot ? configuration : configurationSection);
         return services;
+    }
+
+    public static IConfiguration GetLocalConfiguration(
+        this IServiceCollection services,
+        string sectionName)
+    {
+        var serviceProvider = services.BuildServiceProvider();
+        IConfiguration? configuration = serviceProvider.GetService<Masa.BuildingBlocks.Configuration.IMasaConfiguration>()?.Local ??
+            serviceProvider.GetService<IConfiguration>();
+        if (configuration == null)
+            throw new NotSupportedException(); //Need to make sure IConfiguration has been injected in DI
+        return configuration.GetSection(sectionName);
     }
 }

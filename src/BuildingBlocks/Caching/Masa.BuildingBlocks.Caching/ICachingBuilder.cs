@@ -11,7 +11,7 @@ public interface ICachingBuilder
     IServiceCollection Services { get; }
 
     /// <summary>
-    /// Gets the name of the client configured by this builder.
+    /// Get the name of IDistributedCacheClient or IMultilevelCacheClient, used for multiple IDistributedCacheClient or IMultilevelCacheClient.
     /// </summary>
     string Name { get; }
 }

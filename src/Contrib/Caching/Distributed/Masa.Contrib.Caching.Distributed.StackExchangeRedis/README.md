@@ -17,6 +17,33 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 
 #### Usage 1:
 
+1. Add Redis cache
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    var redisConfigurationOptions = new RedisConfigurationOptions()
+    {
+        DefaultDatabase = 1,
+        ConnectionPoolSize = 10,
+        Servers = new List<RedisServerOptions>()
+        {
+            new("localhost", 6379)
+        }
+    };
+    distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions);
+});
+```
+
+2. Get `IDistributedCacheClient` from DI and use the corresponding method
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### Usage 2:
+
 1. Configure `appsettings.json`
 
 ``` C#
@@ -37,8 +64,14 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 2. Add Redis cache
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache();
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    // Redis configuration information is obtained through `IOptionsMonitor<RedisConfigurationOptions>`
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
+
+> By default, the `RedisConfig` node of the local configuration is read, and the configuration supports [`Options Mode`](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options), which supports the `IOptionsMonitor<RedisConfigurationOptions>` to get Redis configuration information
 
 3. Get `IDistributedCacheClient` from DI
 
@@ -47,23 +80,65 @@ string key = "test_1";
 distributedCacheClient.Set(key, "test_content");
 ```
 
-#### Usage 2:
+#### Usage 3:
 
-1. Add Redis cache
+1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
-    DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
-    Servers = new List<RedisServerOptions>()
-    {
-        new("localhost", 6379)
-    }
+    configurationBuilder.UseDcc();
 });
 ```
 
-2. Get `IDistributedCacheClient` from DI and use the corresponding method
+> Please [Reference](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+2 Use the configuration where redis is located
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}");
+    distributedCacheOptions.UseStackExchangeRedisCache(configuration);
+});
+```
+
+3. Get `IDistributedCacheClient` from DI and use the corresponding method
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### Usage 4:
+
+1. Use [Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+``` C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+
+    // Use the manual mapping function provided by MasaConfiguration to support the option mode, and support to obtain Redis configuration information through IOptionsMonitor<RedisConfigurationOptions>
+    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<RedisConfigurationOptions>("Replace-Your-RedisOptions-AppId", "Replace-Your-RedisOptions-ConfigObjectName", "{Replace-Your-DistributedCacheName}"));
+});
+```
+
+> Please [Reference](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.md)
+
+2 Use the configuration where redis is located
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    // Redis configuration information is obtained through `IOptionsMonitor<RedisConfigurationOptions>`
+    distributedCacheOptions.UseStackExchangeRedisCache());
+});
+```
+
+> Since the local `RedisConfig` node does not exist, support [Options mode](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) is skipped by default (avoid providing options with MasaConfiguration [Options mode](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) repeat)
+
+3. Get `IDistributedCacheClient` from DI and use the corresponding method
 
 ``` C#
 string key = "test_1";

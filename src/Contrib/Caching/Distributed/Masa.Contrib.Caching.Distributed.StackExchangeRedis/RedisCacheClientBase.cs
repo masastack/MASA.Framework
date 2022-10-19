@@ -8,20 +8,22 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
     protected IDatabase Db;
-    protected readonly JsonSerializerOptions JsonSerializerOptions;
-    protected CacheEntryOptions CacheEntryOptions;
+    protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
+    protected CacheEntryOptions GlobalCacheEntryOptions;
+    protected CacheOptions GlobalCacheOptions;
 
     protected RedisCacheClientBase(RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
     {
+        GlobalCacheOptions = redisConfigurationOptions.GlobalCacheOptions;
         var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);
         IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Db = connection.GetDatabase();
         Subscriber = connection.GetSubscriber();
 
-        JsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
+        GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
 
-        CacheEntryOptions = new CacheEntryOptions
+        GlobalCacheEntryOptions = new CacheEntryOptions
         {
             AbsoluteExpiration = redisConfiguration.AbsoluteExpiration,
             AbsoluteExpirationRelativeToNow = redisConfiguration.AbsoluteExpirationRelativeToNow,
@@ -48,7 +50,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         if (value.HasValue && !value.IsNullOrEmpty)
         {
             isExist = true;
-            return value.ConvertToValue<T>(JsonSerializerOptions);
+            return value.ConvertToValue<T>(GlobalJsonSerializerOptions);
         }
 
         isExist = false;
@@ -56,7 +58,18 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     }
 
     protected CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
-        => options ?? CacheEntryOptions;
+        => options ?? GlobalCacheEntryOptions;
+
+    protected CacheOptions GetCacheOptions(Action<CacheOptions>? action)
+    {
+        if (action != null)
+        {
+            CacheOptions cacheOptions = new CacheOptions();
+            action.Invoke(cacheOptions);
+            return cacheOptions;
+        }
+        return GlobalCacheOptions;
+    }
 
     protected static PublishOptions GetAndCheckPublishOptions(string channel, Action<PublishOptions> setup)
     {
