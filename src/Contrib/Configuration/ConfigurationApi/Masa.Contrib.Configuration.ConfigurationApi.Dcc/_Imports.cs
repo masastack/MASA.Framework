@@ -9,6 +9,7 @@ global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Caching.MultilevelCache;
+global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Model;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
