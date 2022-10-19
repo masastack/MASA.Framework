@@ -68,10 +68,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, long>(requestUri, new { id = teamId });
     }
 
-    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
+    public async Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _caller.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
+        return await _caller.PostAsync<object, UserModel>(requestUri, new { account, password, isLdap });
     }
 
     public async Task<UserModel?> FindByAccountAsync(string account)
@@ -215,10 +215,10 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
-    public async Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
+    public async Task<UserModel?> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
     {
         var requestUri = $"api/user/loginByPhoneNumber";
-        return await _caller.PostAsync<UserModel>(requestUri, login) ?? throw new UserFriendlyException("login failed");
+        return await _caller.PostAsync<UserModel>(requestUri, login);
     }
 
     public async Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
@@ -319,7 +319,7 @@ public class UserService : IUserService
             userId = _userContext.GetUserId<Guid>();
         }
         var requestUri = $"api/user/hasPassword";
-        return await _caller.GetAsync <bool>(requestUri, new { userId });
+        return await _caller.GetAsync<bool>(requestUri, new { userId });
     }
 
     public async Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model)

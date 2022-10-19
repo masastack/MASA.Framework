@@ -184,15 +184,16 @@ public class UserServiceTest
     [DataRow("account", "123456")]
     public async Task TestValidateCredentialsByAccountAsync(string account, string password)
     {
-        var data = false;
+        var data = new UserModel();
         Guid departmentId = Guid.NewGuid();
         var requestUri = $"api/user/validateByAccount";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<object, bool>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        caller.Setup(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default))
+            .ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         var userService = new UserService(caller.Object, userContext.Object);
         var result = await userService.ValidateCredentialsByAccountAsync(account, password);
-        caller.Verify(provider => provider.PostAsync<object, bool>(requestUri, It.IsAny<object>(), default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
     }
 
     [TestMethod]
