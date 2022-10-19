@@ -8,5 +8,6 @@ public enum SendMsgCodeTypes
     VerifiyPhoneNumber = 1,
     UpdatePhoneNumber,
     Login,
-    Register
+    Register,
+    Bind
 }
