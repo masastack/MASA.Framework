@@ -37,7 +37,7 @@ public class SyncCache
     internal async Task SyncIdentityResourceCacheAsync(params int[] ids)
     {
         var identityResources = await IdentityResourceQuery().Where(idrs => ids.Contains(idrs.Id)).ToListAsync();
-        if (identityResources.Count ==0) return;
+        if (identityResources.Count == 0) return;
         await _identityResourceCache.SetRangeAsync(identityResources);
     }
 
