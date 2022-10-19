@@ -18,4 +18,6 @@ public static class GrantType
     public const string DEVICE_FLOW = "urn:ietf:params:oauth:grant-type:device_code";
 
     public const string PHONE_CODE = "phone_code";
+
+    public const string LOCAL_PHONE = "local_phone";
 }
