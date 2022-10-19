@@ -575,19 +575,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Globalization", "Globalizat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect", "src\Contrib\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.csproj", "{9BB5CC86-C2E8-4859-9610-50DB263605A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.Localization", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.Localization\Masa.BuildingBlocks.Globalization.Localization.csproj", "{AC84401A-58FD-4786-9E10-BA99D17ABB3E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.I18N", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18N\Masa.BuildingBlocks.Globalization.I18N.csproj", "{AC84401A-58FD-4786-9E10-BA99D17ABB3E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests", "src\Contrib\Service\Caller\Authentication\Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests.csproj", "{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.Localization", "src\Contrib\Globalization\Masa.Contrib.Globalization.Localization\Masa.Contrib.Globalization.Localization.csproj", "{F9E3EBD9-EE96-40F7-BDC7-818B88557D6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.I18N", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj", "{F9E3EBD9-EE96-40F7-BDC7-818B88557D6B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D2E598D5-5E44-4275-AF03-4BAD07A0E13B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.Localization.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.Localization.Tests\Masa.Contrib.Globalization.Localization.Tests.csproj", "{6C732EBE-22CC-4160-B427-F4558C899024}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.I18N.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.I18N.Tests\Masa.Contrib.Globalization.I18N.Tests.csproj", "{6C732EBE-22CC-4160-B427-F4558C899024}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.Localization.Dcc", "src\Contrib\Globalization\Masa.Contrib.Globalization.Localization.Dcc\Masa.Contrib.Globalization.Localization.Dcc.csproj", "{B0EFDF9E-81FF-4880-992B-8A65A2008717}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Globalization.I18N.Dcc", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18N.Dcc\Masa.Contrib.Globalization.I18N.Dcc.csproj", "{B0EFDF9E-81FF-4880-992B-8A65A2008717}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
