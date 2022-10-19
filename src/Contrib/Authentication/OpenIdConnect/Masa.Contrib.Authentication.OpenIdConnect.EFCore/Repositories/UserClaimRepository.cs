@@ -84,8 +84,9 @@ public class UserClaimRepository : IUserClaimRepository
     public async Task AddStandardUserClaimsAsync()
     {
         var userClaims = new List<UserClaim>();
+        var keys = StandardUserClaims.Claims.Keys;
         var existData = await _context.Set<UserClaim>()
-                                      .Where(userClaim => StandardUserClaims.Claims.ContainsKey(userClaim.Name))
+                                      .Where(userClaim => keys.Contains(userClaim.Name))
                                       .Select(userClaim => userClaim.Name)
                                       .ToListAsync();
         foreach (var claim in StandardUserClaims.Claims)
