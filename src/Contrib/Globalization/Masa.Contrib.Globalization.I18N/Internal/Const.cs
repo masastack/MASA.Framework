@@ -7,5 +7,5 @@ internal static class Const
 {
     internal const string SUPPORTED_CULTURES_NAME = "supportedCultures.json";
 
-    internal const string DEFAULT_RESOURCE_PATH = "Resources";
+    internal const string DEFAULT_RESOURCE_PATH = "Resources/i18n";
 }

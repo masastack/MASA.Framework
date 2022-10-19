@@ -3,47 +3,52 @@
 
 // ReSharper disable once CheckNamespace
 
+using Masa.BuildingBlocks.Globalization.I18N.Options;
+
 namespace Masa.Contrib.Globalization.I18N;
 
 public static class I18NOptionsExtensions
 {
-    public static I18NOptions UseDcc(
+    public static void UseDcc(
         this I18NOptions localization,
         params LanguageInfo[] languages)
-        => localization.UseDcc(DccConfig.AppId, "I18n", languages);
+        => localization.UseDcc(Dcc.Internal.Const.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Const.SUPPORTED_CULTURES_NAME, languages);
 
-    public static I18NOptions UseDcc(
+    public static void UseDcc(
         this I18NOptions localization,
         string configObject,
+        string supportCultureName,
         params LanguageInfo[] languages)
-        => localization.UseDcc(DccConfig.AppId, configObject, languages);
+        => localization.UseDcc(DccConfig.AppId, configObject, supportCultureName, languages);
 
-    public static I18NOptions UseDcc(
+    public static void UseDcc(
         this I18NOptions localization,
         string appId,
         string configObject,
+        string supportCultureName,
         params LanguageInfo[] languages)
     {
         var services = MasaApp.GetServices();
-        services.Configure<MasaI18NOptions>(options =>
+        if (languages.Length == 0)
         {
-            if (languages.Length == 0)
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-                languages = configurationApiClient.GetAsync<List<LanguageInfo>>(
-                    $"{configObject}.{Dcc.Internal.Const.SUPPORTED_CULTURES_NAME}",
-                    newLanguages
-                        =>
-                    {
-                        options.Languages = newLanguages.ToList();
-                    }).ConfigureAwait(false).GetAwaiter().GetResult().ToArray();
-            }
-            options.Languages = languages.ToList();
-            options.Resources
-                .Add<DefaultResource>()
-                .UseDcc(appId, configObject, languages);
-        });
-        return localization;
+            var serviceProvider = services.BuildServiceProvider();
+            var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            languages = configurationApiClient.GetAsync<List<LanguageInfo>>(
+                $"{configObject}.{supportCultureName}",
+                newLanguages
+                    =>
+                {
+                    I18NResourceResourceConfiguration.Languages = newLanguages;
+                    I18NResourceResourceConfiguration
+                        .Resources
+                        .Add<DefaultResource>()
+                        .UseDcc(appId, configObject, newLanguages.ToArray());
+                }).ConfigureAwait(false).GetAwaiter().GetResult().ToArray();
+        }
+        I18NResourceResourceConfiguration.Languages = languages.ToList();
+        I18NResourceResourceConfiguration
+            .Resources
+            .Add<DefaultResource>()
+            .UseDcc(appId, configObject, languages);
     }
 }

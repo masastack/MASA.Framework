@@ -6,6 +6,15 @@ namespace Masa.Contrib.Globalization.I18N.Tests;
 [TestClass]
 public class I18NTest
 {
+    private const string DEFAULT_RESOURCE = "Resources/i18n";
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        I18NResourceResourceConfiguration.Languages = new List<LanguageInfo>();
+        I18NResourceResourceConfiguration.Resources = new();
+    }
+
     [DataTestMethod]
     [DataRow("zh-CN", "吉姆")]
     [DataRow("en-US", "Jim")]
@@ -15,7 +24,7 @@ public class I18NTest
         services.AddLogging();
         services.TestAddI18N(options =>
         {
-            options.UseJson("Resources");
+            options.UseJson();
         });
         var serviceProvider = services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
@@ -36,7 +45,7 @@ public class I18NTest
         var builder = WebApplication.CreateBuilder();
         builder.Services.TestAddI18N(options =>
         {
-            options.UseJson("Resources");
+            options.UseJson(DEFAULT_RESOURCE);
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
@@ -56,7 +65,7 @@ public class I18NTest
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddI18N(options =>
         {
-            options.UseJson("Resources");
+            options.UseJson(DEFAULT_RESOURCE);
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
@@ -78,9 +87,31 @@ public class I18NTest
         {
             options.Resources
                 .Add<DefaultResource>()
-                .AddJson("/Resources");
+                .AddJson("/i18n");
         });
         builder.Services.AddI18N(null);
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var i18N = serviceProvider.GetRequiredService<II18N>();
+        i18N.SetCulture(cultureName);
+        var value = i18N["Name"];
+        Assert.AreEqual(expectedValue, value);
+        value = i18N.T("Name");
+        Assert.AreEqual(expectedValue, value);
+        value = i18N["Name2"];
+        Assert.AreEqual("Name2", value);
+    }
+
+
+    [DataTestMethod]
+    [DataRow("zh-CN", "吉姆")]
+    [DataRow("en-US", "Jim")]
+    public void TestLocalization5(string cultureName, string expectedValue)
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.TestAddI18N(options =>
+        {
+            options.UseJson(DEFAULT_RESOURCE, new LanguageInfo("zh-CN"), new LanguageInfo("en-US"));
+        });
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
         i18N.SetCulture(cultureName);

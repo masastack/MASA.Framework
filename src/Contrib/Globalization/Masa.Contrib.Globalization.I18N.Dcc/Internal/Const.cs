@@ -5,5 +5,7 @@ namespace Masa.Contrib.Globalization.I18N.Dcc.Internal;
 
 internal static class Const
 {
+    internal const string DEFAULT_CONFIG_OBJECT_NAME = "i18n";
+
     internal const string SUPPORTED_CULTURES_NAME = "supportedCultures";
 }

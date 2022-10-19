@@ -6,15 +6,10 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 
 public class MasaI18NOptions
 {
-    public Type? DefaultResourceType { get; set; }
-
-    public List<LanguageInfo> Languages { get; set; }
-
     public I18NResourceDictionary Resources { get; }
 
     public MasaI18NOptions()
     {
         Resources = new();
-        Languages = new();
     }
 }

@@ -13,9 +13,6 @@ public class I18NResourceDictionary : Dictionary<Type, I18NResource>
 
     public I18NResource Add(Type resourceType)
     {
-        if (ContainsKey(resourceType))
-            throw new ArgumentException("This resource is already added before: " + resourceType.FullName);
-
         return this[resourceType] = new I18NResource(resourceType);
     }
 

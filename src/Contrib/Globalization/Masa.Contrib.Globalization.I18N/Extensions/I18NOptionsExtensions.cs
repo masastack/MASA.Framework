@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-using Microsoft.Extensions.FileProviders;
+using Masa.BuildingBlocks.Globalization.I18N.Options;
 
 namespace Masa.Contrib.Globalization.I18N;
 
@@ -23,8 +23,6 @@ public static class I18NOptionsExtensions
         string supportCultureName,
         params LanguageInfo[] languages)
     {
-        var services = MasaApp.GetServices();
-
         languageDirectory = PathHelper.GetAndCheckLanguageDirectory(languageDirectory);
 
         if (languages.Length == 0)
@@ -32,26 +30,40 @@ public static class I18NOptionsExtensions
             languages = GetLanguageInfos(languageDirectory, supportCultureName).ToArray();
             MonitorChange(languageDirectory, supportCultureName, () =>
             {
-                var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
-                var options = serviceProvider.GetRequiredService<IOptions<MasaI18NOptions>>();
-                options.Value.Languages = GetLanguageInfos(languageDirectory, supportCultureName).ToList();
+                I18NResourceResourceConfiguration.Languages = GetLanguageInfos(languageDirectory, supportCultureName).ToList();
+                I18NResourceResourceConfiguration
+                    .Resources
+                    .Add<DefaultResource>()
+                    .AddJson(languageDirectory, I18NResourceResourceConfiguration.Languages.ToArray());
             });
         }
 
-        services.Configure<MasaI18NOptions>(options =>
-        {
-            options.Languages = languages.ToList();
-
-            options.Resources
-                .Add<DefaultResource>()
-                .AddJson(languageDirectory, languages);
-        });
+        I18NResourceResourceConfiguration.Languages = languages.ToList();
+        I18NResourceResourceConfiguration
+            .Resources
+            .Add<DefaultResource>()
+            .AddJson(languageDirectory, languages);
     }
 
     private static List<LanguageInfo> GetLanguageInfos(
         string languageDirectory,
         string supportCultureName)
     {
+        start:
+        try
+        {
+            using var fileStream = new FileStream(Path.Combine(languageDirectory, supportCultureName),FileMode.Open);
+            if (!fileStream.CanRead)
+            {
+                Task.Delay(300);
+                goto start;
+            }
+        }
+        catch (IOException)
+        {
+            Task.Delay(300);
+            goto start;
+        }
         var supportCultureFilePath = Path.Combine(languageDirectory, supportCultureName);
         var content = File.ReadAllText(supportCultureFilePath);
         return System.Text.Json.JsonSerializer.Deserialize<List<LanguageInfo>>(content)!;

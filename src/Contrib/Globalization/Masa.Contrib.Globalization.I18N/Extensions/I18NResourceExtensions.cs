@@ -11,7 +11,7 @@ public static class I18NResourceExtensions
 
     private static IMasaConfiguration? _masaConfiguration;
 
-    public static I18NResource AddJson(
+    public static void AddJson(
         this I18NResource resource,
         string languageDirectory,
         params LanguageInfo[] languages)
@@ -25,8 +25,6 @@ public static class I18NResourceExtensions
         {
             resource.AddContributor(resourceContributor.CultureName, resourceContributor);
         }
-
-        return resource;
     }
 
     private static List<II18NResourceContributor> GetResourceContributors(

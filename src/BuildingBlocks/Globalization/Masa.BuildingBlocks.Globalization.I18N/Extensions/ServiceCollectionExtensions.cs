@@ -27,18 +27,19 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<I18NOptions>? action)
     {
-        services.Configure<MasaI18NOptions>(options =>
-        {
-            options.DefaultResourceType ??= typeof(DefaultResource);
-        });
         services.TryAddTransient(typeof(II18N<>), typeof(I18N<>));
         services.TryAddSingleton<ILanguageProvider, DefaultLanguageProvider>();
 
         action?.Invoke(new I18NOptions());
 
-        var masaLocalizationOptions = services.BuildServiceProvider().GetRequiredService<IOptions<MasaI18NOptions>>().Value;
-        var defaultResourceLocalizer = typeof(II18N<>).MakeGenericType(masaLocalizationOptions.DefaultResourceType!);
-        services.TryAddTransient(serviceProvider => (II18N)serviceProvider.GetRequiredService(defaultResourceLocalizer));
+        services.TryAddTransient(serviceProvider => (II18N)serviceProvider.GetRequiredService<II18N<DefaultResource>>());
+
+        var i18NOptions = services.BuildServiceProvider().GetRequiredService<IOptions<MasaI18NOptions>>();
+        foreach (var resource in i18NOptions.Value.Resources)
+        {
+            I18NResourceResourceConfiguration.Resources[resource.Key] = resource.Value;
+        }
+
         return services;
     }
 }

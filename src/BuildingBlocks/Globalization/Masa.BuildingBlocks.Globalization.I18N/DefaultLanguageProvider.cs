@@ -5,13 +5,5 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 
 public class DefaultLanguageProvider : ILanguageProvider
 {
-    private readonly IOptionsMonitor<MasaI18NOptions> _options;
-
-    public DefaultLanguageProvider(IOptionsMonitor<MasaI18NOptions> options)
-    {
-        _options = options;
-    }
-
-    public IReadOnlyList<LanguageInfo> GetLanguages()
-        => _options.CurrentValue.Languages;
+    public IReadOnlyList<LanguageInfo> GetLanguages() => I18NResourceResourceConfiguration.Languages.ToArray();
 }

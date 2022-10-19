@@ -28,10 +28,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\*.json" />
-    <Content Include="Resources\*.json">
+    <None Remove="Resources\i18n\*.json" />
+    <Content Include="Resources\i18n\*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources" />
   </ItemGroup>
 
 </Project>
