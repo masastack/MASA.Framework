@@ -694,6 +694,36 @@ public class UserServiceTest
         Assert.IsTrue(result);
         caller.Verify(provider => provider.GetAsync<bool>(requestUri, default), Times.Once);
     }
+
+    [TestMethod]
+    public async Task TestResetPasswordByEmailAsync()
+    {
+        var model = new ResetPasswordByEmailModel();
+        var user = new UserModel();
+        var requestUri = $"api/user/reset_password_by_email";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, model, default)).ReturnsAsync(true).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.ResetPasswordByEmailAsync(model);
+        caller.Verify(provider => provider.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, model, default), Times.Once);
+        Assert.IsTrue(result);
+    }
+
+    [TestMethod]
+    public async Task TestResetPasswordByPhoneAsync()
+    {
+        var model = new ResetPasswordByPhoneModel();
+        var user = new UserModel();
+        var requestUri = $"api/user/reset_password_by_phone";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, model, default)).ReturnsAsync(true).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.ResetPasswordByPhoneAsync(model);
+        caller.Verify(provider => provider.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, model, default), Times.Once);
+        Assert.IsTrue(result);
+    }
 }
 
 class SystemData
