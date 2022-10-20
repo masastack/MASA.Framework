@@ -4,4 +4,5 @@
 global using Masa.BuildingBlocks.Caching;
 global using Masa.Contrib.Caching.MultilevelCache;
 global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.Options;

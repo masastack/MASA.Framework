@@ -16,7 +16,6 @@ public static class ServiceCollectionExtensions
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
 
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
-        services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
         return services;
     }
@@ -29,7 +28,6 @@ public static class ServiceCollectionExtensions
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
 
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
-        services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
 
         TryAddDistributedCacheCore(services, name);

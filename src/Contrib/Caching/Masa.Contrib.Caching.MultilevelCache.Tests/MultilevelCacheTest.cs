@@ -24,6 +24,16 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
+    public void TestAddMultilevelCache2()
+    {
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
+        builder.Services.AddMultilevelCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        var app = builder.Build();
+
+    }
+
+    [TestMethod]
     public void TestAddMultilevelCacheBySpecialMultilevelCacheOptions()
     {
         var services = new ServiceCollection();
