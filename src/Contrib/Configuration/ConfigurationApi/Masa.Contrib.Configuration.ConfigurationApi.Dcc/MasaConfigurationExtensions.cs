@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Configuration;
 
 public static class MasaConfigurationExtensions
@@ -35,6 +36,10 @@ public static class MasaConfigurationExtensions
             null,
             multilevelCacheOptions =>
             {
+                multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
+                {
+                    CacheKeyType = CacheKeyType.None
+                };
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
                 multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX;
             });
