@@ -130,7 +130,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
-            throw new ArgumentException(nameof(eventId));
+            throw new ArgumentException($"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}", nameof(eventId));
 
         action?.Invoke(eventLogEntry);
 
