@@ -88,5 +88,9 @@ public interface IUserService
     Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model);
 
     Task<bool> HasPhoneNumberInEnvAsync(string env, string phoneNumber);
+
+    Task<bool> ResetPasswordByEmailAsync(ResetPasswordByEmailModel resetPasswordByEmailModel);
+
+    Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
 }
 

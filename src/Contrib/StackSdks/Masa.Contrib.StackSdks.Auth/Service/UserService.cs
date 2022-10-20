@@ -335,5 +335,17 @@ public class UserService : IUserService
         var requestUri = $"api/user/HasPhoneNumberInEnv?env={env}&phoneNumber={phoneNumber}";
         return await _caller.GetAsync<bool>(requestUri);
     }
+
+    public async Task<bool> ResetPasswordByEmailAsync(ResetPasswordByEmailModel resetPasswordByEmailModel)
+    {
+        var requestUri = $"api/user/reset_password_by_email";
+        return await _caller.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, resetPasswordByEmailModel);
+    }
+
+    public async Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel)
+    {
+        var requestUri = $"api/user/reset_password_by_phone";
+        return await _caller.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, resetPasswordByPhoneModel);
+    }
 }
 
