@@ -66,7 +66,7 @@ distributedCacheClient.Set(key, "test_content");
 ``` C#
 builder.Services.AddDistributedCache(distributedCacheOptions =>
 {
-    // Redis configuration information is obtained through `IOptionsMonitor<RedisConfigurationOptions>`
+    // Redis configuration information is obtained through IOptionsMonitor<RedisConfigurationOptions>
     distributedCacheOptions.UseStackExchangeRedisCache();
 });
 ```
