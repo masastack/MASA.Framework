@@ -189,13 +189,7 @@ public class IntegrationEventBusTest
         };
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Once);
+        await Assert.ThrowsExceptionAsync<Exception>(async () => await integrationEventBus.PublishAsync(@event), "custom exception");
     }
 
     [TestMethod]
