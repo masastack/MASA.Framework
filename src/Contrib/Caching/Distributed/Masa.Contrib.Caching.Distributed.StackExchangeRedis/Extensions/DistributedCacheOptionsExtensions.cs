@@ -134,9 +134,6 @@ public static class DistributedCacheOptionsExtensions
             });
             options.Options.Add(cacheRelationOptions);
         });
-
-        services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
-        services.TryAddSingleton<ITypeAliasProvider, DefaultTypeAliasProvider>();
     }
 
     #endregion
