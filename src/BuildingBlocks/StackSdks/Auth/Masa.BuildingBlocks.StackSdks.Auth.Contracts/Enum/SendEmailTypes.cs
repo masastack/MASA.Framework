@@ -6,6 +6,8 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 public enum SendEmailTypes
 {
     Undefined,
+    VerifiyEmail,
+    UpdateEmail,
     Verifiy,
     Register,
     ForgotPassword
