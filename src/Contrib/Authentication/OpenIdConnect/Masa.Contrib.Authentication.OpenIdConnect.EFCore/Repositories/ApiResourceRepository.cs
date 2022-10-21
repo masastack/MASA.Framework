@@ -33,7 +33,7 @@ public class ApiResourceRepository : IApiResourceRepository
         };
     }
 
-    public async Task<ApiResource?> GetDetailAsync(int id)
+    public async Task<ApiResource?> GetDetailAsync(Guid id)
     {
         var apiResource = await _context.Set<ApiResource>()
                         .Include(apiResource => apiResource.UserClaims)

@@ -22,8 +22,8 @@ public class ApiScopeCache : IApiScopeCache
 
     public async Task<List<ApiScopeModel>> GetListAsync()
     {
-        var apiScopes = await _memoryCacheClient.GetAsync<List<ApiScopeModel>>(CacheKeyConstants.API_SCOPE_KEY) ?? new();
-        return apiScopes;
+        var apiScopes = await _memoryCacheClient.GetAsync<IEnumerable<ApiScopeModel>>(CacheKeyConstants.API_SCOPE_KEY);
+        return apiScopes?.ToList() ?? new();
     }
 
     public async Task SetAsync(ApiScope apiScope)

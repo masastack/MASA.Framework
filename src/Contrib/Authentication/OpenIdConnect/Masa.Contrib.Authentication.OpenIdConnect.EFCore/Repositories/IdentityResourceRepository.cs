@@ -38,7 +38,7 @@ public class IdentityResourceRepository : IIdentityResourceRepository
         return await _context.Set<IdentityResource>().ToListAsync();
     }
 
-    public async Task<IdentityResource?> GetDetailAsync(int id)
+    public async Task<IdentityResource?> GetDetailAsync(Guid id)
     {
         var identityResources = await _context.Set<IdentityResource>()
                                 .Include(idrs => idrs.UserClaims)

@@ -3,11 +3,11 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ClientIdPRestriction : Entity<int>
+public class ClientIdPRestriction : Entity<Guid>
 {
     public string Provider { get; private set; } = string.Empty;
 
-    public int ClientId { get; private set; }
+    public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
 }
