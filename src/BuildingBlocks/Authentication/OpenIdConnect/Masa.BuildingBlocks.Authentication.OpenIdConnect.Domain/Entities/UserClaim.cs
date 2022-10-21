@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class UserClaim : FullAggregateRoot<int, Guid>
+public class UserClaim : FullAggregateRoot<Guid, Guid>
 {
     public string Name { get; private set; }
 

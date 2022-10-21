@@ -23,8 +23,8 @@ public class IdentityResourceCache : IIdentityResourceCache
 
     public async Task<List<IdentityResourceModel>> GetListAsync()
     {
-        var identityResources = await _memoryCacheClient.GetAsync<List<IdentityResourceModel>>(CacheKeyConstants.IDENTITY_RESOURCE_KEY) ?? new();
-        return identityResources;
+        var identityResources = await _memoryCacheClient.GetAsync<IEnumerable<IdentityResourceModel>>(CacheKeyConstants.IDENTITY_RESOURCE_KEY);
+        return identityResources?.ToList() ?? new();
     }
 
     public async Task SetAsync(IdentityResource identityResource)

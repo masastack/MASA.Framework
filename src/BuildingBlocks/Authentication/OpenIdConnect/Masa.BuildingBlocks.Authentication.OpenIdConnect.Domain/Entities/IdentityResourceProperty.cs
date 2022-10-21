@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities
 {
     public class IdentityResourceProperty : Property
     {
-        public int IdentityResourceId { get; private set; }
+        public Guid IdentityResourceId { get; private set; }
 
         public IdentityResource IdentityResource { get; private set; } = null!;
 

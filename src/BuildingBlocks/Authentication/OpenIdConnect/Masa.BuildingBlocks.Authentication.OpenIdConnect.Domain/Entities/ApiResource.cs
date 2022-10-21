@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ApiResource : FullAggregateRoot<int, Guid>
+public class ApiResource : FullAggregateRoot<Guid, Guid>
 {
     private List<ApiResourceSecret> _secrets = new();
     private List<ApiResourceScope> _apiScopes = new();
@@ -57,14 +57,14 @@ public class ApiResource : FullAggregateRoot<int, Guid>
         NonEditable = nonEditable;
     }
 
-    public void BindUserClaims(List<int> userClaims)
+    public void BindUserClaims(List<Guid> userClaims)
     {
         _userClaims = _userClaims.MergeBy(
            userClaims.Select(userClaim => new ApiResourceClaim(userClaim)),
            item => item.UserClaimId);
     }
 
-    public void BindApiScopes(List<int> apiScopes)
+    public void BindApiScopes(List<Guid> apiScopes)
     {
         _apiScopes = _apiScopes.MergeBy(
            apiScopes.Select(apiScope => new ApiResourceScope(apiScope)),

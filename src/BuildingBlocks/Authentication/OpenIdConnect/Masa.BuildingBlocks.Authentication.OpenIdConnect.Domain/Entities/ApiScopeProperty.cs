@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class ApiScopeProperty : Property
 {
-    public int ScopeId { get; private set; }
+    public Guid ScopeId { get; private set; }
 
     public ApiScope Scope { get; private set; } = null!;
 

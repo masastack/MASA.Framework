@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class ClientSecret : Secret
 {
-    public int ClientId { get; private set; }
+    public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
 }

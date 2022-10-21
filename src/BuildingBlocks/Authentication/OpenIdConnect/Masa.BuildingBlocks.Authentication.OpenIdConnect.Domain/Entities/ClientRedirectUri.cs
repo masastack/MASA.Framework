@@ -3,11 +3,11 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ClientRedirectUri : Entity<int>
+public class ClientRedirectUri : Entity<Guid>
 {
     public string RedirectUri { get; private set; } = string.Empty;
 
-    public int ClientId { get; private set; }
+    public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
 

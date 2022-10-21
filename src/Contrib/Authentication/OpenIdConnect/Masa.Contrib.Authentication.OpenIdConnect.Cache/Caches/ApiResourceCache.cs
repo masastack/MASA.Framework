@@ -22,8 +22,8 @@ public class ApiResourceCache : IApiResourceCache
 
     public async Task<List<ApiResourceModel>> GetListAsync()
     {
-        var apiResources = await _memoryCacheClient.GetAsync<List<ApiResourceModel>>(CacheKeyConstants.API_RESOURCE_KEY) ?? new();
-        return apiResources;
+        var apiResources = await _memoryCacheClient.GetAsync<IEnumerable<ApiResourceModel>>(CacheKeyConstants.API_RESOURCE_KEY);
+        return apiResources?.ToList() ?? new();
     }
 
     public async Task SetAsync(ApiResource apiResource)

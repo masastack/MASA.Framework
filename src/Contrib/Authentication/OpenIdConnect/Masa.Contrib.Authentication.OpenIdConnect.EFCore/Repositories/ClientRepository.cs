@@ -33,7 +33,7 @@ public class ClientRepository : IClientRepository
         };
     }
 
-    public async Task<Client?> GetDetailAsync(int id)
+    public async Task<Client?> GetDetailAsync(Guid id)
     {
         return await _context.Set<Client>()
                     .Where(c => c.Id == id)

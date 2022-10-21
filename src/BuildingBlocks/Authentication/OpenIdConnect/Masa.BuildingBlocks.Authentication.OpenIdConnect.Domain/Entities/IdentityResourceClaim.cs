@@ -3,17 +3,17 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class IdentityResourceClaim : FullEntity<int, Guid>
+public class IdentityResourceClaim : FullEntity<Guid, Guid>
 {
-    public int UserClaimId { get; private set; }
+    public Guid UserClaimId { get; private set; }
 
     public UserClaim UserClaim { get; private set; } = null!;
 
-    public int IdentityResourceId { get; private set; }
+    public Guid IdentityResourceId { get; private set; }
 
     public IdentityResource IdentityResource { get; private set; } = null!;
 
-    public IdentityResourceClaim(int userClaimId)
+    public IdentityResourceClaim(Guid userClaimId)
     {
         UserClaimId = userClaimId;
     }

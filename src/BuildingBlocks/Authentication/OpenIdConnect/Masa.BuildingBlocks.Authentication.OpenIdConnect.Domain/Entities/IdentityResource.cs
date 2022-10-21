@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class IdentityResource : FullAggregateRoot<int, Guid>
+public class IdentityResource : FullAggregateRoot<Guid, Guid>
 {
     private List<IdentityResourceClaim> _userClaims = new();
     private List<IdentityResourceProperty> _properties = new();
@@ -40,7 +40,7 @@ public class IdentityResource : FullAggregateRoot<int, Guid>
         NonEditable = nonEditable;
     }
 
-    public void BindUserClaims(IEnumerable<int> userClaims)
+    public void BindUserClaims(IEnumerable<Guid> userClaims)
     {
         _userClaims = _userClaims.MergeBy(
             userClaims.Select(userClaim => new IdentityResourceClaim(userClaim)),
