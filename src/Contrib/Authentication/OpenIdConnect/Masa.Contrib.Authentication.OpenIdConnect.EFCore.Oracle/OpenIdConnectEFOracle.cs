@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle
 {
