@@ -9,5 +9,6 @@ public enum SendMsgCodeTypes
     UpdatePhoneNumber,
     Login,
     Register,
-    Bind
+    Bind,
+    ForgotPassword
 }

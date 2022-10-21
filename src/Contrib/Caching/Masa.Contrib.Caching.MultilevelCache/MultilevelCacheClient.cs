@@ -549,6 +549,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Operation = operation;
             subscribeOptions.Value = value;
         });
+
     }
 
     private async Task PubSubAsync<T>(string key,
@@ -607,5 +608,4 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     #endregion
-
 }

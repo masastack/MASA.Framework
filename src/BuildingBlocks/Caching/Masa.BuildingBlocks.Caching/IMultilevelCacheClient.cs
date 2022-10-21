@@ -12,7 +12,7 @@ public interface IMultilevelCacheClient : ICacheClient
     /// <summary>
     /// Get cache, set cache if cache does not exist
     /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
     /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -26,7 +26,7 @@ public interface IMultilevelCacheClient : ICacheClient
     /// <summary>
     /// Get cache, set cache if cache does not exist
     /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="combinedCacheEntry">Cache key information, used to configure the execution of Handler when the cache does not exist, and the memory cache life cycle</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
     /// <typeparam name="T"></typeparam>
