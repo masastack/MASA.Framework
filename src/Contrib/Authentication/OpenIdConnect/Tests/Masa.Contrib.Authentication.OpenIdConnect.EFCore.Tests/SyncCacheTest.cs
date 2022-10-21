@@ -134,7 +134,7 @@ public class SyncCacheTest
         Assert.IsTrue(identityResources.Count > 0);
     }
 
-    ServiceCollection InitializingData()
+    static ServiceCollection InitializingData()
     {
         var serviceCollection = new ServiceCollection();
         var publisher = new Mock<IPublisher>();
