@@ -12,13 +12,14 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        await dbContext.ApiResources.AddAsync(new ApiResource("ceshi", "测试", "这是个测试", "", default, default, default, default));
+        var resource = new ApiResource("ceshi", "测试", "这是个测试", "", default, default, default, default);
+        await dbContext.ApiResources.AddAsync(resource);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncApiResourceCacheAsync(1);
+        await sync.SyncApiResourceCacheAsync(resource.Id);
         var cache = serviceProvider.GetRequiredService<IApiResourceCache>();
         var resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 1);
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name));
     }
 
     [TestMethod]
@@ -27,13 +28,14 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        await dbContext.ApiScopes.AddAsync(new ApiScope("ceshi"));
+        var scope = new ApiScope("ceshi");
+        await dbContext.ApiScopes.AddAsync(scope);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncApiScopeCacheAsync(1);
+        await sync.SyncApiScopeCacheAsync(scope.Id);
         var cache = serviceProvider.GetRequiredService<IApiScopeCache>();
         var scopes = await cache.GetListAsync();
-        Assert.IsTrue(scopes.Count == 1);
+        Assert.IsTrue(scopes.Any(item => item.Name == scope.Name));
     }
 
     [TestMethod]
@@ -42,13 +44,14 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        await dbContext.IdentityResources.AddAsync(new IdentityResource("ceshi", "测试", "这是个测试", default, default, default, default, default));
+        var resource = new IdentityResource("ceshi", "测试", "这是个测试", default, default, default, default, default);
+        await dbContext.IdentityResources.AddAsync(resource);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncIdentityResourceCacheAsync(1);
+        await sync.SyncIdentityResourceCacheAsync(resource.Id);
         var cache = serviceProvider.GetRequiredService<IIdentityResourceCache>();
         var resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 1);
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name));
     }
 
     [TestMethod]
@@ -57,17 +60,17 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        var resource = new ApiResource("ceshi", "测试", "这是个测试", "", default, default, default, default);
+        var resource = new ApiResource("ceshi2", "测试", "这是个测试", "", default, default, default, default);
         await dbContext.ApiResources.AddAsync(resource);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncApiResourceCacheAsync(1);
+        await sync.SyncApiResourceCacheAsync(resource.Id);
         var cache = serviceProvider.GetRequiredService<IApiResourceCache>();
         var resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 1);
-        await sync.RemoveApiResourceCacheAsync(resource);      
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name));
+        await sync.RemoveApiResourceCacheAsync(resource);
         resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 0);
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name) is false);
     }
 
     [TestMethod]
@@ -76,17 +79,17 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        var scope = new ApiScope("ceshi");
+        var scope = new ApiScope("ceshi2");
         await dbContext.ApiScopes.AddAsync(scope);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncApiScopeCacheAsync(1);
+        await sync.SyncApiScopeCacheAsync(scope.Id);
         var cache = serviceProvider.GetRequiredService<IApiScopeCache>();
         var scopes = await cache.GetListAsync();
-        Assert.IsTrue(scopes.Count == 1);
-        await sync.RemoveApiScopeCacheAsync(scope);       
+        Assert.IsTrue(scopes.Any(item => item.Name == scope.Name));
+        await sync.RemoveApiScopeCacheAsync(scope);
         scopes = await cache.GetListAsync();
-        Assert.IsTrue(scopes.Count == 0);
+        Assert.IsTrue(scopes.Any(item => item.Name == scope.Name) is false);
     }
 
     [TestMethod]
@@ -95,17 +98,17 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        var resource = new IdentityResource("ceshi", "测试", "这是个测试", default, default, default, default, default);
+        var resource = new IdentityResource("ceshi2", "测试", "这是个测试", default, default, default, default, default);
         await dbContext.IdentityResources.AddAsync(resource);
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
-        await sync.SyncIdentityResourceCacheAsync(1);
+        await sync.SyncIdentityResourceCacheAsync(resource.Id);
         var cache = serviceProvider.GetRequiredService<IIdentityResourceCache>();
         var resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 1);
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name));
         await sync.RemoveIdentityResourceCacheAsync(resource);
         resources = await cache.GetListAsync();
-        Assert.IsTrue(resources.Count == 0);
+        Assert.IsTrue(resources.Any(item => item.Name == resource.Name) is false);
     }
 
     [TestMethod]
@@ -114,21 +117,21 @@ public class SyncCacheTest
         var serviceCollection = InitializingData();
         using var serviceProvider = serviceCollection.BuildServiceProvider();
         var dbContext = (CustomDbContext)serviceProvider.GetRequiredService<OidcDbContext>().Dbcontext;
-        await dbContext.ApiResources.AddAsync(new ApiResource("ceshi", "测试", "这是个测试", "", default, default, default, default));
-        await dbContext.ApiScopes.AddAsync(new ApiScope("ceshi"));
-        await dbContext.IdentityResources.AddAsync(new IdentityResource("ceshi", "测试", "这是个测试", default, default, default, default, default));
+        await dbContext.ApiResources.AddAsync(new ApiResource("ceshi3", "测试", "这是个测试", "", default, default, default, default));
+        await dbContext.ApiScopes.AddAsync(new ApiScope("ceshi3"));
+        await dbContext.IdentityResources.AddAsync(new IdentityResource("ceshi3", "测试", "这是个测试", default, default, default, default, default));
         await dbContext.SaveChangesAsync();
         var sync = serviceProvider.GetRequiredService<SyncCache>();
         await sync.ResetAsync();
         var apiResourceCache = serviceProvider.GetRequiredService<IApiResourceCache>();
         var apiResources = await apiResourceCache.GetListAsync();
-        Assert.IsTrue(apiResources.Count == 1);
+        Assert.IsTrue(apiResources.Count > 0);
         var apiScopeCache = serviceProvider.GetRequiredService<IApiScopeCache>();
         var apiScopes = await apiScopeCache.GetListAsync();
-        Assert.IsTrue(apiScopes.Count == 1);
+        Assert.IsTrue(apiScopes.Count > 0);
         var identityResourceCache = serviceProvider.GetRequiredService<IIdentityResourceCache>();
         var identityResources = await identityResourceCache.GetListAsync();
-        Assert.IsTrue(identityResources.Count == 1);
+        Assert.IsTrue(identityResources.Count > 0);
     }
 
     ServiceCollection InitializingData()
