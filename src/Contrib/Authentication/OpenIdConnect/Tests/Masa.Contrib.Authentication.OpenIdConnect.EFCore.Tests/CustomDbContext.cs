@@ -9,6 +9,12 @@ public class CustomDbContext : IsolationDbContext
 
     public DbSet<IdentityResource> IdentityResources { get; set; }
 
+    public DbSet<ApiResource> ApiResources { get; set; }
+
+    public DbSet<Client> Clients { get; set; }
+
+    public DbSet<ApiScope> ApiScopes { get; set; }
+
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
 

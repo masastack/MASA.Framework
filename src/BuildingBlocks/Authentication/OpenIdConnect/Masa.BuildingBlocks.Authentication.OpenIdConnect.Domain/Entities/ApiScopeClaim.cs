@@ -3,17 +3,17 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ApiScopeClaim : FullEntity<int, Guid>
+public class ApiScopeClaim : FullEntity<Guid, Guid>
 {
-    public int UserClaimId { get; private set; }
+    public Guid UserClaimId { get; private set; }
 
     public UserClaim UserClaim { get; private set; } = null!;
 
-    public int ApiScopeId { get; private set; }
+    public Guid ApiScopeId { get; private set; }
 
     public ApiScope ApiScope { get; private set; } = null!;
 
-    public ApiScopeClaim(int userClaimId)
+    public ApiScopeClaim(Guid userClaimId)
     {
         UserClaimId = userClaimId;
     }

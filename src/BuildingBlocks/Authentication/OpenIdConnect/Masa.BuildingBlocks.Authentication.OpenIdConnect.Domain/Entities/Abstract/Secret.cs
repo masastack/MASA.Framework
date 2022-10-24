@@ -1,9 +1,9 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities.Abstract;
 
-public abstract class Secret : FullEntity<int, Guid>
+public abstract class Secret : FullEntity<Guid, Guid>
 {
     public string Description { get; protected set; } = string.Empty;
 

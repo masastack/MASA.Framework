@@ -33,7 +33,7 @@ public class ApiScopeRepository : IApiScopeRepository
         };
     }
 
-    public async Task<ApiScope?> GetDetailAsync(int id)
+    public async Task<ApiScope?> GetDetailAsync(Guid id)
     {
         var apiScope = await _context.Set<ApiScope>()
                          .Include(apiScope => apiScope.UserClaims)

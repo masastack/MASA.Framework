@@ -31,7 +31,7 @@ public class UserClaimRepository : IUserClaimRepository
         };
     }
 
-    public async Task<UserClaim?> GetDetailAsync(int id)
+    public async Task<UserClaim?> GetDetailAsync(Guid id)
     {
         var userClaim = await _context.Set<UserClaim>()
                          .FirstOrDefaultAsync(userClaim => userClaim.Id == id);
