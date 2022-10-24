@@ -1,9 +1,5 @@
 name: PR_Run_Test_CI
-on:
-  pull_request_target:
-    branches:
-      - 'main'
-  workflow_dispatch:
+on: pull_request_target
   
 jobs:
   test:
