@@ -569,11 +569,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect", "src\Contrib\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.csproj", "{9BB5CC86-C2E8-4859-9610-50DB263605A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect", "src\Contrib\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.csproj", "{9BB5CC86-C2E8-4859-9610-50DB263605A3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests", "src\Contrib\Service\Caller\Authentication\Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests.csproj", "{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests", "src\Contrib\Service\Caller\Authentication\Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests.csproj", "{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle.csproj", "{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2039,6 +2041,14 @@ Global
 		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|x64.ActiveCfg = Release|Any CPU
 		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}.Release|x64.Build.0 = Release|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Debug|x64.Build.0 = Debug|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|x64.ActiveCfg = Release|Any CPU
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2322,6 +2332,7 @@ Global
 		{9BB5CC86-C2E8-4859-9610-50DB263605A3} = {FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}
 		{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A} = {FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}
 		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02} = {8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}
+		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

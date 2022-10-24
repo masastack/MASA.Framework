@@ -94,4 +94,3 @@ jobs:
         dotnet build /p:ContinuousIntegrationBuild=true
         dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal --collect "Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
         dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
