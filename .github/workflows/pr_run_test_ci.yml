@@ -8,6 +8,7 @@ on:
 jobs:
   test:
     name: redis on base image
+    environment: PR
     runs-on: ubuntu-latest
     services:
       # Label used to access the service container
