@@ -85,6 +85,8 @@ public abstract class RepositoryBase<TEntity> :
 
     public abstract Task<long> GetCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
+    public abstract Task<bool> GetAnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Get a paginated list after sorting according to skip and take
     /// </summary>

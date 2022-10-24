@@ -67,6 +67,11 @@ public class Repository<TDbContext, TEntity> :
         CancellationToken cancellationToken = default)
         => Context.Set<TEntity>().LongCountAsync(predicate, cancellationToken);
 
+    public override Task<bool> GetAnyAsync(
+        Expression<Func<TEntity, bool>> predicate,
+        CancellationToken cancellationToken = default)
+        => Context.Set<TEntity>().AnyAsync(predicate, cancellationToken);
+
     public override async Task<IEnumerable<TEntity>> GetListAsync(CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().ToListAsync(cancellationToken);
 

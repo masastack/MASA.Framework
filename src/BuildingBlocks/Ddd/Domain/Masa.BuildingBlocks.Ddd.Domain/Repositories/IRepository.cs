@@ -56,6 +56,8 @@ public interface IRepository<TEntity>
 
     Task<long> GetCountAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
+    Task<bool> GetAnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Get a paginated list after sorting according to skip and take
     /// </summary>
