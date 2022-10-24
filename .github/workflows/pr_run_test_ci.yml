@@ -88,7 +88,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      if: ${{ secrets != '' }}
+      if: ${{ SONAR_TOKEN != '' }}
       run: |
         dotnet-sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build /p:ContinuousIntegrationBuild=true
