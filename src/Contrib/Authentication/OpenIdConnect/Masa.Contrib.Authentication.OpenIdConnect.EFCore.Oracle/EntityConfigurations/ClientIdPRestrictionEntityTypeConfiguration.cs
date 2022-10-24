@@ -8,5 +8,6 @@ public class ClientIdPRestrictionEntityTypeConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<ClientIdPRestriction> builder)
     {
         builder.Property(x => x.Provider).HasMaxLength(200).IsRequired();
+        builder.HasIndex(x => x.ClientId).HasDatabaseName("IX_ClientIdPR_ClientId");
     }
 }

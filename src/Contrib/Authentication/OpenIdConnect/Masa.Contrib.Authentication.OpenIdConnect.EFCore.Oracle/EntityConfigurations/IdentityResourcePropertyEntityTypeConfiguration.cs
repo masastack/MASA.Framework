@@ -9,5 +9,6 @@ public class IdentityResourcePropertyEntityTypeConfiguration : IEntityTypeConfig
     {
         builder.Property(x => x.Key).HasMaxLength(250).IsRequired();
         builder.Property(x => x.Value).HasMaxLength(2000).IsRequired();
+        builder.HasIndex(x => x.IdentityResourceId).HasDatabaseName("IX_IdResourceProp_ResourceId");
     }
 }
