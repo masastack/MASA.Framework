@@ -8,5 +8,6 @@ public class ClientPostLogoutRedirectUriEntityTypeConfiguration : IEntityTypeCon
     public void Configure(EntityTypeBuilder<ClientPostLogoutRedirectUri> builder)
     {
         builder.HasKey(x => x.Id);
+        builder.HasIndex(x => x.ClientId).HasDatabaseName("IX_ClientPostLogout_ClientId");
     }
 }

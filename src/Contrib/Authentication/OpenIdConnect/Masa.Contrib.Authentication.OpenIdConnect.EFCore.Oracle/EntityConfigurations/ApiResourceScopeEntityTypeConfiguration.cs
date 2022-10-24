@@ -8,5 +8,7 @@ public class ApiResourceScopeEntityTypeConfiguration : IEntityTypeConfiguration<
     public void Configure(EntityTypeBuilder<ApiResourceScope> builder)
     {
         builder.HasKey(apiResourceScope => apiResourceScope.Id);
+        builder.HasOne(x => x.ApiScope).WithMany().HasForeignKey(x => x.ApiScopeId).HasConstraintName("FK_ApiResScope_ScopeId");
+        builder.HasIndex(x => x.ApiResourceId).HasDatabaseName("IX_ApiResScope_ApiScopeId");
     }
 }

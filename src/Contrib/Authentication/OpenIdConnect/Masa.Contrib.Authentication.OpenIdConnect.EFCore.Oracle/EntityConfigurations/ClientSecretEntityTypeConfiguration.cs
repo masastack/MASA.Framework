@@ -9,6 +9,6 @@ public class ClientSecretEntityTypeConfiguration : IEntityTypeConfiguration<Clie
     {
         builder.Property(x => x.Value).HasMaxLength(4000).IsRequired();
         builder.Property(x => x.Type).HasMaxLength(250).IsRequired();
-        builder.Property(x => x.Description).HasMaxLength(2000);
+        builder.Property(x => x.Description).HasMaxLength(2000).IsRequired(false);
     }
 }

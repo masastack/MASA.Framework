@@ -8,5 +8,9 @@ public class IdentityResourceClaimEntityTypeConfiguration : IEntityTypeConfigura
     public void Configure(EntityTypeBuilder<IdentityResourceClaim> builder)
     {
         builder.HasKey(identityResourceClaim => identityResourceClaim.Id);
+        builder.HasOne(x => x.UserClaim).WithMany().HasForeignKey(x => x.UserClaimId)
+            .HasConstraintName("FK_IdResClaim_UserClaimId").IsRequired().OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(x => x.IdentityResourceId).HasDatabaseName("IX_IdResourceClaim_ResourceId");
+        builder.HasIndex(x => x.UserClaimId).HasDatabaseName("IX_IdResourceClaim_UserClaimId");
     }
 }

@@ -7,8 +7,9 @@ public class ApiResourceSecretEntityTypeConfiguration : IEntityTypeConfiguration
 {
     public void Configure(EntityTypeBuilder<ApiResourceSecret> builder)
     {
-        builder.Property(x => x.Description).HasMaxLength(1000);
+        builder.Property(x => x.Description).HasMaxLength(1000).IsRequired(false);
         builder.Property(x => x.Value).HasMaxLength(4000).IsRequired();
         builder.Property(x => x.Type).HasMaxLength(250).IsRequired();
+        builder.HasIndex(x => x.ApiResourceId).HasDatabaseName("IX_ApiResSecret_ApiResourceId");
     }
 }

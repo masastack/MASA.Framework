@@ -9,10 +9,10 @@ public class PersistedGrantEntityTypeConfiguration : IEntityTypeConfiguration<Pe
     {
         builder.Property(x => x.Key).HasMaxLength(200).ValueGeneratedNever();
         builder.Property(x => x.Type).HasMaxLength(50).IsRequired();
-        builder.Property(x => x.SubjectId).HasMaxLength(200);
-        builder.Property(x => x.SessionId).HasMaxLength(100);
+        builder.Property(x => x.SubjectId).HasMaxLength(200).IsRequired(false);
+        builder.Property(x => x.SessionId).HasMaxLength(100).IsRequired(false);
         builder.Property(x => x.ClientId).HasMaxLength(200).IsRequired();
-        builder.Property(x => x.Description).HasMaxLength(200);
+        builder.Property(x => x.Description).HasMaxLength(200).IsRequired(false);
         builder.Property(x => x.CreationTime).IsRequired();
         // 50000 chosen to be explicit to allow enough size to avoid truncation, yet stay beneath the MySql row size limit of ~65K
         // apparently anything over 4K converts to nvarchar(max) on SqlServer
@@ -20,8 +20,8 @@ public class PersistedGrantEntityTypeConfiguration : IEntityTypeConfiguration<Pe
 
         builder.HasKey(x => x.Key);
 
-        builder.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type });
-        builder.HasIndex(x => new { x.SubjectId, x.SessionId, x.Type });
-        builder.HasIndex(x => x.Expiration);
+        builder.HasIndex(x => new { x.SubjectId, x.ClientId, x.Type }).HasDatabaseName("IX_PersistedGrant_SCT");
+        builder.HasIndex(x => new { x.SubjectId, x.SessionId, x.Type }).HasDatabaseName("IX_PersistedGrant_SST");
+        builder.HasIndex(x => x.Expiration).HasDatabaseName("IX_PersistedGrant_Expiration");
     }
 }

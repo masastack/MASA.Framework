@@ -9,5 +9,6 @@ public class ApiResourcePropertyEntityTypeConfiguration : IEntityTypeConfigurati
     {
         builder.Property(x => x.Key).HasMaxLength(250).IsRequired();
         builder.Property(x => x.Value).HasMaxLength(2000).IsRequired();
+        builder.HasIndex(x => x.ApiResourceId).HasDatabaseName("IX_ApiResProp_ApiResourceId");
     }
 }
