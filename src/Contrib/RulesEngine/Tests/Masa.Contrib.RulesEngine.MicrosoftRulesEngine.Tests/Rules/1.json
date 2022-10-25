@@ -1,0 +1,12 @@
+{
+  "WorkflowName": "UserInputWorkflow",
+  "Rules": [
+    {
+      "RuleName": "CheckAge",
+      "ErrorMessage": "Must be over 18 years old.",
+      "ErrorType": "Error",
+      "RuleExpressionType": "LambdaExpression",
+      "Expression": "Age > 18"
+    }
+  ]
+}

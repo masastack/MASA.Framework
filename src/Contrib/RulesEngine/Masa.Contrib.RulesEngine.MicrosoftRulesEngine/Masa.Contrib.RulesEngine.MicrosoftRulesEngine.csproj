@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RulesEngine" Version="4.0.0" />
+    <PackageReference Aliases="MicrosoftRulesEngine" Include="RulesEngine" Version="4.0.0" />
   </ItemGroup>
 
 </Project>
