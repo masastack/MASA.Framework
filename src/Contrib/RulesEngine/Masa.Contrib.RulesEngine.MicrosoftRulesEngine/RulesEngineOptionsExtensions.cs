@@ -11,13 +11,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class RulesEngineOptionsExtensions
 {
-    public static RulesEngineOptions UseRulesEngine(this RulesEngineOptions rulesEngineOptions)
-        => rulesEngineOptions.UseRulesEngine(Options.Options.DefaultName);
+    public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions)
+        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.Options.DefaultName);
 
-    public static RulesEngineOptions UseRulesEngine(this RulesEngineOptions rulesEngineOptions, ReSettings? reSettings)
-        => rulesEngineOptions.UseRulesEngine(Options.Options.DefaultName, reSettings);
+    public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions, ReSettings? reSettings)
+        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.Options.DefaultName, reSettings);
 
-    public static RulesEngineOptions UseRulesEngine(
+    public static RulesEngineOptions UseMicrosoftRulesEngine(
         this RulesEngineOptions rulesEngineOptions,
         string name,
         ReSettings? reSettings = null)
@@ -25,7 +25,7 @@ public static class RulesEngineOptionsExtensions
         rulesEngineOptions.Services.Configure<RulesEngineFactoryOptions>(name, options =>
         {
             options.TryAddRulesEngine(name,
-                serviceProvider => new RulesEngineClient(reSettings)
+                serviceProvider => new RulesEngineClient(reSettings, serviceProvider.GetService<ILogger<RulesEngineClient>>())
             );
         });
         return rulesEngineOptions;

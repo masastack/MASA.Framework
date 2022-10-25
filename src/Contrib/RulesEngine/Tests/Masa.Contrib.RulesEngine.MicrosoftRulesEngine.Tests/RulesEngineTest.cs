@@ -12,7 +12,7 @@ public class RulesEngineTest
         var services = new ServiceCollection();
         services.AddRulesEngine(rulesEngineOptions =>
         {
-            rulesEngineOptions.UseRulesEngine();
+            rulesEngineOptions.UseMicrosoftRulesEngine();
         });
         var serviceProvider = services.BuildServiceProvider();
         var ruleEngineFactory = serviceProvider.GetService<IRulesEngineFactory>();
@@ -27,7 +27,7 @@ public class RulesEngineTest
         var services = new ServiceCollection();
         services.AddRulesEngine(rulesEngineOptions =>
         {
-            rulesEngineOptions.UseRulesEngine(new ReSettings()
+            rulesEngineOptions.UseMicrosoftRulesEngine(new ReSettings()
             {
                 CustomTypes = new[] { typeof(StringExtensions) }
             });
@@ -41,14 +41,14 @@ public class RulesEngineTest
         {
             Name = string.Empty
         });
-        Assert.IsFalse(result);
+        Assert.IsFalse(result[0].IsValid);
 
         json = File.ReadAllText(Path.Combine("Rules", "1.json"));
         result = ruleEngineClient.Execute(json, new
         {
             Age = 19
         });
-        Assert.IsTrue(result);
+        Assert.IsTrue(result[0].IsValid);
     }
 
     [DataRow("", false)]
@@ -60,7 +60,7 @@ public class RulesEngineTest
         var services = new ServiceCollection();
         services.AddRulesEngine(rulesEngineOptions =>
         {
-            rulesEngineOptions.UseRulesEngine(new ReSettings()
+            rulesEngineOptions.UseMicrosoftRulesEngine(new ReSettings()
             {
                 CustomTypes = new[] { typeof(StringExtensions) }
             });
@@ -74,6 +74,32 @@ public class RulesEngineTest
         {
             Name = name
         });
-        Assert.AreEqual(expectResult, result);
+        Assert.AreEqual(expectResult, result[0].IsValid);
+    }
+
+    [DataRow("", false)]
+    [DataRow(null, false)]
+    [DataRow("Jim", true)]
+    [DataTestMethod]
+    public void TestAddRulesEngineAndSpecifyRuleSettings2(string? name, bool expectResult)
+    {
+        var services = new ServiceCollection();
+        services.AddRulesEngine(rulesEngineOptions =>
+        {
+            rulesEngineOptions.UseMicrosoftRulesEngine(new ReSettings()
+            {
+                CustomTypes = new[] { typeof(StringExtensions) }
+            });
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var ruleEngineClient = serviceProvider.GetService<IRulesEngineClient>();
+        Assert.IsNotNull(ruleEngineClient);
+
+        var json = File.ReadAllText(Path.Combine("Rules", "4.json"));
+        var result = ruleEngineClient.Execute(json, new
+        {
+            Name = name
+        });
+        Assert.AreEqual(expectResult, result[0].IsValid);
     }
 }

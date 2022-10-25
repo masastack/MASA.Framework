@@ -6,56 +6,27 @@ namespace Masa.BuildingBlocks.RulesEngine;
 public interface IRulesEngineClient
 {
     /// <summary>
-    /// Obtain whether the match is successful according to the rules and input parameters
+    /// Check if the rule format is correct
     /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
-    /// <param name="data">Input data</param>
-    /// <typeparam name="TRequest"></typeparam>
-    /// <returns>Whether the match was successful</returns>
-    bool Execute<TRequest>(string ruleJson, TRequest data);
-
-    /// <summary>
-    /// Obtain parameters and corresponding execution sets according to rules and input parameter sets
-    /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
-    /// <param name="datum">Set of input parameters</param>
-    /// <typeparam name="TRequest"></typeparam>
-    /// <returns>Input parameters and execution result set</returns>
-    List<(TRequest Data, bool Result)> Execute<TRequest>(string ruleJson, TRequest[] datum);
-
-    /// <summary>
-    /// Obtain parameters and corresponding execution sets according to rules and input parameter sets
-    /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
-    /// <param name="datum">Set of input parameters</param>
-    /// <typeparam name="TRequest"></typeparam>
-    /// <returns>Input parameters and execution result set</returns>
-    List<(TRequest Data, bool Result)> Execute<TRequest>(string ruleJson, IEnumerable<TRequest> datum);
+    /// <param name="ruleRaw"></param>
+    /// <returns></returns>
+    VerifyResponse Verify(string ruleRaw);
 
     /// <summary>
     /// Obtain whether the match is successful according to the rules and input parameters
     /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
+    /// <param name="ruleRaw"></param>
     /// <param name="data">Input data</param>
     /// <typeparam name="TRequest"></typeparam>
     /// <returns>Whether the match was successful</returns>
-    Task<bool> ExecuteAsync<TRequest>(string ruleJson, TRequest data);
+    List<ExecuteResponse> Execute<TRequest>(string ruleRaw, TRequest data);
 
     /// <summary>
-    /// Obtain parameters and corresponding execution sets according to rules and input parameter sets
+    /// Obtain whether the match is successful according to the rules and input parameters
     /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
-    /// <param name="datum">Set of input parameters</param>
+    /// <param name="ruleRaw">Rule Json</param>
+    /// <param name="data">Input data</param>
     /// <typeparam name="TRequest"></typeparam>
-    /// <returns>Input parameters and execution result set</returns>
-    Task<List<(TRequest Data, bool Result)>> ExecuteAsync<TRequest>(string ruleJson, TRequest[] datum);
-
-    /// <summary>
-    /// Obtain parameters and corresponding execution sets according to rules and input parameter sets
-    /// </summary>
-    /// <param name="ruleJson">Rule Json</param>
-    /// <param name="datum">Set of input parameters</param>
-    /// <typeparam name="TRequest"></typeparam>
-    /// <returns>Input parameters and execution result set</returns>
-    Task<List<(TRequest Data, bool Result)>> ExecuteAsync<TRequest>(string ruleJson, IEnumerable<TRequest> datum);
+    /// <returns>Whether the match was successful</returns>
+    Task<List<ExecuteResponse>> ExecuteAsync<TRequest>(string ruleRaw, TRequest data);
 }

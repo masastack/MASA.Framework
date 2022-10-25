@@ -2,6 +2,8 @@
 
 ## Masa.Contrib.RulesEngine.MicrosoftRulesEngine
 
+基于[`RulesEngine`](https://github.com/microsoft/RulesEngine)实现的规则引擎，它提供了一种简单的方法，使您能够将规则放在系统核心逻辑之外的存储中，从而确保规则的任何更改都不会影响核心系统
+
 用例：
 
 ``` powershell
@@ -15,7 +17,7 @@ Install-Package Masa.Contrib.RulesEngine.MicrosoftRulesEngine //使用 microsoft
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine();
+    rulesEngineOptions.UseMicrosoftRulesEngine();
 })
 ```
 
@@ -25,7 +27,7 @@ builder.Services.AddRulesEngine(rulesEngineOptions =>
 IRulesEngineClient rulesEngineClient; //从DI获取
 
 var json = @"{
-  ""WorkflowName"": ""UserInputWorkflow"",
+  ""WorkflowName"": ""UserInputWorkflow"",// 非必填
   ""Rules"": [
     {
       ""RuleName"": ""CheckAge"",
@@ -41,7 +43,7 @@ var result = rulesEngineClient.Execute(ruleJson, new
 {
     Age = 19
 });
-Console.WriteLine("规则执行结果为{0}", result);
+Console.WriteLine("规则执行结果为{0}", result[0].IsValid);
 ```
 
 ### 进阶
@@ -65,7 +67,7 @@ public static class StringUtils
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine(new ReSettings()
+    rulesEngineOptions.UseMicrosoftRulesEngine(new ReSettings()
     {
         CustomTypes = new[] { typeof(StringUtils) }
     });
@@ -83,8 +85,8 @@ builder.Services.AddRulesEngine(rulesEngineOptions =>
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine();
-    rulesEngineOptions.UseRulesEngine("ruleA", new ReSettings()
+    rulesEngineOptions.UseMicrosoftRulesEngine();
+    rulesEngineOptions.UseMicrosoftRulesEngine("ruleA", new ReSettings()
     {
         CustomTypes = new[] { typeof(StringUtils) }
     });

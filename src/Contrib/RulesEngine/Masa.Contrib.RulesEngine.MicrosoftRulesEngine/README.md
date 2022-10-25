@@ -2,6 +2,8 @@
 
 ## Masa.Contrib.RulesEngine.MicrosoftRulesEngine
 
+A rules engine implemented based on [`RulesEngine`](https://github.com/microsoft/RulesEngine), It provides a simple way of giving you the ability to put your rules in a store outside the core logic of the system, thus ensuring that any change in rules don't affect the core system.
+
 Example:
 
 ``` powershell
@@ -15,7 +17,7 @@ Install-Package Masa.Contrib.RulesEngine.MicrosoftRulesEngine //Use the rule eng
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine();
+    rulesEngineOptions.UseMicrosoftRulesEngine();
 })
 ```
 
@@ -25,7 +27,7 @@ builder.Services.AddRulesEngine(rulesEngineOptions =>
 IRulesEngineClient rulesEngineClient; //Get from DI
 
 var json = @"{
-  ""WorkflowName"": ""UserInputWorkflow"",
+  ""WorkflowName"": ""UserInputWorkflow"",// Not required
   ""Rules"": [
     {
       ""RuleName"": ""CheckAge"",
@@ -41,7 +43,7 @@ var result = rulesEngineClient.Execute(ruleJson, new
 {
     Age = 19
 });
-Console.WriteLine("The result of the rule execution is {0}", result);
+Console.WriteLine("The result of the rule execution is {0}", result[0].IsValid);
 ```
 
 ### Advanced
@@ -65,7 +67,7 @@ public static class StringUtils
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine(new ReSettings()
+    rulesEngineOptions.UseMicrosoftRulesEngine(new ReSettings()
     {
         CustomTypes = new[] { typeof(StringUtils) }
     });
@@ -83,8 +85,8 @@ The following example registers two rule engines. The default rule engine only s
 ``` C#
 builder.Services.AddRulesEngine(rulesEngineOptions =>
 {
-    rulesEngineOptions.UseRulesEngine();
-    rulesEngineOptions.UseRulesEngine("ruleA", new ReSettings()
+    rulesEngineOptions.UseMicrosoftRulesEngine();
+    rulesEngineOptions.UseMicrosoftRulesEngine("ruleA", new ReSettings()
     {
         CustomTypes = new[] { typeof(StringUtils) }
     });
