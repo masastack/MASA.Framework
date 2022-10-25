@@ -30,7 +30,7 @@ public class RulesEngineClient : RulesEngineClientBase
         }
         catch (Exception ex)
         {
-            _logger?.LogWarning(ex, "illegal rules on MicrosoftRulesEngine");
+            _logger?.LogWarning(ex, Constant.ERROR_RULE);
             return new VerifyResponse(false, ex.Message);
         }
     }
@@ -50,7 +50,9 @@ public class RulesEngineClient : RulesEngineClientBase
     {
         _rulesEngine.ClearWorkflows();
         workflow = JsonConvert.DeserializeObject<Workflow>(ruleRaw);
-        ArgumentNullException.ThrowIfNull(workflow, nameof(ruleRaw));
+        if (workflow == null)
+            throw new UserFriendlyException(Constant.ERROR_RULE);
+
         if (string.IsNullOrWhiteSpace(workflow.WorkflowName))
             workflow.WorkflowName = Guid.NewGuid().ToString();
         _rulesEngine.AddWorkflow(workflow);

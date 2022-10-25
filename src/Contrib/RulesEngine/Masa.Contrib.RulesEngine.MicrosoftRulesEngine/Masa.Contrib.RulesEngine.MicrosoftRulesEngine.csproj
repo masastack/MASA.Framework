@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\RulesEngine\Masa.BuildingBlocks.RulesEngine\Masa.BuildingBlocks.RulesEngine.csproj" />
+    <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

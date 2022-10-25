@@ -4,7 +4,9 @@
 // ReSharper disable once CheckNamespace
 namespace Masa.Contrib.RulesEngine.MicrosoftRulesEngine;
 
-internal class Constant
+internal static class Constant
 {
     public const string DEFAULT_JSON_NAME = "Masa.Contrib.RulesEngine.MicrosoftRulesEngine";
+
+    public const string ERROR_RULE = "illegal rules on MicrosoftRulesEngine";
 }
