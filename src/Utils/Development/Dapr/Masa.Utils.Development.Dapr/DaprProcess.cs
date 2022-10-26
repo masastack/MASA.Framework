@@ -408,8 +408,8 @@ public class DaprProcess : IDaprProcess
 
     private static void CompleteDaprEnvironment(string daprHttpPort, string daprGrpcPort, out bool isChange)
     {
-        EnvironmentExtensions.TryAdd("DAPR_GRPC_PORT", () => daprGrpcPort, out bool gRpcPortIsExist);
-        EnvironmentExtensions.TryAdd("DAPR_HTTP_PORT", () => daprHttpPort, out bool httpPortIsExist);
+        var gRpcPortIsExist = EnvironmentUtils.TrySetEnvironmentVariable("DAPR_GRPC_PORT", daprGrpcPort);
+        var httpPortIsExist = EnvironmentUtils.TrySetEnvironmentVariable("DAPR_HTTP_PORT", daprHttpPort);
         isChange = !gRpcPortIsExist || !httpPortIsExist;
     }
 

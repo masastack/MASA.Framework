@@ -1,11 +1,13 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+// ReSharper disable once CheckNamespace
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDaprStarter(this IServiceCollection services,
+     public static IServiceCollection AddDaprStarter(this IServiceCollection services,
         string sectionName = nameof(DaprOptions),
         bool isDelay = true)
         => services.AddDaprStarter(services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetSection(sectionName), isDelay);
@@ -51,11 +53,7 @@ public static class ServiceCollectionExtensions
 
         ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort, nameof(options.CurrentValue.AppPort));
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
-        options.OnChange(daprOptions =>
-        {
-            daprProcess.Refresh(daprOptions);
-        });
-        daprProcess.Start(options.CurrentValue);
+        daprProcess.Start();
         CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
         return services;
     }

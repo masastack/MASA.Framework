@@ -15,12 +15,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		.gitmodules = .gitmodules
 		Directory.Build.props = Directory.Build.props
 		LICENSE.txt = LICENSE.txt
 		NuGet.Config = NuGet.Config
 		README.md = README.md
 		README.zh-CN.md = README.zh-CN.md
+		Masa.Framework.sln.DotSettings = Masa.Framework.sln.DotSettings
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E747043D-81E2-4A89-8B5B-1258ED45F941}"
@@ -576,6 +576,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests", "src\Contrib\Service\Caller\Authentication\Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests.csproj", "{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle", "src\Contrib\Authentication\OpenIdConnect\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle\Masa.Contrib.Authentication.OpenIdConnect.EFCore.Oracle.csproj", "{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{43E0F1C0-7308-45C9-83CF-E6291ACE9F0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Development.DaprStarters", "src\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarters\Masa.BuildingBlocks.Development.DaprStarters.csproj", "{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters", "src\Contrib\Development\Masa.Contrib.Development.DaprStarters\Masa.Contrib.Development.DaprStarters.csproj", "{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.AspNetCore", "src\Contrib\Development\Masa.Contrib.Development.DaprStarters.AspNetCore\Masa.Contrib.Development.DaprStarters.AspNetCore.csproj", "{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2049,6 +2059,30 @@ Global
 		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|x64.ActiveCfg = Release|Any CPU
 		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F}.Release|x64.Build.0 = Release|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Debug|x64.Build.0 = Debug|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Release|x64.ActiveCfg = Release|Any CPU
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}.Release|x64.Build.0 = Release|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Debug|x64.Build.0 = Debug|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Release|x64.ActiveCfg = Release|Any CPU
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}.Release|x64.Build.0 = Release|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Debug|x64.Build.0 = Debug|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|x64.ActiveCfg = Release|Any CPU
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2333,6 +2367,11 @@ Global
 		{8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A} = {FC4A0C94-47F7-4C9A-A7EC-138DE8EB842D}
 		{BEA8E5A5-E7BD-4165-80CD-D1F53ED82D02} = {8D7D3D21-86DB-4FCC-8FF0-6E1587ABD22A}
 		{03F476EF-022A-4370-B1C3-FEEDE3BB4E7F} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
+		{64E37EF0-0C85-4F02-A430-6D3B1DBF13DF} = {950DA7D0-48C1-42BA-8E8F-F72C0DCE41C4}
+		{43E0F1C0-7308-45C9-83CF-E6291ACE9F0F} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F} = {43E0F1C0-7308-45C9-83CF-E6291ACE9F0F}
+		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0} = {64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}
+		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA} = {64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

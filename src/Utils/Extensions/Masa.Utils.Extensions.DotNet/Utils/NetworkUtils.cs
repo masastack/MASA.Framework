@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Utils.Development.Dapr.Internal;
+// ReSharper disable once CheckNamespace
 
-internal class NetworkUtils
+namespace System.Net.NetworkInformation;
+
+public static class NetworkUtils
 {
     public static string GetPhysicalAddress()
     {
