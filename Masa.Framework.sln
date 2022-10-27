@@ -593,6 +593,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.Da
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests", "src\Contrib\RulesEngine\Tests\Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests\Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests.csproj", "{EEB2D542-5A2C-4E18-A0E6-72844C359DAD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8CDAF37E-3DB1-4573-B5AA-376C93A8D299}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarters.Tests\Masa.Contrib.Development.DaprStarters.Tests.csproj", "{49B51B95-3DC5-45BD-B91A-3056FF5014B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.AspNetCore.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarters.AspNetCore.Tests\Masa.Contrib.Development.DaprStarters.AspNetCore.Tests.csproj", "{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2097,6 +2103,22 @@ Global
 		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|x64.ActiveCfg = Release|Any CPU
 		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}.Release|x64.Build.0 = Release|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5}.Release|x64.Build.0 = Release|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Debug|x64.Build.0 = Debug|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Release|x64.ActiveCfg = Release|Any CPU
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2389,6 +2411,9 @@ Global
 		{77A9CADA-35D6-419B-87B3-AACC50FFAD0F} = {43E0F1C0-7308-45C9-83CF-E6291ACE9F0F}
 		{A6D4C293-E184-42C0-B9B7-3F856BE57EC0} = {64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}
 		{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA} = {64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}
+		{8CDAF37E-3DB1-4573-B5AA-376C93A8D299} = {64E37EF0-0C85-4F02-A430-6D3B1DBF13DF}
+		{49B51B95-3DC5-45BD-B91A-3056FF5014B5} = {8CDAF37E-3DB1-4573-B5AA-376C93A8D299}
+		{DD899DC4-A2B7-4C7B-A644-EDB56A61145C} = {8CDAF37E-3DB1-4573-B5AA-376C93A8D299}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

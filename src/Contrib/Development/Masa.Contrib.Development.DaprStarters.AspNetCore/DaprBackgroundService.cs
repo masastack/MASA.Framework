@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters.AspNetCore;
 
+[ExcludeFromCodeCoverage]
 public class DaprBackgroundService : BackgroundService
 {
     private readonly IAppPortProvider _appPortProvider;
