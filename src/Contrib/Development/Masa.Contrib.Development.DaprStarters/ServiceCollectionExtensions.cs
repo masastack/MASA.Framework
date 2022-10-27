@@ -5,10 +5,14 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public delegate void DaprEventHandler(string type, string data);
-
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddDaprStarterCore(this IServiceCollection services, string sectionName = nameof(DaprOptions))
+    {
+        services.AddConfigure<DaprOptions>(sectionName);
+        return services.AddDaprStarter();
+    }
+
     public static IServiceCollection AddDaprStarterCore(this IServiceCollection services, Action<DaprOptions>? action = null)
     {
 

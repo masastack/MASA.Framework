@@ -150,7 +150,6 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
 
     /// <summary>
     /// Refresh the dapr configuration, the source dapr process will be killed and the new dapr process will be restarted
-    /// todo: At present, there are no restrictions on HttpPort and GrpcPort, but if the configuration update changes HttpPort and GrpcPort, the port obtained by DaprClient will be inconsistent with the actual operation, which needs to be adjusted later.
     /// </summary>
     /// <param name="options"></param>
     public void Refresh(DaprOptions options)

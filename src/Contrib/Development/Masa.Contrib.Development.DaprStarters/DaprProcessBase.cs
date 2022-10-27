@@ -27,7 +27,7 @@ public abstract class DaprProcessBase
     internal DaprCoreOptions ConvertTo(DaprOptions options)
     {
         var appId = options.AppId ?? _masaAppConfigureOptions?.Value.AppId ?? _defaultAppId;
-        if (!options.DisableAppIdSuffix && options.AppIdSuffix != null && options.AppIdSuffix.Trim() == string.Empty)
+        if (options.IsIncompleteAppId())
             appId = $"{appId}{options.AppIdDelimiter}{options.AppIdSuffix}";
         DaprCoreOptions
             dataOptions = new(

@@ -62,7 +62,7 @@ public class DaprOptions
     /// Whether to disable AppIdSuffix
     /// default: false
     /// </summary>
-    public bool DisableAppIdSuffix { get; set; } = false;
+    public bool DisableAppIdSuffix { get; set; }
 
     private int? _maxConcurrency;
 
@@ -278,4 +278,9 @@ public class DaprOptions
     public bool EnableHeartBeat { get; set; } = true;
 
     public bool CreateNoWindow { get; set; } = true;
+
+    public bool IsIncompleteAppId()
+    {
+        return !DisableAppIdSuffix && ((AppIdSuffix != null && AppIdSuffix.Trim() != string.Empty));
+    }
 }

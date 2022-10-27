@@ -7,10 +7,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-     public static IServiceCollection AddDaprStarter(this IServiceCollection services,
+    public static IServiceCollection AddDaprStarter(this IServiceCollection services,
         string sectionName = nameof(DaprOptions),
         bool isDelay = true)
-        => services.AddDaprStarter(services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetSection(sectionName), isDelay);
+    {
+        return services.AddDaprStarter(() =>
+        {
+            services.AddDaprStarterCore(sectionName);
+        }, isDelay);
+    }
 
     public static IServiceCollection AddDaprStarter(
         this IServiceCollection services,
@@ -45,8 +50,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IAppPortProvider, DefaultAppPortProvider>();
         action.Invoke();
-        if (isDelay)
-            return services.AddHostedService<DaprBackgroundService>();
+        if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
@@ -54,20 +58,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort, nameof(options.CurrentValue.AppPort));
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
         daprProcess.Start();
-        CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
         return services;
     }
 
-    private static void CompleteDaprEnvironment(ushort? daprHttpPort, ushort? daprGrpcPort)
-    {
-        if (daprHttpPort == null || daprGrpcPort == null)
-            return;
-
-        EnvironmentUtils.TrySetEnvironmentVariable("DAPR_GRPC_PORT", daprGrpcPort.ToString());
-        EnvironmentUtils.TrySetEnvironmentVariable("DAPR_HTTP_PORT", daprHttpPort.ToString());
-    }
-
-    private class DaprService
+    private sealed class DaprService
     {
 
     }
