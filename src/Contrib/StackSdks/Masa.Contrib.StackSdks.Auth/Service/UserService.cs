@@ -221,7 +221,7 @@ public class UserService : IUserService
         return await _caller.PostAsync<UserModel>(requestUri, login);
     }
 
-    public async Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
+    public async Task<TokenModel> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
     {
         using var client = new HttpClient();
         var disco = await client.GetDiscoveryDocumentAsync(address);
@@ -242,7 +242,13 @@ public class UserService : IUserService
         if (tokenResponse.IsError)
             throw new UserFriendlyException(tokenResponse.Error);
 
-        return tokenResponse.AccessToken;
+        return new TokenModel
+        {
+            AccessToken = tokenResponse.AccessToken,
+            IdentityToken = tokenResponse.IdentityToken,
+            RefreshToken = tokenResponse.RefreshToken,
+            ExpiresIn = tokenResponse.ExpiresIn,
+        };
     }
 
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)
