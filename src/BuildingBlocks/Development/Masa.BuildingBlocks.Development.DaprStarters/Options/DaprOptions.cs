@@ -281,6 +281,6 @@ public class DaprOptions
 
     public bool IsIncompleteAppId()
     {
-        return !DisableAppIdSuffix && ((AppIdSuffix != null && AppIdSuffix.Trim() != string.Empty));
+        return !DisableAppIdSuffix && (AppIdSuffix == null || AppIdSuffix.Trim() != string.Empty);
     }
 }

@@ -10,7 +10,7 @@ public abstract class DaprProcessBase
     /// <summary>
     /// Use after getting dapr AppId and global AppId fails
     /// </summary>
-    private static readonly string _defaultAppId = Assembly.GetCallingAssembly().GetName().Name!.Replace(
+    private static readonly string _defaultAppId = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(
         ".",
         Constant.DEFAULT_APPID_DELIMITER);
 
@@ -26,9 +26,13 @@ public abstract class DaprProcessBase
 
     internal DaprCoreOptions ConvertTo(DaprOptions options)
     {
-        var appId = options.AppId ?? _masaAppConfigureOptions?.Value.AppId ?? _defaultAppId;
+        var appId = options.AppId;
+        if (appId.IsNullOrWhiteSpace())
+            appId = _masaAppConfigureOptions?.Value.AppId;
+        if (appId.IsNullOrWhiteSpace())
+            appId = _defaultAppId;
         if (options.IsIncompleteAppId())
-            appId = $"{appId}{options.AppIdDelimiter}{options.AppIdSuffix}";
+            appId = $"{appId}{options.AppIdDelimiter}{options.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
         DaprCoreOptions
             dataOptions = new(
                 appId,

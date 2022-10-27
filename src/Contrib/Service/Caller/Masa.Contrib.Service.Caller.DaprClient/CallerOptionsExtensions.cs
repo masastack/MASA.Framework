@@ -29,11 +29,11 @@ public static class CallerOptionsExtensions
         AddCallerExtensions.AddCaller(callerOptions, name,
             serviceProvider =>
             {
-                var daprOptions = serviceProvider.GetRequiredService<IOptions<DaprOptions>>().Value;
+                var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>().CurrentValue;
                 string appId = builder.AppId;
                 if (daprOptions.AppPort > 0 && daprOptions.IsIncompleteAppId())
                 {
-                    appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix}";
+                    appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
                 }
                 var daprCaller = new DaprCaller(serviceProvider, name, appId);
                 return daprCaller;

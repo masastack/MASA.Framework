@@ -13,15 +13,9 @@ public static class ServiceCollectionExtensions
         return services.AddDaprStarter();
     }
 
-    public static IServiceCollection AddDaprStarterCore(this IServiceCollection services, Action<DaprOptions>? action = null)
+    public static IServiceCollection AddDaprStarterCore(this IServiceCollection services, Action<DaprOptions> action)
     {
-
-        if (action != null)
-            services.Configure(action);
-        else
-            services.Configure<DaprOptions>(_ =>
-            {
-            });
+        services.Configure(action);
         return services.AddDaprStarter();
     }
 
