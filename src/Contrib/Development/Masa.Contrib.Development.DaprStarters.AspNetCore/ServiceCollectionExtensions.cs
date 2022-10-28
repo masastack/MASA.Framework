@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         Action<DaprOptions> daprOptionAction,
         bool isDelay = true)
     {
-        ArgumentNullException.ThrowIfNull(daprOptionAction, nameof(daprOptionAction));
+        ArgumentNullException.ThrowIfNull(daprOptionAction);
 
         return services.AddDaprStarter(() =>
         {

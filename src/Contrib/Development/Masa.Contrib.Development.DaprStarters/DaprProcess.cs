@@ -110,7 +110,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
     /// </summary>
     private void CompleteDaprEnvironment(ushort httpPort, ushort grpcPort, Action action)
     {
-        if (CompleteDaprHttpPortEnvironment(httpPort) & CompleteDaprGrpcPortEnvironment(grpcPort))
+        if (CompleteDaprHttpPortEnvironment(httpPort) && CompleteDaprGrpcPortEnvironment(grpcPort))
         {
             action.Invoke();
             _logger?.LogInformation(
@@ -161,6 +161,11 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
 
             if (SuccessDaprOptions != null)
             {
+                options.AppPort = SuccessDaprOptions.AppPort;
+                options.EnableSsl = SuccessDaprOptions.EnableSsl;
+                options.DaprHttpPort = SuccessDaprOptions.DaprHttpPort;
+                options.DaprGrpcPort = SuccessDaprOptions.DaprGrpcPort;
+
                 UpdateStatus(DaprProcessStatus.Restarting);
                 _logger?.LogDebug(
                     "Dapr configuration refresh, Dapr AppId is {AppId}, closing dapr, please wait...",
@@ -249,5 +254,14 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         }
     }
 
-    public void Dispose() => Stop();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        Stop();
+    }
 }

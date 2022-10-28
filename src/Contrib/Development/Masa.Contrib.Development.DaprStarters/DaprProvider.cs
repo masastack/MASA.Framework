@@ -45,7 +45,7 @@ public class DaprProvider : IDaprProvider
         }
         catch (Exception exception)
         {
-            _logger?.LogWarning(exception, "----- Error getting list of running dapr, response message is {response}", response);
+            _logger?.LogWarning(exception, "----- Error getting list of running dapr, response message is {Response}", response);
             return new List<DaprRuntimeOptions>();
         }
         return daprList.Where(dapr => dapr.AppId == appId).ToList();
@@ -61,7 +61,7 @@ public class DaprProvider : IDaprProvider
         processUtils.OutputDataReceived += delegate(object? sender, DataReceivedEventArgs args)
         {
             outputDataReceivedAction.Invoke(sender, args);
-            DaprProcess_OutputDataReceived(sender, args);
+            DaprProcess_OutputDataReceived(args);
         };
         processUtils.ErrorDataReceived += DaprProcess_ErrorDataReceived;
         processUtils.Exit += delegate
@@ -72,7 +72,7 @@ public class DaprProvider : IDaprProvider
         return processUtils.Run(Constant.DEFAULT_FILE_NAME, $"run {arguments}", createNoWindow);
     }
 
-    private static void DaprProcess_OutputDataReceived(object? sender, DataReceivedEventArgs e)
+    private static void DaprProcess_OutputDataReceived(DataReceivedEventArgs e)
     {
         if (e.Data == null) return;
 
@@ -96,8 +96,6 @@ public class DaprProvider : IDaprProvider
             case "fatal":
                 Console.ForegroundColor = ConsoleColor.Red;
                 break;
-            default:
-                break;
         }
 
         Console.WriteLine(e.Data);
@@ -116,7 +114,11 @@ public class DaprProvider : IDaprProvider
 
     public void DaprStop(string appId)
     {
-        var process = Process.Start(@$"{Constant.DEFAULT_FILE_NAME}", $"stop {appId}");
+        var process = new ProcessUtils(_loggerFactory).Run(
+            $"{Constant.DEFAULT_FILE_NAME}",
+            $"stop {appId}",
+            createNoWindow: false,
+            isWait: false);
         process.WaitForExit();
     }
 
