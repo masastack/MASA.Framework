@@ -386,39 +386,80 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Hash
 
-    public override Task<long> HashIncrementAsync(string key, long value = 1, Action<CacheOptions>? action = null)
+    public override async Task<long> HashIncrementAsync(
+        string key,
+        long value = 1,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null)
     {
         if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
 
-        return Db.HashIncrementAsync(FormatCacheKey<long>(key, action), Const.DATA_KEY, value);
-    }
-
-    public override async Task<long> HashDecrementAsync(
-        string key,
-        long value = 1L,
-        long defaultMinVal = 0L,
-        Action<CacheOptions>? action = null)
-    {
-        CheckParametersByHashDecrement(value, defaultMinVal);
-
         var script = $@"
-local result = redis.call('HGET', KEYS[1], KEYS[2])
-if tonumber(result) > {defaultMinVal} then
-    result = redis.call('HINCRBY', KEYS[1], KEYS[2], {0 - value})
-    return result
-else
-    return -1
-end";
-        var result = (long)await Db.ScriptEvaluateAsync(script, new RedisKey[] { FormatCacheKey<long>(key, action), Const.DATA_KEY });
+local exist = redis.call('EXISTS', KEYS[1])
+if(exist ~= 1) then
+redis.call('HMSET', KEYS[1], KEYS[3], ARGV[1], KEYS[4], ARGV[2])
+    if ARGV[3] ~= '-1' then
+        redis.call('EXPIRE', KEYS[1], ARGV[3])
+    end
+end
+return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
+
+        var formattedKey = FormatCacheKey<long>(key, action);
+        var result = (long)await Db.ScriptEvaluateAsync(script,
+            new RedisKey[]
+                { formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
+            GetRedisValues(options));
+
+        await RefreshAsync(formattedKey);
 
         return result;
     }
 
-    private static void CheckParametersByHashDecrement(long value = 1, long defaultMinVal = 0L)
+    public override async Task<long?> HashDecrementAsync(
+        string key,
+        long value = 1L,
+        long defaultMinVal = 0L,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null)
+    {
+        CheckParametersByHashDecrement(value);
+
+        var script = $@"
+local exist = redis.call('EXISTS', KEYS[1])
+if(exist ~= 1) then
+redis.call('HMSET', KEYS[1], KEYS[3], ARGV[1], KEYS[4], ARGV[2])
+    if ARGV[3] ~= '-1' then
+        redis.call('EXPIRE', KEYS[1], ARGV[3])
+    end
+end
+
+local result = redis.call('HGET', KEYS[1], KEYS[2])
+if result then
+else
+    result = 0
+end
+if tonumber(result) > {defaultMinVal} then
+    result = redis.call('HINCRBY', KEYS[1], KEYS[2], {0 - value})
+    return result
+else
+    return nil
+end";
+        var formattedKey = FormatCacheKey<long>(key, action);
+        var result = await Db.ScriptEvaluateAsync(
+            script,
+            new RedisKey[] { formattedKey, Const.DATA_KEY , Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
+            GetRedisValues(options));
+        await RefreshAsync(formattedKey);
+
+        if (result.IsNull)
+            return null;
+
+        return (long)result;
+    }
+
+    private static void CheckParametersByHashDecrement(long value = 1)
     {
         if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
-
-        if (defaultMinVal < 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than or equal to 0");
     }
 
     #endregion

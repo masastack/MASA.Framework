@@ -119,8 +119,12 @@ public interface IDistributedCacheClient : ICacheClient
     /// <param name="key">cache key</param>
     /// <param name="value">incremental increment, must be greater than 0</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
     /// <returns></returns>
-    Task<long> HashIncrementAsync(string key, long value = 1L, Action<CacheOptions>? action = null);
+    Task<long> HashIncrementAsync(string key,
+        long value = 1L,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
     /// <summary>
     /// Descending Hash
@@ -129,8 +133,13 @@ public interface IDistributedCacheClient : ICacheClient
     /// <param name="value">decrement increment, must be greater than 0</param>
     /// <param name="defaultMinVal">critical value, must be greater than or equal to 0</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
     /// <returns></returns>
-    Task<long> HashDecrementAsync(string key, long value = 1L, long defaultMinVal = 0L, Action<CacheOptions>? action = null);
+    Task<long?> HashDecrementAsync(string key,
+        long value = 1L,
+        long defaultMinVal = 0L,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
     /// <summary>
     /// Set cache lifetime
