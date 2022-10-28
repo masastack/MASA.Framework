@@ -282,12 +282,12 @@ public class DccTest
                     new("localhost", 6379)
                 }
             }),
-            new MultilevelCacheOptions()
+            multilevelCacheOptions =>
             {
-                GlobalCacheOptions = new CacheOptions()
+                multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
                 {
                     CacheKeyType = CacheKeyType.None
-                }
+                };
             }
         );
         var serviceProvider = builder.Services.BuildServiceProvider();

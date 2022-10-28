@@ -464,10 +464,10 @@ public class MultilevelCacheClientTest : TestBase
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(_ =>
             {
             }),
-            new MultilevelCacheOptions()
+            multilevelCacheOptions =>
             {
-                SubscribeKeyPrefix = "masa",
-                SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+                multilevelCacheOptions.SubscribeKeyPrefix = "masa";
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey;
             });
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();

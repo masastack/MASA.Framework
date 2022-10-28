@@ -76,10 +76,10 @@ var redisConfigurationOptions = new RedisConfigurationOptions()
 builder.Services
        .AddMultilevelCache(
            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions),
-           new MultilevelCacheOptions()
+           multilevelCacheOptions =>
            {
-               SubscribeKeyPrefix = "masa",
-               SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
+               multilevelCacheOptions.SubscribeKeyPrefix = "masa";
+               multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey;
            });
 ```
 
