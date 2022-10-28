@@ -17,8 +17,11 @@ public class DefaultAppPortProviderTest
             "Failed to get the startup port, please specify the port manually");
     }
 
-    [TestMethod]
-    public void TestGetAppPort2()
+    [DataTestMethod]
+    [DataRow(null, false, 5000)]
+    [DataRow(false, false, 5000)]
+    [DataRow(true, true, 5001)]
+    public void TestGetAppPort2(bool? enableSsl, bool expectedEnableSsl, int expectedAppPort)
     {
         var service = new Mock<IServer>();
         IServerAddressesFeature serverAddressesFeature = new ServerAddressesFeature();
@@ -26,9 +29,25 @@ public class DefaultAppPortProviderTest
         serverAddressesFeature.Addresses.Add("http://localhost:5000");
         service.Setup(s => s.Features.Get<IServerAddressesFeature>()).Returns(() => serverAddressesFeature).Verifiable();
         var provider = new DefaultAppPortProvider(service.Object);
-        var result = provider.GetAppPort(true);
-        Assert.AreEqual(5001, result.AppPort);
-        Assert.AreEqual(true, result.EnableSsl);
+        var result = provider.GetAppPort(enableSsl);
+        Assert.AreEqual(expectedAppPort, result.AppPort);
+        Assert.AreEqual(expectedEnableSsl, result.EnableSsl);
+    }
+
+    [DataTestMethod]
+    [DataRow(null, true, 5001)]
+    [DataRow(true, true, 5001)]
+    [DataRow(false, true, 5001)]
+    public void TestGetAppPort3(bool? enableSsl, bool expectedEnableSsl, int expectedAppPort)
+    {
+        var service = new Mock<IServer>();
+        IServerAddressesFeature serverAddressesFeature = new ServerAddressesFeature();
+        serverAddressesFeature.Addresses.Add("https://localhost:5001");
+        service.Setup(s => s.Features.Get<IServerAddressesFeature>()).Returns(() => serverAddressesFeature).Verifiable();
+        var provider = new DefaultAppPortProvider(service.Object);
+        var result = provider.GetAppPort(enableSsl);
+        Assert.AreEqual(expectedAppPort, result.AppPort);
+        Assert.AreEqual(expectedEnableSsl, result.EnableSsl);
     }
 
     [TestMethod]

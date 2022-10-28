@@ -26,4 +26,11 @@
     <ProjectReference Include="..\..\Masa.Contrib.Development.DaprStarters.AspNetCore\Masa.Contrib.Development.DaprStarters.AspNetCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

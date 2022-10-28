@@ -48,14 +48,14 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<DaprService>();
 
-        services.AddSingleton<IAppPortProvider, DefaultAppPortProvider>();
+        services.TryAddSingleton<IAppPortProvider, DefaultAppPortProvider>();
         action.Invoke();
         if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
-        ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort, nameof(options.CurrentValue.AppPort));
+        ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort);
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
         daprProcess.Start();
         return services;
