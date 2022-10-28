@@ -392,7 +392,7 @@ public class RedisCacheClient : RedisCacheClientBase
         Action<CacheOptions>? action = null,
         CacheEntryOptions? options = null)
     {
-        if (value <= 0) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
+        CheckParametersByHashIncrementOrHashDecrement(value);
 
         var script = $@"
 local exist = redis.call('EXISTS', KEYS[1])
@@ -415,6 +415,11 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         return result;
     }
 
+    private static void CheckParametersByHashIncrementOrHashDecrement(long value = 1)
+    {
+        if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
+    }
+
     public override async Task<long?> HashDecrementAsync(
         string key,
         long value = 1L,
@@ -422,7 +427,7 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         Action<CacheOptions>? action = null,
         CacheEntryOptions? options = null)
     {
-        CheckParametersByHashDecrement(value);
+        CheckParametersByHashIncrementOrHashDecrement(value);
 
         var script = $@"
 local exist = redis.call('EXISTS', KEYS[1])
@@ -455,11 +460,6 @@ end";
             return null;
 
         return (long)result;
-    }
-
-    private static void CheckParametersByHashDecrement(long value = 1)
-    {
-        if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
     }
 
     #endregion
