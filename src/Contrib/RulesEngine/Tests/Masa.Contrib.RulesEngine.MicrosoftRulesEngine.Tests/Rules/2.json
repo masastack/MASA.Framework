@@ -1,0 +1,12 @@
+{
+  "WorkflowName": "UserInputWorkflow",
+  "Rules": [
+    {
+      "RuleName": "CheckNameIsNotNullOrEmpty",
+      "ErrorMessage": "Name is not equal to null or empty.",
+      "ErrorType": "Error",
+      "RuleExpressionType": "LambdaExpression",
+      "Expression": "!Name.IsNullOrEmpty()"
+    }
+  ]
+}
