@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 public class DaprProcess : DaprProcessBase, IDaprProcess
 {
     private readonly object _lock = new();

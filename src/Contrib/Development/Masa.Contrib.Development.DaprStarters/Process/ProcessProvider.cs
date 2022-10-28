@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 public class ProcessProvider : IProcessProvider
 {
     private readonly ILogger<ProcessProvider>? _logger;

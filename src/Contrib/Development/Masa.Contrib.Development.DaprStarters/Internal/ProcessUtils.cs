@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 internal sealed class ProcessUtils
 {
     private readonly ILogger<ProcessUtils>? _logger;

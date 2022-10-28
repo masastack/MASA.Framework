@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 public class DaprProvider : IDaprProvider
 {
     private readonly ILoggerFactory? _loggerFactory;
@@ -119,8 +120,5 @@ public class DaprProvider : IDaprProvider
         process.WaitForExit();
     }
 
-    public bool IsExist(string appId)
-    {
-        return GetDaprList(appId).Any();
-    }
+    public bool IsExist(string appId) => GetDaprList(appId).Any();
 }

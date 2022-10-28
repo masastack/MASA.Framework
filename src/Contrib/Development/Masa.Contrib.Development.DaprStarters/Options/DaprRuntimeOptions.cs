@@ -4,6 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 public class DaprRuntimeOptions
 {
     [JsonPropertyName("appId")]

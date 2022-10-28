@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 internal class DaprCoreOptions
 {
     /// <summary>
@@ -40,9 +41,9 @@ internal class DaprCoreOptions
 
     public bool EnableHeartBeat { get; private set; }
 
-    public int HeartBeatInterval { get; }
+    public int HeartBeatInterval { get; set; }
 
-    public bool CreateNoWindow { get; } = true;
+    public bool CreateNoWindow { get; set; } = true;
 
     /// <summary>
     /// The concurrency level of the application, otherwise is unlimited
@@ -120,9 +121,7 @@ internal class DaprCoreOptions
         bool? enableSsl,
         ushort? daprGrpcPort,
         ushort? daprHttpPort,
-        bool enableHeartBeat,
-        int heartBeatInterval,
-        bool createNoWindow)
+        bool enableHeartBeat)
     {
         AppId = appId;
         AppPort = appPort;
@@ -131,8 +130,6 @@ internal class DaprCoreOptions
         DaprGrpcPort = daprGrpcPort;
         DaprHttpPort = daprHttpPort;
         EnableHeartBeat = enableHeartBeat;
-        HeartBeatInterval = heartBeatInterval;
-        CreateNoWindow = createNoWindow;
     }
 
     public void SetPort(ushort httpPort, ushort rpcPort)

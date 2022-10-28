@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\Masa.Contrib.Development.DaprStarters\Masa.Contrib.Development.DaprStarters.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

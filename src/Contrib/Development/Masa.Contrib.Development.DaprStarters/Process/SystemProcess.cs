@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Development.DaprStarters;
 
+[ExcludeFromCodeCoverage]
 public class SystemProcess : IProcess
 {
     private readonly Process _process;

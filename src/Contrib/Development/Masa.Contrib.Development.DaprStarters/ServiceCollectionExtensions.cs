@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private class DaprService
+    private sealed class DaprService
     {
 
     }
