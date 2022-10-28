@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Caching\Masa.BuildingBlocks.Caching\Masa.BuildingBlocks.Caching.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Dcc\Masa.BuildingBlocks.StackSdks.Dcc.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Dcc\Masa.BuildingBlocks.StackSdks.Dcc\Masa.BuildingBlocks.StackSdks.Dcc.csproj" />
     <ProjectReference Include="..\..\..\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
     <ProjectReference Include="..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
   </ItemGroup>

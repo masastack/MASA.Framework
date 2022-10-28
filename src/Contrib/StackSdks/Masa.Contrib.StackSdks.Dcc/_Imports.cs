@@ -4,7 +4,7 @@
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.StackSdks.Dcc;
-global using Masa.BuildingBlocks.StackSdks.Dcc.Model;
+global using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Service;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.StackSdks.Dcc;
