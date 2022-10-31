@@ -55,12 +55,14 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
     public abstract Task<long> HashIncrementAsync(
         string key,
         long value = 1,
-        Action<CacheOptions>? action = null);
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
-    public abstract Task<long> HashDecrementAsync(string key,
+    public abstract Task<long?> HashDecrementAsync(string key,
         long value = 1L,
         long defaultMinVal = 0L,
-        Action<CacheOptions>? action = null);
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
     public virtual bool KeyExpire(string key, TimeSpan? absoluteExpirationRelativeToNow)
         => KeyExpire(key, new CacheEntryOptions(absoluteExpirationRelativeToNow));
