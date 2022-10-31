@@ -10,8 +10,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         Action<DistributedCacheOptions> distributedCacheAction,
-        Action<TypeAliasOptions>? typeAliasOptionsAction = null,
-        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null)
+        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null,
+        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         if (multilevelCacheOptionsAction == null)
         {
@@ -23,14 +23,14 @@ public static class ServiceCollectionExtensions
         return services.AddMultilevelCache(
             Microsoft.Extensions.Options.Options.DefaultName,
             distributedCacheAction,
-            typeAliasOptionsAction,
-            multilevelCacheOptionsAction);
+            multilevelCacheOptionsAction,
+            typeAliasOptionsAction);
     }
 
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         Action<DistributedCacheOptions> distributedCacheAction,
-        string sectionName,
+        string sectionName = Const.DEFAULT_SECTION_NAME,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
         => services.AddMultilevelCache(
             distributedCacheAction,
@@ -41,7 +41,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         Action<DistributedCacheOptions> distributedCacheAction,
-        string sectionName,
+        string sectionName = Const.DEFAULT_SECTION_NAME,
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
         => services.AddMultilevelCache(
@@ -81,34 +81,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
-        Action<DistributedCacheOptions> distributedCacheAction,
-        MultilevelCacheOptions multilevelCacheOptions,
-        Action<TypeAliasOptions>? typeAliasOptionsAction = null)
-        => services.AddMultilevelCache(
-            Microsoft.Extensions.Options.Options.DefaultName,
-            distributedCacheAction,
-            multilevelCacheOptions,
-            typeAliasOptionsAction);
-
-    public static IServiceCollection AddMultilevelCache(
-        this IServiceCollection services,
         string name,
         Action<DistributedCacheOptions> distributedCacheAction,
-        MultilevelCacheOptions multilevelCacheOptions,
+        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
-    {
-        services.AddMultilevelCache(name, multilevelCacheOptions, typeAliasOptionsAction);
-        var distributedCacheOptions = new DistributedCacheOptions(services, name);
-        distributedCacheAction.Invoke(distributedCacheOptions);
-        return services;
-    }
-
-    public static IServiceCollection AddMultilevelCache(
-        this IServiceCollection services,
-        string name,
-        Action<DistributedCacheOptions> distributedCacheAction,
-        Action<TypeAliasOptions>? typeAliasOptionsAction,
-        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null)
     {
         MultilevelCacheOptions multilevelCacheOptions = new();
         multilevelCacheOptionsAction?.Invoke(multilevelCacheOptions);

@@ -33,7 +33,6 @@ public static class MasaConfigurationExtensions
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
-            null,
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()

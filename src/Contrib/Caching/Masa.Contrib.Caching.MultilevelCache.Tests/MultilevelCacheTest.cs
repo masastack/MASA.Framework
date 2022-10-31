@@ -220,18 +220,18 @@ public class MultilevelCacheTest : TestBase
         var services = new ServiceCollection();
         services.AddMultilevelCache(distributedCacheOptions =>
                 distributedCacheOptions.UseStackExchangeRedisCache(RedisConfigurationOptions),
-            typeAliasOptions =>
-            {
-                typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
-                {
-                    { "String", "s" }
-                };
-            },
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
                 {
                     CacheKeyType = CacheKeyType.TypeAlias
+                };
+            },
+            typeAliasOptions =>
+            {
+                typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
+                {
+                    { "String", "s" }
                 };
             }
         );
@@ -251,6 +251,7 @@ public class MultilevelCacheTest : TestBase
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddMultilevelCache(distributedCacheOptions =>
                 distributedCacheOptions.UseStackExchangeRedisCache(RedisConfigurationOptions),
+            "MultilevelCache",
             typeAliasOptions =>
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
