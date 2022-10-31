@@ -8,9 +8,9 @@ namespace System;
 [Serializable]
 public class MasaException : Exception
 {
-    public string? ErrorCode { get; set; }
+    public string? ErrorCode { get; private set; }
 
-    public object[] Parameters { get; set; }
+    public object[] Parameters { get; private set; }
 
     public MasaException()
     {
