@@ -581,23 +581,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.RulesEngine", "src\BuildingBlocks\RulesEngine\Masa.BuildingBlocks.RulesEngine\Masa.BuildingBlocks.RulesEngine.csproj", "{B03C329C-70F4-442A-B420-90DDF7E31847}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Development.DaprStarters", "src\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarters\Masa.BuildingBlocks.Development.DaprStarters.csproj", "{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Development.DaprStarter", "src\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarter\Masa.BuildingBlocks.Development.DaprStarter.csproj", "{77A9CADA-35D6-419B-87B3-AACC50FFAD0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.RulesEngine.MicrosoftRulesEngine", "src\Contrib\RulesEngine\Masa.Contrib.RulesEngine.MicrosoftRulesEngine\Masa.Contrib.RulesEngine.MicrosoftRulesEngine.csproj", "{4E217EC9-0616-414B-82D9-9107F9826D6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters", "src\Contrib\Development\Masa.Contrib.Development.DaprStarters\Masa.Contrib.Development.DaprStarters.csproj", "{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarter", "src\Contrib\Development\Masa.Contrib.Development.DaprStarter\Masa.Contrib.Development.DaprStarter.csproj", "{A6D4C293-E184-42C0-B9B7-3F856BE57EC0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3FADF704-2581-47AC-A1F7-07091B6328A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.AspNetCore", "src\Contrib\Development\Masa.Contrib.Development.DaprStarters.AspNetCore\Masa.Contrib.Development.DaprStarters.AspNetCore.csproj", "{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarter.AspNetCore", "src\Contrib\Development\Masa.Contrib.Development.DaprStarter.AspNetCore\Masa.Contrib.Development.DaprStarter.AspNetCore.csproj", "{E47D82C7-7A1C-4BEF-ACA8-43971FD6C6BA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests", "src\Contrib\RulesEngine\Tests\Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests\Masa.Contrib.RulesEngine.MicrosoftRulesEngine.Tests.csproj", "{EEB2D542-5A2C-4E18-A0E6-72844C359DAD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8CDAF37E-3DB1-4573-B5AA-376C93A8D299}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarters.Tests\Masa.Contrib.Development.DaprStarters.Tests.csproj", "{49B51B95-3DC5-45BD-B91A-3056FF5014B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarter.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarter.Tests\Masa.Contrib.Development.DaprStarter.Tests.csproj", "{49B51B95-3DC5-45BD-B91A-3056FF5014B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarters.AspNetCore.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarters.AspNetCore.Tests\Masa.Contrib.Development.DaprStarters.AspNetCore.Tests.csproj", "{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Development.DaprStarter.AspNetCore.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarter.AspNetCore.Tests\Masa.Contrib.Development.DaprStarter.AspNetCore.Tests.csproj", "{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarters\Masa.BuildingBlocks.Development.DaprStarters.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarter\Masa.BuildingBlocks.Development.DaprStarter.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>
