@@ -17,9 +17,11 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
     }
 
     ///<inheritdoc/>
-    public async Task InitializeAsync(string environment, string cluster, string appId, Dictionary<string, string> configObjects)
+    public async Task AddAsync(string environment, string cluster, string appId,
+        Dictionary<string, string> configObjects,
+        bool isEncryption = false)
     {
-        var requestUri = $"open-api/releasing/init/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}";
+        var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{isEncryption}";
         var result = await _caller.PostAsync(requestUri, configObjects, default);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
