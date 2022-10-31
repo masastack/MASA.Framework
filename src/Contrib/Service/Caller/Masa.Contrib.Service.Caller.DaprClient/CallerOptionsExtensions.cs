@@ -27,7 +27,17 @@ public static class CallerOptionsExtensions
 
         callerOptions.Services.AddOptions();
         AddCallerExtensions.AddCaller(callerOptions, name,
-            serviceProvider => new DaprCaller(serviceProvider, name, builder.AppId));
+            serviceProvider =>
+            {
+                var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>().CurrentValue;
+                string appId = builder.AppId;
+                if (daprOptions.AppPort > 0 && daprOptions.IsIncompleteAppId())
+                {
+                    appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
+                }
+                var daprCaller = new DaprCaller(serviceProvider, name, appId);
+                return daprCaller;
+            });
         return new DefaultDaprClientBuilder(callerOptions.Services, name);
     }
 
