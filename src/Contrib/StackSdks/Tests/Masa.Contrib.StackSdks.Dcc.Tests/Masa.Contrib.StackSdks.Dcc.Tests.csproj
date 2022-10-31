@@ -8,7 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -18,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)"/>
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)"/>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)"/>
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)"/>
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -33,7 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Dcc\Masa.Contrib.StackSdks.Dcc.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Dcc\Masa.Contrib.StackSdks.Dcc.csproj"/>
   </ItemGroup>
 
 </Project>
