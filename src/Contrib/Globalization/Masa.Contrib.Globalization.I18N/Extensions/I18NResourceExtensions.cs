@@ -51,7 +51,7 @@ public static class I18NResourceExtensions
                 (
                     resource.ResourceType,
                     languageInfo.Culture,
-                    useMasaConfiguration ? _configuration!.GetSection(SectionTypes.Local.ToString()) : _configuration!
+                    useMasaConfiguration ? _configuration.GetSection(SectionTypes.Local.ToString()) : _configuration!
                 )
             )
             .ToList();

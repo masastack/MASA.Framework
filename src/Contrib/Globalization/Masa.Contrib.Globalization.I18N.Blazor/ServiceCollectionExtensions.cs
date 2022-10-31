@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
         Action<I18NOptions>? action = null,
         params LanguageInfo[] languages)
     {
-        services.TryAddTransient(typeof(II18N<>), typeof(I18N<>));
+        services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
         return services.AddI18N(languageDirectory, action, languages);
     }
 
@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         Action<I18NOptions>? action = null,
         params LanguageInfo[] languages)
     {
-        services.TryAddTransient(typeof(II18N<>), typeof(I18N<>));
+        services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
         services.AddI18N(languageDirectory, supportCultureName, action, languages);
         return services;
     }

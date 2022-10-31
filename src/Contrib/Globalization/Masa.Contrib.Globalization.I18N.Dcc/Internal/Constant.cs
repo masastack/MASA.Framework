@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Globalization.I18N.Dcc.Internal;
 
-internal static class Const
+internal static class Constant
 {
     internal const string DEFAULT_CONFIG_OBJECT_NAME = "i18n";
 

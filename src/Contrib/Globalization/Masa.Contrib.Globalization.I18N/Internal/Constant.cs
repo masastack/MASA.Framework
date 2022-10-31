@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Globalization.I18N.Internal;
 
-internal static class Const
+internal static class Constant
 {
     internal const string SUPPORTED_CULTURES_NAME = "supportedCultures.json";
 

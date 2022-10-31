@@ -10,7 +10,7 @@ public static class I18NOptionsExtensions
     public static void UseDcc(
         this I18NOptions i18NOptions,
         params LanguageInfo[] languages)
-        => i18NOptions.UseDcc(Dcc.Internal.Const.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Const.SUPPORTED_CULTURES_NAME, languages);
+        => i18NOptions.UseDcc(Dcc.Internal.Constant.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Constant.SUPPORTED_CULTURES_NAME, languages);
 
     public static void UseDcc(
         this I18NOptions i18NOptions,
