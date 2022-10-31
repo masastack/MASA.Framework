@@ -16,6 +16,8 @@ public class DaprCaller : AbstractCaller
         var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<CallerDaprClientOptions>>();
         _callerDaprClientOptions = optionsFactory.Create(name);
         AppId = appId;
+        var logger = serviceProvider.GetService<ILogger<DaprCaller>>();
+        logger?.LogDebug("The Name of the initialized Caller is {Name}, and the AppId is {AppId}", name, appId);
     }
 
     public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)

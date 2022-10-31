@@ -16,7 +16,9 @@ public static class I18NResourceExtensions
         string languageDirectory,
         params LanguageInfo[] languages)
     {
-        languageDirectory = PathHelper.GetAndCheckLanguageDirectory(languageDirectory);
+        if (!PathHelper.ParseLanguageDirectory(ref languageDirectory))
+            return;
+
         var resourceContributors = GetResourceContributors(
             resource,
             languageDirectory,

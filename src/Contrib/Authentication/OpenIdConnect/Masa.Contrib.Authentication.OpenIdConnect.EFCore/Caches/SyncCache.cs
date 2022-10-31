@@ -20,38 +20,38 @@ public class SyncCache
         _context = context;
     }
 
-    internal async Task SyncApiResourceCacheAsync(int id)
+    public async Task SyncApiResourceCacheAsync(Guid id)
     {
         var apiResource = await ApiResourceQuery().FirstOrDefaultAsync(apiResource => apiResource.Id == id);
         if (apiResource is null) return;
         await _apiResourceCache.SetAsync(apiResource);
     }
 
-    internal async Task SyncApiScopeCacheAsync(int id)
+    public async Task SyncApiScopeCacheAsync(Guid id)
     {
         var apiScope = await ApiScopeQuery().FirstOrDefaultAsync(apiScope => apiScope.Id == id);
         if (apiScope is null) return;
         await _apiScopeCache.SetAsync(apiScope);
     }
 
-    internal async Task SyncIdentityResourceCacheAsync(params int[] ids)
+    public async Task SyncIdentityResourceCacheAsync(params Guid[] ids)
     {
         var identityResources = await IdentityResourceQuery().Where(idrs => ids.Contains(idrs.Id)).ToListAsync();
-        if (identityResources.Count < 0) return;
+        if (identityResources.Count == 0) return;
         await _identityResourceCache.SetRangeAsync(identityResources);
     }
 
-    internal async Task RemoveApiResourceCacheAsync(ApiResource apiResource)
+    public async Task RemoveApiResourceCacheAsync(ApiResource apiResource)
     {
         await _apiResourceCache.RemoveAsync(apiResource);
     }
 
-    internal async Task RemoveApiScopeCacheAsync(ApiScope apiScope)
+    public async Task RemoveApiScopeCacheAsync(ApiScope apiScope)
     {
         await _apiScopeCache.RemoveAsync(apiScope);
     }
 
-    internal async Task RemoveIdentityResourceCacheAsync(IdentityResource identityResource)
+    public async Task RemoveIdentityResourceCacheAsync(IdentityResource identityResource)
     {
         await _identityResourceCache.RemoveAsync(identityResource);
     }

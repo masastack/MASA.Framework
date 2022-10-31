@@ -40,11 +40,16 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
         services.AddCaller(callerOptions);
-        services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, redisOptions).AddMultilevelCache(options =>
-        {
-            options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
-            options.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
-        });
+
+        services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions),
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
+                multilevelCacheOptions.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
+            }
+        );
 
         services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();
         services.AddSingleton<ISsoClient, SsoClient>();

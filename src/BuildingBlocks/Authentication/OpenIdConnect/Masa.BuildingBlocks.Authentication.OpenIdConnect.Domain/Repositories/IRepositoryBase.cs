@@ -7,7 +7,7 @@ public interface IRepositoryBase<TEntity> where TEntity : class, IEntity
 {
     Task<PaginatedList<TEntity>> GetPaginatedListAsync(int page, int pageSize, Expression<Func<TEntity, bool>>? condition = null);
 
-    Task<TEntity?> GetDetailAsync(int id);
+    Task<TEntity?> GetDetailAsync(Guid id);
 
     Task<List<TEntity>> GetListAsync();
 

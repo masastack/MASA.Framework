@@ -6,15 +6,10 @@ namespace Masa.Contrib.Globalization.I18N;
 
 internal static class PathHelper
 {
-    internal static string GetAndCheckLanguageDirectory(string languageDirectory)
+    internal static bool ParseLanguageDirectory(ref string languageDirectory)
     {
         languageDirectory.CheckIsNullOrWhiteSpace();
-        var path = Path.Combine(I18NResourceResourceConfiguration.BaseDirectory, languageDirectory.TrimStart("/"));
-        if (!Directory.Exists(path))
-        {
-            throw new UserFriendlyException($"[{languageDirectory}] does not exist");
-        }
-
-        return path;
+        languageDirectory = Path.Combine(I18NResourceResourceConfiguration.BaseDirectory, languageDirectory.TrimStart("/"));
+        return Directory.Exists(languageDirectory);
     }
 }

@@ -68,10 +68,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, long>(requestUri, new { id = teamId });
     }
 
-    public async Task<bool> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
+    public async Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _caller.PostAsync<object, bool>(requestUri, new { account, password, isLdap });
+        return await _caller.PostAsync<object, UserModel>(requestUri, new { account, password, isLdap });
     }
 
     public async Task<UserModel?> FindByAccountAsync(string account)
@@ -215,13 +215,13 @@ public class UserService : IUserService
         return await _caller.PutAsync<bool>(requestUri, user);
     }
 
-    public async Task<UserModel> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
+    public async Task<UserModel?> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login)
     {
         var requestUri = $"api/user/loginByPhoneNumber";
-        return await _caller.PostAsync<UserModel>(requestUri, login) ?? throw new UserFriendlyException("login failed");
+        return await _caller.PostAsync<UserModel>(requestUri, login);
     }
 
-    public async Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
+    public async Task<TokenModel> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
     {
         using var client = new HttpClient();
         var disco = await client.GetDiscoveryDocumentAsync(address);
@@ -242,7 +242,13 @@ public class UserService : IUserService
         if (tokenResponse.IsError)
             throw new UserFriendlyException(tokenResponse.Error);
 
-        return tokenResponse.AccessToken;
+        return new TokenModel
+        {
+            AccessToken = tokenResponse.AccessToken,
+            IdentityToken = tokenResponse.IdentityToken,
+            RefreshToken = tokenResponse.RefreshToken,
+            ExpiresIn = tokenResponse.ExpiresIn,
+        };
     }
 
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)
@@ -319,7 +325,7 @@ public class UserService : IUserService
             userId = _userContext.GetUserId<Guid>();
         }
         var requestUri = $"api/user/hasPassword";
-        return await _caller.GetAsync <bool>(requestUri, new { userId });
+        return await _caller.GetAsync<bool>(requestUri, new { userId });
     }
 
     public async Task<UserModel> RegisterThirdPartyUserAsync(RegisterThirdPartyUserModel model)
@@ -334,6 +340,18 @@ public class UserService : IUserService
         ArgumentNullException.ThrowIfNull(phoneNumber);
         var requestUri = $"api/user/HasPhoneNumberInEnv?env={env}&phoneNumber={phoneNumber}";
         return await _caller.GetAsync<bool>(requestUri);
+    }
+
+    public async Task<bool> ResetPasswordByEmailAsync(ResetPasswordByEmailModel resetPasswordByEmailModel)
+    {
+        var requestUri = $"api/user/reset_password_by_email";
+        return await _caller.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, resetPasswordByEmailModel);
+    }
+
+    public async Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel)
+    {
+        var requestUri = $"api/user/reset_password_by_phone";
+        return await _caller.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, resetPasswordByPhoneModel);
     }
 }
 

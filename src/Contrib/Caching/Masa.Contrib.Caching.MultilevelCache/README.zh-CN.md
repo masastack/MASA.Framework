@@ -10,6 +10,7 @@
 用例：
 
 ``` powershell
+Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis //用于提供分布式缓存能力，这里以Redis为例
 Install-Package Masa.Contrib.Caching.MultilevelCache
 ```
 ### 入门
@@ -46,8 +47,10 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
 2. 添加多级缓存
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache()
-                .AddMultilevelCache();
+builder.Services.AddMultilevelCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
 
 3. 从DI获取`IMultilevelCacheClient`
@@ -71,12 +74,13 @@ var redisConfigurationOptions = new RedisConfigurationOptions()
     }
 };
 builder.Services
-    .AddStackExchangeRedisCache(redisConfigurationOptions)
-    .AddMultilevelCache(new MultilevelCacheOptions()
-    {
-        SubscribeKeyPrefix = "masa",
-        SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
-    });
+       .AddMultilevelCache(
+           distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions),
+           multilevelCacheOptions =>
+           {
+               multilevelCacheOptions.SubscribeKeyPrefix = "masa";
+               multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey;
+           });
 ```
 
 2. 从DI获取`IMultilevelCacheClient`，并使用相应的方法

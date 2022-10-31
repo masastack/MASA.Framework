@@ -15,7 +15,34 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 
 ### 入门
 
-#### 用法1:
+#### 用法1：
+
+1. 添加Redis缓存
+
+```C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    var redisConfigurationOptions = new RedisConfigurationOptions()
+    {
+        DefaultDatabase = 1,
+        ConnectionPoolSize = 10,
+        Servers = new List<RedisServerOptions>()
+        {
+            new("localhost", 6379)
+        }
+    };
+    distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions);
+});
+```
+
+2. 从DI获取`IDistributedCacheClient`，并使用相应的方法
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### 用法2:
 
 1. 配置`appsettings.json`
 
@@ -37,8 +64,14 @@ Install-Package Masa.Contrib.Caching.Distributed.StackExchangeRedis
 2. 添加Redis缓存
 
 ```C#
-builder.Services.AddStackExchangeRedisCache();
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    // Redis配置信息是通过 IOptionsMonitor<RedisConfigurationOptions> 来获取
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
+
+> 默认读取本地配置的`RedisConfig`节点，并配置支持[`选项模式`](https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/options)，支持了通过`IOptionsMonitor<RedisConfigurationOptions>`来获取Redis配置的信息
 
 3. 从DI获取`IDistributedCacheClient`
 
@@ -47,23 +80,65 @@ string key = "test_1";
 distributedCacheClient.Set(key, "test_content");
 ```
 
-#### 用法2：
+#### 用法3：
 
-1. 添加Redis缓存
+1. 使用[Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
 
 ```C#
-builder.Services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+builder.Services.AddMasaConfiguration(configurationBuilder =>
 {
-    DefaultDatabase = 1,
-    ConnectionPoolSize = 10,
-    Servers = new List<RedisServerOptions>()
-    {
-        new("localhost", 6379)
-    }
+    configurationBuilder.UseDcc();
 });
 ```
 
-2. 从DI获取`IDistributedCacheClient`，并使用相应的方法
+> Dcc配置使用请[参考](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+2 使用redis所在的配置
+
+```C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    var configuration = builder.GetMasaConfiguration().ConfigurationApi.GetSection("{Replace-Your-RedisOptions-AppId}").GetSection("{Replace-Your-RedisOptions-ConfigObjectName}");
+    distributedCacheOptions.UseStackExchangeRedisCache(configuration);
+});
+```
+
+3. 从DI获取`IDistributedCacheClient`，并使用相应的方法
+
+``` C#
+string key = "test_1";
+distributedCacheClient.Set(key, "test_content");
+```
+
+#### 用法4：
+
+1. 使用[Dcc](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+```C#
+builder.Services.AddMasaConfiguration(configurationBuilder =>
+{
+    configurationBuilder.UseDcc();
+
+    // 使用 MasaConfiguration提供的手动映射功能，使其支持 选项模式，支持通过 IOptionsMonitor<RedisConfigurationOptions> 来获取Redis配置的信息
+    configurationBuilder.UseMasaOptions(option => option.MappingConfigurationApi<RedisConfigurationOptions>("Replace-Your-RedisOptions-AppId", "Replace-Your-RedisOptions-ConfigObjectName", "{Replace-Your-DistributedCacheName}"));
+});
+```
+
+> Dcc配置使用请[参考](../../../Configuration/ConfigurationApi/Masa.Contrib.Configuration.ConfigurationApi.Dcc/README.zh-CN.md)
+
+2 使用redis所在的配置
+
+``` C#
+builder.Services.AddDistributedCache(distributedCacheOptions =>
+{
+    // Redis配置信息是通过`IOptionsMonitor<RedisConfigurationOptions>`来获取
+    distributedCacheOptions.UseStackExchangeRedisCache());
+});
+```
+
+> 由于本地`RedisConfig`节点不存在，默认会跳过支持[选项模式](https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/options) (避免与MasaConfiguration提供[选项模式](https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/configuration/options)重复)
+
+3. 从DI获取`IDistributedCacheClient`，并使用相应的方法
 
 ``` C#
 string key = "test_1";

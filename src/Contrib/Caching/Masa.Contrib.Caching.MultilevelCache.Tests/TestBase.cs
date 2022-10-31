@@ -13,6 +13,10 @@ public class TestBase
             Servers = new List<RedisServerOptions>()
             {
                 new(REDIS_HOST, 6379)
+            },
+            GlobalCacheOptions = new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
             }
         };
 }

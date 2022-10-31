@@ -21,7 +21,10 @@ public static class ServiceCollectionExtensions
 
     public static void AddDccClient(this IServiceCollection services, RedisConfigurationOptions options)
     {
-        services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, options);
+        services.AddDistributedCache(DEFAULT_CLIENT_NAME, distributedCacheOptions =>
+        {
+            distributedCacheOptions.UseStackExchangeRedisCache(options);
+        });
 
         services.AddSingleton<IDccClient>(serviceProvider =>
         {

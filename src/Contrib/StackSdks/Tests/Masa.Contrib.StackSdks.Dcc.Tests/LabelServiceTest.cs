@@ -17,11 +17,11 @@ public class LabelServiceTest
         };
 
         var distributedCacheClient = new Mock<IDistributedCacheClient>();
-        distributedCacheClient.Setup(client => client.GetAsync<List<LabelModel>>(typeCode)).ReturnsAsync(data).Verifiable();
+        distributedCacheClient.Setup(client => client.GetAsync<List<LabelModel>>(typeCode, null)).ReturnsAsync(data).Verifiable();
         var dccClient = new DccClient(distributedCacheClient.Object);
 
         var result = await dccClient.LabelService.GetListByTypeCodeAsync(typeCode);
-        distributedCacheClient.Verify(client => client.GetAsync<List<LabelModel>>(typeCode), Times.Once);
+        distributedCacheClient.Verify(client => client.GetAsync<List<LabelModel>>(typeCode, null), Times.Once);
 
         Assert.IsNotNull(result);
     }
@@ -33,11 +33,11 @@ public class LabelServiceTest
         List<LabelModel>? data = null;
 
         var distributedCacheClient = new Mock<IDistributedCacheClient>();
-        distributedCacheClient.Setup(client => client.GetAsync<List<LabelModel>>(It.IsAny<string>())).ReturnsAsync(data).Verifiable();
+        distributedCacheClient.Setup(client => client.GetAsync<List<LabelModel>>(It.IsAny<string>(), null)).ReturnsAsync(data).Verifiable();
         var dccClient = new DccClient(distributedCacheClient.Object);
 
         var result = await dccClient.LabelService.GetListByTypeCodeAsync(typeCode);
-        distributedCacheClient.Verify(client => client.GetAsync<List<LabelModel>>(typeCode), Times.Once);
+        distributedCacheClient.Verify(client => client.GetAsync<List<LabelModel>>(typeCode, null), Times.Once);
 
         Assert.IsFalse(result.Any());
     }

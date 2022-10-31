@@ -6,7 +6,9 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Enum;
 public enum SendMsgCodeTypes
 {
     VerifiyPhoneNumber = 1,
-    UpdatePhoneNumber,
-    Login,
-    Register
+    UpdatePhoneNumber = 2,
+    Login = 3,
+    Register = 4,
+    Bind = 5,
+    ForgotPassword = 6
 }

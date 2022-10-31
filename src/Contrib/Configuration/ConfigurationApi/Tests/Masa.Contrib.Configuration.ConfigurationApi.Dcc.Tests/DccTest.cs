@@ -15,8 +15,6 @@ public class DccTest
     private Mock<IDistributedCacheClientFactory> _distributedCacheClientFactory;
     private Mock<IMemoryCache> _memoryCache;
     private Mock<IDistributedCacheClient> _distributedCacheClient;
-    private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
-    private const string DEFAULT_SUBSCRIBE_KEY_PREFIX = "masa.dcc:";
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
     private Masa.BuildingBlocks.Data.ISerializer _serializer;
     private Masa.BuildingBlocks.Data.IDeserializer _deserializer;
@@ -75,7 +73,8 @@ public class DccTest
                 _memoryCache.Object,
                 _distributedCacheClient.Object,
                 null,
-                SubscribeKeyType.ValueTypeFullNameAndKey))
+                SubscribeKeyType.ValueTypeFullNameAndKey,
+                new CacheOptions()))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
@@ -94,7 +93,8 @@ public class DccTest
             .Returns(() => new MultilevelCacheClient(_memoryCache.Object,
                 _distributedCacheClient.Object,
                 null,
-                SubscribeKeyType.ValueTypeFullNameAndKey))
+                SubscribeKeyType.ValueTypeFullNameAndKey,
+                new CacheOptions()))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
@@ -140,7 +140,8 @@ public class DccTest
             ConfigFormat = ConfigFormats.Text
         });
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result)
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -201,7 +202,9 @@ public class DccTest
             ConfigFormat = ConfigFormats.Json
         });
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>()).Result).Returns(() => response);
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            .Returns(() => response);
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
         memoryCacheClientFactory
             .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
@@ -270,15 +273,25 @@ public class DccTest
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");
         string key = "Development-Default-WebApplication1-Brand".ToLower();
-        builder.Services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, new RedisConfigurationOptions()
-        {
-            Servers = new List<RedisServerOptions>()
+        builder.Services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(new RedisConfigurationOptions()
             {
-                new("localhost", 6379)
+                Servers = new List<RedisServerOptions>()
+                {
+                    new("localhost", 6379)
+                }
+            }),
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
+                {
+                    CacheKeyType = CacheKeyType.None
+                };
             }
-        }).AddMultilevelCache(isReset: true);
+        );
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
         string value = new PublishRelease()
         {
             Content = brand.Serialize(_jsonSerializerOptions),

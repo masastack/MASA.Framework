@@ -47,8 +47,10 @@ Install-Package Masa.Contrib.Caching.MultilevelCache
 2. Add multi-level cache
 
 ``` C#
-builder.Services.AddStackExchangeRedisCache()
-                .AddMultilevelCache();
+builder.Services.AddMultilevelCache(distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+});
 ```
 
 3. Get `IMultilevelCacheClient` from DI
@@ -72,12 +74,13 @@ var redisConfigurationOptions = new RedisConfigurationOptions()
     }
 };
 builder.Services
-    .AddStackExchangeRedisCache(redisConfigurationOptions)
-    .AddMultilevelCache(new MultilevelCacheOptions()
-    {
-        SubscribeKeyPrefix = "masa",
-        SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey
-    });
+       .AddMultilevelCache(
+           distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisConfigurationOptions),
+           multilevelCacheOptions =>
+           {
+               multilevelCacheOptions.SubscribeKeyPrefix = "masa";
+               multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey;
+           });
 ```
 
 2. Get `IMultilevelCacheClient` from DI and use the corresponding method

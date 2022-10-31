@@ -70,6 +70,11 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// </summary>
     public int SyncTimeout { get; set; } = 1000;
 
+    public CacheOptions GlobalCacheOptions { get; set; } = new()
+    {
+        CacheKeyType = CacheKeyType.TypeName
+    };
+
     public static implicit operator ConfigurationOptions(RedisConfigurationOptions options)
     {
         var configurationOptions = new ConfigurationOptions

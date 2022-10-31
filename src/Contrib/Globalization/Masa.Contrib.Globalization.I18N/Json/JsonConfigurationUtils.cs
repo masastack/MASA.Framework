@@ -9,7 +9,8 @@ public static class JsonConfigurationUtils
         string supportCultureName,
         params LanguageInfo[] languages)
     {
-        languageDirectory = PathHelper.GetAndCheckLanguageDirectory(languageDirectory);
+        if (!PathHelper.ParseLanguageDirectory(ref languageDirectory))
+            return;
 
         if (languages.Length == 0)
         {

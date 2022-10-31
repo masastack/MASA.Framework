@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ApiScope : FullAggregateRoot<int, Guid>
+public class ApiScope : FullAggregateRoot<Guid, Guid>
 {
     private List<ApiScopeClaim> _userClaims = new();
     private List<ApiScopeProperty> _properties = new();
@@ -52,7 +52,7 @@ public class ApiScope : FullAggregateRoot<int, Guid>
         ShowInDiscoveryDocument = showInDiscoveryDocument;
     }
 
-    public void BindUserClaims(List<int> userClaims)
+    public void BindUserClaims(List<Guid> userClaims)
     {
         _userClaims = _userClaims.MergeBy(
            userClaims.Select(userClaim => new ApiScopeClaim(userClaim)),

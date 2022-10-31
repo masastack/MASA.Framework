@@ -1,11 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Constans;
-
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class Client : FullAggregateRoot<int, Guid>
+public class Client : FullAggregateRoot<Guid, Guid>
 {
     public ClientTypes ClientType { get; private set; }
 

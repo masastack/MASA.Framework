@@ -54,7 +54,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return GetAsync(GetEnvironment(string.Empty), GetCluster(string.Empty), GetAppId(string.Empty), configObject, valueChanged);
     }
 
-    public async Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T>? valueChanged)
+    public async Task<T> GetAsync<T>(string environment, string cluster, string appId, string configObject, Action<T>? valueChanged = null)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
@@ -76,7 +76,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 throw new FormatException(result.Raw);
             }
 
-            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(nameof(configObject));
+            return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ??
+                throw new MasaException($"The content of [{configObject}] is wrong");
         })).Value;
 
         return (T)value;

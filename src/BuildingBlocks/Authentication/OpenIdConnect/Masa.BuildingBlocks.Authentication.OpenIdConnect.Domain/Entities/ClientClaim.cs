@@ -3,13 +3,13 @@
 
 namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
-public class ClientClaim : Entity<int>
+public class ClientClaim : Entity<Guid>
 {
     public string Type { get; private set; } = string.Empty;
 
     public string Value { get; private set; } = string.Empty;
 
-    public int ClientId { get; private set; }
+    public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
 }

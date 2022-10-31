@@ -16,14 +16,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)"/>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)"/>
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N.Blazor\Masa.Contrib.Globalization.I18N.Blazor.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N.Blazor\Masa.Contrib.Globalization.I18N.Blazor.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

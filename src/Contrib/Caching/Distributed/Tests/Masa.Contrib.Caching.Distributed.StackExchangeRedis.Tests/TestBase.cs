@@ -9,7 +9,13 @@ public class TestBase
 
     protected static RedisConfigurationOptions GetConfigurationOptions()
     {
-        var redisConfigurationOptions = new RedisConfigurationOptions();
+        var redisConfigurationOptions = new RedisConfigurationOptions()
+        {
+            GlobalCacheOptions = new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            }
+        };
         redisConfigurationOptions.Servers.Add(new RedisServerOptions());
         return redisConfigurationOptions;
     }
