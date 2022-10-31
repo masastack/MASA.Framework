@@ -92,7 +92,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
-        await manage.InitializeAsync(environment, cluster, appId, configObjects);
+        await manage.AddAsync(environment, cluster, appId, configObjects);
     }
 
     [DataTestMethod]
@@ -111,7 +111,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.InitializeAsync(environment, cluster, appId, configObjects));
+        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
     [DataTestMethod]
@@ -130,7 +130,7 @@ public class DccManageTest
         }).Verifiable();
 
         var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.InitializeAsync(environment, cluster, appId, configObjects));
+        await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
     [DataTestMethod]
