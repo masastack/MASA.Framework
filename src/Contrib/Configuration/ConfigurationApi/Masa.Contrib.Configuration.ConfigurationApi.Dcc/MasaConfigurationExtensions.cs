@@ -33,13 +33,8 @@ public static class MasaConfigurationExtensions
         services.AddMultilevelCache(
             DEFAULT_CLIENT_NAME,
             distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(dccOptions.RedisOptions),
-            null,
             multilevelCacheOptions =>
             {
-                multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
-                {
-                    CacheKeyType = CacheKeyType.None
-                };
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
                 multilevelCacheOptions.SubscribeKeyPrefix = dccOptions.SubscribeKeyPrefix ?? DEFAULT_SUBSCRIBE_KEY_PREFIX;
             });
