@@ -386,6 +386,14 @@ public class RedisCacheClient : RedisCacheClientBase
 
     #region Hash
 
+    /// <summary>
+    /// Increment Hash
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">incremental increment, must be greater than 0</param>
+    /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
+    /// <returns>Returns the field value after the increment operation</returns>
     public override async Task<long> HashIncrementAsync(
         string key,
         long value = 1,
@@ -420,6 +428,15 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
     }
 
+    /// <summary>
+    /// Descending Hash
+    /// </summary>
+    /// <param name="key">cache key</param>
+    /// <param name="value">decrement increment, must be greater than 0</param>
+    /// <param name="defaultMinVal">critical value</param>
+    /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
+    /// <returns>Returns null on failure, and returns the field value after the decrement operation on success</returns>
     public override async Task<long?> HashDecrementAsync(
         string key,
         long value = 1L,
