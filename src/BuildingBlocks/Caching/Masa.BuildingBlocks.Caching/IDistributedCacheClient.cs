@@ -119,18 +119,27 @@ public interface IDistributedCacheClient : ICacheClient
     /// <param name="key">cache key</param>
     /// <param name="value">incremental increment, must be greater than 0</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
-    /// <returns></returns>
-    Task<long> HashIncrementAsync(string key, long value = 1L, Action<CacheOptions>? action = null);
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
+    /// <returns>Returns the field value after the increment operation</returns>
+    Task<long> HashIncrementAsync(string key,
+        long value = 1L,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
     /// <summary>
     /// Descending Hash
     /// </summary>
     /// <param name="key">cache key</param>
     /// <param name="value">decrement increment, must be greater than 0</param>
-    /// <param name="defaultMinVal">critical value, must be greater than or equal to 0</param>
+    /// <param name="defaultMinVal">critical value</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
-    /// <returns></returns>
-    Task<long> HashDecrementAsync(string key, long value = 1L, long defaultMinVal = 0L, Action<CacheOptions>? action = null);
+    /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty (is only initialized if the configuration does not exist)</param>
+    /// <returns>Returns null on failure, and returns the field value after the decrement operation on success</returns>
+    Task<long?> HashDecrementAsync(string key,
+        long value = 1L,
+        long defaultMinVal = 0L,
+        Action<CacheOptions>? action = null,
+        CacheEntryOptions? options = null);
 
     /// <summary>
     /// Set cache lifetime
