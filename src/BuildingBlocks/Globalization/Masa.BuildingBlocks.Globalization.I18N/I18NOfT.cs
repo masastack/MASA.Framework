@@ -47,7 +47,7 @@ public class I18N<TResourceSource> : II18N<TResourceSource>
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        var value = this.T(name, returnKey);
+        var value = T(name, returnKey);
         if (value != null)
             return string.Format(GetCultureInfo(), value, arguments);
 

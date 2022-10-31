@@ -6,22 +6,23 @@ namespace Masa.Contrib.Globalization.I18N.Blazor;
 [ExcludeFromCodeCoverage]
 public class I18N<TResourceSource> : Masa.BuildingBlocks.Globalization.I18N.I18N<TResourceSource>
 {
-    private const string CultureCookieKey = "Masa_I18nConfig_Culture";
+    private const string CULTURE_COOKIE_KEY = "Masa_I18nConfig_Culture";
+
+    private const string GET_COOKIE_JS =
+        "(function(name){const reg = new RegExp(`(^| )${name}=([^;]*)(;|$)`);const arr = document.cookie.match(reg);if (arr) {return unescape(arr[2]);}return null;})";
+
+    private const string SET_COOKIE_JS =
+        "(function(name,value){ var Days = 30;var exp = new Date();exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);document.cookie = `${name}=${escape(value.toString())};path=/;expires=${exp.toUTCString()}`;})";
+
     private readonly IJSRuntime _jsRuntime;
 
     public I18N(IJSRuntime jsRuntime) => _jsRuntime = jsRuntime;
-
-    const string GetCookieJs =
-        "(function(name){const reg = new RegExp(`(^| )${name}=([^;]*)(;|$)`);const arr = document.cookie.match(reg);if (arr) {return unescape(arr[2]);}return null;})";
-
-    const string SetCookieJs =
-        "(function(name,value){ var Days = 30;var exp = new Date();exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);document.cookie = `${name}=${escape(value.toString())};path=/;expires=${exp.toUTCString()}`;})";
 
     public override CultureInfo GetCultureInfo()
     {
         if (_jsRuntime is IJSInProcessRuntime jsInProcess)
         {
-            var cultureName = jsInProcess.Invoke<string>("eval", $"{GetCookieJs}('{CultureCookieKey}')");
+            var cultureName = jsInProcess.Invoke<string>("eval", $"{GET_COOKIE_JS}('{CULTURE_COOKIE_KEY}')");
             return new CultureInfo(cultureName);
         }
         return CultureInfo.CurrentUICulture;
@@ -31,7 +32,7 @@ public class I18N<TResourceSource> : Masa.BuildingBlocks.Globalization.I18N.I18N
     {
         try
         {
-            _jsRuntime.InvokeVoidAsync("eval", $"{SetCookieJs}('{CultureCookieKey}','{culture.Name}')")
+            _jsRuntime.InvokeVoidAsync("eval", $"{SET_COOKIE_JS}('{CULTURE_COOKIE_KEY}','{culture.Name}')")
                 .ConfigureAwait(false)
                 .GetAwaiter()
                 .GetResult();
