@@ -532,17 +532,6 @@ public class DistributedCacheClientTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow("hash_test", -1)]
-    [DataRow("hash_test", -2)]
-    public async Task TestHashDecrementAndMinalValueLessThan0Async(string key, long minVal)
-    {
-        await _distributedCacheClient.RemoveAsync(key);
-
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async ()
-            => await _distributedCacheClient.HashDecrementAsync(key, 1, minVal));
-    }
-
-    [DataTestMethod]
     [DataRow("test_expire")]
     public void TestKeyExpireAndSpecialTimeSpan(string key)
     {
