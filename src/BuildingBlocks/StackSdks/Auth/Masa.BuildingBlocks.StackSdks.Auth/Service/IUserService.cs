@@ -71,7 +71,7 @@ public interface IUserService
 
     Task<UserModel?> LoginByPhoneNumberAsync(LoginByPhoneNumberModel login);
 
-    Task<string> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login);
+    Task<TokenModel> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login);
 
     Task RemoveUserRolesAsync(RemoveUserRolesModel user);
 
