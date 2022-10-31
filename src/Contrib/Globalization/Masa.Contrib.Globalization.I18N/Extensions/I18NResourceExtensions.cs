@@ -81,7 +81,7 @@ public static class I18NResourceExtensions
         }
         var configurationBuilder = new ConfigurationBuilder();
         var jsonLocalizationConfigurationSource =
-            new JsonLocalizationConfigurationSource(resourceType, languageDirectory, languages.Select(l => l.Culture),
+            new JsonConfigurationSource(resourceType, languageDirectory, languages.Select(l => l.Culture),
                 useMasaConfiguration);
         configurationBuilder.Add(jsonLocalizationConfigurationSource);
         var localizationConfiguration = configurationBuilder.Build();

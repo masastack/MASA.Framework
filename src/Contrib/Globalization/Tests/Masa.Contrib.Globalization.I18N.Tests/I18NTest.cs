@@ -22,10 +22,7 @@ public class I18NTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.TestAddI18N(options =>
-        {
-            options.UseJson();
-        });
+        services.TestAddI18N();
         var serviceProvider = services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
         i18N.SetCulture(cultureName);
@@ -43,10 +40,7 @@ public class I18NTest
     public void TestLocalization2(string cultureName, string expectedValue)
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.TestAddI18N(options =>
-        {
-            options.UseJson(DEFAULT_RESOURCE);
-        });
+        builder.Services.TestAddI18N(DEFAULT_RESOURCE);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
         i18N.SetCulture(cultureName);
@@ -63,55 +57,7 @@ public class I18NTest
     public void TestLocalization3(string cultureName, string expectedValue)
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddI18N(options =>
-        {
-            options.UseJson(DEFAULT_RESOURCE);
-        });
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var i18N = serviceProvider.GetRequiredService<II18N>();
-        i18N.SetCulture(cultureName);
-        var value = i18N["Name"];
-        Assert.AreEqual(expectedValue, value);
-        value = i18N.T("Name");
-        Assert.AreEqual(expectedValue, value);
-        value = i18N["Name2"];
-        Assert.AreEqual("Name2", value);
-    }
-
-    [DataTestMethod]
-    [DataRow("zh-TW", "Name")]
-    public void TestLocalization4(string cultureName, string expectedValue)
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.Configure<MasaI18NOptions>(options =>
-        {
-            options.Resources
-                .Add<DefaultResource>()
-                .AddJson("/i18n");
-        });
-        builder.Services.AddI18N(null);
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var i18N = serviceProvider.GetRequiredService<II18N>();
-        i18N.SetCulture(cultureName);
-        var value = i18N["Name"];
-        Assert.AreEqual(expectedValue, value);
-        value = i18N.T("Name");
-        Assert.AreEqual(expectedValue, value);
-        value = i18N["Name2"];
-        Assert.AreEqual("Name2", value);
-    }
-
-
-    [DataTestMethod]
-    [DataRow("zh-CN", "吉姆")]
-    [DataRow("en-US", "Jim")]
-    public void TestLocalization5(string cultureName, string expectedValue)
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.TestAddI18N(options =>
-        {
-            options.UseJson(DEFAULT_RESOURCE, new LanguageInfo("zh-CN"), new LanguageInfo("en-US"));
-        });
+        builder.Services.AddI18N(DEFAULT_RESOURCE);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
         i18N.SetCulture(cultureName);

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Globalization.I18N.Json;
 
-public class JsonLocalizationConfigurationSource : IConfigurationSource
+public class JsonConfigurationSource : IConfigurationSource
 {
     public Type ResourceType { get; }
 
@@ -13,7 +13,7 @@ public class JsonLocalizationConfigurationSource : IConfigurationSource
 
     public bool UseMasaConfiguration { get; }
 
-    public JsonLocalizationConfigurationSource(
+    public JsonConfigurationSource(
         Type resourceType,
         string languageDirectory,
         IEnumerable<string> cultureNames,
@@ -27,7 +27,7 @@ public class JsonLocalizationConfigurationSource : IConfigurationSource
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        var configurationProvider = new JsonLocalizationConfigurationProvider(this);
+        var configurationProvider = new JsonConfigurationProvider(this);
         configurationProvider.Initialize();
         return configurationProvider;
     }

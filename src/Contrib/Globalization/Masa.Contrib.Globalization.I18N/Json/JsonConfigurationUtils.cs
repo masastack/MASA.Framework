@@ -1,25 +1,11 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-// ReSharper disable once CheckNamespace
+namespace Masa.Contrib.Globalization.I18N.Json;
 
-using Masa.BuildingBlocks.Globalization.I18N.Options;
-
-namespace Masa.Contrib.Globalization.I18N;
-
-public static class I18NOptionsExtensions
+public static class JsonConfigurationUtils
 {
-    public static void UseJson(this I18NOptions _,
-        params LanguageInfo[] languages)
-        => _.UseJson(Internal.Const.DEFAULT_RESOURCE_PATH, Internal.Const.SUPPORTED_CULTURES_NAME, languages);
-
-    public static void UseJson(this I18NOptions _,
-        string languageDirectory,
-        params LanguageInfo[] languages)
-        => _.UseJson(languageDirectory, Internal.Const.SUPPORTED_CULTURES_NAME, languages);
-
-    public static void UseJson(this I18NOptions _,
-        string languageDirectory,
+    internal static void AddJson(string languageDirectory,
         string supportCultureName,
         params LanguageInfo[] languages)
     {
@@ -52,7 +38,7 @@ public static class I18NOptionsExtensions
         start:
         try
         {
-            using var fileStream = new FileStream(Path.Combine(languageDirectory, supportCultureName),FileMode.Open);
+            using var fileStream = new FileStream(Path.Combine(languageDirectory, supportCultureName), FileMode.Open);
             if (!fileStream.CanRead)
             {
                 Task.Delay(300);

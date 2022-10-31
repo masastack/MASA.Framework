@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Globalization.I18N.Json;
 
-public class JsonLocalizationConfigurationProvider : FileLocalizationConfigurationProvider
+public class JsonConfigurationProvider : FileConfigurationProvider
 {
-    public JsonLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource)
+    public JsonConfigurationProvider(JsonConfigurationSource configurationSource)
         : base(configurationSource)
     {
 

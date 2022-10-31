@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Globalization.I18N;
 
-public abstract class FileLocalizationConfigurationProvider : ConfigurationProvider
+public abstract class FileConfigurationProvider : ConfigurationProvider
 {
     private readonly string _resourceType;
     private readonly string _languageDirectory;
@@ -11,7 +11,7 @@ public abstract class FileLocalizationConfigurationProvider : ConfigurationProvi
     private readonly bool _useMasaConfiguration;
     private readonly Dictionary<string, Dictionary<string, string>> _dictionary;
 
-    protected FileLocalizationConfigurationProvider(JsonLocalizationConfigurationSource configurationSource)
+    protected FileConfigurationProvider(JsonConfigurationSource configurationSource)
     {
         _resourceType = configurationSource.ResourceType.Name;
         _languageDirectory = configurationSource.LanguageDirectory;

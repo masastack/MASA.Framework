@@ -3,26 +3,24 @@
 
 // ReSharper disable once CheckNamespace
 
-using Masa.BuildingBlocks.Globalization.I18N.Options;
-
 namespace Masa.Contrib.Globalization.I18N;
 
 public static class I18NOptionsExtensions
 {
     public static void UseDcc(
-        this I18NOptions localization,
+        this I18NOptions i18NOptions,
         params LanguageInfo[] languages)
-        => localization.UseDcc(Dcc.Internal.Const.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Const.SUPPORTED_CULTURES_NAME, languages);
+        => i18NOptions.UseDcc(Dcc.Internal.Const.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Const.SUPPORTED_CULTURES_NAME, languages);
 
     public static void UseDcc(
-        this I18NOptions localization,
+        this I18NOptions i18NOptions,
         string configObject,
         string supportCultureName,
         params LanguageInfo[] languages)
-        => localization.UseDcc(DccConfig.AppId, configObject, supportCultureName, languages);
+        => i18NOptions.UseDcc(DccConfig.AppId, configObject, supportCultureName, languages);
 
     public static void UseDcc(
-        this I18NOptions localization,
+        this I18NOptions i18NOptions,
         string appId,
         string configObject,
         string supportCultureName,
