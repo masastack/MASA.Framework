@@ -1,7 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Configuration.Options;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.BuildingBlocks.Configuration;
 
 public class MasaAppConfigureOptionsRelation
 {
@@ -29,14 +31,11 @@ public class MasaAppConfigureOptionsRelation
 
     public MasaAppConfigureOptionsRelation SetOptionsRelation(string key, string variable, string defaultValue)
     {
-        if (string.IsNullOrEmpty(key))
-            throw new ArgumentException($"{nameof(key)} cannot be empty", nameof(key));
+        MasaArgumentException.ThrowIfNullOrEmpty(key);
 
-        if (string.IsNullOrEmpty(variable))
-            throw new ArgumentException($"{nameof(variable)} cannot be empty", nameof(variable));
+        MasaArgumentException.ThrowIfNullOrEmpty(variable);
 
-        if (string.IsNullOrEmpty(defaultValue))
-            throw new ArgumentException($"{nameof(defaultValue)} cannot be empty", nameof(defaultValue));
+        MasaArgumentException.ThrowIfNullOrEmpty(defaultValue);
 
         Data[key] = (variable, defaultValue);
         return this;
@@ -46,8 +45,7 @@ public class MasaAppConfigureOptionsRelation
 
     internal (string Variable, string DefaultValue) GetValue(string key)
     {
-        if (string.IsNullOrEmpty(key))
-            throw new ArgumentException($"{nameof(key)} cannot be empty", nameof(key));
+        MasaArgumentException.ThrowIfNullOrEmpty(key);
 
         return Data[key];
     }

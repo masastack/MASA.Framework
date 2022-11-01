@@ -400,7 +400,7 @@ public class RedisCacheClient : RedisCacheClientBase
         Action<CacheOptions>? action = null,
         CacheEntryOptions? options = null)
     {
-        CheckParametersByHashIncrementOrHashDecrement(value);
+        MasaArgumentException.ThrowIfLessThanOrEqual(value, 0L);
 
         var script = $@"
 local exist = redis.call('EXISTS', KEYS[1])
@@ -423,11 +423,6 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         return result;
     }
 
-    private static void CheckParametersByHashIncrementOrHashDecrement(long value = 1)
-    {
-        if (value < 1) throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)} must be greater than 0");
-    }
-
     /// <summary>
     /// Descending Hash
     /// </summary>
@@ -444,7 +439,7 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         Action<CacheOptions>? action = null,
         CacheEntryOptions? options = null)
     {
-        CheckParametersByHashIncrementOrHashDecrement(value);
+        MasaArgumentException.ThrowIfLessThanOrEqual(value, 0L);
 
         var script = $@"
 local exist = redis.call('EXISTS', KEYS[1])
@@ -469,7 +464,7 @@ end";
         var formattedKey = FormatCacheKey<long>(key, action);
         var result = await Db.ScriptEvaluateAsync(
             script,
-            new RedisKey[] { formattedKey, Const.DATA_KEY , Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
+            new RedisKey[] { formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
             GetRedisValues(options));
         await RefreshAsync(formattedKey);
 

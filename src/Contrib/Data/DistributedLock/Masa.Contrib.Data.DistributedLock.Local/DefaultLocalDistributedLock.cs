@@ -33,7 +33,8 @@ public class DefaultLocalDistributedLock : IDistributedLock
 
     private SemaphoreSlim GetSemaphoreSlim(string key)
     {
-        ArgumentNullOrWhiteSpaceException.ThrowIfNullOrWhiteSpace(key);
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
+
         return _localObjects.GetOrAdd(key, _ => new SemaphoreSlim(1, 1));
     }
 }
