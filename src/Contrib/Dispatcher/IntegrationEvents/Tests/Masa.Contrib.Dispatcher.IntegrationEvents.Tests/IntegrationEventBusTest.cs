@@ -11,7 +11,7 @@ public class IntegrationEventBusTest
     private Mock<IPublisher> _publisher;
     private Mock<ILogger<IntegrationEventBus>> _logger;
     private Mock<IIntegrationEventLogService> _eventLog;
-    private Mock<IOptionsMonitor<AppConfig>> _appConfig;
+    private Mock<IOptionsMonitor<MasaAppConfigureOptions>> _masaAppConfigureOptions;
     private Mock<IEventBus> _eventBus;
     private Mock<IUnitOfWork> _uoW;
 
@@ -31,8 +31,8 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
-        _appConfig = new();
-        _appConfig.Setup(appConfig => appConfig.CurrentValue).Returns(() => new AppConfig()
+        _masaAppConfigureOptions = new();
+        _masaAppConfigureOptions.Setup(masaAppConfigureOptions => masaAppConfigureOptions.CurrentValue).Returns(() => new MasaAppConfigureOptions()
         {
             AppId = "Test"
         });
@@ -71,7 +71,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -95,7 +95,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             null,
             _eventBus.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
@@ -122,7 +122,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -149,7 +149,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             null,
             _eventBus.Object,
             _uoW.Object);
@@ -178,7 +178,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             null,
             _eventBus.Object,
             _uoW.Object);
@@ -199,7 +199,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -227,7 +227,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -253,7 +253,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -273,7 +273,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             null,
             _uoW.Object);
@@ -294,7 +294,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -310,7 +310,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             null);
@@ -328,7 +328,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             null,
             null);
@@ -352,7 +352,7 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _appConfig.Object,
+            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             null);

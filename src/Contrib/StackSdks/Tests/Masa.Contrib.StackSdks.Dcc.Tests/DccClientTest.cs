@@ -20,12 +20,17 @@ public class DccClientTest
     [TestMethod]
     public void TestAddDccClient2()
     {
-        var services = new ServiceCollection();
-        var options = AppSettings.GetModel<RedisConfigurationOptions>("DccOptions:RedisOptions");
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.AddDccClient();
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
+        var redisOptions = options.Get("masa.contrib.basicability.dcc");
+        Assert.AreEqual(1, redisOptions.Servers.Count);
+        Assert.AreEqual("localhost", redisOptions.Servers[0].Host);
+        Assert.AreEqual(8888, redisOptions.Servers[0].Port);
+        Assert.AreEqual(0, redisOptions.DefaultDatabase);
 
-        services.AddDccClient(options);
-
-        var dccClient = services.BuildServiceProvider().GetRequiredService<IDccClient>();
+        var dccClient = serviceProvider.GetRequiredService<IDccClient>();
         Assert.IsNotNull(dccClient);
     }
 

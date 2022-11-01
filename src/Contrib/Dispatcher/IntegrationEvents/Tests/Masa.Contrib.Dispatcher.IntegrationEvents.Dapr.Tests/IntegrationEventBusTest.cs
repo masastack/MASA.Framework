@@ -10,7 +10,7 @@ public class IntegrationEventBusTest
     private Mock<IDispatcherOptions> _options;
     private Mock<IOptions<DispatcherOptions>> _dispatcherOptions;
     private Mock<IIntegrationEventLogService> _eventLog;
-    private Mock<IOptionsMonitor<AppConfig>> _appConfig;
+    private Mock<IOptionsMonitor<MasaAppConfigureOptions>> _masaAppConfigureOptions;
     private Mock<IUnitOfWork> _uoW;
 
     [TestInitialize]
@@ -27,8 +27,8 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
-        _appConfig = new();
-        _appConfig.Setup(appConfig => appConfig.CurrentValue).Returns(() => new AppConfig()
+        _masaAppConfigureOptions = new();
+        _masaAppConfigureOptions.Setup(appConfig => appConfig.CurrentValue).Returns(() => new MasaAppConfigureOptions
         {
             AppId = "Test"
         });

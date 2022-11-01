@@ -9,5 +9,4 @@ global using Masa.BuildingBlocks.StackSdks.Dcc.Service;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.StackSdks.Dcc;
 global using Masa.Contrib.StackSdks.Dcc.Service;
-global using Masa.Utils.Configuration.Json;
 global using static Masa.Contrib.StackSdks.Dcc.Internal.Constants;

@@ -5,9 +5,8 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class RetryByDataProcessor : ProcessorBase
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly IOptions<DispatcherOptions> _options;
-    private readonly IOptionsMonitor<AppConfig>? _appConfig;
+    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly ILogger<RetryByDataProcessor>? _logger;
 
     public override int Delay => _options.Value.FailedRetryInterval;
@@ -15,11 +14,10 @@ public class RetryByDataProcessor : ProcessorBase
     public RetryByDataProcessor(
         IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
-        IOptionsMonitor<AppConfig>? appConfig = null,
+        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<RetryByDataProcessor>? logger = null) : base(serviceProvider)
     {
-        _serviceProvider = serviceProvider;
-        _appConfig = appConfig;
+        _masaAppConfigureOptions = masaAppConfigureOptions;
         _options = options;
         _logger = logger;
     }
@@ -64,7 +62,7 @@ public class RetryByDataProcessor : ProcessorBase
                 {
                     _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                        eventLog.EventId, _appConfig?.CurrentValue.AppId ?? string.Empty, eventLog);
+                        eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
                     await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
                 }
             }
