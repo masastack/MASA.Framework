@@ -16,6 +16,7 @@ global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Auth;
+global using Masa.Contrib.StackSdks.Auth.Model;
 global using Masa.Contrib.StackSdks.Auth.Service;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;
