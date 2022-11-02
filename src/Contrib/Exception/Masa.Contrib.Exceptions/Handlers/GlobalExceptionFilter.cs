@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using Microsoft.Extensions.Options;
+
 namespace Microsoft.AspNetCore.Mvc.Filters;
 
 /// <summary>

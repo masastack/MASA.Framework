@@ -119,6 +119,36 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
+    public static void ThrowIfContain(string? argument,
+        string parameter,
+        [CallerArgumentExpression("argument")] string? paramName = null)
+        => ThrowIfContain(argument, parameter, StringComparison.OrdinalIgnoreCase, paramName);
+
+    public static void ThrowIfContain(string? argument,
+        string parameter,
+        StringComparison stringComparison,
+        [CallerArgumentExpression("argument")] string? paramName = null)
+        => ThrowIfContain(argument, new[] { parameter }, stringComparison, parameter);
+
+    public static void ThrowIfContain(string? argument,
+        IEnumerable<string> parameters,
+        [CallerArgumentExpression("argument")] string? paramName = null)
+        => ThrowIfContain(argument, parameters, StringComparison.OrdinalIgnoreCase, paramName);
+
+    public static void ThrowIfContain(string? argument,
+        IEnumerable<string> parameters,
+        StringComparison stringComparison,
+        [CallerArgumentExpression("argument")] string? paramName = null)
+    {
+        if (argument != null)
+            ThrowIf(parameters.Any(parameter => argument.Contains(parameter, stringComparison)),
+                paramName,
+                parameters.Count() == 1 ? Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_NOT_SUPPORTED_SINGLE :
+                    Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_NOT_SUPPORTED_MULTI,
+                parameters
+            );
+    }
+
     public static void ThrowIf(bool condition, string? paramName, string errorCode, params object[] parameters)
     {
         if (condition) Throw(paramName, errorCode, parameters);

@@ -28,10 +28,7 @@ public class DaprOptions
         get => _appIdDelimiter;
         set
         {
-            if (value == ".")
-            {
-                throw new NotSupportedException("AppIdDelimiter is not supported as .");
-            }
+            MasaArgumentException.ThrowIfContain(value, ".", nameof(AppIdDelimiter));
 
             _appIdDelimiter = value;
         }
@@ -49,10 +46,7 @@ public class DaprOptions
         get => _appIdSuffix;
         set
         {
-            if (value == ".")
-            {
-                throw new NotSupportedException("AppIdSuffix is not supported as .");
-            }
+            MasaArgumentException.ThrowIfContain(value, ".", nameof(AppIdSuffix));
 
             _appIdSuffix = value;
         }
@@ -75,10 +69,8 @@ public class DaprOptions
         get => _maxConcurrency;
         set
         {
-            if (value is <= 0)
-            {
-                throw new NotSupportedException($"{nameof(MaxConcurrency)} must be greater than 0 .");
-            }
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(MaxConcurrency));
 
             _maxConcurrency = value;
         }
@@ -95,8 +87,8 @@ public class DaprOptions
         get => _appPort;
         set
         {
-            if (value is <= 0)
-                throw new NotSupportedException($"{nameof(AppPort)} must be greater than 0 .");
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(AppPort));
 
             _appPort = value;
         }
@@ -140,8 +132,8 @@ public class DaprOptions
         get => _daprGrpcPort;
         set
         {
-            if (value is <= 0)
-                throw new NotSupportedException($"{nameof(DaprGrpcPort)} must be greater than 0 .");
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprGrpcPort));
 
             _daprGrpcPort = value;
         }
@@ -158,8 +150,8 @@ public class DaprOptions
         get => _daprHttpPort;
         set
         {
-            if (value is <= 0)
-                throw new NotSupportedException($"{nameof(DaprHttpPort)} must be greater than 0 .");
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprHttpPort));
 
             _daprHttpPort = value;
         }
@@ -220,8 +212,8 @@ public class DaprOptions
         get => _profilePort;
         set
         {
-            if (value is <= 0)
-                throw new NotSupportedException($"{nameof(ProfilePort)} must be greater than 0 .");
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(ProfilePort));
 
             _profilePort = value;
         }
@@ -245,8 +237,8 @@ public class DaprOptions
         get => _daprMaxRequestSize;
         set
         {
-            if (value is <= 0)
-                throw new NotSupportedException($"{nameof(DaprMaxRequestSize)} must be greater than 0 .");
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprMaxRequestSize));
 
             _daprMaxRequestSize = value;
         }
@@ -264,8 +256,7 @@ public class DaprOptions
         get => _heartBeatInterval;
         set
         {
-            if (value < 0)
-                throw new NotSupportedException($"{nameof(DaprMaxRequestSize)} must be greater than or equal to 0 .");
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, (ushort)0, nameof(HeartBeatInterval));
 
             _heartBeatInterval = value;
         }

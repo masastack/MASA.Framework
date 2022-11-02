@@ -13,7 +13,7 @@ public class TestBase
         {
             GlobalCacheOptions = new CacheOptions()
             {
-                CacheKeyType = CacheKeyType.None
+                CacheKeyType = CacheKeyType.TypeName
             }
         };
         redisConfigurationOptions.Servers.Add(new RedisServerOptions());

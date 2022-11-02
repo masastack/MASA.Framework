@@ -3,6 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
+using System.Net;
+using Microsoft.Extensions.Options;
+
 namespace Microsoft.AspNetCore.Builder;
 
 public class ExceptionHandlerMiddleware
@@ -39,10 +42,7 @@ public class ExceptionHandlerMiddleware
             }
             else
             {
-                var masaExceptionHandler =
-                    Masa.Utils.Exceptions.ExceptionHandlerExtensions.GetMasaExceptionHandler(
-                        serviceProvider,
-                        _options.MasaExceptionHandlerType);
+                var masaExceptionHandler = serviceProvider.GetMasaExceptionHandler(_options.MasaExceptionHandlerType);
                 masaExceptionHandler?.OnException(masaExceptionContext);
             }
 

@@ -60,5 +60,16 @@ public static class ErrorCode
     /// </summary>
     public const string ARGUMENT_LESS_THAN_OR_EQUAL = $"{ARGUMENT}0009";
 
+    /// <summary>
+    /// Value does not support {0}
+    /// </summary>
+    public const string ARGUMENT_NOT_SUPPORTED_SINGLE = $"{ARGUMENT}0010";
+
+    /// <summary>
+    /// Value does not support {0} or {1}. (Parameter 'value')
+    /// </summary>
+    public const string ARGUMENT_NOT_SUPPORTED_MULTI = $"{ARGUMENT}0011";
+
     #endregion
+
 }
