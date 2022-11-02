@@ -113,6 +113,10 @@ public interface IDistributedCacheClient : ICacheClient
 
     Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options);
 
+    void UnSubscribe<T>(string channel);
+
+    Task UnSubscribeAsync<T>(string channel);
+
     /// <summary>
     /// Increment Hash
     /// </summary>

@@ -15,8 +15,8 @@ internal class CustomConfigurationApiClient : ConfigurationApiClient
     {
     }
 
-    public (string Raw, ConfigurationTypes ConfigurationType) TestFormatRaw(string? raw, string paramName)
-        => base.FormatRaw(raw, paramName);
+    public (string Raw, ConfigurationTypes ConfigurationType) TestFormatRaw(BuildingBlocks.StackSdks.Dcc.Contracts.Model.PublishReleaseModel? publishRelease, string paramName)
+        => base.FormatRaw(publishRelease, paramName);
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> TestGetRawByKeyAsync(string key, Action<string>? valueChanged)
         => base.GetRawByKeyAsync(key, valueChanged);

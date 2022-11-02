@@ -24,6 +24,44 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
+    public void TestAddMultilevelCache2()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        var serviceProvider = services.BuildServiceProvider();
+
+        Assert.IsNotNull(serviceProvider.GetService<IMultilevelCacheClient>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultilevelCacheClientFactory>());
+    }
+
+    [TestMethod]
+    public void TestAddMultilevelCache3()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache("test", distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        var serviceProvider = services.BuildServiceProvider();
+        var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
+        Assert.IsNotNull(multilevelCacheClientFactory);
+        Assert.IsNotNull(multilevelCacheClientFactory.Create("test"));
+    }
+
+    [TestMethod]
+    public void TestAddMultilevelCache4()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(distributedCacheOptions =>
+                distributedCacheOptions.UseStackExchangeRedisCache(),
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
+            });
+        var serviceProvider = services.BuildServiceProvider();
+        var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
+        Assert.IsNotNull(multilevelCacheClientFactory);
+        Assert.IsNotNull(multilevelCacheClientFactory.Create());
+    }
+
+    [TestMethod]
     public void TestAddMultilevelCacheBySpecialMultilevelCacheOptions()
     {
         var services = new ServiceCollection();
