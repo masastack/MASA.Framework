@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Model;
+namespace Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Model;
 
-internal class PublishRelease
+public class PublishReleaseModel
 {
     private ConfigFormats _configFormat;
     public ConfigFormats ConfigFormat
@@ -13,7 +13,7 @@ internal class PublishRelease
             try
             {
                 if (_configFormat == 0 && !string.IsNullOrWhiteSpace(FormatLabelCode))
-                    _configFormat = (ConfigFormats)Enum.Parse(typeof(ConfigFormats), FormatLabelCode);
+                    _configFormat = (ConfigFormats)System.Enum.Parse(typeof(ConfigFormats), FormatLabelCode);
             }
             catch (Exception ex)
             {

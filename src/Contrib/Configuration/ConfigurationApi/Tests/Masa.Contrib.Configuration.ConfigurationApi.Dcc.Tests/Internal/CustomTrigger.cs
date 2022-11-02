@@ -16,14 +16,14 @@ public class CustomTrigger
 
     internal string Content { get; set; }
 
-    internal Action<string> Action { get; set; }
+    internal Action<PublishReleaseModel> Action { get; set; }
 
     internal void Execute()
     {
-        Action?.Invoke(new PublishRelease()
+        Action?.Invoke(new PublishReleaseModel()
         {
             ConfigFormat = Formats,
             Content = Content
-        }.Serialize(_jsonSerializerOptions));
+        });
     }
 }
