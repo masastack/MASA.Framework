@@ -52,6 +52,10 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
 
     public abstract Task SubscribeAsync<T>(string channel, Action<SubscribeOptions<T>> options);
 
+    public abstract void UnSubscribe<T>(string channel);
+
+    public abstract Task UnSubscribeAsync<T>(string channel);
+
     public abstract Task<long> HashIncrementAsync(
         string key,
         long value = 1,

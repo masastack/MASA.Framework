@@ -522,9 +522,12 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private void RemoveOne<T>(string key, Action<CacheOptions>? action)
     {
         var formattedKey = FormatCacheKey<T>(key, action);
+
         _distributedCacheClient.Remove<T>(formattedKey, CacheOptionsAction);
 
         PubSub(key, formattedKey, SubscribeOperation.Remove, default(T));
+
+        _memoryCache.Remove(formattedKey);
     }
 
     private async Task RemoveOneAsync<T>(string key, Action<CacheOptions>? action)
@@ -533,6 +536,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction);
 
         await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T));
+
+        _memoryCache.Remove(formattedKey);
     }
 
     private void PubSub<T>(
@@ -542,7 +547,6 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         T? value)
     {
         var channel = FormatSubscribeChannel<T>(key);
-
         _distributedCacheClient.Publish(channel, subscribeOptions =>
         {
             subscribeOptions.Key = formattedKey;
@@ -550,6 +554,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Value = value;
         });
 
+        if (operation == SubscribeOperation.Remove) _distributedCacheClient.UnSubscribe<T>(channel);
     }
 
     private async Task PubSubAsync<T>(string key,
@@ -565,6 +570,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Operation = operation;
             subscribeOptions.Value = value;
         });
+
+        if (operation == SubscribeOperation.Remove) await _distributedCacheClient.UnSubscribeAsync<T>(channel);
     }
 
     private string FormatSubscribeChannel<T>(string key) =>
@@ -595,6 +602,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                         break;
                     case SubscribeOperation.Remove:
                         _memoryCache.Remove(subscribeOptions.Key);
+                        _distributedCacheClient.Remove(subscribeOptions.Key);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -608,4 +616,5 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     #endregion
+
 }
