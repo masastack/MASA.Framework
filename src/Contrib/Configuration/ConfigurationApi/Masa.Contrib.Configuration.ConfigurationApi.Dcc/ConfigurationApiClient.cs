@@ -128,18 +128,18 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
         Action<string>? valueChanged)
     {
-        var raw = await _client.GetAsync<string>(key, value =>
+        var publishRelease = await _client.GetAsync<PublishReleaseModel>(key, value =>
         {
             var result = FormatRaw(value, key);
             valueChanged?.Invoke(result.Raw);
         });
 
-        return FormatRaw(raw, key);
+        return FormatRaw(publishRelease, key);
     }
 
-    protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(string? raw, string paramName)
+    protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(PublishReleaseModel? publishRelease, string key)
     {
-        PublishRelease result = GetPublishRelease(raw, paramName);
+        PublishReleaseModel result = FormatPublishRelease(publishRelease, key);
 
         switch (result.ConfigFormat)
         {
@@ -158,7 +158,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 catch (Exception exception)
                 {
                     _logger?.LogWarning(exception,
-                        "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Properties type", paramName);
+                        "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Properties type", key);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -171,7 +171,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 catch (Exception exception)
                 {
                     _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Xml type",
-                        paramName);
+                        key);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -186,7 +186,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 catch (Exception exception)
                 {
                     _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid Yaml type",
-                        paramName);
+                        key);
                     throw new ArgumentException("configObject invalid");
                 }
 
@@ -198,35 +198,35 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     private string FomartKey(string environment, string cluster, string appId, string configObject)
         => $"{GetEnvironment(environment)}-{GetCluster(cluster)}-{GetAppId(appId)}-{GetConfigObject(configObject)}".ToLower();
 
-    private PublishRelease GetPublishRelease(string? raw, string paramName)
+    private PublishReleaseModel FormatPublishRelease(PublishReleaseModel? publishRelease, string key)
     {
-        if (raw == null)
-            throw new ArgumentException($"configObject invalid, {paramName} is not null");
+        if (publishRelease == null)
+            throw new ArgumentException($"configObject invalid, {key} is not null");
 
-        PublishRelease? result;
-        try
-        {
-            result = JsonSerializer.Deserialize<PublishRelease>(raw, _jsonSerializerOptions);
-        }
-        catch (Exception exception)
-        {
-            _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid response value",
-                paramName);
-            throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is not a valid response value");
-        }
-        if (result == null || result.ConfigFormat == 0)
-            throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {paramName} is an unsupported type");
+        //PublishReleaseModel? result;
+        //try
+        //{
+        //    result = JsonSerializer.Deserialize<PublishReleaseModel>(raw, _jsonSerializerOptions);
+        //}
+        //catch (Exception exception)
+        //{
+        //    _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid response value",
+        //        key);
+        //    throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {key} is not a valid response value");
+        //}
+        if (publishRelease == null || publishRelease.ConfigFormat == 0)
+            throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {key} is an unsupported type");
 
-        if (result.Encryption)
+        if (publishRelease.Encryption)
         {
             if (string.IsNullOrEmpty(_dccOptions.ConfigObjectSecret))
             {
                 throw new ArgumentNullException(_dccOptions.ConfigObjectSecret, nameof(_dccOptions.ConfigObjectSecret));
             }
-            result.Content = DecryptContent(_dccOptions.ConfigObjectSecret, result.Content);
+            publishRelease.Content = DecryptContent(_dccOptions.ConfigObjectSecret, publishRelease.Content);
         }
 
-        return result;
+        return publishRelease;
     }
 
     private static string? DecryptContent(string secret, string? content)

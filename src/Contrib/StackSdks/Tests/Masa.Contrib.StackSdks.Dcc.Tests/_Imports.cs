@@ -5,8 +5,6 @@ global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.StackSdks.Dcc;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Model;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
-global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
