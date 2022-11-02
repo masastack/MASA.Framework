@@ -41,14 +41,16 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             entity.State = EntityState.Modified;
             entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
 
-            if (_userContext != null && entity.Entity is IAuditEntity<TUserId> &&
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] != default)
+            if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
+            {
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
+                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
+            }
+
+            if (entity.Entity is IAuditEntity<TUserId> && _userContext != null)
             {
                 var userId = GetUserId(_userContext.UserId);
                 if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
-
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
-                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
         }
     }

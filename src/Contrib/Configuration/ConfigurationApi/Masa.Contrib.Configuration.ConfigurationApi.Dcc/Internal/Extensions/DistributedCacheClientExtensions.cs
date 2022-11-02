@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Extensions;
 
+
 internal static class DistributedCacheClientExtensions
 {
     public static List<string> GetAllConfigObjects(
@@ -15,7 +16,7 @@ internal static class DistributedCacheClientExtensions
 
         string partialKey =
             $"{environment}-{cluster}-{appId}".ToLower();
-        var keys = distributedCacheClient.GetKeys($"{partialKey}*");
+        var keys = distributedCacheClient.GetKeys<PublishReleaseModel>($"{partialKey}*");
         foreach (var key in keys)
         {
             var configObject = key.Split($"{partialKey}-", StringSplitOptions.RemoveEmptyEntries).LastOrDefault();

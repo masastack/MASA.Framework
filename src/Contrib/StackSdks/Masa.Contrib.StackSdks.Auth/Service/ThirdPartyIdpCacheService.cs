@@ -7,9 +7,9 @@ public class ThirdPartyIdpCacheService : IThirdPartyIdpCacheService
 {
     readonly IMultilevelCacheClient _memoryCacheClient;
 
-    public ThirdPartyIdpCacheService(IMultilevelCacheClient memoryCacheClient)
+    public ThirdPartyIdpCacheService(AuthClientMultilevelCacheProvider authClientMultilevelCacheProvider)
     {
-        _memoryCacheClient = memoryCacheClient;
+        _memoryCacheClient = authClientMultilevelCacheProvider.GetMultilevelCacheClient();
     }
 
     public async Task<List<ThirdPartyIdpModel>> GetAllAsync()

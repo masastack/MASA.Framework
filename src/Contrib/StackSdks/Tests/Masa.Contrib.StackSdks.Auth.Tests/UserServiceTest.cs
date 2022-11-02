@@ -245,6 +245,21 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestFindByIdAsync()
+    {
+        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
+        var data = new UserModel();
+        var requestUri = $"api/user/byId/{userId}";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = new UserService(caller.Object, userContext.Object);
+        var result = await userService.FindByIdAsync(userId);
+        caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     public async Task TestGetCurrentUserAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");

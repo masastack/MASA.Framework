@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Reflection;
+
 namespace Masa.Contrib.Data.Contracts.EFCore.Tests;
 
 [TestClass]
@@ -46,7 +48,7 @@ public class DataFilterTest
     }
 
     [TestMethod]
-    public void TestSoftDelete()
+    public async Task TestSoftDeleteAsync()
     {
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(options =>
@@ -55,7 +57,7 @@ public class DataFilterTest
         });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        dbContext.Database.EnsureCreated();
+        await dbContext.Database.EnsureCreatedAsync();
 
         DateTime createTime = DateTime.Now;
         var student = new Student()
@@ -84,17 +86,25 @@ public class DataFilterTest
             }
         };
         dbContext.Set<Student>().Add(student);
-        dbContext.SaveChanges();
+        await dbContext.SaveChangesAsync();
 
         student = dbContext.Set<Student>().Include(s => s.Address).FirstOrDefault(s => s.Id == 1);
         Assert.IsNotNull(student);
+
+        var creationTime = student.CreationTime;
+        var modificationTime = student.ModificationTime;
+
+        await Task.Delay(1000);
+
         dbContext.Set<Student>().Remove(student);
-        var row = dbContext.SaveChanges();
+        var row = await dbContext.SaveChangesAsync();
         Assert.IsTrue(row > 0);
 
         var newStudent = dbContext.Set<Student>().IgnoreQueryFilters().FirstOrDefault(s => s.Id == student.Id);
         Assert.IsNotNull(newStudent);
 
+        Assert.AreEqual(creationTime, newStudent.CreationTime);
+        Assert.AreNotEqual(modificationTime, newStudent.ModificationTime);
         Assert.AreEqual(createTime, newStudent.Address.LastLog.CreateTime);
     }
 }

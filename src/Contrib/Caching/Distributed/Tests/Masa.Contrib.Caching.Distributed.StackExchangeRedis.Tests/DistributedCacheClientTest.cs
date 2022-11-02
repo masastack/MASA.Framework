@@ -445,7 +445,35 @@ public class DistributedCacheClientTest : TestBase
     public void TestGetKeys(string keyPattern, int count)
     {
         var list = _distributedCacheClient.GetKeys(keyPattern);
-        Assert.AreEqual(count, _distributedCacheClient.GetKeys(keyPattern).Count());
+        Assert.AreEqual(count, list.Count());
+    }
+
+    [TestMethod]
+    public void TestGetKeys2()
+    {
+        string key = "te" + Guid.NewGuid();
+        var distributedCacheClient = new RedisCacheClient(new RedisConfigurationOptions()
+        {
+            GlobalCacheOptions = new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.TypeName
+            }
+        });
+        distributedCacheClient.Set(key, new List<UserModel>()
+        {
+            new()
+            {
+                Name = "jim"
+            }
+        });
+
+        var value = distributedCacheClient.Get<List<UserModel>>(key);
+        Assert.IsNotNull(value);
+
+        var keys = distributedCacheClient.GetKeys<List<UserModel>>("te*").ToList();
+        Assert.AreEqual(1, keys.Count);
+
+        distributedCacheClient.Remove<List<UserModel>>(key);
     }
 
     [DataTestMethod]

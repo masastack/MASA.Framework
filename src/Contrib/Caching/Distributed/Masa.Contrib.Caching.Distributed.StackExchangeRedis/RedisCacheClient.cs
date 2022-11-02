@@ -131,8 +131,8 @@ public class RedisCacheClient : RedisCacheClientBase
         string keyPattern,
         Action<CacheOptions>? action = null)
     {
-        keyPattern = FormatCacheKey<T>(keyPattern, action);
-        return GetKeys(keyPattern);
+        string formattedPattern = FormatKeyPattern<T>(keyPattern, action);
+        return GetKeys(formattedPattern);
     }
 
     /// <summary>
@@ -151,8 +151,9 @@ public class RedisCacheClient : RedisCacheClientBase
         string keyPattern,
         Action<CacheOptions>? action = null)
     {
-        keyPattern = FormatCacheKey<T>(keyPattern, action);
-        return GetKeysAsync(keyPattern);
+        string formattedPattern = FormatKeyPattern<T>(keyPattern, action);
+
+        return GetKeysAsync(formattedPattern);
     }
 
     public override IEnumerable<KeyValuePair<string, T?>> GetByKeyPattern<T>(
@@ -160,7 +161,7 @@ public class RedisCacheClient : RedisCacheClientBase
         Action<CacheOptions>? action = null)
         where T : default
     {
-        keyPattern = FormatCacheKey<T>(keyPattern, action);
+        keyPattern = FormatKeyPattern<T>(keyPattern, action);
 
         var list = GetListByKeyPattern(keyPattern);
 
@@ -173,7 +174,8 @@ public class RedisCacheClient : RedisCacheClientBase
         string keyPattern,
         Action<CacheOptions>? action = null) where T : default
     {
-        keyPattern = FormatCacheKey<T>(keyPattern, action);
+        keyPattern = FormatKeyPattern<T>(keyPattern, action);
+
         var list = await GetListByKeyPatternAsync(keyPattern);
 
         await RefreshCoreAsync(list);
@@ -380,6 +382,16 @@ public class RedisCacheClient : RedisCacheClientBase
                 subscribeOptions.IsPublisherClient = subscribeOptions.UniquelyIdentifies == UniquelyIdentifies;
             options(subscribeOptions!);
         });
+    }
+
+    public override void UnSubscribe<T>(string channel)
+    {
+        Subscriber.Unsubscribe(channel);
+    }
+
+    public override Task UnSubscribeAsync<T>(string channel)
+    {
+        return Subscriber.UnsubscribeAsync(channel);
     }
 
     #endregion
@@ -674,6 +686,12 @@ end";
             cacheKeyType,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)
         ));
+    }
+
+    private string FormatKeyPattern<T>(string keyPattern,
+        Action<CacheOptions>? action = null)
+    {
+        return FormatCacheKey<T>(keyPattern, action).TrimEnd(keyPattern).Replace("[", "\\[").Replace("?", "\\?").Replace("*", "\\*") + keyPattern;
     }
 
     #endregion

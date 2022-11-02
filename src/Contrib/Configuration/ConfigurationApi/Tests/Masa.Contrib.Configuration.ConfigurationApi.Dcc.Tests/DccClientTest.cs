@@ -60,24 +60,24 @@ public class DccClientTest
     public void TestFormatCodeErrorRawReturnThrowNotSupportedException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = "",
             FormatLabelCode = "json",
-        }, _jsonSerializerOptions);
-        Assert.ThrowsException<NotSupportedException>(() => client.TestFormatRaw(raw, "DccObjectName"), "configObject invalid");
+        };
+        Assert.ThrowsException<NotSupportedException>(() => client.TestFormatRaw(model, "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
     public void TestJsonFormatCodeRawReturnConfigurationTypeIsJson()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = "",
             FormatLabelCode = "Json",
-        }, _jsonSerializerOptions);
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        };
+        var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Json);
     }
 
@@ -89,18 +89,10 @@ public class DccClientTest
     }
 
     [TestMethod]
-    public void TestFormatEmptyRawReturnThrowArgumentException()
-    {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(string.Empty, "DccObjectName"), "configObject invalid");
-    }
-
-    [TestMethod]
     public void TestFormatNotSupportRawReturnThrowArgumentException()
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        string raw = JsonSerializer.Serialize(new PublishRelease(), _jsonSerializerOptions);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"), "configObject invalid");
+        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(new(), "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
@@ -108,12 +100,12 @@ public class DccClientTest
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = content,
             ConfigFormat = ConfigFormats.Json
-        }, _jsonSerializerOptions);
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        };
+        var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Json);
     }
 
@@ -124,13 +116,13 @@ public class DccClientTest
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
         var encryptContent = AesUtils.Encrypt(content, _dccOptions.ConfigObjectSecret, FillType.Left);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = encryptContent,
             ConfigFormat = ConfigFormats.Json,
             Encryption = true
-        }, _jsonSerializerOptions);
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        };
+        var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Json);
     }
 
@@ -140,13 +132,13 @@ public class DccClientTest
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
         var encryptContent = AesUtils.Encrypt(content, "secret", FillType.Left);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = encryptContent,
             ConfigFormat = ConfigFormats.Json,
             Encryption = true
-        }, _jsonSerializerOptions);
-        Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        };
+        Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
     }
 
     [TestMethod]
@@ -154,12 +146,12 @@ public class DccClientTest
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         var content = "Microsoft";
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = content,
-            ConfigFormat = ConfigFormats.Text
-        }, _jsonSerializerOptions);
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+            ConfigFormat = ConfigFormats.Raw
+        };
+        var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Text);
     }
 
@@ -180,12 +172,12 @@ public class DccClientTest
                 Value = "Microsoft"
             }
         };
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = JsonSerializer.Serialize(list),
             ConfigFormat = ConfigFormats.Properties
-        }, _jsonSerializerOptions);
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        };
+        var result = client.TestFormatRaw(model, "DccObjectName");
         Dictionary<string, string> dictionary = new(list.Select(x => new KeyValuePair<string, string>(x.Key, x.Value)).ToList());
         Assert.IsTrue(result.Raw == JsonSerializer.Serialize(dictionary, _jsonSerializerOptions) &&
             result.ConfigurationType == ConfigurationTypes.Properties);
@@ -200,11 +192,7 @@ public class DccClientTest
             Key = "Name",
             Value = "Microsoft"
         }, _jsonSerializerOptions);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = content,
-            ConfigFormat = ConfigFormats.Properties
-        }, _jsonSerializerOptions);
+        var raw = new PublishReleaseModel() { Content = content, ConfigFormat = ConfigFormats.Properties };
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
@@ -218,11 +206,7 @@ public class DccClientTest
                       <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        string raw = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = xml,
-            ConfigFormat = ConfigFormats.Xml
-        }, _jsonSerializerOptions);
+        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.Xml };
 
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
@@ -238,11 +222,7 @@ public class DccClientTest
                           <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        string raw = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = xml,
-            ConfigFormat = ConfigFormats.Xml
-        }, _jsonSerializerOptions);
+        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.Xml };
         var result = client.TestFormatRaw(raw, "DccObjectName");
 
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Xml);
@@ -258,11 +238,7 @@ age: 1.5
 addresses:
 home:
     city: hangzhou";
-        string raw = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = yaml,
-            ConfigFormat = ConfigFormats.Yaml
-        }, _jsonSerializerOptions);
+        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.Yaml };
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
@@ -281,11 +257,7 @@ addresses:
 
         var serializer = new SerializerBuilder().JsonCompatible().Build();
         var json = serializer.Serialize(yamlObject);
-        string raw = JsonSerializer.Serialize(new PublishRelease()
-        {
-            Content = yaml,
-            ConfigFormat = ConfigFormats.Yaml
-        }, _jsonSerializerOptions);
+        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.Yaml };
         var result = client.TestFormatRaw(raw, "DccObjectName");
 
         Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Yaml);
@@ -296,23 +268,23 @@ addresses:
     {
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
         string content = "Microsoft";
-        string raw = JsonSerializer.Serialize(new PublishRelease()
+        var model = new PublishReleaseModel()
         {
             Content = content,
-            ConfigFormat = ConfigFormats.Text
-        }, _jsonSerializerOptions);
+            ConfigFormat = ConfigFormats.Raw
+        };
         string key = "DccObjectName";
         bool isExecute = false;
         _client
-            .Setup(c => c.GetAsync(key, It.IsAny<Action<string>>()!, null))
-            .ReturnsAsync(raw)
-            .Callback((string value, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
+            .ReturnsAsync(model)
+            .Callback((string value, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
-                _trigger.Formats = ConfigFormats.Text;
-                _trigger.Content = JsonSerializer.Serialize(new PublishRelease()
+                _trigger.Formats = ConfigFormats.Raw;
+                _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
                 {
                     Content = "Apple",
-                    ConfigFormat = ConfigFormats.Text
+                    ConfigFormat = ConfigFormats.Raw
                 }, _jsonSerializerOptions);
                 _trigger.Action = action;
             });
@@ -337,7 +309,7 @@ addresses:
     public async Task TestGetDynamicAsyncReturnResultNameIsApple()
     {
         string key = "environment-cluster-appId-configObject";
-        var raw = JsonSerializer.Serialize(new PublishRelease()
+        var raw = new PublishReleaseModel()
         {
             Content = JsonSerializer.Serialize(new
             {
@@ -345,14 +317,14 @@ addresses:
                 name = "Apple"
             }, _jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Json
-        }, _jsonSerializerOptions);
+        };
         _client
-            .Setup(c => c.GetAsync<string>(key, It.IsAny<Action<string>>()!, null))
+            .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(raw)
-            .Callback((string str, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Callback((string str, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
-                _trigger.Content = JsonSerializer.Serialize(new PublishRelease()
+                _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
                 {
                     Content = JsonSerializer.Serialize(new
                     {
@@ -392,13 +364,13 @@ addresses:
                 Value = "Microsoft"
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
-            .ReturnsAsync(() => new PublishRelease()
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
+            .ReturnsAsync(() => new PublishReleaseModel()
             {
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
-            }.Serialize(_jsonSerializerOptions))
-            .Callback((string value, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
+            })
+            .Callback((string value, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Properties;
                 _trigger.Content = new List<Property>()
@@ -436,12 +408,12 @@ addresses:
                 Value = Guid.NewGuid().ToString(),
             }
         };
-        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
-            .ReturnsAsync(() => new PublishRelease
+        _client.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
+            .ReturnsAsync(() => new PublishReleaseModel
             {
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
-            }.Serialize(_jsonSerializerOptions))
+            })
             .Verifiable();
         var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
 
@@ -459,14 +431,14 @@ addresses:
         var newBrand = new Brands("Microsoft2");
 
         _client
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null))
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null))
             .ReturnsAsync(()
-                => new PublishRelease()
+                => new PublishReleaseModel()
                 {
                     ConfigFormat = ConfigFormats.Json,
                     Content = brand.Serialize(_jsonSerializerOptions)
-                }.Serialize(_jsonSerializerOptions))
-            .Callback((string str, Action<string> action, Action<CacheOptions>? cacheOptionsAction) =>
+                })
+            .Callback((string str, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
                 _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
@@ -493,16 +465,16 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection(string environment, string cluster, string appId, string configObject)
     {
-        CustomTrigger trigger = new CustomTrigger(_jsonSerializerOptions);
+        var trigger = new CustomTrigger(_jsonSerializerOptions);
         var brand = new Brands("Microsoft");
-        var response = JsonSerializer.Serialize(new PublishRelease()
+        var response = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Text
-        });
+            ConfigFormat = ConfigFormats.Raw
+        };
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -537,13 +509,13 @@ addresses:
             { "Id", Guid.NewGuid().ToString() },
             { "Name", "Masa" }
         };
-        var response = JsonSerializer.Serialize(new PublishRelease()
+        var response = new PublishReleaseModel()
         {
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Json
-        });
+        };
         memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -575,12 +547,12 @@ addresses:
     {
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
-        var response = JsonSerializer.Serialize(new PublishRelease()
+        var response = new PublishReleaseModel()
         {
             Content = "Test",
-            ConfigFormat = ConfigFormats.Text
-        });
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            ConfigFormat = ConfigFormats.Raw
+        };
+        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -611,13 +583,13 @@ addresses:
     {
         Mock<IMultilevelCacheClient> memoryCacheClient = new();
 
-        var response = JsonSerializer.Serialize(new PublishRelease()
+        var response = new PublishReleaseModel()
         {
             Content = null,
-            ConfigFormat = ConfigFormats.Text
-        });
+            ConfigFormat = ConfigFormats.Raw
+        };
         memoryCacheClient
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
         Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
@@ -660,12 +632,12 @@ addresses:
             }
         };
         _client
-            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<string?>>(), null).Result)
-            .Returns(() => new PublishRelease()
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
+            .Returns(() => new PublishReleaseModel()
             {
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
-            }.Serialize(_jsonSerializerOptions)).Verifiable();
+            }).Verifiable();
         var client = new ConfigurationApiClient(
             _serviceProvider,
             _jsonSerializerOptions,
