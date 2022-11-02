@@ -473,5 +473,25 @@ public class MultilevelCacheClientTest : TestBase
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
         Assert.IsNotNull(multilevelCacheClient);
     }
+
+    [TestMethod]
+    public async Task TestRemoveAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddMultilevelCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        var serviceProvider = services.BuildServiceProvider();
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
+        string key = "test" + Guid.NewGuid();
+        var value = await multilevelCacheClient.GetAsync<string?>(key);
+        Assert.IsNull(value);
+
+        await multilevelCacheClient.SetAsync<string>(key, "success");
+        Assert.AreEqual("success", await multilevelCacheClient.GetAsync<string>(key));
+
+        await multilevelCacheClient.RemoveAsync<string>(key);
+
+        value = await multilevelCacheClient.GetAsync<string?>(key);
+        Assert.IsNull(value);
+    }
 }
 #pragma warning restore CS0618

@@ -522,6 +522,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private void RemoveOne<T>(string key, Action<CacheOptions>? action)
     {
         var formattedKey = FormatCacheKey<T>(key, action);
+
+        _memoryCache.Remove(formattedKey);
         _distributedCacheClient.Remove<T>(formattedKey, CacheOptionsAction);
 
         PubSub(key, formattedKey, SubscribeOperation.Remove, default(T));
@@ -530,6 +532,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     private async Task RemoveOneAsync<T>(string key, Action<CacheOptions>? action)
     {
         var formattedKey = FormatCacheKey<T>(key, action);
+        _memoryCache.Remove(formattedKey);
         await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction);
 
         await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T));
