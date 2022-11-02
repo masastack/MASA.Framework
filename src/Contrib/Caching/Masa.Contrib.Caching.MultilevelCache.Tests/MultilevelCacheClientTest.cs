@@ -481,7 +481,7 @@ public class MultilevelCacheClientTest : TestBase
         services.AddMultilevelCache(distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
-        string key = "test" + Guid.NewGuid();
+        string key = Guid.NewGuid().ToString();
         var value = await multilevelCacheClient.GetAsync<string?>(key);
         Assert.IsNull(value);
 
@@ -491,6 +491,7 @@ public class MultilevelCacheClientTest : TestBase
         await multilevelCacheClient.RemoveAsync<string>(key);
 
         value = await multilevelCacheClient.GetAsync<string?>(key);
+        Console.WriteLine("value: " + value);
         Assert.IsNull(value);
     }
 }

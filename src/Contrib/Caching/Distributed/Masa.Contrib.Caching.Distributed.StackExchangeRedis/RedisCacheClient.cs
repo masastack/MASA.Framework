@@ -382,6 +382,16 @@ public class RedisCacheClient : RedisCacheClientBase
         });
     }
 
+    public override void UnSubscribe<T>(string channel)
+    {
+        Subscriber.Unsubscribe(channel);
+    }
+
+    public override Task UnSubscribeAsync<T>(string channel)
+    {
+        return Subscriber.UnsubscribeAsync(channel);
+    }
+
     #endregion
 
     #region Hash

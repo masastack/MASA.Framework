@@ -545,7 +545,6 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         T? value)
     {
         var channel = FormatSubscribeChannel<T>(key);
-
         _distributedCacheClient.Publish(channel, subscribeOptions =>
         {
             subscribeOptions.Key = formattedKey;
@@ -553,6 +552,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Value = value;
         });
 
+        if (operation == SubscribeOperation.Remove) _distributedCacheClient.UnSubscribe<T>(channel);
     }
 
     private async Task PubSubAsync<T>(string key,
@@ -598,6 +598,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                         break;
                     case SubscribeOperation.Remove:
                         _memoryCache.Remove(subscribeOptions.Key);
+                        _distributedCacheClient.Remove(subscribeOptions.Key);
                         break;
                     default:
                         throw new NotImplementedException();
@@ -611,4 +612,5 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     #endregion
+
 }
