@@ -523,19 +523,21 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     {
         var formattedKey = FormatCacheKey<T>(key, action);
 
-        _memoryCache.Remove(formattedKey);
         _distributedCacheClient.Remove<T>(formattedKey, CacheOptionsAction);
 
         PubSub(key, formattedKey, SubscribeOperation.Remove, default(T));
+
+        _memoryCache.Remove(formattedKey);
     }
 
     private async Task RemoveOneAsync<T>(string key, Action<CacheOptions>? action)
     {
         var formattedKey = FormatCacheKey<T>(key, action);
-        _memoryCache.Remove(formattedKey);
         await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction);
 
         await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T));
+
+        _memoryCache.Remove(formattedKey);
     }
 
     private void PubSub<T>(
@@ -568,6 +570,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Operation = operation;
             subscribeOptions.Value = value;
         });
+
+        if (operation == SubscribeOperation.Remove) await _distributedCacheClient.UnSubscribeAsync<T>(channel);
     }
 
     private string FormatSubscribeChannel<T>(string key) =>
