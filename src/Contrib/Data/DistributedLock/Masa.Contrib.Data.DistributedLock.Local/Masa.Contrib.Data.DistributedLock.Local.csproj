@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
-    <ProjectReference Include="..\..\..\..\BuildingBlocks\Exceptions\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
   </ItemGroup>

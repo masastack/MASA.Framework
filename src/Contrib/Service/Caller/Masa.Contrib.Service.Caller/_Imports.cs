@@ -6,7 +6,6 @@ global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.Contrib.Service.Caller.Internal;
 global using Masa.Contrib.Service.Caller.Internal.Options;
-global using Masa.Utils.Exceptions;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
