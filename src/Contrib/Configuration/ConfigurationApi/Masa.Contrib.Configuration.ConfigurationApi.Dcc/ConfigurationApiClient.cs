@@ -203,17 +203,6 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         if (publishRelease == null)
             throw new ArgumentException($"configObject invalid, {key} is not null");
 
-        //PublishReleaseModel? result;
-        //try
-        //{
-        //    result = JsonSerializer.Deserialize<PublishReleaseModel>(raw, _jsonSerializerOptions);
-        //}
-        //catch (Exception exception)
-        //{
-        //    _logger?.LogWarning(exception, "Dcc.ConfigurationApiClient: configObject invalid, {ParamName} is not a valid response value",
-        //        key);
-        //    throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {key} is not a valid response value");
-        //}
         if (publishRelease == null || publishRelease.ConfigFormat == 0)
             throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {key} is an unsupported type");
 
