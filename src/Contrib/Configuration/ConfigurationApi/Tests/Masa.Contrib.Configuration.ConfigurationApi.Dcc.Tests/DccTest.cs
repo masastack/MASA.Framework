@@ -622,6 +622,6 @@ public class DccTest
     {
         string partialKey =
             $"{environment}-{cluster}-{appId}".ToLower();
-        _distributedCacheClient.Setup(client => client.GetKeys($"{partialKey}*")).Returns(mockKeys);
+        _distributedCacheClient.Setup(client => client.GetKeys<PublishReleaseModel>($"{partialKey}*", null)).Returns(mockKeys);
     }
 }
