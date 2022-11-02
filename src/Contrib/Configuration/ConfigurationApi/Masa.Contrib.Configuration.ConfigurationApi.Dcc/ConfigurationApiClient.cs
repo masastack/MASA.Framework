@@ -203,7 +203,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         if (publishRelease == null)
             throw new ArgumentException($"configObject invalid, {key} is not null");
 
-        if (publishRelease == null || publishRelease.ConfigFormat == 0)
+        if (publishRelease.ConfigFormat == 0)
             throw new ArgumentException($"Dcc.ConfigurationApiClient: configObject invalid, {key} is an unsupported type");
 
         if (publishRelease.Encryption)
