@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
 global using Masa.Contrib.Data.Contracts.EFCore.DataFiltering;
 global using Masa.Contrib.Data.Contracts.EFCore.Tests.EntityConfigurations;
 global using Masa.Contrib.Data.Contracts.EFCore.Tests.Models;

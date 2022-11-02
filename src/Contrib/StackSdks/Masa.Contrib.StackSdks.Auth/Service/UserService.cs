@@ -92,10 +92,11 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, UserModel>(requestUri, new { email });
     }
 
-    public async Task<UserModel?> FindByIdAsync(Guid id)
+    public async Task<UserModel?> FindByIdAsync(Guid userId)
     {
-        var requestUri = $"api/user/byId/{id}";
-        return await _caller.GetAsync<object, UserModel>(requestUri, new { id });
+        var requestUri = $"api/user/byId/{userId}";
+        return await _caller.GetAsync<object, UserModel>(requestUri, new {
+            id = userId });
     }
 
     public async Task<UserModel?> GetCurrentUserAsync()
