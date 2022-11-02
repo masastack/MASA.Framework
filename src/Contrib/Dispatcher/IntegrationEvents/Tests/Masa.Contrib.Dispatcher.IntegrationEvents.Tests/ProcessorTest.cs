@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Events;
-using Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
-
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]
@@ -96,7 +93,7 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
+        MasaAppConfigureOptions masaAppConfigureOptions = new()
         {
             AppId = "test"
         };
@@ -105,7 +102,7 @@ public class ProcessorTest
         RetryByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
+            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
@@ -175,7 +172,7 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
+        MasaAppConfigureOptions masaAppConfigureOptions = new()
         {
             AppId = "test"
         };
@@ -184,7 +181,7 @@ public class ProcessorTest
         RetryByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
+            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
@@ -237,7 +234,7 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        AppConfig appConfig = new()
+        MasaAppConfigureOptions masaAppConfigureOptions  = new()
         {
             AppId = "test"
         };
@@ -263,7 +260,7 @@ public class ProcessorTest
         RetryByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<AppConfig>>(a => a.CurrentValue == appConfig),
+            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
