@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -41,16 +42,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<HttpEnvironmentDelegatingHandler>();
         services.AddCaller(callerOptions);
 
-        services.AddMultilevelCache(
-            DEFAULT_CLIENT_NAME,
-            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions),
-            multilevelCacheOptions =>
-            {
-                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
-                multilevelCacheOptions.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
-            }
-        );
-
+        services.AddAuthClientMultilevelCache(redisOptions);
         services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();
         services.AddSingleton<ISsoClient, SsoClient>();
         services.AddScoped<IAuthClient>(serviceProvider =>
@@ -70,6 +62,22 @@ public static class ServiceCollectionExtensions
         });
 
         MasaApp.TrySetServiceCollection(services);
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuthClientMultilevelCache(this IServiceCollection services, RedisConfigurationOptions redisOptions)
+    {
+        services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(redisOptions),
+            multilevelCacheOptions =>
+            {
+                multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
+                multilevelCacheOptions.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
+            }
+        );
+        services.AddSingleton<AuthClientMultilevelCacheProvider>();
 
         return services;
     }

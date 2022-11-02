@@ -35,7 +35,9 @@ public interface IUserService
 
     Task<UserModel?> FindByEmailAsync(string email);
 
-    Task<UserModel> GetCurrentUserAsync();
+    Task<UserModel?> FindByIdAsync(Guid userId);
+
+    Task<UserModel?> GetCurrentUserAsync();
 
     Task<StaffDetailModel?> GetCurrentStaffAsync();
 
