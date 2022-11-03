@@ -107,11 +107,7 @@ public static class ServiceCollectionExtensions
 
     private static void CheckAliYunStorageOptions(AliyunStorageOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-
-        if (options.AccessKeyId == null && options.AccessKeySecret == null)
-            throw new ArgumentException(
-                $"{nameof(options.AccessKeyId)}, {nameof(options.AccessKeySecret)} are required and cannot be empty");
+        MasaArgumentException.ThrowIfNull(options);
 
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));

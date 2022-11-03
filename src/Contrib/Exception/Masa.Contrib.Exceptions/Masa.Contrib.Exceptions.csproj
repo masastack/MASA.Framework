@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18N\Masa.BuildingBlocks.Globalization.I18N.csproj" />
   </ItemGroup>
 
 </Project>

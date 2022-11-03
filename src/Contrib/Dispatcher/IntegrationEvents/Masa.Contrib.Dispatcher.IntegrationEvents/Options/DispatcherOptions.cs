@@ -190,8 +190,7 @@ public class DispatcherOptions : IDispatcherOptions
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
-        if (assemblies == null || assemblies.Length == 0)
-            throw new ArgumentException(nameof(assemblies));
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
 
         Assemblies = assemblies;
         AllEventTypes = assemblies

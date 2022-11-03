@@ -7,5 +7,5 @@ internal static class Constant
 {
     public const string DEFAULT_HTTP_CONTENT_TYPE = "text/plain; charset=utf-8";
 
-    public const string DEFAULT_EXCEPTION_MESSAGE = "An error occur in masa framework.";
+    // public const string DEFAULT_EXCEPTION_MESSAGE = "An error occur in masa framework.";
 }

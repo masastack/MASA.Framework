@@ -8,44 +8,7 @@ namespace Microsoft.AspNetCore.Builder;
 public static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Use localizable <see cref="ExceptionHandlingMiddleware"/>
-    /// </summary>
-    /// <param name="app"></param>
-    /// <param name="exceptionHandlingOptions"></param>
-    /// <returns></returns>
-    [Obsolete("UseMasaExceptionHandler is recommended to use instead.")]
-    public static IApplicationBuilder UseMasaExceptionHandling(
-        this IApplicationBuilder app,
-        Action<MasaExceptionHandlingOptions>? exceptionHandlingOptions = null)
-    {
-        return app.UseMasaExceptionHandling(_ =>
-        {
-        }, exceptionHandlingOptions);
-    }
-
-    /// <summary>
-    /// Use localizable <see cref="ExceptionHandlingMiddleware"/>
-    /// </summary>
-    /// <param name="app"></param>
-    /// <param name="action"></param>
-    /// <param name="exceptionHandlingOptions"></param>
-    /// <returns></returns>
-    [Obsolete("UseMasaExceptionHandler is recommended to use instead.")]
-    public static IApplicationBuilder UseMasaExceptionHandling(
-        this IApplicationBuilder app,
-        Action<RequestLocalizationOptions> action,
-        Action<MasaExceptionHandlingOptions>? exceptionHandlingOptions)
-    {
-        var option = new MasaExceptionHandlingOptions();
-        exceptionHandlingOptions?.Invoke(option);
-
-        app.UseMiddleware<ExceptionHandlingMiddleware>(Options.Create(option));
-        app.UseRequestLocalization(action);
-        return app;
-    }
-
-    /// <summary>
-    /// Use localizable <see cref="ExceptionHandlingMiddleware"/>
+    /// Use localizable <see cref="ExceptionHandlerMiddleware"/>
     /// </summary>
     /// <param name="app"></param>
     /// <param name="exceptionHandlingOptions"></param>
@@ -60,7 +23,7 @@ public static class ApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Use localizable <see cref="ExceptionHandlingMiddleware"/>
+    /// Use localizable <see cref="ExceptionHandlerMiddleware"/>
     /// </summary>
     /// <param name="app"></param>
     /// <param name="action"></param>

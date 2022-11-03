@@ -3,30 +3,34 @@
 
 // ReSharper disable once CheckNamespace
 
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.AspNetCore.Mvc.Filters;
 
 /// <summary>
 /// Mvc pipeline exception filter to catch global exception
 /// </summary>
-public class MvcGlobalExcetionFilter : IExceptionFilter
+public class MvcGlobalExceptionFilter : IExceptionFilter
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
-    private readonly ILogger<MvcGlobalExcetionFilter>? _logger;
+    private readonly ILogger<MvcGlobalExceptionFilter>? _logger;
+    private readonly I18N<MasaDefaultResource>? _frameworkI18N;
+    private readonly II18N<DefaultResource>? _i18N;
 
-    public MvcGlobalExcetionFilter(IServiceProvider serviceProvider,
+    public MvcGlobalExceptionFilter(IServiceProvider serviceProvider,
         IOptions<MasaExceptionHandlerOptions> options,
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
-        ILogger<MvcGlobalExcetionFilter>? logger = null)
+        I18N<MasaDefaultResource>? frameworkI18N = null,
+        II18N<DefaultResource>? i18N = null,
+        ILogger<MvcGlobalExceptionFilter>? logger = null)
     {
         _serviceProvider = serviceProvider;
         _options = options.Value;
-        _masaExceptionHandler = ExceptionHandlerExtensions.GetMasaExceptionHandler(serviceProvider, _options.MasaExceptionHandlerType);
+        _masaExceptionHandler = serviceProvider.GetMasaExceptionHandler(_options.MasaExceptionHandlerType);
         _logRelationOptions = logRelationOptions.Value;
+        _frameworkI18N = frameworkI18N;
+        _i18N = i18N;
         _logger = logger;
     }
 
@@ -49,26 +53,33 @@ public class MvcGlobalExcetionFilter : IExceptionFilter
         {
             context.ExceptionHandled = true;
             context.Result = new DefaultExceptionResult(
-                masaExceptionContext.Message,
+                masaExceptionContext.Message!,
                 masaExceptionContext.StatusCode,
                 masaExceptionContext.ContentType);
             return;
         }
 
-        _logger?.WriteLog(masaExceptionContext.Exception,
-            masaExceptionContext.Exception is UserFriendlyException ? LogLevel.Information : LogLevel.Error,
-            _logRelationOptions);
+        _logger?.WriteLog(masaExceptionContext.Exception, _logRelationOptions);
 
-        if (masaExceptionContext.Exception is UserFriendlyException userFriendlyException)
+        var httpStatusCode = masaExceptionContext.Exception.GetHttpStatusCode();
+
+        if (masaExceptionContext.Exception is MasaException masaException)
         {
             context.ExceptionHandled = true;
-            context.Result = new UserFriendlyExceptionResult(userFriendlyException.Message);
+            context.Result = new DefaultExceptionResult(masaException.GetMessage(_frameworkI18N, _i18N),
+                httpStatusCode,
+                masaExceptionContext.ContentType);
             return;
         }
-        if (masaExceptionContext.Exception is MasaException || _options.CatchAllException)
+        if (_options.CatchAllException)
         {
             context.ExceptionHandled = true;
-            context.Result = new InternalServerErrorObjectResult(Constant.DEFAULT_EXCEPTION_MESSAGE);
+
+            string message = _frameworkI18N == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
+                _frameworkI18N[ErrorCode.INTERNAL_SERVER_ERROR];
+            context.Result = new DefaultExceptionResult(message,
+                httpStatusCode,
+                masaExceptionContext.ContentType);
             return;
         }
     }

@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using Masa.Contrib.Globalization.I18N.Internal;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -83,7 +85,13 @@ public static class ServiceCollectionExtensions
         services.AddOptions();
         services.TryAddTransient(typeof(II18N<>), typeof(I18N<>));
         services.TryAddSingleton<ILanguageProvider, DefaultLanguageProvider>();
-
+        services.Configure<MasaI18NOptions>(options =>
+        {
+            options.Resources
+                .Add<MasaDefaultResource>()
+                .AddJson(Constant.DEFAULT_RESOURCE_PATH);
+        });
+        
         services.TryAddTransient(serviceProvider => (II18N)serviceProvider.GetRequiredService<II18N<DefaultResource>>());
 
         var i18NOptions = services.BuildServiceProvider().GetRequiredService<IOptions<MasaI18NOptions>>();

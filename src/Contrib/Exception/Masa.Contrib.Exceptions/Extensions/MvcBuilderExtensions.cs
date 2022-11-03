@@ -20,7 +20,7 @@ public static class MvcBuilderExtensions
 
         builder.Services.Configure<MvcOptions>(options =>
         {
-            options.Filters.Add<MvcGlobalExcetionFilter>();
+            options.Filters.Add<MvcGlobalExceptionFilter>();
         });
 
         builder.Services.Configure(action);

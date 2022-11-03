@@ -3,9 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using System.Net;
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.AspNetCore.Builder;
 
 public class ExceptionHandlerMiddleware
@@ -27,7 +24,10 @@ public class ExceptionHandlerMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
+    public async Task InvokeAsync(HttpContext httpContext,
+        IServiceProvider serviceProvider,
+        I18N<MasaDefaultResource>? frameworkI18N = null,
+        II18N<DefaultResource>? i18N = null)
     {
         try
         {
@@ -58,19 +58,19 @@ public class ExceptionHandlerMiddleware
                 return;
             }
 
-            _logger?.WriteLog(masaExceptionContext.Exception,
-                masaExceptionContext.Exception is UserFriendlyException ? LogLevel.Information : LogLevel.Error,
-                _logRelationOptions);
+            _logger?.WriteLog(masaExceptionContext.Exception, _logRelationOptions);
 
-            if (masaExceptionContext.Exception is UserFriendlyException)
+            var httpStatusCode = masaExceptionContext.Exception.GetHttpStatusCode();
+
+            if (masaExceptionContext.Exception is MasaException masaException)
             {
-                await httpContext.Response.WriteTextAsync((int)MasaHttpStatusCode.UserFriendlyException,
-                    masaExceptionContext.Exception.Message);
+                await httpContext.Response.WriteTextAsync(httpStatusCode, masaException.GetMessage(frameworkI18N, i18N));
             }
-            else if (masaExceptionContext.Exception is MasaException || _options.CatchAllException)
+            else if (_options.CatchAllException)
             {
-                var message = Constant.DEFAULT_EXCEPTION_MESSAGE;
-                await httpContext.Response.WriteTextAsync((int)HttpStatusCode.InternalServerError, message);
+                string message = frameworkI18N == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
+                    frameworkI18N[ErrorCode.INTERNAL_SERVER_ERROR];
+                await httpContext.Response.WriteTextAsync(httpStatusCode, message);
             }
             else
             {

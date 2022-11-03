@@ -13,8 +13,8 @@ public class MasaExceptionHandlerOptions
 
     internal Type? MasaExceptionHandlerType { get; private set; }
 
-    public void UseExceptionHanlder<TExceptionHanlder>() where TExceptionHanlder : IMasaExceptionHandler
+    public void UseExceptionHandler<TExceptionHandler>() where TExceptionHandler : IMasaExceptionHandler
     {
-        MasaExceptionHandlerType = typeof(TExceptionHanlder);
+        MasaExceptionHandlerType = typeof(TExceptionHandler);
     }
 }

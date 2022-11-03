@@ -21,18 +21,18 @@ public class MasaArgumentException : MasaException
     }
 
     public MasaArgumentException(string paramName, params object[] parameters)
-        : this(paramName, Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_ERROR, parameters)
+        : this(paramName, Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_ERROR, "", parameters)
     {
     }
 
-    public MasaArgumentException(string? paramName, string errorCode, params object[] parameters)
-        : this((Exception?)null, errorCode, parameters)
+    public MasaArgumentException(string? paramName, string errorCode, string? errorMessage, params object[] parameters)
+        : this((Exception?)null, errorCode, errorMessage, parameters)
     {
         ParamName = paramName;
     }
 
-    public MasaArgumentException(Exception? innerException, string errorCode, params object[] parameters)
-        : base(innerException, errorCode, parameters)
+    public MasaArgumentException(Exception? innerException, string errorCode, string? errorMessage, params object[] parameters)
+        : base(innerException, errorCode, errorMessage, parameters)
     {
     }
 
@@ -44,6 +44,15 @@ public class MasaArgumentException : MasaException
     public MasaArgumentException(SerializationInfo serializationInfo, StreamingContext context)
         : base(serializationInfo, context)
     {
+    }
+
+    public static void ThrowIfNullOrEmptyCollection<T>(IEnumerable<T>? arguments,
+        [CallerArgumentExpression("arguments")]
+        string? paramName = null)
+    {
+        ThrowIf(arguments is null || !arguments.Any(),
+            paramName,
+            Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_NULL_OR_EMPTY_COLLECTION);
     }
 
     public static void ThrowIfNull(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
@@ -62,7 +71,7 @@ public class MasaArgumentException : MasaException
 
     public static void ThrowIfNullOrWhiteSpace(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
     {
-        ThrowIf(argument is null,
+        ThrowIf(string.IsNullOrWhiteSpace(argument?.ToString()),
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_NULL_OR_WHITE_SPACE);
     }
@@ -151,10 +160,15 @@ public class MasaArgumentException : MasaException
 
     public static void ThrowIf(bool condition, string? paramName, string errorCode, params object[] parameters)
     {
-        if (condition) Throw(paramName, errorCode, parameters);
+        if (condition) Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), parameters);
+    }
+
+    public static void ThrowIf(bool condition, string? paramName, string errorCode, string? errorMessage, params object[] parameters)
+    {
+        if (condition) Throw(paramName, errorCode, errorMessage, parameters);
     }
 
     [DoesNotReturn]
-    private static void Throw(string? paramName, string errorCode, params object[] parameters) =>
-        throw new MasaArgumentException(paramName, errorCode, parameters);
+    private static void Throw(string? paramName, string errorCode, string? errorMessage, params object[] parameters) =>
+        throw new MasaArgumentException(paramName, errorCode, errorMessage, parameters);
 }

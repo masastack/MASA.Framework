@@ -7,13 +7,13 @@ namespace Microsoft.AspNetCore.Mvc;
 
 public class DefaultExceptionResult : IActionResult
 {
-    public string? Message { get; set; }
+    public string Message { get; set; }
 
     public int StatusCode { get; set; }
 
     public string ContentType { get; set; }
 
-    public DefaultExceptionResult(string? message, int statusCode, string contentType)
+    public DefaultExceptionResult(string message, int statusCode, string contentType)
     {
         Message = message;
         StatusCode = statusCode;
@@ -22,6 +22,6 @@ public class DefaultExceptionResult : IActionResult
 
     public async Task ExecuteResultAsync(ActionContext context)
     {
-        await context.HttpContext.Response.WriteTextAsync(StatusCode, Message ?? Constant.DEFAULT_EXCEPTION_MESSAGE, ContentType);
+        await context.HttpContext.Response.WriteTextAsync(StatusCode, Message, ContentType);
     }
 }

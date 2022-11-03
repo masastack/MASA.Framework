@@ -7,9 +7,8 @@ internal static class ObjectStorageExtensions
 {
     internal static string CheckNullOrEmptyAndReturnValue(string? parameter, string parameterName)
     {
-        if (string.IsNullOrEmpty(parameter))
-            throw new ArgumentException($"{parameterName} cannot be null and empty string");
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(parameter, parameterName);
 
-        return parameter;
+        return parameter!;
     }
 }

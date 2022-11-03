@@ -136,14 +136,14 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
     protected virtual void OnBeforeSaveChanges()
     {
-        UpdateRowVesion(ChangeTracker);
+        UpdateRowVersion(ChangeTracker);
         OnBeforeSaveChangesByFilters();
         DomainEventEnqueueAsync(ChangeTracker).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     protected virtual async Task OnBeforeSaveChangesAsync()
     {
-        UpdateRowVesion(ChangeTracker);
+        UpdateRowVersion(ChangeTracker);
         OnBeforeSaveChangesByFilters();
         await DomainEventEnqueueAsync(ChangeTracker);
     }
@@ -184,7 +184,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
             await DomainEventBus.Enqueue(domainEvent);
     }
 
-    protected virtual void UpdateRowVesion(ChangeTracker changeTracker)
+    protected virtual void UpdateRowVersion(ChangeTracker changeTracker)
     {
         if (ConcurrencyStampProvider == null)
             return;

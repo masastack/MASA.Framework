@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Exceptions.Internal;
 
-internal static class ExceptionHandlerExtensions
+internal static class ServiceProviderExtensions
 {
     public static IMasaExceptionHandler? GetMasaExceptionHandler(this IServiceProvider serviceProvider, Type? masaExceptionHandlerType)
     {
