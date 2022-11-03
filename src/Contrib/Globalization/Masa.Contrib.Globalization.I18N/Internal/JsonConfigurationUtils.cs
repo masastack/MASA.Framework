@@ -15,14 +15,14 @@ internal static class JsonConfigurationUtils
         if (languages.Length == 0)
         {
             languages = GetLanguageInfos(languageDirectory, supportCultureName).ToArray();
-            MonitorChange(languageDirectory, supportCultureName, () =>
-            {
-                I18NResourceResourceConfiguration.Languages = GetLanguageInfos(languageDirectory, supportCultureName).ToList();
-                I18NResourceResourceConfiguration
-                    .Resources
-                    .Add<DefaultResource>()
-                    .AddJson(languageDirectory, I18NResourceResourceConfiguration.Languages.ToArray());
-            });
+            // MonitorChange(languageDirectory, supportCultureName, () =>
+            // {
+            //     I18NResourceResourceConfiguration.Languages = GetLanguageInfos(languageDirectory, supportCultureName).ToList();
+            //     I18NResourceResourceConfiguration
+            //         .Resources
+            //         .Add<DefaultResource>()
+            //         .AddJson(languageDirectory, I18NResourceResourceConfiguration.Languages.ToArray());
+            // });
         }
 
         I18NResourceResourceConfiguration.Languages = languages.ToList();
@@ -46,7 +46,15 @@ internal static class JsonConfigurationUtils
                 goto start;
             }
         }
-        catch (IOException)
+        catch (FileNotFoundException ex)
+        {
+            //todo: Write a log, prompting to use English by default
+            return new List<LanguageInfo>()
+            {
+                new("en-us", "English")
+            };
+        }
+        catch (IOException ex)
         {
             Task.Delay(300);
             goto start;

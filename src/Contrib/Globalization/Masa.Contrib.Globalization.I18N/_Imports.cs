@@ -5,6 +5,7 @@ global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Globalization.I18N;
 global using Masa.Contrib.Globalization.I18N;
+global using Masa.Contrib.Globalization.I18N.Internal;
 global using Masa.Contrib.Globalization.I18N.Json;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

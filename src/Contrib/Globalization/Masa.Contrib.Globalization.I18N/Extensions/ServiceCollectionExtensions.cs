@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using Masa.Contrib.Globalization.I18N.Internal;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -14,8 +12,8 @@ public static class ServiceCollectionExtensions
         Action<I18NOptions>? action = null,
         params LanguageInfo[] languages)
         => services.AddI18N(
-            Masa.Contrib.Globalization.I18N.Internal.Constant.DEFAULT_RESOURCE_PATH,
-            Masa.Contrib.Globalization.I18N.Internal.Constant.SUPPORTED_CULTURES_NAME,
+            Constant.DEFAULT_RESOURCE_PATH,
+            Constant.SUPPORTED_CULTURES_NAME,
             action,
             languages);
 
@@ -26,7 +24,7 @@ public static class ServiceCollectionExtensions
         params LanguageInfo[] languages)
         => services.AddI18N(
             languageDirectory,
-            Masa.Contrib.Globalization.I18N.Internal.Constant.SUPPORTED_CULTURES_NAME,
+            Constant.SUPPORTED_CULTURES_NAME,
             action,
             languages);
 
@@ -46,8 +44,8 @@ public static class ServiceCollectionExtensions
         Action<I18NOptions>? action = null,
         params LanguageInfo[] languages)
         => services.TestAddI18N(
-            Masa.Contrib.Globalization.I18N.Internal.Constant.DEFAULT_RESOURCE_PATH,
-            Masa.Contrib.Globalization.I18N.Internal.Constant.SUPPORTED_CULTURES_NAME,
+            Constant.DEFAULT_RESOURCE_PATH,
+            Constant.SUPPORTED_CULTURES_NAME,
             action,
             languages);
 
@@ -58,7 +56,7 @@ public static class ServiceCollectionExtensions
         params LanguageInfo[] languages)
         => services.TestAddI18N(
             languageDirectory,
-            Masa.Contrib.Globalization.I18N.Internal.Constant.SUPPORTED_CULTURES_NAME,
+            Constant.SUPPORTED_CULTURES_NAME,
             action,
             languages);
 
@@ -91,7 +89,7 @@ public static class ServiceCollectionExtensions
                 .Add<MasaDefaultResource>()
                 .AddJson(Constant.DEFAULT_RESOURCE_PATH);
         });
-        
+
         services.TryAddTransient(serviceProvider => (II18N)serviceProvider.GetRequiredService<II18N<DefaultResource>>());
 
         var i18NOptions = services.BuildServiceProvider().GetRequiredService<IOptions<MasaI18NOptions>>();

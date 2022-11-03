@@ -24,11 +24,10 @@ public class ExceptionHandlerMiddleware
         _logger = logger;
     }
 
-    public async Task InvokeAsync(HttpContext httpContext,
-        IServiceProvider serviceProvider,
-        I18N<MasaDefaultResource>? frameworkI18N = null,
-        II18N<DefaultResource>? i18N = null)
+    public async Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
+        var frameworkI18N = serviceProvider.GetService<I18N<MasaDefaultResource>>();
+        var i18N = serviceProvider.GetService<I18N<DefaultResource>>();
         try
         {
             await _next(httpContext);

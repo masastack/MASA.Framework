@@ -13,6 +13,10 @@ public class JsonConfigurationProvider : FileConfigurationProvider
 
     protected override IConfigurationBuilder AddFile(IConfigurationBuilder configurationBuilder, string basePath, string cultureName)
     {
+        var filePath = Path.Combine(basePath, cultureName + ".json");
+        if (!File.Exists(filePath))
+            return configurationBuilder;
+
         return configurationBuilder
             .SetBasePath(basePath)
             .AddJsonFile(cultureName + ".json", false, true);
