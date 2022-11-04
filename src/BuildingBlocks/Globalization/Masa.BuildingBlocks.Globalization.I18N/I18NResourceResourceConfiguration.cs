@@ -8,6 +8,4 @@ public static class I18NResourceResourceConfiguration
     public static readonly string BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
 
     public static I18NResourceDictionary Resources { get; set; } = new();
-
-    public static IEnumerable<LanguageInfo> Languages { get; set; } = new List<LanguageInfo>();
 }

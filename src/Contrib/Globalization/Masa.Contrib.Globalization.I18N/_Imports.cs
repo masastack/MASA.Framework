@@ -10,7 +10,7 @@ global using Masa.Contrib.Globalization.I18N.Json;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
-global using Microsoft.Extensions.FileProviders;
 global using Microsoft.Extensions.Localization;
 global using Microsoft.Extensions.Options;
 global using Microsoft.Extensions.Primitives;
+global using Constant = Masa.Contrib.Globalization.I18N.Internal.Constant;

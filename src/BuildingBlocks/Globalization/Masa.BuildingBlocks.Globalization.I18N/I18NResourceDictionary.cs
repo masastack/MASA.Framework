@@ -6,14 +6,29 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 [Serializable]
 public class I18NResourceDictionary : Dictionary<Type, I18NResource>
 {
-    public I18NResource Add<TResource>()
+    public I18NResource Add<TResource>(params Type[] baseResourceTypes)
     {
-        return Add(typeof(TResource));
+        return Add(typeof(TResource), baseResourceTypes);
     }
 
-    public I18NResource Add(Type resourceType)
+    public I18NResource Add(Type resourceType, params Type[] baseResourceTypes)
     {
-        return this[resourceType] = new I18NResource(resourceType);
+        return this[resourceType] = new I18NResource(resourceType, baseResourceTypes);
+    }
+
+    public bool TryAdd<TResource>(Action<I18NResource> action, params Type[] baseResourceTypes)
+    {
+        return TryAdd(typeof(TResource), action, baseResourceTypes);
+    }
+
+    public bool TryAdd(Type resourceType, Action<I18NResource> action, params Type[] baseResourceTypes)
+    {
+        if (this.ContainsKey(resourceType))
+            return false;
+
+        var i18NResource = Add(resourceType, baseResourceTypes);
+        action.Invoke(i18NResource);
+        return true;
     }
 
     public I18NResource? GetOrNull(Type resourceType)

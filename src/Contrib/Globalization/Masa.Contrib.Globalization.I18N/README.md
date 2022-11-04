@@ -57,13 +57,11 @@ Install-Package Masa.Contrib.Globalization.I18N
 ``` supportedCultures.json
 [
     {
-        "DefaultCulture": true,
         "Culture":"zh-CN",
         "Display":"Simplified Chinese",
         "Icon": "{Replace-Your-Icon}"
     },
     {
-        "DefaultCulture": false,
         "Culture":"en-US",
         "Display":"English (United States)",
         "Icon": "{Replace-Your-Icon}"

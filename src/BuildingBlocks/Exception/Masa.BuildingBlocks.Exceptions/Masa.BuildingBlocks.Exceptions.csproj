@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
     <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\Globalization\Masa.BuildingBlocks.Globalization.I18N\Masa.BuildingBlocks.Globalization.I18N.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,33 +8,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddI18NForBlazor(this IServiceCollection services,
-        Action<I18NOptions>? action = null,
-        params LanguageInfo[] languages)
+        Action<CultureSettings>? action = null)
     {
         services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
-        services.AddI18N(action, languages);
-        return services;
-    }
-
-    public static IServiceCollection AddI18NForBlazor(
-        this IServiceCollection services,
-        string languageDirectory,
-        Action<I18NOptions>? action = null,
-        params LanguageInfo[] languages)
-    {
-        services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
-        return services.AddI18N(languageDirectory, action, languages);
-    }
-
-    public static IServiceCollection AddI18NForBlazor(
-        this IServiceCollection services,
-        string languageDirectory,
-        string supportCultureName,
-        Action<I18NOptions>? action = null,
-        params LanguageInfo[] languages)
-    {
-        services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
-        services.AddI18N(languageDirectory, supportCultureName, action, languages);
+        services.AddI18N(action);
         return services;
     }
 }

@@ -9,8 +9,11 @@ public class I18NOptions
 {
     public IServiceCollection Services { get; }
 
-    public I18NOptions(IServiceCollection services)
+    public List<CultureModel> SupportedCultures { get; }
+
+    public I18NOptions(IServiceCollection services, List<CultureModel> supportedCultures)
     {
         Services = services;
+        SupportedCultures = supportedCultures;
     }
 }

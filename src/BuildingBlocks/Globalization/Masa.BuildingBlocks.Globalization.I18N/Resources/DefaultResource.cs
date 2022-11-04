@@ -5,12 +5,7 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public class MasaI18NOptions
+public class DefaultResource
 {
-    public I18NResourceDictionary Resources { get; }
 
-    public MasaI18NOptions()
-    {
-        Resources = new();
-    }
 }

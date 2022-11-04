@@ -7,6 +7,11 @@ namespace Microsoft.Extensions.Localization;
 
 public class LocalI18NResourceContributor : II18NResourceContributor
 {
+    /// <summary>
+    /// Random number for handling special keys.
+    /// </summary>
+    private static readonly string _randomNumber = Guid.NewGuid().ToString();
+
     private readonly IConfiguration _configuration;
 
     public Type ResourceType { get; }
@@ -25,10 +30,11 @@ public class LocalI18NResourceContributor : II18NResourceContributor
 
     public string? GetOrNull(string name)
     {
-        var section = _configuration.GetSection(Const.DEFAULT_LOCAL_SECTION)?.GetSection(ResourceType.Name)?.GetSection(CultureName);
+        var section = _configuration.GetSection(Masa.BuildingBlocks.Globalization.I18N.Constant.DEFAULT_LOCAL_SECTION)?.GetSection(ResourceType.Name)?.GetSection(CultureName);
         if (section != null && section.Exists())
         {
-            return section.GetValue<string>(name.Replace(".", ConfigurationPath.KeyDelimiter));
+            string newName = name.Replace("\\.", _randomNumber).Replace(".", ConfigurationPath.KeyDelimiter).Replace(_randomNumber, ".");
+            return section.GetValue<string>(newName);
         }
         return null;
     }

@@ -9,13 +9,16 @@ public class I18NResource
 
     public Type ResourceType { get; }
 
-    public I18NResource(Type resourceType)
+    public Type[] BaseResourceTypes { get; }
+
+    public I18NResource(Type resourceType, Type[] baseResourceTypes)
     {
         _dictionary = new(StringComparer.OrdinalIgnoreCase);
         ResourceType = resourceType;
+        BaseResourceTypes = baseResourceTypes;
     }
 
-    public void AddContributor(string cultureName,II18NResourceContributor localizationResourceContributor)
+    public void AddContributor(string cultureName, II18NResourceContributor localizationResourceContributor)
     {
         if (_dictionary.ContainsKey(cultureName))
             throw new ArgumentException($"The {cultureName} already exists with {ResourceType.FullName}");

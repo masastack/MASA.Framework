@@ -171,4 +171,14 @@ public class MasaArgumentException : MasaException
     [DoesNotReturn]
     private static void Throw(string? paramName, string errorCode, string? errorMessage, params object[] parameters) =>
         throw new MasaArgumentException(paramName, errorCode, errorMessage, parameters);
+
+    protected override object[] GetParameters()
+    {
+        var parameters = new List<object>()
+        {
+            ParamName!
+        };
+        parameters.AddRange(Parameters);
+        return parameters.ToArray();
+    }
 }

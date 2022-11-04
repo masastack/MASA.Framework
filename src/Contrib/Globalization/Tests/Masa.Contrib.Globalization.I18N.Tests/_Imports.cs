@@ -5,4 +5,3 @@ global using Masa.BuildingBlocks.Globalization.I18N;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using System.Globalization;

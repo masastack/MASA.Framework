@@ -11,11 +11,12 @@ public static class I18NResourceExtensions
         this I18NResource localizationResource,
         string appId,
         string configObject,
-        params LanguageInfo[] languages)
+        List<CultureModel> supportedCultures)
     {
         var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetRequiredService<IMasaConfiguration>();
-        var contributors = languages.Select(language => new DccI18NResourceContributor(appId, configObject, language.Culture, masaConfiguration)).ToList();
+        var contributors = supportedCultures
+            .Select(supportedCulture => new DccI18NResourceContributor(appId, configObject, supportedCulture.Culture, masaConfiguration)).ToList();
         foreach (var contributor in contributors)
         {
             localizationResource.AddContributor(contributor.CultureName, contributor);

@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Globalization.I18N.Blazor;
 
 [ExcludeFromCodeCoverage]
-public class I18N<TResourceSource> : Masa.BuildingBlocks.Globalization.I18N.I18N<TResourceSource>
+public class I18N<TResourceSource> : I18NOfT<TResourceSource>
 {
     private const string CULTURE_COOKIE_KEY = "Masa_I18nConfig_Culture";
 

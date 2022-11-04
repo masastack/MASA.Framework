@@ -17,7 +17,7 @@ public abstract class FileConfigurationProvider : ConfigurationProvider
         _languageDirectory = configurationSource.LanguageDirectory;
         _cultureNames = configurationSource.CultureNames;
         _useMasaConfiguration = configurationSource.UseMasaConfiguration;
-        _dictionary = new();
+        _dictionary = new(StringComparer.OrdinalIgnoreCase);
     }
 
     public override void Load()
@@ -33,17 +33,18 @@ public abstract class FileConfigurationProvider : ConfigurationProvider
 
     private string FormatKey(string cultureName)
     {
+        string localSection = BuildingBlocks.Globalization.I18N.Constant.DEFAULT_LOCAL_SECTION;
         var list = _useMasaConfiguration ?
-            new List<string>()
+            new List<string>
             {
                 SectionTypes.Local.ToString(),
-                Const.DEFAULT_LOCAL_SECTION,
+                localSection,
                 _resourceType,
                 cultureName
             } :
-            new List<string>()
+            new List<string>
             {
-                Const.DEFAULT_LOCAL_SECTION,
+                localSection,
                 _resourceType,
                 cultureName
             };

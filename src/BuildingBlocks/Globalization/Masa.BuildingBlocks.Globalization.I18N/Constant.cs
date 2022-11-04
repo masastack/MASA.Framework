@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public class DefaultResource
+public static class Constant
 {
-
+    public const string DEFAULT_LOCAL_SECTION = "I18N";
 }

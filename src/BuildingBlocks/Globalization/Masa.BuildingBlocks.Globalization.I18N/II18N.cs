@@ -60,6 +60,8 @@ public interface II18N
     /// <param name="arguments">The values to format the string with.</param>
     string? T(string name, bool returnKey, params object[] arguments);
 
+    CultureInfo GetCultureInfo();
+
     /// <summary>
     /// Set the CultureName for the current request
     /// </summary>

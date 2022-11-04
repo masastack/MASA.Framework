@@ -14,15 +14,13 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
     private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
+    private readonly I18NOfT<MasaFrameworkResource>? _frameworkI18N;
     private readonly ILogger<MvcGlobalExceptionFilter>? _logger;
-    private readonly I18N<MasaDefaultResource>? _frameworkI18N;
-    private readonly II18N<DefaultResource>? _i18N;
 
     public MvcGlobalExceptionFilter(IServiceProvider serviceProvider,
         IOptions<MasaExceptionHandlerOptions> options,
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
-        I18N<MasaDefaultResource>? frameworkI18N = null,
-        II18N<DefaultResource>? i18N = null,
+        I18NOfT<MasaFrameworkResource>? frameworkI18N = null,
         ILogger<MvcGlobalExceptionFilter>? logger = null)
     {
         _serviceProvider = serviceProvider;
@@ -30,7 +28,6 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
         _masaExceptionHandler = serviceProvider.GetMasaExceptionHandler(_options.MasaExceptionHandlerType);
         _logRelationOptions = logRelationOptions.Value;
         _frameworkI18N = frameworkI18N;
-        _i18N = i18N;
         _logger = logger;
     }
 
@@ -66,7 +63,7 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
         if (masaExceptionContext.Exception is MasaException masaException)
         {
             context.ExceptionHandled = true;
-            context.Result = new DefaultExceptionResult(masaException.GetMessage(_frameworkI18N, _i18N),
+            context.Result = new DefaultExceptionResult(masaException.GetLocalizationMessage(),
                 httpStatusCode,
                 masaExceptionContext.ContentType);
             return;

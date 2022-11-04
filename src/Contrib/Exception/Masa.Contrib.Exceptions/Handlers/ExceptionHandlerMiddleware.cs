@@ -26,8 +26,7 @@ public class ExceptionHandlerMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
-        var frameworkI18N = serviceProvider.GetService<I18N<MasaDefaultResource>>();
-        var i18N = serviceProvider.GetService<I18N<DefaultResource>>();
+        var frameworkI18N = serviceProvider.GetService<II18N<MasaFrameworkResource>>();
         try
         {
             await _next(httpContext);
@@ -63,7 +62,7 @@ public class ExceptionHandlerMiddleware
 
             if (masaExceptionContext.Exception is MasaException masaException)
             {
-                await httpContext.Response.WriteTextAsync(httpStatusCode, masaException.GetMessage(frameworkI18N, i18N));
+                await httpContext.Response.WriteTextAsync(httpStatusCode, masaException.GetLocalizationMessage());
             }
             else if (_options.CatchAllException)
             {

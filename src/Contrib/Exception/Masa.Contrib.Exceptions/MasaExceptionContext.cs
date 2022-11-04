@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using Constant = Masa.Contrib.Exceptions.Internal.Constant;
+
 namespace System;
 
 public class MasaExceptionContext

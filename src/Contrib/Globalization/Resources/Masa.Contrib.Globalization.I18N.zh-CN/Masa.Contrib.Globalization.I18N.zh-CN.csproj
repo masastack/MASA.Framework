@@ -2,19 +2,19 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Masa.Contrib.Exceptions.Zh_CN</RootNamespace>
+        <RootNamespace>Masa.Contrib.Globalization.I18N.zh_CN</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="Resources\i18n\framework\zh-CN.json">
+      <Content Include="Resources\i18n\framework\*\*.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Masa.Contrib.Exceptions\Masa.Contrib.Exceptions.csproj" />
+      <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj" />
     </ItemGroup>
 
 </Project>

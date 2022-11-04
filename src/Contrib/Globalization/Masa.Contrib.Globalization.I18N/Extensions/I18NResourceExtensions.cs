@@ -11,28 +11,35 @@ public static class I18NResourceExtensions
 
     private static IMasaConfiguration? _masaConfiguration;
 
-    public static void AddJson(
+    public static I18NResource AddJson(
         this I18NResource resource,
-        string languageDirectory,
-        params LanguageInfo[] languages)
+        string resourcesDirectory,
+        params CultureModel[] supportedCultures)
+        => resource.AddJson(resourcesDirectory, supportedCultures.ToList());
+
+    public static I18NResource AddJson(
+        this I18NResource resource,
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures)
     {
-        if (!PathHelper.ParseLanguageDirectory(ref languageDirectory))
-            return;
+        if (!PathUtils.ParseResourcesDirectory(ref resourcesDirectory))
+            return resource;
 
         var resourceContributors = GetResourceContributors(
             resource,
-            languageDirectory,
-            languages);
+            resourcesDirectory,
+            supportedCultures);
         foreach (var resourceContributor in resourceContributors)
         {
             resource.AddContributor(resourceContributor.CultureName, resourceContributor);
         }
+        return resource;
     }
 
     private static List<II18NResourceContributor> GetResourceContributors(
         I18NResource resource,
-        string languageDirectory,
-        IEnumerable<LanguageInfo> languages)
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures)
     {
         _configuration ??= MasaApp.GetServices().BuildServiceProvider().GetService<IConfiguration>();
         _masaConfiguration ??=
@@ -42,17 +49,17 @@ public static class I18NResourceExtensions
         var useMasaConfiguration = _masaConfiguration != null;
         var configuration = AddJsonConfigurationSource(
             services,
-            languageDirectory,
-            languages,
+            resourcesDirectory,
+            supportedCultures,
             resource.ResourceType,
             _configuration,
             useMasaConfiguration);
         _configuration = configuration;
 
-        return languages.Select(languageInfo => (II18NResourceContributor)new LocalI18NResourceContributor
+        return supportedCultures.Select(supportedCulture => (II18NResourceContributor)new LocalI18NResourceContributor
                 (
                     resource.ResourceType,
-                    languageInfo.Culture,
+                    supportedCulture.Culture,
                     useMasaConfiguration ? _configuration.GetSection(SectionTypes.Local.ToString()) : _configuration!
                 )
             )
@@ -61,8 +68,8 @@ public static class I18NResourceExtensions
 
     private static IConfiguration AddJsonConfigurationSource(
         IServiceCollection services,
-        string languageDirectory,
-        IEnumerable<LanguageInfo> languages,
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures,
         Type resourceType,
         IConfiguration? configuration,
         bool useMasaConfiguration)
@@ -83,7 +90,7 @@ public static class I18NResourceExtensions
         }
         var configurationBuilder = new ConfigurationBuilder();
         var jsonLocalizationConfigurationSource =
-            new JsonConfigurationSource(resourceType, languageDirectory, languages.Select(l => l.Culture),
+            new JsonConfigurationSource(resourceType, resourcesDirectory, supportedCultures.Select(c => c.Culture),
                 useMasaConfiguration);
         configurationBuilder.Add(jsonLocalizationConfigurationSource);
         var localizationConfiguration = configurationBuilder.Build();

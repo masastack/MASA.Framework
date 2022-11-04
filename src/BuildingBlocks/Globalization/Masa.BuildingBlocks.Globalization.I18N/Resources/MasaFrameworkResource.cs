@@ -5,12 +5,10 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public class MasaI18NOptions
+/// <summary>
+/// Framework Multilingual Resources
+/// </summary>
+public class MasaFrameworkResource
 {
-    public I18NResourceDictionary Resources { get; }
 
-    public MasaI18NOptions()
-    {
-        Resources = new();
-    }
 }

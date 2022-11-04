@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public class LanguageInfo
+public class CultureModel
 {
     public string Culture { get; set; }
 
@@ -11,13 +11,7 @@ public class LanguageInfo
 
     public string Icon { get; set; }
 
-    // ReSharper disable once InconsistentNaming
-    /// <summary>
-    /// Content displayed for the current language
-    /// </summary>
-    public string? UIDisplayName { get; set; }
-
-    public LanguageInfo(string culture, string displayName, string? icon = null)
+    public CultureModel(string culture, string displayName, string? icon = null)
     {
         Culture = culture;
         DisplayName = displayName;
