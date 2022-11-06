@@ -43,19 +43,21 @@ internal class Dispatcher : DispatcherBase
     {
         try
         {
+            if (IsSagaMode(type, method))
+                return;
+
             var attribute = method.GetCustomAttributes(typeof(EventHandlerAttribute), true).FirstOrDefault();
             if (attribute is not null && attribute is EventHandlerAttribute handler)
             {
-                var parameters = method.GetParameters();
+                var parameters = method.GetParameters().Where(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType))
+                    .ToList();
 
-                if (parameters == null || parameters.Length != 1 ||
-                    !parameters.Any(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType)))
-                    throw new ArgumentOutOfRangeException($"[{method.Name}] must have only one argument and inherit from Event");
+                if (parameters.Count != 1)
+                    throw new ArgumentOutOfRangeException(
+                        $"[{method.Name}] only allows one parameter and inherits from Event, other parameters must support getting from DI");
 
-                if (IsSagaMode(type, method))
-                    return;
+                var parameter = parameters[0];
 
-                var parameter = parameters.FirstOrDefault()!;
                 handler.ActionMethodInfo = method;
                 handler.InstanceType = type;
                 handler.EventType = parameter.ParameterType;
@@ -65,7 +67,8 @@ internal class Dispatcher : DispatcherBase
         }
         catch (Exception ex)
         {
-            Logger?.LogError($"Dispatcher: Failed to get EventBus network, type name: [{type.FullName ?? type.Name}], method: [{method.Name}]", ex);
+            Logger?.LogError(
+                $"Dispatcher: Failed to get EventBus network, type name: [{type.FullName ?? type.Name}], method: [{method.Name}]", ex);
             throw;
         }
     }

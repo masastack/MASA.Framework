@@ -5,15 +5,13 @@ namespace Masa.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
 public class TransferEventHandler : ISagaEventHandler<TransferEvent>
 {
-    private readonly List<string> _blackAccount = new List<string>() { "roller", "thomas" };
+    private readonly List<string> _blackAccount = new() { "roller", "thomas" };
 
     private readonly ILogger<TransferEventHandler>? _logger;
-    private readonly IEventBus _eventBus;
 
-    public TransferEventHandler(IEventBus eventBus, ILogger<TransferEventHandler>? logger = null)
+    public TransferEventHandler(ILogger<TransferEventHandler>? logger = null)
     {
         _logger = logger;
-        _eventBus = eventBus;
     }
 
     [EventHandler(EnableRetry = true, RetryTimes = 3)]
@@ -41,7 +39,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
     }
 
     [EventHandler]
-    public async Task DeductionMoneyHandler(DeductionMoneyEvent @event)
+    public async Task DeductionMoneyHandler(IEventBus eventBus, DeductionMoneyEvent @event)
     {
         // TODO: The simulated deduction is successful
 
@@ -51,7 +49,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
             TransferAccount = @event.Account,
             Money = @event.Money
         };
-        await _eventBus.PublishAsync(increaseMoneyEvent);
+        await eventBus.PublishAsync(increaseMoneyEvent);
     }
 
     [EventHandler]

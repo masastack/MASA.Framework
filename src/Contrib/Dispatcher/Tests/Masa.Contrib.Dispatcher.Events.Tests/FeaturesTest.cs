@@ -50,24 +50,6 @@ public class FeaturesTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestMultiParameter()
-    {
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async () =>
-        {
-            try
-            {
-                ResetMemoryEventBus(typeof(AddGoodsEvent).Assembly);
-            }
-            catch (Exception)
-            {
-                ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
-                throw;
-            }
-            await Task.CompletedTask;
-        });
-    }
-
-    [TestMethod]
     public async Task TestCorrectEventBus()
     {
         AddShoppingCartEvent @event = new AddShoppingCartEvent()

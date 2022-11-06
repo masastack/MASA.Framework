@@ -78,7 +78,7 @@ internal class DispatcherBase
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
                 Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.GetEventId());
-                await dispatchHandler.ExcuteAction(serviceProvider, @event);
+                await dispatchHandler.ExecuteAction(serviceProvider, @event);
             }, async (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
@@ -114,7 +114,7 @@ internal class DispatcherBase
             {
                 logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event,
                     @event.GetEventId());
-                await cancelHandler.ExcuteAction(serviceProvider, @event);
+                await cancelHandler.ExecuteAction(serviceProvider, @event);
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
