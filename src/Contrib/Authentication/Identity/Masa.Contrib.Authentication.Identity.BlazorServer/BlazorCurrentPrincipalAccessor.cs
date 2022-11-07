@@ -6,14 +6,17 @@ namespace Masa.Contrib.Authentication.Identity.BlazorServer;
 public class BlazorCurrentPrincipalAccessor : ICurrentPrincipalAccessor
 {
     readonly AuthenticationStateProvider _authenticationStateProvider;
+    readonly IHttpContextAccessor _httpContextAccessor;
 
-    public BlazorCurrentPrincipalAccessor(AuthenticationStateProvider authenticationStateProvider)
+    public BlazorCurrentPrincipalAccessor(AuthenticationStateProvider authenticationStateProvider, IHttpContextAccessor httpContextAccessor)
     {
         _authenticationStateProvider = authenticationStateProvider;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public ClaimsPrincipal? GetCurrentPrincipal()
     {
-        return _authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false).GetAwaiter().GetResult().User;
+        //https://github.com/dotnet/aspnetcore/issues/28684
+        return _httpContextAccessor.HttpContext?.User ?? _authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false).GetAwaiter().GetResult().User;
     }
 }
