@@ -7,8 +7,14 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class ApplicationBuilderExtensions
 {
+    private static bool _isInitialize = false;
+
     public static IApplicationBuilder UseI18N(this IApplicationBuilder app)
     {
+        if (_isInitialize)
+            return app;
+
+        _isInitialize = true;
         var settings = app.ApplicationServices.GetRequiredService<IOptions<CultureSettings>>().Value;
 
         var requestLocalization = new RequestLocalizationOptions();
@@ -18,7 +24,7 @@ public static class ApplicationBuilderExtensions
             .AddSupportedCultures(cultures)
             .AddSupportedUICultures(cultures);
         if (!string.IsNullOrWhiteSpace(settings.DefaultCulture))
-            requestLocalization.DefaultRequestCulture = new RequestCulture(settings.DefaultCulture);
+            requestLocalization.SetDefaultCulture(settings.DefaultCulture);
 
         requestLocalization.ApplyCurrentCultureToResponseHeaders = true;
         app.UseRequestLocalization(requestLocalization);

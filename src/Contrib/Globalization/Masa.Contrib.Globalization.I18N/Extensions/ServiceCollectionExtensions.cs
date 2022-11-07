@@ -68,28 +68,23 @@ public static class ServiceCollectionExtensions
     {
         services.AddOptions();
         services.TryAddTransient(typeof(II18N<>), typeof(I18NOfT<>));
-        if (settingsAction != null)
+        services.Configure<CultureSettings>(settings =>
         {
-            services.Configure(settingsAction);
-        }
-        else
-        {
-            services.Configure<CultureSettings>(settings =>
-            {
-                if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
-                    settings.ResourcesDirectory = Constant.DEFAULT_RESOURCE_PATH;
+            settingsAction?.Invoke(settings);
 
-                if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
-                    settings.SupportCultureName = Constant.SUPPORTED_CULTURES_NAME;
+            if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
+                settings.ResourcesDirectory = Constant.DEFAULT_RESOURCE_PATH;
 
-                if (!settings.SupportedCultures.Any())
-                    settings.SupportedCultures =
-                        CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
+            if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
+                settings.SupportCultureName = Constant.SUPPORTED_CULTURES_NAME;
 
-                if (string.IsNullOrEmpty(settings.DefaultCulture))
-                    settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
-            });
-        }
+            if (!settings.SupportedCultures.Any())
+                settings.SupportedCultures =
+                    CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
+
+            if (string.IsNullOrEmpty(settings.DefaultCulture))
+                settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
+        });
 
         CultureSettings? languageSettings = null;
         services.Configure<MasaI18NOptions>(options =>
@@ -99,6 +94,7 @@ public static class ServiceCollectionExtensions
             {
                 var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
                 localLanguageSettings = serviceProvider.GetService<IOptions<CultureSettings>>()!.Value;
+                languageSettings ??= localLanguageSettings;
             }
 
             //todo: wait for auto-detection

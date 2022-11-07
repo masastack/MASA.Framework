@@ -1,10 +1,10 @@
 [
   {
     "Culture": "zh-CN",
-    "Display": "中文简体"
+    "DisplayName": "中文简体"
   },
   {
     "Culture": "en-US",
-    "Display": "English (United States)"
+    "DisplayName": "English (United States)"
   }
 ]

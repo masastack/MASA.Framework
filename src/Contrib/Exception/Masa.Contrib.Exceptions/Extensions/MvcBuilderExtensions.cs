@@ -16,8 +16,6 @@ public static class MvcBuilderExtensions
 
     public static IMvcBuilder AddMasaExceptionHandler(this IMvcBuilder builder, Action<MasaExceptionHandlerOptions> action)
     {
-        builder.Services.AddLocalization();
-
         builder.Services.Configure<MvcOptions>(options =>
         {
             options.Filters.Add<MvcGlobalExceptionFilter>();

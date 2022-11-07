@@ -9,9 +9,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-  
+
 </Project>

@@ -69,7 +69,7 @@ public class I18NOfT<TResourceSource> : II18N<TResourceSource>
         if (i18NResource == null)
             return null;
 
-        var resourceContributor = i18NResource.GetResourceContributor(GetCultureInfo());
+        var resourceContributor = i18NResource.GetResourceContributor(GetUiCultureInfo());
         return resourceContributor?.GetOrNull(name);
     }
 
@@ -88,10 +88,17 @@ public class I18NOfT<TResourceSource> : II18N<TResourceSource>
         return returnKey ? name : null;
     }
 
-    public virtual CultureInfo GetCultureInfo() => CultureInfo.CurrentUICulture;
+    public virtual CultureInfo GetCultureInfo() => CultureInfo.CurrentCulture;
 
     public virtual void SetCulture(string cultureName, bool useUserOverride = true)
         => SetCulture(new CultureInfo(cultureName, useUserOverride));
 
-    public virtual void SetCulture(CultureInfo culture) => CultureInfo.CurrentUICulture = culture;
+    public virtual void SetCulture(CultureInfo culture) => CultureInfo.CurrentCulture = culture;
+
+    public virtual CultureInfo GetUiCultureInfo() => CultureInfo.CurrentUICulture;
+
+    public virtual void SetUiCulture(string cultureName, bool useUserOverride = true)
+        => SetUiCulture(new CultureInfo(cultureName, useUserOverride));
+
+    public virtual void SetUiCulture(CultureInfo culture) => CultureInfo.CurrentUICulture = culture;
 }

@@ -58,12 +58,12 @@ Install-Package Masa.Contrib.Globalization.I18N
 [
     {
         "Culture":"zh-CN",
-        "Display":"Simplified Chinese",
+        "DisplayName":"Simplified Chinese",
         "Icon": "{Replace-Your-Icon}"
     },
     {
         "Culture":"en-US",
-        "Display":"English (United States)",
+        "DisplayName":"English (United States)",
         "Icon": "{Replace-Your-Icon}"
     }
 ]

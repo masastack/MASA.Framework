@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using Constant = Masa.Contrib.Exceptions.Internal.Constant;
-
 namespace System;
 
 public class MasaExceptionContext
@@ -37,14 +35,14 @@ public class MasaExceptionContext
         HttpContext = httpContext;
         StatusCode = (int)MasaHttpStatusCode.UserFriendlyException;
         ExceptionHandled = false;
-        ContentType = Constant.DEFAULT_HTTP_CONTENT_TYPE;
+        ContentType = Masa.Contrib.Exceptions.Internal.Constant.DEFAULT_HTTP_CONTENT_TYPE;
         ServiceProvider = serviceProvider;
     }
 
     public void ToResult(
         string message,
         int statusCode = (int)MasaHttpStatusCode.UserFriendlyException,
-        string contentType = Constant.DEFAULT_HTTP_CONTENT_TYPE)
+        string contentType = Masa.Contrib.Exceptions.Internal.Constant.DEFAULT_HTTP_CONTENT_TYPE)
     {
         Message = message;
         StatusCode = statusCode;

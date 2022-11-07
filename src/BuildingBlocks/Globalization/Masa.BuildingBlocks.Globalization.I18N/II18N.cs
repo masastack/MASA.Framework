@@ -63,15 +63,38 @@ public interface II18N
     CultureInfo GetCultureInfo();
 
     /// <summary>
-    /// Set the CultureName for the current request
+    /// Set the CultureName
+    /// Data used to define "regional options", standards, formats, etc
     /// </summary>
     /// <param name="cultureName">A predefined <see cref="T:System.Globalization.CultureInfo" /> name, <see cref="P:System.Globalization.CultureInfo.Name" /> of an existing <see cref="T:System.Globalization.CultureInfo" />, or Windows-only culture name. <paramref name="name" /> is not case-sensitive.</param>
     /// <param name="useUserOverride">A Boolean that denotes whether to use the user-selected culture settings (<see langword="true" />) or the default culture settings (<see langword="false" />).</param>
     void SetCulture(string cultureName, bool useUserOverride = true);
 
     /// <summary>
-    /// Set the CultureName for the current request
+    /// Set the CultureName
+    /// Data used to define "regional options", standards, formats, etc
     /// </summary>
     /// <param name="culture"></param>
     void SetCulture(CultureInfo culture);
+
+    /// <summary>
+    /// get interface language
+    /// </summary>
+    /// <returns></returns>
+    CultureInfo GetUiCultureInfo();
+
+    /// <summary>
+    /// Set the CultureName for the current request
+    /// Used to set the interface language
+    /// </summary>
+    /// <param name="cultureName">A predefined <see cref="T:System.Globalization.CultureInfo" /> name, <see cref="P:System.Globalization.CultureInfo.Name" /> of an existing <see cref="T:System.Globalization.CultureInfo" />, or Windows-only culture name. <paramref name="name" /> is not case-sensitive.</param>
+    /// <param name="useUserOverride">A Boolean that denotes whether to use the user-selected culture settings (<see langword="true" />) or the default culture settings (<see langword="false" />).</param>
+    void SetUiCulture(string cultureName, bool useUserOverride = true);
+
+    /// <summary>
+    /// Set the CultureName for the current request
+    /// Used to set the interface language
+    /// </summary>
+    /// <param name="culture"></param>
+    void SetUiCulture(CultureInfo culture);
 }
