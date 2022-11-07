@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Internal.Expressions;
 
-internal delegate Task TaskInvokeDelegate(object target, params object[] parameters);
+internal delegate Task TaskInvokeDelegate(object target, params object?[] parameters);
 
-internal delegate void VoidInvokeDelegate(object target, object[] parameters);
+internal delegate void VoidInvokeDelegate(object target, object?[] parameters);
 
 internal static class InvokeBuilder
 {
@@ -13,7 +13,7 @@ internal static class InvokeBuilder
     {
         // Parameters to executor
         var targetParameter = Expression.Parameter(typeof(object), "target");
-        var parametersParameter = Expression.Parameter(typeof(object[]), "parameters");
+        var parametersParameter = Expression.Parameter(typeof(object?[]), "parameters");
 
         // Build parameter list
         var parameters = new List<Expression>();
@@ -38,7 +38,7 @@ internal static class InvokeBuilder
         {
             var lambda = Expression.Lambda<VoidInvokeDelegate>(methodCall, targetParameter, parametersParameter);
             var voidExecutor = lambda.Compile();
-            return delegate (object target, object[] parameters)
+            return delegate (object target, object?[] parameters)
             {
                 voidExecutor(target, parameters);
                 return Task.CompletedTask;

@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
-public interface ISagaEventHandler<TEvent> : IEventHandler<TEvent>
+public interface ISagaEventHandler<in TEvent> : IEventHandler<TEvent>
         where TEvent : IEvent
 {
     Task CancelAsync(TEvent @event);
