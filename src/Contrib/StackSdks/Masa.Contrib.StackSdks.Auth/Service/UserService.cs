@@ -95,8 +95,10 @@ public class UserService : IUserService
     public async Task<UserModel?> FindByIdAsync(Guid userId)
     {
         var requestUri = $"api/user/byId/{userId}";
-        return await _caller.GetAsync<object, UserModel>(requestUri, new {
-            id = userId });
+        return await _caller.GetAsync<object, UserModel>(requestUri, new
+        {
+            id = userId
+        });
     }
 
     public async Task<UserModel?> GetCurrentUserAsync()

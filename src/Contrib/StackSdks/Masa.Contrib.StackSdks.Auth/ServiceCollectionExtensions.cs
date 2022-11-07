@@ -52,6 +52,7 @@ public static class ServiceCollectionExtensions
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             if (tokenProvider != null)
             {
+
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
                     httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
