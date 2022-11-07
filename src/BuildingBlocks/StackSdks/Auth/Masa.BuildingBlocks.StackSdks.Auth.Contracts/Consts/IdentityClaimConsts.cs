@@ -10,4 +10,6 @@ public static class IdentityClaimConsts
     public const string ENVIRONMENT = "environment";
     public const string CURRENT_TEAM = "current_team";
     public const string STAFF = "staff_id";
+    public const string PHONE_NUMBER = "phone_number";
+    public const string EMAIL = "email";
 }
