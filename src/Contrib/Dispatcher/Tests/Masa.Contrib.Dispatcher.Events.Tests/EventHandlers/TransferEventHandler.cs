@@ -42,6 +42,8 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
     public async Task DeductionMoneyHandler(IEventBus eventBus, DeductionMoneyEvent @event)
     {
         // TODO: The simulated deduction is successful
+        
+        _logger?.LogInformation("deduct account balance {event}", @event.ToString());
 
         IncreaseMoneyEvent increaseMoneyEvent = new IncreaseMoneyEvent()
         {

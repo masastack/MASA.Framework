@@ -47,7 +47,7 @@ internal class Dispatcher : DispatcherBase
                 return;
 
             var attribute = method.GetCustomAttributes(typeof(EventHandlerAttribute), true).FirstOrDefault();
-            if (attribute is not null && attribute is EventHandlerAttribute handler)
+            if (attribute is EventHandlerAttribute handler)
             {
                 var parameters = method.GetParameters().Where(parameter => typeof(IEvent).IsAssignableFrom(parameter.ParameterType))
                     .ToList();
@@ -67,8 +67,10 @@ internal class Dispatcher : DispatcherBase
         }
         catch (Exception ex)
         {
-            Logger?.LogError(
-                $"Dispatcher: Failed to get EventBus network, type name: [{type.FullName ?? type.Name}], method: [{method.Name}]", ex);
+            Logger?.LogError(ex,
+                "Dispatcher: Failed to get EventBus network, type name: [{TypeName}], method: [{MethodName}]",
+                (type.FullName ?? type.Name),
+                method.Name);
             throw;
         }
     }
