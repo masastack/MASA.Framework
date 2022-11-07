@@ -7,7 +7,7 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class ApplicationBuilderExtensions
 {
-    private static bool _isInitialize = false;
+    private static bool _isInitialize;
 
     public static IApplicationBuilder UseI18N(this IApplicationBuilder app)
     {

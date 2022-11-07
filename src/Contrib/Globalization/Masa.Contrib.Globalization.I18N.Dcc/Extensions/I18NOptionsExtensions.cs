@@ -8,21 +8,21 @@ namespace Masa.Contrib.Globalization.I18N;
 public static class I18NOptionsExtensions
 {
     public static void UseDcc(this I18NOptions i18NOptions)
-        => i18NOptions.UseDcc(Dcc.Internal.Constant.DEFAULT_CONFIG_OBJECT_NAME, Dcc.Internal.Constant.SUPPORTED_CULTURES_NAME);
+        => i18NOptions.UseDcc(Dcc.Internal.Constant.CULTURES_NAME_PREFIX);
 
     public static void UseDcc(
         this I18NOptions i18NOptions,
-        string configObject)
-        => i18NOptions.UseDcc(DccConfig.AppId, configObject);
+        string configObjectPrefix)
+        => i18NOptions.UseDcc(DccConfig.AppId, configObjectPrefix);
 
     public static void UseDcc(
         this I18NOptions i18NOptions,
         string appId,
-        string configObject)
+        string configObjectPrefix)
     {
         I18NResourceResourceConfiguration
             .Resources
             .Add<DefaultResource>()
-            .UseDcc(appId, configObject, i18NOptions.SupportedCultures);
+            .UseDcc(appId, configObjectPrefix, i18NOptions.SupportedCultures);
     }
 }

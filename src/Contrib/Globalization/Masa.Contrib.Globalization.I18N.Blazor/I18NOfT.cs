@@ -25,7 +25,7 @@ public class I18N<TResourceSource> : I18NOfT<TResourceSource>
             var cultureName = jsInProcess.Invoke<string>("eval", $"{GET_COOKIE_JS}('{CULTURE_COOKIE_KEY}')");
             return new CultureInfo(cultureName);
         }
-        return CultureInfo.CurrentUICulture;
+        return CultureInfo.CurrentCulture;
     }
 
     public override void SetCulture(CultureInfo culture)

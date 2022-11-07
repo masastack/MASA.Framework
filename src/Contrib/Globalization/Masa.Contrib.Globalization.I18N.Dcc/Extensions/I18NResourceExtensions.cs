@@ -10,13 +10,13 @@ public static class I18NResourceExtensions
     public static I18NResource UseDcc(
         this I18NResource localizationResource,
         string appId,
-        string configObject,
+        string configObjectPrefix,
         List<CultureModel> supportedCultures)
     {
         var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetRequiredService<IMasaConfiguration>();
         var contributors = supportedCultures
-            .Select(supportedCulture => new DccI18NResourceContributor(appId, configObject, supportedCulture.Culture, masaConfiguration)).ToList();
+            .Select(supportedCulture => new DccI18NResourceContributor(appId, configObjectPrefix, supportedCulture.Culture, masaConfiguration)).ToList();
         foreach (var contributor in contributors)
         {
             localizationResource.AddContributor(contributor.CultureName, contributor);
