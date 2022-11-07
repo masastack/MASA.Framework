@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Pm.Model;
-
 namespace Masa.Contrib.StackSdks.Pm.Tests;
 
 [TestClass]
@@ -210,6 +208,39 @@ public class ProjectServiceTest
 
         var result = await pmCaching.ProjectService.GetProjectTypesAsync();
         caller.Verify(provider => provider.GetAsync<List<ProjectTypeModel>>(requestUri, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 0);
+    }
+
+    [TestMethod]
+    public async Task TestGetListAsync()
+    {
+        var data = new List<ProjectModel>()
+        {
+            new ProjectModel()
+        };
+        var requestUri = $"api/v1/projects";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
+
+        var result = await pmCaching.ProjectService.GetListAsync();
+        caller.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
+
+        Assert.IsTrue(result.Count == 1);
+    }
+
+    [TestMethod]
+    public async Task TestGetList1Async()
+    {
+        List<ProjectModel>? data = null;
+        var requestUri = $"api/v1/projects";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<ProjectModel>>(It.IsAny<string>(), default)).ReturnsAsync(data).Verifiable();
+        var pmCaching = new PmClient(caller.Object);
+
+        var result = await pmCaching.ProjectService.GetListAsync();
+        caller.Verify(provider => provider.GetAsync<List<ProjectModel>>(requestUri, default), Times.Once);
 
         Assert.IsTrue(result.Count == 0);
     }
