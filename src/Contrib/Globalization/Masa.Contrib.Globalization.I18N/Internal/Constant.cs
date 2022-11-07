@@ -7,11 +7,19 @@ internal static class Constant
 {
     internal const string SUPPORTED_CULTURES_NAME = "supportedCultures.json";
 
-    internal const string DEFAULT_RESOURCE_PATH = "Resources/i18n";
+    internal static readonly string DefaultResourcePath;
 
-    internal const string DEFAULT_FRAMEWORK_RESOURCE_PATH = "Resources/i18n/framework";
+    internal static readonly string DefaultFrameworkResourcePath;
 
-    internal const string DEFAULT_FRAMEWORK_EXCEPTION_RESOURCE_PATH = "Resources/i18n/framework/exceptions";
+    internal static readonly string DefaultFrameworkExceptionResourcePath;
 
-    internal const string DEFAULT_FRAMEWORK_LANGUAGE_RESOURCE_PATH = "Resources/i18n/framework/languages";
+    internal static readonly string DefaultFrameworkLanguageResourcePath;
+
+    static Constant()
+    {
+        DefaultResourcePath = Path.Combine("Resources", "I18n");
+        DefaultFrameworkResourcePath = Path.Combine(DefaultResourcePath, "Framework");
+        DefaultFrameworkExceptionResourcePath = Path.Combine(DefaultFrameworkResourcePath, "Exceptions");
+        DefaultFrameworkLanguageResourcePath = Path.Combine(DefaultFrameworkResourcePath, "Languages");
+    }
 }

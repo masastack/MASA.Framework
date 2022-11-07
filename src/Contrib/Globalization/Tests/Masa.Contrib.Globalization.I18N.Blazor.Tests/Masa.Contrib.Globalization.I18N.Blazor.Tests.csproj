@@ -26,13 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\i18n\en-US.json">
+    <Content Include="Resources\I18n\en-US.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\i18n\supportedCultures.json">
+    <Content Include="Resources\I18n\supportedCultures.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\i18n\zh-CN.json">
+    <Content Include="Resources\I18n\zh-CN.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

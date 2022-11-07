@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="Resources\i18n\framework\*\*.json">
+      <Content Include="Resources\I18n\Framework\*\*.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>

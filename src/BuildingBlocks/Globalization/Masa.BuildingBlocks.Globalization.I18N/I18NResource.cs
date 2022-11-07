@@ -9,9 +9,9 @@ public class I18NResource
 
     public Type ResourceType { get; }
 
-    public Type[] BaseResourceTypes { get; }
+    public IEnumerable<Type> BaseResourceTypes { get; }
 
-    public I18NResource(Type resourceType, Type[] baseResourceTypes)
+    public I18NResource(Type resourceType, IEnumerable<Type> baseResourceTypes)
     {
         _dictionary = new(StringComparer.OrdinalIgnoreCase);
         ResourceType = resourceType;

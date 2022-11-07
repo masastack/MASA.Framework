@@ -73,7 +73,7 @@ public static class ServiceCollectionExtensions
             settingsAction?.Invoke(settings);
 
             if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
-                settings.ResourcesDirectory = Constant.DEFAULT_RESOURCE_PATH;
+                settings.ResourcesDirectory = Constant.DefaultResourcePath;
 
             if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
                 settings.SupportCultureName = Constant.SUPPORTED_CULTURES_NAME;
@@ -97,19 +97,17 @@ public static class ServiceCollectionExtensions
                 languageSettings ??= localLanguageSettings;
             }
 
-            //todo: wait for auto-detection
             options.Resources.TryAdd<MasaFrameworkResource>(resource
-                    => resource.AddJson(Constant.DEFAULT_FRAMEWORK_RESOURCE_PATH, localLanguageSettings.SupportedCultures),
-                typeof(MasaExceptionResource));
+                    => resource.AddJson(Constant.DefaultFrameworkResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<MasaExceptionResource>(resource
-                => resource.AddJson(Constant.DEFAULT_FRAMEWORK_EXCEPTION_RESOURCE_PATH, localLanguageSettings.SupportedCultures));
+                => resource.AddJson(Constant.DefaultFrameworkExceptionResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<MasaLanguageResource>(resource
-                => resource.AddJson(Constant.DEFAULT_FRAMEWORK_LANGUAGE_RESOURCE_PATH, localLanguageSettings.SupportedCultures));
+                => resource.AddJson(Constant.DefaultFrameworkLanguageResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<DefaultResource>(resource
-                => resource.AddJson(localLanguageSettings.ResourcesDirectory ?? Constant.DEFAULT_RESOURCE_PATH,
+                => resource.AddJson(localLanguageSettings.ResourcesDirectory ?? Constant.DefaultResourcePath,
                     localLanguageSettings.SupportedCultures));
         });
 

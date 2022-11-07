@@ -7,11 +7,18 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddI18NForBlazor(this IServiceCollection services,
-        Action<CultureSettings>? action = null)
+    public static IServiceCollection AddI18NForBlazor(this IServiceCollection services, Action<CultureSettings>? action = null)
     {
+        services.AddHttpContextAccessor();
         services.TryAddTransient(typeof(II18N<>), typeof(Masa.Contrib.Globalization.I18N.Blazor.I18N<>));
-        services.AddI18N(action);
+        services.TryAddScoped<ILanguageProvider, DefaultLanguageProvider>();
+        services.AddI18N(setting =>
+        {
+            action?.Invoke(setting);
+
+            if (setting.ResourcesDirectory.IsNullOrWhiteSpace())
+                setting.ResourcesDirectory = Path.Combine(I18NResourceResourceConfiguration.BaseDirectory, "Resources", "I18n");
+        });
         return services;
     }
 }

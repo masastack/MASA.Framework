@@ -6,36 +6,46 @@ namespace Masa.Contrib.Globalization.I18N.Blazor;
 [ExcludeFromCodeCoverage]
 public class I18N<TResourceSource> : I18NOfT<TResourceSource>
 {
-    private const string CULTURE_COOKIE_KEY = "Masa_I18nConfig_Culture";
-
-    private const string GET_COOKIE_JS =
-        "(function(name){const reg = new RegExp(`(^| )${name}=([^;]*)(;|$)`);const arr = document.cookie.match(reg);if (arr) {return unescape(arr[2]);}return null;})";
+    private const string CULTURE_COOKIE_KEY = ".AspNetCore.Culture";
 
     private const string SET_COOKIE_JS =
         "(function(name,value){ var Days = 30;var exp = new Date();exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);document.cookie = `${name}=${escape(value.toString())};path=/;expires=${exp.toUTCString()}`;})";
 
     private readonly IJSRuntime _jsRuntime;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IOptions<CultureSettings> _options;
 
-    public I18N(IJSRuntime jsRuntime) => _jsRuntime = jsRuntime;
-
-    public override CultureInfo GetCultureInfo()
+    public I18N(IJSRuntime jsRuntime, IHttpContextAccessor httpContextAccessor, IOptions<CultureSettings> options)
     {
-        if (_jsRuntime is IJSInProcessRuntime jsInProcess)
-        {
-            var cultureName = jsInProcess.Invoke<string>("eval", $"{GET_COOKIE_JS}('{CULTURE_COOKIE_KEY}')");
-            return new CultureInfo(cultureName);
-        }
-        return CultureInfo.CurrentCulture;
+        _jsRuntime = jsRuntime;
+        _httpContextAccessor = httpContextAccessor;
+        _options = options;
     }
 
+    public override CultureInfo GetCultureInfo() => GetSelectCulture().Culture;
+
+    public override CultureInfo GetUiCultureInfo() => GetSelectCulture().UICulture;
+
     public override void SetCulture(CultureInfo culture)
+        => SetCultureCore(culture, GetUiCultureInfo());
+
+    public override void SetUiCulture(CultureInfo culture) => SetCultureCore(GetCultureInfo(), culture);
+
+    private RequestCulture GetSelectCulture()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null) return new RequestCulture(_options.Value.DefaultCulture);
+
+        var requestCulture = httpContext.Features.Get<IRequestCultureFeature>();
+        return requestCulture?.RequestCulture ?? new RequestCulture(_options.Value.DefaultCulture);
+    }
+
+    private void SetCultureCore(CultureInfo culture, CultureInfo uiCulture)
     {
         try
         {
-            _jsRuntime.InvokeVoidAsync("eval", $"{SET_COOKIE_JS}('{CULTURE_COOKIE_KEY}','{culture.Name}')")
-                .ConfigureAwait(false)
-                .GetAwaiter()
-                .GetResult();
+            var val = ($"c={culture.Name}|uic={uiCulture.Name}");
+            _jsRuntime.InvokeVoidAsync("eval", $"{SET_COOKIE_JS}('{CULTURE_COOKIE_KEY}','{val}')");
         }
         catch (Exception ex)
         {

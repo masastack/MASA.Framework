@@ -6,7 +6,7 @@ namespace Masa.Contrib.Globalization.I18N.Tests;
 [TestClass]
 public class I18NTest
 {
-    private const string DEFAULT_RESOURCE = "Resources/i18n";
+    private const string DEFAULT_RESOURCE = "Resources/I18n";
 
     [TestInitialize]
     public void Initialize()

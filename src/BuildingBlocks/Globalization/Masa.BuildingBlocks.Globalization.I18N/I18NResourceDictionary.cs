@@ -13,7 +13,15 @@ public class I18NResourceDictionary : Dictionary<Type, I18NResource>
 
     public I18NResource Add(Type resourceType, params Type[] baseResourceTypes)
     {
-        return this[resourceType] = new I18NResource(resourceType, baseResourceTypes);
+        List<Type> types = new List<Type>(baseResourceTypes);
+
+        var customAttributes = resourceType.GetCustomAttributes(typeof(InheritResourceAttribute), true).FirstOrDefault();
+        if (customAttributes is InheritResourceAttribute inheritResourceAttribute)
+        {
+            types.AddRange(inheritResourceAttribute.ResourceTypes);
+        }
+
+        return this[resourceType] = new I18NResource(resourceType, types.Distinct());
     }
 
     public bool TryAdd<TResource>(Action<I18NResource> action, params Type[] baseResourceTypes)
