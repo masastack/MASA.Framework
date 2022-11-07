@@ -25,8 +25,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
-            })
-            .AddHttpMessageHandler<HttpEnvironmentDelegatingHandler>();
+            });
             callerOptions.DisableAutoRegistration = true;
         }, redisOptions);
     }
@@ -39,7 +38,6 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddScoped<HttpEnvironmentDelegatingHandler>();
         services.AddCaller(callerOptions);
 
         services.AddAuthClientMultilevelCache(redisOptions);
@@ -55,6 +53,14 @@ public static class ServiceCollectionExtensions
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
                     httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                });
+            }
+            else
+            {
+                callProvider.ConfigRequestMessage(httpRequestMessage =>
+                {
+                    var environment = serviceProvider.GetRequiredService<IEnvironmentProvider>().GetEnvironment();
+                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment);
                 });
             }
             var authClient = new AuthClient(callProvider, userContext);
