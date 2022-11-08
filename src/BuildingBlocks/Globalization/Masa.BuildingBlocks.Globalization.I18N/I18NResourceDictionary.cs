@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
@@ -36,6 +36,21 @@ public class I18NResourceDictionary : Dictionary<Type, I18NResource>
 
         var i18NResource = Add(resourceType, baseResourceTypes);
         action.Invoke(i18NResource);
+        return true;
+    }
+
+    public Task<bool> TryAddAsync<TResource>(Func<I18NResource, Task> func, params Type[] baseResourceTypes)
+    {
+        return TryAddAsync(typeof(TResource), func, baseResourceTypes);
+    }
+
+    public async Task<bool> TryAddAsync(Type resourceType, Func<I18NResource, Task> func, params Type[] baseResourceTypes)
+    {
+        if (this.ContainsKey(resourceType))
+            return false;
+
+        var i18NResource = Add(resourceType, baseResourceTypes);
+        await func.Invoke(i18NResource);
         return true;
     }
 

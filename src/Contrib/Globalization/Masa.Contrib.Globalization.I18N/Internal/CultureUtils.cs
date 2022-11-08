@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Globalization.I18N.Internal;
@@ -10,7 +10,7 @@ internal static class CultureUtils
         string supportCultureName)
     {
         int retry = 0;
-        start:
+    start:
         try
         {
             var fileName = Path.Combine(languageDirectory, supportCultureName);
@@ -36,6 +36,11 @@ internal static class CultureUtils
         }
         catch (IOException ex)
         {
+            return new List<CultureModel>()
+            {
+                new("en-us", "English")
+            };
+
             retry++;
             if (retry <= 10)
             {

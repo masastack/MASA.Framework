@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Globalization.I18N;
+namespace Masa.BuildingBlocks.Globalization.I18N;
 
 public class I18NOptions
 {

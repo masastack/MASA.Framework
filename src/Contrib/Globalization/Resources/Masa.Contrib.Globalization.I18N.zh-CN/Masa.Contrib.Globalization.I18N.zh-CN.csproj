@@ -1,20 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Masa.Contrib.Globalization.I18N.zh_CN</RootNamespace>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Masa.Contrib.Globalization.I18N.zh_CN</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <Content Include="Resources\I18n\Framework\*\*.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\I18n\Framework\*\*.json" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj" />
+  </ItemGroup>
 
 </Project>

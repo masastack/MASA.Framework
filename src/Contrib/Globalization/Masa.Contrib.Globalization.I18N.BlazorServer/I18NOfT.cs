@@ -1,10 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Globalization.I18N.Blazor;
+namespace Masa.Contrib.Globalization.I18N.BlazorServer;
 
 [ExcludeFromCodeCoverage]
-public class I18N<TResourceSource> : I18NOfT<TResourceSource>
+public class I18NOfT<TResourceSource> : BuildingBlocks.Globalization.I18N.I18NOfT<TResourceSource>
 {
     private const string CULTURE_COOKIE_KEY = ".AspNetCore.Culture";
 
@@ -15,16 +15,16 @@ public class I18N<TResourceSource> : I18NOfT<TResourceSource>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<CultureSettings> _options;
 
-    public I18N(IJSRuntime jsRuntime, IHttpContextAccessor httpContextAccessor, IOptions<CultureSettings> options)
+    public I18NOfT(IJSRuntime jsRuntime, IHttpContextAccessor httpContextAccessor, IOptions<CultureSettings> options)
     {
         _jsRuntime = jsRuntime;
         _httpContextAccessor = httpContextAccessor;
         _options = options;
     }
 
-    public override CultureInfo GetCultureInfo() => GetSelectCulture().Culture;
+    public override CultureInfo GetCultureInfo() => CultureInfo.CurrentCulture;
 
-    public override CultureInfo GetUiCultureInfo() => GetSelectCulture().UICulture;
+    public override CultureInfo GetUiCultureInfo() => CultureInfo.CurrentUICulture;
 
     public override void SetCulture(CultureInfo culture)
         => SetCultureCore(culture, GetUiCultureInfo());

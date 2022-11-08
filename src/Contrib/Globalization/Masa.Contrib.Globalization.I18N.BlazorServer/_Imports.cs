@@ -3,10 +3,10 @@
 
 global using Masa.BuildingBlocks.Globalization.I18N;
 global using Microsoft.AspNetCore.Http;
-global using Microsoft.AspNetCore.Localization;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
 global using Microsoft.JSInterop;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
+global using Microsoft.AspNetCore.Localization;

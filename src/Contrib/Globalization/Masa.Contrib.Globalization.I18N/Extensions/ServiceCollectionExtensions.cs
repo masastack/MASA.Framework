@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
         string? supportCultureName = null,
         Action<I18NOptions>? action = null)
     {
-        MasaArgumentException.ThrowIfNullOrWhiteSpace(languageDirectory);
         return services.AddI18N(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
@@ -40,7 +39,6 @@ public static class ServiceCollectionExtensions
         string? supportCultureName = null,
         Action<I18NOptions>? action = null)
     {
-        MasaArgumentException.ThrowIfNullOrWhiteSpace(languageDirectory);
         return services.TestAddI18N(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
@@ -93,7 +91,7 @@ public static class ServiceCollectionExtensions
             if (localLanguageSettings == null)
             {
                 var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
-                localLanguageSettings = serviceProvider.GetService<IOptions<CultureSettings>>()!.Value;
+                localLanguageSettings = serviceProvider.GetService<IOptions<CultureSettings>>()?.Value ?? new CultureSettings();
                 languageSettings ??= localLanguageSettings;
             }
 
