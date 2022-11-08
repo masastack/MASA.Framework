@@ -28,12 +28,11 @@ public static class ActivityExtension
         if (httpRequest.Body != null)
         {
             var contentType = httpRequest.ContentType;
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                if (MediaTypeHeaderValue.TryParse(contentType, out var attr))
-                    if (attr != null && !string.IsNullOrEmpty(attr.CharSet))
-                        return Encoding.GetEncoding(attr.CharSet);
-            }
+            if (!string.IsNullOrEmpty(contentType)
+                && MediaTypeHeaderValue.TryParse(contentType, out var attr)
+                && attr != null
+                && !string.IsNullOrEmpty(attr.CharSet))
+                return Encoding.GetEncoding(attr.CharSet);
         }
 
         return null;
