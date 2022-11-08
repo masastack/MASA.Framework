@@ -64,7 +64,8 @@ public static class ServiceCollectionExtensions
                     httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment);
                 });
             }
-            var authClient = new AuthClient(callProvider, userContext);
+            var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
+            var authClient = new AuthClient(callProvider, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
         });
 

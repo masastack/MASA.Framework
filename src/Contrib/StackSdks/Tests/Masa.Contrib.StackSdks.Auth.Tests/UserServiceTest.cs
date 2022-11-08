@@ -14,8 +14,7 @@ public class UserServiceTest
         var requestUri = $"api/user/external";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<AddUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.AddAsync(addUser);
         caller.Verify(provider => provider.PostAsync<AddUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -29,8 +28,7 @@ public class UserServiceTest
         var requestUri = $"api/thirdPartyUser/upsertThirdPartyUserExternal";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.UpsertThirdPartyUserAsync(addUser);
         caller.Verify(provider => provider.PostAsync<UpsertThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -44,8 +42,7 @@ public class UserServiceTest
         var requestUri = $"api/thirdPartyUser/addThirdPartyUser?whenExistReturn={true}";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.AddThirdPartyUserAsync(addUser);
         caller.Verify(provider => provider.PostAsync<AddThirdPartyUserModel, UserModel>(requestUri, addUser, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -59,8 +56,7 @@ public class UserServiceTest
         var requestUri = $"api/thirdPartyUser";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model, default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetThirdPartyUserAsync(model);
         caller.Verify(provider => provider.GetAsync<GetThirdPartyUserModel, UserModel>(requestUri, model, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -74,8 +70,7 @@ public class UserServiceTest
         var requestUri = $"api/user/upsertExternal";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<UpsertUserModel, UserModel>(requestUri, upsertUser, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.UpsertAsync(upsertUser);
         caller.Verify(provider => provider.PostAsync<UpsertUserModel, UserModel>(requestUri, upsertUser, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -92,8 +87,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getListByDepartment";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetListByDepartmentAsync(departmentId);
         caller.Verify(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
@@ -110,8 +104,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getListByTeam";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetListByTeamAsync(teamId);
         caller.Verify(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
@@ -128,8 +121,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getListByRole";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetListByRoleAsync(roleId);
         caller.Verify(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
@@ -143,8 +135,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getTotalByDepartment";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetTotalByDepartmentAsync(departmentId);
         caller.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result == data);
@@ -158,8 +149,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getTotalByRole";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetTotalByRoleAsync(roleId);
         caller.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result == data);
@@ -173,8 +163,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/getTotalByTeam";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetTotalByTeamAsync(teamId);
         caller.Verify(provider => provider.GetAsync<object, long>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result == data);
@@ -190,8 +179,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default))
             .ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.ValidateCredentialsByAccountAsync(account, password);
         caller.Verify(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
     }
@@ -204,8 +192,7 @@ public class UserServiceTest
         var requestUri = $"api/user/byAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.FindByAccountAsync(account);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -222,8 +209,7 @@ public class UserServiceTest
         var requestUri = $"api/user/byPhoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.FindByPhoneNumberAsync(phoneNumber);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null && result.PhoneNumber == data.PhoneNumber);
@@ -237,26 +223,10 @@ public class UserServiceTest
         var requestUri = $"api/user/byEmail";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.FindByEmailAsync(email);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null && result.Email == data.Email);
-    }
-
-    [TestMethod]
-    public async Task TestFindByIdAsync()
-    {
-        var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var data = new UserModel();
-        var requestUri = $"api/user/byId/{userId}";
-        var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
-        var result = await userService.FindByIdAsync(userId);
-        caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
-        Assert.IsTrue(result is not null);
     }
 
     [TestMethod]
@@ -269,7 +239,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         var result = await userService.GetCurrentUserAsync();
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -285,7 +255,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         var result = await userService.GetCurrentStaffAsync();
         caller.Verify(provider => provider.GetAsync<object, StaffDetailModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -301,7 +271,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<object>(requestUri, new { UserId = userId, Url = url }, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         await userService.VisitedAsync(appId, url);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
@@ -322,7 +292,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         var result = await userService.GetVisitedListAsync();
         caller.Verify(provider => provider.GetAsync<object, List<UserVisitedModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
@@ -340,8 +310,7 @@ public class UserServiceTest
         var requestUri = $"api/user/password";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdatePasswordAsync(user);
         caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
@@ -353,8 +322,7 @@ public class UserServiceTest
         var requestUri = $"api/user/avatar";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdateUserAvatarAsync(user);
         caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
@@ -366,8 +334,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/updateAvatar";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, staff, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdateStaffAvatarAsync(staff);
         caller.Verify(provider => provider.PutAsync(requestUri, staff, true, default), Times.Once);
     }
@@ -379,8 +346,7 @@ public class UserServiceTest
         var requestUri = $"api/message/sms";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, code, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.SendMsgCodeAsync(code);
         caller.Verify(provider => provider.PostAsync(requestUri, code, true, default), Times.Once);
     }
@@ -392,8 +358,7 @@ public class UserServiceTest
         var requestUri = $"api/user/verifyMsgCode";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<bool>(requestUri, code, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.VerifyMsgCodeAsync(code);
         caller.Verify(provider => provider.PostAsync<bool>(requestUri, code, default), Times.Once);
     }
@@ -405,8 +370,7 @@ public class UserServiceTest
         var requestUri = $"api/user/phoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdatePhoneNumberAsync(user);
         caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
     }
@@ -419,8 +383,7 @@ public class UserServiceTest
         var requestUri = $"api/user/loginByPhoneNumber";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, login, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.LoginByPhoneNumberAsync(login);
         caller.Verify(provider => provider.PostAsync<UserModel>(requestUri, login, default), Times.Once);
     }
@@ -432,8 +395,7 @@ public class UserServiceTest
         var requestUri = $"api/user/userRoles";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.DeleteAsync(requestUri, user, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.RemoveUserRolesAsync(user);
         caller.Verify(provider => provider.DeleteAsync(requestUri, user, true, default), Times.Once);
     }
@@ -446,8 +408,7 @@ public class UserServiceTest
         var requestUri = $"api/user/disable";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.DisableUserAsync(user);
         caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
     }
@@ -464,8 +425,7 @@ public class UserServiceTest
         var requestUri = $"api/user/basicInfo";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, user, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdateBasicInfoAsync(user);
         caller.Verify(provider => provider.PutAsync(requestUri, user, true, default), Times.Once);
     }
@@ -483,8 +443,7 @@ public class UserServiceTest
         var requestUri = $"api/staff/updateBasicInfo";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync(requestUri, staff, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.UpdateStaffBasicInfoAsync(staff);
         caller.Verify(provider => provider.PutAsync(requestUri, staff, true, default), Times.Once);
     }
@@ -507,8 +466,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default))
             .ReturnsAsync(userPortraits).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var data = await userService.GetUserPortraitsAsync(userId);
         caller.Verify(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
         Assert.IsTrue(data.Count == 1);
@@ -526,7 +484,7 @@ public class UserServiceTest
             .ReturnsAsync(data.ToString()).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         var result = await userService.GetUserSystemDataAsync<int>(systemId);
         Assert.IsTrue(result == 1);
     }
@@ -547,7 +505,7 @@ public class UserServiceTest
             .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         var result = await userService.GetUserSystemDataAsync<SystemData>(systemId);
         Assert.IsTrue(result is not null);
     }
@@ -564,7 +522,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<object>(requestUri, data, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         await userService.SaveUserSystemDataAsync(systemId, value);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
@@ -585,7 +543,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<object>(requestUri, data, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         await userService.SaveUserSystemDataAsync(systemId, value);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
@@ -601,8 +559,7 @@ public class UserServiceTest
         var requestUri = $"api/user/listByAccount";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.GetListByAccountAsync(accounts);
         caller.Verify(provider => provider.GetAsync<object, List<UserSimpleModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
@@ -623,7 +580,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PutAsync(requestUri, data, true, default)).Verifiable();
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller, userContext);
         await userService.SetCurrentTeamAsync(teamId);
         caller.Verify(provider => provider.PutAsync(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
@@ -635,8 +592,7 @@ public class UserServiceTest
         var requestUri = $"api/message/email";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.SendEmailAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
@@ -648,8 +604,7 @@ public class UserServiceTest
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.RegisterByEmailAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
@@ -661,8 +616,7 @@ public class UserServiceTest
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         await userService.RegisterByPhoneAsync(model);
         caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
     }
@@ -673,8 +627,7 @@ public class UserServiceTest
         var requestUri = $"api/user/hasPassword";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(true).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.HasPasswordAsync();
         caller.Verify(provider => provider.GetAsync<bool>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is true);
@@ -688,8 +641,7 @@ public class UserServiceTest
         var requestUri = $"api/thirdPartyUser/register";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<UserModel>(requestUri, model, default)).ReturnsAsync(user).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.RegisterThirdPartyUserAsync(model);
         caller.Verify(provider => provider.PostAsync<UserModel>(requestUri, model, default), Times.Once);
         Assert.IsTrue(result is not null);
@@ -703,8 +655,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<bool>(requestUri, default))
             .ReturnsAsync(true).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.HasPhoneNumberInEnvAsync(env, phoneNumber);
         Assert.IsTrue(result);
         caller.Verify(provider => provider.GetAsync<bool>(requestUri, default), Times.Once);
@@ -718,8 +669,7 @@ public class UserServiceTest
         var requestUri = $"api/user/reset_password_by_email";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, model, default)).ReturnsAsync(true).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.ResetPasswordByEmailAsync(model);
         caller.Verify(provider => provider.PostAsync<ResetPasswordByEmailModel, bool>(requestUri, model, default), Times.Once);
         Assert.IsTrue(result);
@@ -733,11 +683,17 @@ public class UserServiceTest
         var requestUri = $"api/user/reset_password_by_phone";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, model, default)).ReturnsAsync(true).Verifiable();
-        var userContext = new Mock<IUserContext>();
-        var userService = new UserService(caller.Object, userContext.Object);
+        var userService = GetUserService(caller);
         var result = await userService.ResetPasswordByPhoneAsync(model);
         caller.Verify(provider => provider.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, model, default), Times.Once);
         Assert.IsTrue(result);
+    }
+
+    static UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)
+    {
+        userContext ??= new Mock<IUserContext>();
+        var multilevelCacheClient = new Mock<IMultilevelCacheClient>();
+        return new UserService(caller.Object, userContext.Object, multilevelCacheClient.Object);
     }
 }
 
