@@ -13,4 +13,5 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Localization;
 global using Microsoft.Extensions.Options;
 global using Microsoft.Extensions.Primitives;
-global using Constant = Masa.Contrib.Globalization.I18N.Internal.Constant;
+global using ContribI18NConstant = Masa.Contrib.Globalization.I18N.Constant;
+global using System.Reflection;

@@ -10,3 +10,4 @@ global using Microsoft.JSInterop;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;
 global using Microsoft.AspNetCore.Localization;
+global using ContribI18NConstant = Masa.Contrib.Globalization.I18N.Constant;

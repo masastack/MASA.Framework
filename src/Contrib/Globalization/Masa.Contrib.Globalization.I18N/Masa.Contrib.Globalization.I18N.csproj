@@ -21,8 +21,4 @@
     <EmbeddedResource Include="Resources\I18n\Framework\*\*.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Options" />
-  </ItemGroup>
-
 </Project>

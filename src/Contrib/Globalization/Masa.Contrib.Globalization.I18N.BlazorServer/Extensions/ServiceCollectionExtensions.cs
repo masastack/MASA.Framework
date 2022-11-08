@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
             action?.Invoke(setting);
 
             if (setting.ResourcesDirectory.IsNullOrWhiteSpace())
-                setting.ResourcesDirectory = Path.Combine(I18NResourceResourceConfiguration.BaseDirectory, "Resources", "I18n");
+                setting.ResourcesDirectory = Path.Combine(I18NResourceResourceConfiguration.BaseDirectory, "wwwroot", ContribI18NConstant.DefaultResourcePath);
         });
         return services;
     }

@@ -16,7 +16,8 @@ public static class ServiceCollectionExtensions
         return services.AddI18N(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
-            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? Constant.SUPPORTED_CULTURES_NAME : supportCultureName;
+            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
+                supportCultureName;
             settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
 
             if (string.IsNullOrEmpty(settings.DefaultCulture))
@@ -42,7 +43,8 @@ public static class ServiceCollectionExtensions
         return services.TestAddI18N(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
-            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? Constant.SUPPORTED_CULTURES_NAME : supportCultureName;
+            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
+                supportCultureName;
             settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
 
             if (string.IsNullOrEmpty(settings.DefaultCulture))
@@ -71,10 +73,10 @@ public static class ServiceCollectionExtensions
             settingsAction?.Invoke(settings);
 
             if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
-                settings.ResourcesDirectory = Constant.DefaultResourcePath;
+                settings.ResourcesDirectory = ContribI18NConstant.DefaultResourcePath;
 
             if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
-                settings.SupportCultureName = Constant.SUPPORTED_CULTURES_NAME;
+                settings.SupportCultureName = ContribI18NConstant.SUPPORTED_CULTURES_NAME;
 
             if (!settings.SupportedCultures.Any())
                 settings.SupportedCultures =
@@ -95,17 +97,28 @@ public static class ServiceCollectionExtensions
                 languageSettings ??= localLanguageSettings;
             }
 
+            var assembly = typeof(EmbeddedResourceUtils).Assembly;
+
             options.Resources.TryAdd<MasaFrameworkResource>(resource
-                    => resource.AddJson(Constant.DefaultFrameworkResourcePath, localLanguageSettings.SupportedCultures));
+                => resource.AddJson(new List<Assembly>()
+                {
+                    assembly
+                }, ContribI18NConstant.DefaultFrameworkResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<MasaExceptionResource>(resource
-                => resource.AddJson(Constant.DefaultFrameworkExceptionResourcePath, localLanguageSettings.SupportedCultures));
+                => resource.AddJson(new List<Assembly>()
+                {
+                    assembly
+                }, ContribI18NConstant.DefaultFrameworkExceptionResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<MasaLanguageResource>(resource
-                => resource.AddJson(Constant.DefaultFrameworkLanguageResourcePath, localLanguageSettings.SupportedCultures));
+                => resource.AddJson(new List<Assembly>()
+                {
+                    assembly
+                }, ContribI18NConstant.DefaultFrameworkLanguageResourcePath, localLanguageSettings.SupportedCultures));
 
             options.Resources.TryAdd<DefaultResource>(resource
-                => resource.AddJson(localLanguageSettings.ResourcesDirectory ?? Constant.DefaultResourcePath,
+                => resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
                     localLanguageSettings.SupportedCultures));
         });
 

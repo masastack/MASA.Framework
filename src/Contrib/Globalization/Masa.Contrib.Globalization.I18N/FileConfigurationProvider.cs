@@ -5,7 +5,7 @@ namespace Masa.Contrib.Globalization.I18N;
 
 public abstract class FileConfigurationProvider : ConfigurationProvider
 {
-    private readonly string _resourceType;
+    private readonly string _resourceTypeName;
     private readonly string _languageDirectory;
     private readonly IEnumerable<string> _cultureNames;
     private readonly bool _useMasaConfiguration;
@@ -13,7 +13,7 @@ public abstract class FileConfigurationProvider : ConfigurationProvider
 
     protected FileConfigurationProvider(JsonConfigurationSource configurationSource)
     {
-        _resourceType = configurationSource.ResourceType.Name;
+        _resourceTypeName = configurationSource.ResourceType.Name;
         _languageDirectory = configurationSource.LanguageDirectory;
         _cultureNames = configurationSource.CultureNames;
         _useMasaConfiguration = configurationSource.UseMasaConfiguration;
@@ -39,13 +39,13 @@ public abstract class FileConfigurationProvider : ConfigurationProvider
             {
                 SectionTypes.Local.ToString(),
                 localSection,
-                _resourceType,
+                _resourceTypeName,
                 cultureName
             } :
             new List<string>
             {
                 localSection,
-                _resourceType,
+                _resourceTypeName,
                 cultureName
             };
         return string.Join(ConfigurationPath.KeyDelimiter, list);

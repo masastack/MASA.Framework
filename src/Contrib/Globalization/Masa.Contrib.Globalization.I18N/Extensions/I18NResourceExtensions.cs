@@ -28,7 +28,33 @@ public static class I18NResourceExtensions
         var resourceContributors = GetResourceContributors(
             resource,
             resourcesDirectory,
-            supportedCultures);
+            supportedCultures,
+            Array.Empty<Assembly>());
+        foreach (var resourceContributor in resourceContributors)
+        {
+            resource.AddContributor(resourceContributor.CultureName, resourceContributor);
+        }
+        return resource;
+    }
+
+    public static I18NResource AddJson(
+        this I18NResource resource,
+        IEnumerable<Assembly> assemblies,
+        string resourcesDirectory,
+        params CultureModel[] supportedCultures)
+        => resource.AddJson(assemblies, resourcesDirectory, supportedCultures.ToList());
+
+    public static I18NResource AddJson(
+        this I18NResource resource,
+        IEnumerable<Assembly> assemblies,
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures)
+    {
+        var resourceContributors = GetResourceContributors(
+            resource,
+            resourcesDirectory,
+            supportedCultures,
+            assemblies);
         foreach (var resourceContributor in resourceContributors)
         {
             resource.AddContributor(resourceContributor.CultureName, resourceContributor);
@@ -39,7 +65,8 @@ public static class I18NResourceExtensions
     private static List<II18NResourceContributor> GetResourceContributors(
         I18NResource resource,
         string resourcesDirectory,
-        IEnumerable<CultureModel> supportedCultures)
+        IEnumerable<CultureModel> supportedCultures,
+        IEnumerable<Assembly> assemblies)
     {
         _configuration ??= MasaApp.GetServices().BuildServiceProvider().GetService<IConfiguration>();
         _masaConfiguration ??=
@@ -47,13 +74,21 @@ public static class I18NResourceExtensions
 
         var services = MasaApp.GetServices();
         var useMasaConfiguration = _masaConfiguration != null;
-        var configuration = AddJsonConfigurationSource(
-            services,
-            resourcesDirectory,
-            supportedCultures,
-            resource.ResourceType,
-            _configuration,
-            useMasaConfiguration);
+        var configuration = !assemblies.Any() ? AddJsonConfigurationSource(
+                services,
+                resourcesDirectory,
+                supportedCultures,
+                resource.ResourceType,
+                _configuration,
+                useMasaConfiguration) :
+            AddJsonConfigurationSourceByEmbeddedResource(
+                assemblies,
+                services,
+                resourcesDirectory,
+                supportedCultures,
+                resource.ResourceType,
+                _configuration,
+                useMasaConfiguration);
         _configuration = configuration;
 
         return supportedCultures.Select(supportedCulture => (II18NResourceContributor)new LocalI18NResourceContributor
@@ -74,6 +109,53 @@ public static class I18NResourceExtensions
         IConfiguration? configuration,
         bool useMasaConfiguration)
     {
+        return AddJsonConfigurationSourceCore(
+            services,
+            configuration,
+            () => new List<IConfigurationSource>()
+            {
+                new JsonConfigurationSource(resourceType, resourcesDirectory, supportedCultures.Select(c => c.Culture),
+                    useMasaConfiguration)
+            });
+    }
+
+    private static IConfiguration AddJsonConfigurationSourceByEmbeddedResource(
+        IEnumerable<Assembly> assemblies,
+        IServiceCollection services,
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures,
+        Type resourceType,
+        IConfiguration? configuration,
+        bool useMasaConfiguration)
+    {
+        return AddJsonConfigurationSourceCore(services,
+            configuration,
+            () =>
+            {
+                var list = new List<IConfigurationSource>();
+                var embeddedResourceUtils = new EmbeddedResourceUtils(assemblies);
+                var resourceData = embeddedResourceUtils.GetResources(resourcesDirectory);
+                foreach (var item in resourceData)
+                {
+                    foreach (var fileName in item.Value)
+                    {
+                        var stream = embeddedResourceUtils.GetStream(item.Key, fileName);
+                        if (stream == null) continue;
+
+                        var culture = embeddedResourceUtils.GetCulture(resourcesDirectory, fileName);
+                        if (culture != null && supportedCultures.Any(cul => cul.Culture.Equals(culture, StringComparison.OrdinalIgnoreCase)))
+                            list.Add(new JsonConfigurationSourceByEmbedded(resourceType, stream, culture, useMasaConfiguration));
+                    }
+                }
+                return list;
+            });
+    }
+
+    private static IConfiguration AddJsonConfigurationSourceCore(
+        IServiceCollection services,
+        IConfiguration? configuration,
+        Func<IEnumerable<IConfigurationSource>> func)
+    {
         ConfigurationManager configurationManager = new();
         if (configuration == null)
         {
@@ -89,10 +171,13 @@ public static class I18NResourceExtensions
             configurationManager = configurationManagerTemp;
         }
         var configurationBuilder = new ConfigurationBuilder();
-        var jsonLocalizationConfigurationSource =
-            new JsonConfigurationSource(resourceType, resourcesDirectory, supportedCultures.Select(c => c.Culture),
-                useMasaConfiguration);
-        configurationBuilder.Add(jsonLocalizationConfigurationSource);
+
+        var jsonLocalizationConfigurationSources = func.Invoke();
+        foreach (var source in jsonLocalizationConfigurationSources)
+        {
+            configurationBuilder.Add(source);
+        }
+
         var localizationConfiguration = configurationBuilder.Build();
         configurationManager.AddConfiguration(localizationConfiguration);
         return configuration;

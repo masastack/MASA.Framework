@@ -36,11 +36,6 @@ internal static class CultureUtils
         }
         catch (IOException ex)
         {
-            return new List<CultureModel>()
-            {
-                new("en-us", "English")
-            };
-
             retry++;
             if (retry <= 10)
             {
