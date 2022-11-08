@@ -689,7 +689,7 @@ public class UserServiceTest
         Assert.IsTrue(result);
     }
 
-    UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)
+    static UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)
     {
         userContext ??= new Mock<IUserContext>();
         var multilevelCacheClient = new Mock<IMultilevelCacheClient>();
