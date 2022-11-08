@@ -7,13 +7,13 @@ namespace Masa.Contrib.StackSdks.Tsc;
 /// Constants for semantic attribute names outlined by the OpenTelemetry specifications.
 /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/README.md"/>.
 /// </summary>
-internal sealed class OpenTelemetryAttributeName
+internal static class OpenTelemetryAttributeName
 {
     /// <summary>
     /// Constants for deployment semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/11cc73939a32e3a2e6f11bdeab843c61cf8594e9/specification/resource/semantic_conventions/deployment_environment.md"/>.
     /// </summary>
-    internal class Deployment
+    internal static class Deployment
     {
         /// <summary>
         /// The name of the deployment environment (aka deployment tier).
@@ -26,7 +26,7 @@ internal sealed class OpenTelemetryAttributeName
     /// Constants for end user semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/span-general.md"/>.
     /// </summary>
-    internal class EndUser
+    internal static class EndUser
     {
         /// <summary>
         /// Username or client_id extracted from the access token or Authorization header in the inbound request from outside the system.
@@ -57,7 +57,7 @@ internal sealed class OpenTelemetryAttributeName
     /// Constants for HTTP semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/http.md"/>.
     /// </summary>
-    internal class Http
+    internal static class Http
     {
         /// <summary>
         /// The URI scheme identifying the used protocol.
@@ -134,7 +134,7 @@ internal sealed class OpenTelemetryAttributeName
     /// Constants for service semantic attribute names outlined by the OpenTelemetry specifications.
     /// <see href="https://github.com/open-telemetry/opentelemetry-specification/blob/master/specification/trace/semantic_conventions/messaging.md"/>.
     /// </summary>
-    internal class Service
+    internal static class Service
     {
         public const string NAME = "service.name";
 
@@ -142,5 +142,14 @@ internal sealed class OpenTelemetryAttributeName
         /// custom attr
         /// </summary>
         public const string PROJECT_NAME = "service.project.name";
+    }
+
+    internal static class Exception
+    {
+        public const string TYPE = "exception.type";
+
+        public const string MESSAGE = "exception.message";
+
+        public const string STACKTRACE = "exception.stacktrace";
     }
 }

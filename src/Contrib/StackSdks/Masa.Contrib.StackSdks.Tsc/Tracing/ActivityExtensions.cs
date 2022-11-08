@@ -5,13 +5,11 @@ namespace System.Diagnostics;
 
 public static class ActivityExtension
 {
-    public static async Task<Activity?> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
+    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
     {
-        if (activity is null) return null;
-
         activity.SetTag(OpenTelemetryAttributeName.Http.FLAVOR, httpRequest.Protocol);
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.Scheme);
-        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, httpRequest.HttpContext?.Connection.RemoteIpAddress);
+        activity.SetTag(OpenTelemetryAttributeName.Http.CLIENT_IP, httpRequest.HttpContext?.Connection?.RemoteIpAddress);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_LENGTH, httpRequest.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_TYPE, httpRequest.ContentType);
         if (httpRequest.Body != null)
@@ -29,22 +27,20 @@ public static class ActivityExtension
     {
         if (httpRequest.Body != null)
         {
-            var contentType = httpRequest.HttpContext.Request.ContentType;
+            var contentType = httpRequest.ContentType;
             if (!string.IsNullOrEmpty(contentType))
             {
-                var attr = MediaTypeHeaderValue.Parse(contentType);
-                if (attr != null && !string.IsNullOrEmpty(attr.CharSet))
-                    return Encoding.GetEncoding(attr.CharSet);
+                if (MediaTypeHeaderValue.TryParse(contentType, out var attr))
+                    if (attr != null && !string.IsNullOrEmpty(attr.CharSet))
+                        return Encoding.GetEncoding(attr.CharSet);
             }
         }
 
         return null;
     }
 
-    public static Activity? AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
+    public static Activity AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
     {
-        if (activity is null) return null;
-
         activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_LENGTH, httpResponse.ContentLength);
         activity.SetTag(OpenTelemetryAttributeName.Http.RESPONSE_CONTENT_TYPE, httpResponse.ContentType);
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
@@ -58,10 +54,8 @@ public static class ActivityExtension
         return activity;
     }
 
-    public static async Task<Activity?> AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
+    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
     {
-        if (activity is null) return null;
-
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.RequestUri?.Scheme);
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
@@ -89,12 +83,9 @@ public static class ActivityExtension
         return null;
     }
 
-    public static Activity? AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
+    public static Activity AddMasaSupplement(this Activity activity, HttpResponseMessage httpResponse)
     {
-        if (activity is null) return null;
-
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
-
         return activity;
     }
 

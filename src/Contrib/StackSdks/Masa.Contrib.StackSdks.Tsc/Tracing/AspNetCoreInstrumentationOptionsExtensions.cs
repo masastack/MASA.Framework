@@ -5,29 +5,27 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class AspNetCoreInstrumentationOptionsExtensions
 {
-    private static List<string> _lstDefaultFilterIgnorePrefix = new()
-    {
-        "/swagger",
-        "/healthz",
-    };
-
-    private static List<string> _lstBlazorFilterIgnorePrefix = new()
-    {
-        "/swagger",
-        "/healthz",
-        "/_blazor",
-        "/_content",
-    };
-
-    private static List<string> _lstBlazorFilterIgnoreSuffix = new()
+    private static readonly List<string> _CommonFilterIgnoreSuffix = new()
     {
         ".js",
         ".css",
-        "/negotiate",
         ".ico",
         ".png",
         ".woff",
         ".icon"
+    };
+
+    private static readonly List<string> _CommonFilterIgnorePrefix = new()
+    {
+        "/swagger",
+        "/healthz"
+    };
+
+    private static readonly List<string> _BlazorFilterIgnorePrefix = new()
+    {
+        "/_blazor",
+        "/_content",
+        "/negotiate"
     };
 
     /// <summary>
@@ -35,14 +33,13 @@ public static class AspNetCoreInstrumentationOptionsExtensions
     /// </summary>
     /// <param name="options"></param>
     /// <param name="openTelemetryInstrumentationOptions"></param>
-    public static void AppendDefaultFilter(this Action<AspNetCoreInstrumentationOptions> options, OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions)
+    public static void AppendDefaultFilter(this Action<AspNetCoreInstrumentationOptions> options, OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions, bool isInterruptSignalrTracing)
     {
         options += opt =>
         {
-            opt.Filter = httpContext =>
-            {
-                return !_lstDefaultFilterIgnorePrefix.Any(prefix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.StartsWith(prefix));
-            };
+            opt.Filter = httpContext => !(isInterruptSignalrTracing && IsWebsocket(httpContext)
+                || IsReuqestPathMatchPrefix(httpContext, _CommonFilterIgnorePrefix)
+                || IsReuqestPathMatchSuffix(httpContext, _CommonFilterIgnoreSuffix));
         };
 
         openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
@@ -57,18 +54,29 @@ public static class AspNetCoreInstrumentationOptionsExtensions
     {
         options += opt =>
         {
-            opt.Filter = httpContext =>
-            {
-                if (_lstBlazorFilterIgnorePrefix.Any(prefix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.StartsWith(prefix)))
-                    return false;
-
-                if (_lstBlazorFilterIgnoreSuffix.Any(suffix => !string.IsNullOrEmpty(httpContext.Request.Path.Value) && httpContext.Request.Path.Value.EndsWith(suffix)))
-                    return false;
-
-                return true;
-            };
+            opt.Filter = httpContext => !IsReuqestPathMatchPrefix(httpContext, _BlazorFilterIgnorePrefix);
         };
 
         openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
+    }
+
+    private static bool IsWebsocket(HttpContext httpContext)
+    {
+        if (httpContext.Request.Headers.ContainsKey("Connection") && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
+        {
+            Activity.Current?.Stop();
+            return false;
+        }
+        return true;
+    }
+
+    private static bool IsReuqestPathMatchSuffix(HttpContext httpContext, List<string> suffix)
+    {
+        return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && suffix.Any(str => httpContext.Request.Path.Value.EndsWith(str));
+    }
+
+    private static bool IsReuqestPathMatchPrefix(HttpContext httpContext, List<string> prefix)
+    {
+        return !string.IsNullOrEmpty(httpContext.Request.Path.Value) && prefix.Any(str => httpContext.Request.Path.Value.StartsWith(str));
     }
 }
