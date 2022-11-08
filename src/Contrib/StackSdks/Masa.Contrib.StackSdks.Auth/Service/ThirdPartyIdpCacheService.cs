@@ -14,7 +14,7 @@ public class ThirdPartyIdpCacheService : IThirdPartyIdpCacheService
 
     public async Task<List<ThirdPartyIdpModel>> GetAllAsync()
     {
-        var thirdPartyIdps = await _memoryCacheClient.GetAsync<List<ThirdPartyIdpModel>>(CacheKeyConsts.ALL_THIRD_PARTYIDP);
+        var thirdPartyIdps = await _memoryCacheClient.GetAsync<List<ThirdPartyIdpModel>>(CacheKeyConsts.ALL_THIRD_PARTY_IDP);
         return thirdPartyIdps ?? new();
     }
 }
