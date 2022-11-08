@@ -35,6 +35,8 @@ public class UserModel
 
     public List<RoleModel> Roles { get; set; } = new();
 
+    public List<SubjectPermissionRelationModel> Permissions { get; set; } = new();
+
     public Guid? StaffId { get; set; }
 
     //only for staff

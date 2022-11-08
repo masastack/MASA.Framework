@@ -5,9 +5,9 @@ namespace Masa.Contrib.StackSdks.Auth;
 
 public class AuthClient : IAuthClient
 {
-    public AuthClient(ICaller caller, IMultiEnvironmentUserContext userContext)
+    public AuthClient(ICaller caller, IMultiEnvironmentUserContext userContext, IMultilevelCacheClient multilevelCacheClient)
     {
-        UserService = new UserService(caller, userContext);
+        UserService = new UserService(caller, userContext, multilevelCacheClient);
         SubjectService = new SubjectService(caller);
         TeamService = new TeamService(caller, userContext);
         ProjectService = new ProjectService(caller, userContext);

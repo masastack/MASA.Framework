@@ -5,5 +5,11 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Consts;
 
 public static class CacheKeyConsts
 {
-    public const string GETALLTHIRDPARTYIDP = "get_all_thirdparty_idp";
+    public const string ALL_THIRD_PARTYIDP = "get_all_thirdparty_idp";
+    public const string USER_BY_ID = "get_user_by_id";
+
+    public static string UserKey(Guid userId)
+    {
+        return $"{USER_BY_ID}{userId}";
+    }
 }
