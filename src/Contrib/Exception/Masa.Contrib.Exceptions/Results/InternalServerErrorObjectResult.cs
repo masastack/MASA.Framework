@@ -5,6 +5,7 @@
 
 namespace Microsoft.AspNetCore.Mvc;
 
+[ExcludeFromCodeCoverage]
 public class InternalServerErrorObjectResult : ObjectResult
 {
     public InternalServerErrorObjectResult(object obj)

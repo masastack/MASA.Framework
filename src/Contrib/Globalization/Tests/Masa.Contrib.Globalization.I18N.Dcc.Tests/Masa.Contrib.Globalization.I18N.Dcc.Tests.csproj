@@ -19,10 +19,23 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
   </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Masa.Contrib.Globalization.I18N.Dcc\Masa.Contrib.Globalization.I18N.Dcc.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Resources\I18n\en-US.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Resources\I18n\supportedCultures.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <Content Include="Resources\I18n\zh-CN.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

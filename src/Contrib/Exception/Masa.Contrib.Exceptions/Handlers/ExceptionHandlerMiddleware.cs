@@ -5,6 +5,7 @@
 
 namespace Microsoft.AspNetCore.Builder;
 
+[ExcludeFromCodeCoverage]
 public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;

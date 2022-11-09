@@ -5,6 +5,7 @@
 
 namespace System;
 
+[ExcludeFromCodeCoverage]
 internal static class LoggerExtensions
 {
     public static void WriteLog(

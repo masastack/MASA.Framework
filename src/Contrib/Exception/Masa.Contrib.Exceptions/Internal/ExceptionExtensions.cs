@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Exceptions.Internal;
 
+[ExcludeFromCodeCoverage]
 internal static class ExceptionExtensions
 {
     public static int GetHttpStatusCode(this Exception exception)

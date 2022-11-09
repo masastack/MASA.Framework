@@ -5,6 +5,7 @@
 
 namespace Microsoft.AspNetCore.Mvc;
 
+[ExcludeFromCodeCoverage]
 public class UserFriendlyExceptionResult : IActionResult
 {
     public string Message { get; set; }

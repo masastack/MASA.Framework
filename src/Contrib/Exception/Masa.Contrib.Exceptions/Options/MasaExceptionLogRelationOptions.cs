@@ -5,9 +5,10 @@
 
 namespace System;
 
+[ExcludeFromCodeCoverage]
 public class MasaExceptionLogRelationOptions
 {
-    internal Dictionary<Type, LogLevel> Mappings { get; } = new();
+    private Dictionary<Type, LogLevel> Mappings { get; } = new();
 
     public MasaExceptionLogRelationOptions MapLogLevel<TException>(LogLevel logLevel) where TException : Exception
     {

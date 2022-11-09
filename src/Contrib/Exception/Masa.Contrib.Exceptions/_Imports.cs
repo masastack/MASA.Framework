@@ -10,6 +10,7 @@ global using Microsoft.AspNetCore.Mvc.Filters;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Net;
 global using System.Reflection;
 global using System.Text;

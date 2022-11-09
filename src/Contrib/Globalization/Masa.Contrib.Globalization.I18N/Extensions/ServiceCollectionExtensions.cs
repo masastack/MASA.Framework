@@ -87,22 +87,22 @@ public static class ServiceCollectionExtensions
             var assembly = typeof(EmbeddedResourceUtils).Assembly;
             options.Resources.TryAdd<MasaFrameworkResource>(resource =>
             {
-                resource.AddJsonByEmbeddedResource(new[] { assembly },
-                    ContribI18NConstant.DefaultFrameworkResourcePath,
+                resource.Assemblies = new[] { assembly };
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaParameterValidationResource>(resource =>
             {
-                resource.AddJsonByEmbeddedResource(new[] { assembly },
-                    ContribI18NConstant.DefaultFrameworkParameterValidationResourcePath,
+                resource.Assemblies = new[] { assembly };
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkParameterValidationResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaLanguageResource>(resource =>
             {
-                resource.AddJsonByEmbeddedResource(new[] { assembly },
-                    ContribI18NConstant.DefaultFrameworkLanguageResourcePath,
+                resource.Assemblies = new[] { assembly };
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkLanguageResourcePath,
                     languageSettings.SupportedCultures);
             });
         });
@@ -150,18 +150,9 @@ public static class ServiceCollectionExtensions
             var localLanguageSettings = cultureSettings;
             options.Resources.TryAdd<TResource>(resource =>
             {
-                if (!assemblies.Any())
-                {
-                    resource.AddJson(
-                        localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
-                        localLanguageSettings.SupportedCultures);
-                }
-                else
-                {
-                    resource.AddJsonByEmbeddedResource(assemblies,
-                        localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
-                        localLanguageSettings.SupportedCultures);
-                }
+                if (assemblies.Any()) resource.Assemblies = assemblies;
+                resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
+                    localLanguageSettings.SupportedCultures);
             });
         });
 

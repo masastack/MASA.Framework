@@ -5,6 +5,7 @@
 
 namespace System;
 
+[ExcludeFromCodeCoverage]
 public class MasaExceptionContext
 {
     public IServiceProvider ServiceProvider { get; set; }

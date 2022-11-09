@@ -8,6 +8,12 @@ public class DefaultLanguageProvider : ILanguageProvider
     private readonly II18N<MasaLanguageResource> _i18N;
     private readonly IOptions<CultureSettings> _options;
 
+    private static Dictionary<string, string> _languages = new()
+    {
+        { "en-US", "English (United States)" },
+        { "zh-CN", "中文 (简体)" }
+    };
+
     public DefaultLanguageProvider(II18N<MasaLanguageResource> i18N, IOptions<CultureSettings> options)
     {
         _i18N = i18N;
@@ -24,7 +30,7 @@ public class DefaultLanguageProvider : ILanguageProvider
                 nameof(LanguageInfo.UIDisplayName) :
                 $"{culture.Culture}\\.{nameof(LanguageInfo.UIDisplayName)}";
             var uiDisplayName = _i18N.T(key);
-            var languageInfo = new LanguageInfo(culture.Culture, culture.DisplayName, culture.Icon)
+            var languageInfo = new LanguageInfo(culture.Culture, culture.DisplayName ?? GetDisplayName(cultureName), culture.Icon)
             {
                 UIDisplayName = uiDisplayName
             };
@@ -32,5 +38,13 @@ public class DefaultLanguageProvider : ILanguageProvider
             list.Add(languageInfo);
         });
         return list;
+    }
+
+    private static string GetDisplayName(string cultureName)
+    {
+        if (_languages.TryGetValue(cultureName, out string? displayName))
+            return displayName;
+
+        return string.Empty;
     }
 }

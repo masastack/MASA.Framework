@@ -11,23 +11,6 @@ public static class I18NResourceExtensions
 
     private static IMasaConfiguration? _masaConfiguration;
 
-    public static I18NResource AddJsonByEmbeddedResource(
-        this I18NResource resource,
-        IEnumerable<Assembly> assemblies,
-        string resourcesDirectory,
-        params CultureModel[] supportedCultures)
-        => resource.AddJsonByEmbeddedResource(assemblies, resourcesDirectory, supportedCultures.ToList());
-
-    public static I18NResource AddJsonByEmbeddedResource(
-        this I18NResource resource,
-        IEnumerable<Assembly> assemblies,
-        string resourcesDirectory,
-        IEnumerable<CultureModel> supportedCultures)
-    {
-        resource.Assemblies = assemblies;
-        return resource.AddJson(resourcesDirectory, supportedCultures);
-    }
-
     public static I18NResource AddJson(
         this I18NResource resource,
         string resourcesDirectory,

@@ -8,3 +8,4 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Globalization.I18N.Dcc;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using System.Diagnostics.CodeAnalysis;

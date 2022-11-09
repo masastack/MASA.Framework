@@ -5,6 +5,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+[ExcludeFromCodeCoverage]
 public static class MvcBuilderExtensions
 {
     public static IMvcBuilder AddMasaExceptionHandler(this IMvcBuilder builder)

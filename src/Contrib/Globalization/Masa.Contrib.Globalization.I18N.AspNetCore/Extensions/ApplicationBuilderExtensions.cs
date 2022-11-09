@@ -5,6 +5,7 @@
 
 namespace Microsoft.AspNetCore.Builder;
 
+[ExcludeFromCodeCoverage]
 public static class ApplicationBuilderExtensions
 {
     private static bool _isInitialize;

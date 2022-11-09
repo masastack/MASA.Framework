@@ -8,6 +8,7 @@ namespace Microsoft.AspNetCore.Mvc.Filters;
 /// <summary>
 /// Mvc pipeline exception filter to catch global exception
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class MvcGlobalExceptionFilter : IExceptionFilter
 {
     private readonly IServiceProvider _serviceProvider;

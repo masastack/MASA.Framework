@@ -8,10 +8,10 @@ namespace Masa.Contrib.Dispatcher.Events;
 public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
     where TEvent : IEvent
 {
-    private readonly ILogger<ValidatorMiddleware<TEvent>> _logger;
+    private readonly ILogger<ValidatorMiddleware<TEvent>>? _logger;
     private readonly IEnumerable<IValidator<TEvent>> _validators;
 
-    public ValidatorMiddleware(IEnumerable<IValidator<TEvent>> validators, ILogger<ValidatorMiddleware<TEvent>> logger)
+    public ValidatorMiddleware(IEnumerable<IValidator<TEvent>> validators, ILogger<ValidatorMiddleware<TEvent>>? logger = null)
     {
         _validators = validators;
         _logger = logger;
@@ -21,7 +21,7 @@ public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
     {
         var typeName = @event.GetType().FullName;
 
-        _logger.LogDebug("----- Validating command {CommandType}", typeName);
+        _logger?.LogDebug("----- Validating command {CommandType}", typeName);
 
         var failures = _validators
             .Select(v => v.Validate(@event))
@@ -31,7 +31,7 @@ public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
 
         if (failures.Any())
         {
-            _logger.LogError("Validation errors - {CommandType} - Event: {@Command} - Errors: {@ValidationErrors}",
+            _logger?.LogError("Validation errors - {CommandType} - Event: {@Command} - Errors: {@ValidationErrors}",
                 typeName,
                 @event,
                 failures);

@@ -5,6 +5,7 @@
 
 namespace System;
 
+[ExcludeFromCodeCoverage]
 public class MasaExceptionHandlerOptions
 {
     public bool CatchAllException { get; set; } = true;

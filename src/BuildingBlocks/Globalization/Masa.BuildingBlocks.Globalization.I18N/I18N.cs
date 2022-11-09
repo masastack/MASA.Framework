@@ -7,8 +7,11 @@ public static class I18N
 {
     private static readonly IServiceProvider _serviceProvider = MasaApp.RootServiceProvider;
     private static readonly II18N _i18N = InitI18N();
+    private static readonly ILanguageProvider _languageProvider = InitLanguage();
 
     static II18N InitI18N() => _serviceProvider.GetRequiredService<II18N>();
+
+    static ILanguageProvider InitLanguage() => _serviceProvider.GetRequiredService<ILanguageProvider>();
 
     /// <summary>
     /// Gets the string resource with the given name.
@@ -77,4 +80,6 @@ public static class I18N
     /// </summary>
     /// <param name="culture"></param>
     public static void SetUiCulture(CultureInfo culture) => _i18N.SetUiCulture(culture);
+
+    public static IReadOnlyList<LanguageInfo> GetLanguages() => _languageProvider.GetLanguages();
 }

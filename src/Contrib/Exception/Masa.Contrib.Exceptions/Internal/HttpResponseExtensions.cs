@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Exceptions.Internal;
 
+[ExcludeFromCodeCoverage]
 internal static class HttpResponseExtensions
 {
     /// <summary>

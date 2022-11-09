@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Globalization.I18N
 
 ``` structure
 - Resources
-  - i18n
+  - I18n
     - en-US.json
     - zh-CN.json
     - supportedCultures.json
@@ -72,25 +72,33 @@ Install-Package Masa.Contrib.Globalization.I18N
 2. Register to use I18N, modify `Program.cs`
 
 ``` C#
-services.AddI18N(options =>
-{
-    options.UseJson();//Use the i18n resource file in the local `Resources/i18n` folder
-});
+services.AddI18N();
 ```
 
 3. How to use I18N
 
-``` C#
-II18N i18n;//Get from DI
-i18n.SetCulture("zh-CN");//Switch the language to zh-CN
-var home = i18n.T("Home");//Get the value of the language corresponding to the key value Home, this method call will return "Home";
+* Get `II18N` from DI (**II18N** is the interface, supports getting from DI)
+* Use `I18N` (**I18N** is a static class)
 
-var name = i18n.T("User.Name");//Output: name (support nesting)
-```
-
-4. Get all languages
+Take `I18N` as an example:
 
 ``` C#
-ILanguageProvider languageProvider;//Get from DI
-var languages = languageProvider.GetLanguages();
+var home = I18N.T("Home");//Get the value of the language corresponding to the key value Home, this method call will return "Home";
+var name = I18N.T("User.Name");//Output: name (support nesting)
 ```
+
+### Provided by I18N
+
+* SetCulture (string cultureName): Switch CurrentCulture to zh-CN, and the format of numbers, dates, etc. will also change after it is changed
+* SetUiCulture (string cultureName): Switch the interface language (CurrentUICulture) to zh-CN
+* GetCultureInfo (): Get CurrentCulture configuration
+* GetUiCultureInfo (): Get the interface language (CurrentUICulture)
+* T (string name): get the value of the parameter 'name' in the current language
+    * Returns the value of parameter 'name' when parameter 'name' is not configured in the current language
+* T (string name, bool returnKey): get the value of the parameter 'name' in the current language
+    * returnKey: whether to return the value of the parameter `name` when the parameter 'name' is not configured in the current language
+* string T(string name, params object[] arguments): Get the value of the parameter 'name' in the current language, and get the final result according to the incoming parameters
+    * arguments: parameter value, for example: '{0}' must be greater than 18, then I18N.T("Age",18) should be used
+    * If the parameter has a format such as number, date, etc., it will change with the change of CurrentCulture
+* string T(string name, bool returnKey, params object[] arguments): Get the value of the parameter 'name' in the current language, and get the final result according to the incoming parameters
+* GetLanguages(): Get all languages supported by the current system

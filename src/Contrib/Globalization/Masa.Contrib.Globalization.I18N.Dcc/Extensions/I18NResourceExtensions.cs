@@ -8,7 +8,7 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 public static class I18NResourceExtensions
 {
     public static I18NResource UseDcc(
-        this I18NResource localizationResource,
+        this I18NResource i18NResource,
         string appId,
         string configObjectPrefix,
         List<CultureModel> supportedCultures)
@@ -19,8 +19,8 @@ public static class I18NResourceExtensions
             .Select(supportedCulture => new DccI18NResourceContributor(appId, configObjectPrefix, supportedCulture.Culture, masaConfiguration)).ToList();
         foreach (var contributor in contributors)
         {
-            localizationResource.AddContributor(contributor.CultureName, contributor);
+            i18NResource.AddContributor(contributor.CultureName, contributor);
         }
-        return localizationResource;
+        return i18NResource;
     }
 }

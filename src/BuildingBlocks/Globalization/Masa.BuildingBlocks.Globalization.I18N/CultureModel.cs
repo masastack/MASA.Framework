@@ -7,11 +7,11 @@ public class CultureModel
 {
     public string Culture { get; set; }
 
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     public string Icon { get; set; }
 
-    public CultureModel(string culture, string displayName, string? icon = null)
+    public CultureModel(string culture, string? displayName = null, string? icon = null)
     {
         Culture = culture;
         DisplayName = displayName;

@@ -11,13 +11,13 @@ public class DccI18NResourceContributor : II18NResourceContributor
 
     public DccI18NResourceContributor(
         string appId,
-        string configObject,
+        string configObjectPrefix,
         string cultureName,
         IMasaConfiguration masaConfiguration)
     {
         CultureName = cultureName;
 
-        _configurationSection = masaConfiguration.ConfigurationApi.Get(appId).GetSection($"{configObject}.{cultureName}");
+        _configurationSection = masaConfiguration.ConfigurationApi.Get(appId).GetSection($"{configObjectPrefix}.{cultureName}");
     }
 
     public string? GetOrNull(string name)

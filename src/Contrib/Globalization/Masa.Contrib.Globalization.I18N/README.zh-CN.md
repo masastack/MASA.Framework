@@ -16,7 +16,7 @@ Install-Package Masa.Contrib.Globalization.I18N
 
 ``` structure
 - Resources
-  - i18n
+  - I18n
     - en-US.json
     - zh-CN.json
     - supportedCultures.json
@@ -72,25 +72,33 @@ Install-Package Masa.Contrib.Globalization.I18N
 2. 注册使用I18N, 修改`Program.cs`
 
 ``` C#
-services.AddI18N(options =>
-{
-    options.UseJson();//使用本地`Resources/i18n`文件夹下的i18n资源文件
-});
+services.AddI18N();
 ```
 
 3. 如何使用I18N
 
-``` C#
-II18N i18n;//从DI获取
-i18n.SetCulture("zh-CN");//将语言切换成zh-CN
-var home = i18n.T("Home");//获取键值Home对应语言的值，此方法调用将返回"首页";
+* 从DI获取`II18N` (**II18N**是接口，支持从DI获取)
+* 使用`I18N` (**I18N**是静态类)
 
-var name = i18n.T("User.Name");//输出：名称（支持嵌套）
-```
-
-4. 获取所有语言
+以`I18N`为例:
 
 ``` C#
-ILanguageProvider languageProvider;//从DI获取
-var languages = languageProvider.GetLanguages();
+var home = I18N.T("Home"); //获取键值Home对应语言的值，此方法调用将返回"首页";
+var name = I18N.T("User.Name");//输出：名称（支持嵌套）
 ```
+
+### I18N提供
+
+* SetCulture (string cultureName): 将CurrentCulture切换成zh-CN，它更改后数字、日期等表示格式也随之改变
+* SetUiCulture (string cultureName): 将界面语言(CurrentUICulture)切换成zh-CN
+* GetCultureInfo (): 得到CurrentCulture配置
+* GetUiCultureInfo (): 得到界面语言(CurrentUICulture)
+* T (string name): 得到参数'name'在当前语言下的值
+  * 当参数'name'在当前语言下未配置时返回参数'name'的值
+* T (string name, bool returnKey): 得到参数'name'在当前语言下的值
+  * returnKey: 当参数'name'在当前语言下未配置时，是否返回参数`name`的值
+* string T(string name, params object[] arguments): 得到参数'name'在当前语言下的值, 并根据传入参数得到最终的结果
+  * arguments: 参数值, 例如: '{0}' 必须大于18, 则应该使用 I18N.T("Age",18)
+  * 如果参数存在数字、日期等格式，它将随着CurrentCulture的更改更改变
+* string T(string name, bool returnKey, params object[] arguments): 得到参数'name'在当前语言下的值, 并根据传入参数得到最终的结果
+* GetLanguages(): 获取当前系统支持的所有语言

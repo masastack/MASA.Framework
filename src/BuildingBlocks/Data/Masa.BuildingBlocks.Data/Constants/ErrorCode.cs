@@ -236,7 +236,7 @@ public static class ErrorCode
         {
             var errorMessage = AttributeUtils.GetDescriptionByField(field);
 
-            _errorCodeMessageDictionary.Add(field.GetRawConstantValue()!.ToString(), errorMessage);
+            _errorCodeMessageDictionary.Add(field.GetRawConstantValue()!.ToString()!, errorMessage);
         }
     }
 

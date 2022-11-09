@@ -24,7 +24,7 @@ public class I18NTest
         services.TestAddI18N();
         var serviceProvider = services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
-        i18N.SetCulture(cultureName);
+        i18N.SetUiCulture(cultureName);
         var value = i18N["Name"];
         Assert.AreEqual(expectedValue, value);
         value = i18N.T("Name");
@@ -42,7 +42,7 @@ public class I18NTest
         builder.Services.TestAddI18N(DEFAULT_RESOURCE);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
-        i18N.SetCulture(cultureName);
+        i18N.SetUiCulture(cultureName);
         var value = i18N["Name"];
         Assert.AreEqual(expectedValue, value);
         value = i18N.T("Name");
@@ -59,7 +59,7 @@ public class I18NTest
         builder.Services.AddI18N(DEFAULT_RESOURCE);
         var serviceProvider = builder.Services.BuildServiceProvider();
         var i18N = serviceProvider.GetRequiredService<II18N>();
-        i18N.SetCulture(cultureName);
+        i18N.SetUiCulture(cultureName);
         var value = i18N["Name"];
         Assert.AreEqual(expectedValue, value);
         value = i18N.T("Name");

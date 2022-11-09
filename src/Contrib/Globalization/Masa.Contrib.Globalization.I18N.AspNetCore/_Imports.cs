@@ -4,3 +4,4 @@
 global using Masa.BuildingBlocks.Globalization.I18N;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
+global using System.Diagnostics.CodeAnalysis;
