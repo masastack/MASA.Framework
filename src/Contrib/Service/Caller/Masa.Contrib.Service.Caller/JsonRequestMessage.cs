@@ -18,6 +18,7 @@ public class JsonRequestMessage : DefaultRequestMessage, IRequestMessage
     public virtual Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
         TrySetRequestId(requestMessage);
+        TrySetCulture(requestMessage);
         return Task.FromResult(requestMessage);
     }
 

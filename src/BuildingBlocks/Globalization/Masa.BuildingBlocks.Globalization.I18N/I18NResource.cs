@@ -11,6 +11,8 @@ public class I18NResource
 
     public IEnumerable<Type> BaseResourceTypes { get; }
 
+    public IEnumerable<Assembly> Assemblies { get; set; } = new List<Assembly>();
+
     public I18NResource(Type resourceType, IEnumerable<Type> baseResourceTypes)
     {
         _dictionary = new(StringComparer.OrdinalIgnoreCase);

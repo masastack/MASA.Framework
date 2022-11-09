@@ -11,6 +11,23 @@ public static class I18NResourceExtensions
 
     private static IMasaConfiguration? _masaConfiguration;
 
+    public static I18NResource AddJsonByEmbeddedResource(
+        this I18NResource resource,
+        IEnumerable<Assembly> assemblies,
+        string resourcesDirectory,
+        params CultureModel[] supportedCultures)
+        => resource.AddJsonByEmbeddedResource(assemblies, resourcesDirectory, supportedCultures.ToList());
+
+    public static I18NResource AddJsonByEmbeddedResource(
+        this I18NResource resource,
+        IEnumerable<Assembly> assemblies,
+        string resourcesDirectory,
+        IEnumerable<CultureModel> supportedCultures)
+    {
+        resource.Assemblies = assemblies;
+        return resource.AddJson(resourcesDirectory, supportedCultures);
+    }
+
     public static I18NResource AddJson(
         this I18NResource resource,
         string resourcesDirectory,
@@ -22,39 +39,13 @@ public static class I18NResourceExtensions
         string resourcesDirectory,
         IEnumerable<CultureModel> supportedCultures)
     {
-        if (!PathUtils.ParseResourcesDirectory(ref resourcesDirectory))
+        if (!resource.Assemblies.Any() && !PathUtils.ParseResourcesDirectory(ref resourcesDirectory))
             return resource;
 
         var resourceContributors = GetResourceContributors(
             resource,
             resourcesDirectory,
-            supportedCultures,
-            Array.Empty<Assembly>());
-        foreach (var resourceContributor in resourceContributors)
-        {
-            resource.AddContributor(resourceContributor.CultureName, resourceContributor);
-        }
-        return resource;
-    }
-
-    public static I18NResource AddJson(
-        this I18NResource resource,
-        IEnumerable<Assembly> assemblies,
-        string resourcesDirectory,
-        params CultureModel[] supportedCultures)
-        => resource.AddJson(assemblies, resourcesDirectory, supportedCultures.ToList());
-
-    public static I18NResource AddJson(
-        this I18NResource resource,
-        IEnumerable<Assembly> assemblies,
-        string resourcesDirectory,
-        IEnumerable<CultureModel> supportedCultures)
-    {
-        var resourceContributors = GetResourceContributors(
-            resource,
-            resourcesDirectory,
-            supportedCultures,
-            assemblies);
+            supportedCultures);
         foreach (var resourceContributor in resourceContributors)
         {
             resource.AddContributor(resourceContributor.CultureName, resourceContributor);
@@ -65,8 +56,7 @@ public static class I18NResourceExtensions
     private static List<II18NResourceContributor> GetResourceContributors(
         I18NResource resource,
         string resourcesDirectory,
-        IEnumerable<CultureModel> supportedCultures,
-        IEnumerable<Assembly> assemblies)
+        IEnumerable<CultureModel> supportedCultures)
     {
         _configuration ??= MasaApp.GetServices().BuildServiceProvider().GetService<IConfiguration>();
         _masaConfiguration ??=
@@ -74,7 +64,7 @@ public static class I18NResourceExtensions
 
         var services = MasaApp.GetServices();
         var useMasaConfiguration = _masaConfiguration != null;
-        var configuration = !assemblies.Any() ? AddJsonConfigurationSource(
+        var configuration = !resource.Assemblies.Any() ? AddJsonConfigurationSource(
                 services,
                 resourcesDirectory,
                 supportedCultures,
@@ -82,7 +72,7 @@ public static class I18NResourceExtensions
                 _configuration,
                 useMasaConfiguration) :
             AddJsonConfigurationSourceByEmbeddedResource(
-                assemblies,
+                resource.Assemblies,
                 services,
                 resourcesDirectory,
                 supportedCultures,
@@ -143,7 +133,8 @@ public static class I18NResourceExtensions
                         if (stream == null) continue;
 
                         var culture = embeddedResourceUtils.GetCulture(resourcesDirectory, fileName);
-                        if (culture != null && supportedCultures.Any(cul => cul.Culture.Equals(culture, StringComparison.OrdinalIgnoreCase)))
+                        if (culture != null &&
+                            supportedCultures.Any(cul => cul.Culture.Equals(culture, StringComparison.OrdinalIgnoreCase)))
                             list.Add(new JsonConfigurationSourceByEmbedded(resourceType, stream, culture, useMasaConfiguration));
                     }
                 }

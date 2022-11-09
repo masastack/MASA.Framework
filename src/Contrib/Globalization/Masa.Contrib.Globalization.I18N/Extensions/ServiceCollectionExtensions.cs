@@ -12,26 +12,42 @@ public static class ServiceCollectionExtensions
         string languageDirectory,
         string? supportCultureName = null,
         Action<I18NOptions>? action = null)
-    {
-        return services.AddI18N(settings =>
-        {
-            settings.ResourcesDirectory = languageDirectory;
-            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
-                supportCultureName;
-            settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
-
-            if (string.IsNullOrEmpty(settings.DefaultCulture))
-                settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
-        }, action);
-    }
+        => services.AddI18NByEmbedded(Array.Empty<Assembly>(), languageDirectory, supportCultureName, action);
 
     public static IServiceCollection AddI18N(
         this IServiceCollection services,
         Action<CultureSettings>? settingsAction = null,
         Action<I18NOptions>? action = null)
+        => services.AddI18NByEmbedded(Array.Empty<Assembly>(), settingsAction, action);
+
+    public static IServiceCollection AddI18NByEmbedded(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        string languageDirectory,
+        string? supportCultureName = null,
+        Action<I18NOptions>? action = null)
+    {
+        return services.AddI18NByEmbedded(assemblies,
+            settings =>
+            {
+                settings.ResourcesDirectory = languageDirectory;
+                settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
+                    supportCultureName;
+            }, action);
+    }
+
+    public static IServiceCollection AddI18NByEmbedded(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        Action<CultureSettings>? settingsAction = null,
+        Action<I18NOptions>? action = null)
     {
         MasaApp.TrySetServiceCollection(services);
-        return services.AddI18NCore(settingsAction, action);
+
+        var cultureSettings = AddAndGetCultureSettings(services, settingsAction);
+        return services
+            .AddI18NByFramework(cultureSettings)
+            .AddI18NCore<DefaultResource>(action, assemblies, cultureSettings);
     }
 
     public static IServiceCollection TestAddI18N(
@@ -58,16 +74,45 @@ public static class ServiceCollectionExtensions
         Action<I18NOptions>? action = null)
     {
         MasaApp.SetServiceCollection(services);
-        return services.AddI18NCore(settingsAction, action);
+        var cultureSettings = AddAndGetCultureSettings(services, settingsAction);
+        return services
+            .AddI18NByFramework(cultureSettings)
+            .AddI18NCore<DefaultResource>(action, Array.Empty<Assembly>(), cultureSettings);
     }
 
-    private static IServiceCollection AddI18NCore(
-        this IServiceCollection services,
-        Action<CultureSettings>? settingsAction,
-        Action<I18NOptions>? action = null)
+    private static IServiceCollection AddI18NByFramework(this IServiceCollection services, CultureSettings languageSettings)
     {
-        services.AddOptions();
-        services.TryAddTransient(typeof(II18N<>), typeof(I18NOfT<>));
+        services.Configure<MasaI18NOptions>(options =>
+        {
+            var assembly = typeof(EmbeddedResourceUtils).Assembly;
+            options.Resources.TryAdd<MasaFrameworkResource>(resource =>
+            {
+                resource.AddJsonByEmbeddedResource(new[] { assembly },
+                    languageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
+                    languageSettings.SupportedCultures);
+            });
+
+            options.Resources.TryAdd<MasaExceptionResource>(resource =>
+            {
+                resource.AddJsonByEmbeddedResource(new[] { assembly },
+                    ContribI18NConstant.DefaultFrameworkExceptionResourcePath,
+                    languageSettings.SupportedCultures);
+            });
+
+            options.Resources.TryAdd<MasaLanguageResource>(resource =>
+            {
+                resource.AddJsonByEmbeddedResource(new[] { assembly },
+                    ContribI18NConstant.DefaultFrameworkLanguageResourcePath,
+                    languageSettings.SupportedCultures);
+            });
+        });
+        return services;
+    }
+
+    private static CultureSettings AddAndGetCultureSettings(
+        this IServiceCollection services,
+        Action<CultureSettings>? settingsAction)
+    {
         services.Configure<CultureSettings>(settings =>
         {
             settingsAction?.Invoke(settings);
@@ -85,57 +130,47 @@ public static class ServiceCollectionExtensions
             if (string.IsNullOrEmpty(settings.DefaultCulture))
                 settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
         });
+        var serviceProvider = services.BuildServiceProvider();
+        return serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
+    }
 
-        CultureSettings? languageSettings = null;
-        services.Configure<MasaI18NOptions>(options =>
-        {
-            var localLanguageSettings = languageSettings;
-            if (localLanguageSettings == null)
-            {
-                var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
-                localLanguageSettings = serviceProvider.GetService<IOptions<CultureSettings>>()?.Value ?? new CultureSettings();
-                languageSettings ??= localLanguageSettings;
-            }
-
-            var assembly = typeof(EmbeddedResourceUtils).Assembly;
-
-            options.Resources.TryAdd<MasaFrameworkResource>(resource
-                => resource.AddJson(new List<Assembly>()
-                {
-                    assembly
-                }, ContribI18NConstant.DefaultFrameworkResourcePath, localLanguageSettings.SupportedCultures));
-
-            options.Resources.TryAdd<MasaExceptionResource>(resource
-                => resource.AddJson(new List<Assembly>()
-                {
-                    assembly
-                }, ContribI18NConstant.DefaultFrameworkExceptionResourcePath, localLanguageSettings.SupportedCultures));
-
-            options.Resources.TryAdd<MasaLanguageResource>(resource
-                => resource.AddJson(new List<Assembly>()
-                {
-                    assembly
-                }, ContribI18NConstant.DefaultFrameworkLanguageResourcePath, localLanguageSettings.SupportedCultures));
-
-            options.Resources.TryAdd<DefaultResource>(resource
-                => resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
-                    localLanguageSettings.SupportedCultures));
-        });
-
+    private static IServiceCollection AddI18NCore<TResource>(
+        this IServiceCollection services,
+        Action<I18NOptions>? action,
+        IEnumerable<Assembly> assemblies,
+        CultureSettings cultureSettings) where TResource : class
+    {
+        services.AddOptions();
+        services.TryAddTransient(typeof(II18N<>), typeof(I18NOfT<>));
         services.TryAddSingleton<ILanguageProvider, DefaultLanguageProvider>();
-
         services.TryAddTransient(serviceProvider => (II18N)serviceProvider.GetRequiredService<II18N<DefaultResource>>());
 
-        var serviceProvider = services.BuildServiceProvider();
-        if (action != null)
+        services.Configure<MasaI18NOptions>(options =>
         {
-            languageSettings = serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
-            action.Invoke(new I18NOptions(services, languageSettings.SupportedCultures));
-        }
+            var localLanguageSettings = cultureSettings;
+            options.Resources.TryAdd<TResource>(resource =>
+            {
+                if (!assemblies.Any())
+                {
+                    resource.AddJson(
+                        localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
+                        localLanguageSettings.SupportedCultures);
+                }
+                else
+                {
+                    resource.AddJsonByEmbeddedResource(assemblies,
+                        localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
+                        localLanguageSettings.SupportedCultures);
+                }
+            });
+        });
 
-        var i18NOptions = serviceProvider.GetRequiredService<IOptions<MasaI18NOptions>>();
+        action?.Invoke(new I18NOptions(services, cultureSettings.SupportedCultures));
+
+        var i18NOptions = services.BuildServiceProvider().GetRequiredService<IOptions<MasaI18NOptions>>();
         foreach (var resource in i18NOptions.Value.Resources)
             I18NResourceResourceConfiguration.Resources[resource.Key] = resource.Value;
+
         return services;
     }
 }

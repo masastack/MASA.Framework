@@ -15,6 +15,7 @@ public class XmlRequestMessage : DefaultRequestMessage, IRequestMessage
     public Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
         TrySetRequestId(requestMessage);
+        TrySetCulture(requestMessage);
         return Task.FromResult(requestMessage);
     }
 
