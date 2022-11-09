@@ -59,4 +59,12 @@ public class ProjectService : IProjectService
 
         return result ?? new();
     }
+
+    public async Task<List<ProjectModel>> GetListAsync()
+    {
+        var requestUri = $"api/v1/projects";
+        var result = await _caller.GetAsync<List<ProjectModel>>(requestUri);
+
+        return result ?? new();
+    }
 }

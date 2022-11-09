@@ -463,8 +463,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Perfs", "src\Contrib\Dispatcher\Tests\Masa.Contrib.Dispatcher.Events.Tests.Perfs\Masa.Contrib.Dispatcher.Events.Tests.Perfs.csproj", "{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameter", "src\Contrib\Dispatcher\Tests\Scenes\CheckMethodsParameter\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameter.csproj", "{BA239716-3B66-4A7D-A68E-2372C9DB07E1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull", "src\Contrib\Dispatcher\Tests\Scenes\CheckMethodsParameterNotNull\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.csproj", "{44B0463B-8F56-49A6-8373-0141B66461BE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType", "src\Contrib\Dispatcher\Tests\Scenes\CheckMethodsParameterType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.csproj", "{41E12E1D-CC99-48D1-B7D2-928BE23EC3DD}"
@@ -1737,14 +1735,6 @@ Global
 		{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}.Release|x64.ActiveCfg = Release|Any CPU
 		{A0B995F8-8C73-4885-8C9E-BAFD071B0A58}.Release|x64.Build.0 = Release|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Debug|x64.Build.0 = Debug|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Release|x64.ActiveCfg = Release|Any CPU
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1}.Release|x64.Build.0 = Release|Any CPU
 		{44B0463B-8F56-49A6-8373-0141B66461BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44B0463B-8F56-49A6-8373-0141B66461BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44B0463B-8F56-49A6-8373-0141B66461BE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2436,7 +2426,6 @@ Global
 		{1E82EC06-25F3-49E2-BAB6-978CE2896ACC} = {41769FBF-91A8-48D1-B3BB-CAE4C814E7CD}
 		{1527C989-514E-4066-9FE0-BF4289D31CB3} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{A0B995F8-8C73-4885-8C9E-BAFD071B0A58} = {DAF45769-BCA5-43D6-8F04-DE7B2B98DB25}
-		{BA239716-3B66-4A7D-A68E-2372C9DB07E1} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{44B0463B-8F56-49A6-8373-0141B66461BE} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{41E12E1D-CC99-48D1-B7D2-928BE23EC3DD} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45} = {08B138B5-2599-4F42-9584-6AE736673882}

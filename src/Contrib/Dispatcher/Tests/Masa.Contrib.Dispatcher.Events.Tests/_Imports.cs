@@ -7,7 +7,6 @@ global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.Contrib.Dispatcher.Events.Enums;
 global using Masa.Contrib.Dispatcher.Events.Tests.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Middleware;
-global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameter.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.Events;

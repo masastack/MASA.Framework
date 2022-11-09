@@ -4,6 +4,7 @@
 global using Masa.Contrib.Authentication.Identity;
 global using Masa.Contrib.Authentication.Identity.BlazorServer;
 global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Security.Claims;
 global using System.Text.Json;

@@ -7,11 +7,13 @@ public class UserService : IUserService
 {
     readonly ICaller _caller;
     readonly IUserContext _userContext;
+    readonly IMultilevelCacheClient _multilevelCacheClient;
 
-    public UserService(ICaller caller, IUserContext userContext)
+    public UserService(ICaller caller, IUserContext userContext, IMultilevelCacheClient multilevelCacheClient)
     {
         _caller = caller;
         _userContext = userContext;
+        _multilevelCacheClient = multilevelCacheClient;
     }
 
     public async Task<UserModel> AddAsync(AddUserModel user)
@@ -94,15 +96,15 @@ public class UserService : IUserService
 
     public async Task<UserModel?> FindByIdAsync(Guid userId)
     {
-        var requestUri = $"api/user/byId/{userId}";
-        return await _caller.GetAsync<object, UserModel>(requestUri, new {
-            id = userId });
+        var user = await _multilevelCacheClient.GetAsync<UserModel>(CacheKeyConsts.UserKey(userId));
+        return user;
     }
 
     public async Task<UserModel?> GetCurrentUserAsync()
     {
         var id = _userContext.GetUserId<Guid>();
-        return await FindByIdAsync(id);
+        var requestUri = $"api/user/byId/{id}";
+        return await _caller.GetAsync<object, UserModel>(requestUri, new { id });
     }
 
     public async Task<StaffDetailModel?> GetCurrentStaffAsync()

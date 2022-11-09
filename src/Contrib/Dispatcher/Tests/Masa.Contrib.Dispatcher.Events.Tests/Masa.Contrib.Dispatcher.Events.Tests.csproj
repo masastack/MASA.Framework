@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
-    <ProjectReference Include="..\Scenes\CheckMethodsParameter\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameter.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsParameterNotNull\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsParameterType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.csproj" />

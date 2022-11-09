@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
 
     private static IServiceCollection AddMasaIdentityCore(IServiceCollection services)
     {
-        services.AddAuthorizationCore();
+        services.AddHttpContextAccessor();
         services.TryAddScoped<ICurrentPrincipalAccessor, BlazorCurrentPrincipalAccessor>();
         return services;
     }
