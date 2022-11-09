@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\I18n\Framework\*\*.json" />
+    <EmbeddedResource Include="Resources\I18n\Framework\*.json" />
   </ItemGroup>
 
 </Project>

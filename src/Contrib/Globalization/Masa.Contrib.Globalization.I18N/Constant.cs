@@ -11,7 +11,7 @@ public static class Constant
 
     internal static readonly string DefaultFrameworkResourcePath;
 
-    internal static readonly string DefaultFrameworkExceptionResourcePath;
+    internal static readonly string DefaultFrameworkParameterValidationResourcePath;
 
     internal static readonly string DefaultFrameworkLanguageResourcePath;
 
@@ -19,7 +19,7 @@ public static class Constant
     {
         DefaultResourcePath = Path.Combine("Resources", "I18n");
         DefaultFrameworkResourcePath = Path.Combine(DefaultResourcePath, "Framework");
-        DefaultFrameworkExceptionResourcePath = Path.Combine(DefaultFrameworkResourcePath, "Exceptions");
+        DefaultFrameworkParameterValidationResourcePath = Path.Combine(DefaultFrameworkResourcePath, "ParameterValidations");
         DefaultFrameworkLanguageResourcePath = Path.Combine(DefaultFrameworkResourcePath, "Languages");
     }
 }

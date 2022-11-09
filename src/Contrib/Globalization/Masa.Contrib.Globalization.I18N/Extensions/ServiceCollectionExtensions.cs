@@ -88,14 +88,14 @@ public static class ServiceCollectionExtensions
             options.Resources.TryAdd<MasaFrameworkResource>(resource =>
             {
                 resource.AddJsonByEmbeddedResource(new[] { assembly },
-                    languageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
+                    ContribI18NConstant.DefaultFrameworkResourcePath,
                     languageSettings.SupportedCultures);
             });
 
-            options.Resources.TryAdd<MasaExceptionResource>(resource =>
+            options.Resources.TryAdd<MasaParameterValidationResource>(resource =>
             {
                 resource.AddJsonByEmbeddedResource(new[] { assembly },
-                    ContribI18NConstant.DefaultFrameworkExceptionResourcePath,
+                    ContribI18NConstant.DefaultFrameworkParameterValidationResourcePath,
                     languageSettings.SupportedCultures);
             });
 

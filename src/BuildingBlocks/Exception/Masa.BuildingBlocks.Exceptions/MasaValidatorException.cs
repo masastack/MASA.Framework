@@ -5,43 +5,55 @@
 
 namespace System;
 
-public class MasaArgumentException : MasaException
+public class MasaValidatorException : MasaArgumentException
 {
-    protected string? ParamName { get; }
-
-    public MasaArgumentException(string message)
+    public MasaValidatorException(string message)
         : base(message)
     {
     }
 
-    public MasaArgumentException(string message, string paramName)
-        : base(message)
+    public MasaValidatorException(string? paramName, string errorCode, params object[] parameters)
+        : base(paramName, errorCode, parameters)
     {
-        ParamName = paramName;
+
     }
 
-    public MasaArgumentException(string? paramName, string errorCode, params object[] parameters)
-        : this((Exception?)null, errorCode, parameters)
-    {
-        ParamName = paramName;
-    }
-
-    public MasaArgumentException(Exception? innerException, string errorCode, params object[] parameters)
+    public MasaValidatorException(Exception? innerException, string errorCode, params object[] parameters)
         : base(innerException, errorCode, parameters)
     {
     }
 
-    public MasaArgumentException(string message, Exception? innerException)
+    public MasaValidatorException(params ValidationModel[] validationModels)
+        : base(FormatMessage(validationModels))
+    {
+
+    }
+
+    public MasaValidatorException(string message, Exception? innerException)
         : base(message, innerException)
     {
     }
 
-    public MasaArgumentException(SerializationInfo serializationInfo, StreamingContext context)
+    public MasaValidatorException(SerializationInfo serializationInfo, StreamingContext context)
         : base(serializationInfo, context)
     {
     }
 
-    public static void ThrowIfNullOrEmptyCollection<T>(IEnumerable<T>? arguments,
+    private static string FormatMessage(params ValidationModel[] models)
+        => FormatMessage(models.ToList());
+
+    private static string FormatMessage(IEnumerable<ValidationModel> models)
+    {
+        var stringBuilder = new Text.StringBuilder();
+        stringBuilder.AppendLine("Validation failed: ");
+        foreach (var model in models)
+        {
+            stringBuilder.AppendLine($"-- {model.Name}: {model.Message} Severity: {model.Level.ToString()}");
+        }
+        return stringBuilder.ToString();
+    }
+
+    public new static void ThrowIfNullOrEmptyCollection<T>(IEnumerable<T>? arguments,
         [CallerArgumentExpression("arguments")]
         string? paramName = null)
     {
@@ -50,28 +62,34 @@ public class MasaArgumentException : MasaException
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR);
     }
 
-    public static void ThrowIfNull(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public new static void ThrowIfNull(
+        object? argument,
+        [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(argument is null,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_VALIDATOR);
     }
 
-    public static void ThrowIfNullOrEmpty(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public new static void ThrowIfNullOrEmpty(
+        object? argument,
+        [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(string.IsNullOrEmpty(argument?.ToString()),
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR);
     }
 
-    public static void ThrowIfNullOrWhiteSpace(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public new static void ThrowIfNullOrWhiteSpace(
+        object? argument,
+        [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(string.IsNullOrWhiteSpace(argument?.ToString()),
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR);
     }
 
-    public static void ThrowIfGreaterThan<T>(T argument,
+    public new static void ThrowIfGreaterThan<T>(T argument,
         T maxValue,
         [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
     {
@@ -81,7 +99,7 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
-    public static void ThrowIfGreaterThanOrEqual<T>(T argument,
+    public new static void ThrowIfGreaterThanOrEqual<T>(T argument,
         T maxValue,
         [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
     {
@@ -91,7 +109,7 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
-    public static void ThrowIfLessThan<T>(T argument,
+    public new static void ThrowIfLessThan<T>(T argument,
         T minValue,
         [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
     {
@@ -101,7 +119,7 @@ public class MasaArgumentException : MasaException
             minValue);
     }
 
-    public static void ThrowIfLessThanOrEqual<T>(T argument,
+    public new static void ThrowIfLessThanOrEqual<T>(T argument,
         T minValue,
         [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
     {
@@ -111,7 +129,7 @@ public class MasaArgumentException : MasaException
             minValue);
     }
 
-    public static void ThrowIfOutOfRange<T>(T argument,
+    public new static void ThrowIfOutOfRange<T>(T argument,
         T minValue,
         T maxValue,
         [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
@@ -123,12 +141,12 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
-    public static void ThrowIfContain(string? argument,
+    public new static void ThrowIfContain(string? argument,
         string parameter,
         [CallerArgumentExpression("argument")] string? paramName = null)
         => ThrowIfContain(argument, parameter, StringComparison.OrdinalIgnoreCase, paramName);
 
-    public static void ThrowIfContain(string? argument,
+    public new static void ThrowIfContain(string? argument,
         string parameter,
         StringComparison stringComparison,
         [CallerArgumentExpression("argument")] string? paramName = null)
@@ -140,30 +158,54 @@ public class MasaArgumentException : MasaException
             );
     }
 
-    public static void ThrowIf(bool condition, string? paramName, string errorCode, params object[] parameters)
+    public new static void ThrowIf(
+        bool condition,
+        string? paramName,
+        string errorCode,
+        params object[] parameters)
     {
         if (condition) Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), parameters);
     }
 
-    public static void ThrowIf(bool condition, string? paramName, string errorCode, string? errorMessage, params object[] parameters)
+    public new static void ThrowIf(
+        bool condition,
+        string? paramName,
+        string errorCode,
+        string? errorMessage,
+        params object[] parameters)
     {
         if (condition) Throw(paramName, errorCode, errorMessage, parameters);
     }
 
     [DoesNotReturn]
-    private static void Throw(string? paramName, string errorCode, string? errorMessage, params object[] parameters) =>
-        throw new MasaArgumentException(paramName, errorCode, parameters)
+    private static void Throw(
+        string? paramName,
+        string errorCode,
+        string? errorMessage,
+        params object[] parameters)
+        => throw new MasaValidatorException(paramName, errorCode, parameters)
         {
             ErrorMessage = errorMessage
         };
 
-    protected override object[] GetParameters()
+    protected override string GetLocalizedMessageExecuting()
     {
-        var parameters = new List<object>()
+        string message;
+        if (!SupportI18N)
         {
-            ParamName!
-        };
-        parameters.AddRange(Parameters);
-        return parameters.ToArray();
+            message = string.IsNullOrWhiteSpace(ErrorMessage) ? Message : string.Format(ErrorMessage, GetParameters());
+        }
+
+        else if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
+        {
+            //The current framework frame exception
+            message = FrameworkI18N!.T(ErrorCode!, false, GetParameters()) ?? Message;
+        }
+        else
+        {
+            message = I18N!.T(ErrorCode, false, GetParameters()) ?? Message;
+        }
+
+        return FormatMessage(new ValidationModel(ParamName!, message));
     }
 }

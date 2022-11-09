@@ -47,6 +47,6 @@ public class EmbeddedResourceUtils
 
     private string FormatResourcesDirectory(string resourcesDirectory)
     {
-        return resourcesDirectory.Replace("\\", ".");
+        return resourcesDirectory.Replace(Path.DirectorySeparatorChar.ToString(), ".");
     }
 }

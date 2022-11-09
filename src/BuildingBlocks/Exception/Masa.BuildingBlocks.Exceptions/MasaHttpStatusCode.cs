@@ -7,5 +7,9 @@ namespace System;
 
 public enum MasaHttpStatusCode
 {
+    /// <summary>
+    /// form validation exception
+    /// </summary>
+    ValidatorException = 298,
     UserFriendlyException = 299
 }

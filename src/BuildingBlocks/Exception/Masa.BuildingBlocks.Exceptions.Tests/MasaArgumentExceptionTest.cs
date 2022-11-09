@@ -13,11 +13,13 @@ public class MasaArgumentExceptionTest
 
         try
         {
+            MasaValidatorException.ThrowIfNull("");
+
             MasaArgumentException.ThrowIfNull(str);
         }
         catch (MasaArgumentException ex)
         {
-            Assert.AreEqual(Masa.BuildingBlocks.Data.Constants.ErrorCode.ARGUMENT_NULL, ex.ErrorCode);
+            Assert.AreEqual(Masa.BuildingBlocks.Data.Constants.ErrorCode.NULL_VALIDATOR, ex.ErrorCode);
             Assert.AreEqual("Value cannot be null. (Parameter '{0}')", ex.ErrorMessage);
         }
     }

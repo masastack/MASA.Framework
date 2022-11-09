@@ -10,6 +10,9 @@ internal static class ExceptionExtensions
         if (exception is UserFriendlyException)
             return (int)MasaHttpStatusCode.UserFriendlyException;
 
+        if (exception is MasaValidatorException)
+            return (int)MasaHttpStatusCode.ValidatorException;
+
         return (int)HttpStatusCode.InternalServerError;
     }
 }

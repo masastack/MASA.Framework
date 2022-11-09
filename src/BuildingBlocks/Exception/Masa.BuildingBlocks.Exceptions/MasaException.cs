@@ -79,16 +79,15 @@ public class MasaException : Exception
     {
     }
 
-    public MasaException(string errorCode, string? errorMessage, params object[] parameters)
-        : this(null, errorCode, errorMessage, parameters)
+    public MasaException(string errorCode, params object[] parameters)
+        : this(null, errorCode, parameters)
     {
     }
 
-    public MasaException(Exception? innerException, string errorCode, string? errorMessage, params object[] parameters)
+    public MasaException(Exception? innerException, string errorCode, params object[] parameters)
         : base(null, innerException)
     {
         ErrorCode = errorCode;
-        ErrorMessage = errorMessage;
         Parameters = parameters;
     }
 
@@ -102,15 +101,15 @@ public class MasaException : Exception
     {
     }
 
-    public string GetLocalizationMessage()
+    public string GetLocalizedMessage()
     {
         if (string.IsNullOrWhiteSpace(ErrorCode))
             return Message;
 
-        return GetLocalizationMessageExecuting();
+        return GetLocalizedMessageExecuting();
     }
 
-    protected virtual string GetLocalizationMessageExecuting()
+    protected virtual string GetLocalizedMessageExecuting()
     {
         if (!SupportI18N)
         {

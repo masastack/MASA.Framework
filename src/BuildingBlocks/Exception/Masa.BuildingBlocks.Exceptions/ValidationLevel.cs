@@ -3,12 +3,13 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Globalization.I18N;
+namespace System;
 
 /// <summary>
-/// Framework Multilingual Resources
+/// Form validation error level
 /// </summary>
-public class MasaExceptionResource
+public enum ValidationLevel
 {
-
+    Warning = 1,
+    Error = 2
 }

@@ -10,90 +10,209 @@ public static class ErrorCode
     #region Type
 
     /// <summary>
-    /// Parameter error
+    /// Internal service error
+    /// </summary>
+    private const string INTERNAL_SERVER = $"{FRAMEWORK_PREFIX}Ser";
+
+    /// <summary>
+    /// parameter validation error
     /// </summary>
     private const string ARGUMENT = $"{FRAMEWORK_PREFIX}ARG";
 
-    /// <summary>
-    /// Internal service error
-    /// </summary>
-    private const string InternalServer = $"{FRAMEWORK_PREFIX}Ser";
-
     #endregion
 
-    #region Argument
+    #region Argument Verify
 
     /// <summary>
-    /// Value Error. (Parameter 'value')
+    /// '{PropertyName}' is not a valid email address.
     /// </summary>
-    [Description("Value Error. (Parameter '{0}')")]
-    public const string ARGUMENT_ERROR = $"{ARGUMENT}0001";
+    [Description("'{0}' is not a valid email address.")]
+    public const string EMAIL_VALIDATOR = $"{ARGUMENT}0001";
 
     /// <summary>
-    /// Value cannot be null. (Parameter 'value')
+    /// '{PropertyName}' must be greater than or equal to '{ComparisonValue}'.
     /// </summary>
-    [Description("Value cannot be null. (Parameter '{0}')")]
-    public const string ARGUMENT_NULL = $"{ARGUMENT}0002";
+    [Description("'{0}' must be greater than or equal to '{1}'.")]
+    public const string GREATER_THAN_OR_EQUAL_VALIDATOR = $"{ARGUMENT}0002";
 
     /// <summary>
-    /// Value cannot be null and empty . (Parameter 'value')
+    /// '{PropertyName}' must be greater than '{ComparisonValue}'.
     /// </summary>
-    [Description("Value cannot be null and empty. (Parameter '{0}')")]
-    public const string ARGUMENT_NULL_OR_EMPTY = $"{ARGUMENT}0003";
+    [Description("'{0}' must be greater than '{1}'.")]
+    public const string GREATER_THAN_VALIDATOR = $"{ARGUMENT}0003";
 
     /// <summary>
-    /// Value cannot be null and WhiteSpace . (Parameter 'value')
+    /// '{PropertyName}' must be between {MinLength} and {MaxLength} characters. You entered {TotalLength} characters.
     /// </summary>
-    [Description("Value cannot be null and WhiteSpace . (Parameter '{0}')")]
-    public const string ARGUMENT_NULL_OR_WHITE_SPACE = $"{ARGUMENT}0004";
+    [Description("'{0}' must be between {1} and {2} characters. You entered {3} characters.")]
+    public const string LENGTH_VALIDATOR = $"{ARGUMENT}0004";
 
     /// <summary>
-    /// Value must be between {1}-{2} . (Parameter 'value')
+    /// The length of '{PropertyName}' must be at least {MinLength} characters. You entered {TotalLength} characters.
     /// </summary>
-    [Description("Value must be between {1}-{2} . (Parameter '{0}')")]
-    public const string ARGUMENT_OUT_OF_RANGE = $"{ARGUMENT}0005";
+    [Description("The length of '{0}' must be at least {1} characters. You entered {2} characters.")]
+    public const string MINIMUM_LENGTH_VALIDATOR = $"{ARGUMENT}0005";
 
     /// <summary>
-    /// Value must be greater than {1} . (Parameter 'value')
+    /// The length of '{PropertyName}' must be {MaxLength} characters or fewer. You entered {TotalLength} characters.
     /// </summary>
-    [Description("Value must be greater than {1} . (Parameter '{0}')")]
-    public const string ARGUMENT_GREATER_THAN = $"{ARGUMENT}0006";
+    [Description("The length of '{0}' must be {1} characters or fewer. You entered {2} characters.")]
+    public const string MAXIMUM_LENGTH_VALIDATOR = $"{ARGUMENT}0006";
 
     /// <summary>
-    /// Value must be greater than or equal {1} . (Parameter 'value')
+    /// '{PropertyName}' must be less than or equal to '{ComparisonValue}'.
     /// </summary>
-    [Description("Value must be greater than or equal {1} . (Parameter '{0}')")]
-    public const string ARGUMENT_GREATER_THAN_OR_EQUAL = $"{ARGUMENT}0007";
+    [Description("'{0}' must be less than or equal to '{1}'.")]
+    public const string LESS_THAN_OR_EQUAL_VALIDATOR = $"{ARGUMENT}0007";
 
     /// <summary>
-    /// Value must be less than {1} . (Parameter 'value')
+    /// '{PropertyName}' must be less than '{ComparisonValue}'.
     /// </summary>
-    [Description("Value must be less than {1} . (Parameter '{0}')")]
-    public const string ARGUMENT_LESS_THAN = $"{ARGUMENT}0008";
+    [Description("'{0}' must be less than '{1}'.")]
+    public const string LESS_THAN_VALIDATOR = $"{ARGUMENT}0008";
 
     /// <summary>
-    /// Value must be less than or equal {1} . (Parameter 'value')
+    /// '{PropertyName}' must not be empty.
     /// </summary>
-    [Description("Value must be less than or equal {1} . (Parameter '{0}')")]
-    public const string ARGUMENT_LESS_THAN_OR_EQUAL = $"{ARGUMENT}0009";
+    [Description("'{0}' must not be empty.")]
+    public const string NOT_EMPTY_VALIDATOR = $"{ARGUMENT}0009";
 
     /// <summary>
-    /// Value cannot contain {1}. (Parameter 'value')
+    /// '{PropertyName}' must not be equal to '{ComparisonValue}'.
     /// </summary>
-    [Description("Value cannot contain {1}. (Parameter '{0}')")]
-    public const string ARGUMENT_NOT_SUPPORTED_SINGLE = $"{ARGUMENT}0010";
+    [Description("'{0}' must not be equal to '{1}'.")]
+    public const string NOT_EQUAL_VALIDATOR = $"{ARGUMENT}0010";
 
     /// <summary>
-    /// Value cannot contain {1} or {2}. (Parameter 'value')
+    /// '{PropertyName}' must not be empty.
     /// </summary>
-    [Description("Value cannot contain {1} or {2}. (Parameter '{0}')")]
-    public const string ARGUMENT_NOT_SUPPORTED_MULTI = $"{ARGUMENT}0011";
+    [Description("'{0}' must not be empty.")]
+    public const string NOT_NULL_VALIDATOR = $"{ARGUMENT}0011";
 
     /// <summary>
-    /// Value cannot be null or empty collection. (Parameter 'value')
+    /// The specified condition was not met for '{0}'.
     /// </summary>
-    [Description("Value cannot be null or empty collection. (Parameter '{0}')")]
-    public const string ARGUMENT_NULL_OR_EMPTY_COLLECTION = $"{ARGUMENT}0012";
+    [Description("The specified condition was not met for '{0}'.")]
+    public const string PREDICATE_VALIDATOR = $"{ARGUMENT}0012";
+
+    /// <summary>
+    /// The specified condition was not met for '{0}'.
+    /// </summary>
+    [Description("The specified condition was not met for '{0}'.")]
+    public const string ASYNC_PREDICATE_VALIDATOR = $"{ARGUMENT}0013";
+
+    /// <summary>
+    /// '{PropertyName}' is not in the correct format.
+    /// </summary>
+    [Description("'{0}' is not in the correct format.")]
+    public const string REGULAR_EXPRESSION_VALIDATOR = $"{ARGUMENT}0014";
+
+    /// <summary>
+    /// '{PropertyName}' must be equal to '{ComparisonValue}'.
+    /// </summary>
+    [Description("'{0}' must be equal to '{1}'.")]
+    public const string EQUAL_VALIDATOR = $"{ARGUMENT}0015";
+
+    /// <summary>
+    /// '{PropertyName}' must be {MaxLength} characters in length. You entered {TotalLength} characters.
+    /// </summary>
+    [Description("'{0}' must be {1} characters in length. You entered {2} characters.")]
+    public const string EXACT_LENGTH_VALIDATOR = $"{ARGUMENT}0016";
+
+    /// <summary>
+    /// '{PropertyName}' must be between {From} and {To}. You entered {PropertyValue}.
+    /// </summary>
+    [Description("'{0}' must be between {1} and {2}. You entered {3}.")]
+    public const string INCLUSIVE_BETWEEN_VALIDATOR = $"{ARGUMENT}0017";
+
+    /// <summary>
+    /// '{PropertyName}' must be between {From} and {To} (exclusive). You entered {PropertyValue}.
+    /// </summary>
+    [Description("'{0}' must be between {1} and {2} (exclusive). You entered {3}.")]
+    public const string EXCLUSIVE_BETWEEN_VALIDATOR = $"{ARGUMENT}0018";
+
+    /// <summary>
+    /// '{PropertyName}' cannot be null and empty.
+    /// </summary>
+    [Description("'{0}' cannot be null and empty.")]
+    public const string NOT_NULL_AND_EMPTY_VALIDATOR = $"{ARGUMENT}0019";
+
+    /// <summary>
+    /// '{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals. {Digits} digits and {ActualScale} decimals were found.
+    /// </summary>
+    [Description(
+        "'{0}' must not be more than {1} digits in total, with allowance for {2} decimals. {3} digits and {4} decimals were found.")]
+    public const string SCALE_PRECISION_VALIDATOR = $"{ARGUMENT}0020";
+
+    /// <summary>
+    /// '{PropertyName}' must be empty.
+    /// </summary>
+    [Description("'{0}' must be empty.")] public const string EMPTY_VALIDATOR = $"{ARGUMENT}0021";
+
+    /// <summary>
+    /// '{PropertyName}' must be empty.
+    /// </summary>
+    [Description("'{0}' must be empty.")] public const string NULL_VALIDATOR = $"{ARGUMENT}0022";
+
+    /// <summary>
+    /// '{0}' has a range of values which does not include '{1}'.
+    /// </summary>
+    [Description("'{0}' has a range of values which does not include '{1}'.")]
+    public const string ENUM_VALIDATOR = $"{ARGUMENT}0023";
+
+    /// <summary>
+    /// '{PropertyName}' must be between {MinLength} and {MaxLength} characters.
+    /// </summary>
+    [Description("'{0}' must be between {1} and {2} characters.")]
+    public const string LENGTH_SIMPLE = $"{ARGUMENT}0024";
+
+    /// <summary>
+    /// The length of '{PropertyName}' must be at least {MinLength} characters.
+    /// </summary>
+    [Description("The length of '{0}' must be at least {1} characters.")]
+    public const string MINIMUM_LENGTH_SIMPLE = $"{ARGUMENT}0025";
+
+    /// <summary>
+    /// The length of '{0}' must be {1} characters or fewer.
+    /// </summary>
+    [Description("The length of '{PropertyName}' must be {MaxLength} characters or fewer.")]
+    public const string MAXIMUM_LENGTH_SIMPLE = $"{ARGUMENT}0026";
+
+    /// <summary>
+    /// '{0}' must be {1} characters in length.
+    /// </summary>
+    [Description("'{PropertyName}' must be {MaxLength} characters in length.")]
+    public const string EXACT_LENGTH_SIMPLE = $"{ARGUMENT}0027";
+
+    /// <summary>
+    /// '{0}' must be between {1} and {2}.
+    /// </summary>
+    [Description("'{PropertyName}' must be between {From} and {To}.")]
+    public const string INCLUSIVE_BETWEEN_SIMPLE = $"{ARGUMENT}0028";
+
+    /// <summary>
+    /// '{PropertyName}' cannot be Null or empty collection.
+    /// </summary>
+    [Description("'{0}' cannot be Null or empty collection.")]
+    public const string NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR = $"{ARGUMENT}0029";
+
+    /// <summary>
+    /// '{PropertyName}' cannot be Null or whitespace.
+    /// </summary>
+    [Description("'{0}' cannot be Null or whitespace.")]
+    public const string NOT_NULL_AND_WHITESPACE_VALIDATOR = $"{ARGUMENT}0030";
+
+    /// <summary>
+    /// '{PropertyName}' cannot contain {Content}.
+    /// </summary>
+    [Description("'{0}' cannot contain {1}.")]
+    public const string NOT_CONTAIN_VALIDATOR = $"{ARGUMENT}0031";
+
+    /// <summary>
+    /// '{PropertyName}' must be greater than or equal to '{min}' and less than or equal to '{max}'.
+    /// </summary>
+    [Description("'{0}' must be greater than or equal to '{1}' and less than or equal to '{2}'.")]
+    public const string OUT_OF_RANGE_VALIDATOR = $"{ARGUMENT}0032";
 
     #endregion
 
@@ -103,11 +222,11 @@ public static class ErrorCode
     /// Internal service error
     /// </summary>
     [Description("Internal service error")]
-    public const string INTERNAL_SERVER_ERROR = $"{InternalServer}0001";
+    public const string INTERNAL_SERVER_ERROR = $"{INTERNAL_SERVER}0001";
 
     #endregion
 
-    private static Dictionary<string, string?> ErrorCodeMessageDictionary = new();
+    private static readonly Dictionary<string, string?> _errorCodeMessageDictionary = new();
 
     static ErrorCode()
     {
@@ -117,13 +236,13 @@ public static class ErrorCode
         {
             var errorMessage = AttributeUtils.GetDescriptionByField(field);
 
-            ErrorCodeMessageDictionary.Add(field.GetRawConstantValue()!.ToString(), errorMessage);
+            _errorCodeMessageDictionary.Add(field.GetRawConstantValue()!.ToString(), errorMessage);
         }
     }
 
     public static string? GetErrorMessage(string errorCode)
     {
-        if (ErrorCodeMessageDictionary.TryGetValue(errorCode, out string? errorMessage))
+        if (_errorCodeMessageDictionary.TryGetValue(errorCode, out string? errorMessage))
             return errorMessage;
 
         return null;
