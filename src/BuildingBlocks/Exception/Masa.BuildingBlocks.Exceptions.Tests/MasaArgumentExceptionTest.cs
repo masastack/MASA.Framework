@@ -19,8 +19,8 @@ public class MasaArgumentExceptionTest
         }
         catch (MasaArgumentException ex)
         {
-            Assert.AreEqual(Masa.BuildingBlocks.Data.Constants.ErrorCode.NULL_VALIDATOR, ex.ErrorCode);
-            Assert.AreEqual("Value cannot be null. (Parameter '{0}')", ex.ErrorMessage);
+            Assert.AreEqual(Data.Constants.ErrorCode.NOT_NULL_VALIDATOR, ex.ErrorCode);
+            Assert.AreEqual("'{0}' must not be empty.", ex.ErrorMessage);
         }
     }
 }

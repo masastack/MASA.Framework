@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -135,12 +136,7 @@ public static class ServiceCollectionExtensions
         configurationBuilder.Sources.Clear();
         configurationBuilder.AddConfiguration(masaConfiguration);
 
-        if (sourceConfiguration == null)
-        {
-            var configurationManager = new ConfigurationManager();
-            configurationBuilder.AddConfiguration(configurationBuilder.Build());
-            services.AddSingleton<IConfiguration>(_ => configurationManager);
-        }
+        if (sourceConfiguration == null) services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
 
         return services;
     }

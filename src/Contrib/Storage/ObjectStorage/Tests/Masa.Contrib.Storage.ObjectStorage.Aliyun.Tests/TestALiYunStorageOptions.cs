@@ -24,7 +24,7 @@ public class TestALiYunStorageOptions
         string roleSessionName,
         string parameterName)
     {
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
                 new AliyunStorageOptions(accessKeyId, accessKeySecret, regionId, roleArn, roleSessionName),
             $"{parameterName} cannot be empty");
     }
@@ -73,7 +73,7 @@ public class TestALiYunStorageOptions
         string temporaryCredentialsCacheKeyName)
     {
         var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT, "RoleArn", "RoleSessionName");
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
                 options.SetTemporaryCredentialsCacheKey(temporaryCredentialsCacheKey),
             $"{temporaryCredentialsCacheKeyName} cannot be empty");
     }
