@@ -22,7 +22,7 @@ public class MasaExceptionContext
     public int StatusCode { get; set; }
 
     /// <summary>
-    /// Error code to provide support for subsequent I18n
+    /// Error code to provide support for subsequent I18N
     /// </summary>
     public string? ErrorCode { get; set; }
 

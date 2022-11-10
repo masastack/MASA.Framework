@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj" />
-    <ProjectReference Include="..\..\Globalization\Masa.Contrib.Globalization.I18n.AspNetCore\Masa.Contrib.Globalization.I18n.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18N\Masa.BuildingBlocks.Globalization.I18N.csproj" />
+    <ProjectReference Include="..\..\Globalization\Masa.Contrib.Globalization.I18N.AspNetCore\Masa.Contrib.Globalization.I18N.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

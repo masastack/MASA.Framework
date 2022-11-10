@@ -8,7 +8,7 @@ public class DefaultLanguageProvider : ILanguageProvider
     private readonly II18N<MasaLanguageResource> _i18N;
     private readonly IOptions<CultureSettings> _options;
 
-    private static Dictionary<string, string> _languages = new()
+    private static readonly Dictionary<string, string> _languages = new()
     {
         { "en-US", "English (United States)" },
         { "zh-CN", "中文 (简体)" }

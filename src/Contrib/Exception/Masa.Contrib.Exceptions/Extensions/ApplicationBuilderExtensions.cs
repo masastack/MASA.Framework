@@ -13,7 +13,6 @@ public static class ApplicationBuilderExtensions
     /// </summary>
     /// <param name="app"></param>
     /// <param name="exceptionHandlingOptions"></param>
-    /// <param name="useI18N">Whether to enable i18n</param>
     /// <returns></returns>
     public static IApplicationBuilder UseMasaExceptionHandler(
         this IApplicationBuilder app,
@@ -22,7 +21,7 @@ public static class ApplicationBuilderExtensions
         var option = new MasaExceptionHandlerOptions();
         exceptionHandlingOptions?.Invoke(option);
 
-        app.UseI18N();
+        app.UseI18n();
 
         app.UseMiddleware<ExceptionHandlerMiddleware>(Options.Create(option));
 

@@ -7,5 +7,5 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 
 public class MasaLanguageResource
 {
-    
+
 }

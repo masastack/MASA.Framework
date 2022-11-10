@@ -21,10 +21,4 @@ public class StringTest
     {
         Assert.AreEqual(result, value.TrimEnd(trimParameter, StringComparison.OrdinalIgnoreCase));
     }
-
-    [TestMethod]
-    public void Test()
-    {
-
-    }
 }

@@ -19,13 +19,13 @@ internal static class LoggerExtensions
         {
             if (masaException.LogLevel != null)
             {
-                logger.Log(masaException.LogLevel!.Value, exception, message);
+                logger.Log(masaException.LogLevel!.Value, exception, "{Message}", message);
                 return;
             }
-            if(masaException is UserFriendlyException)
+            if (masaException is UserFriendlyException)
                 defaultLogLevel = LogLevel.Information;
         }
         var logLevel = logRelationOptions.GetLogLevel(exception, defaultLogLevel);
-        logger.Log(logLevel, exception, message);
+        logger.Log(logLevel, exception, "{Message}", message);
     }
 }
