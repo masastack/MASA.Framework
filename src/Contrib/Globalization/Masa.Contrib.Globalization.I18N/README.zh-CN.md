@@ -69,15 +69,15 @@ Install-Package Masa.Contrib.Globalization.I18N
 ]
 ```
 
-2. 注册使用I18n, 修改`Program.cs`
+2. 注册使用I18N, 修改`Program.cs`
 
 ``` C#
-services.AddI18n();
+services.AddI18N();
 ```
 
-3. 如何使用I18n
+3. 如何使用I18N
 
-* 从DI获取`II18n` (**II18n**是接口，支持从DI获取)
+* 从DI获取`II18N` (**II18N**是接口，支持从DI获取)
 * 使用`I18N` (**I18N**是静态类)
 
 以`I18N`为例:
@@ -87,7 +87,7 @@ var home = I18N.T("Home"); //获取键值Home对应语言的值，此方法调�
 var name = I18N.T("User.Name");//输出：名称（支持嵌套）
 ```
 
-### I18n提供
+### I18N提供
 
 * SetCulture (string cultureName): 将CurrentCulture切换成zh-CN，它更改后数字、日期等表示格式也随之改变
 * SetUiCulture (string cultureName): 将界面语言(CurrentUICulture)切换成zh-CN

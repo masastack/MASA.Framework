@@ -32,25 +32,25 @@ public class MasaException : Exception
         }
     }
 
-    private II18N? _frameworkI18n;
+    private II18N? _frameworkI18N;
 
-    internal II18N? FrameworkI18n
+    internal II18N? FrameworkI18N
     {
         get
         {
             TryInitialize();
-            return _frameworkI18n;
+            return _frameworkI18N;
         }
     }
 
-    private bool _supportI18n;
+    private bool _supportI18N;
 
-    internal bool SupportI18n
+    internal bool SupportI18N
     {
         get
         {
             TryInitialize();
-            return _supportI18n;
+            return _supportI18N;
         }
     }
 
@@ -64,9 +64,9 @@ public class MasaException : Exception
 
     private void Initialize()
     {
-        _frameworkI18n = MasaApp.GetService<II18N<MasaFrameworkResource>>();
+        _frameworkI18N = MasaApp.GetService<II18N<MasaFrameworkResource>>();
         _i18N = MasaApp.GetService<II18N<DefaultResource>>();
-        _supportI18n = _frameworkI18n != null;
+        _supportI18N = _frameworkI18N != null;
         _initialize = true;
     }
 
@@ -111,7 +111,7 @@ public class MasaException : Exception
 
     protected virtual string GetLocalizedMessageExecuting()
     {
-        if (!SupportI18n)
+        if (!SupportI18N)
         {
             if (string.IsNullOrWhiteSpace(ErrorMessage))
                 return Message;
@@ -122,7 +122,7 @@ public class MasaException : Exception
         if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
-            return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;
+            return FrameworkI18N!.T(ErrorCode!, false, GetParameters()) ?? Message;
         }
 
         return I18N!.T(ErrorCode, false, GetParameters()) ?? Message;

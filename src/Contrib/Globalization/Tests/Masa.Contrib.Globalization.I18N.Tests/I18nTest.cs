@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Globalization.I18N.Tests;
 
 [TestClass]
-public class I18nTest
+public class I18NTest
 {
     private const string DEFAULT_RESOURCE = "Resources/I18N";
 

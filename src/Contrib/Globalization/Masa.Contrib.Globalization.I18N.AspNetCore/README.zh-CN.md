@@ -73,21 +73,21 @@ Install-Package Masa.Contrib.Globalization.I18N.AspNetCore
 ]
 ```
 
-2. 注册使用I18n, 修改`Program.cs`
+2. 注册使用I18N, 修改`Program.cs`
 
 ``` C#
-services.AddI18n();
+services.AddI18N();
 ```
 
 3. 使用`Masa.Contrib.Globalization.I18N.AspNetCore`提供解析Culture的能力
 
 ``` C#
-app.UseI18n();
+app.UseI18N();
 ```
 
-4. 如何使用I18n
+4. 如何使用I18N
 
-* 从DI获取`II18n` (**II18n**是接口，支持从DI获取)
+* 从DI获取`II18N` (**II18N**是接口，支持从DI获取)
 * 使用`I18N` (**I18N**是静态类)
 
 以`I18N`为例:

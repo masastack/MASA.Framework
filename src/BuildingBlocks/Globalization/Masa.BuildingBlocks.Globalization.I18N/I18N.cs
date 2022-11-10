@@ -6,10 +6,10 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 public static class I18N
 {
     private static readonly IServiceProvider _serviceProvider = MasaApp.RootServiceProvider;
-    private static readonly II18N Ii18N = InitI18n();
+    private static readonly II18N Ii18N = InitI18N();
     private static readonly ILanguageProvider _languageProvider = InitLanguage();
 
-    static II18N InitI18n() => _serviceProvider.GetRequiredService<II18N>();
+    static II18N InitI18N() => _serviceProvider.GetRequiredService<II18N>();
 
     static ILanguageProvider InitLanguage() => _serviceProvider.GetRequiredService<ILanguageProvider>();
 

@@ -21,7 +21,7 @@ public static class ApplicationBuilderExtensions
         var option = new MasaExceptionHandlerOptions();
         exceptionHandlingOptions?.Invoke(option);
 
-        app.UseI18n();
+        app.UseI18N();
 
         app.UseMiddleware<ExceptionHandlerMiddleware>(Options.Create(option));
 

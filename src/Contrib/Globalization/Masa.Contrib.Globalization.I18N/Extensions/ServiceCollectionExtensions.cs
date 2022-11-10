@@ -31,7 +31,7 @@ public static class ServiceCollectionExtensions
             settings =>
             {
                 settings.ResourcesDirectory = languageDirectory;
-                settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
+                settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
                     supportCultureName;
             }, action);
     }
@@ -59,7 +59,7 @@ public static class ServiceCollectionExtensions
         return services.TestAddI18N(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
-            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
+            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
                 supportCultureName;
             settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
 
@@ -88,21 +88,21 @@ public static class ServiceCollectionExtensions
             options.Resources.TryAdd<MasaFrameworkResource>(resource =>
             {
                 resource.Assemblies = new[] { assembly };
-                resource.AddJson(ContribI18nConstant.DefaultFrameworkResourcePath,
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaParameterValidationResource>(resource =>
             {
                 resource.Assemblies = new[] { assembly };
-                resource.AddJson(ContribI18nConstant.DefaultFrameworkParameterValidationResourcePath,
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkParameterValidationResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaLanguageResource>(resource =>
             {
                 resource.Assemblies = new[] { assembly };
-                resource.AddJson(ContribI18nConstant.DefaultFrameworkLanguageResourcePath,
+                resource.AddJson(ContribI18NConstant.DefaultFrameworkLanguageResourcePath,
                     languageSettings.SupportedCultures);
             });
         });
@@ -118,10 +118,10 @@ public static class ServiceCollectionExtensions
             settingsAction?.Invoke(settings);
 
             if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
-                settings.ResourcesDirectory = ContribI18nConstant.DefaultResourcePath;
+                settings.ResourcesDirectory = ContribI18NConstant.DefaultResourcePath;
 
             if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
-                settings.SupportCultureName = ContribI18nConstant.SUPPORTED_CULTURES_NAME;
+                settings.SupportCultureName = ContribI18NConstant.SUPPORTED_CULTURES_NAME;
 
             if (!settings.SupportedCultures.Any())
                 settings.SupportedCultures =
@@ -151,7 +151,7 @@ public static class ServiceCollectionExtensions
             options.Resources.TryAdd<TResource>(resource =>
             {
                 if (assemblies.Any()) resource.Assemblies = assemblies;
-                resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18nConstant.DefaultResourcePath,
+                resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18NConstant.DefaultResourcePath,
                     localLanguageSettings.SupportedCultures);
             });
         });

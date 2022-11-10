@@ -76,18 +76,18 @@ Install-Package Masa.Contrib.Globalization.I18N.AspNetCore
 2. Register to use I18N, modify `Program.cs`
 
 ``` C#
-services.AddI18n();
+services.AddI18N();
 ```
 
 3. Use `Masa.Contrib.Globalization.I18N.AspNetCore` to provide the ability to parse Culture
 
 ``` C#
-app.UseI18n();
+app.UseI18N();
 ```
 
 4. How to use I18N
 
-* Get `II18n` from DI (**II18n** is the interface, supports getting from DI)
+* Get `II18N` from DI (**II18N** is the interface, supports getting from DI)
 * Use `I18N` (**I18N** is a static class)
 
 Take `I18N` as an example:

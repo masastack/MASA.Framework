@@ -192,7 +192,7 @@ public class MasaValidatorException : MasaArgumentException
     protected override string GetLocalizedMessageExecuting()
     {
         string message;
-        if (!SupportI18n)
+        if (!SupportI18N)
         {
             message = string.IsNullOrWhiteSpace(ErrorMessage) ? Message : string.Format(ErrorMessage, GetParameters());
         }
@@ -200,7 +200,7 @@ public class MasaValidatorException : MasaArgumentException
         else if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
-            message = FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;
+            message = FrameworkI18N!.T(ErrorCode!, false, GetParameters()) ?? Message;
         }
         else
         {

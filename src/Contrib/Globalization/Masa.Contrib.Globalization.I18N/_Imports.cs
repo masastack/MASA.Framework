@@ -15,5 +15,5 @@ global using Microsoft.Extensions.Localization;
 global using Microsoft.Extensions.Options;
 global using Microsoft.Extensions.Primitives;
 global using System.Reflection;
-global using ContribI18nConstant = Masa.Contrib.Globalization.I18N.Constant;
+global using ContribI18NConstant = Masa.Contrib.Globalization.I18N.Constant;
 global using MasaJsonConfigurationSource = Masa.Contrib.Globalization.I18N.Json.JsonConfigurationSource;

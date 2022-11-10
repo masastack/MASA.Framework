@@ -72,12 +72,12 @@ Install-Package Masa.Contrib.Globalization.I18N
 2. Register to use I18N, modify `Program.cs`
 
 ``` C#
-services.AddI18n();
+services.AddI18N();
 ```
 
 3. How to use I18N
 
-* Get `II18n` from DI (**II18n** is the interface, supports getting from DI)
+* Get `II18N` from DI (**II18N** is the interface, supports getting from DI)
 * Use `I18N` (**I18N** is a static class)
 
 Take `I18N` as an example:
