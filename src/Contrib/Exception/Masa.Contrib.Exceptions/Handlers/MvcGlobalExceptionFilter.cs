@@ -15,13 +15,13 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
     private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
-    private readonly I18NOfT<MasaFrameworkResource>? _frameworkI18N;
+    private readonly I18nOfT<MasaFrameworkResource>? _frameworkI18N;
     private readonly ILogger<MvcGlobalExceptionFilter>? _logger;
 
     public MvcGlobalExceptionFilter(IServiceProvider serviceProvider,
         IOptions<MasaExceptionHandlerOptions> options,
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
-        I18NOfT<MasaFrameworkResource>? frameworkI18N = null,
+        I18nOfT<MasaFrameworkResource>? frameworkI18N = null,
         ILogger<MvcGlobalExceptionFilter>? logger = null)
     {
         _serviceProvider = serviceProvider;

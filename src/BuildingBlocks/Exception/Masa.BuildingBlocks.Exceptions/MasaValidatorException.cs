@@ -5,6 +5,7 @@
 
 namespace System;
 
+[Serializable]
 public class MasaValidatorException : MasaArgumentException
 {
     public MasaValidatorException(string message)

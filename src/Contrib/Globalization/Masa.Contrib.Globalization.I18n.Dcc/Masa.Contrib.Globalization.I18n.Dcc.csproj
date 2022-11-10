@@ -7,13 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj" />
-    <ProjectReference Include="..\..\Globalization\Masa.Contrib.Globalization.I18n.AspNetCore\Masa.Contrib.Globalization.I18n.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\Configuration\ConfigurationApi\Masa.Contrib.Configuration.ConfigurationApi.Dcc\Masa.Contrib.Configuration.ConfigurationApi.Dcc.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Globalization.I18n\Masa.Contrib.Globalization.I18n.csproj" />
   </ItemGroup>
 
 </Project>

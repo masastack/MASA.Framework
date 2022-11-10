@@ -5,6 +5,7 @@
 
 namespace System;
 
+[Serializable]
 public class MasaArgumentException : MasaException
 {
     protected string? ParamName { get; }
