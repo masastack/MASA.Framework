@@ -5,5 +5,5 @@ namespace Masa.Utils.Data.Prometheus.Model;
 
 public class MetaResultResponse: ResultBaseResponse
 {
-    public Dictionary<string, MetaItemValueModel> Data { get; set; }
+    public Dictionary<string, MetaItemValueModel[]> Data { get; set; }
 }

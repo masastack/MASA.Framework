@@ -194,7 +194,7 @@ public class MasaPrometheusClientTest
     [TestMethod]
     public async Task TestMetricMetaQueryAsync()
     {
-        var str = "{\"status\":\"success\",\"data\":{\"up\":{\"type\":\"guage\",\"help\":\"test example\",\"unit\":\"\"}}}";
+        var str = "{\"status\":\"success\",\"data\":{\"up\":[{\"type\":\"guage\",\"help\":\"test example\",\"unit\":\"\"}]}}";
         SetTestData(str);
         var param = new MetricMetaQueryRequest();
         var result = await _client.MetricMetaQueryAsync(param);
