@@ -143,9 +143,8 @@ public class MasaPrometheusClientTest
         Assert.IsNotNull(result.Data);
     }
 
-    [TestMethod]
-    [DataRow(new string[] { "up", "up1" })]
-    public async Task TestLabelsQueryAsync(IEnumerable<string> matches)
+    [TestMethod]    
+    public async Task TestLabelsQueryAsync()
     {
         SetTestData("{\"status\":\"success\",\"data\":[\"up\"]}");
         var result = await _client.LabelsQueryAsync(new MetaDataQueryRequest
@@ -177,7 +176,6 @@ public class MasaPrometheusClientTest
     }
 
     [TestMethod]
-    [DataRow()]
     public async Task TestExemplarQueryAsync()
     {
         var str = "{\"status\":\"success\",\"data\":[{\"seriesLabels\":{\"__name__\":\"test_exemplar_metric_total\",\"instance\":\"localhost:8090\",\"job\":\"prometheus\",\"service\":\"bar\"},\"exemplars\":[{\"labels\":{\"traceID\":\"EpTxMJ40fUus7aGY\"},\"value\":\"6\",\"timestamp\":1600096945.479}]},{\"seriesLabels\":{\"__name__\":\"test_exemplar_metric_total\",\"instance\":\"localhost:8090\",\"job\":\"prometheus\",\"service\":\"foo\"},\"exemplars\":[{\"labels\":{\"traceID\":\"Olp9XHlq763ccsfa\"},\"value\":\"19\",\"timestamp\":1600096955.479},{\"labels\":{\"traceID\":\"hCtjygkIHwAN9vs4\"},\"value\":\"20\",\"timestamp\":1600096965.489}]}]}";
@@ -193,13 +191,24 @@ public class MasaPrometheusClientTest
         Assert.AreEqual(result.Status, ResultStatuses.Success);
     }
 
+    [TestMethod]
+    public async Task TestMetricMetaQueryAsync()
+    {
+        var str = "{\"status\":\"success\",\"data\":{\"up\":[{\"type\":\"guage\",\"help\":\"test example\",\"unit\":\"\"}]}}";
+        SetTestData(str);
+        var param = new MetricMetaQueryRequest();
+        var result = await _client.MetricMetaQueryAsync(param);
+        Assert.IsNotNull(result);
+        Assert.AreEqual(result.Status, ResultStatuses.Success);
+    }
+
     private void SetTestData(string result, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
     {
         _mockHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
            .ReturnsAsync(new HttpResponseMessage()
            {
-               StatusCode = HttpStatusCode.OK,
+               StatusCode = httpStatusCode,
                Content = new StringContent(result)
            });
     }

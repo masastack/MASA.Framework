@@ -7,15 +7,13 @@ public static class OpenTelemetryLoggingExtensions
 {
     public static ILoggingBuilder AddMasaOpenTelemetry(this ILoggingBuilder builder, Action<OpenTelemetryLoggerOptions> configure)
     {
-        builder.AddOpenTelemetry(options =>
-        {
-            options.IncludeScopes = true;
-            options.IncludeFormattedMessage = true;
-            options.ParseStateValues = true;
-            if (configure != null)
-                configure.Invoke(options);
-        });
-
-        return builder;
+        return builder.AddOpenTelemetry(options =>
+          {
+              options.IncludeScopes = true;
+              options.IncludeFormattedMessage = true;
+              options.ParseStateValues = true;
+              if (configure != null)
+                  configure.Invoke(options);
+          });
     }
 }

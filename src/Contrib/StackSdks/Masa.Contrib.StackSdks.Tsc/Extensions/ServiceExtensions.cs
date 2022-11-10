@@ -9,9 +9,9 @@ public static class ServiceExtensions
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.tsc";
 
-    public static IServiceCollection AddTscClient(this IServiceCollection services, string tscServiceBaseUri)
+    public static IServiceCollection AddTscClient(this IServiceCollection services, string tscServiceBaseUrl)
     {
-        ArgumentNullException.ThrowIfNull(tscServiceBaseUri, nameof(tscServiceBaseUri));
+        ArgumentNullException.ThrowIfNull(tscServiceBaseUrl);
 
         if (services.Any(service => service.ServiceType == typeof(ITscClient)))
             return services;
@@ -20,7 +20,7 @@ public static class ServiceExtensions
         {
             builder.UseHttpClient(DEFAULT_CLIENT_NAME, options =>
             {
-                options.BaseAddress = tscServiceBaseUri;
+                options.BaseAddress = tscServiceBaseUrl;
             });
             builder.DisableAutoRegistration = true;
         });
@@ -34,5 +34,83 @@ public static class ServiceExtensions
 
         MasaApp.TrySetServiceCollection(services);
         return services;
+    }
+
+    public static IServiceCollection AddObservable(this IServiceCollection services,
+        ILoggingBuilder loggingBuilder,
+        IConfiguration configuration,
+        bool isBlazor = false,
+        bool isInterruptSignalRTracing = true)
+    {
+        return services.AddObservable(loggingBuilder,
+            configuration.GetSection("Masa:Observable").Get<MasaObservableOptions>(),
+            configuration.GetSection("Masa:Observable:OtlpUrl").Get<string>(),
+            isBlazor,
+            isInterruptSignalRTracing);
+    }
+
+    public static IServiceCollection AddObservable(this IServiceCollection services,
+        ILoggingBuilder loggingBuilder,
+        Func<MasaObservableOptions> optionsConfigure,
+        Func<string>? otlpUrlConfigure = null,
+        bool isBlazor = false,
+        bool isInterruptSignalRTracing = true)
+    {
+        ArgumentNullException.ThrowIfNull(optionsConfigure);
+        var options = optionsConfigure();
+        var otlpUrl = otlpUrlConfigure?.Invoke() ?? string.Empty;
+        return services.AddObservable(loggingBuilder, options, otlpUrl, isBlazor, isInterruptSignalRTracing);
+    }
+
+    public static IServiceCollection AddObservable(this IServiceCollection services,
+        ILoggingBuilder loggingBuilder,
+        MasaObservableOptions option,
+        string? otlpUrl = null,
+        bool isBlazor = false,
+        bool isInterruptSignalRTracing = true)
+    {
+        ArgumentNullException.ThrowIfNull(option);
+        var resources = ResourceBuilder.CreateDefault().AddMasaService(option);
+        Uri? uri = null;
+        if (!string.IsNullOrEmpty(otlpUrl) && !Uri.TryCreate(otlpUrl, UriKind.Absolute, out uri))
+            throw new UriFormatException($"{nameof(otlpUrl)}:{otlpUrl} is invalid url");
+
+        loggingBuilder.AddMasaOpenTelemetry(builder =>
+        {
+            builder.SetResourceBuilder(resources);
+            builder.AddOtlpExporter(options =>
+            {
+                if (uri != null)
+                    options.Endpoint = uri;
+            });
+        });
+
+        services.AddMasaMetrics(builder =>
+        {
+            builder.SetResourceBuilder(resources);
+            builder.AddOtlpExporter(options =>
+            {
+                if (uri != null)
+                    options.Endpoint = uri;
+            });
+        });
+
+        return services.AddMasaTracing(builder =>
+        {
+            builder.AspNetCoreInstrumentationOptions.AppendDefaultFilter(builder, isInterruptSignalRTracing);
+
+            if (isBlazor)
+                builder.AspNetCoreInstrumentationOptions.AppendBlazorFilter(builder);
+
+            builder.BuildTraceCallback = options =>
+            {
+                options.SetResourceBuilder(resources);
+                options.AddOtlpExporter(options =>
+                {
+                    if (uri != null)
+                        options.Endpoint = uri;
+                });
+            };
+        });
     }
 }

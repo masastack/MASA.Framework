@@ -15,12 +15,12 @@ internal class MetricService : IMetricService
         _caller = caller;
     }
 
-    public async Task<IEnumerable<string>> GetNamesAsync(IEnumerable<string>? matches = default)
+    public async Task<IEnumerable<string>> GetNamesAsync(IEnumerable<string>? match = null)
     {
         string param = default!;
-        if (matches != null && matches.Any())
+        if (match != null && match.Any())
         {
-            param = string.Join(',', matches);
+            param = string.Join(',', match);
         }
         return (await _caller.GetAsync<IEnumerable<string>>(NAMES_URI, new Dictionary<string, string> { { "match", param } }))!;
     }

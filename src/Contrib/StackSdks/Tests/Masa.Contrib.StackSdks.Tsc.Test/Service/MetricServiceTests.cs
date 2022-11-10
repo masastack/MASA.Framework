@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.StackSdks.Tsc;
-using Masa.Contrib.StackSdks.Tsc.Service;
-
 namespace Masa.Contrib.StackSdks.Tsc.Tests.Service;
 
 [TestClass]
@@ -43,23 +40,26 @@ public class MetricServiceTests
     public async Task GetLabelValuesAsyncTest(string match, string start, string end)
     {
         var caller = new Mock<ICaller>();
+
+
         caller.Setup(provider => provider.SendAsync<Dictionary<string, Dictionary<string, List<string>>>>(It.IsNotNull<HttpRequestMessage>(), default))
             .ReturnsAsync(new Dictionary<string, Dictionary<string, List<string>>> {
-            {"up",new Dictionary<string, List<string>>{
-                {"name",new List<string>{"name1","name2"} }
-            } }
-        });
+                    {"up",new Dictionary<string, List<string>>{
+                    {"name",new List<string>{"name1","name2"} }
+                } }
+            });
         var client = new TscClient(caller.Object);
 
         DateTime startDateTime = DateTime.Parse(start);
         DateTime endDateTime = DateTime.Parse(end);
-        var result = await client.MetricService.GetLabelValuesAsync(new LableValuesRequest
+        var query = new LableValuesRequest
         {
             Match = match,
             Start = startDateTime,
             End = endDateTime
-        });
-
+        };
+        var result = await client.MetricService.GetLabelValuesAsync(query);
+        Assert.AreEqual(match, query.Matches.First());
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Any());
     }

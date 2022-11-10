@@ -9,7 +9,7 @@ public static class ResourceBuilderExtenstions
        this ResourceBuilder resourceBuilder,
        MasaObservableOptions options, Action<ResourceBuilder>? action = null)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
+        ArgumentNullException.ThrowIfNull(options);
 
         resourceBuilder = resourceBuilder.AddService(options.ServiceName, options.ServiceNameSpace, options.ServiceVersion, true, options.ServiceInstanceId);
 

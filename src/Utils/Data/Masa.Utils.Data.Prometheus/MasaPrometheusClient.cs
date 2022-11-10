@@ -15,6 +15,7 @@ internal class MasaPrometheusClient : IMasaPrometheusClient
     private const string SERIES_URL = "/api/v1/series";
     private const string EXEMPLAR_URL = "/api/v1/query_exemplars";
     private const string LABLE_VALUE_URL = "/api/v1/label/{0}/values";
+    private const string METRIC_META_URL = "/api/v1/meta";
 
     public MasaPrometheusClient(HttpClient client, JsonSerializerOptions jsonSerializerOptions, ILogger<MasaPrometheusClient> logger)
     {
@@ -51,6 +52,11 @@ internal class MasaPrometheusClient : IMasaPrometheusClient
     public async Task<SeriesResultResponse> SeriesQueryAsync(MetaDataQueryRequest query)
     {
         return await QueryDataAsync<SeriesResultResponse>(SERIES_URL, query);
+    }
+
+    public async Task<MetaResultResponse> MetricMetaQueryAsync(MetricMetaQueryRequest query)
+    {
+        return await QueryDataAsync<MetaResultResponse>(METRIC_META_URL, query);
     }
 
     private async Task<T> QueryDataAsync<T>(string url, object data) where T : ResultBaseResponse
@@ -122,6 +128,7 @@ internal class MasaPrometheusClient : IMasaPrometheusClient
 
         return baseResult;
     }
+
 
     private static object[] ConvertJsonToObjValue(object[]? values)
     {
