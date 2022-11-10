@@ -8,36 +8,50 @@ namespace System;
 [Serializable]
 public class MasaArgumentException : MasaException
 {
-    protected string? ParamName { get; }
+    private string? _paramName;
+    protected string? ParamName => _paramName;
 
-    public MasaArgumentException(string message)
-        : base(message)
+    public MasaArgumentException(
+        string message,
+        LogLevel? logLevel = null)
+        : base(message, logLevel)
     {
     }
 
-    public MasaArgumentException(string message, string paramName)
-        : base(message)
+    public MasaArgumentException(
+        string message,
+        string paramName,
+        LogLevel? logLevel = null)
+        : base(message, logLevel)
     {
-        ParamName = paramName;
+        _paramName = paramName;
     }
 
-    public MasaArgumentException(string? paramName, string errorCode, params object[] parameters)
-        : this((Exception?)null, errorCode, parameters)
+    public MasaArgumentException(
+        string? paramName,
+        string errorCode,
+        LogLevel? logLevel = null,
+        params object[] parameters)
+        : this((Exception?)null, errorCode, logLevel, parameters)
     {
-        ParamName = paramName;
+        _paramName = paramName;
     }
 
-    public MasaArgumentException(Exception? innerException, string errorCode, params object[] parameters)
-        : base(innerException, errorCode, parameters)
+    public MasaArgumentException(
+        Exception? innerException,
+        string errorCode,
+        LogLevel? logLevel = null,
+        params object[] parameters)
+        : base(innerException, errorCode, logLevel, parameters)
     {
     }
 
-    public MasaArgumentException(string message, Exception? innerException)
-        : base(message, innerException)
+    public MasaArgumentException(string message, Exception? innerException, LogLevel? logLevel = null)
+        : base(message, innerException, logLevel)
     {
     }
 
-    public MasaArgumentException(SerializationInfo serializationInfo, StreamingContext context)
+    protected MasaArgumentException(SerializationInfo serializationInfo, StreamingContext context)
         : base(serializationInfo, context)
     {
     }
@@ -79,6 +93,7 @@ public class MasaArgumentException : MasaException
         ThrowIf(argument.CompareTo(maxValue) > 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_OR_EQUAL_VALIDATOR,
+            null,
             maxValue);
     }
 
@@ -89,6 +104,7 @@ public class MasaArgumentException : MasaException
         ThrowIf(argument.CompareTo(maxValue) >= 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_VALIDATOR,
+            null,
             maxValue);
     }
 
@@ -99,6 +115,7 @@ public class MasaArgumentException : MasaException
         ThrowIf(argument.CompareTo(minValue) < 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_OR_EQUAL_VALIDATOR,
+            null,
             minValue);
     }
 
@@ -109,6 +126,7 @@ public class MasaArgumentException : MasaException
         ThrowIf(argument.CompareTo(minValue) <= 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_VALIDATOR,
+            null,
             minValue);
     }
 
@@ -120,6 +138,7 @@ public class MasaArgumentException : MasaException
         ThrowIf(argument.CompareTo(minValue) < 0 || argument.CompareTo(maxValue) > 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.OUT_OF_RANGE_VALIDATOR,
+            null,
             minValue,
             maxValue);
     }
@@ -141,19 +160,36 @@ public class MasaArgumentException : MasaException
             );
     }
 
-    public static void ThrowIf(bool condition, string? paramName, string errorCode, params object[] parameters)
+    public static void ThrowIf(
+        bool condition,
+        string? paramName,
+        string errorCode,
+        LogLevel? logLevel = null,
+        params object[] parameters)
     {
-        if (condition) Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), parameters);
+        if (condition)
+            Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), logLevel, parameters);
     }
 
-    public static void ThrowIf(bool condition, string? paramName, string errorCode, string? errorMessage, params object[] parameters)
+    public static void ThrowIf(
+        bool condition,
+        string? paramName,
+        string errorCode,
+        string? errorMessage,
+        LogLevel? logLevel = null,
+        params object[] parameters)
     {
-        if (condition) Throw(paramName, errorCode, errorMessage, parameters);
+        if (condition) Throw(paramName, errorCode, errorMessage, logLevel, parameters);
     }
 
     [DoesNotReturn]
-    private static void Throw(string? paramName, string errorCode, string? errorMessage, params object[] parameters) =>
-        throw new MasaArgumentException(paramName, errorCode, parameters)
+    private static void Throw(
+        string? paramName,
+        string errorCode,
+        string? errorMessage,
+        LogLevel? logLevel,
+        params object[] parameters) =>
+        throw new MasaArgumentException(paramName, errorCode, logLevel, parameters)
         {
             ErrorMessage = errorMessage
         };

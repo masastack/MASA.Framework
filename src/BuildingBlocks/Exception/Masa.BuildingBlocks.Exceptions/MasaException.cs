@@ -8,16 +8,20 @@ namespace System;
 [Serializable]
 public class MasaException : Exception
 {
-    public virtual LogLevel? LogLevel { get; set; }
+    private LogLevel? _logLevel;
+    public LogLevel? LogLevel => _logLevel;
 
-    public string? ErrorCode { get; private set; }
+    private string? _errorCode;
+    public string? ErrorCode => _errorCode;
 
     /// <summary>
     /// Provides error message that I18N is not used
     /// </summary>
-    public string? ErrorMessage { get; set; }
+    protected string? ErrorMessage { get; set; }
 
-    public object[] Parameters { get; private set; }
+    private object[] _parameters;
+
+    public object[] Parameters => _parameters;
 
     private bool _initialize;
 
@@ -74,29 +78,32 @@ public class MasaException : Exception
     {
     }
 
-    public MasaException(string message)
+    public MasaException(string message, LogLevel? logLevel = null)
         : base(message)
     {
+        _logLevel = logLevel;
     }
 
-    public MasaException(string errorCode, params object[] parameters)
-        : this(null, errorCode, parameters)
+    public MasaException(string errorCode, LogLevel? logLevel = null, params object[] parameters)
+        : this(null, errorCode, logLevel, parameters)
     {
     }
 
-    public MasaException(Exception? innerException, string errorCode, params object[] parameters)
+    public MasaException(Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
         : base(null, innerException)
     {
-        ErrorCode = errorCode;
-        Parameters = parameters;
+        _errorCode = errorCode;
+        _parameters = parameters;
+        _logLevel = logLevel;
     }
 
-    public MasaException(string message, Exception? innerException)
+    public MasaException(string message, Exception? innerException, LogLevel? logLevel = null)
         : base(message, innerException)
     {
+        _logLevel = logLevel;
     }
 
-    public MasaException(SerializationInfo serializationInfo, StreamingContext context)
+    protected MasaException(SerializationInfo serializationInfo, StreamingContext context)
         : base(serializationInfo, context)
     {
     }
@@ -129,4 +136,6 @@ public class MasaException : Exception
     }
 
     protected virtual object[] GetParameters() => Parameters;
+
+    public string? GetErrorMessage() => ErrorMessage;
 }

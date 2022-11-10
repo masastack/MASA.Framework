@@ -8,34 +8,40 @@ namespace System;
 [Serializable]
 public class MasaValidatorException : MasaArgumentException
 {
-    public MasaValidatorException(string message)
-        : base(message)
+    public MasaValidatorException(string message, LogLevel? logLevel = null)
+        : base(message, logLevel)
     {
     }
 
-    public MasaValidatorException(string? paramName, string errorCode, params object[] parameters)
-        : base(paramName, errorCode, parameters)
+    public MasaValidatorException(string? paramName, string errorCode, LogLevel? logLevel = null, params object[] parameters)
+        : base(paramName, errorCode, logLevel, parameters)
     {
 
     }
 
-    public MasaValidatorException(Exception? innerException, string errorCode, params object[] parameters)
-        : base(innerException, errorCode, parameters)
+    public MasaValidatorException(Exception? innerException, string errorCode, LogLevel? logLevel = null, params object[] parameters)
+        : base(innerException, errorCode, logLevel, parameters)
     {
     }
 
     public MasaValidatorException(params ValidationModel[] validationModels)
-        : base(FormatMessage(validationModels))
+        : base(FormatMessage(validationModels), Microsoft.Extensions.Logging.LogLevel.Error)
     {
 
     }
 
-    public MasaValidatorException(string message, Exception? innerException)
-        : base(message, innerException)
+    public MasaValidatorException(LogLevel? logLevel = null, params ValidationModel[] validationModels)
+        : base(FormatMessage(validationModels), logLevel)
+    {
+
+    }
+
+    public MasaValidatorException(string message, Exception? innerException, LogLevel? logLevel = null)
+        : base(message, innerException, logLevel)
     {
     }
 
-    public MasaValidatorException(SerializationInfo serializationInfo, StreamingContext context)
+    protected MasaValidatorException(SerializationInfo serializationInfo, StreamingContext context)
         : base(serializationInfo, context)
     {
     }
@@ -97,6 +103,7 @@ public class MasaValidatorException : MasaArgumentException
         ThrowIf(argument.CompareTo(maxValue) > 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_OR_EQUAL_VALIDATOR,
+            null,
             maxValue);
     }
 
@@ -107,6 +114,7 @@ public class MasaValidatorException : MasaArgumentException
         ThrowIf(argument.CompareTo(maxValue) >= 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_VALIDATOR,
+            null,
             maxValue);
     }
 
@@ -117,6 +125,7 @@ public class MasaValidatorException : MasaArgumentException
         ThrowIf(argument.CompareTo(minValue) < 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_OR_EQUAL_VALIDATOR,
+            null,
             minValue);
     }
 
@@ -127,6 +136,7 @@ public class MasaValidatorException : MasaArgumentException
         ThrowIf(argument.CompareTo(minValue) <= 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_VALIDATOR,
+            null,
             minValue);
     }
 
@@ -138,6 +148,7 @@ public class MasaValidatorException : MasaArgumentException
         ThrowIf(argument.CompareTo(minValue) < 0 || argument.CompareTo(maxValue) > 0,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.OUT_OF_RANGE_VALIDATOR,
+            null,
             minValue,
             maxValue);
     }
@@ -163,9 +174,11 @@ public class MasaValidatorException : MasaArgumentException
         bool condition,
         string? paramName,
         string errorCode,
+        LogLevel? logLevel = null,
         params object[] parameters)
     {
-        if (condition) Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), parameters);
+        if (condition)
+            Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), logLevel, parameters);
     }
 
     public new static void ThrowIf(
@@ -173,9 +186,10 @@ public class MasaValidatorException : MasaArgumentException
         string? paramName,
         string errorCode,
         string? errorMessage,
+        LogLevel? logLevel = null,
         params object[] parameters)
     {
-        if (condition) Throw(paramName, errorCode, errorMessage, parameters);
+        if (condition) Throw(paramName, errorCode, errorMessage, logLevel, parameters);
     }
 
     [DoesNotReturn]
@@ -183,8 +197,9 @@ public class MasaValidatorException : MasaArgumentException
         string? paramName,
         string errorCode,
         string? errorMessage,
+        LogLevel? logLevel,
         params object[] parameters)
-        => throw new MasaValidatorException(paramName, errorCode, parameters)
+        => throw new MasaValidatorException(paramName, errorCode, logLevel, parameters)
         {
             ErrorMessage = errorMessage
         };

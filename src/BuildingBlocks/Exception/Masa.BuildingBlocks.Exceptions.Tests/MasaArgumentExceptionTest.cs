@@ -20,7 +20,7 @@ public class MasaArgumentExceptionTest
         catch (MasaArgumentException ex)
         {
             Assert.AreEqual(Data.Constants.ErrorCode.NOT_NULL_VALIDATOR, ex.ErrorCode);
-            Assert.AreEqual("'{0}' must not be empty.", ex.ErrorMessage);
+            Assert.AreEqual("'{0}' must not be empty.", ex.GetErrorMessage());
         }
     }
 }

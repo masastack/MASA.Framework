@@ -18,13 +18,32 @@ public class UserFriendlyException : MasaException
     {
     }
 
-    public UserFriendlyException(string errorCode, string errorMessage, params object[] parameters)
-        : base(errorCode, errorMessage, parameters)
+    public UserFriendlyException(
+        string errorCode,
+        params object[] parameters)
+        : base(errorCode, null, parameters)
     {
     }
 
-    public UserFriendlyException(Exception? innerException, string errorCode, string errorMessage, params object[] parameters)
-        : base(innerException, errorCode, errorMessage, parameters)
+    public UserFriendlyException(
+        string errorCode,
+        LogLevel? logLevel,
+        params object[] parameters)
+        : base(errorCode, logLevel, parameters)
+    {
+    }
+
+    public UserFriendlyException(
+        Exception? innerException,
+        string errorCode,
+        LogLevel? logLevel = null,
+        params object[] parameters)
+        : base(innerException, errorCode, logLevel, parameters)
+    {
+    }
+
+    protected UserFriendlyException(SerializationInfo serializationInfo, StreamingContext context)
+        : base(serializationInfo, context)
     {
     }
 }

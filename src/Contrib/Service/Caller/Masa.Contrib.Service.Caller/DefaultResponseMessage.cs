@@ -56,40 +56,23 @@ public class DefaultResponseMessage : IResponseMessage
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
 
-    private async Task<TResponse?> FormatResponseAsync<TResponse>(HttpResponseMessage response,
+    private async Task<TResponse?> FormatResponseAsync<TResponse>(
+        HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
         var responseType = typeof(TResponse);
         if (responseType == typeof(Guid) || responseType == typeof(Guid?))
-        {
-            var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
-            if (IsNullOrEmpty(content))
-                return default;
+            return await FormatResponseByGuidAsync<TResponse>(response, cancellationToken);
 
-            return (TResponse?)(object)Guid.Parse(content);
-        }
         if (responseType == typeof(DateTime) || responseType == typeof(DateTime?))
-        {
-            var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
-            if (IsNullOrEmpty(content))
-                return default;
-
-            return (TResponse?)(object)DateTime.Parse(content);
-        }
+            return await FormatResponseByDateTimeAsync<TResponse>(response, cancellationToken);
 
         var actualType = Nullable.GetUnderlyingType(responseType);
 
         if (responseType.GetInterfaces().Any(type => type == typeof(IConvertible)) ||
             (actualType != null && actualType.GetInterfaces().Any(type => type == typeof(IConvertible))))
         {
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            if (IsNullOrEmpty(content))
-                return default;
-
-            if (actualType != null)
-                return (TResponse?)Convert.ChangeType(content, actualType);
-
-            return (TResponse?)Convert.ChangeType(content, responseType);
+            return await FormatResponseByValueTypeAsync<TResponse>(responseType, actualType, response, cancellationToken);
         }
 
         try
@@ -100,10 +83,47 @@ public class DefaultResponseMessage : IResponseMessage
         }
         catch (Exception exception)
         {
-            _logger?.LogWarning(exception, exception.Message);
+            _logger?.LogWarning(exception, "{Message}", exception.Message);
             ExceptionDispatchInfo.Capture(exception).Throw();
             return default; //This will never be executed, the previous line has already thrown an exception
         }
+    }
+
+    private static async Task<TResponse?> FormatResponseByGuidAsync<TResponse>(
+        HttpResponseMessage response,
+        CancellationToken cancellationToken = default)
+    {
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+        if (IsNullOrEmpty(content))
+            return default;
+
+        return (TResponse?)(object)Guid.Parse(content);
+    }
+
+    private static async Task<TResponse?> FormatResponseByDateTimeAsync<TResponse>(HttpResponseMessage response,
+        CancellationToken cancellationToken = default)
+    {
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+        if (IsNullOrEmpty(content))
+            return default;
+
+        return (TResponse?)(object)DateTime.Parse(content);
+    }
+
+    private static async Task<TResponse?> FormatResponseByValueTypeAsync<TResponse>(
+        Type responseType,
+        Type? actualType,
+        HttpResponseMessage response,
+        CancellationToken cancellationToken = default)
+    {
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (IsNullOrEmpty(content))
+            return default;
+
+        if (actualType != null)
+            return (TResponse?)Convert.ChangeType(content, actualType);
+
+        return (TResponse?)Convert.ChangeType(content, responseType);
     }
 
     private static bool IsNullOrEmpty(string value) => string.IsNullOrEmpty(value) || value == "null";

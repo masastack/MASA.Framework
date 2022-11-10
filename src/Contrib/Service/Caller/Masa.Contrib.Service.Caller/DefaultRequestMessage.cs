@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Globalization;
-
 namespace Masa.Contrib.Service.Caller;
 
 public abstract class DefaultRequestMessage
@@ -51,7 +49,9 @@ public abstract class DefaultRequestMessage
             requestMessage.Headers.Remove(name);
         string value = System.Web.HttpUtility.UrlEncode(string.Join('|', cultures.Select(c => $"{c.Key}={c.Value}")));
         var cookies = cookieValues?.ToList() ?? new List<string>();
-        cookies.Add($".AspNetCore.Culture={value}");
+        if (!cookies.Any(cookie => cookie.Contains(".AspNetCore.Culture=", StringComparison.OrdinalIgnoreCase)))
+            cookies.Add($".AspNetCore.Culture={value}");
+
         requestMessage.Headers.Add(name, cookies);
     }
 }

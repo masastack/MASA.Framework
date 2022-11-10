@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public interface II18N<TResourceSource> : II18N where TResourceSource : class
+public interface II18N<out TResourceSource> : II18N
 {
 
 }

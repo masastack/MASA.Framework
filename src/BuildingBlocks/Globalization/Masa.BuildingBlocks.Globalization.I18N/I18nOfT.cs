@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18N;
 
-public class I18N<TResourceSource> : II18N<TResourceSource> where TResourceSource : class
+public class I18N<TResourceSource> : II18N<TResourceSource>
 {
     private readonly I18NResource? _resource;
     private readonly List<I18NResource?> _baseResources;

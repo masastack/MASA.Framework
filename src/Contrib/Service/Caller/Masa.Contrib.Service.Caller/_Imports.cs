@@ -12,6 +12,7 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using System.Collections.Concurrent;
+global using System.Globalization;
 global using System.Net;
 global using System.Net.Http.Json;
 global using System.Reflection;

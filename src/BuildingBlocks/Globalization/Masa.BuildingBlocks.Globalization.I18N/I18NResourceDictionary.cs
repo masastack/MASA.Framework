@@ -6,6 +6,12 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 [Serializable]
 public class I18NResourceDictionary : Dictionary<Type, I18NResource>
 {
+    public I18NResourceDictionary()
+    {
+    }
+
+    protected I18NResourceDictionary(SerializationInfo info, StreamingContext context) : base(info, context){}
+
     public I18NResource Add<TResource>(params Type[] baseResourceTypes)
     {
         return Add(typeof(TResource), baseResourceTypes);
