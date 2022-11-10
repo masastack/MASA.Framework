@@ -16,4 +16,6 @@ public interface IMasaPrometheusClient
     Task<LabelResultResponse> LabelValuesQueryAsync(LableValueQueryRequest query);
 
     Task<ExemplarResultResponse> ExemplarQueryAsync(QueryExemplarRequest query);
+
+    Task<MetaResultResponse> MetricMetaQueryAsync(MetricMetaQueryRequest query);
 }
