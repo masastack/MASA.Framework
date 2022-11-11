@@ -84,7 +84,7 @@ public class MasaException : Exception
         _logLevel = logLevel;
     }
 
-    public MasaException(string errorCode, LogLevel? logLevel = null, params object[] parameters)
+    public MasaException(string errorCode, LogLevel? logLevel, params object[] parameters)
         : this(null, errorCode, logLevel, parameters)
     {
     }
