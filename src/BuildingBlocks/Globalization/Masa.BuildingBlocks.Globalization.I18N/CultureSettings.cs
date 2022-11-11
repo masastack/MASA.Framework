@@ -5,8 +5,6 @@ namespace Masa.BuildingBlocks.Globalization.I18N;
 
 public class CultureSettings
 {
-    public string DefaultCulture { get; set; }
-
     public string? ResourcesDirectory { get; set; }
 
     public string? SupportCultureName { get; set; }

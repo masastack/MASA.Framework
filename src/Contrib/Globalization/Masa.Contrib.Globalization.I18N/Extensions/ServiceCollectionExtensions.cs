@@ -62,9 +62,6 @@ public static class ServiceCollectionExtensions
             settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18NConstant.SUPPORTED_CULTURES_NAME :
                 supportCultureName;
             settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
-
-            if (string.IsNullOrEmpty(settings.DefaultCulture))
-                settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
         }, action);
     }
 
@@ -126,9 +123,6 @@ public static class ServiceCollectionExtensions
             if (!settings.SupportedCultures.Any())
                 settings.SupportedCultures =
                     CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
-
-            if (string.IsNullOrEmpty(settings.DefaultCulture))
-                settings.DefaultCulture = settings.SupportedCultures.Select(c => c.Culture).FirstOrDefault()!;
         });
         var serviceProvider = services.BuildServiceProvider();
         return serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;

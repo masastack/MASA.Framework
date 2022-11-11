@@ -10,7 +10,7 @@ public static class ApplicationBuilderExtensions
 {
     private static bool _isInitialize;
 
-    public static IApplicationBuilder UseI18N(this IApplicationBuilder app)
+    public static IApplicationBuilder UseI18N(this IApplicationBuilder app, string? defaultCulture = null)
     {
         if (_isInitialize)
             return app;
@@ -24,8 +24,7 @@ public static class ApplicationBuilderExtensions
         requestLocalization
             .AddSupportedCultures(cultures)
             .AddSupportedUICultures(cultures);
-        if (!string.IsNullOrWhiteSpace(settings.DefaultCulture))
-            requestLocalization.SetDefaultCulture(settings.DefaultCulture);
+        requestLocalization.SetDefaultCulture(!string.IsNullOrWhiteSpace(defaultCulture) ? defaultCulture : cultures.FirstOrDefault()!);
 
         requestLocalization.ApplyCurrentCultureToResponseHeaders = true;
         app.UseRequestLocalization(requestLocalization);
