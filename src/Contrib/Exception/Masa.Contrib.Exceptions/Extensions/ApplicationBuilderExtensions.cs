@@ -9,7 +9,7 @@ namespace Microsoft.AspNetCore.Builder;
 public static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Use I18N <see cref="ExceptionHandlerMiddleware"/>
+    /// Use I18n <see cref="ExceptionHandlerMiddleware"/>
     /// </summary>
     /// <param name="app"></param>
     /// <param name="exceptionHandlingOptions"></param>
@@ -23,7 +23,7 @@ public static class ApplicationBuilderExtensions
         var option = new MasaExceptionHandlerOptions();
         exceptionHandlingOptions?.Invoke(option);
 
-        app.UseI18N(defaultCulture);
+        app.UseI18n(defaultCulture);
 
         app.UseMiddleware<ExceptionHandlerMiddleware>(Options.Create(option));
 

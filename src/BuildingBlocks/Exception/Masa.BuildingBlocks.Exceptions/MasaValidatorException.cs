@@ -207,7 +207,7 @@ public class MasaValidatorException : MasaArgumentException
     protected override string GetLocalizedMessageExecuting()
     {
         string message;
-        if (!SupportI18N)
+        if (!SupportI18n)
         {
             message = string.IsNullOrWhiteSpace(ErrorMessage) ? Message : string.Format(ErrorMessage, GetParameters());
         }
@@ -215,11 +215,11 @@ public class MasaValidatorException : MasaArgumentException
         else if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
-            message = FrameworkI18N!.T(ErrorCode!, false, GetParameters()) ?? Message;
+            message = FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;
         }
         else
         {
-            message = I18N!.T(ErrorCode, false, GetParameters()) ?? Message;
+            message = I18n!.T(ErrorCode, false, GetParameters()) ?? Message;
         }
 
         return FormatMessage(new ValidationModel(ParamName!, message));

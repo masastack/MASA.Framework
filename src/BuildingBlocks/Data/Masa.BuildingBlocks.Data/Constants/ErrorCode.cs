@@ -12,7 +12,7 @@ public static class ErrorCode
     /// <summary>
     /// Internal service error
     /// </summary>
-    private const string INTERNAL_SERVER = $"{FRAMEWORK_PREFIX}Ser";
+    private const string INTERNAL_SERVER = $"{FRAMEWORK_PREFIX}SVR";
 
     /// <summary>
     /// parameter validation error
@@ -140,19 +140,20 @@ public static class ErrorCode
     /// <summary>
     /// '{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals. {Digits} digits and {ActualScale} decimals were found.
     /// </summary>
-    [Description(
-        "'{0}' must not be more than {1} digits in total, with allowance for {2} decimals. {3} digits and {4} decimals were found.")]
+    [Description("'{0}' must not be more than {1} digits in total, with allowance for {2} decimals. {3} digits and {4} decimals were found.")]
     public const string SCALE_PRECISION_VALIDATOR = $"{ARGUMENT}0020";
 
     /// <summary>
     /// '{PropertyName}' must be empty.
     /// </summary>
-    [Description("'{0}' must be empty.")] public const string EMPTY_VALIDATOR = $"{ARGUMENT}0021";
+    [Description("'{0}' must be empty.")]
+    public const string EMPTY_VALIDATOR = $"{ARGUMENT}0021";
 
     /// <summary>
     /// '{PropertyName}' must be empty.
     /// </summary>
-    [Description("'{0}' must be empty.")] public const string NULL_VALIDATOR = $"{ARGUMENT}0022";
+    [Description("'{0}' must be empty.")]
+    public const string NULL_VALIDATOR = $"{ARGUMENT}0022";
 
     /// <summary>
     /// '{0}' has a range of values which does not include '{1}'.

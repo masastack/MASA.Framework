@@ -15,7 +15,7 @@ public class MasaException : Exception
     public string? ErrorCode => _errorCode;
 
     /// <summary>
-    /// Provides error message that I18N is not used
+    /// Provides error message that I18n is not used
     /// </summary>
     protected string? ErrorMessage { get; set; }
 
@@ -25,36 +25,36 @@ public class MasaException : Exception
 
     private bool _initialize;
 
-    private II18N? _i18N;
+    private II18n? _i18n;
 
-    internal II18N? I18N
+    internal II18n? I18n
     {
         get
         {
             TryInitialize();
-            return _i18N;
+            return _i18n;
         }
     }
 
-    private II18N? _frameworkI18N;
+    private II18n? _frameworkI18n;
 
-    internal II18N? FrameworkI18N
+    internal II18n? FrameworkI18n
     {
         get
         {
             TryInitialize();
-            return _frameworkI18N;
+            return _frameworkI18n;
         }
     }
 
-    private bool _supportI18N;
+    private bool _supportI18n;
 
-    internal bool SupportI18N
+    internal bool SupportI18n
     {
         get
         {
             TryInitialize();
-            return _supportI18N;
+            return _supportI18n;
         }
     }
 
@@ -68,9 +68,9 @@ public class MasaException : Exception
 
     private void Initialize()
     {
-        _frameworkI18N = MasaApp.GetService<II18N<MasaFrameworkResource>>();
-        _i18N = MasaApp.GetService<II18N<DefaultResource>>();
-        _supportI18N = _frameworkI18N != null;
+        _frameworkI18n = MasaApp.GetService<II18n<MasaFrameworkResource>>();
+        _i18n = MasaApp.GetService<II18n<DefaultResource>>();
+        _supportI18n = _frameworkI18n != null;
         _initialize = true;
     }
 
@@ -118,7 +118,7 @@ public class MasaException : Exception
 
     protected virtual string GetLocalizedMessageExecuting()
     {
-        if (!SupportI18N)
+        if (!SupportI18n)
         {
             if (string.IsNullOrWhiteSpace(ErrorMessage))
                 return Message;
@@ -129,10 +129,10 @@ public class MasaException : Exception
         if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
-            return FrameworkI18N!.T(ErrorCode!, false, GetParameters()) ?? Message;
+            return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;
         }
 
-        return I18N!.T(ErrorCode, false, GetParameters()) ?? Message;
+        return I18n!.T(ErrorCode, false, GetParameters()) ?? Message;
     }
 
     protected virtual object[] GetParameters() => Parameters;

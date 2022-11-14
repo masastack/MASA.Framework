@@ -597,15 +597,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Development.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Development.DaprStarter.AspNetCore.Tests", "src\Contrib\Development\Tests\Masa.Contrib.Development.DaprStarter.AspNetCore.Tests\Masa.Contrib.Development.DaprStarter.AspNetCore.Tests.csproj", "{DD899DC4-A2B7-4C7B-A644-EDB56A61145C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18N", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18N\Masa.Contrib.Globalization.I18N.csproj", "{F9E3EBD9-EE96-40F7-BDC7-818B88557D6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18n\Masa.Contrib.Globalization.I18n.csproj", "{F9E3EBD9-EE96-40F7-BDC7-818B88557D6B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D2E598D5-5E44-4275-AF03-4BAD07A0E13B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18N.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.I18N.Tests\Masa.Contrib.Globalization.I18N.Tests.csproj", "{6C732EBE-22CC-4160-B427-F4558C899024}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.I18n.Tests\Masa.Contrib.Globalization.I18n.Tests.csproj", "{6C732EBE-22CC-4160-B427-F4558C899024}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18N.Dcc", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18N.Dcc\Masa.Contrib.Globalization.I18N.Dcc.csproj", "{B0EFDF9E-81FF-4880-992B-8A65A2008717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n.Dcc", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18n.Dcc\Masa.Contrib.Globalization.I18n.Dcc.csproj", "{B0EFDF9E-81FF-4880-992B-8A65A2008717}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18N.Dcc.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.I18N.Dcc.Tests\Masa.Contrib.Globalization.I18N.Dcc.Tests.csproj", "{91FE0D47-D6DB-4D2D-8C6F-15FCE974AB52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n.Dcc.Tests", "src\Contrib\Globalization\Tests\Masa.Contrib.Globalization.I18n.Dcc.Tests\Masa.Contrib.Globalization.I18n.Dcc.Tests.csproj", "{91FE0D47-D6DB-4D2D-8C6F-15FCE974AB52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Exception", "Exception", "{84F366D3-6E9A-4101-AEC0-287CBA6984A8}"
 EndProject
@@ -617,11 +617,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Exceptions", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Exceptions.Tests", "src\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions.Tests\Masa.BuildingBlocks.Exceptions.Tests.csproj", "{921DCAAC-3146-4EDB-891C-D76089E4A451}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18N.AspNetCore", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18N.AspNetCore\Masa.Contrib.Globalization.I18N.AspNetCore.csproj", "{B7AEC624-6A40-42E7-BDB5-4487ACE48CE4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n.AspNetCore", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18n.AspNetCore\Masa.Contrib.Globalization.I18n.AspNetCore.csproj", "{B7AEC624-6A40-42E7-BDB5-4487ACE48CE4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Dispatcher.Events.FluentValidation", "src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events.FluentValidation\Masa.Contrib.Dispatcher.Events.FluentValidation.csproj", "{66B1723A-D578-418C-B21C-2C3B5CBD1180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.I18N", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18N\Masa.BuildingBlocks.Globalization.I18N.csproj", "{6088C3D3-E17E-41BC-A21F-F222F5123DF1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.I18n", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj", "{6088C3D3-E17E-41BC-A21F-F222F5123DF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

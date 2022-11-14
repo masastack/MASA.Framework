@@ -15,20 +15,20 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
     private readonly IMasaExceptionHandler? _masaExceptionHandler;
     private readonly MasaExceptionHandlerOptions _options;
     private readonly MasaExceptionLogRelationOptions _logRelationOptions;
-    private readonly I18N<MasaFrameworkResource>? _frameworkI18N;
+    private readonly I18n<MasaFrameworkResource>? _frameworkI18n;
     private readonly ILogger<MvcGlobalExceptionFilter>? _logger;
 
     public MvcGlobalExceptionFilter(IServiceProvider serviceProvider,
         IOptions<MasaExceptionHandlerOptions> options,
         IOptions<MasaExceptionLogRelationOptions> logRelationOptions,
-        I18N<MasaFrameworkResource>? frameworkI18N = null,
+        I18n<MasaFrameworkResource>? frameworkI18n = null,
         ILogger<MvcGlobalExceptionFilter>? logger = null)
     {
         _serviceProvider = serviceProvider;
         _options = options.Value;
         _masaExceptionHandler = serviceProvider.GetMasaExceptionHandler(_options.MasaExceptionHandlerType);
         _logRelationOptions = logRelationOptions.Value;
-        _frameworkI18N = frameworkI18N;
+        _frameworkI18n = frameworkI18n;
         _logger = logger;
     }
 
@@ -73,8 +73,8 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
         {
             context.ExceptionHandled = true;
 
-            string message = _frameworkI18N == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
-                _frameworkI18N[ErrorCode.INTERNAL_SERVER_ERROR];
+            string message = _frameworkI18n == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
+                _frameworkI18n[ErrorCode.INTERNAL_SERVER_ERROR];
             context.Result = new DefaultExceptionResult(message,
                 httpStatusCode,
                 masaExceptionContext.ContentType);

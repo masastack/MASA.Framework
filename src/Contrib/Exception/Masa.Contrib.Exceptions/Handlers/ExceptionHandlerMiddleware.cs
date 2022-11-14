@@ -27,7 +27,7 @@ public class ExceptionHandlerMiddleware
 
     public async Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
-        var frameworkI18N = serviceProvider.GetService<II18N<MasaFrameworkResource>>();
+        var frameworkI18n = serviceProvider.GetService<II18n<MasaFrameworkResource>>();
         try
         {
             await _next(httpContext);
@@ -67,8 +67,8 @@ public class ExceptionHandlerMiddleware
             }
             else if (_options.CatchAllException)
             {
-                string message = frameworkI18N == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
-                    frameworkI18N[ErrorCode.INTERNAL_SERVER_ERROR];
+                string message = frameworkI18n == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
+                    frameworkI18n[ErrorCode.INTERNAL_SERVER_ERROR];
                 await httpContext.Response.WriteTextAsync(httpStatusCode, message);
             }
             else
