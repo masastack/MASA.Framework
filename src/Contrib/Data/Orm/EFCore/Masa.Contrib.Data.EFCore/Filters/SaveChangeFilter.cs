@@ -31,8 +31,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
                 {
                     if (entity.State == EntityState.Added)
                     {
-                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
-                            DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
                     }
                     else
                     {

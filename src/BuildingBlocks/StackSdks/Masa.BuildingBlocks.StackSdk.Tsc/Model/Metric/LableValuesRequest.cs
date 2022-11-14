@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Model;
 
 public class LableValuesRequest
 {
-    private string[] _match = new string[1];
+    private readonly string[] _match = new string[1];
 
     /// <summary>
     /// it for the parameter `match` whitch is IEnumerable<string>

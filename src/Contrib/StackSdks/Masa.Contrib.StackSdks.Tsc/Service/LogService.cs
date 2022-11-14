@@ -6,9 +6,9 @@ namespace Masa.Contrib.StackSdks.Tsc.Service;
 public class LogService : ILogService
 {
     private readonly ICaller _caller;
-    internal const string AGGREGATION_URI = "/api/log/aggregation";
+    internal const string AGGREGATION_URI = "/api/log/aggregate";
     internal const string LATEST_URI = "/api/log/latest";
-    internal const string FIELD_URI = "/api/log/field";
+    internal const string FIELD_URI = "/api/log/mapping";
 
     public LogService(ICaller caller)
     {
