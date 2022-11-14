@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache\Masa.BuildingBlocks.Authentication.OpenIdConnect.Cache.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Ddd\Domain\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
-    <ProjectReference Include="..\..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

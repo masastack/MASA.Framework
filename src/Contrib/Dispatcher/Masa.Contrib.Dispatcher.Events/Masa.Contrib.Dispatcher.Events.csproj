@@ -16,8 +16,8 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Ddd\Domain\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.Events\Masa.BuildingBlocks.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.IntegrationEvents\Masa.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
-    <ProjectReference Include="..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

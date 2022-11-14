@@ -16,10 +16,9 @@ public static class ServiceCollectionExtensions
     /// <exception cref="ArgumentException"></exception>
     public static IServiceCollection AddAliyunStorage(
         this IServiceCollection services,
-        string sectionName = Const.DEFAULT_SECTION)
+        string sectionName = Constant.DEFAULT_SECTION)
     {
-        if (string.IsNullOrEmpty(sectionName))
-            throw new ArgumentException(sectionName, nameof(sectionName));
+        MasaArgumentException.ThrowIfNullOrEmpty(sectionName);
 
         services.AddConfigure<StorageOptions>($"{sectionName}{ConfigurationPath.KeyDelimiter}{nameof(AliyunStorageConfigureOptions.Storage)}");
         services.AddConfigure<AliyunStorageConfigureOptions>(sectionName);
@@ -108,11 +107,7 @@ public static class ServiceCollectionExtensions
 
     private static void CheckAliYunStorageOptions(AliyunStorageOptions options)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-
-        if (options.AccessKeyId == null && options.AccessKeySecret == null)
-            throw new ArgumentException(
-                $"{nameof(options.AccessKeyId)}, {nameof(options.AccessKeySecret)} are required and cannot be empty");
+        MasaArgumentException.ThrowIfNull(options);
 
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeyId, nameof(options.AccessKeyId));
         ObjectStorageExtensions.CheckNullOrEmptyAndReturnValue(options.AccessKeySecret, nameof(options.AccessKeySecret));

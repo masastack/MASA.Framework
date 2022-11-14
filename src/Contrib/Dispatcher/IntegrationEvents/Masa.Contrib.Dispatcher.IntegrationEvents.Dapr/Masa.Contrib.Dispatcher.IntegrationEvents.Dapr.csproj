@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.csproj" />
   </ItemGroup>
 

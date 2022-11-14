@@ -14,8 +14,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Mapping\Masa.BuildingBlocks.Data.Mapping\Masa.BuildingBlocks.Data.Mapping.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
-    <ProjectReference Include="..\..\..\..\Utils\Masa.Utils.Exceptions\Masa.Utils.Exceptions.csproj" />
   </ItemGroup>
 
 </Project>

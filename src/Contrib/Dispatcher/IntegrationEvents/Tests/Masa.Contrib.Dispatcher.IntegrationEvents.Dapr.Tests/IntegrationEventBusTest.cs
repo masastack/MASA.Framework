@@ -44,11 +44,11 @@ public class IntegrationEventBusTest
         var services = new ServiceCollection();
         DispatcherOptions options;
 
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             options = new DispatcherOptions(services, null!);
         });
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             options = new DispatcherOptions(services, Array.Empty<Assembly>());
         });

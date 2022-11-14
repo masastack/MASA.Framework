@@ -528,7 +528,7 @@ public class DistributedCacheClientTest : TestBase
     {
         await _distributedCacheClient.RemoveAsync(key);
 
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async ()
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async ()
             => await _distributedCacheClient.HashIncrementAsync(key, value));
     }
 
@@ -555,7 +555,7 @@ public class DistributedCacheClientTest : TestBase
     {
         await _distributedCacheClient.RemoveAsync(key);
 
-        await Assert.ThrowsExceptionAsync<ArgumentOutOfRangeException>(async ()
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async ()
             => await _distributedCacheClient.HashDecrementAsync(key, value));
     }
 

@@ -524,7 +524,7 @@ public class DccTest
     public void TestComplementAndCheckDccConfigurationOptionByManageServiceAddressIsEmpty()
     {
         DccOptions dccOptions = new DccOptions();
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });
@@ -537,7 +537,7 @@ public class DccTest
         {
             ManageServiceAddress = nameof(DccOptions.ManageServiceAddress),
         };
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });
@@ -599,7 +599,7 @@ public class DccTest
                 }
             }
         };
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
         });

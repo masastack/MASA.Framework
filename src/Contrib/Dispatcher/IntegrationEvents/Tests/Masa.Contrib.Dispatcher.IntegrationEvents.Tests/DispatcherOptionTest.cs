@@ -22,7 +22,7 @@ public class DispatcherOptionTest
         _options.LocalRetryTimes = 5;
         Assert.IsTrue(_options.LocalRetryTimes == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.LocalRetryTimes = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.LocalRetryTimes = 0);
     }
 
     [TestMethod]
@@ -32,7 +32,7 @@ public class DispatcherOptionTest
         _options.MaxRetryTimes = 5;
         Assert.IsTrue(_options.MaxRetryTimes == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.MaxRetryTimes = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.MaxRetryTimes = 0);
     }
 
     [TestMethod]
@@ -42,7 +42,7 @@ public class DispatcherOptionTest
         _options.FailedRetryInterval = 5;
         Assert.IsTrue(_options.FailedRetryInterval == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.FailedRetryInterval = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.FailedRetryInterval = 0);
     }
 
     [TestMethod]
@@ -52,7 +52,7 @@ public class DispatcherOptionTest
         _options.MinimumRetryInterval = 5;
         Assert.IsTrue(_options.MinimumRetryInterval == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.MinimumRetryInterval = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.MinimumRetryInterval = 0);
     }
 
     [TestMethod]
@@ -62,7 +62,7 @@ public class DispatcherOptionTest
         _options.LocalFailedRetryInterval = 5;
         Assert.IsTrue(_options.LocalFailedRetryInterval == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.LocalFailedRetryInterval = -1);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.LocalFailedRetryInterval = -1);
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class DispatcherOptionTest
         _options.RetryBatchSize = 5;
         Assert.IsTrue(_options.RetryBatchSize == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.RetryBatchSize = -1);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.RetryBatchSize = -1);
     }
 
     [TestMethod]
@@ -82,7 +82,7 @@ public class DispatcherOptionTest
         _options.CleaningLocalQueueExpireInterval = 5;
         Assert.IsTrue(_options.CleaningLocalQueueExpireInterval == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.CleaningLocalQueueExpireInterval = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.CleaningLocalQueueExpireInterval = 0);
     }
 
     [TestMethod]
@@ -92,7 +92,7 @@ public class DispatcherOptionTest
         _options.CleaningExpireInterval = 5;
         Assert.IsTrue(_options.CleaningExpireInterval == 5);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.CleaningExpireInterval = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.CleaningExpireInterval = 0);
     }
 
     [TestMethod]
@@ -102,7 +102,7 @@ public class DispatcherOptionTest
         _options.PublishedExpireTime = 24 * 3 * 3600;
         Assert.IsTrue(_options.PublishedExpireTime == 24 * 3 * 3600);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.PublishedExpireTime = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.PublishedExpireTime = 0);
     }
 
     [TestMethod]
@@ -112,7 +112,7 @@ public class DispatcherOptionTest
         _options.DeleteBatchCount = 100;
         Assert.IsTrue(_options.DeleteBatchCount == 100);
 
-        Assert.ThrowsException<ArgumentException>(() => _options.DeleteBatchCount = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => _options.DeleteBatchCount = 0);
     }
 
     [TestMethod]

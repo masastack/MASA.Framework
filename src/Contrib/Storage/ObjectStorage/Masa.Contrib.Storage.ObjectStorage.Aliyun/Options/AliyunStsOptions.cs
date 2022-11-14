@@ -56,7 +56,7 @@ public class AliyunStsOptions
         RegionId = regionId;
     }
 
-    public long GetDurationSeconds() => DurationSeconds ?? Const.DEFAULT_DURATION_SECONDS;
+    public long GetDurationSeconds() => DurationSeconds ?? Constant.DEFAULT_DURATION_SECONDS;
 
-    public long GetEarlyExpires() => EarlyExpires ?? Const.DEFAULT_EARLY_EXPIRES;
+    public long GetEarlyExpires() => EarlyExpires ?? Constant.DEFAULT_EARLY_EXPIRES;
 }

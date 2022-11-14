@@ -14,8 +14,7 @@ public class AutoCompleteOptions
         get => _page;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException($"{nameof(Page)} must be greater than 0", nameof(Page));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(Page));
 
             _page = value;
         }
@@ -28,8 +27,7 @@ public class AutoCompleteOptions
         get => _pageSize;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException($"{nameof(PageSize)} must be greater than 0", nameof(PageSize));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(PageSize));
 
             _pageSize = value;
         }

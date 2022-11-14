@@ -24,7 +24,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             Assembly[] assemblies = null!;
             services.AddEventBus(assemblies!);
@@ -36,7 +36,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             services.AddEventBus(Array.Empty<Assembly>());
         });
@@ -47,7 +47,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        Assert.ThrowsException<ArgumentException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             services.AddTestEventBus(null!, ServiceLifetime.Scoped);
         });

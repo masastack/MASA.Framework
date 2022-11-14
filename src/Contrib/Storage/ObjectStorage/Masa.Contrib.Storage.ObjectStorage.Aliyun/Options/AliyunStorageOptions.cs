@@ -15,7 +15,7 @@ public class AliyunStorageOptions : AliyunOptions
         set => _endpoint = value?.Trim() ?? string.Empty;
     }
 
-    private string _temporaryCredentialsCacheKey = Const.TEMPORARY_CREDENTIALS_CACHEKEY;
+    private string _temporaryCredentialsCacheKey = Constant.TEMPORARY_CREDENTIALS_CACHEKEY;
 
     public string TemporaryCredentialsCacheKey
     {

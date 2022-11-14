@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)"/>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)"/>
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)"/>
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj"/>
+  </ItemGroup>
+
+</Project>

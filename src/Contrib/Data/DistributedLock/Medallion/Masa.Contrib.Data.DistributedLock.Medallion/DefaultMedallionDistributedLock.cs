@@ -12,7 +12,7 @@ public class DefaultMedallionDistributedLock : IMasaDistributedLock
 
     public IDisposable? TryGet(string key, TimeSpan timeout = default)
     {
-        ArgumentNullOrWhiteSpaceException.ThrowIfNullOrWhiteSpace(key);
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
         var handle = _distributedLockProvider.TryAcquireLock(key, timeout);
         if (handle == null)
             return null;
@@ -22,7 +22,7 @@ public class DefaultMedallionDistributedLock : IMasaDistributedLock
 
     public async Task<IAsyncDisposable?> TryGetAsync(string key, TimeSpan timeout = default, CancellationToken cancellationToken = default)
     {
-        ArgumentNullOrWhiteSpaceException.ThrowIfNullOrWhiteSpace(key);
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
         var handle = await _distributedLockProvider.TryAcquireLockAsync(key, timeout, cancellationToken);
         if (handle == null)
             return null;

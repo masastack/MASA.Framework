@@ -31,4 +31,27 @@ public abstract class DefaultRequestMessage
         if (requestMessage.Headers.All(h => h.Key != _requestIdKey))
             requestMessage.Headers.Add(_requestIdKey, requestId.ToString());
     }
+
+    protected virtual void TrySetCulture(HttpRequestMessage requestMessage)
+    {
+        var cultures = new List<(string Key, string Value)>
+        {
+            ("c", CultureInfo.CurrentCulture.Name),
+            ("uic", CultureInfo.CurrentUICulture.Name)
+        };
+        TrySetCulture(requestMessage, cultures);
+    }
+
+    protected virtual void TrySetCulture(HttpRequestMessage requestMessage, List<(string Key, string Value)> cultures)
+    {
+        var name = "cookie";
+        if (requestMessage.Headers.TryGetValues(name, out IEnumerable<string>? cookieValues))
+            requestMessage.Headers.Remove(name);
+        string value = System.Web.HttpUtility.UrlEncode(string.Join('|', cultures.Select(c => $"{c.Key}={c.Value}")));
+        var cookies = cookieValues?.ToList() ?? new List<string>();
+        if (!cookies.Any(cookie => cookie.Contains(".AspNetCore.Culture=", StringComparison.OrdinalIgnoreCase)))
+            cookies.Add($".AspNetCore.Culture={value}");
+
+        requestMessage.Headers.Add(name, cookies);
+    }
 }

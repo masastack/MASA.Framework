@@ -19,8 +19,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _localRetryTimes;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(LocalRetryTimes));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(LocalRetryTimes));
 
             _localRetryTimes = value;
         }
@@ -37,8 +36,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _maxRetryTimes;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(MaxRetryTimes));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(MaxRetryTimes));
 
             _maxRetryTimes = value;
         }
@@ -56,8 +54,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _failedRetryInterval;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(FailedRetryInterval));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(FailedRetryInterval));
 
             _failedRetryInterval = value;
         }
@@ -74,8 +71,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _minimumRetryInterval;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(MinimumRetryInterval));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(MinimumRetryInterval));
 
             _minimumRetryInterval = value;
         }
@@ -94,8 +90,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _localFailedRetryInterval;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(LocalFailedRetryInterval));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(LocalFailedRetryInterval));
 
             _localFailedRetryInterval = value;
         }
@@ -111,8 +106,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _retryBatchSize;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(RetryBatchSize));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(RetryBatchSize));
 
             _retryBatchSize = value;
         }
@@ -130,8 +124,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _cleaningLocalQueueExpireInterval;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(CleaningLocalQueueExpireInterval));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(CleaningLocalQueueExpireInterval));
 
             _cleaningLocalQueueExpireInterval = value;
         }
@@ -149,8 +142,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _cleaningExpireInterval;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(CleaningExpireInterval));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(CleaningExpireInterval));
 
             _cleaningExpireInterval = value;
         }
@@ -167,8 +159,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _publishedExpireTime;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(PublishedExpireTime));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(PublishedExpireTime));
 
             _publishedExpireTime = value;
         }
@@ -184,8 +175,7 @@ public class DispatcherOptions : IDispatcherOptions
         get => _deleteBatchCount;
         set
         {
-            if (value <= 0)
-                throw new ArgumentException("must be greater than 0", nameof(DeleteBatchCount));
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(DeleteBatchCount));
 
             _deleteBatchCount = value;
         }
@@ -200,8 +190,7 @@ public class DispatcherOptions : IDispatcherOptions
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
-        if (assemblies == null || assemblies.Length == 0)
-            throw new ArgumentException(nameof(assemblies));
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
 
         Assemblies = assemblies;
         AllEventTypes = assemblies

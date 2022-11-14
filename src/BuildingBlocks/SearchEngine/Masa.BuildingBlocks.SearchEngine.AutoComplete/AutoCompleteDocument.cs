@@ -45,14 +45,17 @@ public class AutoCompleteDocument<TValue> : AutoCompleteDocument where TValue : 
         get
         {
             if (string.IsNullOrEmpty(_id))
-                return Value?.ToString() ?? throw new ArgumentException($"{nameof(Id)} cannot be empty", nameof(Id));
+            {
+                var val = Value.ToString();
+                MasaArgumentException.ThrowIfNullOrEmpty(val, nameof(Id));
+                return val!;
+            }
 
             return _id;
         }
         init
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentException($"{nameof(Id)} cannot be empty", nameof(Id));
+            MasaArgumentException.ThrowIfNullOrEmpty(value, nameof(Id));
 
             _id = value;
         }

@@ -19,7 +19,7 @@ public class StorageTest : TestBase
     public void TestAddAliyunStorageByEmptySectionReturnThrowArgumentException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentException>(() => services.AddAliyunStorage(string.Empty));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddAliyunStorage(string.Empty));
     }
 
     [TestMethod]
@@ -226,7 +226,7 @@ public class StorageTest : TestBase
     [TestMethod]
     public void TestAddAliyunStorageByEmptyAccessKeyIdReturnThrowArgumentNullException()
     {
-        Assert.ThrowsException<ArgumentException>(() => new AliyunStorageOptions(null!, null!, null!));
+        Assert.ThrowsException<MasaArgumentException>(() => new AliyunStorageOptions(null!, null!, null!));
     }
 
     [TestMethod]

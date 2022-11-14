@@ -25,33 +25,8 @@ internal class LocalMasaConfigurationRepository : AbstractConfigurationRepositor
 
     private void Initialize(IConfiguration configuration)
     {
-        Dictionary<string, string> data = new();
-        GetData(configuration, configuration.GetChildren(), ref data);
+        var data = configuration.ConvertToDictionary();
         _data = new Properties(data);
-    }
-
-    private void GetData(IConfiguration configuration, IEnumerable<IConfigurationSection> configurationSections,
-        ref Dictionary<string, string> dictionary)
-    {
-        foreach (var configurationSection in configurationSections)
-        {
-            var section = configuration.GetSection(configurationSection.Path);
-
-            var childrenSections = section.GetChildren()?.ToList() ?? new List<IConfigurationSection>();
-
-            if (!section.Exists() || !childrenSections.Any())
-            {
-                var key = section.Path;
-                if (!dictionary.ContainsKey(key))
-                {
-                    dictionary.Add(key, configuration[section.Path]);
-                }
-            }
-            else
-            {
-                GetData(configuration, childrenSections, ref dictionary);
-            }
-        }
     }
 
     public override Properties Load()
