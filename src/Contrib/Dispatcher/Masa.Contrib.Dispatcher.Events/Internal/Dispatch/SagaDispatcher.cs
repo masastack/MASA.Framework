@@ -59,6 +59,7 @@ internal class SagaDispatcher : DispatcherBase
                 handler.InstanceType = eventBusHandlerType;
                 handler.EventType = eventType;
                 handler.IsCancel = method.Name.Equals(nameof(ISagaEventHandler<IEvent>.CancelAsync));
+                handler.BuildExpression();
                 eventHandlers.Add(handler);
             }
         }

@@ -140,14 +140,7 @@ public class EventHandlerAttribute : Attribute
 
     internal async Task ExecuteAction<TEvent>(IServiceProvider serviceProvider, TEvent @event) where TEvent : IEvent
     {
-        if (InvokeDelegate != null)
-        {
-            await InvokeDelegate.Invoke(serviceProvider.GetRequiredService(InstanceType), GetParameters(serviceProvider, @event));
-        }
-        else
-        {
-            await ExecuteSagaAction(serviceProvider, @event);
-        }
+        await InvokeDelegate!.Invoke(serviceProvider.GetRequiredService(InstanceType), GetParameters(serviceProvider, @event));
     }
 
     private object?[] GetParameters<TEvent>(IServiceProvider serviceProvider, TEvent @event) where TEvent : IEvent
@@ -165,22 +158,6 @@ public class EventHandlerAttribute : Attribute
             }
         }
         return parameters;
-    }
-
-    private async Task ExecuteSagaAction<TEvent>(IServiceProvider serviceProvider, TEvent @event) where TEvent : IEvent
-    {
-        if (!IsCancel)
-        {
-            var handlers = serviceProvider.GetServices<IEventHandler<TEvent>>();
-            var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
-            await handler.HandleAsync(@event);
-        }
-        else
-        {
-            var handlers = serviceProvider.GetServices<ISagaEventHandler<TEvent>>();
-            var handler = handlers.FirstOrDefault(x => x.GetType() == InstanceType)!;
-            await handler.CancelAsync(@event);
-        }
     }
 
     internal bool IsHandlerMissing(int maxCancelOrder) => FailureLevels == FailureLevels.ThrowAndCancel && Order < maxCancelOrder ||

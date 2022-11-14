@@ -9,6 +9,7 @@ namespace Masa.Contrib.Dispatcher.Events.Tests;
 public class SagaTest : TestBase
 {
     private readonly IEventBus _eventBus;
+
     public SagaTest() : base()
     {
         _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
@@ -26,6 +27,17 @@ public class SagaTest : TestBase
         };
         await _eventBus.PublishAsync(@event);
         Assert.IsTrue(@event.Message == result);
+    }
+
+    [TestMethod]
+    public async Task TestAddGoodsEventBySaga()
+    {
+        IEvent @event = new AddGoodsEvent()
+        {
+            Name = "Microsoft"
+        };
+        await _eventBus.PublishAsync(@event);
+        Assert.IsTrue(((AddGoodsEvent)@event).Count == 1);
     }
 
     [DataTestMethod]
@@ -97,4 +109,6 @@ public class SagaTest : TestBase
         }
         ResetMemoryEventBus(false, null!);
     }
+
+
 }
