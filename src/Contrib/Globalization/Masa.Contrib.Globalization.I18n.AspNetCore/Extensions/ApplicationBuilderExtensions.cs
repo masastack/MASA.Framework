@@ -20,14 +20,17 @@ public static class ApplicationBuilderExtensions
 
         var requestLocalization = new RequestLocalizationOptions();
 
-        var cultures = settings.SupportedCultures.Select(x => x.Culture).ToArray();
-        requestLocalization
-            .AddSupportedCultures(cultures)
-            .AddSupportedUICultures(cultures);
-        requestLocalization.SetDefaultCulture(!string.IsNullOrWhiteSpace(defaultCulture) ? defaultCulture : cultures.FirstOrDefault()!);
+        if (settings.SupportedCultures.Any())
+        {
+            var cultures = settings.SupportedCultures.Select(x => x.Culture).ToArray();
+            requestLocalization
+                .AddSupportedCultures(cultures)
+                .AddSupportedUICultures(cultures);
+            requestLocalization.SetDefaultCulture(!string.IsNullOrWhiteSpace(defaultCulture) ? defaultCulture : cultures.FirstOrDefault()!);
 
-        requestLocalization.ApplyCurrentCultureToResponseHeaders = true;
-        app.UseRequestLocalization(requestLocalization);
+            requestLocalization.ApplyCurrentCultureToResponseHeaders = true;
+            app.UseRequestLocalization(requestLocalization);
+        }
         return app;
     }
 }
