@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Yaml\Masa.Contrib.Data.Serialization.Yaml.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Authentication.Identity.BlazorWebAssembly\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.csproj" />
   </ItemGroup>
 
 </Project>

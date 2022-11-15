@@ -6,7 +6,7 @@ Identity核心库，为`Identity`提供核心实现，它需要配合以下三�
 
 * [Authentication.Identity](../Masa.Contrib.Authentication.Identity/README.zh-CN.md): 为Mvc、Minimal APIs项目提供`Identity`服务
 * [Authentication.Identity.BlazorServer](../Masa.Contrib.Authentication.Identity.BlazorServer/README.zh-CN.md): 为BlazorServer项目提供`Identity`服务
-* [Authentication.Identity.BlazorAssembly](../Masa.Contrib.Authentication.Identity.BlazorAssembly/README.zh-CN.md): 为BlazorAssembly项目提供`Identity`服务
+* [Authentication.Identity.BlazorAssembly](../Masa.Contrib.Authentication.Identity.BlazorWebAssembly/README.zh-CN.md): 为BlazorAssembly项目提供`Identity`服务
 
 下面我们以`Authentication.Identity`为例：
 

@@ -7,7 +7,7 @@ Provides `Identity` implementation, supports `Blazor Assembly` projects
 Example:
 
 ``` C#
-Install-Package Masa.Contrib.Authentication.Identity.BlazorAssembly
+Install-Package Masa.Contrib.Authentication.Identity.BlazorWebAssembly
 ```
 
 1. Modify `Program.cs`

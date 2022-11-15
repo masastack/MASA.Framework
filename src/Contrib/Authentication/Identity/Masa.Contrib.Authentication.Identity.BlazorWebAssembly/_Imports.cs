@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.Contrib.Authentication.Identity;
-global using Masa.Contrib.Authentication.Identity.BlazorAssembly;
+global using Masa.Contrib.Authentication.Identity.BlazorWebAssembly;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Security.Claims;
