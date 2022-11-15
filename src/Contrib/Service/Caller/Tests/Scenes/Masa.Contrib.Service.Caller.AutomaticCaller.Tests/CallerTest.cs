@@ -86,6 +86,7 @@ public class CallerTest
         {
             opt.UseHttpClient(builder =>
             {
+                builder.Prefix = "";
                 builder.BaseAddress = "https://github.com/masastack";
             });
         });

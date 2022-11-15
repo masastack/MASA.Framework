@@ -5,7 +5,7 @@
 Masa.Contrib.Service.Caller is the basic class library of Caller, which provides the abstraction of the following capabilities
 
 * `ICallerFactory`: Factory for creating `Caller` (Singleton)
-* `ICaller`: Provides `Post`, `Delete`, `Patch`, `Put`, `Get`, `Send` capabilities (Singleton)
+* `ICaller`: Provides `Post`, `Delete`, `Patch`, `Put`, `Get`, `Send` capabilities (Scoped)
 * Caller instance that inherits `HttpClientCallerBase`, `DaprCallerBase` (Scoped)
 * `IRequestMessage`: Provides the ability to process request data (default implementation [`JsonRequestMessage`](./JsonRequestMessage.cs)) (Singleton)
 * `IResponseMessage`: Provides the ability to handle response data (default implementation [`DefaultResponseMessage`](./DefaultResponseMessage.cs)) (Singleton)

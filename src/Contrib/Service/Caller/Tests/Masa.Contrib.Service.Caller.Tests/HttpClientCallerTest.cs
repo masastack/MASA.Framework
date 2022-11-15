@@ -139,7 +139,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
         Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<object?>(httpResponseMessage));
 
         Assert.IsNull(await defaultResponseMessage.ProcessResponseAsync<int?>(httpResponseMessage));
@@ -162,7 +162,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
         var result = await defaultResponseMessage.ProcessResponseAsync<List<string>>(GetHttpResponseMessage());
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.Count);
@@ -194,7 +194,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
         var result = await defaultResponseMessage.ProcessResponseAsync<List<int>>(GetHttpResponseMessage());
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.Count);
@@ -232,7 +232,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
 
         var res = await defaultResponseMessage.ProcessResponseAsync<int>(httpResponseMessage);
         Assert.IsNotNull(res);
@@ -257,7 +257,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
 
         var res = await defaultResponseMessage.ProcessResponseAsync<Guid?>(httpResponseMessage);
         Assert.IsNotNull(res);
@@ -282,7 +282,7 @@ public class HttpClientCallerTest
             option.JsonSerializerOptions = new JsonSerializerOptions();
         });
         var serviceProvider = services.BuildServiceProvider();
-        var defaultResponseMessage = new DefaultResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
+        var defaultResponseMessage = new JsonResponseMessage(serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>());
 
         var res = await defaultResponseMessage.ProcessResponseAsync<DateTime?>(httpResponseMessage);
         Assert.IsNotNull(res);

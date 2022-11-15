@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
         services.TryAddSingleton<IRequestMessage, JsonRequestMessage>();
-        services.TryAddSingleton<IResponseMessage, DefaultResponseMessage>();
+        services.TryAddSingleton<IResponseMessage, JsonResponseMessage>();
         services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
