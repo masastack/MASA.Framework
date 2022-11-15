@@ -36,7 +36,7 @@ public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
                 @event,
                 failures);
 
-            var validationException = new ValidationException("Validation exception", failures);
+            var validationException = new ValidationException(failures);
             throw new MasaValidatorException(validationException.Message);
         }
 
