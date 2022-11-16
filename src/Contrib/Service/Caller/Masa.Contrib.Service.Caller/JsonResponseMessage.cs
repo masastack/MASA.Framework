@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class JsonResponseMessage : DefaultResponseMessage
 {
     public JsonResponseMessage(

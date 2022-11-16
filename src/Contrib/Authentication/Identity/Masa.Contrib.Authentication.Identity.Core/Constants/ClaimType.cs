@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Authentication.Identity;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public static class ClaimType
 {
     public const string DEFAULT_USER_ID = ClaimTypes.NameIdentifier;

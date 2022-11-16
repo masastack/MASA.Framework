@@ -3,13 +3,14 @@
 
 namespace Masa.Contrib.Service.Caller;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public abstract class DefaultResponseMessage : IResponseMessage
 {
     protected ILogger<DefaultResponseMessage>? Logger { get; }
 
     protected CallerFactoryOptions Options { get; }
 
-    public DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
+    protected DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
     {
         Options = options.Value;
         Logger = logger;
@@ -57,7 +58,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
 
-    protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
+    private async Task<TResponse?> FormatResponseAsync<TResponse>(
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
@@ -77,6 +78,24 @@ public abstract class DefaultResponseMessage : IResponseMessage
         }
 
         return await FormatResponseAsync<TResponse>(response.Content, cancellationToken);
+    }
+
+    protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
+        HttpContent httpContent,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return await httpContent.ReadFromJsonAsync<TResponse>(
+                Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
+                , cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            Logger?.LogWarning(exception, "{Message}", exception.Message);
+            ExceptionDispatchInfo.Capture(exception).Throw();
+            return default; //This will never be executed, the previous line has already thrown an exception
+        }
     }
 
     private static async Task<TResponse?> FormatResponseByGuidAsync<TResponse>(
@@ -114,24 +133,6 @@ public abstract class DefaultResponseMessage : IResponseMessage
             return (TResponse?)Convert.ChangeType(content, actualType);
 
         return (TResponse?)Convert.ChangeType(content, responseType);
-    }
-
-    protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
-        HttpContent httpContent,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await httpContent.ReadFromJsonAsync<TResponse>(
-                Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
-                , cancellationToken);
-        }
-        catch (Exception exception)
-        {
-            Logger?.LogWarning(exception, "{Message}", exception.Message);
-            ExceptionDispatchInfo.Capture(exception).Throw();
-            return default; //This will never be executed, the previous line has already thrown an exception
-        }
     }
 
     private static bool IsNullOrEmpty(string value) => string.IsNullOrEmpty(value) || value == "null";
