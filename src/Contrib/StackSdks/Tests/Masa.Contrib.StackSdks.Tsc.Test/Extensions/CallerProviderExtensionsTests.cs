@@ -14,7 +14,7 @@ public class CallerProviderExtensionsTests
         var param = new { name = "name" };
         var result = "ok";
         caller.Setup(provider => provider.SendAsync<string>(It.IsAny<HttpRequestMessage>(), default)).ReturnsAsync(result);
-        var str = await caller.Object.GetByBodyAsync<string>(url, "name");
+        var str = await caller.Object.GetByBodyAsync<string>(url, param);
         Assert.IsNotNull(str);
         Assert.AreEqual(result, str);
     }

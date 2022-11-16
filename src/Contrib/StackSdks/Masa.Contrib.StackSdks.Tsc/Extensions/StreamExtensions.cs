@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace System.IO;
 
-public static class StreamExtensions
+internal static class StreamExtensions
 {
     private static readonly Encoding _defaultEncoding = Encoding.UTF8;
 

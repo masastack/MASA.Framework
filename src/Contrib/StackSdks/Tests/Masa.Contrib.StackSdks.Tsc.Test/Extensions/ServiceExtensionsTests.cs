@@ -1,15 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq.Protected;
-using OpenTelemetry.Logs;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-
 namespace Masa.Contrib.StackSdks.Tsc.Tests.Extensions;
 
 [TestClass]
