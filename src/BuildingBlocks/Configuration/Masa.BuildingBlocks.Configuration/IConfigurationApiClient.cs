@@ -15,6 +15,6 @@ public interface IConfigurationApiClient
 
     Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject, Action<dynamic>? valueChanged = null);
 
-    Task<dynamic> GetDynamicAsync(string key);
+    Task<dynamic> GetDynamicAsync(string configObject);
 }
 

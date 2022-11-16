@@ -1,13 +1,13 @@
 中 | [EN](README.md)
 
-## Authentication.Identity.BlazorAssembly
+## Authentication.Identity.BlazorWebAssembly
 
-提供了`Identity`实现，支持`Blazor Assembly`项目
+提供了`Identity`实现，支持`Blazor WebAssembly`项目
 
 用例：
 
 ``` C#
-Install-Package Masa.Contrib.Authentication.Identity.BlazorAssembly
+Install-Package Masa.Contrib.Authentication.Identity.BlazorWebAssembly
 ```
 
 1. 修改`Program.cs`

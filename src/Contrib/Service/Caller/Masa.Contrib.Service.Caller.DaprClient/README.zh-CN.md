@@ -31,7 +31,7 @@ app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
     => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
 ```
 
-> 完整请求的接口地址是：http://localhost:3500/v1.0/invoke/<Replace-You-Dapr-AppID>/method/Hello?Name={name}
+> 完整请求的接口地址是：http://localhost:3500/v1.0/invoke/<Replace-Your-Dapr-AppID>/method/Hello?Name={name}
 
 3. 当存在多个DaprClient时，则修改`Program.cs`为
 

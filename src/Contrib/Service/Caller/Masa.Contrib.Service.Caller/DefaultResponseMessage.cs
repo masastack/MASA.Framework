@@ -3,15 +3,17 @@
 
 namespace Masa.Contrib.Service.Caller;
 
-public class DefaultResponseMessage : IResponseMessage
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+public abstract class DefaultResponseMessage : IResponseMessage
 {
-    private readonly ILogger<DefaultResponseMessage>? _logger;
-    private readonly CallerFactoryOptions _options;
+    protected ILogger<DefaultResponseMessage>? Logger { get; }
 
-    public DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
+    protected CallerFactoryOptions Options { get; }
+
+    protected DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
     {
-        _options = options.Value;
-        _logger = logger;
+        Options = options.Value;
+        Logger = logger;
     }
 
     public async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
@@ -75,15 +77,22 @@ public class DefaultResponseMessage : IResponseMessage
             return await FormatResponseByValueTypeAsync<TResponse>(responseType, actualType, response, cancellationToken);
         }
 
+        return await FormatResponseAsync<TResponse>(response.Content, cancellationToken);
+    }
+
+    protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
+        HttpContent httpContent,
+        CancellationToken cancellationToken = default)
+    {
         try
         {
-            return await response.Content.ReadFromJsonAsync<TResponse>(
-                _options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
+            return await httpContent.ReadFromJsonAsync<TResponse>(
+                Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
                 , cancellationToken);
         }
         catch (Exception exception)
         {
-            _logger?.LogWarning(exception, "{Message}", exception.Message);
+            Logger?.LogWarning(exception, "{Message}", exception.Message);
             ExceptionDispatchInfo.Capture(exception).Throw();
             return default; //This will never be executed, the previous line has already thrown an exception
         }

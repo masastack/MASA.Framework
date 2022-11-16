@@ -33,10 +33,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
                     {
                         entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
                     }
-                    else
-                    {
-                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
-                    }
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
                 }
             }
 
@@ -46,14 +43,9 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
                 {
                     entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
                         DateTime.UtcNow; //The current time to change to localization after waiting for localization
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
-                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
                 }
-                else
-                {
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
-                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
-                }
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
+                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
         }
     }

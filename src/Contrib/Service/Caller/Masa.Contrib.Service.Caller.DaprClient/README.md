@@ -31,7 +31,7 @@ app.MapGet("/Test/User/Hello", ([FromServices] ICaller userCaller, string name)
     => userCaller.GetAsync<string>($"/Hello", new { Name = name }));
 ```
 
-> The interface address of the complete request is: http://localhost:3500/v1.0/invoke/<Replace-You-Dapr-AppID>/method/Hello?Name={name}
+> The interface address of the complete request is: http://localhost:3500/v1.0/invoke/<Replace-Your-Dapr-AppID>/method/Hello?Name={name}
 
 3. When there are multiple DaprClients, modify `Program.cs`
 

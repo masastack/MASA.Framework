@@ -511,7 +511,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Caching", "Caching", "{50E4A2F8-2EB8-4942-AEDA-BBA467249D92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly", "src\Contrib\Authentication\Identity\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorWebAssembly", "src\Contrib\Authentication\Identity\Masa.Contrib.Authentication.Identity.BlazorWebAssembly\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Caching", "src\BuildingBlocks\Caching\Masa.BuildingBlocks.Caching\Masa.BuildingBlocks.Caching.csproj", "{6FB4481A-9C5E-4D0E-9B95-EA26DD1F90F2}"
 EndProject
@@ -519,7 +519,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Distributed", "Distributed", "{B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests", "src\Contrib\Authentication\Identity\Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests", "src\Contrib\Authentication\Identity\Tests\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Extensions.DotNet.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.DotNet.Tests\Masa.Utils.Extensions.DotNet.Tests.csproj", "{9E9122FD-8E27-4524-862F-FFEFA97E404A}"
 EndProject
