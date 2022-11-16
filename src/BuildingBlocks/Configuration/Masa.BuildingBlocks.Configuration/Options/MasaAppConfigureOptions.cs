@@ -24,5 +24,14 @@ public class MasaAppConfigureOptions
         return defaultFunc.Invoke();
     }
 
-    public void TryAdd(string key, string value) => Data.TryAdd(key, value);
+    public bool TryAdd(string key, string value) => Data.TryAdd(key, value);
+
+    public void Set(string key, string value) => Data[key] = value;
+
+    public void TryRemove(string key)
+    {
+        if (Data.ContainsKey(key)) Remove(key);
+    }
+
+    public bool Remove(string key) => Data.Remove(key);
 }
