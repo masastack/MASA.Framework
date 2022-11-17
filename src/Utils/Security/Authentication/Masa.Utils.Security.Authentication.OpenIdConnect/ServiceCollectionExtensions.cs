@@ -70,6 +70,7 @@ public static class ServiceCollectionExtensions
                 options.ClaimActions.MapUniqueJsonKey("roles", "roles");
                 options.ClaimActions.MapUniqueJsonKey("environment", "environment");
                 options.ClaimActions.MapUniqueJsonKey("current_team", "current_team");
+                options.ClaimActions.MapUniqueJsonKey("phone_number", "phone_number");
                 options.ClaimActions.MapUniqueJsonKey("staff_id", "staff_id");
 
                 options.Events = new OpenIdConnectEvents
