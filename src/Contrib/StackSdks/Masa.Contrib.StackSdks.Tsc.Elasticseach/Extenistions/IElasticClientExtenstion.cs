@@ -170,7 +170,7 @@ internal static class IElasticClientExtenstion
     {
         PaginationDto<LogResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Log.IndexName, query,
-        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
         (response, q) => result = SetLogResult(response));
         return result;
     }
@@ -179,7 +179,7 @@ internal static class IElasticClientExtenstion
     {
         object result = default!;
         await client.SearchAsync(ElasticConst.Log.IndexName, query,
-       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
        (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
@@ -190,7 +190,7 @@ internal static class IElasticClientExtenstion
     {
         PaginationDto<TraceResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Trace.IndexName, query,
-        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
         (response, q) => result = SetTraceResult(response));
         return result;
     }
@@ -199,18 +199,17 @@ internal static class IElasticClientExtenstion
     {
         object result = default!;
         await client.SearchAsync(ElasticConst.Trace.IndexName, query,
-       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, false), query),
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, false), query),
        (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
     #endregion
 
-    private static QueryContainer SearchFn<TQuery, TResult>(QueryContainerDescriptor<TResult> queryContainer, TQuery query) where TQuery : BaseRequestDto where TResult : class
+    private static QueryContainer SearchFn<TQuery, TResult>(QueryContainerDescriptor<TResult> queryContainer, TQuery query, bool isLog) where TQuery : BaseRequestDto where TResult : class
     {
         var list = new List<Func<QueryContainerDescriptor<TResult>, QueryContainer>>();
-        bool isLog = false;
-        if (query is LogRequestDto)
-            isLog = true;
+        string timestamp = isLog ? ElasticConst.Log.Timestamp : ElasticConst.Trace.Timestamp;
+        var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
 
         if (!string.IsNullOrEmpty(query.RawQuery))
         {
@@ -218,7 +217,7 @@ internal static class IElasticClientExtenstion
         }
         if (query.Start > DateTime.MinValue && query.End > DateTime.MinValue && query.Start < query.End)
         {
-            list.Add(queryContainer => queryContainer.DateRange(dateRangeQuery => dateRangeQuery.GreaterThanOrEquals(query.Start).LessThanOrEquals(query.End).Field(isLog ? ElasticConst.Log.Timestamp : ElasticConst.Trace.Timestamp)));
+            list.Add(queryContainer => queryContainer.DateRange(dateRangeQuery => dateRangeQuery.GreaterThanOrEquals(query.Start).LessThanOrEquals(query.End).Field(timestamp)));
         }
         if (!string.IsNullOrEmpty(query.Keyword))
         {
@@ -229,7 +228,6 @@ internal static class IElasticClientExtenstion
         var conditions = AddFilter(query);
         if (conditions != null && conditions.Any())
         {
-            var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
             foreach (var item in conditions)
             {
                 var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, item.Name, StringComparison.OrdinalIgnoreCase));
@@ -361,6 +359,7 @@ internal static class IElasticClientExtenstion
         var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
         var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, aggModel.Name, StringComparison.OrdinalIgnoreCase));
         string field = mapping?.Name ?? aggModel.Name;
+        string aliasName = aggModel.Alias ?? aggModel.Name;
         string keyword = field;
         if (mapping != null && (mapping.IsKeyword ?? false))
             keyword = $"{keyword}.keyword";
@@ -369,22 +368,22 @@ internal static class IElasticClientExtenstion
         {
             case AggregateTypes.Count:
                 {
-                    aggContainer.ValueCount(aggModel.Alias ?? aggModel.Name, agg => agg.Field(keyword));
+                    aggContainer.ValueCount(aliasName, agg => agg.Field(keyword));
                 }
                 break;
             case AggregateTypes.Sum:
                 {
-                    aggContainer.Sum(aggModel.Alias ?? aggModel.Name, agg => agg.Field(field));
+                    aggContainer.Sum(aliasName, agg => agg.Field(field));
                 }
                 break;
             case AggregateTypes.Avg:
                 {
-                    aggContainer.Average(aggModel.Alias ?? aggModel.Name, agg => agg.Field(field));
+                    aggContainer.Average(aliasName, agg => agg.Field(field));
                 }
                 break;
             case AggregateTypes.DistinctCount:
                 {
-                    aggContainer.Cardinality(aggModel.Alias ?? aggModel.Name, agg => agg.Field(keyword));
+                    aggContainer.Cardinality(aliasName, agg => agg.Field(keyword));
                 }
                 break;
             case AggregateTypes.DateHistogram:
@@ -393,12 +392,12 @@ internal static class IElasticClientExtenstion
                     {
                         throw new UserFriendlyException($"Field of type [{field}] is not supported for aggregation [date_histogram]");
                     }
-                    aggContainer.DateHistogram(aggModel.Alias ?? aggModel.Name, agg => agg.Field(keyword).FixedInterval(new Time(aggModel.Interval)));
+                    aggContainer.DateHistogram(aliasName, agg => agg.Field(keyword).FixedInterval(new Time(aggModel.Interval)));
                 }
                 break;
             case AggregateTypes.GroupBy:
                 {
-                    aggContainer.Terms(aggModel.Alias ?? aggModel.Name, agg => agg.Field(keyword).Size(aggModel.MaxCount));
+                    aggContainer.Terms(aliasName, agg => agg.Field(keyword).Size(aggModel.MaxCount));
                 }
                 break;
         }
@@ -411,10 +410,9 @@ internal static class IElasticClientExtenstion
         if (response.Aggregations == null || !response.Aggregations.Any())
             return default!;
 
-        var result = new Dictionary<string, string>();
         foreach (var item in response.Aggregations.Values)
         {
-            if (aggModel.Type - AggregateTypes.DistinctCount <= 0 && item is ValueAggregate value && value != null)
+            if (item is ValueAggregate value)
             {
                 string temp = default!;
                 if (!string.IsNullOrEmpty(value.ValueAsString))
@@ -422,24 +420,26 @@ internal static class IElasticClientExtenstion
                 else if (value.Value.HasValue)
                     temp = value.Value.Value.ToString();
 
-                if (string.IsNullOrEmpty(temp))
-                    continue;
-
                 return temp;
             }
-            else if (aggModel.Type == AggregateTypes.DateHistogram && item is BucketAggregate bucketAggregate)
+            else if (item is BucketAggregate bucketAggregate)
             {
-                foreach (var bucket in bucketAggregate.Items)
+                if (aggModel.Type == AggregateTypes.DateHistogram)
                 {
-                    var dateHistogramBucket = (DateHistogramBucket)bucket;
-                    result.Add(dateHistogramBucket.KeyAsString, (dateHistogramBucket.DocCount ?? 0).ToString());
+                    var result = new Dictionary<string, string>();
+                    foreach (var bucket in bucketAggregate.Items)
+                    {
+                        var dateHistogramBucket = (DateHistogramBucket)bucket;
+                        result.Add(dateHistogramBucket.KeyAsString, (dateHistogramBucket.DocCount ?? 0).ToString());
+                    }
+                    return result;
+                }
+                else if (aggModel.Type == AggregateTypes.GroupBy)
+                {
+                    return bucketAggregate.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
                 }
             }
-            else if (aggModel.Type == AggregateTypes.GroupBy && item is BucketAggregate termsAggregate)
-            {
-                return termsAggregate.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
-            }
         }
-        return result;
+        return default!;
     }
 }

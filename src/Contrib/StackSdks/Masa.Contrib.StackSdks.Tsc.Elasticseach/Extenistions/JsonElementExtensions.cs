@@ -15,22 +15,15 @@ internal static class JsonElementExtensions
 
     public static object GetValue(this JsonElement value)
     {
-        switch (value.ValueKind)
+        return value.ValueKind switch
         {
-            case JsonValueKind.Object:
-                return GetObject(value);
-            case JsonValueKind.Array:
-                return GetArray(value);
-            case JsonValueKind.String:
-                return value.GetString()!;
-            case JsonValueKind.Number:
-                return GetNumber(value);
-            case JsonValueKind.True:
-            case JsonValueKind.False:
-                return value.GetBoolean();
-            default:
-                return default!;
-        }
+            JsonValueKind.Object => GetObject(value),
+            JsonValueKind.Array => GetArray(value),
+            JsonValueKind.String => value.GetString()!,
+            JsonValueKind.Number => GetNumber(value),
+            JsonValueKind.True or JsonValueKind.False => value.GetBoolean(),
+            _ => default!,
+        };
     }
 
     private static object GetNumber(JsonElement value)
