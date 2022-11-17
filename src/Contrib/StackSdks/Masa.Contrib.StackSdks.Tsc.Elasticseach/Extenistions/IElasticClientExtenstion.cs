@@ -8,56 +8,18 @@ internal static class IElasticClientExtenstion
     public static async Task SearchAsync<TResult, TQuery>(this IElasticClient client,
         string indexName,
         TQuery query,
-        Func<QueryContainerDescriptor<TResult>, TQuery, QueryContainer>? condition = null,
-        Action<ISearchResponse<TResult>, TQuery>? result = null,
-        Func<AggregationContainerDescriptor<TResult>, TQuery, IAggregationContainer>? aggregate = null,
-        Func<ValueTuple<bool, int, int>>? page = null,
-        Func<SortDescriptor<TResult>, TQuery, SortDescriptor<TResult>>? sort = null,
-        Func<string[]>? includeFields = null,
-        Func<string[]>? excludeFields = null
-        ) where TResult : class where TQuery : class
+        Func<SearchDescriptor<TResult>, SearchDescriptor<TResult>> searchDescriptorFunc,
+        Action<ISearchResponse<TResult>, TQuery> resultFunc) where TResult : class where TQuery : class
     {
         try
         {
-            SearchDescriptor<TResult> func(SearchDescriptor<TResult> searchDescriptor)
-            {
-                if (condition is not null)
-                    searchDescriptor = searchDescriptor.Query(queryContainer => condition.Invoke(queryContainer, query));
-                int curPage = 0, pageSize = 0;
-                bool hasPage = false;
-                if (page != null)
-                {
-                    var pageData = page.Invoke();
-                    hasPage = pageData.Item1;
-                    curPage = pageData.Item2;
-                    pageSize = pageData.Item3;
-                }
-                searchDescriptor = SetPageSize(searchDescriptor, hasPage, curPage, pageSize);
-                if (sort != null)
-                    searchDescriptor = searchDescriptor.Sort(sortDescriptor => sort(sortDescriptor, query));
-                if (includeFields != null || excludeFields != null)
-                {
-                    searchDescriptor = searchDescriptor.Source(source =>
-                    {
-                        if (includeFields != null)
-                            source = source.Includes(f => f.Fields(includeFields.Invoke()));
-                        if (excludeFields != null)
-                            source = source.Excludes(f => f.Fields(excludeFields.Invoke()));
-                        return source;
-                    });
-                }
-
-                if (aggregate != null)
-                {
-                    searchDescriptor = searchDescriptor.Aggregations(agg => aggregate?.Invoke(agg, query));
-                }
-                return searchDescriptor;
-            }
-            var searchResponse = await client.SearchAsync<TResult>(s => func(s.Index(indexName)));
+            if (resultFunc is null)
+                return;
+            var searchResponse = await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)));
             searchResponse.FriendlyElasticException();
             if (searchResponse.IsValid)
             {
-                result?.Invoke(searchResponse, query);
+                resultFunc.Invoke(searchResponse, query);
             }
         }
         catch (Exception ex)
@@ -66,7 +28,7 @@ internal static class IElasticClientExtenstion
         }
     }
 
-    private static SearchDescriptor<T> SetPageSize<T>(SearchDescriptor<T> container, bool hasPage, int page, int size) where T : class
+    private static SearchDescriptor<T> AddPageSize<T>(this SearchDescriptor<T> container, bool hasPage, int page, int size) where T : class
     {
         if (!hasPage)
             return container.Size(size);
@@ -77,6 +39,37 @@ internal static class IElasticClientExtenstion
             throw new UserFriendlyException($"elastic query data max count must be less {ElasticConst.MaxRecordCount}, please input more condition to limit");
 
         return container.Size(size).From(start);
+    }
+
+    private static SearchDescriptor<TResult> AddCondition<TResult, TQuery>(this SearchDescriptor<TResult> searchDescriptor,
+        Func<QueryContainerDescriptor<TResult>, TQuery, QueryContainer> condition,
+        TQuery query) where TResult : class where TQuery : class
+    {
+        if (condition is not null)
+            searchDescriptor = searchDescriptor.Query(queryContainer => condition.Invoke(queryContainer, query));
+        return searchDescriptor;
+    }
+
+    private static SearchDescriptor<TResult> AddSort<TResult, TQuery>(this SearchDescriptor<TResult> searchDescriptor,
+        Func<SortDescriptor<TResult>, TQuery, SortDescriptor<TResult>> sort,
+        TQuery query) where TResult : class where TQuery : class
+    {
+
+        if (sort != null)
+            searchDescriptor = searchDescriptor.Sort(sortDescriptor => sort(sortDescriptor, query));
+
+        return searchDescriptor;
+    }
+
+    private static SearchDescriptor<TResult> AddAggregate<TResult, TQuery>(this SearchDescriptor<TResult> searchDescriptor,
+        Func<AggregationContainerDescriptor<TResult>, TQuery, IAggregationContainer> aggregate,
+        TQuery query) where TResult : class where TQuery : class
+    {
+        if (aggregate != null)
+        {
+            searchDescriptor = searchDescriptor.Aggregations(agg => aggregate.Invoke(agg, query));
+        }
+        return searchDescriptor;
     }
 
     #region mapping
@@ -176,31 +169,18 @@ internal static class IElasticClientExtenstion
     public static async Task<PaginationDto<LogResponseDto>> SearchLogAsync(this IElasticClient client, LogRequestDto query)
     {
         PaginationDto<LogResponseDto> result = default!;
-        await client.SearchAsync<object, LogRequestDto>(ElasticConst.Log.IndexName,
-        query: query,
-        condition: SearchFn,
-        result: (response, q) =>
-        {
-            result = SetLogResult(response);
-        },
-        sort: SortFn,
-        page: () => ValueTuple.Create(true, query.Page, query.Size));
+        await client.SearchAsync(ElasticConst.Log.IndexName, query,
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (response, q) => result = SetLogResult(response));
         return result;
     }
 
     public static async Task<object> AggregateLogAsync(this IElasticClient client, SimpleAggregateRequestDto query)
     {
         object result = default!;
-        await client.SearchAsync<object, SimpleAggregateRequestDto>(ElasticConst.Log.IndexName,
-        query,
-        condition: SearchFn,
-        result: (response, q) =>
-        {
-            result = SetAggregationResult(response, q);
-        },
-        aggregate: (agg, query) => AggregationFn(agg, query, true),
-        sort: SortFn,
-        page: () => ValueTuple.Create(true, query.Page, query.Size));
+        await client.SearchAsync(ElasticConst.Log.IndexName, query,
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
+       (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
     #endregion
@@ -209,31 +189,18 @@ internal static class IElasticClientExtenstion
     public static async Task<PaginationDto<TraceResponseDto>> SearchTraceAsync(this IElasticClient client, TraceRequestDto query)
     {
         PaginationDto<TraceResponseDto> result = default!;
-        await SearchAsync<object, TraceRequestDto>(client, ElasticConst.Trace.IndexName,
-        query: query,
-        condition: SearchFn,
-        result: (response, q) =>
-        {
-            result = SetTraceResult(response);
-        },
-        sort: SortFn,
-        page: () => ValueTuple.Create(true, query.Page, query.Size));
+        await client.SearchAsync(ElasticConst.Trace.IndexName, query,
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (response, q) => result = SetTraceResult(response));
         return result;
     }
 
     public static async Task<object> AggregateTraceAsync(this IElasticClient client, SimpleAggregateRequestDto query)
     {
         object result = default!;
-        await SearchAsync<object, SimpleAggregateRequestDto>(client, ElasticConst.Trace.IndexName,
-        query,
-        condition: SearchFn,
-        result: (response, q) =>
-        {
-            result = SetAggregationResult(response, q);
-        },
-        (agg, query) => AggregationFn(agg, query, false),
-        sort: SortFn,
-        page: () => ValueTuple.Create(true, query.Page, query.Size));
+        await client.SearchAsync(ElasticConst.Trace.IndexName, query,
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(SearchFn, query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, false), query),
+       (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
     #endregion
@@ -393,7 +360,7 @@ internal static class IElasticClientExtenstion
     {
         var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
         var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, aggModel.Name, StringComparison.OrdinalIgnoreCase));
-        string field=mapping?.Name??aggModel.Name;
+        string field = mapping?.Name ?? aggModel.Name;
         string keyword = field;
         if (mapping != null && (mapping.IsKeyword ?? false))
             keyword = $"{keyword}.keyword";
@@ -420,11 +387,6 @@ internal static class IElasticClientExtenstion
                     aggContainer.Cardinality(aggModel.Alias ?? aggModel.Name, agg => agg.Field(keyword));
                 }
                 break;
-            //case AggregateTypes.Histogram:
-            //    {
-            //        aggContainer.Histogram(aggModel.Alias, agg => agg.Field(aggModel.Name).Interval(new Time(aggModel.Interval).Milliseconds));
-            //    }
-            //    break;
             case AggregateTypes.DateHistogram:
                 {
                     if (mapping != null && mapping.Type != "date")
@@ -450,9 +412,9 @@ internal static class IElasticClientExtenstion
             return default!;
 
         var result = new Dictionary<string, string>();
-        foreach (var item in response.Aggregations)
+        foreach (var item in response.Aggregations.Values)
         {
-            if (aggModel.Type - AggregateTypes.DistinctCount <= 0 && item.Value is ValueAggregate value && value != null)
+            if (aggModel.Type - AggregateTypes.DistinctCount <= 0 && item is ValueAggregate value && value != null)
             {
                 string temp = default!;
                 if (!string.IsNullOrEmpty(value.ValueAsString))
@@ -465,14 +427,15 @@ internal static class IElasticClientExtenstion
 
                 return temp;
             }
-            else if (aggModel.Type == AggregateTypes.DateHistogram && item.Value is BucketAggregate bucketAggregate)
+            else if (aggModel.Type == AggregateTypes.DateHistogram && item is BucketAggregate bucketAggregate)
             {
-                foreach (DateHistogramBucket bucket in bucketAggregate.Items)
+                foreach (var bucket in bucketAggregate.Items)
                 {
-                    result.Add(bucket.KeyAsString, (bucket.DocCount ?? 0).ToString());
+                    var dateHistogramBucket = (DateHistogramBucket)bucket;
+                    result.Add(dateHistogramBucket.KeyAsString, (dateHistogramBucket.DocCount ?? 0).ToString());
                 }
             }
-            else if (aggModel.Type == AggregateTypes.GroupBy && item.Value is BucketAggregate termsAggregate)
+            else if (aggModel.Type == AggregateTypes.GroupBy && item is BucketAggregate termsAggregate)
             {
                 return termsAggregate.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
             }
