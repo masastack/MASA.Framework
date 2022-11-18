@@ -9,7 +9,7 @@ public class UserClaimRepositoryTest
     [TestMethod]
     public async Task TestAddStandardUserClaimsAsync()
     {
-        var serviceCollection = new ServiceCollection();       
+        var serviceCollection = new ServiceCollection();
         serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
         serviceCollection.AddScoped<IUserClaimRepository, UserClaimRepository>();
         var publisher = new Mock<IPublisher>();
@@ -21,9 +21,7 @@ public class UserClaimRepositoryTest
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestAddStandardUserClaims"),false,false
-            )
+            .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseInMemoryTestDatabase("TestAddStandardUserClaims"))
             .UseRepository<CustomDbContext>();
         });
 
@@ -34,6 +32,6 @@ public class UserClaimRepositoryTest
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Set<UserClaim>().AddAsync(new("sub", "1"));
         var userClaims = await dbContext.Set<UserClaim>().ToListAsync();
-        Assert.AreNotEqual(0, userClaims.Count);       
+        Assert.AreNotEqual(0, userClaims.Count);
     }
 }

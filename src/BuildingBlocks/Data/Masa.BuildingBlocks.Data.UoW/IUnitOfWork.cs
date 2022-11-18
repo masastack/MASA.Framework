@@ -9,6 +9,8 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
 
     DbTransaction Transaction { get; }
 
+    Guid? TransactionId { get; }
+
     /// <summary>
     /// Whether the transaction has been opened
     /// </summary>

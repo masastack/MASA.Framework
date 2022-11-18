@@ -25,6 +25,17 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         }
     }
 
+    public Guid? TransactionId
+    {
+        get
+        {
+            if (UseTransaction && TransactionHasBegun)
+                return Context.Database.CurrentTransaction!.TransactionId;
+
+            return null;
+        }
+    }
+
     public bool TransactionHasBegun => Context.Database.CurrentTransaction != null;
 
     public bool DisableRollbackOnFailure { get; set; }
@@ -33,7 +44,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public CommitState CommitState { get; set; } = CommitState.Commited;
 
-    public bool UseTransaction { get; set; } = true;
+    public bool UseTransaction { get; set; } = false;
 
     public UnitOfWork(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 

@@ -19,8 +19,7 @@ public class OidcDbContextOptionsTest
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false, false
+            .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false
             )
             .UseRepository<CustomDbContext>();
         });
@@ -55,9 +54,7 @@ public class OidcDbContextOptionsTest
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources2"), false, false
-            )
+            .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources2"), false)
             .UseRepository<CustomDbContext>();
         });
         serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));

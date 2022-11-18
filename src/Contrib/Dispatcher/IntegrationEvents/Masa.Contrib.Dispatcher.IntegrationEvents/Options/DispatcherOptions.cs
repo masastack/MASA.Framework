@@ -60,24 +60,6 @@ public class DispatcherOptions : IDispatcherOptions
         }
     }
 
-    private int _pendingRetryInterval = 300;
-
-    /// <summary>
-    /// The interval at which db polls for failure messages.
-    /// Default is 300 millisecond.
-    /// unit: millisecond
-    /// </summary>
-    public int PendingRetryInterval
-    {
-        get => _pendingRetryInterval;
-        set
-        {
-            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(PendingRetryInterval));
-
-            _pendingRetryInterval = value;
-        }
-    }
-
     private int _minimumRetryInterval = 60;
 
     /// <summary>

@@ -23,15 +23,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <summary>
     /// Get local messages waiting to be sent
     /// </summary>
-    /// <param name="retryBatchSize"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int retryBatchSize = 200)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
+        Guid transactionId,
+        CancellationToken stoppingToken = default)
     {
         var result = await _eventLogContext.EventLogs
-            .Where(e => e.State == IntegrationEventStates.NotPublished)
+            .Where(e => e.TransactionId == transactionId && e.State == IntegrationEventStates.NotPublished)
             .OrderBy(o => o.CreationTime)
-            .Take(retryBatchSize)
-            .ToListAsync();
+            .ToListAsync(stoppingToken);
 
         if (result.Any())
         {
@@ -52,7 +52,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">default: 60s</param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
+        int maxRetryTimes = 10, int minimumRetryInterval = 60)
     {
         //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
         var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);

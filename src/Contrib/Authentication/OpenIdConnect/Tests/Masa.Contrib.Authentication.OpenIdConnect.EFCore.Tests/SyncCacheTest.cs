@@ -146,9 +146,7 @@ public class SyncCacheTest
             .UseEventBus(eventBusBuilder =>
             {
             })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false, false
-            )
+            .UseUoW<CustomDbContext>(dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false)
             .UseRepository<CustomDbContext>();
         });
         serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));

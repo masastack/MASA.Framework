@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -61,13 +62,13 @@ public static class ServiceCollectionExtensions
 
         LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
+        services.TryAddScoped<IIntegrationEventService, IntegrationEventService>();
         action?.Invoke();
 
         if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))
         {
             services.AddSingleton<IProcessor, RetryFailedByDataProcessor>();
             services.AddSingleton<IProcessor, RetryFailedByLocalQueueProcessor>();
-            services.AddSingleton<IProcessor, RetryPendingByDataProcessor>();
             services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
             services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
         }

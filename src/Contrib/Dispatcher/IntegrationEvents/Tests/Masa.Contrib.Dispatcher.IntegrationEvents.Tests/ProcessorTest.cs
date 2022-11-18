@@ -41,13 +41,6 @@ public class ProcessorTest
     }
 
     [TestMethod]
-    public void RetryPendingByDataProcessorDelayTestAsync()
-    {
-        ProcessorBase processor = new RetryPendingByDataProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.PendingRetryInterval);
-    }
-
-    [TestMethod]
     public async Task RetryByDataProcessorExecuteTestAsync()
     {
         var services = new ServiceCollection();

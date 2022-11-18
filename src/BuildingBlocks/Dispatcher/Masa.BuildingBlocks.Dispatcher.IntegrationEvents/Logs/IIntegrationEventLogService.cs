@@ -8,9 +8,10 @@ public interface IIntegrationEventLogService
     /// <summary>
     /// Get local messages waiting to be sent
     /// </summary>
-    /// <param name="retryBatchSize"></param>
     /// <returns></returns>
-    Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int retryBatchSize = 200);
+    Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
+        Guid transactionId,
+        CancellationToken stoppingToken = default);
 
     /// <summary>
     /// Get message records that need to be retried after sending failures
@@ -19,7 +20,8 @@ public interface IIntegrationEventLogService
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">default: 60s</param>
     /// <returns></returns>
-    Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60);
+    Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10,
+        int minimumRetryInterval = 60);
 
     Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction);
 

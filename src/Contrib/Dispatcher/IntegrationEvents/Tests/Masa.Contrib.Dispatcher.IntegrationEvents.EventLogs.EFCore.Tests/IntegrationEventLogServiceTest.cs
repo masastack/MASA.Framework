@@ -63,9 +63,10 @@ public class IntegrationEventLogServiceTest : TestBase
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
         await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
+        var transactionId = transaction.TransactionId;
         await transaction.CommitAsync();
 
-        var count = (await logService.RetrieveEventLogsPendingToPublishAsync()).Count();
+        var count = (await logService.RetrieveEventLogsPendingToPublishAsync(transactionId)).Count();
         Assert.AreEqual(1, count);
     }
 
