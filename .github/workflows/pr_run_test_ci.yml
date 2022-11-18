@@ -77,10 +77,10 @@ jobs:
     - name: Start Elasticsearch
       uses: everpcpc/elasticsearch-action@v2
       with:
-        version: 7.6.1
+        version: 7.17.6
         plugins: |
-          https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.6.1/elasticsearch-analysis-ik-7.6.1.zip
-          https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.6.1/elasticsearch-analysis-pinyin-7.6.1.zip
+          https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.17.6/elasticsearch-analysis-ik-7.17.6.zip
+          https://github.com/medcl/elasticsearch-analysis-pinyin/releases/download/v7.17.6/elasticsearch-analysis-pinyin-7.17.6.zip
           analysis-icu
           analysis-smartcn
           analysis-kuromoji
