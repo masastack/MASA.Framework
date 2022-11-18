@@ -5,6 +5,14 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 
 public class BaseRequestDto : PaginationRequestDto
 {
+    public string TraceId { get; set; }
+
+    public string Service { get; set; }
+
+    public string Instance { get; set; }
+
+    public string Endpoint { get; set; }
+
     public string Keyword { get; set; }
 
     public DateTime Start { get; set; }

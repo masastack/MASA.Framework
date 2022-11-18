@@ -166,7 +166,7 @@ internal static class IElasticClientExtenstion
     #endregion
 
     #region log
-    public static async Task<PaginationDto<LogResponseDto>> SearchLogAsync(this IElasticClient client, LogRequestDto query)
+    public static async Task<PaginationDto<LogResponseDto>> SearchLogAsync(this IElasticClient client, BaseRequestDto query)
     {
         PaginationDto<LogResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Log.IndexName, query,
@@ -186,7 +186,7 @@ internal static class IElasticClientExtenstion
     #endregion
 
     #region trace
-    public static async Task<PaginationDto<TraceResponseDto>> SearchTraceAsync(this IElasticClient client, TraceRequestDto query)
+    public static async Task<PaginationDto<TraceResponseDto>> SearchTraceAsync(this IElasticClient client, BaseRequestDto query)
     {
         PaginationDto<TraceResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Trace.IndexName, query,
@@ -243,44 +243,36 @@ internal static class IElasticClientExtenstion
 
     private static IEnumerable<FieldConditionDto> AddFilter<TQuery>(TQuery query) where TQuery : BaseRequestDto
     {
-        if (query is LogRequestDto log)
-        {
-            return log.Conditions;
-        }
-        else if (query is TraceRequestDto trace)
-        {
-            var result = query.Conditions?.ToList() ?? new();
-            if (!string.IsNullOrEmpty(trace.Service))
-                result.Add(new FieldConditionDto
-                {
-                    Name = ElasticConst.ServiceName,
-                    Value = trace.Service,
-                    Type = ConditionTypes.Equal
-                });
-            if (!string.IsNullOrEmpty(trace.Instance))
-                result.Add(new FieldConditionDto
-                {
-                    Name = ElasticConst.ServiceInstance,
-                    Value = trace.Service,
-                    Type = ConditionTypes.Equal
-                });
-            if (!string.IsNullOrEmpty(trace.Endpoint))
-                result.Add(new FieldConditionDto
-                {
-                    Name = ElasticConst.Endpoint,
-                    Value = $"*{trace.Service}*",
-                    Type = ConditionTypes.Regex
-                });
-            if (!string.IsNullOrEmpty(trace.TraceId))
-                result.Add(new FieldConditionDto
-                {
-                    Name = ElasticConst.TraceId,
-                    Value = trace.TraceId,
-                    Type = ConditionTypes.Equal
-                });
-            return result;
-        }
-        return query.Conditions;
+        var result = query.Conditions?.ToList() ?? new();
+        if (!string.IsNullOrEmpty(query.Service))
+            result.Add(new FieldConditionDto
+            {
+                Name = ElasticConst.ServiceName,
+                Value = query.Service,
+                Type = ConditionTypes.Equal
+            });
+        if (!string.IsNullOrEmpty(query.Instance))
+            result.Add(new FieldConditionDto
+            {
+                Name = ElasticConst.ServiceInstance,
+                Value = query.Service,
+                Type = ConditionTypes.Equal
+            });
+        if (!string.IsNullOrEmpty(query.Endpoint))
+            result.Add(new FieldConditionDto
+            {
+                Name = ElasticConst.Endpoint,
+                Value = $"*{query.Service}*",
+                Type = ConditionTypes.Regex
+            });
+        if (!string.IsNullOrEmpty(query.TraceId))
+            result.Add(new FieldConditionDto
+            {
+                Name = ElasticConst.TraceId,
+                Value = query.TraceId,
+                Type = ConditionTypes.Equal
+            });
+        return result;
     }
 
     private static Func<QueryContainerDescriptor<TResult>, QueryContainer> CompareCondition<TResult>(ElasticseacherMappingResponseDto? mapping, FieldConditionDto query) where TResult : class
@@ -414,31 +406,34 @@ internal static class IElasticClientExtenstion
         {
             if (item is ValueAggregate value)
             {
-                string temp = default!;
-                if (!string.IsNullOrEmpty(value.ValueAsString))
-                    temp = value.ValueAsString;
-                else if (value.Value.HasValue)
-                    temp = value.Value.Value.ToString();
-
-                return temp;
+                return GetDouble(value);
             }
             else if (item is BucketAggregate bucketAggregate)
             {
-                if (aggModel.Type == AggregateTypes.DateHistogram)
-                {
-                    var result = new Dictionary<string, string>();
-                    foreach (var bucket in bucketAggregate.Items)
-                    {
-                        var dateHistogramBucket = (DateHistogramBucket)bucket;
-                        result.Add(dateHistogramBucket.KeyAsString, (dateHistogramBucket.DocCount ?? 0).ToString());
-                    }
-                    return result;
-                }
-                else if (aggModel.Type == AggregateTypes.GroupBy)
-                {
-                    return bucketAggregate.Items.Select(it => ((KeyedBucket<object>)it).Key.ToString()).ToList();
-                }
+                return GetBucketValue(bucketAggregate, aggModel.Type);
             }
+        }
+        return default!;
+    }
+
+    private static double GetDouble(ValueAggregate value)
+    {
+        return value.Value ?? default;
+    }
+
+    private static object GetBucketValue(BucketAggregate value, AggregateTypes type)
+    {
+        if (type == AggregateTypes.GroupBy)
+            return value.Items.Select(it => ((KeyedBucket<object>)it).KeyAsString).ToList();
+        else if (type == AggregateTypes.DateHistogram)
+        {
+            var result = new Dictionary<double, long>();
+            foreach (var bucket in value.Items)
+            {
+                var dateHistogramBucket = (DateHistogramBucket)bucket;
+                result.Add(dateHistogramBucket.Key, (dateHistogramBucket.DocCount ?? 0));
+            }
+            return result;
         }
         return default!;
     }

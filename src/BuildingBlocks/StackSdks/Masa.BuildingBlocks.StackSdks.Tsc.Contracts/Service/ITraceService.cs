@@ -7,7 +7,7 @@ public interface ITraceService
 {
     Task<IEnumerable<TraceResponseDto>> GetAsync(string traceId);
 
-    Task<PaginationDto<TraceResponseDto>> ListAsync(TraceRequestDto query);
+    Task<PaginationDto<TraceResponseDto>> ListAsync(BaseRequestDto query);
 
     Task<object> AggregateAsync(SimpleAggregateRequestDto query);
 }

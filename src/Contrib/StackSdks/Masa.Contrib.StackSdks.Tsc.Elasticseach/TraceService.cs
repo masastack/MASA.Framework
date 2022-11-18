@@ -15,15 +15,14 @@ internal class TraceService : ITraceService
     public async Task<object> AggregateAsync(SimpleAggregateRequestDto query)
     {
         return await _client.AggregateTraceAsync(query);
-    }    
+    }
 
     public async Task<IEnumerable<TraceResponseDto>> GetAsync(string traceId)
     {
-        var result = await _client.SearchTraceAsync(new TraceRequestDto { TraceId = traceId, Page=1, Size = ElasticConst.MaxRecordCount - 1 });
-        return (IEnumerable<TraceResponseDto>)result.Items ?? Array.Empty<TraceResponseDto>();
+        return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, Size = ElasticConst.MaxRecordCount - 1 })).Items;
     }
 
-    public Task<PaginationDto<TraceResponseDto>> ListAsync(TraceRequestDto query)
+    public Task<PaginationDto<TraceResponseDto>> ListAsync(BaseRequestDto query)
     {
         return _client.SearchTraceAsync(query);
     }

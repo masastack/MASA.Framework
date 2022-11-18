@@ -19,7 +19,7 @@ internal class LogService : ILogService
         return await _client.AggregateLogAsync(query);
     }
 
-    public async Task<PaginationDto<LogResponseDto>> ListAsync(LogRequestDto query)
+    public async Task<PaginationDto<LogResponseDto>> ListAsync(BaseRequestDto query)
     {
         return await _client.SearchLogAsync(query);
     }

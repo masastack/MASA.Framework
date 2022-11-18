@@ -17,12 +17,4 @@ public class SimpleAggregateRequestDto : BaseRequestDto
     /// https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-aggregations-bucket-datehistogram-aggregation.html
     /// </summary>
     public string Interval { get; set; }
-
-    public string TraceId { get; set; }
-
-    public string Service { get; set; }
-
-    public string Instance { get; set; }
-
-    public string Endpoint { get; set; }
 }

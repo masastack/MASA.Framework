@@ -5,8 +5,6 @@ global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Log;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model.Aggregate;
-global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model.Log;
-global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model.Trace;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 global using Masa.Contrib.Service.Caller;

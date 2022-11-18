@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 
 public interface ILogService
 {
-    Task<PaginationDto<LogResponseDto>> ListAsync(LogRequestDto query);
+    Task<PaginationDto<LogResponseDto>> ListAsync(BaseRequestDto query);
 
     Task<IEnumerable<MappingResponseDto>> MappingAsync();
 

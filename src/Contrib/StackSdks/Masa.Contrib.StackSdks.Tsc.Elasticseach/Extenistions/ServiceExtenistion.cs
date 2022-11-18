@@ -23,10 +23,10 @@ public static class ServiceExtenistion
         return AddElasticsearch(services, nodes, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
     }
 
-    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
+    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
     {
         ElasticConst.Trace.Init(indexName, mappings!,true);
-        return AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        return AddElasticsearch(services, elasearchConnectionAction,default!,ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
     }
 
     public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, string[] nodes, string logIndexName, string traceIndexName, IEnumerable<ElasticseacherMappingResponseDto>? logMappings = null, IEnumerable<ElasticseacherMappingResponseDto>? traceMappings = null)
@@ -76,13 +76,14 @@ public static class ServiceExtenistion
             });
     }
 
-    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string name)
+    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder>? callerAction, string name)
     {
         return services.AddElasticsearch(name, elasearchConnectionAction)
             .AddCaller(option =>
             {
                 option.DisableAutoRegistration = true;
-                option.UseHttpClient(name, callerAction);
+                if(callerAction!=null)
+                    option.UseHttpClient(name, callerAction);
             });
     }
 }
