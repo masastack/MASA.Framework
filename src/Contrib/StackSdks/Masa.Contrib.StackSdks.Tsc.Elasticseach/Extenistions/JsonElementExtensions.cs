@@ -69,5 +69,5 @@ internal static class JsonElementExtensions
             list.Add(v);
         }
         return list;
-    }    
+    }
 }

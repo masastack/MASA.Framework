@@ -36,7 +36,8 @@ public class ServiceExtenistionTests
         ServiceCollection services = new();
         services.AddElasticClientLog(options =>
         {
-            options.UseNodes(new string[] { StaticConfig.HOST });
+            options.UseNodes(new string[] { StaticConfig.HOST })
+            .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
         }, caller =>
         {
             caller.BaseAddress = StaticConfig.HOST;
@@ -73,7 +74,8 @@ public class ServiceExtenistionTests
         ServiceCollection services = new();
         services.AddElasticClientTrace(options =>
         {
-            options.UseNodes(new string[] { StaticConfig.HOST });
+            options.UseNodes(new string[] { StaticConfig.HOST }).
+            UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
         }, caller =>
         {
             caller.BaseAddress = StaticConfig.HOST;
@@ -112,7 +114,8 @@ public class ServiceExtenistionTests
         ServiceCollection services = new();
         services.AddElasticClientLogAndTrace(options =>
         {
-            options.UseNodes(new string[] { StaticConfig.HOST });
+            options.UseNodes(new string[] { StaticConfig.HOST }).
+            UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
         }, caller =>
         {
             caller.BaseAddress = StaticConfig.HOST;

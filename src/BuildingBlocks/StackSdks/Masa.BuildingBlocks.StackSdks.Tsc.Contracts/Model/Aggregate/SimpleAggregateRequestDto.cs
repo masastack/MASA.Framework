@@ -14,7 +14,7 @@ public class SimpleAggregateRequestDto : BaseRequestDto
     public int MaxCount { get; set; }
 
     /// <summary>
-    /// https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-aggregations-bucket-datehistogram-aggregation.html
+    /// currently support elasticsearch: https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-aggregations-bucket-datehistogram-aggregation.html
     /// </summary>
     public string Interval { get; set; }
 }

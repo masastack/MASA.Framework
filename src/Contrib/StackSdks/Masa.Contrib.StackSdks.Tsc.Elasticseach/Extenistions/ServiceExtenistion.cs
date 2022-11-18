@@ -79,7 +79,11 @@ public static class ServiceExtenistion
 
     private static IServiceCollection AddElasticsearch(IServiceCollection services, string[] nodes, string name)
     {
-        return services.AddElasticsearch(name, nodes)
+        return services.AddElasticsearch(name, options =>
+        {
+            options.UseNodes(nodes).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
+
+        })
             .AddCaller(option =>
             {
                 option.DisableAutoRegistration = true;

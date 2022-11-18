@@ -32,7 +32,8 @@ public class TraceServiceTests
         services.Clear();
         services.AddElasticClientTrace(options =>
         {
-            options.UseNodes(new string[] { StaticConfig.HOST });
+            options.UseNodes(new string[] { StaticConfig.HOST }).
+            UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
         },
         callerOptions =>
         {
