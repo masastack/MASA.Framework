@@ -6,12 +6,10 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticseach;
 internal class TraceService : ITraceService
 {
     private readonly IElasticClient _client;
-    private readonly ICallerFactory _callerFactory;
 
-    public TraceService(IElasticsearchFactory elasticsearchFactory, ICallerFactory callerFactory)
+    public TraceService(IElasticsearchFactory elasticsearchFactory)
     {
         _client = elasticsearchFactory.CreateElasticClient();
-        _callerFactory = callerFactory;
     }
 
     public async Task<object> AggregateAsync(SimpleAggregateRequestDto query)
@@ -27,5 +25,5 @@ internal class TraceService : ITraceService
     public Task<PaginationDto<TraceResponseDto>> ListAsync(BaseRequestDto query)
     {
         return _client.SearchTraceAsync(query);
-    }   
+    }
 }
