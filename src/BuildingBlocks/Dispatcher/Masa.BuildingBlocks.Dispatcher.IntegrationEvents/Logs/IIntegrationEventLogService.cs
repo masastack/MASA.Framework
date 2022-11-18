@@ -6,7 +6,14 @@ namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents.Logs;
 public interface IIntegrationEventLogService
 {
     /// <summary>
-    /// Get messages to retry
+    /// Get local messages waiting to be sent
+    /// </summary>
+    /// <param name="retryBatchSize"></param>
+    /// <returns></returns>
+    Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int retryBatchSize = 200);
+
+    /// <summary>
+    /// Get message records that need to be retried after sending failures
     /// </summary>
     /// <param name="retryBatchSize">The size of a single event to be retried</param>
     /// <param name="maxRetryTimes"></param>

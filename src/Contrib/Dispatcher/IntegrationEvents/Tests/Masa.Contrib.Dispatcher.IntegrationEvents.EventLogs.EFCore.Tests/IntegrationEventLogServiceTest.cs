@@ -49,6 +49,27 @@ public class IntegrationEventLogServiceTest : TestBase
     }
 
     [TestMethod]
+    public async Task RetrieveEventLogsPendingToPublishAsync()
+    {
+        var response = await InitializeAsync();
+
+        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+
+        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
+        var @event = new OrderPaymentSucceededIntegrationEvent
+        {
+            OrderId = "1234567890123",
+            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+        };
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
+        await transaction.CommitAsync();
+
+        var count = (await logService.RetrieveEventLogsPendingToPublishAsync()).Count();
+        Assert.AreEqual(1, count);
+    }
+
+    [TestMethod]
     public async Task TestRetrieveEventLogsFailedToPublishAsync()
     {
         var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
@@ -101,7 +122,7 @@ public class IntegrationEventLogServiceTest : TestBase
 
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using (var transcation = await response.CustomDbContext.Database.BeginTransactionAsync())
+        await using (var transaction = await response.CustomDbContext.Database.BeginTransactionAsync())
         {
             var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
             var @event = new OrderPaymentSucceededIntegrationEvent
@@ -109,8 +130,8 @@ public class IntegrationEventLogServiceTest : TestBase
                 OrderId = "1234567890123",
                 PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
             };
-            await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
-            await transcation.CommitAsync();
+            await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
+            await transaction.CommitAsync();
         }
 
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 1);
@@ -128,14 +149,14 @@ public class IntegrationEventLogServiceTest : TestBase
 
         await Assert.ThrowsExceptionAsync<Exception>(async () =>
         {
-            await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+            await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
             var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
             var @event = new OrderPaymentSucceededIntegrationEvent
             {
                 OrderId = "1234567890123",
                 PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
             };
-            await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+            await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
             throw new Exception("custom exception");
         }, "custom exception");
 
@@ -148,19 +169,19 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
         var @event = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
 
         await logService.MarkEventAsInProgressAsync(@event.Id);
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
             .CountAsync(log => log.State == IntegrationEventStates.InProgress) == 1);
-        await transcation.CommitAsync();
+        await transaction.CommitAsync();
 
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
             .CountAsync(log => log.State == IntegrationEventStates.InProgress) == 1);
@@ -173,7 +194,7 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
 
 
@@ -198,20 +219,20 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
         var @event = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
 
         await logService.MarkEventAsInProgressAsync(@event.Id);
 
         await logService.MarkEventAsPublishedAsync(@event.Id);
 
-        await transcation.CommitAsync();
+        await transaction.CommitAsync();
 
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
             .CountAsync(log => log.State == IntegrationEventStates.Published) == 1);
@@ -224,14 +245,14 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
         var @event = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
 
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await logService.MarkEventAsPublishedAsync(@event.Id));
     }
@@ -242,19 +263,20 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
         var @event = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
         await logService.MarkEventAsInProgressAsync(@event.Id);
         await logService.MarkEventAsFailedAsync(@event.Id);
-        await transcation.CommitAsync();
+        await transaction.CommitAsync();
 
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync(log => log.State == IntegrationEventStates.PublishedFailed) == 1);
+        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
+            .CountAsync(log => log.State == IntegrationEventStates.PublishedFailed) == 1);
     }
 
     [TestMethod]
@@ -263,14 +285,14 @@ public class IntegrationEventLogServiceTest : TestBase
         var response = await InitializeAsync();
         Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
 
-        await using var transcation = await response.CustomDbContext.Database.BeginTransactionAsync();
+        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
         var @event = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await logService.SaveEventAsync(@event, transcation.GetDbTransaction());
+        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await logService.MarkEventAsFailedAsync(@event.Id));
     }
 

@@ -29,10 +29,7 @@ public class IntegrationEventLogEntityTypeConfiguration: IEntityTypeConfiguratio
         builder.Property(e => e.TimesSent)
             .IsRequired();
 
-        builder.Property(nameof(IHasConcurrencyStamp.RowVersion))
-            .IsConcurrencyToken()
-            .HasMaxLength(36)
-            .HasColumnName(nameof(IHasConcurrencyStamp.RowVersion));
+        builder.TryConfigureConcurrencyStamp(nameof(IHasConcurrencyStamp.RowVersion));
 
         builder.Property(e => e.EventTypeName)
             .IsRequired();

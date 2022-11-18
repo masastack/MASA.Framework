@@ -7,7 +7,7 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase
 {
     private readonly IOptions<DispatcherOptions> _options;
 
-    public override int Delay => _options.Value.CleaningLocalQueueExpireInterval;
+    public override int Delay => _options.Value.CleaningLocalQueueExpireInterval * 1000;
 
     public DeleteLocalQueueExpiresProcessor(IOptions<DispatcherOptions> options) : base(null)
     {

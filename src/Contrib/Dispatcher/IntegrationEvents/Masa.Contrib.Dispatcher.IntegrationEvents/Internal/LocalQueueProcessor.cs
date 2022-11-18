@@ -7,23 +7,23 @@ internal class LocalQueueProcessor
 {
     private readonly ConcurrentDictionary<Guid, IntegrationEventLogItem> _retryEventLogs;
 
-    public static ILogger<LocalQueueProcessor>? Logger;
+    private static ILogger<LocalQueueProcessor>? _logger;
     public static readonly LocalQueueProcessor Default = new();
 
     public LocalQueueProcessor() => _retryEventLogs = new();
 
     public static void SetLogger(IServiceCollection services)
     {
-        Logger = services.BuildServiceProvider().GetService<ILogger<LocalQueueProcessor>>();
+        _logger = services.BuildServiceProvider().GetService<ILogger<LocalQueueProcessor>>();
     }
 
-    public void AddJobs(IntegrationEventLogItem items)
+    public void TryAddJobs(IntegrationEventLogItem items)
         => _retryEventLogs.TryAdd(items.EventId, items);
 
-    public void RemoveJobs(Guid eventId)
+    public void TryRemoveJobs(Guid eventId)
         => _retryEventLogs.TryRemove(eventId, out _);
 
-    public void RetryJobs(Guid eventId)
+    public void TryRetryJobs(Guid eventId)
     {
         if (_retryEventLogs.TryGetValue(eventId, out IntegrationEventLogItem? item))
         {
@@ -37,7 +37,7 @@ internal class LocalQueueProcessor
     public void Delete(int maxRetryTimes)
     {
         var eventLogItems = _retryEventLogs.Values.Where(log => log.RetryCount >= maxRetryTimes - 1).ToList();
-        eventLogItems.ForEach(item => RemoveJobs(item.EventId));
+        eventLogItems.ForEach(item => TryRemoveJobs(item.EventId));
     }
 
     public List<IntegrationEventLogItem> RetrieveEventLogsFailedToPublishAsync(int maxRetryTimes, int retryBatchSize)
@@ -54,7 +54,7 @@ internal class LocalQueueProcessor
         }
         catch (Exception ex)
         {
-            Logger?.LogWarning(ex, "... getting local retry queue error");
+            _logger?.LogWarning(ex, "... getting local retry queue error");
 
             Thread.Sleep(TimeSpan.FromSeconds(2));
             return new List<IntegrationEventLogItem>();

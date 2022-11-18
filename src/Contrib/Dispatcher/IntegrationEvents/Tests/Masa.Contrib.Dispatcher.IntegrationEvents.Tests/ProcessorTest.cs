@@ -23,21 +23,28 @@ public class ProcessorTest
     public void DeleteLocalQueueExpiresProcessorDelayTestAsync()
     {
         ProcessorBase processor = new DeleteLocalQueueExpiresProcessor(_options);
-        Assert.IsTrue(processor.Delay == _options.Value.CleaningLocalQueueExpireInterval);
+        Assert.IsTrue(processor.Delay == _options.Value.CleaningLocalQueueExpireInterval * 1000);
     }
 
     [TestMethod]
     public void DeletePublishedExpireEventDelayTestAsync()
     {
         ProcessorBase processor = new DeletePublishedExpireEventProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.CleaningExpireInterval);
+        Assert.IsTrue(processor.Delay == _options.Value.CleaningExpireInterval * 1000);
     }
 
     [TestMethod]
-    public void RetryByDataProcessorDelayTestAsync()
+    public void RetryFailedByDataProcessorDelayTestAsync()
     {
-        ProcessorBase processor = new RetryByDataProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.FailedRetryInterval);
+        ProcessorBase processor = new RetryFailedByDataProcessor(_serviceProvider, _options);
+        Assert.IsTrue(processor.Delay == _options.Value.FailedRetryInterval * 1000);
+    }
+
+    [TestMethod]
+    public void RetryPendingByDataProcessorDelayTestAsync()
+    {
+        ProcessorBase processor = new RetryPendingByDataProcessor(_serviceProvider, _options);
+        Assert.IsTrue(processor.Delay == _options.Value.PendingRetryInterval);
     }
 
     [TestMethod]
@@ -93,17 +100,12 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        MasaAppConfigureOptions masaAppConfigureOptions = new()
-        {
-            AppId = "test"
-        };
 
         var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
+        RetryFailedByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
+            serviceProvider.GetService<ILogger<RetryFailedByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
         integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
@@ -172,17 +174,11 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        MasaAppConfigureOptions masaAppConfigureOptions = new()
-        {
-            AppId = "test"
-        };
-
         var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
+        RetryFailedByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
+            serviceProvider.GetService<ILogger<RetryFailedByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
         integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
@@ -234,10 +230,6 @@ public class ProcessorTest
 
         Mock<IOptions<DispatcherOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
-        MasaAppConfigureOptions masaAppConfigureOptions  = new()
-        {
-            AppId = "test"
-        };
 
         Mock<IUnitOfWork> uoW = new();
         uoW.Setup(u => u.CommitAsync(cancellationTokenSource.Token)).Verifiable();
@@ -257,11 +249,10 @@ public class ProcessorTest
         services.AddSingleton(_ => dataConnectionStringProvider.Object);
 
         var serviceProvider = services.BuildServiceProvider();
-        RetryByDataProcessor retryByDataProcessor = new(
+        RetryFailedByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
-            serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
+            serviceProvider.GetService<ILogger<RetryFailedByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
         integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>()), Times.Exactly(2));
@@ -270,10 +261,10 @@ public class ProcessorTest
     }
 
     [TestMethod]
-    public void RetryByLocalQueueProcessorDelayTestAsync()
+    public void RetryFailedByLocalQueueProcessorDelayTestAsync()
     {
-        ProcessorBase processor = new RetryByLocalQueueProcessor(_serviceProvider, _options);
-        Assert.IsTrue(processor.Delay == _options.Value.LocalFailedRetryInterval);
+        ProcessorBase processor = new RetryFailedByLocalQueueProcessor(_serviceProvider, _options);
+        Assert.IsTrue(processor.Delay == _options.Value.LocalFailedRetryInterval * 1000);
     }
 
     [TestMethod]

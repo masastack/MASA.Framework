@@ -9,14 +9,12 @@ public class IntegrationEventBus : IIntegrationEventBus
     private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
-    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
     public IntegrationEventBus(IOptions<DispatcherOptions> options,
         IPublisher publisher,
         IIntegrationEventLogService? eventLogService = null,
-        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
         IEventBus? eventBus = null,
         IUnitOfWork? unitOfWork = null)
@@ -24,7 +22,6 @@ public class IntegrationEventBus : IIntegrationEventBus
         _dispatcherOptions = options.Value;
         _publisher = publisher;
         _eventLogService = eventLogService;
-        _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;
         _eventBus = eventBus;
         _unitOfWork = unitOfWork;
@@ -61,41 +58,16 @@ public class IntegrationEventBus : IIntegrationEventBus
         var topicName = @event.Topic;
         if (@event.UnitOfWork is { UseTransaction: true } && _eventLogService != null)
         {
-            bool isAdd = false;
-            try
-            {
-                _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
-                await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
-                isAdd = true;
-
-                _logger?.LogDebug(
-                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
-                    @event.GetEventId(),
-                    _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
-
-                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId());
-
-                _logger?.LogDebug("Publishing event {Event} to {TopicName}", @event, topicName);
-                await _publisher.PublishAsync(topicName, (dynamic)@event);
-
-                await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId());
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    @event.GetEventId(), _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
-                if (!isAdd) throw;
-
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.GetEventId(), @event.Topic, @event));
-                await _eventLogService.MarkEventAsFailedAsync(@event.GetEventId());
-            }
+            // Using outbox mode
+            _logger?.LogDebug("----- Saving changes Integration Event: {IntegrationEventId} from {AppId} - ({@IntegrationEvent})",
+                @event.GetEventId(), MasaAppConfig.AppId(), @event);
+            await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
         }
         else
         {
             _logger?.LogDebug(
-                "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
-                @event.GetEventId(),
-                _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
+                "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({@IntegrationEvent})",
+                @event.GetEventId(), MasaAppConfig.AppId(), @event);
 
             await _publisher.PublishAsync(topicName, (dynamic)@event);
         }
@@ -108,4 +80,6 @@ public class IntegrationEventBus : IIntegrationEventBus
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
+
+
 }

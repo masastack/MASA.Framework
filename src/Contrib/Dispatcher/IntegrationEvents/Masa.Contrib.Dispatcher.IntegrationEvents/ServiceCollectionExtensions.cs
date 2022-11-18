@@ -65,8 +65,9 @@ public static class ServiceCollectionExtensions
 
         if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))
         {
-            services.AddSingleton<IProcessor, RetryByDataProcessor>();
-            services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
+            services.AddSingleton<IProcessor, RetryFailedByDataProcessor>();
+            services.AddSingleton<IProcessor, RetryFailedByLocalQueueProcessor>();
+            services.AddSingleton<IProcessor, RetryPendingByDataProcessor>();
             services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
             services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
         }

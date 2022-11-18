@@ -7,7 +7,7 @@ public class DeletePublishedExpireEventProcessor : ProcessorBase
 {
     private readonly IOptions<DispatcherOptions> _options;
 
-    public override int Delay => _options.Value.CleaningExpireInterval;
+    public override int Delay => _options.Value.CleaningExpireInterval * 1000;
 
     public DeletePublishedExpireEventProcessor(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options)
         : base(serviceProvider)

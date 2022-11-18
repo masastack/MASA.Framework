@@ -21,14 +21,38 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     }
 
     /// <summary>
-    /// Get messages to retry
+    /// Get local messages waiting to be sent
+    /// </summary>
+    /// <param name="retryBatchSize"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int retryBatchSize = 200)
+    {
+        var result = await _eventLogContext.EventLogs
+            .Where(e => e.State == IntegrationEventStates.NotPublished)
+            .OrderBy(o => o.CreationTime)
+            .Take(retryBatchSize)
+            .ToListAsync();
+
+        if (result.Any())
+        {
+            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
+
+            return result.OrderBy(o => o.CreationTime)
+                .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Get message records that need to be retried after sending failures
     /// </summary>
     /// <param name="retryBatchSize">maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">default: 60s</param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
-        int maxRetryTimes = 10, int minimumRetryInterval = 60)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200, int maxRetryTimes = 10, int minimumRetryInterval = 60)
     {
         //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
         var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
@@ -130,7 +154,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     {
         var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
         if (eventLogEntry == null)
-            throw new ArgumentException($"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}", nameof(eventId));
+            throw new ArgumentException(
+                $"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}",
+                nameof(eventId));
 
         action?.Invoke(eventLogEntry);
 

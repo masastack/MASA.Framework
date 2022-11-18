@@ -11,7 +11,6 @@ public class IntegrationEventBusTest
     private Mock<IPublisher> _publisher;
     private Mock<ILogger<IntegrationEventBus>> _logger;
     private Mock<IIntegrationEventLogService> _eventLog;
-    private Mock<IOptionsMonitor<MasaAppConfigureOptions>> _masaAppConfigureOptions;
     private Mock<IEventBus> _eventBus;
     private Mock<IUnitOfWork> _uoW;
 
@@ -31,11 +30,6 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
-        _masaAppConfigureOptions = new();
-        _masaAppConfigureOptions.Setup(masaAppConfigureOptions => masaAppConfigureOptions.CurrentValue).Returns(() => new MasaAppConfigureOptions()
-        {
-            AppId = "Test"
-        });
         _eventBus = new();
         _uoW = new();
         _uoW.Setup(uoW => uoW.CommitAsync(default)).Verifiable();
@@ -65,37 +59,12 @@ public class IntegrationEventBusTest
     }
 
     [TestMethod]
-    public async Task TestPublishIntegrationEventAsync()
-    {
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            _logger.Object,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-    }
-
-    [TestMethod]
     public async Task TestNotUseUoWAndLoggerAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             null,
             _eventBus.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
@@ -122,7 +91,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -143,33 +111,6 @@ public class IntegrationEventBusTest
     }
 
     [TestMethod]
-    public async Task TestUseTranscationAndNotUseLoggerAsync()
-    {
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            null,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
-    }
-
-    [TestMethod]
     public async Task TestSaveEventFailedAndNotUseLoggerAsync()
     {
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!))
@@ -178,7 +119,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             null,
             _eventBus.Object,
             _uoW.Object);
@@ -193,49 +133,40 @@ public class IntegrationEventBusTest
     }
 
     [TestMethod]
-    public async Task TestPublishIntegrationEventAndFailedAsync()
+    public async Task TestPublishIntegrationEventUseOutboxModeAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+        var @event = new RegisterUserIntegrationEvent()
         {
             Account = "lisa",
             Password = "123456"
         };
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Throws<Exception>();
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
+
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>())).Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>()), Times.Once);
     }
 
     [TestMethod]
-    public async Task TestPublishIntegrationEventAndNotUoWAsync()
+    public async Task TestPublishIntegrationEventAndNotUseUnitOfWorkAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
+            _eventBus.Object);
+        var @event = new RegisterUserIntegrationEvent()
         {
             Account = "lisa",
-            Password = "123456",
-            UnitOfWork = _uoW.Object
+            Password = "123456"
         };
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
@@ -253,7 +184,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -273,7 +203,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             null,
             _uoW.Object);
@@ -294,7 +223,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             _uoW.Object);
@@ -310,7 +238,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             null);
@@ -328,7 +255,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             null,
             null);
@@ -352,7 +278,6 @@ public class IntegrationEventBusTest
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
-            _masaAppConfigureOptions.Object,
             _logger.Object,
             _eventBus.Object,
             null);

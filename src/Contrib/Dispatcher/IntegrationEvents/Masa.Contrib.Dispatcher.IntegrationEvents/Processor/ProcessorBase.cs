@@ -8,7 +8,7 @@ public abstract class ProcessorBase : IProcessor
     protected readonly IServiceProvider? ServiceProvider;
 
     /// <summary>
-    /// Task delay time, unit: seconds
+    /// Task delay time, unit: Milliseconds
     /// </summary>
     public virtual int Delay { get; }
 
@@ -36,9 +36,9 @@ public abstract class ProcessorBase : IProcessor
     // /// <summary>
     // /// Easy to switch between background tasks
     // /// </summary>
-    /// <param name="delay">unit: seconds</param>
+    /// <param name="delay">unit: Milliseconds</param>
     // /// <returns></returns>
-    public Task DelayAsync(int delay) => Task.Delay(TimeSpan.FromSeconds(delay));
+    public Task DelayAsync(int delay) => Task.Delay(TimeSpan.FromMilliseconds(delay));
 
     protected virtual Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken) => Task.CompletedTask;
 

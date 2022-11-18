@@ -25,6 +25,11 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         return Task.CompletedTask;
     }
 
+    public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int retryBatchSize = 200)
+    {
+        return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
+    }
+
     public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
         int retryBatchSize = 200,
         int maxRetryTimes = 10,
