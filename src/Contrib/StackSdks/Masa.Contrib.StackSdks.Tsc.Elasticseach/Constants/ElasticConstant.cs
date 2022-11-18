@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Const;
+namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Constants;
 
-public static class ElasticConst
+public static class ElasticConstant
 {
     internal const string LOG_CALLER_CLIENT_NAME = "masa.contrib.stacksdks.tsc.log.elasticseach.log";
     internal const string TRACE_CALLER_CLIENT_NAME = "masa.contrib.stacksdks.tsc.log.elasticseach.trace";

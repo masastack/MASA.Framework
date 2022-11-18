@@ -6,7 +6,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests.Extensions;
 [TestClass]
 public class DictionaryExtenistionsTests
 {
-    readonly JsonSerializerOptions options = new JsonSerializerOptions
+    readonly JsonSerializerOptions options = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
@@ -17,7 +17,7 @@ public class DictionaryExtenistionsTests
         var str = "{\"a.name\":\"David\",\"a.age\":20,\"sex\":\"Male\"}";
         var dic = JsonSerializer.Deserialize<Dictionary<string, object>>(str, options);
         Assert.IsNotNull(dic);
-        var convert = dic.ConvertDic<object>("a.");
+        var convert = dic.GroupByKeyPrefix<object>("a.");
         Assert.IsNotNull(convert);
         Assert.IsTrue(convert.ContainsKey("name"));
         Assert.IsTrue(convert.ContainsKey("age"));

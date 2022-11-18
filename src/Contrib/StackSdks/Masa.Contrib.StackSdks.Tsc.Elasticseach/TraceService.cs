@@ -9,7 +9,7 @@ internal class TraceService : ITraceService
 
     public TraceService(IElasticsearchFactory elasticsearchFactory)
     {
-        _client = elasticsearchFactory.CreateElasticClient();
+        _client = elasticsearchFactory.CreateElasticClient(false);
     }
 
     public async Task<object> AggregateAsync(SimpleAggregateRequestDto query)
@@ -19,10 +19,10 @@ internal class TraceService : ITraceService
 
     public async Task<IEnumerable<TraceResponseDto>> GetAsync(string traceId)
     {
-        return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, Size = ElasticConst.MaxRecordCount - 1 })).Items;
+        return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, Size = ElasticConstant.MaxRecordCount - 1 })).Result;
     }
 
-    public Task<PaginationDto<TraceResponseDto>> ListAsync(BaseRequestDto query)
+    public Task<PaginatedListBase<TraceResponseDto>> ListAsync(BaseRequestDto query)
     {
         return _client.SearchTraceAsync(query);
     }

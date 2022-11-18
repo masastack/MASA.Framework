@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 
-public class BaseRequestDto : PaginationRequestDto
+public class BaseRequestDto : RequestPageBase
 {
     public string TraceId { get; set; }
 

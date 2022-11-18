@@ -7,5 +7,5 @@ public class FieldOrderDto
 {
     public string Name { get; set; }
 
-    public bool? IsAsc { get; set; }
+    public bool IsDesc { get; set; } = true;
 }

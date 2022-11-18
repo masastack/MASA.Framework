@@ -5,19 +5,30 @@ namespace System.Collections.Generic;
 
 internal static class DictionaryExtenistions
 {
-    public static Dictionary<string, T> ConvertDic<T>(this Dictionary<string, object> dic, string prefix, Func<object, T>? convert = null)
+    private static readonly JsonSerializerOptions _serializerOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
+    public static Dictionary<string, T> GroupByKeyPrefix<T>(this Dictionary<string, object> source, string prefix, Func<object, T>? convertFunc = null)
     {
         var result = new Dictionary<string, T>();
-        foreach (var key in dic.Keys)
+        foreach (var key in source.Keys)
         {
             if (!key.StartsWith(prefix))
                 continue;
-            var value = dic[key];
+            var value = source[key];
             var newKey = key[prefix.Length..];
-            if (convert != null)
-                value = convert(dic[key]);
+            if (convertFunc != null)
+                value = convertFunc(source[key]);
             result.Add(newKey, (T)value!);
         }
         return result;
+    }
+
+    public static T ToObject<T>(this Dictionary<string, object> dic)
+    {
+        var text = JsonSerializer.Serialize(dic, _serializerOptions);
+        return JsonSerializer.Deserialize<T>(text, _serializerOptions)!;
     }
 }

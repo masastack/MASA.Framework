@@ -7,7 +7,12 @@ public interface ITraceService
 {
     Task<IEnumerable<TraceResponseDto>> GetAsync(string traceId);
 
-    Task<PaginationDto<TraceResponseDto>> ListAsync(BaseRequestDto query);
+    Task<PaginatedListBase<TraceResponseDto>> ListAsync(BaseRequestDto query);
 
+    /// <summary>
+    /// when query type: Count,Sum,Avg and DistinctCount return type is double, DateHistogram return IEnumerable<KeyValuePair<double, long>> ,GroupBy return IEnumerable<string>
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns></returns>
     Task<object> AggregateAsync(SimpleAggregateRequestDto query);
 }

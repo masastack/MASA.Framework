@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 
 public interface ILogService
 {
-    Task<PaginationDto<LogResponseDto>> ListAsync(BaseRequestDto query);
+    Task<PaginatedListBase<LogResponseDto>> ListAsync(BaseRequestDto query);
 
-    Task<IEnumerable<MappingResponseDto>> MappingAsync();
+    Task<IEnumerable<MappingResponseDto>> GetMappingAsync();
 
     /// <summary>
     /// when query type: Count,Sum,Avg and DistinctCount return type is double, DateHistogram return IEnumerable<KeyValuePair<double, long>> ,GroupBy return IEnumerable<string>

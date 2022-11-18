@@ -10,7 +10,7 @@ internal class LogService : ILogService
 
     public LogService(IElasticsearchFactory elasticsearchFactory,ICallerFactory callerFactory)
     {
-        _client = elasticsearchFactory.CreateElasticClient();
+        _client = elasticsearchFactory.CreateElasticClient(true);
         _callerFactory = callerFactory;
     }
 
@@ -19,13 +19,13 @@ internal class LogService : ILogService
         return await _client.AggregateLogAsync(query);
     }
 
-    public async Task<PaginationDto<LogResponseDto>> ListAsync(BaseRequestDto query)
+    public async Task<PaginatedListBase<LogResponseDto>> ListAsync(BaseRequestDto query)
     {
         return await _client.SearchLogAsync(query);
     }
 
-    public async Task<IEnumerable<MappingResponseDto>> MappingAsync()
+    public async Task<IEnumerable<MappingResponseDto>> GetMappingAsync()
     {
-        return await _callerFactory.Create(true).GetMappingAsync(ElasticConst.Log.IndexName);
+        return await _callerFactory.Create(true).GetMappingAsync(ElasticConstant.Log.IndexName);
     }
 }

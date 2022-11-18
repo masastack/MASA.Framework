@@ -9,7 +9,10 @@
   <ItemGroup>
     <Compile Remove="Model\Metric\**" />
     <EmbeddedResource Remove="Model\Metric\**" />
-    <None Remove="Model\Metric\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

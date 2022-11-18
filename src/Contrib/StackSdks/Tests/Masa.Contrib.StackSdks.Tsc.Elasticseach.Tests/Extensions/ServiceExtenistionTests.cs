@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Data.Elasticsearch;
-
 namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests.Extensions;
 
 [TestClass]
@@ -20,14 +18,14 @@ public class ServiceExtenistionTests
     {
         ServiceCollection services = new();
         services.AddElasticClientLog(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_NAME);
-        Assert.IsNotNull(ElasticConst.Log);
-        Assert.AreEqual(ElasticConst.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Log);
+        Assert.AreEqual(ElasticConstant.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 
     [TestMethod]
@@ -43,14 +41,14 @@ public class ServiceExtenistionTests
             caller.BaseAddress = StaticConfig.HOST;
         }, StaticConfig.LOG_INDEX_NAME);
 
-        Assert.IsNotNull(ElasticConst.Log);
-        Assert.AreEqual(ElasticConst.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Log);
+        Assert.AreEqual(ElasticConstant.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 
     [TestMethod]
@@ -58,14 +56,14 @@ public class ServiceExtenistionTests
     {
         ServiceCollection services = new();
         services.AddElasticClientTrace(new string[] { StaticConfig.HOST }, StaticConfig.TRACE_INDEX_NAME);
-        Assert.IsNotNull(ElasticConst.Trace);
-        Assert.AreEqual(ElasticConst.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Trace);
+        Assert.AreEqual(ElasticConstant.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 
     [TestMethod]
@@ -81,14 +79,14 @@ public class ServiceExtenistionTests
             caller.BaseAddress = StaticConfig.HOST;
         }, StaticConfig.TRACE_INDEX_NAME);
 
-        Assert.IsNotNull(ElasticConst.Trace);
-        Assert.AreEqual(ElasticConst.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Trace);
+        Assert.AreEqual(ElasticConstant.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 
     [TestMethod]
@@ -96,16 +94,16 @@ public class ServiceExtenistionTests
     {
         ServiceCollection services = new();
         services.AddElasticClientLogAndTrace(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_NAME, StaticConfig.TRACE_INDEX_NAME);
-        Assert.IsNotNull(ElasticConst.Trace);
-        Assert.AreEqual(ElasticConst.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
-        Assert.IsNotNull(ElasticConst.Log);
-        Assert.AreEqual(ElasticConst.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Trace);
+        Assert.AreEqual(ElasticConstant.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Log);
+        Assert.AreEqual(ElasticConstant.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 
     [TestMethod]
@@ -123,15 +121,15 @@ public class ServiceExtenistionTests
         StaticConfig.LOG_INDEX_NAME,
         StaticConfig.TRACE_INDEX_NAME);
 
-        Assert.IsNotNull(ElasticConst.Trace);
-        Assert.AreEqual(ElasticConst.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
-        Assert.IsNotNull(ElasticConst.Log);
-        Assert.AreEqual(ElasticConst.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Trace);
+        Assert.AreEqual(ElasticConstant.Trace.IndexName, StaticConfig.TRACE_INDEX_NAME);
+        Assert.IsNotNull(ElasticConstant.Log);
+        Assert.AreEqual(ElasticConstant.Log.IndexName, StaticConfig.LOG_INDEX_NAME);
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.LOG_CALLER_CLIENT_NAME));
-        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConst.TRACE_CALLER_CLIENT_NAME));
-        Assert.IsNotNull(factory.CreateElasticClient(ElasticConst.DEFAULT_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
+        Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
+        Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 }

@@ -35,8 +35,8 @@ internal static class IElasticClientExtenstion
 
         var start = (page - 1) * size;
 
-        if (ElasticConst.MaxRecordCount - start - size <= 0)
-            throw new UserFriendlyException($"elastic query data max count must be less {ElasticConst.MaxRecordCount}, please input more condition to limit");
+        if (ElasticConstant.MaxRecordCount - start - size <= 0)
+            throw new UserFriendlyException($"elastic query data max count must be less {ElasticConstant.MaxRecordCount}, please input more condition to limit");
 
         return container.Size(size).From(start);
     }
@@ -132,26 +132,26 @@ internal static class IElasticClientExtenstion
 
     private static JsonElement? GetProperties(JsonElement value)
     {
-        if (value.TryGetProperty(MappingConst.PROPERTY, out JsonElement result))
+        if (value.TryGetProperty(MappingConstant.PROPERTY, out JsonElement result))
             return result;
         return null;
     }
 
     private static string? GetType(JsonElement value)
     {
-        if (value.TryGetProperty(MappingConst.TYPE, out JsonElement element))
+        if (value.TryGetProperty(MappingConstant.TYPE, out JsonElement element))
             return element.ToString();
         return default;
     }
 
     private static void SetKeyword(JsonElement value, ElasticseacherMappingResponseDto model)
     {
-        if (value.TryGetProperty(MappingConst.FIELD, out JsonElement fields) &&
-       fields.TryGetProperty(MappingConst.KEYWORD, out JsonElement element))
+        if (value.TryGetProperty(MappingConstant.FIELD, out JsonElement fields) &&
+       fields.TryGetProperty(MappingConstant.KEYWORD, out JsonElement element))
         {
-            if (element.TryGetProperty(MappingConst.TYPE, out JsonElement type) && type.ToString() == MappingConst.KEYWORD)
+            if (element.TryGetProperty(MappingConstant.TYPE, out JsonElement type) && type.ToString() == MappingConstant.KEYWORD)
                 model.IsKeyword = true;
-            if (element.TryGetProperty(MappingConst.MAXLENGTH, out JsonElement maxLength))
+            if (element.TryGetProperty(MappingConstant.MAXLENGTH, out JsonElement maxLength))
                 model.MaxLenth = maxLength.GetInt32();
         }
     }
@@ -166,10 +166,10 @@ internal static class IElasticClientExtenstion
     #endregion
 
     #region log
-    public static async Task<PaginationDto<LogResponseDto>> SearchLogAsync(this IElasticClient client, BaseRequestDto query)
+    public static async Task<PaginatedListBase<LogResponseDto>> SearchLogAsync(this IElasticClient client, BaseRequestDto query)
     {
-        PaginationDto<LogResponseDto> result = default!;
-        await client.SearchAsync(ElasticConst.Log.IndexName, query,
+        PaginatedListBase<LogResponseDto> result = default!;
+        await client.SearchAsync(ElasticConstant.Log.IndexName, query,
         (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query)
         .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query), query)
         .AddPageSize(true, query.Page, query.Size),
@@ -180,7 +180,7 @@ internal static class IElasticClientExtenstion
     public static async Task<object> AggregateLogAsync(this IElasticClient client, SimpleAggregateRequestDto query)
     {
         object result = default!;
-        await client.SearchAsync(ElasticConst.Log.IndexName, query,
+        await client.SearchAsync(ElasticConstant.Log.IndexName, query,
        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query)
        .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query), query)
        .AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
@@ -190,10 +190,10 @@ internal static class IElasticClientExtenstion
     #endregion
 
     #region trace
-    public static async Task<PaginationDto<TraceResponseDto>> SearchTraceAsync(this IElasticClient client, BaseRequestDto query)
+    public static async Task<PaginatedListBase<TraceResponseDto>> SearchTraceAsync(this IElasticClient client, BaseRequestDto query)
     {
-        PaginationDto<TraceResponseDto> result = default!;
-        await client.SearchAsync(ElasticConst.Trace.IndexName, query,
+        PaginatedListBase<TraceResponseDto> result = default!;
+        await client.SearchAsync(ElasticConstant.Trace.IndexName, query,
         (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query)
         .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query, false), query)
         .AddPageSize(true, query.Page, query.Size),
@@ -204,7 +204,7 @@ internal static class IElasticClientExtenstion
     public static async Task<object> AggregateTraceAsync(this IElasticClient client, SimpleAggregateRequestDto query)
     {
         object result = default!;
-        await client.SearchAsync(ElasticConst.Trace.IndexName, query,
+        await client.SearchAsync(ElasticConstant.Trace.IndexName, query,
        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query)
        .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query, false), query)
        .AddPageSize(false, 0, 0)
@@ -217,8 +217,8 @@ internal static class IElasticClientExtenstion
     private static QueryContainer SearchFn<TQuery, TResult>(QueryContainerDescriptor<TResult> queryContainer, TQuery query, bool isLog) where TQuery : BaseRequestDto where TResult : class
     {
         var list = new List<Func<QueryContainerDescriptor<TResult>, QueryContainer>>();
-        string timestamp = isLog ? ElasticConst.Log.Timestamp : ElasticConst.Trace.Timestamp;
-        var mappings = isLog ? ElasticConst.Log.Mappings.Value : ElasticConst.Trace.Mappings.Value;
+        string timestamp = isLog ? ElasticConstant.Log.Timestamp : ElasticConstant.Trace.Timestamp;
+        var mappings = isLog ? ElasticConstant.Log.Mappings.Value : ElasticConstant.Trace.Mappings.Value;
 
         if (!string.IsNullOrEmpty(query.RawQuery))
         {
@@ -256,28 +256,28 @@ internal static class IElasticClientExtenstion
         if (!string.IsNullOrEmpty(query.Service))
             result.Add(new FieldConditionDto
             {
-                Name = ElasticConst.ServiceName,
+                Name = ElasticConstant.ServiceName,
                 Value = query.Service,
                 Type = ConditionTypes.Equal
             });
         if (!string.IsNullOrEmpty(query.Instance))
             result.Add(new FieldConditionDto
             {
-                Name = ElasticConst.ServiceInstance,
+                Name = ElasticConstant.ServiceInstance,
                 Value = query.Service,
                 Type = ConditionTypes.Equal
             });
         if (!string.IsNullOrEmpty(query.Endpoint))
             result.Add(new FieldConditionDto
             {
-                Name = ElasticConst.Endpoint,
+                Name = ElasticConstant.Endpoint,
                 Value = $"*{query.Service}*",
                 Type = ConditionTypes.Regex
             });
         if (!string.IsNullOrEmpty(query.TraceId))
             result.Add(new FieldConditionDto
             {
-                Name = ElasticConst.TraceId,
+                Name = ElasticConstant.TraceId,
                 Value = query.TraceId,
                 Type = ConditionTypes.Equal
             });
@@ -321,7 +321,7 @@ internal static class IElasticClientExtenstion
 
     private static SortDescriptor<TResult> SortFn<TQuery, TResult>(SortDescriptor<TResult> container, TQuery query, bool isLog = true) where TQuery : BaseRequestDto where TResult : class
     {
-        LogTraceSetting setting = isLog ? ElasticConst.Log : ElasticConst.Trace;
+        LogTraceSetting setting = isLog ? ElasticConstant.Log : ElasticConstant.Trace;
 
         if (query.Sort == null)
             return container.Descending(setting.Timestamp);
@@ -329,35 +329,35 @@ internal static class IElasticClientExtenstion
         var mapping = setting.Mappings.Value.FirstOrDefault(m => string.Equals(m.Name, query.Sort.Name, StringComparison.OrdinalIgnoreCase));
         CreateFieldKeyword(query.Sort.Name, mapping, out var field, out var keyword);
 
-        if (query.Sort.IsAsc ?? false)
-            container.Ascending(keyword);
-        else
+        if (query.Sort.IsDesc)
             container.Descending(keyword);
+        else
+            container.Ascending(keyword);
 
         return container;
     }
 
-    private static PaginationDto<LogResponseDto> SetLogResult(ISearchResponse<object> response)
+    private static PaginatedListBase<LogResponseDto> SetLogResult(ISearchResponse<object> response)
     {
         var options = new JsonSerializerOptions();
         options.Converters.Add(new LogResponseDtoConverter());
         var text = JsonSerializer.Serialize(response.Documents);
 
-        return new PaginationDto<LogResponseDto>(response.Total, JsonSerializer.Deserialize<List<LogResponseDto>>(text, options)!);
+        return new PaginatedListBase<LogResponseDto> { Total = response.Total, Result = JsonSerializer.Deserialize<List<LogResponseDto>>(text, options)! };
     }
 
-    private static PaginationDto<TraceResponseDto> SetTraceResult(ISearchResponse<object> response)
+    private static PaginatedListBase<TraceResponseDto> SetTraceResult(ISearchResponse<object> response)
     {
         var options = new JsonSerializerOptions();
         options.Converters.Add(new TraceResponseDtoConverter());
         var text = JsonSerializer.Serialize(response.Documents);
 
-        return new PaginationDto<TraceResponseDto>(response.Total, JsonSerializer.Deserialize<List<TraceResponseDto>>(text, options)!);
+        return new PaginatedListBase<TraceResponseDto> { Total = response.Total, Result = JsonSerializer.Deserialize<List<TraceResponseDto>>(text, options)! };
     }
 
     private static IAggregationContainer AggregationFn(AggregationContainerDescriptor<object> aggContainer, SimpleAggregateRequestDto aggModel, bool isLog)
     {
-        var mappings = isLog ? ElasticConst.Log.Mappings.Value : ElasticConst.Trace.Mappings.Value;
+        var mappings = isLog ? ElasticConstant.Log.Mappings.Value : ElasticConstant.Trace.Mappings.Value;
         var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, aggModel.Name, StringComparison.OrdinalIgnoreCase));
         CreateFieldKeyword(aggModel.Name, mapping, out var field, out var keyword);
         string aliasName = aggModel.Alias ?? field;

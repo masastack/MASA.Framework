@@ -11,23 +11,23 @@ internal class ElasticseachTraceResponseDto : TraceResponseDto
     [JsonPropertyName("EndTimestamp")]
     public override DateTime EndTimestamp { get; set; }
 
-    public override bool IsDatabase(out TraceDatabaseResponseDto result)
+    public override bool TryParseDatabase(out TraceDatabaseResponseDto result)
     {
-        var success = this.IsDatabase(out ElasticseachTraceDatabaseResponseDto elasticResult);
+        var success = this.TryParseDatabase(out ElasticseachTraceDatabaseResponseDto elasticResult);
         result = success ? elasticResult : default!;
         return success;
     }
 
-    public override bool IsException(out TraceExceptionResponseDto result)
+    public override bool TryParseException(out TraceExceptionResponseDto result)
     {
-        var success = this.IsException(out ElasticseachTraceExceptionResponseDto elasticResult);
+        var success = this.TryParseException(out ElasticseachTraceExceptionResponseDto elasticResult);
         result = success ? elasticResult : default!;
         return success;
     }
 
-    public override bool IsHttp(out TraceHttpResponseDto result)
+    public override bool TryParseHttp(out TraceHttpResponseDto result)
     {
-        var success = this.IsHttp(out ElasticseachTraceHttpResponseDto elasticResult);
+        var success = this.TryParseHttp(out ElasticseachTraceHttpResponseDto elasticResult);
         result = success ? elasticResult : default!;
         return success;
     }

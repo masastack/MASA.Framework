@@ -27,19 +27,19 @@ public class TraceResponseDto
 
     public virtual long Duration => (long)Math.Floor((EndTimestamp - Timestamp).TotalMilliseconds);
 
-    public virtual bool IsHttp(out TraceHttpResponseDto result)
+    public virtual bool TryParseHttp(out TraceHttpResponseDto result)
     {
         result = default!;
         return false;
     }    
 
-    public virtual bool IsDatabase(out TraceDatabaseResponseDto result)
+    public virtual bool TryParseDatabase(out TraceDatabaseResponseDto result)
     {
         result = default!;
         return false;
     }
 
-    public virtual bool IsException(out TraceExceptionResponseDto result)
+    public virtual bool TryParseException(out TraceExceptionResponseDto result)
     {
         result = default!;
         return false;
@@ -47,17 +47,17 @@ public class TraceResponseDto
 
     public virtual string GetDispalyName()
     {
-        if (IsHttp(out var traceHttpDto))
+        if (TryParseHttp(out var traceHttpDto))
         {
             if (Kind == TraceDtoKind.SPAN_KIND_SERVER)
                 return traceHttpDto.Target;
             return traceHttpDto.Url;
         }
-        else if (IsDatabase(out var databaseDto))
+        else if (TryParseDatabase(out var databaseDto))
         {
             return databaseDto.Name;
         }
-        else if (IsException(out TraceExceptionResponseDto exceptionDto))
+        else if (TryParseException(out TraceExceptionResponseDto exceptionDto))
         {
             return exceptionDto.Type ?? exceptionDto.Message;
         }

@@ -11,12 +11,12 @@ public class LogServiceTests
     [ClassInitialize]
     public static void InitializeLog(TestContext testContext)
     {
-        string strJson = "{\"@timestamp\":\"2022-11-15T12:12:11.028116800Z\",\"Attributes.Id\":2,\"Attributes.Name\":\"UserAuthorizationFailed\",\"Attributes.Reason\":\"These requirements were not met:\\r\\nDenyAnonymousAuthorizationRequirement: Requires an authenticated user.\",\"Attributes.[Scope.0]:ParentId\":\"0000000000000000\",\"Attributes.[Scope.0]:SpanId\":\"1c495129b86de343\",\"Attributes.[Scope.0]:TraceId\":\"277df6d0204f09fa63ff4ab896673455\",\"Attributes.[Scope.1]:ConnectionId\":\"0HMM705VTO6BQ\",\"Attributes.[Scope.2]:RequestId\":\"0HMM705VTO6BQ:00000001\",\"Attributes.[Scope.2]:RequestPath\":\"/\",\"Attributes.dotnet.ilogger.category\":\"Microsoft.AspNetCore.Authorization.DefaultAuthorizationService\",\"Attributes.{OriginalFormat}\":\"Authorization failed. {Reason}\",\"Body\":\"Authorization failed. These requirements were not met:\\r\\nDenyAnonymousAuthorizationRequirement: Requires an authenticated user.\",\"Resource.service.instance.id\":\"9eaf1452-8b12-4368-928c-48f871c250fe\",\"Resource.service.name\":\"masa-tsc-web-admin\",\"Resource.service.namespace\":\"Development\",\"Resource.service.version\":\"0.1.0\",\"Resource.telemetry.sdk.language\":\"dotnet\",\"Resource.telemetry.sdk.name\":\"opentelemetry\",\"Resource.telemetry.sdk.version\":\"1.3.0.519\",\"SeverityNumber\":9,\"SeverityText\":\"Information\",\"SpanId\":\"1c495129b86de343\",\"TraceFlags\":1,\"TraceId\":\"277df6d0204f09fa63ff4ab896673455\"}";
-        string strMapping = "{\"mappings\":{\"properties\":{\"@timestamp\":{\"type\":\"date\"},\"Attributes\":{\"properties\":{\"AuthenticationScheme\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"CommandType\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"ContentLength\":{\"type\":\"long\"},\"ContentType\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"ElapsedMilliseconds\":{\"type\":\"float\"},\"EndpointName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"FullName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Host\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Id\":{\"type\":\"long\"},\"Method\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Path\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"PathBase\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Protocol\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"QueryString\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Reason\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Scheme\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"StatusCode\":{\"type\":\"long\"},\"[Scope\":{\"properties\":{\"0]:ParentId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"0]:SpanId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"0]:TraceId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"1]:ConnectionId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"2]:RequestId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"2]:RequestPath\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"address\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"contentRoot\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"dotnet\":{\"properties\":{\"ilogger\":{\"properties\":{\"category\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}},\"envName\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"exception\":{\"properties\":{\"message\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"stacktrace\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"type\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"{OriginalFormat}\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"Body\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"Resource\":{\"properties\":{\"service\":{\"properties\":{\"instance\":{\"properties\":{\"id\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"namespace\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"version\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}},\"telemetry\":{\"properties\":{\"sdk\":{\"properties\":{\"language\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"name\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"version\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}}}},\"SeverityNumber\":{\"type\":\"long\"},\"SeverityText\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"SpanId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}},\"TraceFlags\":{\"type\":\"long\"},\"TraceId\":{\"type\":\"text\",\"fields\":{\"keyword\":{\"type\":\"keyword\",\"ignore_above\":256}}}}}}";
+        var mapping = StaticConfig.GetJson("Mapping:log");
+        var dataJson = StaticConfig.GetJson("Init:log");
         var httpClient = new HttpClient() { BaseAddress = new Uri(StaticConfig.HOST) };
-        httpClient.Send(new HttpRequestMessage { Method = HttpMethod.Delete, RequestUri = new Uri($"/{StaticConfig.LOG_INDEX_NAME}", UriKind.Relative) });
-        httpClient.Send(new HttpRequestMessage { Method = HttpMethod.Put, RequestUri = new Uri($"/{StaticConfig.LOG_INDEX_NAME}", UriKind.Relative), Content = new StringContent(strMapping, Encoding.UTF8, "application/json") });
-        httpClient.Send(new HttpRequestMessage { Method = HttpMethod.Post, RequestUri = new Uri($"/{StaticConfig.LOG_INDEX_NAME}/_doc", UriKind.Relative), Content = new StringContent(strJson, Encoding.UTF8, "application/json") });
+        httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_NAME, HttpMethod.Delete));
+        httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_NAME, HttpMethod.Put, mapping));
+        httpClient.Send(StaticConfig.CreateMessage($"{StaticConfig.LOG_INDEX_NAME}/_doc", HttpMethod.Post, dataJson));
         Task.Delay(1000).Wait();
     }
 
@@ -33,7 +33,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task MappingTest()
     {
-        var mappings = await _logService.MappingAsync();
+        var mappings = await _logService.GetMappingAsync();
         Assert.IsNotNull(mappings);
         Assert.IsTrue(mappings.Any());
         Assert.IsTrue(mappings.Any(m => m.Name == "@timestamp"));
@@ -42,7 +42,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task QueryEqualTest()
     {
-        Assert.IsNotNull(ElasticConst.Log.Mappings.Value);
+        Assert.IsNotNull(ElasticConstant.Log.Mappings.Value);
         var query = new BaseRequestDto
         {
             Page = 1,
@@ -54,7 +54,7 @@ public class LogServiceTests
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public class LogServiceTests
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Items.Any());
+        Assert.IsFalse(result.Result.Any());
     }
 
     [TestMethod]
@@ -86,7 +86,7 @@ public class LogServiceTests
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ public class LogServiceTests
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
     }
 
     [TestMethod]
@@ -115,18 +115,18 @@ public class LogServiceTests
             Page = 1,
             Size = 10,
             Conditions = new FieldConditionDto[] {
-                 new FieldConditionDto{ Name=ElasticConst.SpanId, Type= ConditionTypes.In, Value=new string[]{ "1c495129b86de343", "aaaaaaa" } }
+                 new FieldConditionDto{ Name=ElasticConstant.SpanId, Type= ConditionTypes.In, Value=new string[]{ "1c495129b86de343", "aaaaaaa" } }
              }
         };
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
 
         query.Conditions.First().Type = ConditionTypes.NotIn;
         result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Items.Any());
+        Assert.IsFalse(result.Result.Any());
     }
 
     [TestMethod]
@@ -137,18 +137,18 @@ public class LogServiceTests
             Page = 1,
             Size = 10,
             Conditions = new FieldConditionDto[] {
-                 new FieldConditionDto{ Name=ElasticConst.ServiceName, Type= ConditionTypes.Regex, Value="masa*"}
+                 new FieldConditionDto{ Name=ElasticConstant.ServiceName, Type= ConditionTypes.Regex, Value="masa*"}
              }
         };
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
 
         query.Conditions.First().Type = ConditionTypes.NotRegex;
         result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Items.Any());
+        Assert.IsFalse(result.Result.Any());
     }
 
     [TestMethod]
@@ -159,18 +159,18 @@ public class LogServiceTests
             Page = 1,
             Size = 10,
             Conditions = new FieldConditionDto[] {
-                 new FieldConditionDto{ Name=ElasticConst.ParentId, Type= ConditionTypes.Exists}
+                 new FieldConditionDto{ Name=ElasticConstant.ParentId, Type= ConditionTypes.Exists}
              }
         };
 
         var result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Items.Any());
+        Assert.IsFalse(result.Result.Any());
 
         query.Conditions.First().Type = ConditionTypes.NotExists;
         result = await _logService.ListAsync(query);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Items.Any());
+        Assert.IsTrue(result.Result.Any());
     }
 
     [TestMethod]
@@ -179,7 +179,7 @@ public class LogServiceTests
         var query = new SimpleAggregateRequestDto
         {
             Service = "masa-tsc-web-admin",
-            Name = ElasticConst.ServiceName,
+            Name = ElasticConstant.ServiceName,
             Type = AggregateTypes.Count
         };
         var result = await _logService.AggregateAsync(query);
@@ -224,7 +224,7 @@ public class LogServiceTests
         {
             MaxCount = 10,
             Service = "masa-tsc-web-admin",
-            Name = ElasticConst.ServiceInstance,
+            Name = ElasticConstant.ServiceInstance,
             Type = AggregateTypes.GroupBy
         };
 
@@ -241,17 +241,17 @@ public class LogServiceTests
         {
             MaxCount = 10,
             Service = "masa-tsc-web-admin",
-            Name = ElasticConst.Log.Timestamp,
-            Interval="5m"             
+            Name = ElasticConstant.Log.Timestamp,
+            Interval = "5m"
         };
 
         var result = await _logService.AggregateAsync(query);
         Assert.IsNull(result);
 
-        query.Type= AggregateTypes.DateHistogram;
+        query.Type = AggregateTypes.DateHistogram;
         result = await _logService.AggregateAsync(query);
         Assert.IsNotNull(result);
-        var data = (IEnumerable<KeyValuePair< double,long>>)result;
+        var data = (IEnumerable<KeyValuePair<double, long>>)result;
         Assert.IsTrue(data.Any());
     }
 }
