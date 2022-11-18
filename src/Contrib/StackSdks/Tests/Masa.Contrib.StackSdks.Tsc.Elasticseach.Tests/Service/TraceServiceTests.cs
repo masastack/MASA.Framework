@@ -29,10 +29,16 @@ public class TraceServiceTests
     public void Initialize()
     {
         ServiceCollection services = new();
+        services.Clear();
         services.AddElasticClientTrace(options =>
         {
             options.UseNodes(new string[] { StaticConfig.HOST });
-        }, StaticConfig.TRACE_INDEX_NAME);
+        },
+        callerOptions =>
+        {
+            callerOptions.BaseAddress = StaticConfig.HOST;
+        },
+        StaticConfig.TRACE_INDEX_NAME);
         var serviceProvider = services.BuildServiceProvider();
         _traceService = serviceProvider.GetRequiredService<ITraceService>();
     }
@@ -40,13 +46,17 @@ public class TraceServiceTests
     [TestMethod]
     public async Task QueryTest()
     {
+        Assert.IsNotNull(ElasticConst.Trace.Mappings.Value);
+
         var query = new BaseRequestDto
         {
             Page = 1,
             Size = 10,
-            Conditions = new FieldConditionDto[] {
-                 new FieldConditionDto{ Name="Attributes.host.name.keyword", Type= ConditionTypes.Equal, Value="SSKJ016" }
-             }
+            Sort =
+                new FieldOrderDto
+                {
+                    Name = ElasticConst.ServiceName
+                }
         };
 
         var result = await _traceService.ListAsync(query);

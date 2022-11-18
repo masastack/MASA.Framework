@@ -11,16 +11,15 @@ public class LogTraceSetting
 
     internal bool IsIndependent { get; private set; }
 
-    internal ElasticseacherMappingResponseDto[] Mappings { get; private set; }
+    internal Lazy<ElasticseacherMappingResponseDto[]> Mappings { get; set; }
 
-    internal LogTraceSetting(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false, string timestamp = "@timestamp")
+    internal LogTraceSetting(string indexName, bool isIndependent = false, string timestamp = "@timestamp")
     {
-        if (!string.IsNullOrEmpty(IndexName) || string.IsNullOrEmpty(indexName) || mappings == null)
+        if (!string.IsNullOrEmpty(IndexName) || string.IsNullOrEmpty(indexName))
             return;
 
-        IsIndependent = isIndependent;
         IndexName = indexName;
-        Mappings = mappings.ToArray();
         Timestamp = timestamp;
+        IsIndependent = isIndependent;
     }
 }

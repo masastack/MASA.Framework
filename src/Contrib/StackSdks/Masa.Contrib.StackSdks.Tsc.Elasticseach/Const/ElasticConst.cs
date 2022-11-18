@@ -24,133 +24,17 @@ public static class ElasticConst
 
     public static LogTraceSetting Trace { get; private set; }
 
-    internal static void InitLog(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
+    internal static void InitLog(string indexName, bool isIndependent = false)
     {
         if (Log != null || string.IsNullOrEmpty(indexName))
             return;
-        if (mappings == null || !mappings.Any())
-            mappings = new ElasticseacherMappingResponseDto[] {
-                    new ElasticseacherMappingResponseDto{
-                        Name = TIMESTAMP,
-                        Type ="date"
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ServiceInstance,
-                        Type ="text",
-                         IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ServiceName,
-                        Type ="text",
-                         IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=NameSpace,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="Resource.service.version",
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=SpanId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=TraceId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ParentId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="SeverityNumber",
-                        Type ="number"
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="TraceFlags",
-                        Type ="number"
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="SeverityText",
-                        Type ="text",
-                        IsKeyword=true,
-                    }
-                };
-        Log = new LogTraceSetting(indexName, mappings, isIndependent, TIMESTAMP);
+        Log = new LogTraceSetting(indexName, isIndependent, TIMESTAMP);
     }
 
-    internal static void InitTrace(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
+    internal static void InitTrace(string indexName, bool isIndependent = false)
     {
         if (Trace != null || string.IsNullOrEmpty(indexName))
-            return;
-
-        if (mappings == null || !mappings.Any())
-            mappings = new ElasticseacherMappingResponseDto[] {
-                    new ElasticseacherMappingResponseDto{
-                        Name=TIMESTAMP,
-                        Type ="date"
-                    },
-                   new ElasticseacherMappingResponseDto{
-                        Name="EndTimestamp",
-                        Type ="date"
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="Name",
-                        Type ="text",
-                        IsKeyword=true
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ServiceInstance,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ServiceName,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=NameSpace,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="Resource.service.version",
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=SpanId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=TraceId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=ParentId,
-                        Type ="text",
-                        IsKeyword=true,
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name="TraceFlags",
-                        Type ="number"
-                    },
-                    new ElasticseacherMappingResponseDto{
-                        Name=Endpoint,
-                        Type ="text",
-                        IsKeyword=true
-                    }
-                };
-        Trace = new LogTraceSetting(indexName, mappings, isIndependent, TIMESTAMP);
+            return;     
+        Trace = new LogTraceSetting(indexName, isIndependent, TIMESTAMP);
     }
 }

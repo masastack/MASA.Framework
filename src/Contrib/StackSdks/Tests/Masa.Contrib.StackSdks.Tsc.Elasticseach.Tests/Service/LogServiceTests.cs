@@ -7,7 +7,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests.Service;
 public class LogServiceTests
 {
     private ILogService _logService;
-   
+
     [ClassInitialize]
     public static void InitializeLog(TestContext testContext)
     {
@@ -24,6 +24,7 @@ public class LogServiceTests
     public void Initialize()
     {
         ServiceCollection services = new();
+        services.Clear();
         services.AddElasticClientLog(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_NAME);
         var serviceProvider = services.BuildServiceProvider();
         _logService = serviceProvider.GetRequiredService<ILogService>();
@@ -41,6 +42,7 @@ public class LogServiceTests
     [TestMethod]
     public async Task QueryEqualTest()
     {
+        Assert.IsNotNull(ElasticConst.Log.Mappings.Value);
         var query = new BaseRequestDto
         {
             Page = 1,
@@ -216,7 +218,7 @@ public class LogServiceTests
     }
 
     [TestMethod]
-    public async Task AggGroupBy()
+    public async Task AggGroupByTest()
     {
         var query = new SimpleAggregateRequestDto
         {
@@ -229,6 +231,27 @@ public class LogServiceTests
         var result = await _logService.AggregateAsync(query);
         Assert.IsNotNull(result);
         var data = (IEnumerable<string>)result;
+        Assert.IsTrue(data.Any());
+    }
+
+    [TestMethod]
+    public async Task AggDateHistogramTest()
+    {
+        var query = new SimpleAggregateRequestDto
+        {
+            MaxCount = 10,
+            Service = "masa-tsc-web-admin",
+            Name = ElasticConst.Log.Timestamp,
+            Interval="5m"             
+        };
+
+        var result = await _logService.AggregateAsync(query);
+        Assert.IsNull(result);
+
+        query.Type= AggregateTypes.DateHistogram;
+        result = await _logService.AggregateAsync(query);
+        Assert.IsNotNull(result);
+        var data = (IEnumerable<KeyValuePair< double,long>>)result;
         Assert.IsTrue(data.Any());
     }
 }

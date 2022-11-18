@@ -4,7 +4,7 @@
 namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests.Extensions;
 
 [TestClass]
-public class DictionaryExtenistions
+public class DictionaryExtenistionsTests
 {
     readonly JsonSerializerOptions options = new JsonSerializerOptions
     {

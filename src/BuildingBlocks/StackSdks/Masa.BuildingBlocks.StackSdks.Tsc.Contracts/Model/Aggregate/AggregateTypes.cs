@@ -11,5 +11,4 @@ public enum AggregateTypes
     DistinctCount,
     DateHistogram,
     GroupBy
-    //Histogram
 }

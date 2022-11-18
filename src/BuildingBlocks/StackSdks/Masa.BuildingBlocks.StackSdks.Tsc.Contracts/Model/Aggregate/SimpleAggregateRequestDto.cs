@@ -7,8 +7,8 @@ public class SimpleAggregateRequestDto : BaseRequestDto
 {
     public string Name { get; set; }
 
-    public string Alias { get; set; }
-
+    public string Alias { get; set; }   
+    
     public AggregateTypes Type { get; set; }
 
     public int MaxCount { get; set; }

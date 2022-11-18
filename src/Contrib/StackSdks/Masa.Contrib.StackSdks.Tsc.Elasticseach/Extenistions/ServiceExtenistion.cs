@@ -5,46 +5,60 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticseach;
 
 public static class ServiceExtenistion
 {
-    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, string[] nodes, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
+    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, string[] nodes, string indexName)
     {
-        ElasticConst.InitLog(indexName, mappings!, true);
-        return AddElasticsearch(services, nodes, ElasticConst.LOG_CALLER_CLIENT_NAME, true).AddSingleton<ILogService, LogService>();
+        ElasticConst.InitLog(indexName, true);
+        AddElasticsearch(services, nodes, ElasticConst.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
+        ElasticConst.Log.Mappings = GetLazyMapping(services, ElasticConst.LOG_CALLER_CLIENT_NAME, indexName);
+        return services;
     }
 
-    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
+    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName)
     {
-        ElasticConst.InitLog(indexName, mappings!, true);
-        return AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
+        ElasticConst.InitLog(indexName, true);
+        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
+        ElasticConst.Log.Mappings = GetLazyMapping(services, ElasticConst.LOG_CALLER_CLIENT_NAME, indexName);
+        return services;
     }
 
-    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, string[] nodes, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
+    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, string[] nodes, string indexName)
     {
-        ElasticConst.InitTrace(indexName, mappings!, true);
-        return AddElasticsearch(services, nodes, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        ElasticConst.InitTrace(indexName, true);
+        AddElasticsearch(services, nodes, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        ElasticConst.Trace.Mappings = GetLazyMapping(services, ElasticConst.TRACE_CALLER_CLIENT_NAME, indexName);
+        return services;
     }
 
-    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
+    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName)
     {
-        ElasticConst.InitTrace(indexName, mappings!, true);
-        return AddElasticsearch(services, elasearchConnectionAction, default!, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        ElasticConst.InitTrace(indexName, true);
+        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
+        ElasticConst.Trace.Mappings = GetLazyMapping(services, ElasticConst.TRACE_CALLER_CLIENT_NAME, indexName);
+        return services;
     }
 
-    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, string[] nodes, string logIndexName, string traceIndexName, IEnumerable<ElasticseacherMappingResponseDto>? logMappings = null, IEnumerable<ElasticseacherMappingResponseDto>? traceMappings = null)
+    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, string[] nodes, string logIndexName, string traceIndexName)
     {
-        ElasticConst.InitLog(logIndexName, logMappings!, false);
-        ElasticConst.InitTrace(traceIndexName, traceMappings!, false);
-        return AddElasticsearch(services, nodes, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
+        ElasticConst.InitLog(logIndexName, false);
+        ElasticConst.InitTrace(traceIndexName, false);
+        AddElasticsearch(services, nodes, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
             .AddSingleton<ILogService, LogService>()
             .AddSingleton<ITraceService, TraceService>();
+        ElasticConst.Log.Mappings = GetLazyMapping(services, ElasticConst.DEFAULT_CALLER_CLIENT_NAME, logIndexName);
+        ElasticConst.Trace.Mappings = GetLazyMapping(services, ElasticConst.DEFAULT_CALLER_CLIENT_NAME, traceIndexName);
+        return services;
     }
 
-    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string logIndexName, string traceIndexName, IEnumerable<ElasticseacherMappingResponseDto>? logMappings = null, IEnumerable<ElasticseacherMappingResponseDto>? traceMappings = null)
+    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string logIndexName, string traceIndexName)
     {
-        ElasticConst.InitLog(logIndexName, logMappings!);
-        ElasticConst.InitTrace(traceIndexName, traceMappings!);
-        return AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
+        ElasticConst.InitLog(logIndexName);
+        ElasticConst.InitTrace(traceIndexName);
+        AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
             .AddSingleton<ILogService, LogService>()
             .AddSingleton<ITraceService, TraceService>();
+        ElasticConst.Log.Mappings = GetLazyMapping(services, ElasticConst.DEFAULT_CALLER_CLIENT_NAME, logIndexName);
+        ElasticConst.Trace.Mappings = GetLazyMapping(services, ElasticConst.DEFAULT_CALLER_CLIENT_NAME, traceIndexName);
+        return services;
     }
 
     internal static IElasticClient CreateElasticClient(this IElasticsearchFactory elasticsearchFactory, bool isLog = true)
@@ -63,11 +77,10 @@ public static class ServiceExtenistion
             return callerFactory.Create(ElasticConst.Trace.IsIndependent ? ElasticConst.TRACE_CALLER_CLIENT_NAME : ElasticConst.DEFAULT_CALLER_CLIENT_NAME);
     }
 
-    private static IServiceCollection AddElasticsearch(IServiceCollection services, string[] nodes, string name, bool hasCaller = false)
+    private static IServiceCollection AddElasticsearch(IServiceCollection services, string[] nodes, string name)
     {
-        services.AddElasticsearch(name, nodes);
-        if (hasCaller)
-            services.AddCaller(option =>
+        return services.AddElasticsearch(name, nodes)
+            .AddCaller(option =>
             {
                 option.DisableAutoRegistration = true;
                 option.UseHttpClient(name, builder =>
@@ -75,19 +88,28 @@ public static class ServiceExtenistion
                     builder.BaseAddress = nodes[0];
                 });
             });
-        return services;
     }
 
-    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder>? callerAction, string name)
+    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string name)
     {
-        services.AddElasticsearch(name, elasearchConnectionAction);
-        if (callerAction != null)
-            services.AddCaller(option =>
-            {
-                option.DisableAutoRegistration = true;
-                if (callerAction != null)
-                    option.UseHttpClient(name, callerAction);
-            });
-        return services;
+        ArgumentNullException.ThrowIfNull(callerAction);
+
+        return services.AddElasticsearch(name, elasearchConnectionAction)
+         .AddCaller(option =>
+             {
+                 option.DisableAutoRegistration = true;
+                 option.UseHttpClient(name, callerAction);
+             });
+    }
+
+    private static Lazy<ElasticseacherMappingResponseDto[]> GetLazyMapping(IServiceCollection services, string callerName, string indexName)
+    {
+        return new Lazy<ElasticseacherMappingResponseDto[]>(() =>
+        {
+            var callerFactory = services.BuildServiceProvider().GetRequiredService<ICallerFactory>();
+            var caller = callerFactory.Create(callerName);
+            var result = caller.GetMappingAsync(indexName).Result;
+            return result.Select(item => (ElasticseacherMappingResponseDto)item).ToArray();
+        });
     }
 }

@@ -84,9 +84,9 @@ internal static class IElasticClientExtenstion
     {
         ArgumentNullException.ThrowIfNull(indexName);
         var path = $"/{indexName}/_mapping";
-        var result = await caller.GetAsync<JsonElement>(path, false, token);
-
-        if (!result.TryGetProperty(indexName, out JsonElement root) ||
+        var result = await caller.GetAsync<object>(path, false, token);
+        var json = (JsonElement)result!;
+        if (!json.TryGetProperty(indexName, out JsonElement root) ||
             !root.TryGetProperty("mappings", out JsonElement mapping))
         {
             return default!;
@@ -170,7 +170,9 @@ internal static class IElasticClientExtenstion
     {
         PaginationDto<LogResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Log.IndexName, query,
-        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query)
+        .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query), query)
+        .AddPageSize(true, query.Page, query.Size),
         (response, q) => result = SetLogResult(response));
         return result;
     }
@@ -179,7 +181,9 @@ internal static class IElasticClientExtenstion
     {
         object result = default!;
         await client.SearchAsync(ElasticConst.Log.IndexName, query,
-       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query)
+       .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query), query)
+       .AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, true), query),
        (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
@@ -190,7 +194,9 @@ internal static class IElasticClientExtenstion
     {
         PaginationDto<TraceResponseDto> result = default!;
         await client.SearchAsync(ElasticConst.Trace.IndexName, query,
-        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query).AddSort(SortFn, query).AddPageSize(true, query.Page, query.Size),
+        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query)
+        .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query, false), query)
+        .AddPageSize(true, query.Page, query.Size),
         (response, q) => result = SetTraceResult(response));
         return result;
     }
@@ -199,17 +205,20 @@ internal static class IElasticClientExtenstion
     {
         object result = default!;
         await client.SearchAsync(ElasticConst.Trace.IndexName, query,
-       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query).AddSort(SortFn, query).AddPageSize(false, 0, 0).AddAggregate((agg, query) => AggregationFn(agg, query, false), query),
+       (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query)
+       .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query, false), query)
+       .AddPageSize(false, 0, 0)
+       .AddAggregate((agg, query) => AggregationFn(agg, query, false), query),
        (response, q) => result = SetAggregationResult(response, q));
         return result;
     }
-    #endregion
+    #endregion    
 
     private static QueryContainer SearchFn<TQuery, TResult>(QueryContainerDescriptor<TResult> queryContainer, TQuery query, bool isLog) where TQuery : BaseRequestDto where TResult : class
     {
         var list = new List<Func<QueryContainerDescriptor<TResult>, QueryContainer>>();
         string timestamp = isLog ? ElasticConst.Log.Timestamp : ElasticConst.Trace.Timestamp;
-        var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
+        var mappings = isLog ? ElasticConst.Log.Mappings.Value : ElasticConst.Trace.Mappings.Value;
 
         if (!string.IsNullOrEmpty(query.RawQuery))
         {
@@ -277,11 +286,7 @@ internal static class IElasticClientExtenstion
 
     private static Func<QueryContainerDescriptor<TResult>, QueryContainer> CompareCondition<TResult>(ElasticseacherMappingResponseDto? mapping, FieldConditionDto query) where TResult : class
     {
-        string fieldName = (mapping == null ? query.Name : mapping.Name)!;
-        string keyword = fieldName;
-        if (mapping?.IsKeyword ?? false)
-            keyword = $"{keyword}.keyword";
-
+        CreateFieldKeyword(query.Name, mapping, out var fieldName, out var keyword);
         var value = query.Value;
 
         switch (query.Type)
@@ -314,17 +319,21 @@ internal static class IElasticClientExtenstion
         return (container) => container;
     }
 
-    private static SortDescriptor<TResult> SortFn<TQuery, TResult>(SortDescriptor<TResult> container, TQuery query) where TQuery : BaseRequestDto where TResult : class
+    private static SortDescriptor<TResult> SortFn<TQuery, TResult>(SortDescriptor<TResult> container, TQuery query, bool isLog = true) where TQuery : BaseRequestDto where TResult : class
     {
-        if (query.Sorts == null || !query.Sorts.Any())
-            return container.Descending(ElasticConst.Log.Timestamp);
-        foreach (var item in query.Sorts)
-        {
-            if (item.IsAsc ?? false)
-                container.Ascending(item.Name);
-            else
-                container.Descending(item.Name);
-        }
+        LogTraceSetting setting = isLog ? ElasticConst.Log : ElasticConst.Trace;
+
+        if (query.Sort == null)
+            return container.Descending(setting.Timestamp);
+
+        var mapping = setting.Mappings.Value.FirstOrDefault(m => string.Equals(m.Name, query.Sort.Name, StringComparison.OrdinalIgnoreCase));
+        CreateFieldKeyword(query.Sort.Name, mapping, out var field, out var keyword);
+
+        if (query.Sort.IsAsc ?? false)
+            container.Ascending(keyword);
+        else
+            container.Descending(keyword);
+
         return container;
     }
 
@@ -348,13 +357,10 @@ internal static class IElasticClientExtenstion
 
     private static IAggregationContainer AggregationFn(AggregationContainerDescriptor<object> aggContainer, SimpleAggregateRequestDto aggModel, bool isLog)
     {
-        var mappings = isLog ? ElasticConst.Log.Mappings : ElasticConst.Trace.Mappings;
+        var mappings = isLog ? ElasticConst.Log.Mappings.Value : ElasticConst.Trace.Mappings.Value;
         var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, aggModel.Name, StringComparison.OrdinalIgnoreCase));
-        string field = mapping?.Name ?? aggModel.Name;
-        string aliasName = aggModel.Alias ?? aggModel.Name;
-        string keyword = field;
-        if (mapping != null && (mapping.IsKeyword ?? false))
-            keyword = $"{keyword}.keyword";
+        CreateFieldKeyword(aggModel.Name, mapping, out var field, out var keyword);
+        string aliasName = aggModel.Alias ?? field;
 
         switch (aggModel.Type)
         {
@@ -427,14 +433,31 @@ internal static class IElasticClientExtenstion
             return value.Items.Select(it => ((KeyedBucket<object>)it).KeyAsString).ToList();
         else if (type == AggregateTypes.DateHistogram)
         {
-            var result = new Dictionary<double, long>();
+            var result = new List<KeyValuePair<double, long>>();
             foreach (var bucket in value.Items)
             {
                 var dateHistogramBucket = (DateHistogramBucket)bucket;
-                result.Add(dateHistogramBucket.Key, (dateHistogramBucket.DocCount ?? 0));
+                result.Add(KeyValuePair.Create(dateHistogramBucket.Key, (dateHistogramBucket.DocCount ?? 0)));
             }
             return result;
         }
         return default!;
+    }
+
+    private static void CreateFieldKeyword(string name, ElasticseacherMappingResponseDto? mapping, out string field, out string keyword)
+    {
+        if (mapping == null)
+        {
+            field = name;
+            keyword = name;
+        }
+        else
+        {
+            field = mapping.Name;
+            if (mapping.Type == "text" && mapping.IsKeyword.HasValue && mapping.IsKeyword.Value)
+                keyword = $"{field}.keyword";
+            else
+                keyword = field;
+        }
     }
 }

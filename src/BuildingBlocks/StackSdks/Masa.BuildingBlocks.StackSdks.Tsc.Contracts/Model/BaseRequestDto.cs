@@ -23,7 +23,7 @@ public class BaseRequestDto : PaginationRequestDto
 
     public IEnumerable<FieldConditionDto> Conditions { get; set; }
 
-    public IEnumerable<FieldOrderDto> Sorts { get; set; }
+    public FieldOrderDto? Sort { get; set; }
 
     public virtual void AppendConditions() { }
 }
