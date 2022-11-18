@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Tsc.Log.Elasticseach.Const;
+namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Const;
 
 public static class ElasticConst
 {
@@ -9,6 +9,7 @@ public static class ElasticConst
     internal const string TRACE_CALLER_CLIENT_NAME = "masa.contrib.stacksdks.tsc.log.elasticseach.trace";
     internal const string DEFAULT_CALLER_CLIENT_NAME = "masa.contrib.stacksdks.tsc.log.elasticseach.all";
 
+    private const string TIMESTAMP = "@timestamp";
     public static string TraceId => "TraceId";
     public static string ParentId => "ParentSpanId";
     public static string SpanId => "SpanId";
@@ -19,27 +20,18 @@ public static class ElasticConst
 
     internal static int MaxRecordCount { get; private set; } = 10000;
 
-    public static class Log
+    public static LogTraceSetting Log { get; private set; }
+
+    public static LogTraceSetting Trace { get; private set; }
+
+    internal static void InitLog(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
     {
-        internal static string IndexName { get; private set; }
-
-        public static string Timestamp => "@timestamp";
-
-        internal static bool IsIndependent { get; private set; }
-
-        internal static ElasticseacherMappingResponseDto[] Mappings { get; private set; }
-
-        internal static void Init(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
-        {
-            if (!string.IsNullOrEmpty(IndexName) || string.IsNullOrEmpty(indexName))
-                return;
-
-            IsIndependent = isIndependent;
-            IndexName = indexName;
-            if (mappings == null || !mappings.Any())
-                Mappings = new ElasticseacherMappingResponseDto[] {
+        if (Log != null || string.IsNullOrEmpty(indexName))
+            return;
+        if (mappings == null || !mappings.Any())
+            mappings = new ElasticseacherMappingResponseDto[] {
                     new ElasticseacherMappingResponseDto{
-                        Name = Timestamp,
+                        Name = TIMESTAMP,
                         Type ="date"
                     },
                     new ElasticseacherMappingResponseDto{
@@ -91,32 +83,18 @@ public static class ElasticConst
                         IsKeyword=true,
                     }
                 };
-            else
-                Mappings = mappings.ToArray();
-        }
+        Log = new LogTraceSetting(indexName, mappings, isIndependent, TIMESTAMP);
     }
 
-    public static class Trace
+    internal static void InitTrace(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
     {
-        internal static string IndexName { get; private set; }
+        if (Trace != null || string.IsNullOrEmpty(indexName))
+            return;
 
-        public static string Timestamp => "@timestamp";
-
-        internal static bool IsIndependent { get; private set; }
-
-        internal static ElasticseacherMappingResponseDto[] Mappings { get; private set; }
-
-        internal static void Init(string indexName, IEnumerable<ElasticseacherMappingResponseDto> mappings, bool isIndependent = false)
-        {
-            if (!string.IsNullOrEmpty(IndexName) || string.IsNullOrEmpty(indexName))
-                return;
-
-            IsIndependent = isIndependent;
-            IndexName = indexName;
-            if (mappings == null || !mappings.Any())
-                Mappings = new ElasticseacherMappingResponseDto[] {
+        if (mappings == null || !mappings.Any())
+            mappings = new ElasticseacherMappingResponseDto[] {
                     new ElasticseacherMappingResponseDto{
-                        Name=Timestamp,
+                        Name=TIMESTAMP,
                         Type ="date"
                     },
                    new ElasticseacherMappingResponseDto{
@@ -173,8 +151,6 @@ public static class ElasticConst
                         IsKeyword=true
                     }
                 };
-            else
-                Mappings = mappings.ToArray();
-        }
+        Trace = new LogTraceSetting(indexName, mappings, isIndependent, TIMESTAMP);
     }
 }

@@ -1,38 +1,38 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Tsc.Log.Elasticseach;
+namespace Masa.Contrib.StackSdks.Tsc.Elasticseach;
 
 public static class ServiceExtenistion
 {
     public static IServiceCollection AddElasticClientLog(this IServiceCollection services, string[] nodes, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
     {
-        ElasticConst.Log.Init(indexName, mappings!, true);
+        ElasticConst.InitLog(indexName, mappings!, true);
         return AddElasticsearch(services, nodes, ElasticConst.LOG_CALLER_CLIENT_NAME, true).AddSingleton<ILogService, LogService>();
     }
 
     public static IServiceCollection AddElasticClientLog(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
     {
-        ElasticConst.Log.Init(indexName, mappings!, true);
+        ElasticConst.InitLog(indexName, mappings!, true);
         return AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
     }
 
     public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, string[] nodes, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
     {
-        ElasticConst.Trace.Init(indexName, mappings!, true);
+        ElasticConst.InitTrace(indexName, mappings!, true);
         return AddElasticsearch(services, nodes, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
     }
 
     public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, string indexName, IEnumerable<ElasticseacherMappingResponseDto>? mappings = null)
     {
-        ElasticConst.Trace.Init(indexName, mappings!, true);
+        ElasticConst.InitTrace(indexName, mappings!, true);
         return AddElasticsearch(services, elasearchConnectionAction, default!, ElasticConst.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
     }
 
     public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, string[] nodes, string logIndexName, string traceIndexName, IEnumerable<ElasticseacherMappingResponseDto>? logMappings = null, IEnumerable<ElasticseacherMappingResponseDto>? traceMappings = null)
     {
-        ElasticConst.Log.Init(logIndexName, logMappings!, false);
-        ElasticConst.Trace.Init(traceIndexName, traceMappings!, false);
+        ElasticConst.InitLog(logIndexName, logMappings!, false);
+        ElasticConst.InitTrace(traceIndexName, traceMappings!, false);
         return AddElasticsearch(services, nodes, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
             .AddSingleton<ILogService, LogService>()
             .AddSingleton<ITraceService, TraceService>();
@@ -40,8 +40,8 @@ public static class ServiceExtenistion
 
     public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string logIndexName, string traceIndexName, IEnumerable<ElasticseacherMappingResponseDto>? logMappings = null, IEnumerable<ElasticseacherMappingResponseDto>? traceMappings = null)
     {
-        ElasticConst.Log.Init(logIndexName, logMappings!);
-        ElasticConst.Trace.Init(traceIndexName, traceMappings!);
+        ElasticConst.InitLog(logIndexName, logMappings!);
+        ElasticConst.InitTrace(traceIndexName, traceMappings!);
         return AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConst.DEFAULT_CALLER_CLIENT_NAME)
             .AddSingleton<ILogService, LogService>()
             .AddSingleton<ITraceService, TraceService>();
