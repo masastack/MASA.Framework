@@ -59,7 +59,7 @@ public class TransferHandler
 ```C#
 public class TransferHandler : IEventHandler<TransferEvent>
 {
-    public Task HandleAsync(TransferEvent @event)
+    public Task HandleAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO 模拟转账业务
     }
@@ -129,13 +129,13 @@ public class TransferHandler
 public class TransferHandler : ISagaEventHandler<TransferEvent>
 {
     [EventHandler(1, FailureLevels.ThrowAndCancel, true, 3)]
-    public Task HandleAsync(TransferEvent @event)
+    public Task HandleAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO 模拟检查余额扣减余额
     }
 
     [EventHandler(1, FailureLevels.Ignore, false, true)]
-    public Task CancelAsync(TransferEvent @event)
+    public Task CancelAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO 幂等校验并通知转账失败
     }

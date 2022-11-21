@@ -5,7 +5,7 @@ namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests;
 
 public class ProductionQueryHandler : QueryHandler<ProductionItemQuery, string>
 {
-    public override Task HandleAsync(ProductionItemQuery @event)
+    public override Task HandleAsync(ProductionItemQuery @event, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(@event.ProductionId))
             throw new ArgumentNullException(nameof(@event));

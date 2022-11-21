@@ -15,7 +15,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
     }
 
     [EventHandler(EnableRetry = true, RetryTimes = 3)]
-    public Task HandleAsync(TransferEvent @event)
+    public Task HandleAsync(TransferEvent @event, CancellationToken cancellationToken)
     {
         if (_blackAccount.Contains(@event.Account))
         {
@@ -26,7 +26,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
     }
 
     [EventHandler(EnableRetry = true, RetryTimes = 3)]
-    public Task CancelAsync(TransferEvent @event)
+    public Task CancelAsync(TransferEvent @event, CancellationToken cancellationToken)
     {
         if (@event.Price > 1000000)
         {
@@ -42,7 +42,7 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
     public async Task DeductionMoneyHandler(IEventBus eventBus, DeductionMoneyEvent @event)
     {
         // TODO: The simulated deduction is successful
-        
+
         _logger?.LogInformation("deduct account balance {event}", @event.ToString());
 
         IncreaseMoneyEvent increaseMoneyEvent = new IncreaseMoneyEvent()

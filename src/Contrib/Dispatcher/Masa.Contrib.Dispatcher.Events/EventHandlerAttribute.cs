@@ -138,12 +138,15 @@ public class EventHandlerAttribute : Attribute
         InvokeDelegate = InvokeBuilder.Build(ActionMethodInfo, InstanceType);
     }
 
-    internal async Task ExecuteAction<TEvent>(IServiceProvider serviceProvider, TEvent @event) where TEvent : IEvent
+    internal async Task ExecuteAction<TEvent>(IServiceProvider serviceProvider, TEvent @event, CancellationToken cancellationToken)
+        where TEvent : IEvent
     {
-        await InvokeDelegate!.Invoke(serviceProvider.GetRequiredService(InstanceType), GetParameters(serviceProvider, @event));
+        await InvokeDelegate!.Invoke(serviceProvider.GetRequiredService(InstanceType),
+            GetParameters(serviceProvider, @event, cancellationToken));
     }
 
-    private object?[] GetParameters<TEvent>(IServiceProvider serviceProvider, TEvent @event) where TEvent : IEvent
+    private object?[] GetParameters<TEvent>(IServiceProvider serviceProvider, TEvent @event, CancellationToken cancellationToken)
+        where TEvent : IEvent
     {
         var parameters = new object?[ParameterTypes.Length];
         for (int index = 0; index < ParameterTypes.Length; index++)
@@ -151,6 +154,10 @@ public class EventHandlerAttribute : Attribute
             if (ParameterTypes[index] == @event.GetType())
             {
                 parameters[index] = @event;
+            }
+            else if (ParameterTypes[index] == typeof(CancellationToken))
+            {
+                parameters[index] = cancellationToken;
             }
             else
             {

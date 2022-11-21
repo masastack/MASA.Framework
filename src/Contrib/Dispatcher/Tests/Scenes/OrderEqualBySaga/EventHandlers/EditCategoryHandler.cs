@@ -9,14 +9,14 @@ public class EditCategoryHandler : ISagaEventHandler<EditCategoryEvent>
     public EditCategoryHandler(ILogger<EditCategoryHandler>? logger = null) => _logger = logger;
 
     [EventHandler(10)]
-    public Task CancelAsync(EditCategoryEvent @event)
+    public Task CancelAsync(EditCategoryEvent @event, CancellationToken cancellationToken = default)
     {
         _logger?.LogInformation($"cancel edit category log,CategoryId:{@event.CategoryId},Name:{@event.CategoryName}");
         return Task.CompletedTask;
     }
 
     [EventHandler(20)]
-    public Task HandleAsync(EditCategoryEvent @event)
+    public Task HandleAsync(EditCategoryEvent @event, CancellationToken cancellationToken = default)
     {
         _logger?.LogInformation($"edit category log,CategoryId:{@event.CategoryId},Name:{@event.CategoryName}");
         return Task.CompletedTask;
