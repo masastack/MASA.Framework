@@ -52,7 +52,7 @@ public class TraceServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Sort =
                 new FieldOrderDto
                 {

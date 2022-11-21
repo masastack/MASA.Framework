@@ -46,7 +46,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                  new FieldConditionDto{ Name="Attributes.Name", Type= ConditionTypes.Equal, Value="UserAuthorizationFailed" }
              }
@@ -63,7 +63,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                  new FieldConditionDto{ Name="Attributes.Name", Type= ConditionTypes.NotEqual, Value="UserAuthorizationFailed" }
              }
@@ -80,7 +80,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Keyword = "requirements"
         };
 
@@ -95,7 +95,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                 new FieldConditionDto{ Name="SeverityNumber",Type= ConditionTypes.GreatEqual,Value=8 },
                 new FieldConditionDto{ Name="SeverityNumber",Type= ConditionTypes.Less,Value=10 },
@@ -113,7 +113,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                  new FieldConditionDto{ Name=ElasticConstant.SpanId, Type= ConditionTypes.In, Value=new string[]{ "1c495129b86de343", "aaaaaaa" } }
              }
@@ -135,7 +135,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                  new FieldConditionDto{ Name=ElasticConstant.ServiceName, Type= ConditionTypes.Regex, Value="masa*"}
              }
@@ -157,7 +157,7 @@ public class LogServiceTests
         var query = new BaseRequestDto
         {
             Page = 1,
-            Size = 10,
+            PageSize = 10,
             Conditions = new FieldConditionDto[] {
                  new FieldConditionDto{ Name=ElasticConstant.ParentId, Type= ConditionTypes.Exists}
              }

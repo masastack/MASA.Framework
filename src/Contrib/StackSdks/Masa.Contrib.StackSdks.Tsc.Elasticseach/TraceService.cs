@@ -19,7 +19,7 @@ internal class TraceService : ITraceService
 
     public async Task<IEnumerable<TraceResponseDto>> GetAsync(string traceId)
     {
-        return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, Size = ElasticConstant.MaxRecordCount - 1 })).Result;
+        return (await _client.SearchTraceAsync(new BaseRequestDto { TraceId = traceId, Page = 1, PageSize = ElasticConstant.MaxRecordCount - 1 })).Result;
     }
 
     public Task<PaginatedListBase<TraceResponseDto>> ListAsync(BaseRequestDto query)

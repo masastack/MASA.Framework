@@ -172,7 +172,7 @@ internal static class IElasticClientExtenstion
         await client.SearchAsync(ElasticConstant.Log.IndexName, query,
         (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, true), query)
         .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query), query)
-        .AddPageSize(true, query.Page, query.Size),
+        .AddPageSize(true, query.Page, query.PageSize),
         (response, q) => result = SetLogResult(response));
         return result;
     }
@@ -196,7 +196,7 @@ internal static class IElasticClientExtenstion
         await client.SearchAsync(ElasticConstant.Trace.IndexName, query,
         (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition((searchDescriptor, query) => SearchFn(searchDescriptor, query, false), query)
         .AddSort((sortDescriptor, query) => SortFn(sortDescriptor, query, false), query)
-        .AddPageSize(true, query.Page, query.Size),
+        .AddPageSize(true, query.Page, query.PageSize),
         (response, q) => result = SetTraceResult(response));
         return result;
     }
