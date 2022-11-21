@@ -65,7 +65,7 @@ internal static class TraceResponseDtoExtensions
         if (source == null || !source.Any() || keys == null || !keys.Any())
             return false;
         if (keys.Length == 1)
-            return source.Keys.Any(key => key == keys[0]);
+            return source.ContainsKey(keys[0]);
 
         return keys.Any(k => source.ContainsKey(k));
     }
