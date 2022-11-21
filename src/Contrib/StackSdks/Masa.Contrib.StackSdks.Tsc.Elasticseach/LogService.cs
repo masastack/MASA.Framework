@@ -8,7 +8,7 @@ internal class LogService : ILogService
     private readonly IElasticClient _client;
     private readonly ICallerFactory _callerFactory;
 
-    public LogService(IElasticsearchFactory elasticsearchFactory,ICallerFactory callerFactory)
+    public LogService(IElasticsearchFactory elasticsearchFactory, ICallerFactory callerFactory)
     {
         _client = elasticsearchFactory.CreateElasticClient(true);
         _callerFactory = callerFactory;
