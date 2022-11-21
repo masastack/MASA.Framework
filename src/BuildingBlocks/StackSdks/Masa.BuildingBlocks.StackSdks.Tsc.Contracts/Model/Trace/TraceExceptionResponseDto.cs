@@ -6,7 +6,10 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 public class TraceExceptionResponseDto
 {
     public virtual string Type { get; set; }
+
     public virtual string Message { get; set; }
+
     public virtual string StackTrace { get; set; }
+
     public virtual bool Escaped { get; set; }
 }
