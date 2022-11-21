@@ -26,7 +26,7 @@ internal static class DictionaryExtenistions
         return result;
     }
 
-    public static T ToObject<T>(this Dictionary<string, object> dic)
+    public static T ConvertTo<T>(this Dictionary<string, object> dic)
     {
         var text = JsonSerializer.Serialize(dic, _serializerOptions);
         return JsonSerializer.Deserialize<T>(text, _serializerOptions)!;

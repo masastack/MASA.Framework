@@ -5,7 +5,7 @@ namespace System;
 
 internal static class JsonElementExtensions
 {
-    public static IEnumerable<KeyValuePair<string, object>> ToKeyValuePairs(this JsonElement value)
+    public static IEnumerable<KeyValuePair<string, object>> ConvertToKeyValuePairs(this JsonElement value)
     {
         if (value.ValueKind != JsonValueKind.Object)
             return default!;

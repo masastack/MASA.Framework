@@ -19,8 +19,8 @@ internal class LogResponseDtoConverter : JsonConverter<LogResponseDto>
             if (result.Body == null)
                 return default;
 
-            result.Attributes = jsonObject.ToKeyValuePairs()?.ToDictionary(kv => kv.Key, kv => kv.Value)?.GroupByKeyPrefix<object>("Attributes.")!;
-            result.Resource = jsonObject.ToKeyValuePairs()?.ToDictionary(kv => kv.Key, kv => kv.Value)?.GroupByKeyPrefix<object>("Resource.")!;
+            result.Attributes = jsonObject.ConvertToKeyValuePairs()?.ToDictionary(kv => kv.Key, kv => kv.Value)?.GroupByKeyPrefix<object>("Attributes.")!;
+            result.Resource = jsonObject.ConvertToKeyValuePairs()?.ToDictionary(kv => kv.Key, kv => kv.Value)?.GroupByKeyPrefix<object>("Resource.")!;
 
             return result;
         }

@@ -5,12 +5,16 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticseach.Model;
 
 internal static class TraceResponseDtoExtensions
 {
+    private static readonly string[] httpKeys = new string[] { "http.method" };
+    private static readonly string[] databaseKeys = new string[] { "db.system" };
+    private static readonly string[] exceptionKeys = new string[] { "exception.type", "exception.message" };
+
     public static bool TryParseHttp(this ElasticseachTraceResponseDto data, out ElasticseachTraceHttpResponseDto result)
     {
         result = default!;
-        if (!data.Attributes.ContainsKeies(new string[] { "http.method" }))
+        if (!IsContainsAnyKey(data.Attributes, httpKeys))
             return false;
-        result = data.Attributes.ToObject<ElasticseachTraceHttpResponseDto>();
+        result = data.Attributes.ConvertTo<ElasticseachTraceHttpResponseDto>();
 
         result.RequestHeaders = data.Attributes.GroupByKeyPrefix("http.request.header.", ReadHeaderValues);
         result.ReponseHeaders = data.Attributes.GroupByKeyPrefix("http.response.header.", ReadHeaderValues);
@@ -18,24 +22,24 @@ internal static class TraceResponseDtoExtensions
         result.Name = data.Name;
         result.Status = data.TraceStatus;
         return true;
-    }    
+    }
 
     public static bool TryParseDatabase(this ElasticseachTraceResponseDto data, out ElasticseachTraceDatabaseResponseDto result)
     {
         result = default!;
-        if (!data.Attributes.ContainsKeies(new string[] { "db.system" }))
+        if (!IsContainsAnyKey(data.Attributes, databaseKeys))
             return false;
-        result = data.Attributes.ToObject<ElasticseachTraceDatabaseResponseDto>();
+        result = data.Attributes.ConvertTo<ElasticseachTraceDatabaseResponseDto>();
         return true;
     }
 
     public static bool TryParseException(this ElasticseachTraceResponseDto data, out ElasticseachTraceExceptionResponseDto result)
     {
         result = default!;
-        if (!data.Attributes.ContainsKeies(new string[] { "exception.type", "exception.message" }))
+        if (!IsContainsAnyKey(data.Attributes, exceptionKeys))
             return false;
 
-        result = data.Attributes.ToObject<ElasticseachTraceExceptionResponseDto>();
+        result = data.Attributes.ConvertTo<ElasticseachTraceExceptionResponseDto>();
 
         return true;
     }
@@ -56,8 +60,13 @@ internal static class TraceResponseDtoExtensions
         return new string[] { obj.ToString()! };
     }
 
-    private static bool ContainsKeies(this Dictionary<string, object> dic, IEnumerable<string> keys)
+    private static bool IsContainsAnyKey(Dictionary<string, object> source, string[] keys)
     {
-        return dic != null && dic.Any() && dic.Keys.Any(key => keys.Any(k => key == k));
-    }    
+        if (source == null || !source.Any() || keys == null || !keys.Any())
+            return false;
+        if (keys.Length == 1)
+            return source.Keys.Any(key => key == keys[0]);
+
+        return keys.Any(k => source.ContainsKey(k));
+    }
 }
