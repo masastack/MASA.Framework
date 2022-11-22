@@ -54,14 +54,16 @@ public static class ServiceCollectionExtensions
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
                     httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                    return Task.CompletedTask;
                 });
             }
-            else
+            var environment = serviceProvider.GetService<IEnvironmentProvider>();
+            if (environment != null)
             {
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
-                    var environment = serviceProvider.GetRequiredService<IEnvironmentProvider>().GetEnvironment();
-                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment);
+                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
+                    return Task.CompletedTask;
                 });
             }
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();

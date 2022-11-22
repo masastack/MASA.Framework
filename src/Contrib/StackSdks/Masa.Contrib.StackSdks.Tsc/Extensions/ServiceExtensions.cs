@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtensions
 {
-    private const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.tsc";
+    private const string DEFAULT_CLIENT_NAME = "masa.contrib.stacksdks.tsc";
 
     public static IServiceCollection AddTscClient(this IServiceCollection services, string tscServiceBaseUrl)
     {
@@ -28,8 +28,7 @@ public static class ServiceExtensions
         services.AddSingleton<ITscClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            var pmCaching = new TscClient(caller);
-            return pmCaching;
+           return new TscClient(caller);
         });
 
         MasaApp.TrySetServiceCollection(services);

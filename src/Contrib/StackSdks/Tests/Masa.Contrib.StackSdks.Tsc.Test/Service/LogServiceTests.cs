@@ -6,75 +6,61 @@ namespace Masa.Contrib.StackSdks.Tsc.Tests.Service;
 [TestClass]
 public class LogServiceTests
 {
+    private readonly Mock<HttpMessageHandler> _mockHandler = new();
+    private readonly Mock<IHttpClientFactory> _httpClientFactory = new();
+    private const string HOST = "http://localhost";
+    private ITscClient _client;
+    private const string HTTP_CLIENT_NAME = "masa.contrib.stacksdks.tsc";
+
+    [TestInitialize]
+    public void Initialized()
+    {
+        IServiceCollection services = new ServiceCollection();
+        services.AddSingleton(_httpClientFactory.Object);
+        var httpClient = new HttpClient(_mockHandler.Object)
+        {
+            BaseAddress = new Uri(HOST)
+        };
+        _httpClientFactory.Setup(factory => factory.CreateClient(HTTP_CLIENT_NAME)).Returns(httpClient);       
+        services.AddCaller(builder =>
+        {
+            builder.UseHttpClient(HTTP_CLIENT_NAME, options=>options.BaseAddress=HOST);
+            builder.DisableAutoRegistration = true;
+        });
+        var factory = services.BuildServiceProvider().GetRequiredService<ICallerFactory>();
+        _client = new TscClient(factory.Create(HTTP_CLIENT_NAME));
+    }
+
     [TestMethod]
     public async Task GetMappingFieldsAsyncTest()
     {
-        var caller = new Mock<ICaller>();
-        var data = new string[]
-        {
-            "@timestamp",
-            "container.instance.id",
-            "container.instance.name",
-            "Id"
-        };
-        caller.Setup(provider => provider.GetAsync<IEnumerable<string>>(LogService.FIELD_URI, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(caller.Object);
-        var result = await client.LogService.GetFieldsAsync();
+        var str = "[{\"name\":\"field1\",\"type\":\"text\"},{\"name\":\"field2\",\"type\":\"int\"}]";
+        SetTestData(str);
+        var result = await _client.LogService.GetMappingAsync();
         Assert.IsNotNull(result);
     }
 
     [TestMethod]
     public async Task GetAggregationAsyncTest()
     {
-        var caller = new Mock<ICaller>();
-
         var time = DateTime.Now;
-        var query = new LogAggregationRequest
+        var query = new SimpleAggregateRequestDto
         {
             Start = time.AddMinutes(-15),
-            Query = "keyword",
+            Keyword = "keyword",
             End = time,
-            FieldMaps = new FieldAggregationRequest[]
-            {
-                  new FieldAggregationRequest{
-                       Name="container.instance.id",
-                       AggregationType= AggregationTypes.Count,
-                       Alias="count1"
-                  },
-                  new FieldAggregationRequest{
-                       Name="container.instance.name",
-                       AggregationType= AggregationTypes.Count,
-                       Alias="count2"
-                  }
-              }
+            Name = "name",
+            Type = AggregateTypes.Count
         };
-        var data = new Dictionary<string, string>
-        {
-            {"count1","0" },
-            { "count2","0"}
-        };
-
-        Assert.IsNotNull(query.Query);
-        Assert.IsTrue(query.Start>DateTime.MinValue);
-        Assert.IsTrue(query.End > DateTime.MinValue);
-        Assert.IsNotNull(query.FieldMaps);
-
-        Assert.IsNotNull(query.FieldMaps.First().Name);
-        Assert.IsNotNull(query.FieldMaps.First().Alias);
-        Assert.IsTrue(query.FieldMaps.First().AggregationType>0);
-
-        caller.Setup(provider => provider.GetAsync<IEnumerable<KeyValuePair<string, string>>>(LogService.FIELD_URI, query, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(caller.Object);
-
-        var result = await client.LogService.GetAggregationAsync(query);
+        var str = "10";
+        SetTestData(str);
+        var result = await _client.LogService.GetAggregationAsync<string>(query);
         Assert.IsNotNull(result);
     }
 
     [TestMethod]
     public async Task GetLatestAsyncTest()
     {
-        var caller = new Mock<ICaller>();
-
         var time = DateTime.Now;
         var query = new LogLatestRequest
         {
@@ -89,17 +75,20 @@ public class LogServiceTests
         Assert.IsTrue(query.End > DateTime.MinValue);
         Assert.IsTrue(query.IsDesc);
 
-        var str = "{\"@timestamp\":\"2022-06-15T09:09:05.972899500Z\",\"Attributes.ProcessorName\":\"Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor.RetryByDataProcessor\",\"Attributes.exception.message\":\"SQLite Error 1: 'no such table: IntegrationEventLog'.\",\"Attributes.exception.type\":\"SqliteException\",\"Attributes.{OriginalFormat}\":\"Processor '{ProcessorName}' failed\",\"Body\":\"Processor 'Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Processor.RetryByDataProcessor' failed\",\"Resource.service.instance.id\":\"5d9d00e3-5bb0-40bc-bbb8-ef0b210f739d\",\"Resource.service.name\":\"masa.tsc.api\",\"Resource.service.namespace\":\"Development\",\"Resource.service.version\":\"0.1.0\",\"Resource.telemetry.sdk.language\":\"dotnet\",\"Resource.telemetry.sdk.name\":\"opentelemetry\",\"Resource.telemetry.sdk.version\":\"1.3.0.470\",\"SeverityNumber\":13,\"SeverityText\":\"Warning\",\"TraceFlags\":0}";
-        var options = new JsonSerializerOptions()
-        {
-            PropertyNameCaseInsensitive = true,
-        };
-        options.Converters.Add(new JsonStringEnumConverter());
-        var data = JsonSerializer.Deserialize<object>(str, options);
-        caller.Setup(provider => provider.GetAsync<object>(LogService.LATEST_URI, query, default)).ReturnsAsync(data).Verifiable();
-        var client = new TscClient(caller.Object);
-
-        var result = await client.LogService.GetLatestAsync(query);
+        var str = "{\"timestamp\":\"2022-11-15T07:01:28.2196126Z\",\"traceFlags\":0,\"severityText\":\"Information\",\"severityNumber\":9,\"body\":\"Request finished HTTP/2 GET https://localhost:18012/_blazor?id=_GmR6JVGGEuWA8wo5_vEgg&_=1668495688201 text/plain;charset=UTF-8 - - 200 1203 application/octet-stream 11.1170ms\",\"resource\":{\"service.instance.id\":\"57f5a1db-e0de-434d-aceb-45eb53a2efc8\",\"service.name\":\"masa-tsc-web-admin\",\"service.namespace\":\"Development\",\"service.version\":\"0.1.0\",\"telemetry.sdk.language\":\"dotnet\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.3.0.519\"},\"attributes\":{\"dotnet.ilogger.category\":\"Microsoft.AspNetCore.Hosting.Diagnostics\"}}";
+        SetTestData(str);
+        var result = await _client.LogService.GetLatestAsync(query);
         Assert.IsNotNull(result);
+    }
+
+    private void SetTestData(string result, HttpStatusCode httpStatusCode = HttpStatusCode.OK)
+    {
+        _mockHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+           .ReturnsAsync(new HttpResponseMessage()
+           {
+               StatusCode = httpStatusCode,
+               Content = new StringContent(result)
+           });
     }
 }
