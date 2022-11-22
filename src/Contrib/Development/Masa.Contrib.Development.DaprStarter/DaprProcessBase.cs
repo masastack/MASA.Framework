@@ -8,10 +8,12 @@ public abstract class DaprProcessBase
 {
     private readonly IOptions<MasaAppConfigureOptions>? _masaAppConfigureOptions;
 
+    protected IDaprEnvironmentProvider DaprEnvironmentProvider { get; }
+
     /// <summary>
     /// Use after getting dapr AppId and global AppId fails
     /// </summary>
-    private static readonly string _defaultAppId = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(
+    private static readonly string DefaultAppId = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(
         ".",
         Constant.DEFAULT_APPID_DELIMITER);
 
@@ -20,18 +22,19 @@ public abstract class DaprProcessBase
 
     internal DaprCoreOptions? SuccessDaprOptions;
 
-    protected DaprProcessBase(IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions)
+    protected DaprProcessBase(IDaprEnvironmentProvider daprEnvironmentProvider, IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions)
     {
+        DaprEnvironmentProvider = daprEnvironmentProvider;
         _masaAppConfigureOptions = masaAppConfigureOptions;
     }
 
-    internal DaprCoreOptions ConvertTo(DaprOptions options)
+    internal DaprCoreOptions ConvertToDaprCoreOptions(DaprOptions options)
     {
         var appId = options.AppId;
         if (appId.IsNullOrWhiteSpace())
             appId = _masaAppConfigureOptions?.Value.AppId;
         if (appId.IsNullOrWhiteSpace())
-            appId = _defaultAppId;
+            appId = DefaultAppId;
         if (options.IsIncompleteAppId())
             appId = $"{appId}{options.AppIdDelimiter}{options.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
         DaprCoreOptions
@@ -40,8 +43,8 @@ public abstract class DaprProcessBase
                 options.AppPort ?? throw new ArgumentNullException(nameof(options), $"{options.AppPort} must be greater than 0"),
                 options.AppProtocol,
                 options.EnableSsl,
-                options.DaprGrpcPort,
-                options.DaprHttpPort,
+                options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort(),
+                options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort(),
                 options.EnableHeartBeat)
             {
                 HeartBeatInterval = options.HeartBeatInterval,
@@ -89,12 +92,6 @@ public abstract class DaprProcessBase
         return commandLineBuilder;
     }
 
-    protected static bool CompleteDaprGrpcPortEnvironment(ushort daprGrpcPort)
-        => EnvironmentUtils.TrySetEnvironmentVariable("DAPR_GRPC_PORT", daprGrpcPort.ToString());
-
-    protected static bool CompleteDaprHttpPortEnvironment(ushort httpPort)
-        => EnvironmentUtils.TrySetEnvironmentVariable("DAPR_HTTP_PORT", httpPort.ToString());
-
     protected static ushort GetHttpPort(string data)
     {
         ushort httpPort = 0;
@@ -106,13 +103,13 @@ public abstract class DaprProcessBase
         return httpPort;
     }
 
-    protected static ushort GetGrpcPort(string data)
+    protected static ushort GetgRPCPort(string data)
     {
         ushort grpcPort = 0;
-        var grpcPortMatch = Regex.Matches(data, GRPC_PORT_PATTERN);
-        if (grpcPortMatch.Count > 0)
+        var gRPCPortMatch = Regex.Matches(data, GRPC_PORT_PATTERN);
+        if (gRPCPortMatch.Count > 0)
         {
-            grpcPort = ushort.Parse(grpcPortMatch[0].Groups[1].ToString());
+            grpcPort = ushort.Parse(gRPCPortMatch[0].Groups[1].ToString());
         }
         return grpcPort;
     }

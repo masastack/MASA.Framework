@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)"/>
-    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)"/>
-    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Development.DaprStarter\Masa.Contrib.Development.DaprStarter.csproj"/>
+    <ProjectReference Include="..\..\Masa.Contrib.Development.DaprStarter\Masa.Contrib.Development.DaprStarter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

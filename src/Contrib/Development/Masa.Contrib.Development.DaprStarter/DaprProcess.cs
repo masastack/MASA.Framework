@@ -26,8 +26,9 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         IDaprProvider daprProvider,
         IProcessProvider processProvider,
         IOptionsMonitor<DaprOptions> daprOptions,
+        IDaprEnvironmentProvider daprEnvironmentProvider,
         ILogger<DaprProcess>? logger = null,
-        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null) : base(masaAppConfigureOptions)
+        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null) : base(daprEnvironmentProvider, masaAppConfigureOptions)
     {
         _daprProvider = daprProvider;
         _processProvider = processProvider;
@@ -40,7 +41,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
     {
         lock (_lock)
         {
-            var options = ConvertTo(_daprOptions.CurrentValue);
+            var options = ConvertToDaprCoreOptions(_daprOptions.CurrentValue);
 
             StartCore(options);
         }
@@ -80,17 +81,21 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
 
     public void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort)
     {
-        if (grpcPort is > 0)
-            CompleteDaprGrpcPortEnvironment(grpcPort.Value);
-
-        if (httpPort is > 0)
-            CompleteDaprHttpPortEnvironment(httpPort.Value);
-
-        if (httpPort is > 0 && grpcPort is > 0)
+        var setHttpPortResult = DaprEnvironmentProvider.TrySetHttpPort(httpPort);
+        if (setHttpPortResult)
         {
-            SuccessDaprOptions!.SetPort(httpPort.Value, grpcPort.Value);
-            CompleteDaprEnvironment(httpPort.Value, grpcPort.Value, () => _isFirst = false);
+            SuccessDaprOptions!.TrySetHttpPort(httpPort);
+            _logger?.LogInformation("Update Dapr environment variables, DaprHttpPort: {HttpPort}", httpPort);
         }
+
+        var setGrpcPortResult = DaprEnvironmentProvider.TrySetGrpcPort(grpcPort);
+        if (setGrpcPortResult)
+        {
+            SuccessDaprOptions!.TrySetGrpcPort(grpcPort);
+            _logger?.LogInformation("Update Dapr environment variables, DAPR_GRPC_PORT: {grpcPort}", grpcPort);
+        }
+
+        if (setHttpPortResult && setGrpcPortResult) _isFirst = false;
     }
 
     public void CheckAndCompleteDaprEnvironment(string? data)
@@ -99,25 +104,9 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
             return;
 
         var httpPort = GetHttpPort(data);
-        var grpcPort = GetGrpcPort(data);
+        var grpcPort = GetgRPCPort(data);
 
         CompleteDaprEnvironment(httpPort, grpcPort);
-    }
-
-    /// <summary>
-    /// Improve the information of HttpPort and GrpcPort successfully configured.
-    /// When Port is specified or Dapr is closed for other reasons after startup, the HttpPort and GrpcPort are the same as the Port assigned at the first startup.
-    /// </summary>
-    private void CompleteDaprEnvironment(ushort httpPort, ushort grpcPort, Action action)
-    {
-        if (CompleteDaprHttpPortEnvironment(httpPort) && CompleteDaprGrpcPortEnvironment(grpcPort))
-        {
-            action.Invoke();
-            _logger?.LogInformation(
-                "Update Dapr environment variables, DaprHttpPort: {HttpPort}, DAPR_GRPC_PORT: {GrpcPort}",
-                httpPort,
-                grpcPort);
-        }
     }
 
     public void Stop()
@@ -176,7 +165,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
             _isFirst = true;
             SuccessDaprOptions = null;
             _logger?.LogDebug("Dapr configuration refresh, Dapr AppId is {AppId}, restarting dapr, please wait...", options.AppId);
-            StartCore(ConvertTo(options));
+            StartCore(ConvertToDaprCoreOptions(options));
         }
     }
 

@@ -50,16 +50,20 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IAppPortProvider, DefaultAppPortProvider>();
         action.Invoke();
-        if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+        var daprEnvironmentProvider = serviceProvider.GetRequiredService<IDaprEnvironmentProvider>();
+        daprEnvironmentProvider.CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
+
+        if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 
         ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort);
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
         daprProcess.Start();
         return services;
     }
+
 
     private sealed class DaprService
     {
