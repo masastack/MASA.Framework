@@ -16,8 +16,9 @@ public class CustomHeaderCaller : HttpClientCallerBase
         return res.IsSuccessStatusCode && res.StatusCode == HttpStatusCode.OK;
     }
 
-    protected override void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
+    protected override Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
         Assert.IsTrue(_tokenProvider != null && _tokenProvider.Token == "token");
+        return Task.CompletedTask;
     }
 }

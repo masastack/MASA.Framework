@@ -264,6 +264,7 @@ public class CallerTest
         {
             excuteCount++;
             Assert.IsTrue(httpRequestMessage.RequestUri!.ToString().Contains($"{prefix}/Hello"));
+            return Task.CompletedTask;
         });
 
         await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
@@ -303,6 +304,7 @@ public class CallerTest
         caller.ConfigRequestMessage(httpRequestMessage =>
         {
             excuteCount++;
+            return Task.CompletedTask;
         });
 
         await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));

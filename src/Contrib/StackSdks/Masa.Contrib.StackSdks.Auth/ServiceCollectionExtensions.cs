@@ -54,6 +54,7 @@ public static class ServiceCollectionExtensions
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
                     httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                    return Task.CompletedTask;
                 });
             }
             else
@@ -62,6 +63,7 @@ public static class ServiceCollectionExtensions
                 {
                     var environment = serviceProvider.GetRequiredService<IEnvironmentProvider>().GetEnvironment();
                     httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment);
+                    return Task.CompletedTask;
                 });
             }
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();

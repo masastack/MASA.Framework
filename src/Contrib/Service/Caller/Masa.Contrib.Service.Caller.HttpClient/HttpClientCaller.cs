@@ -29,7 +29,10 @@ public class HttpClientCaller : AbstractCaller
     public override async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
     {
         var requestMessage = await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)));
-        RequestMessageAction?.Invoke(requestMessage);
+        if (RequestMessageFunc != null)
+        {
+            await RequestMessageFunc.Invoke(requestMessage);
+        }
         return requestMessage;
     }
 
@@ -37,7 +40,10 @@ public class HttpClientCaller : AbstractCaller
     {
         var requestMessage =
             await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data);
-        RequestMessageAction?.Invoke(requestMessage);
+        if (RequestMessageFunc != null)
+        {
+            await RequestMessageFunc.Invoke(requestMessage);
+        }
         return requestMessage;
     }
 

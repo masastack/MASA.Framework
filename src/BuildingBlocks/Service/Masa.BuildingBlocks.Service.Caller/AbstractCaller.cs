@@ -12,7 +12,7 @@ public abstract class AbstractCaller : ICaller
     private IResponseMessage? _responseMessage;
     protected IRequestMessage RequestMessage => _requestMessage ??= ServiceProvider.GetRequiredService<IRequestMessage>();
     protected IResponseMessage ResponseMessage => _responseMessage ??= ServiceProvider.GetRequiredService<IResponseMessage>();
-    protected Action<HttpRequestMessage>? RequestMessageAction;
+    protected Func<HttpRequestMessage, Task>? RequestMessageFunc;
 
     protected AbstractCaller(IServiceProvider serviceProvider)
     {
@@ -20,9 +20,9 @@ public abstract class AbstractCaller : ICaller
         ServiceProvider = serviceProvider;
     }
 
-    public virtual void ConfigRequestMessage(Action<HttpRequestMessage> action)
+    public virtual void ConfigRequestMessage(Func<HttpRequestMessage, Task> func)
     {
-        RequestMessageAction = action;
+        RequestMessageFunc = func;
     }
 
     public virtual async Task<HttpResponseMessage> SendAsync(
