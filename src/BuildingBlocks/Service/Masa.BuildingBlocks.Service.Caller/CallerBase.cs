@@ -18,7 +18,7 @@ public abstract class CallerBase
             if (_caller == null)
             {
                 _caller = ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
-                _caller.ConfigRequestMessage(ConfigHttpRequestMessage);
+                _caller.ConfigRequestMessage(ConfigHttpRequestMessageAsync);
             }
             return _caller;
         }
@@ -46,9 +46,10 @@ public abstract class CallerBase
         ServiceProvider = serviceProvider;
     }
 
-    protected virtual void ConfigHttpRequestMessage(HttpRequestMessage requestMessage)
+    protected virtual Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
         var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
         authenticationService?.ExecuteAsync(requestMessage);
+        return Task.CompletedTask;
     }
 }
