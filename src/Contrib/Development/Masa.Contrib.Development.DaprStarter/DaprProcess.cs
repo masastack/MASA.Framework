@@ -77,6 +77,10 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
             _heartBeatTimer.Elapsed += (_, _) => HeartBeat();
             _heartBeatTimer.Start();
         }
+        else
+        {
+            _heartBeatTimer?.Start();
+        }
     }
 
     public void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort)
@@ -114,6 +118,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         lock (_lock)
         {
             StopCore(SuccessDaprOptions);
+            _heartBeatTimer?.Stop();
         }
     }
 
