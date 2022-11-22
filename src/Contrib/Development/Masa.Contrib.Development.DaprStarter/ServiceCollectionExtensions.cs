@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IDaprProcess, DaprProcess>();
         services.TryAddSingleton<IDaprProvider, DaprProvider>();
         services.TryAddSingleton<IProcessProvider, ProcessProvider>();
+        services.TryAddSingleton<IDaprEnvironmentProvider, DaprEnvironmentProvider>();
         return services;
     }
 

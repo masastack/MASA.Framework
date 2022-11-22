@@ -32,6 +32,7 @@ internal class DaprCoreOptions
     /// <summary>
     /// The gRPC port for Dapr to listen on
     /// </summary>
+    // ReSharper disable once InconsistentNaming
     public ushort? DaprGrpcPort { get; private set; }
 
     /// <summary>
@@ -114,12 +115,13 @@ internal class DaprCoreOptions
     /// </summary>
     public int? DaprMaxRequestSize { get; set; }
 
+    // ReSharper disable once InconsistentNaming
     public DaprCoreOptions(
         string appId,
         ushort appPort,
         Protocol? appProtocol,
         bool? enableSsl,
-        ushort? daprGrpcPort,
+        ushort? daprGRPCPort,
         ushort? daprHttpPort,
         bool enableHeartBeat)
     {
@@ -127,14 +129,29 @@ internal class DaprCoreOptions
         AppPort = appPort;
         AppProtocol = appProtocol;
         EnableSsl = enableSsl;
-        DaprGrpcPort = daprGrpcPort;
+        DaprGrpcPort = daprGRPCPort;
         DaprHttpPort = daprHttpPort;
         EnableHeartBeat = enableHeartBeat;
     }
 
-    public void SetPort(ushort httpPort, ushort rpcPort)
+    public bool TrySetHttpPort(ushort? httpPort)
     {
-        DaprHttpPort ??= httpPort;
-        DaprGrpcPort ??= rpcPort;
+        if (DaprHttpPort == null && httpPort is > 0)
+        {
+            DaprHttpPort = httpPort;
+            return true;
+        }
+        return false;
+    }
+
+    // ReSharper disable once InconsistentNaming
+    public bool TrySetGrpcPort(ushort? grpcPort)
+    {
+        if (DaprGrpcPort == null && grpcPort is > 0)
+        {
+            DaprGrpcPort = grpcPort;
+            return true;
+        }
+        return false;
     }
 }
