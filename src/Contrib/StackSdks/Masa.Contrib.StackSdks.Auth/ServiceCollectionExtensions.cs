@@ -57,12 +57,12 @@ public static class ServiceCollectionExtensions
                     return Task.CompletedTask;
                 });
             }
-            else
+            var environment = serviceProvider.GetService<IEnvironmentProvider>();
+            if (environment != null)
             {
                 callProvider.ConfigRequestMessage(httpRequestMessage =>
                 {
-                    var environment = serviceProvider.GetRequiredService<IEnvironmentProvider>().GetEnvironment();
-                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment);
+                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
                     return Task.CompletedTask;
                 });
             }
