@@ -24,7 +24,7 @@ public class DomainEventBus : IDomainEventBus
         _options = options.Value;
     }
 
-    public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
         if (@event is IDomainEvent domainEvent && !IsAssignableFromDomainQuery(@event.GetType()))
         {
@@ -33,11 +33,11 @@ public class DomainEventBus : IDomainEventBus
         if (@event is IIntegrationEvent integrationEvent)
         {
             integrationEvent.UnitOfWork ??= _unitOfWork;
-            await _integrationEventBus.PublishAsync(integrationEvent);
+            await _integrationEventBus.PublishAsync(integrationEvent, cancellationToken);
         }
         else
         {
-            await _eventBus.PublishAsync(@event);
+            await _eventBus.PublishAsync(@event, cancellationToken);
         }
 
         bool IsAssignableFromDomainQuery(Type? type)

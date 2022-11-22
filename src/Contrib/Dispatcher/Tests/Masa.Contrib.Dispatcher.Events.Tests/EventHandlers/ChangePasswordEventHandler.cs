@@ -6,10 +6,10 @@ namespace Masa.Contrib.Dispatcher.Events.Tests.EventHandlers;
 public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
 {
     private readonly ILogger<ChangePasswordEventHandler>? _logger;
-    public ChangePasswordEventHandler(ILogger<ChangePasswordEventHandler>? logger=null) => _logger = logger;
+    public ChangePasswordEventHandler(ILogger<ChangePasswordEventHandler>? logger = null) => _logger = logger;
 
     [EventHandler(10, FailureLevels.ThrowAndCancel)]
-    public Task HandleAsync(ChangePasswordEvent @event)
+    public Task HandleAsync(ChangePasswordEvent @event, CancellationToken cancellationToken)
     {
         if (@event.Content.Contains("@"))
         {
@@ -18,7 +18,7 @@ public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
         return Task.CompletedTask;
     }
 
-    public Task CancelAsync(ChangePasswordEvent @event)
+    public Task CancelAsync(ChangePasswordEvent @event, CancellationToken cancellationToken)
     {
         if (@event.Account.Equals("mark"))
         {
@@ -30,7 +30,7 @@ public class ChangePasswordEventHandler : ISagaEventHandler<ChangePasswordEvent>
 
 
     [EventHandler(0, FailureLevels.Ignore, IsCancel = true)]
-    public Task AddCancelLogs(ChangePasswordEvent @event)
+    public Task AddCancelLogs(ChangePasswordEvent @event, CancellationToken cancellationToken)
     {
         if (@event.Account.Equals("roller"))
         {

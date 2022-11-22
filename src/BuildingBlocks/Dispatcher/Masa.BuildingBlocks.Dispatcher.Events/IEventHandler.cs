@@ -4,7 +4,7 @@
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
 public interface IEventHandler<in TEvent>
-        where TEvent : IEvent
+    where TEvent : IEvent
 {
-    Task HandleAsync(TEvent @event);
+    Task HandleAsync(TEvent @event, CancellationToken cancellationToken = default);
 }
