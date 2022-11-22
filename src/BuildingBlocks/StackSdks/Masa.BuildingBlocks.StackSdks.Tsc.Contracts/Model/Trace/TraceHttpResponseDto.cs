@@ -49,10 +49,12 @@ public class TraceHttpResponseDto
     public virtual string PeerName { get; set; }
 
     #region http server
+
     public virtual string ServerName { get; set; }
 
     public virtual string Route { get; set; }
 
     public virtual string ClientIp { get; set; }
+
     #endregion
 }

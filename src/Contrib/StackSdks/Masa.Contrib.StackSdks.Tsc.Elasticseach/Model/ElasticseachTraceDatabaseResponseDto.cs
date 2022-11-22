@@ -51,6 +51,7 @@ internal class ElasticseachTraceDatabaseResponseDto: TraceDatabaseResponseDto
     public override string SqlTable { get; set; }
 
     #region Cassandra
+
     [JsonPropertyName("db.cassandra.page_size")]
     public override int CassandraPageSize { get; set; }
 
@@ -71,5 +72,6 @@ internal class ElasticseachTraceDatabaseResponseDto: TraceDatabaseResponseDto
 
     [JsonPropertyName("db.cassandra.coordinator.dc")]
     public override string CassandraCoordinatorDc { get; set; }
+
     #endregion
 }

@@ -54,6 +54,7 @@ internal class ElasticseachTraceHttpResponseDto : TraceHttpResponseDto
     public override string PeerName { get; set; }
 
     #region http server
+
     [JsonPropertyName("http.server_name")]
     public override string ServerName { get; set; }
 
@@ -62,5 +63,6 @@ internal class ElasticseachTraceHttpResponseDto : TraceHttpResponseDto
 
     [JsonPropertyName("http.client_ip")]
     public override string ClientIp { get; set; }
+
     #endregion
 }

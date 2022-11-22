@@ -52,5 +52,6 @@ public class TraceDatabaseResponseDto
     public virtual string CassandraCoordinatorId { get; set; }
 
     public virtual string CassandraCoordinatorDc { get; set; }
+
     #endregion
 }
