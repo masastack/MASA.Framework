@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Dispatcher.Events;
 
 public interface IEventBus
 {
-    Task PublishAsync<TEvent>(TEvent @event)
+    Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IEvent;
 
     IEnumerable<Type> GetAllEventTypes();

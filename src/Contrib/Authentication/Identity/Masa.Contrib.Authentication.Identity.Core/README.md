@@ -6,7 +6,7 @@ Identity core library, providing core implementation for `Identity`, it needs to
 
 * [Authentication.Identity](../Masa.Contrib.Authentication.Identity/README.zh-CN.md): Provide `Identity` service for Mvc, MinimalAPI projects
 * [Authentication.Identity.BlazorServer](../Masa.Contrib.Authentication.Identity.BlazorServer/README.zh-CN.md): Provide `Identity` service for BlazorServer project
-* [Authentication.Identity.BlazorAssembly](../Masa.Contrib.Authentication.Identity.BlazorAssembly/README.zh-CN.md): Provide `Identity` service for BlazorAssembly project
+* [Authentication.Identity.BlazorAssembly](../Masa.Contrib.Authentication.Identity.BlazorWebAssembly/README.zh-CN.md): Provide `Identity` service for BlazorAssembly project
 
 Let's take `Authentication.Identity` as an example:
 

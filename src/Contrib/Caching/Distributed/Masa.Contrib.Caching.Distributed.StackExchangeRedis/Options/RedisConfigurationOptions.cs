@@ -28,12 +28,12 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// <summary>
     /// The client name to use for all connections
     /// </summary>
-    public string ClientName { get; set; } = default!;
+    public string ClientName { get; set; } = string.Empty;
 
     /// <summary>
     /// Automatically encodes and decodes channels.
     /// </summary>
-    public string ChannelPrefix { get; set; } = default!;
+    public string ChannelPrefix { get; set; } = string.Empty;
 
     /// <summary>
     /// The number of times to repeat the initial connect cycle if no servers respond promptly.
@@ -53,7 +53,7 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// <summary>
     /// The password to use to authenticate with the server.
     /// </summary>
-    public string Password { get; set; } = default!;
+    public string Password { get; set; } = string.Empty;
 
     /// <summary>
     /// Type of proxy to use (if any); for example Proxy.Twemproxy.

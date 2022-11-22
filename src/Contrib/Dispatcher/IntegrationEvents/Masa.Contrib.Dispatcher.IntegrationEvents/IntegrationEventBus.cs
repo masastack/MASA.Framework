@@ -35,16 +35,16 @@ public class IntegrationEventBus : IIntegrationEventBus
             ? _dispatcherOptions.AllEventTypes
             : _dispatcherOptions.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 
-    public async Task PublishAsync<TEvent>(TEvent @event)
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IEvent
     {
         if (@event is IIntegrationEvent integrationEvent)
         {
-            await PublishIntegrationAsync(integrationEvent);
+            await PublishIntegrationAsync(integrationEvent, cancellationToken);
         }
         else if (_eventBus != null)
         {
-            await _eventBus.PublishAsync(@event);
+            await _eventBus.PublishAsync(@event, cancellationToken);
         }
         else
         {
@@ -52,7 +52,7 @@ public class IntegrationEventBus : IIntegrationEventBus
         }
     }
 
-    private async Task PublishIntegrationAsync<TEvent>(TEvent @event)
+    private async Task PublishIntegrationAsync<TEvent>(TEvent @event, CancellationToken cancellationToken)
         where TEvent : IIntegrationEvent
     {
         if (@event.UnitOfWork == null && _unitOfWork != null)
@@ -65,7 +65,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             try
             {
                 _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
-                await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction);
+                await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction, cancellationToken);
                 isAdd = true;
 
                 _logger?.LogDebug(
@@ -73,12 +73,12 @@ public class IntegrationEventBus : IIntegrationEventBus
                     @event.GetEventId(),
                     _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId());
+                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId(),cancellationToken);
 
                 _logger?.LogDebug("Publishing event {Event} to {TopicName}", @event, topicName);
-                await _publisher.PublishAsync(topicName, (dynamic)@event);
+                await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);
 
-                await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId());
+                await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId(), cancellationToken);
             }
             catch (Exception ex)
             {
@@ -87,7 +87,7 @@ public class IntegrationEventBus : IIntegrationEventBus
                 if (!isAdd) throw;
 
                 LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.GetEventId(), @event.Topic, @event));
-                await _eventLogService.MarkEventAsFailedAsync(@event.GetEventId());
+                await _eventLogService.MarkEventAsFailedAsync(@event.GetEventId(), cancellationToken);
             }
         }
         else
@@ -97,7 +97,7 @@ public class IntegrationEventBus : IIntegrationEventBus
                 @event.GetEventId(),
                 _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-            await _publisher.PublishAsync(topicName, (dynamic)@event);
+            await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);
         }
     }
 

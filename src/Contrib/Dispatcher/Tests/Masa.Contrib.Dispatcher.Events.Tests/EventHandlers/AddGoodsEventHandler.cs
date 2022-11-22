@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
 public class AddGoodsEventHandler : IEventHandler<AddGoodsEvent>
 {
-    public Task HandleAsync(AddGoodsEvent @event)
+    public Task HandleAsync(AddGoodsEvent @event, CancellationToken cancellationToken = default)
     {
         @event.Count++;
         return Task.CompletedTask;

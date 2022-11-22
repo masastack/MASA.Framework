@@ -16,7 +16,7 @@ public class ShipOrderEventHandler : ISagaEventHandler<ShipOrderEvent>
     }
 
     [EventHandler(10, FailureLevels.ThrowAndCancel, true)]
-    public Task HandleAsync(ShipOrderEvent @event)
+    public Task HandleAsync(ShipOrderEvent @event, CancellationToken cancellationToken)
     {
         ExecCount++;
         if (ExecCount - 1 <= 1)
@@ -35,7 +35,7 @@ public class ShipOrderEventHandler : ISagaEventHandler<ShipOrderEvent>
     }
 
     [EventHandler(10, false, true)]
-    public Task CancelAsync(ShipOrderEvent @event)
+    public Task CancelAsync(ShipOrderEvent @event, CancellationToken cancellationToken)
     {
         @event.Message = "the delivery failed, rolling back success";
         _logger?.LogInformation("the delivery failed, rolling back success");
@@ -49,7 +49,7 @@ public class ShipOrderAndNoticeHandler : IEventHandler<ShipOrderEvent>
     public ShipOrderAndNoticeHandler(ILogger<ShipOrderAndNoticeHandler>? logger = null) => _logger = logger;
 
     [EventHandler(20)]
-    public Task HandleAsync(ShipOrderEvent @event)
+    public Task HandleAsync(ShipOrderEvent @event, CancellationToken cancellationToken)
     {
         @event.Message = "the delivery and notice success";
         _logger?.LogInformation("order delivered successfully");

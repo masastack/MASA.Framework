@@ -6,5 +6,5 @@ namespace Masa.BuildingBlocks.Dispatcher.Events;
 public interface ISagaEventHandler<in TEvent> : IEventHandler<TEvent>
         where TEvent : IEvent
 {
-    Task CancelAsync(TEvent @event);
+    Task CancelAsync(TEvent @event, CancellationToken cancellationToken = default);
 }

@@ -13,21 +13,21 @@ public interface ICaller
 
     Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> SendAsync(
         HttpMethod method,
         string? methodName,
         HttpContent? content,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> SendAsync<TRequest>(
         HttpMethod method,
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> SendAsync<TRequest, TResponse>(
@@ -60,63 +60,63 @@ public interface ICaller
 
     Task<string> GetStringAsync(
         string? methodName,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<string> GetStringAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default) where TRequest : class;
 
     Task<string> GetStringAsync(
         string? methodName,
         Dictionary<string, string> data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<byte[]> GetByteArrayAsync(
         string? methodName,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<byte[]> GetByteArrayAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default) where TRequest : class;
 
     Task<byte[]> GetByteArrayAsync(
         string? methodName,
         Dictionary<string, string> data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<Stream> GetStreamAsync(string? methodName,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<Stream> GetStreamAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default) where TRequest : class;
 
     Task<Stream> GetStreamAsync(
         string? methodName,
         Dictionary<string, string> data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> GetAsync(
         string? methodName,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> GetAsync(
         string? methodName,
         Dictionary<string, string> data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> GetAsync<TResponse>(
@@ -140,13 +140,13 @@ public interface ICaller
     Task<HttpResponseMessage> PostAsync(
         string? methodName,
         HttpContent? content,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> PostAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> PostAsync<TRequest, TResponse>(
@@ -162,13 +162,13 @@ public interface ICaller
     Task<HttpResponseMessage> PatchAsync(
         string? methodName,
         HttpContent? content,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> PatchAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> PatchAsync<TRequest, TResponse>(
@@ -184,13 +184,13 @@ public interface ICaller
     Task<HttpResponseMessage> PutAsync(
         string? methodName,
         HttpContent? content,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> PutAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> PutAsync<TRequest, TResponse>(
@@ -206,13 +206,13 @@ public interface ICaller
     Task<HttpResponseMessage> DeleteAsync(
         string? methodName,
         HttpContent? content,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<HttpResponseMessage> DeleteAsync<TRequest>(
         string? methodName,
         TRequest data,
-        bool autoThrowUserFriendlyException = true,
+        bool autoThrowException = true,
         CancellationToken cancellationToken = default);
 
     Task<TResponse?> DeleteAsync<TRequest, TResponse>(string? methodName, TRequest data, CancellationToken cancellationToken = default);

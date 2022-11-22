@@ -33,7 +33,7 @@ public class RetryByDataProcessor : ProcessorBase
 
             var retrieveEventLogs =
                 await eventLogService.RetrieveEventLogsFailedToPublishAsync(_options.Value.RetryBatchSize, _options.Value.MaxRetryTimes,
-                    _options.Value.MinimumRetryInterval);
+                    _options.Value.MinimumRetryInterval, stoppingToken);
 
             foreach (var eventLog in retrieveEventLogs)
             {
@@ -42,7 +42,7 @@ public class RetryByDataProcessor : ProcessorBase
                     if (LocalQueueProcessor.Default.IsExist(eventLog.EventId))
                         continue; // The local queue is retrying, no need to retry
 
-                    await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
+                    await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId, stoppingToken);
 
                     _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                         eventLog,
@@ -52,7 +52,7 @@ public class RetryByDataProcessor : ProcessorBase
 
                     LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
 
-                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
+                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
                 }
                 catch (UserFriendlyException)
                 {
@@ -63,7 +63,7 @@ public class RetryByDataProcessor : ProcessorBase
                     _logger?.LogError(ex,
                         "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
                         eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
-                    await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
+                    await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
                 }
             }
     }

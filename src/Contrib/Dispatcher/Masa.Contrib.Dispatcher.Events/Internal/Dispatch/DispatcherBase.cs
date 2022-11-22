@@ -25,11 +25,13 @@ internal class DispatcherBase
         Logger = serviceProvider.GetService<ILogger<DispatcherBase>>();
     }
 
-    public async Task PublishEventAsync<TEvent>(IServiceProvider serviceProvider, TEvent @event)
+    public async Task PublishEventAsync<TEvent>(IServiceProvider serviceProvider,
+        TEvent @event,
+        CancellationToken cancellationToken = default)
         where TEvent : IEvent
     {
         BeforePublishEvent(@event, out List<DispatchRelationOptions> dispatchRelations);
-        await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event);
+        await ExecuteEventHandlerAsync(serviceProvider, dispatchRelations, @event, cancellationToken);
     }
 
     private void BeforePublishEvent<TEvent>(TEvent @event,
@@ -60,7 +62,8 @@ internal class DispatcherBase
 
     private async Task ExecuteEventHandlerAsync<TEvent>(IServiceProvider serviceProvider,
         List<DispatchRelationOptions> dispatchRelations,
-        TEvent @event)
+        TEvent @event,
+        CancellationToken cancellationToken)
         where TEvent : IEvent
     {
         var executionStrategy = serviceProvider.GetRequiredService<IExecutionStrategy>();
@@ -78,7 +81,7 @@ internal class DispatcherBase
             await executionStrategy.ExecuteAsync(strategyOptions, @event, async @event =>
             {
                 Logger?.LogDebug("----- Publishing event {@Event}: message id: {messageId} -----", @event, @event.GetEventId());
-                await dispatchHandler.ExecuteAction(serviceProvider, @event);
+                await dispatchHandler.ExecuteAction(serviceProvider, @event, cancellationToken);
             }, async (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)
@@ -86,7 +89,7 @@ internal class DispatcherBase
                     isCancel = true;
                     if (dispatchRelation.CancelHandlers.Any())
                         await ExecuteEventCanceledHandlerAsync(serviceProvider, Logger, executionStrategy, dispatchRelation.CancelHandlers,
-                            @event);
+                            @event, cancellationToken);
                     else
                         ex.ThrowException();
                 }
@@ -103,7 +106,8 @@ internal class DispatcherBase
         ILogger<DispatcherBase>? logger,
         IExecutionStrategy executionStrategy,
         IEnumerable<EventHandlerAttribute> cancelHandlers,
-        TEvent @event)
+        TEvent @event,
+        CancellationToken cancellationToken)
         where TEvent : IEvent
     {
         StrategyOptions strategyOptions = new StrategyOptions();
@@ -114,7 +118,7 @@ internal class DispatcherBase
             {
                 logger?.LogDebug("----- Publishing event {@Event} rollback start: message id: {messageId} -----", @event,
                     @event.GetEventId());
-                await cancelHandler.ExecuteAction(serviceProvider, @event);
+                await cancelHandler.ExecuteAction(serviceProvider, @event, cancellationToken);
             }, (@event, ex, failureLevels) =>
             {
                 if (failureLevels != FailureLevels.Ignore)

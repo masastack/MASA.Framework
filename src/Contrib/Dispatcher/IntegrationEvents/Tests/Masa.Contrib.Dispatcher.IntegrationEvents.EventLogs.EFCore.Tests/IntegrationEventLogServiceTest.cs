@@ -24,7 +24,7 @@ public class IntegrationEventLogServiceTest : TestBase
         };
 
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await eventLogService.SaveEventAsync(@event, transaction));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await eventLogService.SaveEventAsync(@event, transaction));
     }
 
     [TestMethod]

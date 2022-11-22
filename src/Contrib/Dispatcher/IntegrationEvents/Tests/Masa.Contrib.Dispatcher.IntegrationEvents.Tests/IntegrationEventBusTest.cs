@@ -27,15 +27,16 @@ public class IntegrationEventBusTest
         _publisher = new();
         _logger = new();
         _eventLog = new();
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!)).Verifiable();
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>())).Verifiable();
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Verifiable();
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>())).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _masaAppConfigureOptions = new();
-        _masaAppConfigureOptions.Setup(masaAppConfigureOptions => masaAppConfigureOptions.CurrentValue).Returns(() => new MasaAppConfigureOptions()
-        {
-            AppId = "Test"
-        });
+        _masaAppConfigureOptions.Setup(masaAppConfigureOptions => masaAppConfigureOptions.CurrentValue).Returns(()
+            => new MasaAppConfigureOptions()
+            {
+                AppId = "Test"
+            });
         _eventBus = new();
         _uoW = new();
         _uoW.Setup(uoW => uoW.CommitAsync(default)).Verifiable();
@@ -107,11 +108,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Never);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
     }
 
     [TestMethod]
@@ -135,11 +136,11 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Never);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
     }
 
     [TestMethod]
@@ -162,17 +163,17 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Once);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
     }
 
     [TestMethod]
     public async Task TestSaveEventFailedAndNotUseLoggerAsync()
     {
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!))
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
@@ -208,16 +209,16 @@ public class IntegrationEventBusTest
             Account = "lisa",
             Password = "123456"
         };
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>())).Throws<Exception>();
+        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Throws<Exception>();
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Once);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId()), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId()), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Once);
     }
 
     [TestMethod]
@@ -248,7 +249,7 @@ public class IntegrationEventBusTest
     [TestMethod]
     public async Task TestPublishEventAsync()
     {
-        _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>())).Verifiable();
+        _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
@@ -263,7 +264,7 @@ public class IntegrationEventBusTest
         };
         await integrationEventBus.PublishAsync(@event);
 
-        _eventBus.Verify(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>()), Times.Once);
+        _eventBus.Verify(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default), Times.Once);
     }
 
     [TestMethod]

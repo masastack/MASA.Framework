@@ -29,7 +29,7 @@ public class EventBus : IEventBus
         _unitOfWork = unitOfWork;
     }
 
-    public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
         ArgumentNullException.ThrowIfNull(@event, nameof(@event));
         var eventType = @event.GetType();
@@ -54,7 +54,7 @@ public class EventBus : IEventBus
 
         EventHandlerDelegate eventHandlerDelegate = async () =>
         {
-            await _dispatcher.PublishEventAsync(_serviceProvider, @event);
+            await _dispatcher.PublishEventAsync(_serviceProvider, @event, cancellationToken);
         };
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }

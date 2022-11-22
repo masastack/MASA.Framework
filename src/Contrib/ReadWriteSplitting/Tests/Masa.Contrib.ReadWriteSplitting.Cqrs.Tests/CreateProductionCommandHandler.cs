@@ -6,7 +6,7 @@ namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests;
 public class CreateProductionCommandHandler : CommandHandler<CreateProductionCommand>
 {
     [EventHandler(1, Dispatcher.Events.Enums.FailureLevels.ThrowAndCancel, false)]
-    public override Task HandleAsync(CreateProductionCommand @event)
+    public override Task HandleAsync(CreateProductionCommand @event, CancellationToken cancellationToken = default)
     {
         @event.Count++;
         if (string.IsNullOrEmpty(@event.Name))
@@ -19,9 +19,9 @@ public class CreateProductionCommandHandler : CommandHandler<CreateProductionCom
     }
 
     [EventHandler(1)]
-    public override Task CancelAsync(CreateProductionCommand @event)
+    public override Task CancelAsync(CreateProductionCommand @event, CancellationToken cancellationToken = default)
     {
         @event.Count++;
-        return base.CancelAsync(@event);
+        return base.CancelAsync(@event, cancellationToken);
     }
 }

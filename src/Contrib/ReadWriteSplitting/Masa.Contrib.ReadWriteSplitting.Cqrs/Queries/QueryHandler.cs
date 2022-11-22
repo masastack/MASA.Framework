@@ -6,5 +6,5 @@ namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Queries;
 public abstract class QueryHandler<TQuery, TResult> : IQueryHandler<TQuery, TResult>
     where TQuery : IQuery<TResult>
 {
-    public abstract Task HandleAsync(TQuery @event);
+    public abstract Task HandleAsync(TQuery @event, CancellationToken cancellationToken = default);
 }

@@ -511,7 +511,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Caching", "Caching", "{50E4A2F8-2EB8-4942-AEDA-BBA467249D92}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly", "src\Contrib\Authentication\Identity\Masa.Contrib.Authentication.Identity.BlazorAssembly\Masa.Contrib.Authentication.Identity.BlazorAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorWebAssembly", "src\Contrib\Authentication\Identity\Masa.Contrib.Authentication.Identity.BlazorWebAssembly\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.csproj", "{9282075C-9C15-409B-BDC4-5EC2CB9EFA87}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Caching", "src\BuildingBlocks\Caching\Masa.BuildingBlocks.Caching\Masa.BuildingBlocks.Caching.csproj", "{6FB4481A-9C5E-4D0E-9B95-EA26DD1F90F2}"
 EndProject
@@ -519,7 +519,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Distributed", "Distributed", "{B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests", "src\Contrib\Authentication\Identity\Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests", "src\Contrib\Authentication\Identity\Tests\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests\Masa.Contrib.Authentication.Identity.BlazorWebAssembly.Tests.csproj", "{60A02980-398C-40CD-9FAA-ACAD7A9A866C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Extensions.DotNet.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.DotNet.Tests\Masa.Utils.Extensions.DotNet.Tests.csproj", "{9E9122FD-8E27-4524-862F-FFEFA97E404A}"
 EndProject
@@ -622,6 +622,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Dispatcher.Events.FluentValidation", "src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events.FluentValidation\Masa.Contrib.Dispatcher.Events.FluentValidation.csproj", "{66B1723A-D578-418C-B21C-2C3B5CBD1180}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.I18n", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj", "{6088C3D3-E17E-41BC-A21F-F222F5123DF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Tests\Masa.Contrib.Ddd.Domain.Tests.csproj", "{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2199,6 +2201,14 @@ Global
 		{6088C3D3-E17E-41BC-A21F-F222F5123DF1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6088C3D3-E17E-41BC-A21F-F222F5123DF1}.Release|x64.ActiveCfg = Release|Any CPU
 		{6088C3D3-E17E-41BC-A21F-F222F5123DF1}.Release|x64.Build.0 = Release|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2506,6 +2516,7 @@ Global
 		{B7AEC624-6A40-42E7-BDB5-4487ACE48CE4} = {5B129E6F-8CB7-4E2E-9F3E-C59CF22C9CA9}
 		{66B1723A-D578-418C-B21C-2C3B5CBD1180} = {5BE84027-D1B4-4264-A7EC-E84658350CA7}
 		{6088C3D3-E17E-41BC-A21F-F222F5123DF1} = {D10FC534-0091-42B4-809F-82C1E2164ED5}
+		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558} = {F83E3E53-2DFE-4B1F-B988-204CA4A42572}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}

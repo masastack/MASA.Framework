@@ -22,7 +22,7 @@
 ## 路线图
 
 * [发行说明](https://github.com/masastack/MASA.Framework/releases)
-* [最新路线图](https://github.com/masastack/MASA.Framework/issues/101)
+* [最新路线图](https://github.com/masastack/MASA.Framework/issues/254)
 
 
 

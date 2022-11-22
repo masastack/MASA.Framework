@@ -26,9 +26,13 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="retryBatchSize">maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">default: 60s</param>
+    /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(int retryBatchSize = 200,
-        int maxRetryTimes = 10, int minimumRetryInterval = 60)
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
+        int retryBatchSize = 200,
+        int maxRetryTimes = 10,
+        int minimumRetryInterval = 60,
+        CancellationToken cancellationToken = default)
     {
         //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
         var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
@@ -38,7 +42,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 e.ModificationTime < time)
             .OrderBy(o => o.CreationTime)
             .Take(retryBatchSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         if (result.Any())
         {
@@ -52,22 +56,22 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         return result;
     }
 
-    public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction)
+    public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default)
     {
-        if (transaction == null)
-            throw new ArgumentNullException(nameof(transaction));
+        MasaArgumentException.ThrowIfNull(transaction);
 
         if (_eventLogContext.DbContext.Database.CurrentTransaction == null)
-            await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid());
+            await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(),
+                cancellationToken: cancellationToken);
 
         var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
-        await _eventLogContext.EventLogs.AddAsync(eventLogEntry);
-        await _eventLogContext.DbContext.SaveChangesAsync();
+        await _eventLogContext.EventLogs.AddAsync(eventLogEntry, cancellationToken);
+        await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
 
         CheckAndDetached(eventLogEntry);
     }
 
-    public Task MarkEventAsPublishedAsync(Guid eventId)
+    public Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.Published, eventLog =>
         {
@@ -79,10 +83,10 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 throw new UserFriendlyException(
                     $"Failed to modify the state of the local message table to {IntegrationEventStates.Published}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
-        });
+        }, cancellationToken);
     }
 
-    public Task MarkEventAsInProgressAsync(Guid eventId)
+    public Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, eventLog =>
         {
@@ -94,10 +98,10 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 throw new UserFriendlyException(
                     $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
-        });
+        }, cancellationToken);
     }
 
-    public Task MarkEventAsFailedAsync(Guid eventId)
+    public Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.PublishedFailed, eventLog =>
         {
@@ -109,7 +113,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 throw new UserFriendlyException(
                     $"Failed to modify the state of the local message table to {IntegrationEventStates.PublishedFailed}, the current State is {eventLog.State}, Id: {eventLog.Id}");
             }
-        });
+        }, cancellationToken);
     }
 
     public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
@@ -126,11 +130,16 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }
     }
 
-    private async Task UpdateEventStatus(Guid eventId, IntegrationEventStates status, Action<IntegrationEventLog>? action = null)
+    private async Task UpdateEventStatus(Guid eventId,
+        IntegrationEventStates status,
+        Action<IntegrationEventLog>? action = null,
+        CancellationToken cancellationToken = default)
     {
-        var eventLogEntry = _eventLogContext.EventLogs.FirstOrDefault(e => e.EventId == eventId);
+        var eventLogEntry = await _eventLogContext.EventLogs.FirstOrDefaultAsync(e => e.EventId == eventId, cancellationToken: cancellationToken);
         if (eventLogEntry == null)
-            throw new ArgumentException($"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}", nameof(eventId));
+            throw new ArgumentException(
+                $"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}",
+                nameof(eventId));
 
         action?.Invoke(eventLogEntry);
 
@@ -144,7 +153,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
         try
         {
-            await _eventLogContext.DbContext.SaveChangesAsync();
+            await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException ex)
         {

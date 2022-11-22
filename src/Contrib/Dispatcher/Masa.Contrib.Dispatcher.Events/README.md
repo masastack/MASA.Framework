@@ -59,7 +59,7 @@ Or use the way to implement the interface:
 ```C#
 public class TransferHandler : IEventHandler<TransferEvent>
 {
-    public Task HandleAsync(TransferEvent @event)
+    public Task HandleAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO Simulated transfer business
     }
@@ -129,13 +129,13 @@ Or use the way to implement the interface
 public class TransferHandler : ISagaEventHandler<TransferEvent>
 {
     [EventHandler(1, FailureLevels.ThrowAndCancel, true, 3)]
-    public Task HandleAsync(TransferEvent @event)
+    public Task HandleAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO Simulate check balance deduction balance
     }
 
     [EventHandler(1, FailureLevels.Ignore, false, true)]
-    public Task CancelAsync(TransferEvent @event)
+    public Task CancelAsync(TransferEvent @event, CancellationToken cancellationToken = default)
     {
         //TODO Idempotent verification and notification of transfer failure
     }

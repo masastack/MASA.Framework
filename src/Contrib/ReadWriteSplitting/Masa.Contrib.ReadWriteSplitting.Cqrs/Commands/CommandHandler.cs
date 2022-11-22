@@ -6,9 +6,11 @@ namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Commands;
 public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>, ISagaEventHandler<TCommand>
     where TCommand : ICommand
 {
-    public abstract Task HandleAsync(TCommand @event);
+    public abstract Task HandleAsync(TCommand @event, CancellationToken cancellationToken = default);
 
-    public virtual Task CancelAsync(TCommand @event)
+
+
+    public virtual Task CancelAsync(TCommand @event, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }
