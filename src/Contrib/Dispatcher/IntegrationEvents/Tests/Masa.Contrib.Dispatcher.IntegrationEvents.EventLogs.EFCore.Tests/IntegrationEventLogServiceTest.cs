@@ -99,7 +99,7 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         var response = await InitializeAsync();
 
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using (var transaction = await response.CustomDbContext.Database.BeginTransactionAsync())
         {
@@ -124,7 +124,7 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         var response = await InitializeAsync();
 
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await Assert.ThrowsExceptionAsync<Exception>(async () =>
         {
@@ -139,14 +139,14 @@ public class IntegrationEventLogServiceTest : TestBase
             throw new Exception("custom exception");
         }, "custom exception");
 
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
     }
 
     [TestMethod]
     public async Task TestMarkEventAsInProgressAsync()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -172,7 +172,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMultiJobMarkEventAsInProgressAsync()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -196,7 +196,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMarkEventAsInProgress2Async()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -221,7 +221,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMarkEventAsPublishedAsync()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -247,7 +247,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMarkEventAsPublished2Async()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -265,7 +265,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMarkEventAsFailedAsync()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
@@ -287,7 +287,7 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestMarkEventAsFailed2Async()
     {
         var response = await InitializeAsync();
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 0);
+        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
 
         await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
