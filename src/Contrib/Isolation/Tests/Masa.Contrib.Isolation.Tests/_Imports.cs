@@ -4,9 +4,7 @@
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
-global using Masa.BuildingBlocks.Isolation.Environment;
-global using Masa.BuildingBlocks.Isolation.Middleware;
-global using Masa.BuildingBlocks.Isolation.MultiTenant;
+global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Options;
 global using Masa.BuildingBlocks.Isolation.Parser;
 global using Masa.Contrib.Isolation.MultiEnvironment;
