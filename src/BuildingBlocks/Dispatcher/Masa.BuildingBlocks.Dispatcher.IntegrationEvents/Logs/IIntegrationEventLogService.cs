@@ -23,7 +23,7 @@ public interface IIntegrationEventLogService
 
     Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken = default);
 
-    Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken = default);
+    Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval,CancellationToken cancellationToken = default);
 
     Task MarkEventAsFailedAsync(Guid eventId, CancellationToken cancellationToken = default);
 

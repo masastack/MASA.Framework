@@ -86,11 +86,22 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
-    public Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval, CancellationToken cancellationToken = default)
     {
         return UpdateEventStatus(eventId, IntegrationEventStates.InProgress, eventLog =>
         {
-            if (eventLog.State != IntegrationEventStates.NotPublished && eventLog.State != IntegrationEventStates.PublishedFailed)
+            if (eventLog.State is IntegrationEventStates.InProgress or IntegrationEventStates.PublishedFailed &&
+                (eventLog.GetCurrentTime() - eventLog.ModificationTime).TotalSeconds < minimumRetryInterval)
+            {
+                _logger?.LogInformation(
+                    "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}, Multitasking execution error, waiting for the next retry",
+                    IntegrationEventStates.InProgress, eventLog.State, eventLog.Id);
+                throw new UserFriendlyException(
+                    $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}, Multitasking execution error, waiting for the next retry");
+            }
+            if (eventLog.State != IntegrationEventStates.NotPublished &&
+                eventLog.State != IntegrationEventStates.InProgress &&
+                eventLog.State != IntegrationEventStates.PublishedFailed)
             {
                 _logger?.LogWarning(
                     "Failed to modify the state of the local message table to {OptState}, the current State is {State}, Id: {Id}",
@@ -135,7 +146,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         Action<IntegrationEventLog>? action = null,
         CancellationToken cancellationToken = default)
     {
-        var eventLogEntry = await _eventLogContext.EventLogs.FirstOrDefaultAsync(e => e.EventId == eventId, cancellationToken: cancellationToken);
+        var eventLogEntry =
+            await _eventLogContext.EventLogs.FirstOrDefaultAsync(e => e.EventId == eventId, cancellationToken: cancellationToken);
         if (eventLogEntry == null)
             throw new ArgumentException(
                 $"The local message record does not exist, please confirm whether the local message record has been deleted or other reasons cause the local message record to not be inserted successfully In EventId: {eventId}",

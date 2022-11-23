@@ -73,7 +73,9 @@ public class IntegrationEventBus : IIntegrationEventBus
                     @event.GetEventId(),
                     _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId(),cancellationToken);
+                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId(),
+                    _dispatcherOptions.MinimumRetryInterval,
+                    cancellationToken);
 
                 _logger?.LogDebug("Publishing event {Event} to {TopicName}", @event, topicName);
                 await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);

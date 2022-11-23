@@ -28,7 +28,7 @@ public class IntegrationEventBusTest
         _logger = new();
         _eventLog = new();
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default)).Verifiable();
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _masaAppConfigureOptions = new();
@@ -108,7 +108,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Never);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
@@ -136,7 +136,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Never);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
@@ -163,7 +163,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Once);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
@@ -214,7 +214,7 @@ public class IntegrationEventBusTest
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), default), Times.Once);
+        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Once);
         _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
             Times.Once);
         _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
