@@ -4,8 +4,6 @@
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
-global using Masa.BuildingBlocks.Isolation.Environment;
-global using Masa.Contrib.Data.Contracts.EFCore;
 global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Contrib.Isolation.MultiEnvironment;
 global using Masa.Contrib.Isolation.MultiTenant;
