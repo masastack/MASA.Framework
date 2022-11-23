@@ -83,7 +83,7 @@ public class UnitOfWorkTest : TestBase
         {
             Name = "Tom"
         };
-        var transcation = uoW.Transaction;
+        var transaction = uoW.Transaction;
         dbContext.User.Add(user);
         uoW.EntityState = EntityState.Changed;
         await uoW.SaveChangesAsync();
@@ -102,7 +102,7 @@ public class UnitOfWorkTest : TestBase
         await dbContext.Database.EnsureCreatedAsync();
         var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
         var user = new Users();
-        var transcation = uoW.Transaction;
+        var transaction = uoW.Transaction;
         dbContext.User.Add(user);
         await uoW.CommitAsync();
 
@@ -119,7 +119,7 @@ public class UnitOfWorkTest : TestBase
         await dbContext.Database.EnsureCreatedAsync();
         var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
         var user = new Users();
-        var transcation = uoW.Transaction;
+        var transaction = uoW.Transaction;
         dbContext.User.Add(user);
         await uoW.CommitAsync();
 

@@ -25,47 +25,47 @@ public class RetryByLocalQueueProcessor : ProcessorBase
     protected override async Task ExecuteAsync(IServiceProvider serviceProvider, CancellationToken stoppingToken)
     {
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
-            if (unitOfWork != null)
-                unitOfWork.UseTransaction = false;
+        if (unitOfWork != null)
+            unitOfWork.UseTransaction = false;
 
-            var publisher = serviceProvider.GetRequiredService<IPublisher>();
-            var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
+        var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
-            var retrieveEventLogs =
-                LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
-                    _options.Value.RetryBatchSize);
+        var retrieveEventLogs =
+            LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
+                _options.Value.RetryBatchSize);
 
-            foreach (var eventLog in retrieveEventLogs)
+        foreach (var eventLog in retrieveEventLogs)
+        {
+            try
             {
-                try
-                {
-                    LocalQueueProcessor.Default.RetryJobs(eventLog.EventId);
+                LocalQueueProcessor.Default.RetryJobs(eventLog.EventId);
 
-                    await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId);
+                await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId, _options.Value.MinimumRetryInterval, stoppingToken);
 
-                    _logger?.LogDebug(
-                        "Publishing integration event {Event} to {TopicName}",
-                        eventLog,
-                        eventLog.Topic);
+                _logger?.LogDebug(
+                    "Publishing integration event {Event} to {TopicName}",
+                    eventLog,
+                    eventLog.Topic);
 
-                    await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
 
-                    await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId);
+                await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
 
-                    LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
-                }
-                catch (UserFriendlyException)
-                {
-                    //Update state due to multitasking contention
-                    LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError(ex,
-                        "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                        eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
-                    await eventLogService.MarkEventAsFailedAsync(eventLog.EventId);
-                }
+                LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
             }
+            catch (UserFriendlyException)
+            {
+                //Update state due to multitasking contention
+                LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex,
+                    "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
+                    eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
+            }
+        }
     }
 }

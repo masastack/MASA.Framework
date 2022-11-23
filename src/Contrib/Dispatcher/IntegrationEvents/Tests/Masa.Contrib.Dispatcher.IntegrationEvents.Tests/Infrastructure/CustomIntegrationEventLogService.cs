@@ -15,7 +15,7 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         throw new NotImplementedException();
     }
 
-    public Task MarkEventAsInProgressAsync(Guid eventId, CancellationToken cancellationToken = default)
+    public Task MarkEventAsInProgressAsync(Guid eventId, int minimumRetryInterval, CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

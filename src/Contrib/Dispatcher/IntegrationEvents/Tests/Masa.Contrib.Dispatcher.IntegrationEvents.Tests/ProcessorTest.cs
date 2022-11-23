@@ -57,7 +57,7 @@ public class ProcessorTest
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent();
 
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token)).Verifiable();
+        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token)).Verifiable();
         integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token)).Verifiable();
 
         List<IntegrationEventLog> list = new List<IntegrationEventLog>()
@@ -107,7 +107,7 @@ public class ProcessorTest
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(2));
+        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token), Times.Exactly(2));
         integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(2));
     }
 
@@ -121,7 +121,7 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(1000);
 
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token))
+        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token))
             .Verifiable();
         integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token))
             .Verifiable();
@@ -191,7 +191,7 @@ public class ProcessorTest
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(2));
+        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token), Times.Exactly(2));
         integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Never);
         integrationEventLogService.Verify(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(1));
     }
@@ -205,7 +205,7 @@ public class ProcessorTest
         cancellationTokenSource.CancelAfter(1000);
 
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
-        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token)).Verifiable();
+        integrationEventLogService.Setup(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token)).Verifiable();
         integrationEventLogService.Setup(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token)).Verifiable();
         integrationEventLogService.Setup(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token)).Verifiable();
 
@@ -271,7 +271,7 @@ public class ProcessorTest
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
-        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(2));
+        integrationEventLogService.Verify(service => service.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), cancellationTokenSource.Token), Times.Exactly(2));
         integrationEventLogService.Verify(service => service.MarkEventAsPublishedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Never);
         integrationEventLogService.Verify(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token), Times.Exactly(1));
     }
