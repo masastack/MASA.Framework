@@ -1,6 +1,6 @@
 中 | [EN](README.md)
 
-## Masa.Contrib.Data.Contracts.EFCore
+## Masa.Contrib.Data.Contracts
 
 提供的数据过滤(用于禁用租户、环境或软删除)、软删除能力
 
@@ -8,7 +8,7 @@
 
 ``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite //以Sqlite数据库为例
-Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力
+Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤、软删除能力
 ```
 
 1. 配置appsettings.json
@@ -26,8 +26,8 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter();//启用过滤
     optionsBuilder.UseSqlite();//使用Sqlite数据库
+    optionsBuilder.UseFilter();//启用过滤
 });
 ```
 

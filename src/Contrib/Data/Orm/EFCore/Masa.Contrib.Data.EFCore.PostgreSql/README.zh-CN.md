@@ -6,7 +6,7 @@
 
 ``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.PostgreSql
-Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
+Install-Package Masa.Contrib.Data.Contracts //使用规约提供的数据过滤、软删除能力，如果不需要可不引用
 ```
 
 ### 用法1
@@ -26,7 +26,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //使用规约提供的数据
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts 提供
     optionsBuilder.UseNpgsql(); //使用PostgreSQL数据库
 });
 ```
@@ -36,7 +36,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts.EFCore 提供
+    optionsBuilder.UseFilter(); //启用过滤，由 Masa.Contrib.Data.Contracts 提供
     optionsBuilder.UseNpgsql("Host=myserver;Username=sa;Password=P@ssw0rd;Database=identity"); //使用PostgreSQL数据库
 });
 ```

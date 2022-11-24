@@ -6,7 +6,7 @@ Example:
 
 ``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Pomelo.MySql
-Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
+Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```
 
 ### Usage 1
@@ -26,7 +26,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts.EFCore
+    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts
     optionsBuilder.UseMySql(new MySqlServerVersion("5.7.26")); //Use MySql database
 });
 ```
@@ -36,7 +36,7 @@ builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts.EFCore
+    optionsBuilder.UseFilter(); //Enable filtering, provided by Masa.Contrib.Data.Contracts
     optionsBuilder.UseMySql("Server=localhost;Database=identity;Uid=myUsername;Pwd=P@ssw0rd;", new MySqlServerVersion("5.7.26")); //Use MySql database
 });
 ```

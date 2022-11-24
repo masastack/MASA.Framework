@@ -6,7 +6,7 @@ Example：
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EFCore
-Install-Package Masa.Contrib.Data.Contracts.EFCore
+Install-Package Masa.Contrib.Data.Contracts
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // Environmental isolation Quote on demand
 Install-Package Masa.Contrib.Isolation.MultiTenant // Multi-tenant isolation On-demand reference
 Install-Package Masa.Contrib.Data.EFCore.SqlServer

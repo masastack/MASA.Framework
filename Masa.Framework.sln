@@ -243,7 +243,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Orm", "Orm", "{343A61CC-45B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UoW", "UoW", "{E8B3FB42-C450-4B12-9C2C-7B9A02B616BB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EFCore", "src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts.EFCore\Masa.Contrib.Data.Contracts.EFCore.csproj", "{8353A1CE-B6F0-42A2-B7F1-BC87707719AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts", "src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj", "{8353A1CE-B6F0-42A2-B7F1-BC87707719AD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{83E5A183-56D6-4CAC-95A6-FB280AA7AE3D}"
 EndProject
@@ -477,7 +477,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Eve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.EFCore.PostgreSql", "src\Contrib\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.PostgreSql\Masa.Contrib.Data.EFCore.PostgreSql.csproj", "{6616A9E2-66F3-4AEB-BE0D-77346B3F3B06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.EFCore.Tests", "src\Contrib\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.EFCore.Tests\Masa.Contrib.Data.Contracts.EFCore.Tests.csproj", "{979FBAA7-EC54-4183-B2A7-3C5BE5510F16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.Contracts.Tests", "src\Contrib\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.Tests\Masa.Contrib.Data.Contracts.Tests.csproj", "{979FBAA7-EC54-4183-B2A7-3C5BE5510F16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Data.UoW.EFCore", "src\Contrib\Data\UoW\Masa.Contrib.Data.UoW.EFCore\Masa.Contrib.Data.UoW.EFCore.csproj", "{44DB6ED1-71DC-487B-8DD7-3F872CB23254}"
 EndProject

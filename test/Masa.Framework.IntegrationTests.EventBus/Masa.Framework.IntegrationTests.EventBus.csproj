@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts.EFCore\Masa.Contrib.Data.Contracts.EFCore.csproj" />
+    <ProjectReference Include="..\..\src\Contrib\Data\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Contrib\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\src\Contrib\Data\UoW\Masa.Contrib.Data.UoW.EFCore\Masa.Contrib.Data.UoW.EFCore.csproj" />
     <ProjectReference Include="..\..\src\Contrib\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EFCore\Masa.Contrib.Ddd.Domain.Repository.EFCore.csproj" />

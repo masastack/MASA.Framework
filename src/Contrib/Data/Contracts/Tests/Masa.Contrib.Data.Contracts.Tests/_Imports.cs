@@ -3,9 +3,9 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
-global using Masa.Contrib.Data.Contracts.EFCore.DataFiltering;
-global using Masa.Contrib.Data.Contracts.EFCore.Tests.EntityConfigurations;
-global using Masa.Contrib.Data.Contracts.EFCore.Tests.Models;
+global using Masa.Contrib.Data.Contracts.DataFiltering;
+global using Masa.Contrib.Data.Contracts.Tests.EntityConfigurations;
+global using Masa.Contrib.Data.Contracts.Tests.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;

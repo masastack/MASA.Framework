@@ -19,7 +19,7 @@ public class TestBase
         Services.AddMasaDbContext<CustomDbContext>(options =>
         {
             if (enableSoftDelete)
-                options.UseTestFilter();
+                options.UseFilter();
 
             if (initConnectionString)
                 options.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
