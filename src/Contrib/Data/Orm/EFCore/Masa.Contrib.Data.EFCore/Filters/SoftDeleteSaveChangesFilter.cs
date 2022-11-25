@@ -31,7 +31,7 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             return;
 
         changeTracker.DetectChanges();
-        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete);
+        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete and IEntity);
         foreach (var entity in entries)
         {
             var navigationEntries = entity.Navigations
@@ -86,6 +86,11 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
 
         if (entityEntry.Entity is ISoftDelete)
             entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+
+        var navigationEntries = entityEntry.Navigations
+            .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
+                !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null);
+        HandleNavigationEntry(navigationEntries);
     }
 
     private object? GetUserId(string? userId)
