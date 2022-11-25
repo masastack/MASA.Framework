@@ -1,13 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuilder
     where TDbContext : MasaDbContext, IMasaDbContext
 {
     public MasaDbContextOptions<TDbContext> MasaOptions
-        => new(ServiceProvider, (DbContextOptions<TDbContext>)DbContextOptionsBuilder.Options, EnableSoftDelete);
+        => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete);
 
     public MasaDbContextOptionsBuilder(bool enableSoftDelete = false) : this(null, enableSoftDelete)
     {

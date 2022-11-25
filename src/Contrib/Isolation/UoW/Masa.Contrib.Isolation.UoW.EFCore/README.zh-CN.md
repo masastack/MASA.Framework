@@ -6,7 +6,7 @@
 
 ```C#
 Install-Package Masa.Contrib.Isolation.UoW.EFCore
-Install-Package Masa.Contrib.Data.Contracts.EFCore
+Install-Package Masa.Contrib.Data.Contracts
 Install-Package Masa.Contrib.Isolation.MultiEnvironment // 环境隔离 按需引用
 Install-Package Masa.Contrib.Isolation.MultiTenant // 多租户隔离 按需引用
 Install-Package Masa.Contrib.Data.EFCore.SqlServer

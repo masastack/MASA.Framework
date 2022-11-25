@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
-    <ProjectReference Include="..\..\..\..\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.EFCore.Tests\Masa.Contrib.Data.Contracts.EFCore.Tests.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Contracts\Tests\Masa.Contrib.Data.Contracts.Tests\Masa.Contrib.Data.Contracts.Tests.csproj" />
     <ProjectReference Include="..\..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
     <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />

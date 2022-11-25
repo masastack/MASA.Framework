@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj" />
-    <ProjectReference Include="..\..\..\..\Data\Contracts\Masa.Contrib.Data.Contracts.EFCore\Masa.Contrib.Data.Contracts.EFCore.csproj" />
+    <ProjectReference Include="..\..\..\..\Data\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
     <ProjectReference Include="..\..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
     <ProjectReference Include="..\..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />

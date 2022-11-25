@@ -1,12 +1,12 @@
 [中](README.zh-CN.md) | EN
 
-## Masa.Contrib.Data.Contracts.EFCore
+## Masa.Contrib.Data.Contracts
 
 Example:
 
 ``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.Sqlite
-Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol
+Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft delete capabilities provided by the protocol
 ```
 
 ### Usage 1
@@ -26,8 +26,8 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter(); //Enable filtering
     optionsBuilder.UseSqlite(); //Using Sqlite database
+    optionsBuilder.UseFilter(); //Enable filtering
 });
 ```
 

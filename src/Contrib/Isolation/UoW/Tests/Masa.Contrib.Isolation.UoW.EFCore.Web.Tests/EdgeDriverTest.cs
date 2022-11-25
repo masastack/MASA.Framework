@@ -18,7 +18,7 @@ public class EdgeDriverTest
         _services = new ServiceCollection();
         _services.AddSingleton<IConfiguration>(configurationRoot);
         _services.AddEventBus(eventBusBuilder => eventBusBuilder.UseIsolationUoW<CustomDbContext, int>(
-            isolationBuilder => isolationBuilder.UseMultiTenant("tenant").UseMultiEnvironment("env"), dbOptions => dbOptions.UseFilter().UseSqlite()));
+            isolationBuilder => isolationBuilder.UseMultiTenant("tenant").UseMultiEnvironment("env"), dbOptions => dbOptions.UseSqlite().UseFilter()));
         System.Environment.SetEnvironmentVariable("env", "pro");
     }
 

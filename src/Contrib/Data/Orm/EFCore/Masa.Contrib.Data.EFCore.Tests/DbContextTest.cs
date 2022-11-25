@@ -106,7 +106,7 @@ public class DbContextTest : TestBase
     public async Task TestDisabledSoftDelete()
     {
         Services.AddMasaDbContext<CustomDbContext>(options
-            => options.UseTestFilter().UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}"));
+            => options.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter());
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -146,7 +146,7 @@ public class DbContextTest : TestBase
             .AddMasaDbContext<CustomDbContext>();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter>().Count() == 2);
     }
 
     [TestMethod]

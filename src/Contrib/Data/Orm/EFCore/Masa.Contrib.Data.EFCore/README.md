@@ -6,7 +6,7 @@ Example:
 
 ``` powershelll
 Install-Package Masa.Contrib.Data.EFCore.SqlServer // SqlServer is used as an example here, you can also choose other implementations by yourself
-Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
+Install-Package Masa.Contrib.Data.Contracts //Use the data filtering and soft delete capabilities provided by the protocol, if you don't need it, you can not refer to it
 ```
 
 ### Get Started
@@ -26,7 +26,7 @@ Install-Package Masa.Contrib.Data.Contracts.EFCore //Use the data filtering and 
 ``` C#
 builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
 {
-    optionsBuilder.UseFilter();// Enable filtering, provided by Masa.Contrib.Data.Contracts.EFCore
+    optionsBuilder.UseFilter();// Enable filtering, provided by Masa.Contrib.Data.Contracts
     optionsBuilder.UseSqlServer();//Use SqlServer database, you can also choose other implementations
 });
 ```

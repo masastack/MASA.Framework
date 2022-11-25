@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -37,7 +39,7 @@ public static class ServiceCollectionExtensions
         optionsBuilder?.Invoke(masaBuilder);
         return services.AddCoreServices<TDbContextImplementation, TUserId>((serviceProvider, efDbContextOptionsBuilder) =>
         {
-            masaBuilder.Builder.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
+            masaBuilder.Builder?.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
         }, masaBuilder.EnableSoftDelete, optionsLifetime);
     }
 
@@ -50,6 +52,7 @@ public static class ServiceCollectionExtensions
         where TUserId : IComparable
     {
         MasaApp.TrySetServiceCollection(services);
+
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
         services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
@@ -67,7 +70,9 @@ public static class ServiceCollectionExtensions
                 optionsLifetime));
 
         services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter),
-            typeof(SaveChangeFilter<TDbContextImplementation, TUserId>), ServiceLifetime.Scoped));
+            typeof(SaveChangeFilter<TDbContextImplementation, TUserId>), optionsLifetime));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter),
+            typeof(SoftDeleteSaveChangesFilter<TDbContextImplementation, TUserId>), optionsLifetime));
         return services;
     }
 

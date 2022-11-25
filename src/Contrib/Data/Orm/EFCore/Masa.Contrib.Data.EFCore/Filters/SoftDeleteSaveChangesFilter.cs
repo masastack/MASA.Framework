@@ -1,7 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.Contracts.EFCore.DataFiltering;
+// ReSharper disable once CheckNamespace
+
+namespace Microsoft.EntityFrameworkCore;
 
 public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter
     where TDbContext : DbContext, IMasaDbContext
