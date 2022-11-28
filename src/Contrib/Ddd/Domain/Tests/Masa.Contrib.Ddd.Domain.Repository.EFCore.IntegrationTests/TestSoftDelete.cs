@@ -53,7 +53,7 @@ public class TestSoftDelete
 
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<Orders>>();
         var order = await repository.FindAsync(o => o.Id == 1);
-
+        Assert.IsNotNull(order);
         await repository.RemoveAsync(order);
         await repository.UnitOfWork.SaveChangesAsync();
         await repository.UnitOfWork.CommitAsync();
