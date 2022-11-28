@@ -86,6 +86,11 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
 
         if (entityEntry.Entity is ISoftDelete)
             entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+
+        var navigationEntries = entityEntry.Navigations
+            .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
+                !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null);
+        HandleNavigationEntry(navigationEntries);
     }
 
     private object? GetUserId(string? userId)

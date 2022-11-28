@@ -1,11 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.Tests.Domain.Entities;
+namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests.Domain.Entities;
 
 public class OrderItem : Entity<Guid>
 {
-    public Guid OrderId { get; set; }
+    public int OrderId { get; set; }
 
     public int ProductId { get; set; }
 
@@ -17,9 +17,5 @@ public class OrderItem : Entity<Guid>
 
     public string PictureUrl { get; set; }
 
-    public OrderItem()
-    {
-        ProductName = string.Empty;
-        PictureUrl = string.Empty;
-    }
+    public Orders Orders { get; set; }
 }
