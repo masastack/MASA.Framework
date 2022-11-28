@@ -631,6 +631,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Tsc.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Tests\Masa.Contrib.Ddd.Domain.Tests.csproj", "{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests.csproj", "{AE12559A-5C8F-4590-9B18-B935155B15C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2239,6 +2241,14 @@ Global
 		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|x64.ActiveCfg = Release|Any CPU
 		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}.Release|x64.Build.0 = Release|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{AE12559A-5C8F-4590-9B18-B935155B15C5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2550,6 +2560,7 @@ Global
 		{A04C3ECC-51BB-43A9-9C38-2305AB31F60D} = {383995FF-B661-4E15-A830-640FC5BA8A1F}
 		{21317D81-BED0-46F0-8FBC-A9B7F1C7F2FD} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
 		{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558} = {F83E3E53-2DFE-4B1F-B988-204CA4A42572}
+		{AE12559A-5C8F-4590-9B18-B935155B15C5} = {F83E3E53-2DFE-4B1F-B988-204CA4A42572}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
