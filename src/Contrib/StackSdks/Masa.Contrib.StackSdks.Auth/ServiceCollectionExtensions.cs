@@ -45,27 +45,24 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISsoClient, SsoClient>();
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
-            var tokenProvider = serviceProvider.GetService<TokenProvider>();
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            if (tokenProvider != null)
-            {
 
-                callProvider.ConfigRequestMessage(httpRequestMessage =>
+            callProvider.ConfigRequestMessage(httpRequestMessage =>
+            {
+                var tokenProvider = serviceProvider.GetService<TokenProvider>();
+                if (tokenProvider != null)
                 {
                     httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-                    return Task.CompletedTask;
-                });
-            }
-            var environment = serviceProvider.GetService<IEnvironmentProvider>();
-            if (environment != null)
-            {
-                callProvider.ConfigRequestMessage(httpRequestMessage =>
+                }
+                var environment = serviceProvider.GetService<IEnvironmentProvider>();
+                if (environment != null)
                 {
                     httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
-                    return Task.CompletedTask;
-                });
-            }
+                }
+                return Task.CompletedTask;
+            });
+
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
             var authClient = new AuthClient(callProvider, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
