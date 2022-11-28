@@ -5,15 +5,15 @@ namespace Masa.Contrib.Isolation.UoW.EFCore;
 
 public class IsolationSaveChangesFilter<TTenantId> : ISaveChangesFilter where TTenantId : IComparable
 {
-    private readonly ITenantContext? _tenantContext;
+    private readonly IMultiTenantContext? _tenantContext;
     private readonly IConvertProvider? _convertProvider;
-    private readonly IEnvironmentContext? _environmentContext;
+    private readonly IMultiEnvironmentContext? _environmentContext;
 
     public IsolationSaveChangesFilter(IServiceProvider serviceProvider)
     {
-        _tenantContext = serviceProvider.GetService<ITenantContext>();
+        _tenantContext = serviceProvider.GetService<IMultiTenantContext>();
         _convertProvider = serviceProvider.GetService<IConvertProvider>();
-        _environmentContext = serviceProvider.GetService<IEnvironmentContext>();
+        _environmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
     }
 
     public void OnExecuting(ChangeTracker changeTracker)

@@ -112,8 +112,8 @@ public class IsolationTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
 
-        Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
-        Assert.IsTrue(!serviceProvider.GetServices<ITenantContext>().Any());
+        Assert.IsTrue(serviceProvider.GetServices<IMultiEnvironmentContext>().Count() == 1);
+        Assert.IsTrue(!serviceProvider.GetServices<IMultiTenantContext>().Any());
     }
 
     [TestMethod]
@@ -128,8 +128,8 @@ public class IsolationTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 1);
 
-        Assert.IsTrue(!serviceProvider.GetServices<IEnvironmentContext>().Any());
-        Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
+        Assert.IsTrue(!serviceProvider.GetServices<IMultiEnvironmentContext>().Any());
+        Assert.IsTrue(serviceProvider.GetServices<IMultiTenantContext>().Count() == 1);
     }
 
     [TestMethod]
@@ -146,7 +146,7 @@ public class IsolationTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IIsolationMiddleware)) == 2);
 
-        Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiEnvironmentContext>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiTenantContext>().Count() == 1);
     }
 }

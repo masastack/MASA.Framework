@@ -5,26 +5,30 @@ namespace Masa.Contrib.Isolation.MultiEnvironment.Middleware;
 
 public class MultiEnvironmentMiddleware : IIsolationMiddleware
 {
+    private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MultiEnvironmentMiddleware>? _logger;
     private readonly IEnumerable<IParserProvider> _parserProviders;
-    private readonly IEnvironmentContext _environmentContext;
-    private readonly IEnvironmentSetter _environmentSetter;
+    private readonly IMultiEnvironmentContext _environmentContext;
+    private readonly IMultiEnvironmentSetter _environmentSetter;
     private readonly IMultiEnvironmentUserContext? _environmentUserContext;
     private readonly string _environmentKey;
     private bool _handled;
 
     public MultiEnvironmentMiddleware(
         IServiceProvider serviceProvider,
-        string environmentKey,
-        IEnumerable<IParserProvider>? parserProviders)
+        string? environmentKey,
+        IEnumerable<IParserProvider>? parserProviders,
+        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null)
     {
         _serviceProvider = serviceProvider;
-        _environmentKey = environmentKey;
+        _environmentKey = environmentKey ??
+            masaAppConfigureOptions?.Value.GetVariable(nameof(MasaAppConfigureOptions.Environment))?.Variable ??
+            DEFAULT_ENVIRONMENT_NAME;
         _parserProviders = parserProviders ?? GetDefaultParserProviders();
         _logger = _serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
-        _environmentContext = _serviceProvider.GetRequiredService<IEnvironmentContext>();
-        _environmentSetter = _serviceProvider.GetRequiredService<IEnvironmentSetter>();
+        _environmentContext = _serviceProvider.GetRequiredService<IMultiEnvironmentContext>();
+        _environmentSetter = _serviceProvider.GetRequiredService<IMultiEnvironmentSetter>();
         _environmentUserContext = _serviceProvider.GetService<IMultiEnvironmentUserContext>();
     }
 
@@ -65,12 +69,14 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
     {
         return new List<IParserProvider>
         {
+            new CurrentUserEnvironmentParseProvider(),
             new HttpContextItemParserProvider(),
             new QueryStringParserProvider(),
             new FormParserProvider(),
             new RouteParserProvider(),
             new HeaderParserProvider(),
             new CookieParserProvider(),
+            new MasaAppConfigureParserProvider(),
             new EnvironmentVariablesParserProvider()
         };
     }

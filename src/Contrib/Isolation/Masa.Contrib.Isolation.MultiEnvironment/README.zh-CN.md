@@ -63,7 +63,8 @@ public class CustomDbContext : IsolationDbContext
 ### 总结
 
 * 控制器或MinimalAPI中环境如何解析？
-    * 环境默认提供了7个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离的参数：ASPNETCORE_ENVIRONMENT)
+    * 环境默认提供了9个解析器，执行顺序为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider、EnvironmentVariablesParserProvider (获取系统环境变量中的参数，默认环境隔离使用的参数值: 全局环境参数变量 (使用全局配置中默认环境参数变量) > **ASPNETCORE_ENVIRONMENT** (如果未使用`MasaConfiguration`则使用)
+      * CurrentUserEnvironmentParseProvider: 通过从当前登录用户信息中获取环境信息
       * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取环境信息
       * QueryStringParserProvider: 通过请求的QueryString获取环境信息
           * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (环境信息是development)
@@ -71,6 +72,7 @@ public class CustomDbContext : IsolationDbContext
       * RouteParserProvider: 通过路由获取环境信息
       * HeaderParserProvider: 通过请求头获取环境信息
       * CookieParserProvider: 通过Cookie获取环境信息
+      * MasaAppConfigureParserProvider: 通过全局配置获取环境信息
       * EnvironmentVariablesParserProvider: 通过系统环境变量获取环境信息
 * 如果解析器解析环境失败，那最后使用的数据库是?
     * 若解析环境失败，则直接返回DefaultConnection

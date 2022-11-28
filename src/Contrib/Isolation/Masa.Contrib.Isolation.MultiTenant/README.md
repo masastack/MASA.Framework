@@ -68,10 +68,11 @@ You can also choose not to implement IMultiTenant when using physical isolation
 ##### Summarize
 
 * How to resolve the tenant in the controller or MinimalAPI?
-  * The tenant provides 6 parsers by default, the execution order is: HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (tenant parameter default: __tenant)
+  * The tenant provides 7 parsers by default, the execution order is: HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (tenant parameter default: __tenant)
+    * CurrentUserEnvironmentParseProvider: By getting the tenant information from the currently logged in user information
     * HttpContextItemParserProvider: Obtain tenant information through the Items property of the requested HttpContext
     * QueryStringParserProvider: Get tenant information through the requested QueryString
-      * https://github.com/masastack?__tenant=1 (tenant id is 1)
+    * https://github.com/masastack?__tenant=1 (tenant id is 1)
     * FormParserProvider: Get tenant information through the Form form
     * RouteParserProvider: Get tenant information through routing
     * HeaderParserProvider: Get tenant information through request headers

@@ -5,7 +5,13 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-public interface ITenantContext
+public interface IMultiTenantSetter
 {
-    Tenant? CurrentTenant { get; }
+    void SetTenant(Tenant? tenant);
+}
+
+[Obsolete("Use IMultiTenantSetter instead")]
+public interface ITenantSetter
+{
+    void SetTenant(Tenant? tenant);
 }

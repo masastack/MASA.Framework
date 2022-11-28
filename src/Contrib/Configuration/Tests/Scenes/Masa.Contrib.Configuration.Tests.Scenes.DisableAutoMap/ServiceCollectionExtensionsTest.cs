@@ -10,9 +10,9 @@ public class ServiceCollectionExtensionsTest
     public void TestInitializeAppConfiguration()
     {
         var services = new ServiceCollection();
-        services.InitializeAppConfiguration(options =>
+        services.Configure<MasaAppConfigureOptions>(options =>
         {
-            options.SetOptionsRelation(nameof(MasaAppConfigureOptions.Environment), "Env", "test1");
+            options.SetVariableAndDefaultValue(nameof(MasaAppConfigureOptions.Environment), "Env", "test1");
         });
         services.AddMasaConfiguration(masaConfigurationBuilder =>
         {
@@ -32,9 +32,9 @@ public class ServiceCollectionExtensionsTest
     public void TestInitializeAppConfiguration2()
     {
         var services = new ServiceCollection();
-        services.InitializeAppConfiguration(options =>
+        services.Configure<MasaAppConfigureOptions>(options =>
         {
-            options.SetOptionsRelation(nameof(MasaAppConfigureOptions.Environment), "Env", "test1");
+            options.SetVariableAndDefaultValue(nameof(MasaAppConfigureOptions.Environment), "Env", "test1");
         });
         services.AddMasaConfiguration();
         var serviceProvider = services.BuildServiceProvider();

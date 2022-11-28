@@ -8,11 +8,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection InitializeAppConfiguration(this IServiceCollection services)
-        => services.InitializeAppConfiguration(null);
-
-    public static IServiceCollection InitializeAppConfiguration(
-        this IServiceCollection services,
-        Action<MasaAppConfigureOptionsRelation>? action)
     {
         if (services.Any(service => service.ImplementationType == typeof(InitializeAppConfigurationProvider)))
             return services;
@@ -21,8 +16,6 @@ public static class ServiceCollectionExtensions
 
         MasaApp.TrySetServiceCollection(services);
 
-        MasaAppConfigureOptionsRelation optionsRelation = new();
-        action?.Invoke(optionsRelation);
         IConfiguration? migrateConfiguration = null;
         bool initialized = false;
 
@@ -38,26 +31,26 @@ public static class ServiceCollectionExtensions
 
             if (string.IsNullOrWhiteSpace(options.AppId))
                 options.AppId = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.AppId)),
+                    options.GetVariable(nameof(options.AppId)),
                     sourceConfiguration,
                     migrateConfiguration);
 
             if (string.IsNullOrWhiteSpace(options.Environment))
                 options.Environment = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.Environment)),
+                    options.GetVariable(nameof(options.Environment)),
                     sourceConfiguration,
                     migrateConfiguration);
 
             if (string.IsNullOrWhiteSpace(options.Cluster))
                 options.Cluster = GetConfigurationValue(
-                    optionsRelation.GetValue(nameof(options.Cluster)),
+                    options.GetVariable(nameof(options.Cluster)),
                     sourceConfiguration,
                     migrateConfiguration);
 
-            foreach (var key in optionsRelation.GetKeys())
+            foreach (var key in options.GetVariableKeys())
             {
                 options.TryAdd(key, GetConfigurationValue(
-                    optionsRelation.GetValue(key),
+                    options.GetVariable(key),
                     sourceConfiguration,
                     migrateConfiguration));
             }
@@ -65,22 +58,24 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static string GetConfigurationValue((string Variable, string DefaultValue) defaultConfig,
+    private static string GetConfigurationValue(VariableInfo? variableInfo,
         IConfiguration? configuration,
         IConfiguration? migrateConfiguration)
     {
         var value = string.Empty;
+        if (variableInfo == null) return value;
+
         if (configuration != null)
         {
-            value = configuration[defaultConfig.Variable];
+            value = configuration[variableInfo.Variable];
             if (!string.IsNullOrWhiteSpace(value))
                 return value;
         }
 
         if (migrateConfiguration != null)
-            value = migrateConfiguration[defaultConfig.Variable];
+            value = migrateConfiguration[variableInfo.Variable];
         if (string.IsNullOrWhiteSpace(value))
-            value = defaultConfig.DefaultValue;
+            value = variableInfo.DefaultValue;
         return value;
     }
 

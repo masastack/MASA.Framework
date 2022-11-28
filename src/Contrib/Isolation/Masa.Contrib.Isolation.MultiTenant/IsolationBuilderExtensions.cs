@@ -25,9 +25,9 @@ public static class IsolationBuilderExtensions
 
         isolationBuilder.Services.AddScoped<IIsolationMiddleware>(serviceProvider => new MultiTenantMiddleware(serviceProvider, tenantName, parserProviders));
         isolationBuilder.Services.TryAddSingleton<IConvertProvider, ConvertProvider>();
-        isolationBuilder.Services.TryAddScoped<TenantContext>();
-        isolationBuilder.Services.TryAddScoped(typeof(ITenantContext), serviceProvider => serviceProvider.GetRequiredService<TenantContext>());
-        isolationBuilder.Services.TryAddScoped(typeof(ITenantSetter), serviceProvider => serviceProvider.GetRequiredService<TenantContext>());
+        isolationBuilder.Services.TryAddScoped<MultiTenantContext>();
+        isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantContext), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantSetter), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
         return isolationBuilder;
     }
 

@@ -7,15 +7,15 @@ public class DefaultDbIsolationConnectionStringProvider : IConnectionStringProvi
 {
     private readonly IUnitOfWorkAccessor _unitOfWorkAccessor;
     private readonly IOptionsSnapshot<IsolationDbConnectionOptions> _options;
-    private readonly IEnvironmentContext? _environmentContext;
-    private readonly ITenantContext? _tenantContext;
+    private readonly IMultiEnvironmentContext? _environmentContext;
+    private readonly IMultiTenantContext? _tenantContext;
     private readonly ILogger<DefaultDbIsolationConnectionStringProvider>? _logger;
 
     public DefaultDbIsolationConnectionStringProvider(
         IUnitOfWorkAccessor unitOfWorkAccessor,
         IOptionsSnapshot<IsolationDbConnectionOptions> options,
-        IEnvironmentContext? environmentContext = null,
-        ITenantContext? tenantContext = null,
+        IMultiEnvironmentContext? environmentContext = null,
+        IMultiTenantContext? tenantContext = null,
         ILogger<DefaultDbIsolationConnectionStringProvider>? logger = null)
     {
         _unitOfWorkAccessor = unitOfWorkAccessor;

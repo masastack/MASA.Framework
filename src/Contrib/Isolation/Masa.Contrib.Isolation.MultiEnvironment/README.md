@@ -62,7 +62,8 @@ You can also choose not to implement IMultiEnvironment when using physical isola
 ### Summarize
 
 * How is the environment resolved in the controller or MinimalAPI?
-    * The environment provides 7 parsers by default, and the execution order is: HttpContextItemParserProvider、 QueryStringParserProvider、 FormParserProvider、 RouteParserProvider、 HeaderParserProvider、 CookieParserProvider、 EnvironmentVariablesParserProvider (Get the parameters in the system environment variables, the parameters of the default environment isolation: ASPNETCORE_ENVIRONMENT)
+    * The environment provides 9 parsers by default, and the execution order is: HttpContextItemParserProvider, QueryStringParserProvider, FormParserProvider, RouteParserProvider, HeaderParserProvider, CookieParserProvider, EnvironmentVariablesParserProvider (to obtain the parameters in the system environment variables, the parameter values ​​used in the default environment isolation: global environment parameter variables (use global Default environment parameter variable in configuration) > **ASPNETCORE_ENVIRONMENT** (used if `MasaConfiguration` is not used)
+        * CurrentUserEnvironmentParseProvider: By getting the environment information from the currently logged in user information
         * HttpContextItemParserProvider: Get environment information through the Items property of the requested HttpContext
         * QueryStringParserProvider: Get environment information through the requested QueryString
             * https://github.com/masastack?ASPNETCORE_ENVIRONMENT=development (environment information is development)
@@ -70,6 +71,7 @@ You can also choose not to implement IMultiEnvironment when using physical isola
         * RouteParserProvider: Get environment information through routing
         * HeaderParserProvider: Get environment information through request headers
         * CookieParserProvider: Get environmental information through cookies
+        * MasaAppConfigureParserProvider: Get environment information through global configuration
         * EnvironmentVariablesParserProvider: Get environment information through system environment variables
 * If the parser fails to resolve the environment, what is the last database used?
     * If the parsing environment fails, return DefaultConnection directly

@@ -72,8 +72,8 @@ public class IsolationTest : TestBase
             dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetService<IEnvironmentContext>());
-        Assert.IsNotNull(serviceProvider.GetService<IEnvironmentSetter>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentSetter>());
     }
 
     [TestMethod]
@@ -86,8 +86,8 @@ public class IsolationTest : TestBase
             dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<IEnvironmentContext>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetServices<IEnvironmentSetter>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiEnvironmentContext>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiEnvironmentSetter>().Count() == 1);
     }
 
     [TestMethod]
@@ -99,8 +99,8 @@ public class IsolationTest : TestBase
             dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetService<ITenantContext>());
-        Assert.IsNotNull(serviceProvider.GetService<ITenantSetter>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IMultiTenantSetter>());
     }
 
     [TestMethod]
@@ -112,8 +112,8 @@ public class IsolationTest : TestBase
             dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ITenantContext>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetServices<ITenantSetter>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiTenantContext>().Count() == 1);
+        Assert.IsTrue(serviceProvider.GetServices<IMultiTenantSetter>().Count() == 1);
     }
 
     [TestMethod]
@@ -141,16 +141,16 @@ public class IsolationTest : TestBase
 
         Assert.IsNull(unitOfWorkAccessorNew.CurrentDbContextOptions);
 
-        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<ITenantContext>().CurrentTenant == null);
+        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiTenantContext>().CurrentTenant == null);
 
-        Assert.IsTrue(string.IsNullOrEmpty(unifOfWorkNew.ServiceProvider.GetRequiredService<IEnvironmentContext>().CurrentEnvironment));
+        Assert.IsTrue(string.IsNullOrEmpty(unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiEnvironmentContext>().CurrentEnvironment));
 
-        unifOfWorkNew.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
-        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<ITenantContext>().CurrentTenant!.Id ==
+        unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
+        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiTenantContext>().CurrentTenant!.Id ==
             "00000000-0000-0000-0000-000000000002");
-        unifOfWorkNew.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("dev");
+        unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("dev");
 
-        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<IEnvironmentContext>().CurrentEnvironment == "dev");
+        Assert.IsTrue(unifOfWorkNew.ServiceProvider.GetRequiredService<IMultiEnvironmentContext>().CurrentEnvironment == "dev");
 
         var dbContext = unifOfWorkNew.ServiceProvider.GetRequiredService<CustomDbContext>();
 
@@ -159,23 +159,23 @@ public class IsolationTest : TestBase
 
         var unifOfWorkNew2 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
+        unifOfWorkNew2.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("development");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test2" &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test2");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew3.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
-        unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("development");
+        unifOfWorkNew3.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
+        unifOfWorkNew3.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("development");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test2" &&
             unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test2");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew4.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
-        unifOfWorkNew4.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("production");
+        unifOfWorkNew4.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(new Tenant("00000000-0000-0000-0000-000000000002"));
+        unifOfWorkNew4.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("production");
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test3" &&
             unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test3");
@@ -219,21 +219,21 @@ public class IsolationTest : TestBase
 
         var unifOfWorkNew2 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew2.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("dev");
+        unifOfWorkNew2.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("dev");
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test5" &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test5");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew3.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("pro");
+        unifOfWorkNew3.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("pro");
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test6" &&
             unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test6");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew4.ServiceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("staging");
+        unifOfWorkNew4.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("staging");
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test4" &&
             unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test4");
@@ -277,21 +277,21 @@ public class IsolationTest : TestBase
 
         var unifOfWorkNew2 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew2.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("1"));
+        unifOfWorkNew2.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(new Tenant("1"));
         var dbContext2 = unifOfWorkNew2.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext2) == "data source=test8" &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions!.ConnectionString == "data source=test8");
 
         var unifOfWorkNew3 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew3.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(new Tenant("2"));
+        unifOfWorkNew3.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(new Tenant("2"));
         var dbContext3 = unifOfWorkNew3.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext3) == "data source=test9" &&
             unitOfWorkAccessorNew3.CurrentDbContextOptions!.ConnectionString == "data source=test9");
 
         var unifOfWorkNew4 = unitOfWorkManager.CreateDbContext(true);
         var unitOfWorkAccessorNew4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unifOfWorkNew4.ServiceProvider.GetRequiredService<ITenantSetter>().SetTenant(null!);
+        unifOfWorkNew4.ServiceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(null!);
         var dbContext4 = unifOfWorkNew4.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(GetDataBaseConnectionString(dbContext4) == "data source=test7" &&
             unitOfWorkAccessorNew4.CurrentDbContextOptions!.ConnectionString == "data source=test7");

@@ -43,8 +43,8 @@ public static class DispatcherOptionsExtensions
         isolationBuilder.Invoke(builder);
 
         if (services.Count(service =>
-                service.ServiceType == typeof(ITenantContext) ||
-                service.ServiceType == typeof(IEnvironmentContext)) < 1)
+                service.ServiceType == typeof(IMultiTenantContext) ||
+                service.ServiceType == typeof(IMultiEnvironmentContext)) < 1)
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
         services.AddHttpContextAccessor();

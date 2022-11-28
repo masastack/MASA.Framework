@@ -9,14 +9,8 @@ public static class WebApplicationBuilderExtensions
 {
     [Obsolete("Use Services.InitializeAppConfiguration() instead")]
     public static WebApplicationBuilder InitializeAppConfiguration(this WebApplicationBuilder builder)
-        => builder.InitializeAppConfiguration(null);
-
-    [Obsolete("Use Services.InitializeAppConfiguration() instead")]
-    public static WebApplicationBuilder InitializeAppConfiguration(
-        this WebApplicationBuilder builder,
-        Action<MasaAppConfigureOptionsRelation>? action)
     {
-        builder.Services.InitializeAppConfiguration(action);
+        builder.Services.InitializeAppConfiguration();
         return builder;
     }
 

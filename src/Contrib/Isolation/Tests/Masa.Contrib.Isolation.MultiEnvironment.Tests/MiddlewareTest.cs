@@ -10,11 +10,11 @@ public class MiddlewareTest
     public async Task TestMultiEnvironmentMiddlewareAsync()
     {
         var services = new ServiceCollection();
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("").Verifiable();
         services.AddScoped(_ => environmentContext.Object);
 
-        Mock<IEnvironmentSetter> environmentSetter = new();
+        Mock<IMultiEnvironmentSetter> environmentSetter = new();
         environmentSetter.Setup(context => context.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
 
@@ -38,11 +38,11 @@ public class MiddlewareTest
         var services = new ServiceCollection();
         services.AddLogging();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("").Verifiable();
         services.AddScoped(_ => environmentContext.Object);
 
-        Mock<IEnvironmentSetter> environmentSetter = new();
+        Mock<IMultiEnvironmentSetter> environmentSetter = new();
         environmentSetter.Setup(context => context.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
 
@@ -62,11 +62,11 @@ public class MiddlewareTest
     public async Task TestMultiEnvironmentMiddleware3Async()
     {
         var services = new ServiceCollection();
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("dev").Verifiable();
         services.AddScoped(_ => environmentContext.Object);
 
-        Mock<IEnvironmentSetter> environmentSetter = new();
+        Mock<IMultiEnvironmentSetter> environmentSetter = new();
         environmentSetter.Setup(context => context.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
 
@@ -88,11 +88,11 @@ public class MiddlewareTest
     public async Task TestMultiEnvironmentMiddleware4Async()
     {
         var services = new ServiceCollection();
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("").Verifiable();
         services.AddScoped(_ => environmentContext.Object);
 
-        Mock<IEnvironmentSetter> environmentSetter = new();
+        Mock<IMultiEnvironmentSetter> environmentSetter = new();
         environmentSetter.Setup(context => context.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
 
@@ -119,11 +119,11 @@ public class MiddlewareTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("").Verifiable();
         services.AddScoped(_ => environmentContext.Object);
 
-        Mock<IEnvironmentSetter> environmentSetter = new();
+        Mock<IMultiEnvironmentSetter> environmentSetter = new();
         environmentSetter.Setup(context => context.SetEnvironment(It.IsAny<string>())).Verifiable();
         services.AddScoped(_ => environmentSetter.Object);
 

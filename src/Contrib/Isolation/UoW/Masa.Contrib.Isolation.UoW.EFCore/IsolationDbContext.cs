@@ -35,13 +35,13 @@ public abstract class IsolationDbContext : IsolationDbContext<Guid>
 public abstract class IsolationDbContext<TKey> : MasaDbContext
     where TKey : IComparable
 {
-    private readonly IEnvironmentContext? _environmentContext;
-    private readonly ITenantContext? _tenantContext;
+    private readonly IMultiEnvironmentContext? _environmentContext;
+    private readonly IMultiTenantContext? _tenantContext;
 
     public IsolationDbContext(MasaDbContextOptions options) : base(options)
     {
-        _environmentContext = options.ServiceProvider?.GetService<IEnvironmentContext>();
-        _tenantContext = options.ServiceProvider?.GetService<ITenantContext>();
+        _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
+        _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
     }
 
     protected override Expression<Func<TEntity, bool>>? CreateFilterExpression<TEntity>()
