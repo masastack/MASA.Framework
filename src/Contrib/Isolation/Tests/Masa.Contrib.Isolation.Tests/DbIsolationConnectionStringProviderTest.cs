@@ -69,7 +69,7 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("pro").Verifiable();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test3;");
@@ -103,7 +103,7 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("Staging").Verifiable();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test1;");
@@ -137,7 +137,7 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("1")).Verifiable();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, null, tenantContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test2;");
@@ -171,7 +171,7 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, null, tenantContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test3;");
@@ -205,7 +205,7 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("11")).Verifiable();
         var provider = new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, null, tenantContext.Object);
         Assert.IsTrue(await provider.GetConnectionStringAsync() == "data source=test1;");
@@ -254,10 +254,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("Staging").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("11")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
@@ -307,10 +307,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("dev").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("1")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
@@ -360,10 +360,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("dev").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
@@ -413,10 +413,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("pro").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
@@ -467,10 +467,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("pro").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("2")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);
@@ -520,10 +520,10 @@ public class DbIsolationConnectionStringProviderTest
         });
         var options = _services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<IsolationDbConnectionOptions>>();
 
-        Mock<IEnvironmentContext> environmentContext = new();
+        Mock<IMultiEnvironmentContext> environmentContext = new();
         environmentContext.Setup(context => context.CurrentEnvironment).Returns("pro").Verifiable();
 
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("10")).Verifiable();
         var provider =
             new DefaultDbIsolationConnectionStringProvider(unitOfWorkAccessor, options, environmentContext.Object, tenantContext.Object);

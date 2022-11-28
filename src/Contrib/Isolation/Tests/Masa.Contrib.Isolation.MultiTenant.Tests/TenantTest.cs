@@ -15,11 +15,11 @@ public class TenantTest
         isolationBuilder.Object.UseMultiTenant();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetRequiredService<ITenantContext>().CurrentTenant == null);
+        Assert.IsTrue(serviceProvider.GetRequiredService<IMultiTenantContext>().CurrentTenant == null);
 
         var tenant = new Tenant("1");
-        serviceProvider.GetRequiredService<ITenantSetter>().SetTenant(tenant);
-        Assert.IsTrue(serviceProvider.GetRequiredService<ITenantContext>().CurrentTenant == tenant);
+        serviceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(tenant);
+        Assert.IsTrue(serviceProvider.GetRequiredService<IMultiTenantContext>().CurrentTenant == tenant);
     }
 
     [TestMethod]

@@ -15,10 +15,10 @@ public class EnvironmentTest
         isolationBuilder.Object.UseMultiEnvironment();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(string.IsNullOrEmpty(serviceProvider.GetRequiredService<IEnvironmentContext>().CurrentEnvironment));
+        Assert.IsTrue(string.IsNullOrEmpty(serviceProvider.GetRequiredService<IMultiEnvironmentContext>().CurrentEnvironment));
 
-        serviceProvider.GetRequiredService<IEnvironmentSetter>().SetEnvironment("dev");
-        Assert.IsTrue(serviceProvider.GetRequiredService<IEnvironmentContext>().CurrentEnvironment == "dev");
+        serviceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("dev");
+        Assert.IsTrue(serviceProvider.GetRequiredService<IMultiEnvironmentContext>().CurrentEnvironment == "dev");
     }
 
     [TestMethod]
@@ -32,9 +32,9 @@ public class EnvironmentTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetService<IIsolationMiddleware>() != null);
         Assert.IsTrue(serviceProvider.GetServices<IIsolationMiddleware>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetService<EnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentSetter>() != null);
+        Assert.IsTrue(serviceProvider.GetService<MultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentSetter>() != null);
     }
 
     [TestMethod]
@@ -48,9 +48,9 @@ public class EnvironmentTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetService<IIsolationMiddleware>() != null);
         Assert.IsTrue(serviceProvider.GetServices<IIsolationMiddleware>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetService<EnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentSetter>() != null);
+        Assert.IsTrue(serviceProvider.GetService<MultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentSetter>() != null);
     }
 
     [TestMethod]
@@ -64,8 +64,8 @@ public class EnvironmentTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetService<IIsolationMiddleware>() != null);
         Assert.IsTrue(serviceProvider.GetServices<IIsolationMiddleware>().Count() == 1);
-        Assert.IsTrue(serviceProvider.GetService<EnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentContext>() != null);
-        Assert.IsTrue(serviceProvider.GetService<IEnvironmentSetter>() != null);
+        Assert.IsTrue(serviceProvider.GetService<MultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentContext>() != null);
+        Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentSetter>() != null);
     }
 }

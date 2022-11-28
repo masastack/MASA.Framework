@@ -10,12 +10,12 @@ public class MiddlewareTest
     public async Task TestMultiTenantMiddlewareAsync()
     {
         var services = new ServiceCollection();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         Tenant tenant = null!;
         tenantContext.Setup(context => context.CurrentTenant).Returns(tenant).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -36,11 +36,11 @@ public class MiddlewareTest
     public async Task TestMultiTenantMiddleware2Async()
     {
         var services = new ServiceCollection();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("1")).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -61,12 +61,12 @@ public class MiddlewareTest
     public async Task TestMultiTenantMiddleware3Async()
     {
         var services = new ServiceCollection();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         Tenant tenant = null!;
         tenantContext.Setup(context => context.CurrentTenant).Returns(tenant).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -98,7 +98,7 @@ public class MiddlewareTest
         Mock<IIsolationBuilder> isolationBuilder = new();
         isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
         string tenantKey = "tenant";
@@ -136,7 +136,7 @@ public class MiddlewareTest
         Mock<IIsolationBuilder> isolationBuilder = new();
         isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -173,7 +173,7 @@ public class MiddlewareTest
         Mock<IIsolationBuilder> isolationBuilder = new();
         isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -205,12 +205,12 @@ public class MiddlewareTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         Tenant tenant = null!;
         tenantContext.Setup(context => context.CurrentTenant).Returns(tenant).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -231,12 +231,12 @@ public class MiddlewareTest
     public async Task TestMultiTenantMiddleware8Async()
     {
         var services = new ServiceCollection();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         Tenant tenant = null!;
         tenantContext.Setup(context => context.CurrentTenant).Returns(tenant).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -269,7 +269,7 @@ public class MiddlewareTest
         Mock<IIsolationBuilder> isolationBuilder = new();
         isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -301,12 +301,12 @@ public class MiddlewareTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         Tenant tenant = null!;
         tenantContext.Setup(context => context.CurrentTenant).Returns(tenant).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 
@@ -336,11 +336,11 @@ public class MiddlewareTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        Mock<ITenantContext> tenantContext = new();
+        Mock<IMultiTenantContext> tenantContext = new();
         tenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant("1")).Verifiable();
         services.AddScoped(_ => tenantContext.Object);
 
-        Mock<ITenantSetter> tenantSetter = new();
+        Mock<IMultiTenantSetter> tenantSetter = new();
         tenantSetter.Setup(context => context.SetTenant(It.IsAny<Tenant>())).Verifiable();
         services.AddScoped(_ => tenantSetter.Object);
 

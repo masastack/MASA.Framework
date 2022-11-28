@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation.MultiEnvironment;
 
-public class EnvironmentContext : IEnvironmentContext, IEnvironmentSetter
+public class MultiEnvironmentContext : IMultiEnvironmentContext, IMultiEnvironmentSetter
 {
     public string CurrentEnvironment { get; private set; } = string.Empty;
 

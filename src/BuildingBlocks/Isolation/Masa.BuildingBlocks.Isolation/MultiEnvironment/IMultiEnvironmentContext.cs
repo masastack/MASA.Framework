@@ -5,6 +5,12 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
+public interface IMultiEnvironmentContext
+{
+    string CurrentEnvironment { get; }
+}
+
+[Obsolete("Use IMultiEnvironmentContext instead")]
 public interface IEnvironmentContext
 {
     string CurrentEnvironment { get; }

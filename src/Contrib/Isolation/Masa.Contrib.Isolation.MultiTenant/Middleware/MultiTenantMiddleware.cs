@@ -8,8 +8,8 @@ public class MultiTenantMiddleware : IIsolationMiddleware
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MultiTenantMiddleware>? _logger;
     private readonly IEnumerable<IParserProvider> _parserProviders;
-    private readonly ITenantContext _tenantContext;
-    private readonly ITenantSetter _tenantSetter;
+    private readonly IMultiTenantContext _tenantContext;
+    private readonly IMultiTenantSetter _tenantSetter;
     private readonly IMultiTenantUserContext? _tenantUserContext;
     private readonly string _tenantKey;
     private bool _handled;
@@ -23,8 +23,8 @@ public class MultiTenantMiddleware : IIsolationMiddleware
         _tenantKey = tenantKey;
         _parserProviders = parserProviders ?? GetDefaultParserProviders();
         _logger = _serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
-        _tenantContext = _serviceProvider.GetRequiredService<ITenantContext>();
-        _tenantSetter = _serviceProvider.GetRequiredService<ITenantSetter>();
+        _tenantContext = _serviceProvider.GetRequiredService<IMultiTenantContext>();
+        _tenantSetter = _serviceProvider.GetRequiredService<IMultiTenantSetter>();
         _tenantUserContext = _serviceProvider.GetService<IMultiTenantUserContext>();
     }
 
@@ -66,6 +66,7 @@ public class MultiTenantMiddleware : IIsolationMiddleware
     {
         return new List<IParserProvider>
         {
+            new CurrentUserTenantParseProvider(),
             new HttpContextItemParserProvider(),
             new QueryStringParserProvider(),
             new FormParserProvider(),

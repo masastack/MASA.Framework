@@ -68,10 +68,11 @@ public class CustomDbContext : IsolationDbContext
 ##### 总结
 
 * 控制器或MinimalAPI中租户如何解析？
-  * 租户默认提供了6个解析器，执行顺序分别为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (租户参数默认：__tenant)
+  * 租户默认提供了7个解析器，执行顺序分别为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (租户参数默认：__tenant)
+    * CurrentUserEnvironmentParseProvider: 通过从当前登录用户信息中获取租户信息
     * HttpContextItemParserProvider: 通过请求的HttpContext的Items属性获取租户信息
     * QueryStringParserProvider: 通过请求的QueryString获取租户信息
-      * https://github.com/masastack?__tenant=1 (租户id为1)
+    * https://github.com/masastack?__tenant=1 (租户id为1)
     * FormParserProvider: 通过Form表单获取租户信息
     * RouteParserProvider: 通过路由获取租户信息
     * HeaderParserProvider: 通过请求头获取租户信息

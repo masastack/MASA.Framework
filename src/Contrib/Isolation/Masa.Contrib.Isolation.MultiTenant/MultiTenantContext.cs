@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation.MultiTenant;
 
-public class TenantContext : ITenantContext, ITenantSetter
+public class MultiTenantContext : IMultiTenantContext, IMultiTenantSetter
 {
     public Tenant? CurrentTenant { get; private set; }
 

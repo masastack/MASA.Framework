@@ -7,11 +7,11 @@ public class RegisterUserEventHandler
 {
     private readonly CustomDbContext _customDbContext;
     private readonly IDataFilter _dataFilter;
-    private readonly IEnvironmentSetter _environmentSetter;
-    private readonly IEnvironmentContext _environmentContext;
+    private readonly IMultiEnvironmentSetter _environmentSetter;
+    private readonly IMultiEnvironmentContext _environmentContext;
 
-    public RegisterUserEventHandler(CustomDbContext customDbContext, IDataFilter dataFilter, IEnvironmentSetter environmentSetter,
-        IEnvironmentContext environmentContext)
+    public RegisterUserEventHandler(CustomDbContext customDbContext, IDataFilter dataFilter, IMultiEnvironmentSetter environmentSetter,
+        IMultiEnvironmentContext environmentContext)
     {
         _customDbContext = customDbContext;
         _dataFilter = dataFilter;
