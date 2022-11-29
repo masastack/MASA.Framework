@@ -7,7 +7,8 @@ internal static class ServiceCollectionRepositoryExtensions
 {
     public static IServiceCollection TryAddRepository<TDbContext>(
         this IServiceCollection services,
-        params Assembly[] assemblies)
+        Assembly[] assemblies,
+        IEnumerable<Type>? types)
         where TDbContext : DbContext, IMasaDbContext
     {
         if (assemblies == null || assemblies.Length == 0)
@@ -16,7 +17,7 @@ internal static class ServiceCollectionRepositoryExtensions
         }
 
         var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
-        var entityTypes = allTypes.Where(type => type.IsEntity());
+        var entityTypes = types ?? allTypes.Where(type => type.IsEntity());
         foreach (var entityType in entityTypes)
         {
             var repositoryInterfaceType = typeof(IRepository<>).MakeGenericType(entityType);
