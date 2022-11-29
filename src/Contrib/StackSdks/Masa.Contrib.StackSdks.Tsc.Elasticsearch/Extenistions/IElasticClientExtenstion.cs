@@ -41,12 +41,10 @@ internal static class IElasticClientExtenstion
     /// <returns></returns>
     public static async Task<IEnumerable<MappingResponseDto>> GetMappingAsync(this ICaller caller, string indexName, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(indexName);
         var path = $"/{indexName}/_mapping";
         var result = await caller.GetAsync<object>(path, false, token);
         var json = (JsonElement)result!;
-        if (!json.TryGetProperty(indexName, out JsonElement root) ||
-            !root.TryGetProperty("mappings", out JsonElement mapping))
+        if (!json.TryGetProperty(indexName, out JsonElement root) || !root.TryGetProperty("mappings", out JsonElement mapping))
         {
             return default!;
         }
@@ -356,7 +354,7 @@ internal static class IElasticClientExtenstion
 
     private static SearchDescriptor<TResult> AddAggregate<TResult, TQuery>(this SearchDescriptor<TResult> searchDescriptor, TQuery aggModel, bool isLog) where TResult : class where TQuery : SimpleAggregateRequestDto
     {
-        Func<AggregationContainerDescriptor<TResult>, IAggregationContainer> aggregateFunc = null;
+        Func<AggregationContainerDescriptor<TResult>, IAggregationContainer>? aggregateFunc = null;
         var mappings = isLog ? ElasticConstant.Log.Mappings.Value : ElasticConstant.Trace.Mappings.Value;
         var mapping = mappings.FirstOrDefault(m => string.Equals(m.Name, aggModel.Name, StringComparison.OrdinalIgnoreCase));
         CreateFieldKeyword(aggModel.Name, mapping, out var field, out var keyword);
