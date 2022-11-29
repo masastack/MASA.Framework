@@ -103,6 +103,77 @@ public class DbContextTest : TestBase
     }
 
     [TestMethod]
+    public async Task TestAddMultiDbContextAsync()
+    {
+        var services = new ServiceCollection();
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        string connectionStringByQuery = connectionString;
+        services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseTestSqlite(connectionStringByQuery).UseFilter());
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        await queryDbContext.Database.EnsureCreatedAsync();
+
+        var student = new Student()
+        {
+            Id = 1,
+            Name = "Jim",
+            Age = 18,
+            Address = new Address()
+            {
+                City = "ShangHai",
+                Street = "PuDong",
+            },
+            Hobbies = new List<Hobby>()
+            {
+                new()
+                {
+                    Name = "Sing",
+                    Description = "loves singing"
+                },
+                new()
+                {
+                    Name = "Game",
+                    Description = "mobile game"
+                }
+            }
+        };
+        await dbContext.Set<Student>().AddAsync(student);
+        await dbContext.SaveChangesAsync();
+        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
+
+        Assert.IsTrue(await queryDbContext.Set<Student>().AnyAsync());
+
+        student = await dbContext.Set<Student>().Include(s => s.Address).Include(s => s.Hobbies).FirstAsync();
+        dbContext.Set<Student>().Remove(student);
+        await dbContext.SaveChangesAsync();
+
+        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
+        Assert.IsTrue(await queryDbContext.Set<Student>().CountAsync() == 0);
+
+        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
+        using (dataFilter.Disable<ISoftDelete>())
+        {
+            Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
+            Assert.IsTrue(await queryDbContext.Set<Student>().CountAsync() == 1);
+
+            student = (await dbContext.Set<Student>().Include(s => s.Address).FirstOrDefaultAsync())!;
+            Assert.IsTrue(student.Id == 1);
+            Assert.IsTrue(student.Name == "Jim");
+            Assert.IsTrue(student.Age == 18);
+            Assert.IsTrue(student.IsDeleted);
+            Assert.IsTrue(student.Address.City == "ShangHai");
+            Assert.IsTrue(student.Address.Street == "PuDong");
+
+            Assert.IsTrue(student.Hobbies.Count == 2);
+            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Sing"));
+            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Game"));
+        }
+    }
+
+    [TestMethod]
     public async Task TestDisabledSoftDelete()
     {
         Services.AddMasaDbContext<CustomDbContext>(options

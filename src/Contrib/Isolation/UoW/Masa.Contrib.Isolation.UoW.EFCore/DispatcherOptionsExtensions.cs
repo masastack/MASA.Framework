@@ -35,7 +35,7 @@ public static class DispatcherOptionsExtensions
         where TTenantId : IComparable
         where TUserId : IComparable
     {
-        eventBusBuilder.Services.UseIsolationUoW<TTenantId>();
+        eventBusBuilder.Services.UseIsolationUoW<TDbContext, TTenantId>();
         return eventBusBuilder.UseIsolation(isolationBuilder)
             .UseUoW<TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
     }
@@ -70,12 +70,15 @@ public static class DispatcherOptionsExtensions
         where TTenantId : IComparable
         where TUserId : IComparable
     {
-        options.Services.UseIsolationUoW<TTenantId>();
+        options.Services.UseIsolationUoW<TDbContext, TTenantId>();
         return options.UseIsolation(isolationBuilder)
             .UseUoW<TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
     }
 
-    private static void UseIsolationUoW<TTenantId>(this IServiceCollection services) where TTenantId : IComparable
-        => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter), typeof(IsolationSaveChangesFilter<TTenantId>),
+    private static void UseIsolationUoW<TDbContext, TTenantId>(this IServiceCollection services)
+        where TTenantId : IComparable
+        where TDbContext : MasaDbContext, IMasaDbContext
+        => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContext>),
+            typeof(IsolationSaveChangesFilter<TDbContext, TTenantId>),
             ServiceLifetime.Scoped));
 }

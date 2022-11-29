@@ -5,8 +5,8 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
-public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter
-    where TDbContext : DbContext
+public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
+    where TDbContext : MasaDbContext, IMasaDbContext
 {
     private readonly Type _userIdType;
     private readonly IUserContext? _userContext;

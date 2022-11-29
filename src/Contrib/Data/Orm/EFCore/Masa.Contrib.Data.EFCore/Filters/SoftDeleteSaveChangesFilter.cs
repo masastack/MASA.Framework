@@ -5,8 +5,8 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
-public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter
-    where TDbContext : DbContext, IMasaDbContext
+public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
+    where TDbContext : MasaDbContext, IMasaDbContext
     where TUserId : IComparable
 {
     private readonly Type _userIdType;
