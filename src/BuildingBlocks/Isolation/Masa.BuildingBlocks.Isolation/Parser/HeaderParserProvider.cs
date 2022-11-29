@@ -7,9 +7,8 @@ public class HeaderParserProvider : IParserProvider
 {
     public string Name => "Header";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
         if (httpContext?.Request.Headers.ContainsKey(key) ?? false)
         {
             var value = httpContext.Request.Headers[key].ToString();

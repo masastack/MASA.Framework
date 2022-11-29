@@ -9,9 +9,9 @@ public class MasaAppConfigureParserProvider : IParserProvider
 {
     public string Name => "MasaAppConfigure";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var environment = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value?.Environment;
+        var environment = httpContext?.RequestServices?.GetService<IOptions<MasaAppConfigureOptions>>()?.Value?.Environment;
         if (!string.IsNullOrWhiteSpace(environment))
         {
             action.Invoke(environment);

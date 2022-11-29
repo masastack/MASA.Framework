@@ -7,5 +7,5 @@ public interface IParserProvider
 {
     string Name { get; }
 
-    Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action);
+    Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action);
 }

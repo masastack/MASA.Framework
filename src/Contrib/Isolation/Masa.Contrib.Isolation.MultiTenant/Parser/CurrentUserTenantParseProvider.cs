@@ -9,9 +9,9 @@ public class CurrentUserTenantParseProvider : IParserProvider
 {
     public string Name => "CurrentUser";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var multiTenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
+        var multiTenantUserContext = httpContext?.RequestServices?.GetService<IMultiTenantUserContext>();
         var tenantId = multiTenantUserContext?.TenantId;
         if (!string.IsNullOrWhiteSpace(tenantId))
         {

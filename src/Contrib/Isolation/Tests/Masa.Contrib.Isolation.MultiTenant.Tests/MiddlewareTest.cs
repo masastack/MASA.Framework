@@ -21,15 +21,15 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string tenantKey = "tenant";
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, parserProviders);
-        await middleware.HandleAsync();
-        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
+        await middleware.HandleAsync(null);
+        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
     }
 
     [TestMethod]
@@ -46,15 +46,15 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string tenantKey = "tenant";
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, parserProviders);
-        await middleware.HandleAsync();
-        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
+        await middleware.HandleAsync(null);
+        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
     }
 
     [TestMethod]
@@ -71,7 +71,7 @@ public class MiddlewareTest
         services.AddScoped(_ => tenantSetter.Object);
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
@@ -83,11 +83,12 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { tenantKey, "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, null);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
     }
 
@@ -106,7 +107,7 @@ public class MiddlewareTest
         isolationBuilder.Object.UseMultiTenant(tenantKey);
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         var httpContextAccessor = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>()!;
@@ -117,15 +118,16 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { tenantKey, "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
 
         var middleware = services.BuildServiceProvider().GetRequiredService<IIsolationMiddleware>();
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
 
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
     }
 
@@ -143,7 +145,7 @@ public class MiddlewareTest
         isolationBuilder.Object.UseMultiTenant();
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         var httpContextAccessor = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>()!;
@@ -154,15 +156,16 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { "__tenant", "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
 
         var middleware = services.BuildServiceProvider().GetRequiredService<IIsolationMiddleware>();
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
 
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
     }
 
@@ -180,7 +183,7 @@ public class MiddlewareTest
         isolationBuilder.Object.UseMultiTenant(new List<IParserProvider>());
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         var httpContextAccessor = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>()!;
@@ -191,12 +194,13 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { "__tenant", "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
 
         var middleware = services.BuildServiceProvider().GetRequiredService<IIsolationMiddleware>();
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
     }
 
@@ -216,15 +220,15 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string tenantKey = "tenant";
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, parserProviders);
-        await middleware.HandleAsync();
-        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
+        await middleware.HandleAsync(null);
+        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
     }
 
     [TestMethod]
@@ -241,7 +245,7 @@ public class MiddlewareTest
         services.AddScoped(_ => tenantSetter.Object);
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
@@ -253,11 +257,12 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { tenantKey, "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, null);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
     }
 
@@ -276,7 +281,7 @@ public class MiddlewareTest
         isolationBuilder.Object.UseMultiTenant(new List<IParserProvider>());
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         var httpContextAccessor = services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>()!;
@@ -287,12 +292,13 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { "__tenant", "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
 
         var middleware = services.BuildServiceProvider().GetRequiredService<IIsolationMiddleware>();
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Never);
     }
 
@@ -311,7 +317,7 @@ public class MiddlewareTest
         services.AddScoped(_ => tenantSetter.Object);
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
 
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
@@ -323,11 +329,12 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { tenantKey, "1" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, null);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         tenantSetter.Verify(setter => setter.SetTenant(It.IsAny<Tenant>()), Times.Once);
     }
 
@@ -346,14 +353,14 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string tenantKey = "tenant";
         var middleware = new MultiTenantMiddleware(services.BuildServiceProvider(), tenantKey, parserProviders);
-        await middleware.HandleAsync();
-        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
+        await middleware.HandleAsync(null);
+        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
     }
 }

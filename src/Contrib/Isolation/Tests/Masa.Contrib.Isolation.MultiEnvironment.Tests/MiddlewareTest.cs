@@ -20,16 +20,16 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string environmentKey = "env";
         var middleware = new MultiEnvironmentMiddleware(services.BuildServiceProvider(), environmentKey, parserProviders);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(null);
         parserProvider.Verify(
-            provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
+            provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
     }
 
     [TestMethod]
@@ -47,15 +47,15 @@ public class MiddlewareTest
         services.AddScoped(_ => environmentSetter.Object);
 
         Mock<IParserProvider> parserProvider = new();
-        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>())).Verifiable();
+        parserProvider.Setup(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>())).Verifiable();
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string environmentKey = "env";
         var middleware = new MultiEnvironmentMiddleware(services.BuildServiceProvider(), environmentKey, parserProviders);
-        await middleware.HandleAsync();
-        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
+        await middleware.HandleAsync(null);
+        parserProvider.Verify(provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Once);
     }
 
     [TestMethod]
@@ -72,16 +72,16 @@ public class MiddlewareTest
 
         Mock<IParserProvider> parserProvider = new();
         parserProvider.Setup(provider
-            => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
+            => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()));
         List<IParserProvider> parserProviders = new List<IParserProvider>
         {
             parserProvider.Object
         };
         string environmentKey = "env";
         var middleware = new MultiEnvironmentMiddleware(services.BuildServiceProvider(), environmentKey, parserProviders);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(null);
         parserProvider.Verify(
-            provider => provider.ResolveAsync(It.IsAny<IServiceProvider>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
+            provider => provider.ResolveAsync(It.IsAny<HttpContext>(), It.IsAny<string>(), It.IsAny<Action<string>>()), Times.Never);
     }
 
     [TestMethod]
@@ -106,11 +106,12 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { environmentKey, "dev" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
         var middleware = new MultiEnvironmentMiddleware(services.BuildServiceProvider(), environmentKey, null);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         environmentSetter.Verify(setter => setter.SetEnvironment(It.IsAny<string>()), Times.Once);
     }
 
@@ -137,11 +138,12 @@ public class MiddlewareTest
                 Items = new Dictionary<object, object?>
                 {
                     { environmentKey, "dev" }
-                }
+                },
+                RequestServices = services.BuildServiceProvider()
             }
         };
         var middleware = new MultiEnvironmentMiddleware(services.BuildServiceProvider(), environmentKey, null);
-        await middleware.HandleAsync();
+        await middleware.HandleAsync(httpContextAccessor.HttpContext);
         environmentSetter.Verify(setter => setter.SetEnvironment(It.IsAny<string>()), Times.Once);
     }
 }

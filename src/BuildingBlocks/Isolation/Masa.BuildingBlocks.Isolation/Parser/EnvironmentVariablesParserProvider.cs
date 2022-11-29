@@ -7,9 +7,9 @@ public class EnvironmentVariablesParserProvider : IParserProvider
 {
     public string Name { get; } = "EnvironmentVariables";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        string? value = System.Environment.GetEnvironmentVariable(key);
+        string? value = Environment.GetEnvironmentVariable(key);
         if (!string.IsNullOrEmpty(value))
         {
             action.Invoke(value);

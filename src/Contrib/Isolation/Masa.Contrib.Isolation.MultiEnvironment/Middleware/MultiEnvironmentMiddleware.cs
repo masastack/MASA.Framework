@@ -6,7 +6,6 @@ namespace Masa.Contrib.Isolation.MultiEnvironment.Middleware;
 public class MultiEnvironmentMiddleware : IIsolationMiddleware
 {
     private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
-    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MultiEnvironmentMiddleware>? _logger;
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly IMultiEnvironmentContext _environmentContext;
@@ -21,18 +20,17 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
         IEnumerable<IParserProvider>? parserProviders,
         IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null)
     {
-        _serviceProvider = serviceProvider;
         _environmentKey = environmentKey ??
             masaAppConfigureOptions?.Value.GetVariable(nameof(MasaAppConfigureOptions.Environment))?.Variable ??
             DEFAULT_ENVIRONMENT_NAME;
         _parserProviders = parserProviders ?? GetDefaultParserProviders();
-        _logger = _serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
-        _environmentContext = _serviceProvider.GetRequiredService<IMultiEnvironmentContext>();
-        _environmentSetter = _serviceProvider.GetRequiredService<IMultiEnvironmentSetter>();
-        _environmentUserContext = _serviceProvider.GetService<IMultiEnvironmentUserContext>();
+        _logger = serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
+        _environmentContext = serviceProvider.GetRequiredService<IMultiEnvironmentContext>();
+        _environmentSetter = serviceProvider.GetRequiredService<IMultiEnvironmentSetter>();
+        _environmentUserContext = serviceProvider.GetService<IMultiEnvironmentUserContext>();
     }
 
-    public async Task HandleAsync()
+    public async Task HandleAsync(HttpContext? httpContext)
     {
         if (_handled)
             return;
@@ -53,7 +51,7 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
         foreach (var environmentParserProvider in _parserProviders)
         {
             parsers.Add(environmentParserProvider.Name);
-            if (await environmentParserProvider.ResolveAsync(_serviceProvider, _environmentKey,
+            if (await environmentParserProvider.ResolveAsync(httpContext, _environmentKey,
                     environment => _environmentSetter.SetEnvironment(environment)))
             {
                 _logger?.LogDebug("The environment is successfully resolved, and the resolver is: {Resolvers}", string.Join("、 ", parsers));

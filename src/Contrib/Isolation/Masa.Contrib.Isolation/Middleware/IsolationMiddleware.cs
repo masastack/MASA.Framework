@@ -6,17 +6,19 @@ namespace Masa.Contrib.Isolation.Middleware;
 public class IsolationMiddleware<TEvent> : Middleware<TEvent> where TEvent : IEvent
 {
     private readonly IEnumerable<IIsolationMiddleware> _middlewares;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IsolationMiddleware(IEnumerable<IIsolationMiddleware> middlewares)
+    public IsolationMiddleware(IEnumerable<IIsolationMiddleware> middlewares, IHttpContextAccessor httpContextAccessor)
     {
         _middlewares = middlewares;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
     {
         foreach (var middleware in _middlewares)
         {
-            await middleware.HandleAsync();
+            await middleware.HandleAsync(_httpContextAccessor.HttpContext);
         }
 
         await next();
@@ -36,7 +38,7 @@ public class IsolationMiddleware
     {
         foreach (var middleware in middlewares)
         {
-            await middleware.HandleAsync();
+            await middleware.HandleAsync(httpContext);
         }
 
         await _next(httpContext);
