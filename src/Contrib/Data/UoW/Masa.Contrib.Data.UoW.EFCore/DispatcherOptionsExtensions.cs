@@ -21,7 +21,10 @@ public static class DispatcherOptionsExtensions
         where TDbContext : MasaDbContext, IMasaDbContext
         where TUserId : IComparable
     {
-        eventBusBuilder.Services.UseUoW<TDbContext, TUserId>(nameof(eventBusBuilder.Services), optionsBuilder, disableRollbackOnFailure,
+        eventBusBuilder.Services.UseUoW<TDbContext, TUserId>(
+            nameof(eventBusBuilder.Services),
+            optionsBuilder,
+            disableRollbackOnFailure,
             useTransaction);
         return eventBusBuilder;
     }

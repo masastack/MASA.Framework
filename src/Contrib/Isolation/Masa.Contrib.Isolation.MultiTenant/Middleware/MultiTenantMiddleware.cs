@@ -5,7 +5,6 @@ namespace Masa.Contrib.Isolation.MultiTenant.Middleware;
 
 public class MultiTenantMiddleware : IIsolationMiddleware
 {
-    private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MultiTenantMiddleware>? _logger;
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly IMultiTenantContext _tenantContext;
@@ -19,16 +18,15 @@ public class MultiTenantMiddleware : IIsolationMiddleware
         string tenantKey,
         IEnumerable<IParserProvider>? parserProviders)
     {
-        _serviceProvider = serviceProvider;
         _tenantKey = tenantKey;
         _parserProviders = parserProviders ?? GetDefaultParserProviders();
-        _logger = _serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
-        _tenantContext = _serviceProvider.GetRequiredService<IMultiTenantContext>();
-        _tenantSetter = _serviceProvider.GetRequiredService<IMultiTenantSetter>();
-        _tenantUserContext = _serviceProvider.GetService<IMultiTenantUserContext>();
+        _logger = serviceProvider.GetService<ILogger<MultiTenantMiddleware>>();
+        _tenantContext = serviceProvider.GetRequiredService<IMultiTenantContext>();
+        _tenantSetter = serviceProvider.GetRequiredService<IMultiTenantSetter>();
+        _tenantUserContext = serviceProvider.GetService<IMultiTenantUserContext>();
     }
 
-    public async Task HandleAsync()
+    public async Task HandleAsync(HttpContext? httpContext)
     {
         if (_handled)
             return;
@@ -50,7 +48,7 @@ public class MultiTenantMiddleware : IIsolationMiddleware
         foreach (var tenantParserProvider in _parserProviders)
         {
             parsers.Add(tenantParserProvider.Name);
-            if (await tenantParserProvider.ResolveAsync(_serviceProvider, _tenantKey,
+            if (await tenantParserProvider.ResolveAsync(httpContext, _tenantKey,
                     tenantId => _tenantSetter.SetTenant(new Tenant(tenantId))))
             {
                 _logger?.LogDebug("The tenant is successfully resolved, and the resolver is: {Resolvers}", string.Join("、 ", parsers));

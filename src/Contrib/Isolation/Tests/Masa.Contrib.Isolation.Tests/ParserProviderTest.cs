@@ -24,14 +24,15 @@ public class ParserProviderTest
                         tenantKey, "1"
                     }
                 }
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new CookieParserProvider();
         Assert.IsTrue(provider.Name == "Cookie");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-         {
-             Assert.IsTrue(tenantId == "1");
-         });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -48,10 +49,13 @@ public class ParserProviderTest
             Request =
             {
                 Cookies = new RequestCookieCollection()
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new CookieParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ => { });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -62,7 +66,9 @@ public class ParserProviderTest
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
         var provider = new CookieParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ => { });
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>().HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -83,14 +89,15 @@ public class ParserProviderTest
                         { tenantKey, "1" }
                     }
                 )
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new FormParserProvider();
         Assert.IsTrue(provider.Name == "Form");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-          {
-              Assert.IsTrue(tenantId == "1");
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -107,12 +114,13 @@ public class ParserProviderTest
             Request =
             {
                 Form = new FormCollection(new Dictionary<string, StringValues>())
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new FormParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-         {
-         });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -129,13 +137,14 @@ public class ParserProviderTest
             Request =
             {
                 QueryString = QueryString.Create(tenantKey, "1")
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new FormParserProvider();
         Assert.IsTrue(provider.Name == "Form");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-         {
-         });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -155,14 +164,15 @@ public class ParserProviderTest
                 {
                     { tenantKey, "1" }
                 }
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new HeaderParserProvider();
         Assert.IsTrue(provider.Name == "Header");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-          {
-              Assert.IsTrue(tenantId == "1");
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -179,12 +189,13 @@ public class ParserProviderTest
             Request =
             {
                 Headers = { }
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new HeaderParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -201,14 +212,15 @@ public class ParserProviderTest
             Items = new Dictionary<object, object?>
             {
                 { tenantKey, "1" }
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new HttpContextItemParserProvider();
         Assert.IsTrue(provider.Name == "Items");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-          {
-              Assert.IsTrue(tenantId == "1");
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -225,9 +237,9 @@ public class ParserProviderTest
             Items = new Dictionary<object, object?>()
         };
         var provider = new HttpContextItemParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -238,9 +250,9 @@ public class ParserProviderTest
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
         var provider = new HttpContextItemParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>().HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -254,14 +266,15 @@ public class ParserProviderTest
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext
         {
-            Request = { QueryString = QueryString.Create(tenantKey, "1") }
+            Request = { QueryString = QueryString.Create(tenantKey, "1") },
+            RequestServices = serviceProvider
         };
         var provider = new QueryStringParserProvider();
         Assert.IsTrue(provider.Name == "QueryString");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-          {
-              Assert.IsTrue(tenantId == "1");
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -275,12 +288,13 @@ public class ParserProviderTest
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
         httpContextAccessor.HttpContext = new DefaultHttpContext
         {
-            Request = { QueryString = new QueryString() }
+            Request = { QueryString = new QueryString() },
+            RequestServices = serviceProvider
         };
         var provider = new QueryStringParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -291,9 +305,9 @@ public class ParserProviderTest
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
         var provider = new QueryStringParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>().HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -313,14 +327,15 @@ public class ParserProviderTest
                 {
                     { tenantKey, "1" }
                 }
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new RouteParserProvider();
         Assert.IsTrue(provider.Name == "Route");
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, tenantId =>
-          {
-              Assert.IsTrue(tenantId == "1");
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, tenantId =>
+        {
+            Assert.IsTrue(tenantId == "1");
+        });
         Assert.IsTrue(handler);
     }
 
@@ -337,12 +352,13 @@ public class ParserProviderTest
             Request =
             {
                 RouteValues = new RouteValueDictionary()
-            }
+            },
+            RequestServices = serviceProvider
         };
         var provider = new RouteParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(httpContextAccessor.HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -353,9 +369,9 @@ public class ParserProviderTest
         services.AddHttpContextAccessor();
         string tenantKey = "tenant";
         var provider = new RouteParserProvider();
-        var handler = await provider.ResolveAsync(services.BuildServiceProvider(), tenantKey, _ =>
-          {
-          });
+        var handler = await provider.ResolveAsync(services.BuildServiceProvider().GetRequiredService<IHttpContextAccessor>().HttpContext, tenantKey, _ =>
+        {
+        });
         Assert.IsFalse(handler);
     }
 
@@ -365,12 +381,11 @@ public class ParserProviderTest
         var services = new ServiceCollection();
         string environmentKey = "env";
         System.Environment.SetEnvironmentVariable(environmentKey, "dev");
-        var serviceProvider = services.BuildServiceProvider();
         var environmentVariablesParserProvider = new EnvironmentVariablesParserProvider();
-        var handler = await environmentVariablesParserProvider.ResolveAsync(serviceProvider, environmentKey, environment =>
-          {
-              Assert.IsTrue(environment == "dev");
-          });
+        var handler = await environmentVariablesParserProvider.ResolveAsync(null, environmentKey, environment =>
+        {
+            Assert.IsTrue(environment == "dev");
+        });
         Assert.IsTrue(environmentVariablesParserProvider.Name == "EnvironmentVariables");
         Assert.IsTrue(handler);
     }

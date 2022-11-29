@@ -7,9 +7,8 @@ public class QueryStringParserProvider : IParserProvider
 {
     public string Name => "QueryString";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
         if (httpContext?.Request.Query.ContainsKey(key) ?? false)
         {
             var value = httpContext.Request.Query[key].ToString();

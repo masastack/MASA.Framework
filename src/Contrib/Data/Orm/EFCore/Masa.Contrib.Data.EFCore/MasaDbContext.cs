@@ -86,7 +86,7 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
     protected virtual void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
     {
-        var methodInfo = typeof(MasaDbContext).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
+        var methodInfo = GetType().GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
@@ -221,20 +221,9 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 }
 
 public abstract class MasaDbContext<TDbContext> : MasaDbContext
-    where TDbContext : DbContext, IMasaDbContext
+    where TDbContext : MasaDbContext, IMasaDbContext
 {
     protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
-    }
-
-    protected override void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
-    {
-        var methodInfo =
-            typeof(MasaDbContext<TDbContext>).GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
-
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[] { modelBuilder, entityType });
-        }
     }
 }

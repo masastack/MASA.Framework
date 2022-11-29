@@ -31,4 +31,19 @@ public class TestBase
         dbContext.Database.EnsureCreated();
         return dbContext;
     }
+
+    protected CustomQueryDbContext CreateQueryDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider)
+    {
+        Services.AddMasaDbContext<CustomQueryDbContext>(options =>
+        {
+            if (enableSoftDelete)
+                options.UseFilter();
+
+            options.UseTestSqlite($"data source=test2-{Guid.NewGuid()}");
+        });
+        serviceProvider = Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
+        dbContext.Database.EnsureCreated();
+        return dbContext;
+    }
 }

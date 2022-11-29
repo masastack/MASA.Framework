@@ -7,9 +7,8 @@ public class FormParserProvider : IParserProvider
 {
     public string Name => "Form";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
         if (!(httpContext?.Request.HasFormContentType ?? false))
             return Task.FromResult(false);
 

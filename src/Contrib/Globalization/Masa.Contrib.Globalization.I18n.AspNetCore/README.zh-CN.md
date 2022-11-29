@@ -3,8 +3,15 @@
 提供解析获取Culture的能力，配合[I18n](../Masa.Contrib.Globalization.I18n/README.zh-CN.md)来使用，目前支持三种方式进行切换语言:
 
 * URL 参数 方式： ?culture=en-US，此方式优先级最高，格式为：culture=区域码
-* Cookies 方式：调用 L.SetCulture(区域码) 方式切换
+* Cookies 方式：cookie 格式为 c=%LANGCODE%|uic=%LANGCODE%，其中 c 是 Culture，uic 是 UICulture, 例如:
+
+``` cookie
+c=en-UK|uic=en-US
+```
+
 * 客户端浏览器语言自动匹配：如果前面两种方式都没有设置，支持自动根据客户端浏览器语言进行匹配。
+
+> 详细[可参考](https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/localization?view=aspnetcore-7.0#localization-middleware)
 
 ## Masa.Contrib.Globalization.I18n.AspNetCore
 

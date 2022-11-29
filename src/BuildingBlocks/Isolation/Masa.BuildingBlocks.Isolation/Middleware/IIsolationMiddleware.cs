@@ -7,5 +7,5 @@ namespace Masa.BuildingBlocks.Isolation;
 
 public interface IIsolationMiddleware
 {
-    Task HandleAsync();
+    Task HandleAsync(HttpContext? httpContext);
 }

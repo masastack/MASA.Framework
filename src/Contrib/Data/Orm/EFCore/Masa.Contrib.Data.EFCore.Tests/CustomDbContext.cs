@@ -16,3 +16,17 @@ public class CustomDbContext : MasaDbContext<CustomDbContext>
         modelBuilder.Entity<Student>().OwnsMany(t => t.Hobbies);
     }
 }
+
+public class CustomQueryDbContext : MasaDbContext
+{
+    public CustomQueryDbContext(MasaDbContextOptions options) : base(options)
+    {
+    }
+
+    protected override void OnModelCreatingExecuting(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Student>();
+        modelBuilder.Entity<Student>().OwnsOne(x => x.Address);
+        modelBuilder.Entity<Student>().OwnsMany(t => t.Hobbies);
+    }
+}

@@ -69,9 +69,9 @@ public static class ServiceCollectionExtensions
                 serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
                 optionsLifetime));
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter),
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
             typeof(SaveChangeFilter<TDbContextImplementation, TUserId>), optionsLifetime));
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter),
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
             typeof(SoftDeleteSaveChangesFilter<TDbContextImplementation, TUserId>), optionsLifetime));
         return services;
     }

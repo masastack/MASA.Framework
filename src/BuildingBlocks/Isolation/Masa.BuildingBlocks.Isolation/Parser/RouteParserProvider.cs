@@ -7,9 +7,8 @@ public class RouteParserProvider : IParserProvider
 {
     public string Name => "Route";
 
-    public Task<bool> ResolveAsync(IServiceProvider serviceProvider, string key, Action<string> action)
+    public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
         var value = httpContext?.GetRouteValue(key)?.ToString() ?? string.Empty;
         if (!string.IsNullOrEmpty(value))
         {
