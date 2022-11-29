@@ -59,7 +59,6 @@ public abstract class IsolationDbContext<TDbContext, TKey> : MasaDbContext<TDbCo
 /// <summary>
 /// DbContext providing isolation
 /// </summary>
-/// <typeparam name="TKey">tenant id type</typeparam>
 public abstract class IsolationDbContext : IsolationDbContext<Guid>
 {
     protected IsolationDbContext(MasaDbContextOptions options) : base(options)

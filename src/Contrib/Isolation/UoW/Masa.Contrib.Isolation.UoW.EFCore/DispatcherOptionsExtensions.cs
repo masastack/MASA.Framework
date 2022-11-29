@@ -22,7 +22,10 @@ public static class DispatcherOptionsExtensions
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
         where TTenantId : IComparable
-        => eventBusBuilder.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(isolationBuilder, optionsBuilder, disableRollbackOnFailure,
+        => eventBusBuilder.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(
+            isolationBuilder,
+            optionsBuilder,
+            disableRollbackOnFailure,
             useTransaction);
 
     public static IEventBusBuilder UseIsolationUoW<TDbContext, TTenantId, TUserId>(

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Isolation.UoW.EFCore;
 
-public class IsolationSaveChangesFilter<TDbContext,TTenantId> : ISaveChangesFilter
+public class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesFilter<TDbContext>
     where TDbContext : MasaDbContext, IMasaDbContext
     where TTenantId : IComparable
 {
