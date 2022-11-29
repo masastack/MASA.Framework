@@ -81,7 +81,7 @@ public class DbContextTest : TestBase
         dbContext.Set<Student>().Remove(student);
         await dbContext.SaveChangesAsync();
 
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
+        Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
 
         var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
         using (dataFilter.Disable<ISoftDelete>())
@@ -150,8 +150,8 @@ public class DbContextTest : TestBase
         dbContext.Set<Student>().Remove(student);
         await dbContext.SaveChangesAsync();
 
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
-        Assert.IsTrue(await queryDbContext.Set<Student>().CountAsync() == 0);
+        Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
+        Assert.IsFalse(await queryDbContext.Set<Student>().AnyAsync());
 
         var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
         using (dataFilter.Disable<ISoftDelete>())
@@ -217,7 +217,7 @@ public class DbContextTest : TestBase
             .AddMasaDbContext<CustomDbContext>();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter>().Count() == 2);
+        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 2);
     }
 
     [TestMethod]
@@ -231,7 +231,7 @@ public class DbContextTest : TestBase
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var filters = serviceProvider.GetServices<ISaveChangesFilter>();
+        var filters = serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>();
         Assert.IsTrue(filters.Count() == 2);
     }
 

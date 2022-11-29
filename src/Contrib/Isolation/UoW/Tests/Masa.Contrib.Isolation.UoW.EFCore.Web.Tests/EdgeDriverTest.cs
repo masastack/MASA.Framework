@@ -19,7 +19,7 @@ public class EdgeDriverTest
         _services.AddSingleton<IConfiguration>(configurationRoot);
         _services.AddEventBus(eventBusBuilder => eventBusBuilder.UseIsolationUoW<CustomDbContext, int>(
             isolationBuilder => isolationBuilder.UseMultiTenant("tenant").UseMultiEnvironment("env"), dbOptions => dbOptions.UseSqlite().UseFilter()));
-        System.Environment.SetEnvironmentVariable("env", "pro");
+        Environment.SetEnvironmentVariable("env", "pro");
     }
 
     [TestMethod]
@@ -39,7 +39,7 @@ public class EdgeDriverTest
         #endregion
 
         var registerUserEvent = new RegisterUserEvent("jim", "123456");
-        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        var eventBus = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IEventBus>();
         await eventBus.PublishAsync(registerUserEvent);
     }
 

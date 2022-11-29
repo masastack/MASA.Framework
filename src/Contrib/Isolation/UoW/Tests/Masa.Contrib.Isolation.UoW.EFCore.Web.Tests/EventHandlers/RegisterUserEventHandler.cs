@@ -10,7 +10,9 @@ public class RegisterUserEventHandler
     private readonly IMultiEnvironmentSetter _environmentSetter;
     private readonly IMultiEnvironmentContext _environmentContext;
 
-    public RegisterUserEventHandler(CustomDbContext customDbContext, IDataFilter dataFilter, IMultiEnvironmentSetter environmentSetter,
+    public RegisterUserEventHandler(CustomDbContext customDbContext,
+        IDataFilter dataFilter,
+        IMultiEnvironmentSetter environmentSetter,
         IMultiEnvironmentContext environmentContext)
     {
         _customDbContext = customDbContext;
