@@ -6,6 +6,7 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Repositories;
 public interface IRepository<TEntity>
     where TEntity : class, IEntity
 {
+    [Obsolete("UnitOfWork is not part of IRepository, it will be removed in 1.0")]
     IUnitOfWork UnitOfWork { get; }
 
     #region Add

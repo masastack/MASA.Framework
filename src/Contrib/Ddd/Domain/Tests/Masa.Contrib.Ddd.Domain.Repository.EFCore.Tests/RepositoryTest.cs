@@ -229,4 +229,40 @@ public class RepositoryTest
         unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
         unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
+
+    [TestMethod]
+    public void TestUseRepository()
+    {
+        var services = new ServiceCollection();
+        services.AddDbContext<CustomDbContext>();
+        Mock<IUnitOfWork> unitOfWork = new();
+        services.AddScoped(_ => unitOfWork.Object);
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(options => options.Assemblies).Returns(() => new[] { typeof(Orders).Assembly });
+        dispatcherOptions.Setup(options => options.Services).Returns(() => services);
+        dispatcherOptions.Object.UseRepository<CustomDbContext>();
+        var serviceProvider = services.BuildServiceProvider();
+        var orderRepository = serviceProvider.GetService<IRepository<Orders>>();
+        var orderItemRepository = serviceProvider.GetService<IRepository<OrderItem>>();
+        Assert.IsNotNull(orderRepository);
+        Assert.IsNotNull(orderItemRepository);
+    }
+
+    [TestMethod]
+    public void TestUseRepositoryBySpecifyEntityType()
+    {
+        var services = new ServiceCollection();
+        services.AddDbContext<CustomDbContext>();
+        Mock<IUnitOfWork> unitOfWork = new();
+        services.AddScoped(_ => unitOfWork.Object);
+        Mock<IDispatcherOptions> dispatcherOptions = new();
+        dispatcherOptions.Setup(options => options.Assemblies).Returns(() => new[] { typeof(Orders).Assembly });
+        dispatcherOptions.Setup(options => options.Services).Returns(() => services);
+        dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(Orders));
+        var serviceProvider = services.BuildServiceProvider();
+        var orderRepository = serviceProvider.GetService<IRepository<Orders>>();
+        var orderItemRepository = serviceProvider.GetService<IRepository<OrderItem>>();
+        Assert.IsNotNull(orderRepository);
+        Assert.IsNull(orderItemRepository);
+    }
 }

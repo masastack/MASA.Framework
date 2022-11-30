@@ -55,8 +55,10 @@ public class TestSoftDelete
         var order = await repository.FindAsync(o => o.Id == 1);
         Assert.IsNotNull(order);
         await repository.RemoveAsync(order);
-        await repository.UnitOfWork.SaveChangesAsync();
-        await repository.UnitOfWork.CommitAsync();
+
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        await unitOfWork.SaveChangesAsync();
+        await unitOfWork.CommitAsync();
 
         Assert.AreEqual(0, await customDbContext.Set<Orders>().CountAsync());
     }
