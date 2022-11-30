@@ -5,9 +5,49 @@ namespace Masa.BuildingBlocks.Caching;
 
 public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClient
 {
+    public virtual T? Get<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null)
+        => Get<T>(key, new CacheEntryOptions(absoluteExpirationRelativeToNow), action);
+
+    public virtual T? Get<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
+        => Get<T>(key, new CacheEntryOptions(absoluteExpiration), action);
+
+    public abstract T? Get<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
     public abstract T? Get<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
 
+    public virtual T? Get<T>(string key, Action<T?> valueChanged, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null)
+        => Get(key, valueChanged, new CacheEntryOptions(absoluteExpirationRelativeToNow), action);
+
+    public virtual T? Get<T>(string key, Action<T?> valueChanged, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
+        => Get(key, valueChanged, new CacheEntryOptions(absoluteExpiration), action);
+
+    public abstract T? Get<T>(string key, Action<T?> valueChanged, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
+    public virtual Task<T?> GetAsync<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null)
+        => GetAsync<T>(key, new CacheEntryOptions(absoluteExpirationRelativeToNow), action);
+
+    public virtual Task<T?> GetAsync<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
+        => GetAsync<T>(key, new CacheEntryOptions(absoluteExpiration), action);
+
+    public abstract Task<T?> GetAsync<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
     public abstract Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
+
+    public virtual IEnumerable<T?> GetList<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null)
+        => GetList<T>(keys, new CacheEntryOptions(absoluteExpirationRelativeToNow), action);
+
+    public IEnumerable<T?> GetList<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
+        => GetList<T>(keys, new CacheEntryOptions(absoluteExpiration), action);
+
+    public abstract IEnumerable<T?> GetList<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
+    public virtual Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null)
+        => GetListAsync<T>(keys, new CacheEntryOptions(absoluteExpirationRelativeToNow), action);
+
+    public virtual Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
+        => GetListAsync<T>(keys, new CacheEntryOptions(absoluteExpiration), action);
+
+    public abstract Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
 
     public virtual T? GetOrSet<T>(string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
@@ -66,6 +106,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null)
         => Set(key, value, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -85,6 +126,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
     public override Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null, Action<CacheOptions>? action = null)
         => SetAsync(key, value, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -107,6 +149,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null) where T : default
         => SetList(keyValues, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -130,6 +173,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null) where T : default
         => SetListAsync(keyValues, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 

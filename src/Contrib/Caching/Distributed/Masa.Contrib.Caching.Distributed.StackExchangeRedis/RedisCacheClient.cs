@@ -248,6 +248,8 @@ public class RedisCacheClient : RedisCacheClientBase
             FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
+
+
     }
 
     public override async Task SetListAsync<T>(
@@ -299,12 +301,6 @@ public class RedisCacheClient : RedisCacheClientBase
         ArgumentNullException.ThrowIfNull(keys);
 
         Db.KeyDelete(keys.GetRedisKeys());
-
-        Parallel.ForEach(keys, key => Publish(key, options =>
-        {
-            options.Operation = SubscribeOperation.Remove;
-            options.Key = key;
-        }));
     }
 
     public override void Remove<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)

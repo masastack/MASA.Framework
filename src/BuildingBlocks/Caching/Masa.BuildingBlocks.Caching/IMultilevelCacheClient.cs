@@ -5,9 +5,39 @@ namespace Masa.BuildingBlocks.Caching;
 
 public interface IMultilevelCacheClient : ICacheClient
 {
+    T? Get<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
+
+    T? Get<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
+
+    T? Get<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
     T? Get<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
 
+    T? Get<T>(string key, Action<T?> valueChanged, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
+
+    T? Get<T>(string key, Action<T?> valueChanged, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
+
+    T? Get<T>(string key, Action<T?> valueChanged, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
+    Task<T?> GetAsync<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
+
+    Task<T?> GetAsync<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
+
+    Task<T?> GetAsync<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
     Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
+
+    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
+
+    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
+
+    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+
+    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow,  Action<CacheOptions>? action = null);
+
+    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
+
+    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
 
     /// <summary>
     /// Get cache, set cache if cache does not exist

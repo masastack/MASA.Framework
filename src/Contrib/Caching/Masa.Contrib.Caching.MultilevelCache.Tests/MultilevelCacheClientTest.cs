@@ -494,5 +494,21 @@ public class MultilevelCacheClientTest : TestBase
         Console.WriteLine("value: " + value);
         Assert.IsNull(value);
     }
+
+    [TestMethod]
+    public async Task TestSetBySpecifiedTimeAsync()
+    {
+        string key = Guid.NewGuid().ToString();
+        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        var value = await multilevelCacheClient.GetAsync<string>(key);
+        Assert.AreEqual(null, value);
+        await multilevelCacheClient.SetAsync(key, "success", TimeSpan.FromMilliseconds(500));
+
+        value = await multilevelCacheClient.GetAsync<string>(key);
+        Assert.AreEqual("success", value);
+
+        await Task.Delay(1000);
+        Assert.AreEqual(null, await multilevelCacheClient.GetAsync<string>(key));
+    }
 }
 #pragma warning restore CS0618
