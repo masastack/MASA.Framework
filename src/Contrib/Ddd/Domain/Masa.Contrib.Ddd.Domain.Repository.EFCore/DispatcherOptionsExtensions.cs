@@ -7,13 +7,13 @@ public static class DispatcherOptionsExtensions
 {
     public static IDispatcherOptions UseRepository<TDbContext>(
             this IDispatcherOptions options,
-            params Type[] types)
+            params Type[] entityTypes)
             where TDbContext : DbContext, IMasaDbContext
-            => options.UseRepository<TDbContext>(types.Length == 0 ? null : (IEnumerable<Type>)types);
+            => options.UseRepository<TDbContext>(entityTypes.Length == 0 ? null : (IEnumerable<Type>)entityTypes);
 
         public static IDispatcherOptions UseRepository<TDbContext>(
             this IDispatcherOptions options,
-            IEnumerable<Type>? types)
+            IEnumerable<Type>? entityTypes)
             where TDbContext : DbContext, IMasaDbContext
         {
             if (options.Services == null)
@@ -27,7 +27,7 @@ public static class DispatcherOptionsExtensions
             if (options.Services.All(service => service.ServiceType != typeof(IUnitOfWork)))
                 throw new Exception("Please add UoW first.");
 
-            options.Services.TryAddRepository<TDbContext>(options.Assemblies, types);
+            options.Services.TryAddRepository<TDbContext>(options.Assemblies, entityTypes);
             MasaApp.TrySetServiceCollection(options.Services);
             return options;
         }
