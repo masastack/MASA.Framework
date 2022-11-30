@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -12,7 +14,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDomainEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<DispatcherOptions>? options = null)
     {
         if (services.Any(service => service.ImplementationType == typeof(DomainEventBusProvider)))
@@ -20,7 +22,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<DomainEventBusProvider>();
 
-        var dispatcherOptions = new DispatcherOptions(services, assemblies);
+        var dispatcherOptions = new DispatcherOptions(services, assemblies.Distinct().ToArray());
         options?.Invoke(dispatcherOptions);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 

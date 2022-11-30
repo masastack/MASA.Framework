@@ -7,14 +7,11 @@ internal static class ServiceCollectionRepositoryExtensions
 {
     public static IServiceCollection TryAddRepository<TDbContext>(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         IEnumerable<Type>? types)
         where TDbContext : DbContext, IMasaDbContext
     {
-        if (assemblies == null || assemblies.Length == 0)
-        {
-            throw new ArgumentNullException(nameof(assemblies));
-        }
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
 
         var allTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToList();
         var entityTypes = types ?? allTypes.Where(type => type.IsEntity());

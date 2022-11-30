@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<DispatcherOptions>? options = null)
         => services.TryAddIntegrationEventBus(assemblies, options);
 
@@ -44,7 +44,7 @@ public static class ServiceCollectionExtensions
 
     internal static IServiceCollection TryAddIntegrationEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<DispatcherOptions>? options,
         Action? action = null)
     {
@@ -53,7 +53,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
-        var dispatcherOptions = new DispatcherOptions(services, assemblies);
+        var dispatcherOptions = new DispatcherOptions(services, assemblies.Distinct().ToArray());
         options?.Invoke(dispatcherOptions);
 
         services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),

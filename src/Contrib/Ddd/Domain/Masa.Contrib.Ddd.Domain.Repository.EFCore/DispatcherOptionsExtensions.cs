@@ -27,7 +27,7 @@ public static class DispatcherOptionsExtensions
             if (options.Services.All(service => service.ServiceType != typeof(IUnitOfWork)))
                 throw new Exception("Please add UoW first.");
 
-            options.Services.TryAddRepository<TDbContext>(options.Assemblies, entityTypes);
+            options.Services.TryAddRepository<TDbContext>(options.Assemblies.Distinct(), entityTypes);
             MasaApp.TrySetServiceCollection(options.Services);
             return options;
         }
