@@ -64,7 +64,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
     {
         if (httpContext.Request.Headers.ContainsKey("Connection") && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
         {
-            Activity.Current?.Stop();
+            Activity.Current = null;
             return false;
         }
         return true;

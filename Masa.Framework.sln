@@ -619,17 +619,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Excepti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Globalization.I18n.AspNetCore", "src\Contrib\Globalization\Masa.Contrib.Globalization.I18n.AspNetCore\Masa.Contrib.Globalization.I18n.AspNetCore.csproj", "{B7AEC624-6A40-42E7-BDB5-4487ACE48CE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Dispatcher.Events.FluentValidation", "src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events.FluentValidation\Masa.Contrib.Dispatcher.Events.FluentValidation.csproj", "{66B1723A-D578-418C-B21C-2C3B5CBD1180}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.FluentValidation", "src\Contrib\Dispatcher\Masa.Contrib.Dispatcher.Events.FluentValidation\Masa.Contrib.Dispatcher.Events.FluentValidation.csproj", "{66B1723A-D578-418C-B21C-2C3B5CBD1180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Globalization.I18n", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj", "{6088C3D3-E17E-41BC-A21F-F222F5123DF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.Globalization.I18n", "src\BuildingBlocks\Globalization\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj", "{6088C3D3-E17E-41BC-A21F-F222F5123DF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.BuildingBlocks.StackSdks.Tsc.Contracts", "src\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Tsc.Contracts\Masa.BuildingBlocks.StackSdks.Tsc.Contracts.csproj", "{12FD44BF-B1CD-4B8A-9C7F-318ED6FE48FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.Elasticseach", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Tsc.Elasticseach\Masa.Contrib.StackSdks.Tsc.Elasticseach.csproj", "{A04C3ECC-51BB-43A9-9C38-2305AB31F60D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.Elasticsearch", "src\Contrib\StackSdks\Masa.Contrib.StackSdks.Tsc.Elasticsearch\Masa.Contrib.StackSdks.Tsc.Elasticsearch.csproj", "{A04C3ECC-51BB-43A9-9C38-2305AB31F60D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests\Masa.Contrib.StackSdks.Tsc.Elasticseach.Tests.csproj", "{21317D81-BED0-46F0-8FBC-A9B7F1C7F2FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests\Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests.csproj", "{21317D81-BED0-46F0-8FBC-A9B7F1C7F2FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Tests\Masa.Contrib.Ddd.Domain.Tests.csproj", "{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Tests\Masa.Contrib.Ddd.Domain.Tests.csproj", "{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests.csproj", "{AE12559A-5C8F-4590-9B18-B935155B15C5}"
 EndProject
