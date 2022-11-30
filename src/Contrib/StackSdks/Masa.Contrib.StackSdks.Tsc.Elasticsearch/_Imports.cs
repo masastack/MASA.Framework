@@ -18,6 +18,7 @@ global using Masa.Utils.Data.Elasticsearch;
 global using Microsoft.Extensions.DependencyInjection;
 global using Nest;
 global using System.Runtime.CompilerServices;
+global using System.Runtime.ExceptionServices;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;
 global using System.Text.RegularExpressions;

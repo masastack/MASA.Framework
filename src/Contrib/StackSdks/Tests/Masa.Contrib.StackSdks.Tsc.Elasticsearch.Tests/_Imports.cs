@@ -5,6 +5,7 @@ global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Service;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 global using Masa.Contrib.StackSdks.Tsc.Elasticsearch.Constants;
 global using Masa.Contrib.StackSdks.Tsc.Elasticsearch.Converters;
+global using Masa.Contrib.StackSdks.Tsc.Elasticsearch.Model;
 global using Masa.Utils.Data.Elasticsearch;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
