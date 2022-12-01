@@ -28,6 +28,11 @@ public static class IsolationBuilderExtensions
         isolationBuilder.Services.TryAddScoped<MultiTenantContext>();
         isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantContext), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
         isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantSetter), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
+
+#pragma warning disable CS0618
+        isolationBuilder.Services.TryAddScoped(typeof(ITenantContext), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(ITenantSetter), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
+#pragma warning restore CS0618
         return isolationBuilder;
     }
 

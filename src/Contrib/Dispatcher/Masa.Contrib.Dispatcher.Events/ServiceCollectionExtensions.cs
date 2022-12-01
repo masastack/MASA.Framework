@@ -13,13 +13,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<EventBusBuilder>? eventBusBuilder = null)
         => services.AddEventBus(assemblies, ServiceLifetime.Scoped, eventBusBuilder);
 
     public static IServiceCollection AddEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         ServiceLifetime lifetime,
         Action<EventBusBuilder>? eventBusBuilder = null)
     {
@@ -31,11 +31,14 @@ public static class ServiceCollectionExtensions
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
 
-        DispatcherOptions dispatcherOptions = new DispatcherOptions(services, assemblies);
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
+
+        var assemblyArray = assemblies.Distinct().ToArray();
+        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-        services.AddSingleton(new SagaDispatcher(services, assemblies).Build(lifetime));
-        services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
+        services.AddSingleton(new SagaDispatcher(services, assemblyArray).Build(lifetime));
+        services.AddSingleton(new Dispatcher(services, assemblyArray).Build(lifetime));
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
@@ -47,7 +50,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddTestEventBus(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         ServiceLifetime lifetime,
         Action<EventBusBuilder>? eventBusBuilder = null)
     {
@@ -58,11 +61,14 @@ public static class ServiceCollectionExtensions
 
         eventBusBuilder?.Invoke(new EventBusBuilder(services));
 
-        DispatcherOptions dispatcherOptions = new DispatcherOptions(services, assemblies);
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
+
+        var assemblyArray = assemblies.Distinct().ToArray();
+        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
             _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-        services.AddSingleton(new SagaDispatcher(services, assemblies, true).Build(lifetime));
-        services.AddSingleton(new Dispatcher(services, assemblies).Build(lifetime));
+        services.AddSingleton(new SagaDispatcher(services, assemblyArray, true).Build(lifetime));
+        services.AddSingleton(new Dispatcher(services, assemblyArray).Build(lifetime));
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();

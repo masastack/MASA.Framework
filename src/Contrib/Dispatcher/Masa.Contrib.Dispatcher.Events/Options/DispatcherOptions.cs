@@ -21,8 +21,6 @@ public class DispatcherOptions
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
-        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
-
         Assemblies = assemblies;
         AllEventTypes = assemblies
             .SelectMany(assembly => assembly.GetTypes())
