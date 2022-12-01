@@ -33,7 +33,7 @@ public class Repository<TDbContext, TEntity> :
         TEntity entity,
         CancellationToken cancellationToken = default)
     {
-        var response = (await Context.AddAsync(entity, cancellationToken).AsTask()).Entity;
+        var response = (await Context.AddAsync(entity, cancellationToken)).Entity;
         EntityState = EntityState.Changed;
         return response;
     }
