@@ -30,16 +30,16 @@ public class OidcDbContextOptionsTest
         userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
         serviceCollection.AddScoped(provider => userClaimRepository.Object);
 
-        var identityResourcerepository = new Mock<IIdentityResourceRepository>();
-        identityResourcerepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => identityResourcerepository.Object);
+        var identityResourceRepository = new Mock<IIdentityResourceRepository>();
+        identityResourceRepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
+        serviceCollection.AddScoped(provider => identityResourceRepository.Object);
 
         serviceCollection.AddScoped<OidcDbContextOptions>();
         var serviceProvider = serviceCollection.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<OidcDbContextOptions>();
         await options.SeedStandardResourcesAsync();
         userClaimRepository.Verify(provider => provider.AddStandardUserClaimsAsync(), Times.Once);
-        identityResourcerepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Once);
+        identityResourceRepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Once);
     }
 
     [TestMethod]
@@ -66,9 +66,9 @@ public class OidcDbContextOptionsTest
         userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
         serviceCollection.AddScoped(provider => userClaimRepository.Object);
 
-        var identityResourcerepository = new Mock<IIdentityResourceRepository>();
-        identityResourcerepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => identityResourcerepository.Object);
+        var identityResourceRepository = new Mock<IIdentityResourceRepository>();
+        identityResourceRepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
+        serviceCollection.AddScoped(provider => identityResourceRepository.Object);
 
         serviceCollection.AddScoped<OidcDbContextOptions>();
         var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -79,6 +79,6 @@ public class OidcDbContextOptionsTest
         var options = serviceProvider.GetRequiredService<OidcDbContextOptions>();
         await options.SeedStandardResourcesAsync();
         userClaimRepository.Verify(provider => provider.AddStandardUserClaimsAsync(), Times.Never);
-        identityResourcerepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Never);
+        identityResourceRepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Never);
     }
 }

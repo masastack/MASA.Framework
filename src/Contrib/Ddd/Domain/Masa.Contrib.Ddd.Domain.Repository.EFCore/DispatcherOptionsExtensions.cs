@@ -16,8 +16,7 @@ public static class DispatcherOptionsExtensions
             IEnumerable<Type>? entityTypes)
             where TDbContext : DbContext, IMasaDbContext
         {
-            if (options.Services == null)
-                throw new ArgumentNullException(nameof(options.Services));
+            MasaArgumentException.ThrowIfNull(options.Services);
 
             if (options.Services.Any(service => service.ImplementationType == typeof(RepositoryProvider)))
                 return options;
