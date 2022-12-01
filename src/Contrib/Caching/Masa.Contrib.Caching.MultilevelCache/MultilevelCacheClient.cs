@@ -638,7 +638,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                         break;
                     case SubscribeOperation.Remove:
                         _memoryCache.Remove(subscribeOptions.Key);
-                        _distributedCacheClient.UnSubscribe<T>(subscribeOptions.Key);
+                        _distributedCacheClient.UnSubscribe<T>(channel);
                         break;
                     default:
                         throw new NotImplementedException();

@@ -20,7 +20,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="absoluteExpiration">Absolute Expiration，Permanently valid when null</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -30,7 +30,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="absoluteExpirationRelativeToNow">Absolute Expiration Relative To Now，Permanently valid when null</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -40,7 +40,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -50,7 +50,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="absoluteExpiration">Absolute Expiration，Permanently valid when null</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -60,7 +60,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="absoluteExpirationRelativeToNow">Absolute Expiration Relative To Now，Permanently valid when null</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
@@ -70,7 +70,7 @@ public interface ICacheClient
     /// <summary>
     /// Set cache
     /// </summary>
-    /// <param name="key">Cache key</param>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="value">Cache value</param>
     /// <param name="options">Configure the cache life cycle, which is consistent with the default configuration when it is empty</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
