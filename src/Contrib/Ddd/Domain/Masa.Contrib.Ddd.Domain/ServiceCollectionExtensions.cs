@@ -22,6 +22,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<DomainEventBusProvider>();
 
+        MasaArgumentException.ThrowIfNull(assemblies);
+
         var dispatcherOptions = new DispatcherOptions(services, assemblies.Distinct().ToArray());
         options?.Invoke(dispatcherOptions);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));

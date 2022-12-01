@@ -53,6 +53,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IntegrationEventBusProvider>();
 
+        MasaArgumentException.ThrowIfNull(assemblies);
         var dispatcherOptions = new DispatcherOptions(services, assemblies.Distinct().ToArray());
         options?.Invoke(dispatcherOptions);
 

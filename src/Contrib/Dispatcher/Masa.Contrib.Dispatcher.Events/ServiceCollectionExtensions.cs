@@ -31,6 +31,8 @@ public static class ServiceCollectionExtensions
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
 
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
+
         var assemblyArray = assemblies.Distinct().ToArray();
         var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>),
@@ -58,6 +60,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<EventBusProvider>();
 
         eventBusBuilder?.Invoke(new EventBusBuilder(services));
+
+        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
 
         var assemblyArray = assemblies.Distinct().ToArray();
         var dispatcherOptions = new DispatcherOptions(services, assemblyArray);

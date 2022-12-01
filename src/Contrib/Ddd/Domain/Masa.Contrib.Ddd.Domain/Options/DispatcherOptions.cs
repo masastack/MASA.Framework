@@ -28,9 +28,6 @@ public class DispatcherOptions : IDistributedDispatcherOptions
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
-        if (assemblies == null || assemblies.Length == 0)
-            throw new ArgumentException(nameof(assemblies));
-
         Assemblies = assemblies;
         Types = assemblies.SelectMany(assembly => assembly.GetTypes());
         AllEventTypes = GetTypes(typeof(IEvent)).ToList();
