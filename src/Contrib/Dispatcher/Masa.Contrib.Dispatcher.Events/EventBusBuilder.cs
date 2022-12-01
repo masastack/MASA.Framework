@@ -12,7 +12,7 @@ public class EventBusBuilder : IEventBusBuilder
     /// <summary>
     /// Use middleware (the order of middleware is executed in reverse order according to the order of addition)
     /// </summary>
-    /// <param name="middlewareType">middleware types</param>
+    /// <param name="middlewareType">middleware type</param>
     /// <param name="middlewareLifetime">Middleware service life cycle</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
