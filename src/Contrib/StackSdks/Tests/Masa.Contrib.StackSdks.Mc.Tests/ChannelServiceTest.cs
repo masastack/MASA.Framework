@@ -35,4 +35,16 @@ public class ChannelServiceTest
         caller.Verify(provider => provider.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options, default), Times.Once);
         Assert.IsTrue(result is not null);
     }
+
+    [TestMethod]
+    public async Task TestCreateAsync()
+    {
+        var options = new ChannelUpsertModel();
+        var requestUri = $"api/channel";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
+        var messageTaskService = new Mock<ChannelService>(caller.Object);
+        await messageTaskService.Object.CreateAsync(options);
+        caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
+    }
 }

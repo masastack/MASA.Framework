@@ -7,7 +7,11 @@ public interface IMessageTaskService
 {
     Task<MessageTaskModel?> GetAsync(Guid id);
 
-    Task SendTemplateMessageAsync(SendTemplateMessageModel options);
+    Task SendOrdinaryMessageByInternalAsync(SendOrdinaryMessageByInternalModel options);
 
-    Task SendOrdinaryMessageAsync(SendOrdinaryMessageModel options);
+    Task SendTemplateMessageByInternalAsync(SendTemplateMessageByInternalModel options);
+
+    Task SendOrdinaryMessageByExternalAsync(SendOrdinaryMessageByExternalModel options);
+
+    Task SendTemplateMessageByExternalAsync(SendTemplateMessageByExternalModel options);
 }

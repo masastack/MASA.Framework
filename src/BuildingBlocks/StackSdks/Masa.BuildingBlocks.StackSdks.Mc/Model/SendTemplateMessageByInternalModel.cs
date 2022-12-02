@@ -3,11 +3,11 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 
-public class SendTemplateMessageModel
+public class SendTemplateMessageByInternalModel
 {
     public string ChannelCode { get; set; } = string.Empty;
 
-    public ChannelTypes? ChannelType { get; set; }
+    public ChannelTypes ChannelType { get; set; }
 
     public string TemplateCode { get; set; } = string.Empty;
 
@@ -15,11 +15,11 @@ public class SendTemplateMessageModel
 
     public string Sign { get; set; } = string.Empty;
 
-    public List<MessageTaskReceiverModel> Receivers { get; set; } = new();
+    public List<InternalReceiverModel> Receivers { get; set; } = new();
 
     public SendRuleModel SendRules { get; set; } = new();
 
     public ExtraPropertyDictionary Variables { get; set; } = new();
 
-    public Guid OperatorId { get; set; }
+    public Guid OperatorId { get; set; } = default;
 }
