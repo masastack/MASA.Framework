@@ -278,7 +278,7 @@ addresses:
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(model)
-            .Callback((string value, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Raw;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
@@ -321,7 +321,7 @@ addresses:
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(raw)
-            .Callback((string str, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
@@ -370,7 +370,7 @@ addresses:
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
             })
-            .Callback((string value, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Properties;
                 _trigger.Content = new List<Property>()
@@ -438,7 +438,7 @@ addresses:
                     ConfigFormat = ConfigFormats.Json,
                     Content = brand.Serialize(_jsonSerializerOptions)
                 })
-            .Callback((string str, Action<PublishReleaseModel> action, Action<CacheOptions>? cacheOptionsAction) =>
+            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
                 _trigger.Formats = ConfigFormats.Json;
                 _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);

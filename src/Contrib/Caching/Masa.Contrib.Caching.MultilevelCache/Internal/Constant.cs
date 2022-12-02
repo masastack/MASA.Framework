@@ -2,15 +2,12 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
-
 namespace Masa.Contrib.Caching.MultilevelCache
 {
-    internal class SetOptions<T>
+    internal static class Constant
     {
-        public string? FormattedKey { get; set; }
+        public const string DEFAULT_SECTION_NAME = "MultilevelCache";
 
-        public T? Value { get; set; }
-
-        public CacheEntryOptions? MemoryCacheEntryOptions { get; set; }
+        public const CacheKeyType DEFAULT_CACHE_KEY_TYPE = CacheKeyType.TypeName;
     }
 }

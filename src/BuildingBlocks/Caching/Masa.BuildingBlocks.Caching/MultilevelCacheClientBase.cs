@@ -5,9 +5,39 @@ namespace Masa.BuildingBlocks.Caching;
 
 public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClient
 {
-    public abstract T? Get<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
+    /// <summary>
+    /// Get cache
+    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
+    /// </summary>
+    /// <param name="key"></param>
+    /// <param name="action"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public virtual T? Get<T>(string key, Action<MultilevelCacheOptions>? action = null)
+        => GetCore<T>(key, null, action);
 
-    public abstract Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
+    public virtual T? Get<T>(string key, Action<T?> valueChanged, Action<MultilevelCacheOptions>? action = null)
+        => GetCore(key, valueChanged, action);
+
+    public abstract T? GetCore<T>(string key, Action<T?>? valueChanged, Action<MultilevelCacheOptions>? action = null);
+
+    public virtual Task<T?> GetAsync<T>(string key, Action<MultilevelCacheOptions>? action = null)
+        => GetCoreAsync<T>(key, null, action);
+
+    public virtual Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<MultilevelCacheOptions>? action = null)
+        => GetCoreAsync(key, valueChanged, action);
+
+    public abstract Task<T?> GetCoreAsync<T>(string key, Action<T?>? valueChanged, Action<MultilevelCacheOptions>? action = null);
+
+    public override IEnumerable<T?> GetList<T>(params string[] keys) where T : default
+        => GetList<T>(GetKeys(keys));
+
+    public abstract IEnumerable<T?> GetList<T>(IEnumerable<string> keys, Action<MultilevelCacheOptions>? action = null);
+
+    public override Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys) where T : default
+        => GetListAsync<T>(GetKeys(keys));
+
+    public abstract Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, Action<MultilevelCacheOptions>? action = null);
 
     public virtual T? GetOrSet<T>(string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
@@ -66,6 +96,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null)
         => Set(key, value, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -85,6 +116,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
     public override Task SetAsync<T>(string key, T value, CacheEntryOptions? options = null, Action<CacheOptions>? action = null)
         => SetAsync(key, value, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -107,6 +139,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null) where T : default
         => SetList(keyValues, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 
@@ -130,6 +163,7 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Action<CacheOptions>? action = null) where T : default
         => SetListAsync(keyValues, new CombinedCacheEntryOptions()
         {
+            MemoryCacheEntryOptions = options,
             DistributedCacheEntryOptions = options
         }, action);
 

@@ -5,6 +5,20 @@ namespace Masa.BuildingBlocks.Caching;
 
 public abstract class DistributedCacheClientBase : CacheClientBase, IDistributedCacheClient
 {
+    public abstract T? Get<T>(string key, Action<CacheOptions>? action = null);
+
+    public abstract Task<T?> GetAsync<T>(string key, Action<CacheOptions>? action = null);
+
+    public override IEnumerable<T?> GetList<T>(params string[] keys) where T : default
+        => GetList<T>(GetKeys(keys));
+
+    public abstract IEnumerable<T?> GetList<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
+
+    public override Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys) where T : default
+        => GetListAsync<T>(GetKeys(keys));
+
+    public abstract Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
+
     public abstract T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null);
 
     public abstract Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null);

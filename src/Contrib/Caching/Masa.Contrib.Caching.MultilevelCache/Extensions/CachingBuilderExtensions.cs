@@ -17,7 +17,7 @@ public static class CachingBuilderExtensions
         "cachingBuilder.AddMultilevelCache has expired, please use services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
     public static ICachingBuilder AddMultilevelCache(
         this ICachingBuilder cachingBuilder,
-        string sectionName = Const.DEFAULT_SECTION_NAME,
+        string sectionName = Constant.DEFAULT_SECTION_NAME,
         bool isReset = false)
     {
         cachingBuilder.Services.AddMultilevelCache(cachingBuilder.Name, sectionName, isReset);
@@ -26,16 +26,16 @@ public static class CachingBuilderExtensions
 
     [Obsolete(
         "cachingBuilder.AddMultilevelCache has expired, please use services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
-    public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, Action<MultilevelCacheOptions> action)
+    public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, Action<MultilevelCacheGlobalOptions> action)
     {
-        var multilevelCacheOptions = new MultilevelCacheOptions();
+        var multilevelCacheOptions = new MultilevelCacheGlobalOptions();
         action.Invoke(multilevelCacheOptions);
         return cachingBuilder.AddMultilevelCache(multilevelCacheOptions);
     }
 
     [Obsolete(
         "cachingBuilder.AddMultilevelCache has expired, please use services.AddMultilevelCache(options => options.UseStackExchangeRedisCache()) instead")]
-    public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, MultilevelCacheOptions multilevelCacheOptions)
+    public static ICachingBuilder AddMultilevelCache(this ICachingBuilder cachingBuilder, MultilevelCacheGlobalOptions multilevelCacheOptions)
     {
         ArgumentNullException.ThrowIfNull(cachingBuilder);
 

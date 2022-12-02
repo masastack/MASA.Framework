@@ -5,19 +5,10 @@ namespace Masa.BuildingBlocks.Caching;
 
 public abstract class CacheClientBase : ICacheClient
 {
-    public abstract T? Get<T>(string key, Action<CacheOptions>? action = null);
+    public abstract IEnumerable<T?> GetList<T>(params string[] keys);
 
-    public abstract Task<T?> GetAsync<T>(string key, Action<CacheOptions>? action = null);
 
-    public IEnumerable<T?> GetList<T>(params string[] keys)
-        => GetList<T>(GetKeys(keys));
-
-    public abstract IEnumerable<T?> GetList<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
-
-    public Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys)
-        => GetListAsync<T>(GetKeys(keys));
-
-    public abstract Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
+    public abstract Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
 
     public virtual void Set<T>(string key, T value, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)
         => Set(key, value, new CacheEntryOptions(absoluteExpiration), action);

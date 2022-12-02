@@ -72,9 +72,12 @@ public class DccTest
             .Returns(() => new MultilevelCacheClient(
                 _memoryCache.Object,
                 _distributedCacheClient.Object,
-                null,
-                SubscribeKeyType.ValueTypeFullNameAndKey,
-                new CacheOptions()))
+                new MultilevelCacheOptions()
+                {
+                    CacheKeyType = new CacheOptions().CacheKeyType
+                },
+                SubscribeKeyType.ValueTypeFullNameAndKey
+            ))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),
@@ -92,9 +95,11 @@ public class DccTest
             .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => new MultilevelCacheClient(_memoryCache.Object,
                 _distributedCacheClient.Object,
-                null,
-                SubscribeKeyType.ValueTypeFullNameAndKey,
-                new CacheOptions()))
+                new MultilevelCacheOptions()
+                {
+                    CacheKeyType = new CacheOptions().CacheKeyType
+                },
+                SubscribeKeyType.ValueTypeFullNameAndKey))
             .Verifiable();
         _services.AddSingleton(_ => _memoryCacheClientFactory.Object);
         MasaConfigurationExtensions.TryAddConfigurationApiClient(_services, new DccOptions(), new DccSectionOptions(),

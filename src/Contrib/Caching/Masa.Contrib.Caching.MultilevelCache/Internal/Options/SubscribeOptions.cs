@@ -1,9 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Caching.MultilevelCache;
+// ReSharper disable once CheckNamespace
 
-internal class SubscribeOptions<T>
+namespace Masa.Contrib.Caching.MultilevelCache
 {
-    public Action<T?>? ValueChanged { get; set; }
+    internal class SubscribeOptions<T>
+    {
+        public Action<T?>? ValueChanged { get; set; }
+    }
 }
