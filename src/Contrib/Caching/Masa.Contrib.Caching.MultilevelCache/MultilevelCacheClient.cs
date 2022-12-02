@@ -116,7 +116,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         return value;
     }
 
-    private SubscribeOptions<T>? GetSubscribeOptions<T>(Action<T?>? valueChanged)
+    private static SubscribeOptions<T>? GetSubscribeOptions<T>(Action<T?>? valueChanged)
     {
         SubscribeOptions<T>? subscribeOptions = null;
         if (valueChanged != null)
@@ -384,7 +384,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         return GlobalCacheOptions;
     }
 
-    private CacheKeyType GetCacheKeyType(MultilevelCacheOptions multilevelCacheOptions)
+    private static CacheKeyType GetCacheKeyType(MultilevelCacheOptions multilevelCacheOptions)
         => multilevelCacheOptions.CacheKeyType ?? Constant.DEFAULT_CACHE_KEY_TYPE;
 
     private CacheEntryOptions? GetMemoryCacheEntryOptions(MultilevelCacheOptions multilevelCacheOptions)
