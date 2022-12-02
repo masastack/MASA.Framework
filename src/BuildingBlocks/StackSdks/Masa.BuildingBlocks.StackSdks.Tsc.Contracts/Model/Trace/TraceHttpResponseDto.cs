@@ -9,51 +9,67 @@ public class TraceHttpResponseDto
 
     public virtual int Status { get; set; }
 
+    [JsonPropertyName("http.method")]
     public virtual string Method { get; set; }
 
+    [JsonPropertyName("http.url")]
     public virtual string Url { get; set; }
 
+    [JsonPropertyName("http.target")]
     public virtual string Target { get; set; }
 
+    [JsonPropertyName("http.host")]
     public virtual string Host { get; set; }
 
+    [JsonPropertyName("http.scheme")]
     public virtual string Scheme { get; set; }
 
+    [JsonPropertyName("http.status_code")]
     public virtual int StatusCode { get; set; }
 
+    [JsonPropertyName("http.flavor")]
     public virtual string Flavor { get; set; }
 
+    [JsonPropertyName("http.user_agent")]
     public virtual string UserAgent { get; set; }
 
+    [JsonPropertyName("http.request_content_length")]
     public virtual int RequestContentLength { get; set; }
 
+    [JsonPropertyName("http.request_content_length_uncompressed")]
     public virtual int RequestContentLengthUncompressed { get; set; }
-
-    public virtual int ResponseContentLength { get; set; }
-
-    public virtual int ResponseContentLengthUncompressed { get; set; }
-
-    public virtual int RetryCount { get; set; }
-
-    public virtual string PeerIp { get; set; }
-
-    public virtual int? PeerPort { get; set; }
 
     public Dictionary<string, IEnumerable<string>> RequestHeaders { get; set; }
 
+    [JsonPropertyName("http.response_content_length")]
+    public virtual int ResponseContentLength { get; set; }
+
+    [JsonPropertyName("http.response_content_length_uncompressed")]
+    public virtual int ResponseContentLengthUncompressed { get; set; }    
+
     public Dictionary<string, IEnumerable<string>> ReponseHeaders { get; set; }
 
-    /// <summary>
-    /// http client
-    /// </summary>   
+    [JsonPropertyName("http.retry_count")]
+    public virtual int RetryCount { get; set; }
+
+    [JsonPropertyName("net.peer.ip")]
+    public virtual string PeerIp { get; set; }
+
+    [JsonPropertyName("net.peer.port")]
+    public virtual int? PeerPort { get; set; }
+
+    [JsonPropertyName("net.peer.name")]
     public virtual string PeerName { get; set; }
 
     #region http server
 
+    [JsonPropertyName("http.server_name")]
     public virtual string ServerName { get; set; }
 
+    [JsonPropertyName("http.route")]
     public virtual string Route { get; set; }
 
+    [JsonPropertyName("http.client_ip")]
     public virtual string ClientIp { get; set; }
 
     #endregion

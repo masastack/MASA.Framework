@@ -8,3 +8,4 @@ global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model.Aggregate;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 global using System.Text.Json;
+global using System.Text.Json.Serialization;
