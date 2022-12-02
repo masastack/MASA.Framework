@@ -22,12 +22,12 @@ public class MultilevelCacheClientTest : TestBase
         _distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClient>();
         _multilevelCacheClient = new MultilevelCacheClient(_memoryCache,
             _distributedCacheClient,
-            new CacheEntryOptions(TimeSpan.FromSeconds(10)),
-            SubscribeKeyType.SpecificPrefix,
-            new CacheOptions()
+            new MultilevelCacheOptions()
             {
+                MemoryCacheEntryOptions = new CacheEntryOptions(TimeSpan.FromSeconds(10)),
                 CacheKeyType = CacheKeyType.None
             },
+            SubscribeKeyType.SpecificPrefix,
             "test");
         InitializeData();
     }
@@ -43,7 +43,7 @@ public class MultilevelCacheClientTest : TestBase
 
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
 
-        Assert.ThrowsException<ArgumentException>(() => _multilevelCacheClient.Get<string>(string.Empty));
+        Assert.ThrowsException<MasaArgumentException>(() => _multilevelCacheClient.Get<string>(string.Empty));
     }
 
     [TestMethod]
@@ -53,7 +53,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual(99.99m, await _multilevelCacheClient.GetAsync<decimal>("test_multilevel_cache_2"));
         Assert.AreEqual(null, await _multilevelCacheClient.GetAsync<string>("test10"));
 
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _multilevelCacheClient.GetAsync<string>(string.Empty));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _multilevelCacheClient.GetAsync<string>(string.Empty));
     }
 
     [TestMethod]
@@ -173,7 +173,7 @@ public class MultilevelCacheClientTest : TestBase
         _multilevelCacheClient.Remove<string>(key);
 
         key = "";
-        Assert.ThrowsException<ArgumentException>(() => _multilevelCacheClient.Set(key, "success"));
+        Assert.ThrowsException<MasaArgumentException>(() => _multilevelCacheClient.Set(key, "success"));
     }
 
     [TestMethod]
@@ -198,7 +198,7 @@ public class MultilevelCacheClientTest : TestBase
         await _multilevelCacheClient.RemoveAsync<string>(key);
 
         key = "";
-        await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await _multilevelCacheClient.SetAsync(key, "success"));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _multilevelCacheClient.SetAsync(key, "success"));
     }
 
     [TestMethod]
@@ -359,12 +359,12 @@ public class MultilevelCacheClientTest : TestBase
 
         var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
             distributedCacheClient.Object,
-            new CacheEntryOptions(TimeSpan.FromSeconds(10)),
-            SubscribeKeyType.SpecificPrefix,
-            new CacheOptions()
+            new MultilevelCacheOptions()
             {
+                MemoryCacheEntryOptions = new CacheEntryOptions(TimeSpan.FromSeconds(10)),
                 CacheKeyType = CacheKeyType.None
             },
+            SubscribeKeyType.SpecificPrefix,
             "test");
 
         multilevelCacheClient.Refresh<string>(keys);
@@ -390,12 +390,12 @@ public class MultilevelCacheClientTest : TestBase
 
         var multilevelCacheClient = new MultilevelCacheClient(memoryCache.Object,
             distributedCacheClient.Object,
-            new CacheEntryOptions(TimeSpan.FromSeconds(10)),
-            SubscribeKeyType.SpecificPrefix,
-            new CacheOptions()
+            new MultilevelCacheOptions()
             {
+                MemoryCacheEntryOptions = new CacheEntryOptions(TimeSpan.FromSeconds(10)),
                 CacheKeyType = CacheKeyType.None
             },
+            SubscribeKeyType.SpecificPrefix,
             "test");
 
         await multilevelCacheClient.RefreshAsync<string>(keys);
@@ -408,8 +408,14 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public void TestGetMemoryCacheEntryOptions()
     {
-        CacheEntryOptions? cacheEntryOptions = null;
-        var customerDistributedCacheClient = new CustomerDistributedCacheClient(cacheEntryOptions);
+        var customerDistributedCacheClient = new CustomerDistributedCacheClient(new Mock<IMemoryCache>().Object,
+            new Mock<IDistributedCacheClient>().Object,
+            new MultilevelCacheOptions()
+            {
+                MemoryCacheEntryOptions = null,
+                CacheKeyType = CacheKeyType.None
+            },
+            SubscribeKeyType.ValueTypeFullName);
         var options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(new CacheEntryOptions()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1),
@@ -424,13 +430,20 @@ public class MultilevelCacheClientTest : TestBase
         Assert.IsNull(options);
 
         DateTimeOffset dateNow = DateTimeOffset.Now.AddDays(2);
-        cacheEntryOptions = new CacheEntryOptions()
+        var cacheEntryOptions = new CacheEntryOptions()
         {
             AbsoluteExpiration = dateNow,
             AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2),
             SlidingExpiration = TimeSpan.FromHours(3)
         };
-        customerDistributedCacheClient = new CustomerDistributedCacheClient(cacheEntryOptions);
+        customerDistributedCacheClient = new CustomerDistributedCacheClient(new Mock<IMemoryCache>().Object,
+            new Mock<IDistributedCacheClient>().Object,
+            new MultilevelCacheOptions()
+            {
+                MemoryCacheEntryOptions = cacheEntryOptions,
+                CacheKeyType = CacheKeyType.None
+            },
+            SubscribeKeyType.ValueTypeFullName);
         options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
         Assert.IsNotNull(options);
         Assert.AreEqual(TimeSpan.FromDays(2), options.AbsoluteExpirationRelativeToNow);

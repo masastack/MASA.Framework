@@ -69,7 +69,7 @@ public class MultilevelCacheTest : TestBase
         cachingBuilder.Name.Returns("test");
         cachingBuilder.Services.Returns(services);
 
-        cachingBuilder.AddMultilevelCache(new MultilevelCacheOptions());
+        cachingBuilder.AddMultilevelCache(new MultilevelCacheGlobalOptions());
 
         Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
         Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());
@@ -85,7 +85,7 @@ public class MultilevelCacheTest : TestBase
         cachingBuilder.AddMultilevelCache();
 
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheOptions = serviceProvider.GetService<IOptionsSnapshot<MultilevelCacheOptions>>();
+        var multilevelCacheOptions = serviceProvider.GetService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
         Assert.IsNotNull(multilevelCacheOptions);
         Assert.IsNotNull(multilevelCacheOptions.Value);
 
@@ -100,7 +100,7 @@ public class MultilevelCacheTest : TestBase
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache().AddMultilevelCache();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheOptions()
+        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheGlobalOptions()
         {
             CacheEntryOptions = new CacheEntryOptions()
             {
@@ -128,19 +128,21 @@ public class MultilevelCacheTest : TestBase
 
         var client = (MultilevelCacheClient)multilevelCacheClient;
         Assert.IsNotNull(client);
-        Assert.IsNotNull(client.DefaultCacheEntryOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
 
-        Assert.AreEqual(null, client.DefaultCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(TimeSpan.FromSeconds(30), client.DefaultCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(50), client.DefaultCacheEntryOptions.SlidingExpiration);
+        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+        Assert.AreEqual(TimeSpan.FromSeconds(30), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromSeconds(50), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
 
         var client2 = (MultilevelCacheClient)multilevelCacheClient2;
         Assert.IsNotNull(client2);
-        Assert.IsNotNull(client2.DefaultCacheEntryOptions);
+        Assert.IsNotNull(client2.GlobalCacheOptions);
+        Assert.IsNotNull(client2.GlobalCacheOptions.MemoryCacheEntryOptions);
 
-        Assert.AreEqual(null, client2.DefaultCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(null, client2.DefaultCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(10), client2.DefaultCacheEntryOptions.SlidingExpiration);
+        Assert.AreEqual(null, client2.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+        Assert.AreEqual(null, client2.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromSeconds(10), client2.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
     }
 
     [TestMethod]
@@ -154,7 +156,7 @@ public class MultilevelCacheTest : TestBase
                 {
                     SlidingExpiration = TimeSpan.FromSeconds(10)
                 };
-            }).AddMultilevelCache(new MultilevelCacheOptions()
+            }).AddMultilevelCache(new MultilevelCacheGlobalOptions()
             {
                 CacheEntryOptions = new CacheEntryOptions()
                 {
@@ -169,11 +171,12 @@ public class MultilevelCacheTest : TestBase
 
         var client = (MultilevelCacheClient)multilevelCacheClient;
         Assert.IsNotNull(client);
-        Assert.IsNotNull(client.DefaultCacheEntryOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
 
-        Assert.AreEqual(null, client.DefaultCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(null, client.DefaultCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(10), client.DefaultCacheEntryOptions.SlidingExpiration);
+        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromSeconds(10), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
     }
 
     [TestMethod]
@@ -190,11 +193,12 @@ public class MultilevelCacheTest : TestBase
 
         var client = (MultilevelCacheClient)multilevelCacheClient;
         Assert.IsNotNull(client);
-        Assert.IsNotNull(client.DefaultCacheEntryOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions);
+        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
 
-        Assert.AreEqual(null, client.DefaultCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(TimeSpan.FromSeconds(30), client.DefaultCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(50), client.DefaultCacheEntryOptions.SlidingExpiration);
+        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+        Assert.AreEqual(TimeSpan.FromSeconds(30), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromSeconds(50), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
 
         var multilevelCacheClientType = typeof(MultilevelCacheClient);
         string subscribeKeyPrefix =
@@ -218,7 +222,7 @@ public class MultilevelCacheTest : TestBase
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"),
             System.Text.Json.JsonSerializer.Serialize(new
             {
-                MultilevelCache = new MultilevelCacheOptions()
+                MultilevelCache = new MultilevelCacheGlobalOptions()
                 {
                     SubscribeKeyPrefix = "masa1",
                     SubscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey,
@@ -245,9 +249,9 @@ public class MultilevelCacheTest : TestBase
                     BindingFlags.Instance | BindingFlags.NonPublic)!
                 .GetValue(client)!;
         Assert.AreEqual(SubscribeKeyType.ValueTypeFullNameAndKey, subscribeKeyType);
-        Assert.AreEqual(dateNow, client.DefaultCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(TimeSpan.FromHours(1), client.DefaultCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(60), client.DefaultCacheEntryOptions.SlidingExpiration);
+        Assert.AreEqual(dateNow, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+        Assert.AreEqual(TimeSpan.FromHours(1), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+        Assert.AreEqual(TimeSpan.FromSeconds(60), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }

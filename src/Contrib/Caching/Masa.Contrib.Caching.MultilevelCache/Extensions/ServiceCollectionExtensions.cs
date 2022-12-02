@@ -10,14 +10,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         Action<DistributedCacheOptions> distributedCacheAction,
-        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null,
+        Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         if (multilevelCacheOptionsAction == null)
         {
             return services.AddMultilevelCache(
                 distributedCacheAction,
-                Const.DEFAULT_SECTION_NAME,
+                Constant.DEFAULT_SECTION_NAME,
                 typeAliasOptionsAction);
         }
         return services.AddMultilevelCache(
@@ -69,20 +69,20 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string name,
         Action<DistributedCacheOptions> distributedCacheAction,
-        Action<MultilevelCacheOptions>? multilevelCacheOptionsAction = null,
+        Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         if (multilevelCacheOptionsAction == null)
         {
             return services.AddMultilevelCache(name,
                 distributedCacheAction,
-                Const.DEFAULT_SECTION_NAME,
+                Constant.DEFAULT_SECTION_NAME,
                 typeAliasOptionsAction: typeAliasOptionsAction);
         }
 
-        MultilevelCacheOptions multilevelCacheOptions = new();
-        multilevelCacheOptionsAction?.Invoke(multilevelCacheOptions);
-        services.AddMultilevelCache(name, multilevelCacheOptions, typeAliasOptionsAction);
+        MultilevelCacheGlobalOptions multilevelCacheGlobalOptions = new();
+        multilevelCacheOptionsAction(multilevelCacheGlobalOptions);
+        services.AddMultilevelCache(name, multilevelCacheGlobalOptions, typeAliasOptionsAction);
         var distributedCacheOptions = new DistributedCacheOptions(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
 
@@ -108,7 +108,7 @@ public static class ServiceCollectionExtensions
     internal static void AddMultilevelCache(
         this IServiceCollection services,
         string name,
-        MultilevelCacheOptions multilevelCacheOptions,
+        MultilevelCacheGlobalOptions multilevelCacheGlobalOptions,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
@@ -122,12 +122,15 @@ public static class ServiceCollectionExtensions
             {
                 var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
                 var multilevelCacheClient = new MultilevelCacheClient(
-                    new MemoryCache(multilevelCacheOptions),
+                    new MemoryCache(multilevelCacheGlobalOptions),
                     distributedCacheClientFactory.Create(name),
-                    multilevelCacheOptions.CacheEntryOptions,
-                    multilevelCacheOptions.SubscribeKeyType,
-                    multilevelCacheOptions.GlobalCacheOptions,
-                    multilevelCacheOptions.SubscribeKeyPrefix,
+                    new MultilevelCacheOptions
+                    {
+                        CacheKeyType = multilevelCacheGlobalOptions.GlobalCacheOptions.CacheKeyType,
+                        MemoryCacheEntryOptions = multilevelCacheGlobalOptions.CacheEntryOptions
+                    },
+                    multilevelCacheGlobalOptions.SubscribeKeyType,
+                    multilevelCacheGlobalOptions.SubscribeKeyPrefix,
                     serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(name)
                 );
                 return multilevelCacheClient;
@@ -146,7 +149,7 @@ public static class ServiceCollectionExtensions
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        services.AddConfigure<MultilevelCacheOptions>(sectionName, name);
+        services.AddConfigure<MultilevelCacheGlobalOptions>(sectionName, name);
         services.AddMultilevelCache(name, isReset, typeAliasOptionsAction);
     }
 
@@ -157,7 +160,7 @@ public static class ServiceCollectionExtensions
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        services.Configure<MultilevelCacheOptions>(name, configuration);
+        services.Configure<MultilevelCacheGlobalOptions>(name, configuration);
         services.AddMultilevelCache(name, isReset, typeAliasOptionsAction);
     }
 
@@ -180,7 +183,7 @@ public static class ServiceCollectionExtensions
                 var multilevelCacheClient = new MultilevelCacheClient(
                     name,
                     isReset,
-                    serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheOptions>>(),
+                    serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheGlobalOptions>>(),
                     distributedCacheClientFactory.Create(name),
                     serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(name)
                 );

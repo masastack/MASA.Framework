@@ -3,9 +3,10 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Caching.MultilevelCache;
-
-internal class SubscribeOptions<T>
+namespace Masa.Contrib.Caching.MultilevelCache
 {
-    public Action<T?>? ValueChanged { get; set; }
+    internal class SubscribeOptions<T>
+    {
+        public Action<T?>? ValueChanged { get; set; }
+    }
 }

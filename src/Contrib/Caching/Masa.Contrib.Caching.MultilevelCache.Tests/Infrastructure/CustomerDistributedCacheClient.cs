@@ -5,8 +5,13 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
 
 public class CustomerDistributedCacheClient : MultilevelCacheClient
 {
-    public CustomerDistributedCacheClient(CacheEntryOptions? cacheEntryOptions)
-        : base(cacheEntryOptions)
+    public CustomerDistributedCacheClient(IMemoryCache memoryCache,
+        IDistributedCacheClient distributedCacheClient,
+        MultilevelCacheOptions multilevelCacheOptions,
+        SubscribeKeyType subscribeKeyType,
+        string subscribeKeyPrefix = "",
+        ITypeAliasProvider? typeAliasProvider = null)
+        : base(memoryCache, distributedCacheClient, multilevelCacheOptions, subscribeKeyType, subscribeKeyPrefix, typeAliasProvider)
     {
     }
 

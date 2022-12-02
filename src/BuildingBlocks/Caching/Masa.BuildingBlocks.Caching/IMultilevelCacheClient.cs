@@ -9,114 +9,11 @@ public interface IMultilevelCacheClient : ICacheClient
     /// Get cache
     /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
     /// </summary>
-    /// <param name="key">cache key</param>
-    /// <param name="absoluteExpirationRelativeToNow">Absolute Expiration，Permanently valid when null</param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
     /// <param name="key"></param>
-    /// <param name="absoluteExpiration"></param>
     /// <param name="action"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    T? Get<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="memoryCacheEntryOptions"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="valueChanged"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="valueChanged"></param>
-    /// <param name="absoluteExpirationRelativeToNow"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, Action<T?> valueChanged, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="valueChanged"></param>
-    /// <param name="absoluteExpiration"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, Action<T?> valueChanged, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="valueChanged"></param>
-    /// <param name="memoryCacheEntryOptions"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    T? Get<T>(string key, Action<T?> valueChanged, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="absoluteExpirationRelativeToNow"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<T?> GetAsync<T>(string key, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="absoluteExpiration"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<T?> GetAsync<T>(string key, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
-    /// <param name="memoryCacheEntryOptions"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<T?> GetAsync<T>(string key, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+    T? Get<T>(string key, Action<MultilevelCacheOptions>? action = null);
 
     /// <summary>
     /// Get cache
@@ -127,73 +24,48 @@ public interface IMultilevelCacheClient : ICacheClient
     /// <param name="action"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<CacheOptions>? action = null);
+    T? Get<T>(string key, Action<T?> valueChanged, Action<MultilevelCacheOptions>? action = null);
+
+    /// <summary>
+    /// Get cache
+    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
+    /// </summary>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
+    /// <param name="action"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<T?> GetAsync<T>(string key, Action<MultilevelCacheOptions>? action = null);
+
+    /// <summary>
+    /// Get cache
+    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
+    /// </summary>
+    /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
+    /// <param name="valueChanged"></param>
+    /// <param name="action"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    Task<T?> GetAsync<T>(string key, Action<T?> valueChanged, Action<MultilevelCacheOptions>? action = null);
 
     /// <summary>
     /// Get cache collection
     /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
     /// </summary>
     /// <param name="keys"></param>
-    /// <param name="absoluteExpirationRelativeToNow"></param>
     /// <param name="action"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow, Action<CacheOptions>? action = null);
+    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, Action<MultilevelCacheOptions>? action = null);
 
     /// <summary>
     /// Get cache collection
     /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
     /// </summary>
     /// <param name="keys"></param>
-    /// <param name="absoluteExpiration"></param>
     /// <param name="action"></param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
-    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache collection
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <param name="memoryCacheEntryOptions"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache collection
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <param name="absoluteExpirationRelativeToNow"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, TimeSpan? absoluteExpirationRelativeToNow,  Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache collection
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <param name="absoluteExpiration"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null);
-
-    /// <summary>
-    /// Get cache collection
-    /// When the memory cache does not exist, get the result of the distributed cache and store the result in the memory cache (the validity period of the memory cache is the expiration time passed in)
-    /// </summary>
-    /// <param name="keys"></param>
-    /// <param name="memoryCacheEntryOptions"></param>
-    /// <param name="action"></param>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, CacheEntryOptions? memoryCacheEntryOptions, Action<CacheOptions>? action = null);
+    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, Action<MultilevelCacheOptions>? action = null);
 
     /// <summary>
     /// Get cache, set cache if cache does not exist

@@ -37,7 +37,7 @@ public class RedisCacheClient : RedisCacheClientBase
         string key,
         Action<CacheOptions>? action = null) where T : default
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return GetAndRefresh<T>(FormatCacheKey<T>(key, action));
     }
@@ -46,7 +46,7 @@ public class RedisCacheClient : RedisCacheClientBase
         string key,
         Action<CacheOptions>? action = null) where T : default
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return await GetAndRefreshAsync<T>(FormatCacheKey<T>(key, action));
     }
@@ -83,7 +83,7 @@ public class RedisCacheClient : RedisCacheClientBase
         Func<CacheEntry<T>> setter,
         Action<CacheOptions>? action = null) where T : default
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         ArgumentNullException.ThrowIfNull(setter);
 
@@ -102,7 +102,7 @@ public class RedisCacheClient : RedisCacheClientBase
         Action<CacheOptions>? action = null)
         where T : default
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         ArgumentNullException.ThrowIfNull(setter);
 
@@ -193,7 +193,7 @@ public class RedisCacheClient : RedisCacheClientBase
         CacheEntryOptions? options = null,
         Action<CacheOptions>? action = null)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         SetCore(FormatCacheKey<T>(key, action), value, options);
     }
@@ -216,7 +216,7 @@ public class RedisCacheClient : RedisCacheClientBase
         CacheEntryOptions? options = null,
         Action<CacheOptions>? action = null)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         await SetCoreAsync(FormatCacheKey<T>(key, action), value, options);
     }
@@ -248,8 +248,6 @@ public class RedisCacheClient : RedisCacheClientBase
             FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
-
-
     }
 
     public override async Task SetListAsync<T>(
@@ -322,7 +320,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override bool Exists(string key)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return Db.KeyExists(key);
     }
@@ -332,7 +330,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override Task<bool> ExistsAsync(string key)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         return Db.KeyExistsAsync(key);
     }
@@ -488,7 +486,7 @@ end";
 
     public override bool KeyExpire(string key, CacheEntryOptions? options = null)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         var result = Db.ScriptEvaluate(
             Const.SET_EXPIRATION_SCRIPT,
@@ -530,7 +528,7 @@ end";
         string key,
         CacheEntryOptions? options = null)
     {
-        key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_EXPIRATION_SCRIPT,

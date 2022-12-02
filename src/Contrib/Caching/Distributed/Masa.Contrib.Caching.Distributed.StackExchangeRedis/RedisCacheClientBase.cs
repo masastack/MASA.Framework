@@ -80,7 +80,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         var options = new PublishOptions(UniquelyIdentifies);
         setup.Invoke(options);
 
-        options.Key.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(options.Key);
 
         return options;
     }

@@ -5,17 +5,9 @@ namespace Masa.BuildingBlocks.Caching;
 
 public interface ICacheClient
 {
-    T? Get<T>(string key, Action<CacheOptions>? action = null);
-
-    Task<T?> GetAsync<T>(string key, Action<CacheOptions>? action = null);
-
-    IEnumerable<T?> GetList<T>(params string[] keys);
-
-    IEnumerable<T?> GetList<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
+   IEnumerable<T?> GetList<T>(params string[] keys);
 
     Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
-
-    Task<IEnumerable<T?>> GetListAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
 
     /// <summary>
     /// Set cache

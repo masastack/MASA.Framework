@@ -9,7 +9,7 @@ internal static class PathUtils
 {
     internal static bool ParseResourcesDirectory(ref string resourcesPath)
     {
-        resourcesPath.CheckIsNullOrWhiteSpace();
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(resourcesPath);
         resourcesPath = Path.Combine(I18nResourceResourceConfiguration.BaseDirectory, resourcesPath.TrimStart("/"));
         return Directory.Exists(resourcesPath);
     }
