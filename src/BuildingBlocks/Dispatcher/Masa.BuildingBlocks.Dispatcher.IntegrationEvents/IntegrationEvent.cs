@@ -12,12 +12,14 @@ public abstract record IntegrationEvent : IIntegrationEvent
     public IUnitOfWork? UnitOfWork { get; set; }
 
     [JsonIgnore]
-    public abstract string Topic { get; set; }
+    public virtual string Topic { get; set; }
 
     protected IntegrationEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
     protected IntegrationEvent(Guid eventId, DateTime creationTime)
     {
+        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().Name;
+
         _eventId = eventId;
         _creationTime = creationTime;
     }

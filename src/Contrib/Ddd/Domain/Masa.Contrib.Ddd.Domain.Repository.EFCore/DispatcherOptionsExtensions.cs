@@ -16,8 +16,7 @@ public static class DispatcherOptionsExtensions
             IEnumerable<Type>? entityTypes)
             where TDbContext : DbContext, IMasaDbContext
         {
-            if (options.Services == null)
-                throw new ArgumentNullException(nameof(options.Services));
+            MasaArgumentException.ThrowIfNull(options.Services);
 
             if (options.Services.Any(service => service.ImplementationType == typeof(RepositoryProvider)))
                 return options;
@@ -27,7 +26,7 @@ public static class DispatcherOptionsExtensions
             if (options.Services.All(service => service.ServiceType != typeof(IUnitOfWork)))
                 throw new Exception("Please add UoW first.");
 
-            options.Services.TryAddRepository<TDbContext>(options.Assemblies, entityTypes);
+            options.Services.TryAddRepository<TDbContext>(options.Assemblies.Distinct(), entityTypes);
             MasaApp.TrySetServiceCollection(options.Services);
             return options;
         }

@@ -29,6 +29,13 @@ public static class IsolationBuilderExtensions
             serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
         isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentSetter),
             serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+
+#pragma warning disable CS0618
+        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentContext),
+            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentSetter),
+            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+#pragma warning restore CS0618
         return isolationBuilder;
     }
 
