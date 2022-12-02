@@ -16,7 +16,7 @@ public static class ElasticConstant
     public static string ServiceName => "Resource.service.name";
     public static string ServiceInstance => "Resource.service.instance.id";
     public static string NameSpace => "Resource.service.namespace";
-    public static string Endpoint => "Attributes.http.target";
+    public static string Endpoint => "Attributes.http.url";
 
     internal static int MaxRecordCount { get; private set; } = 10000;
 

@@ -28,46 +28,60 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         "/negotiate"
     };
 
+    private static bool IsInterruptSignalrTracing = true;
+
     /// <summary>
     /// The default filter ignore list includes swagger.
     /// </summary>
     /// <param name="options"></param>
     /// <param name="openTelemetryInstrumentationOptions"></param>
-    public static void AppendDefaultFilter(this Action<AspNetCoreInstrumentationOptions> options, OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions, bool isInterruptSignalrTracing)
+    /// <param name="isInterruptSignalrTracing"></param>
+    public static void AppendDefaultFilter(this Action<AspNetCoreInstrumentationOptions> options,
+        OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions,
+        bool isInterruptSignalrTracing)
     {
+        IsInterruptSignalrTracing = isInterruptSignalrTracing;
         options += opt =>
         {
-            opt.Filter = httpContext => !(isInterruptSignalrTracing && IsWebsocket(httpContext)
-                || IsReuqestPathMatchPrefix(httpContext, _CommonFilterIgnorePrefix)
-                || IsReuqestPathMatchSuffix(httpContext, _CommonFilterIgnoreSuffix));
+            opt.Filter = IsDefaultFilter;
         };
-
         openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
     }
+
+    private static bool IsDefaultFilter(HttpContext httpContext) => !(IsInterruptSignalrTracing && IsWebsocket(httpContext)
+                 || IsReuqestPathMatchPrefix(httpContext, _CommonFilterIgnorePrefix)
+                 || IsReuqestPathMatchSuffix(httpContext, _CommonFilterIgnoreSuffix));
 
     /// <summary>
     /// The filter ignore list includes swagger and blazor and static files.
     /// </summary>
     /// <param name="options"></param>
     /// <param name="openTelemetryInstrumentationOptions"></param>
-    public static void AppendBlazorFilter(this Action<AspNetCoreInstrumentationOptions> options, OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions)
+    /// <param name="isInterruptSignalrTracing"></param>
+    public static void AppendBlazorFilter(this Action<AspNetCoreInstrumentationOptions> options,
+        OpenTelemetryInstrumentationOptions openTelemetryInstrumentationOptions,
+        bool isInterruptSignalrTracing)
     {
+        IsInterruptSignalrTracing = isInterruptSignalrTracing;
         options += opt =>
         {
-            opt.Filter = httpContext => !IsReuqestPathMatchPrefix(httpContext, _BlazorFilterIgnorePrefix);
+            opt.Filter = httpContext => IsDefaultFilter(httpContext) && IsBlazorFilter(httpContext);
         };
-
         openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
     }
 
+    private static bool IsBlazorFilter(HttpContext httpContext) => !IsReuqestPathMatchPrefix(httpContext, _BlazorFilterIgnorePrefix);
+
     private static bool IsWebsocket(HttpContext httpContext)
     {
-        if (httpContext.Request.Headers.ContainsKey("Connection") && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
+        if (httpContext.Request.Headers.ContainsKey("Connection")
+            && httpContext.Request.Headers.ContainsKey(httpContext.Request.Headers["Connection"]))
         {
+            Console.WriteLine($"path:{httpContext.Request.Path.Value}");
             Activity.Current = null;
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private static bool IsReuqestPathMatchSuffix(HttpContext httpContext, List<string> suffix)

@@ -227,14 +227,14 @@ internal static class IElasticClientExtenstion
             result.Add(new FieldConditionDto
             {
                 Name = ElasticConstant.ServiceInstance,
-                Value = query.Service,
+                Value = query.Instance,
                 Type = ConditionTypes.Equal
             });
         if (!string.IsNullOrEmpty(query.Endpoint))
             result.Add(new FieldConditionDto
             {
                 Name = ElasticConstant.Endpoint,
-                Value = $"*{query.Service}*",
+                Value = $"*{query.Endpoint}*",
                 Type = ConditionTypes.Regex
             });
         if (!string.IsNullOrEmpty(query.TraceId))

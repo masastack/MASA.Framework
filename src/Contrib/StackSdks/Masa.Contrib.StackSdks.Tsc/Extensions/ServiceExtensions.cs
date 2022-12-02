@@ -28,7 +28,7 @@ public static class ServiceExtensions
         services.AddSingleton<ITscClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-           return new TscClient(caller);
+            return new TscClient(caller);
         });
 
         MasaApp.TrySetServiceCollection(services);
@@ -96,10 +96,10 @@ public static class ServiceExtensions
 
         return services.AddMasaTracing(builder =>
         {
-            builder.AspNetCoreInstrumentationOptions.AppendDefaultFilter(builder, isInterruptSignalRTracing);
-
             if (isBlazor)
-                builder.AspNetCoreInstrumentationOptions.AppendBlazorFilter(builder);
+                builder.AspNetCoreInstrumentationOptions.AppendBlazorFilter(builder, isInterruptSignalRTracing);
+            else
+                builder.AspNetCoreInstrumentationOptions.AppendDefaultFilter(builder, isInterruptSignalRTracing);
 
             builder.BuildTraceCallback = options =>
             {
