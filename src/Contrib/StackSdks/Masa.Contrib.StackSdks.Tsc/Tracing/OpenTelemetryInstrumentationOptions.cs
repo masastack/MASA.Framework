@@ -49,20 +49,10 @@ public class OpenTelemetryInstrumentationOptions
         {
             if (rawObject is HttpRequest httpRequest)
             {
-                if (httpRequest.Path.ToUriComponent() == "/_blazor")
-                {
-                    //activity
-                }
-
                 await activity.AddMasaSupplement(httpRequest);
             }
             else if (rawObject is HttpRequestMessage httpRequestMessage)
             {
-                if (httpRequestMessage.RequestUri.AbsolutePath == "/_blazor")
-                {
-
-                }
-
                 await activity.AddMasaSupplement(httpRequestMessage);
             }
         }
@@ -70,31 +60,16 @@ public class OpenTelemetryInstrumentationOptions
         {
             if (rawObject is HttpResponse httpResponse)
             {
-                if (httpResponse.HttpContext.Request.Path.ToUriComponent() == "/_blazor")
-                {
-
-                }
-
                 activity.AddMasaSupplement(httpResponse);
             }
             else if (rawObject is HttpResponseMessage httpResponseMessage)
             {
-                if (httpResponseMessage.RequestMessage.RequestUri.AbsolutePath == "/_blazor")
-                {
-
-                }
                 activity.AddMasaSupplement(httpResponseMessage);
             }
         }
         else if (eventName.Equals("OnException"))
         {
             SetSexceptionTags(activity, rawObject);
-        }
-        else
-        {
-
-            var t = eventName;
-
         }
     }
 

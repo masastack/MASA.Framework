@@ -5,6 +5,10 @@ namespace Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Trace;
 
 public class TraceResponseDto
 {
+    private static readonly string[] httpKeys = new string[] { "http.method" };
+    private static readonly string[] databaseKeys = new string[] { "db.system" };
+    private static readonly string[] exceptionKeys = new string[] { "exception.type", "exception.message" };
+
     public virtual DateTime Timestamp { get; set; }
 
     public virtual DateTime EndTimestamp { get; set; }
@@ -30,32 +34,46 @@ public class TraceResponseDto
     public virtual bool TryParseHttp(out TraceHttpResponseDto result)
     {
         result = default!;
-        return false;
-    }    
+        if (!IsContainsAnyKey(Attributes, httpKeys))
+            return false;
+        result = Attributes.ConvertTo<TraceHttpResponseDto>();
+
+        result.RequestHeaders = Attributes.GroupByKeyPrefix("http.request.header.", ReadHeaderValues);
+        result.ReponseHeaders = Attributes.GroupByKeyPrefix("http.response.header.", ReadHeaderValues);
+
+        result.Name = Name;
+        result.Status = TraceStatus;
+        return true;
+    }
 
     public virtual bool TryParseDatabase(out TraceDatabaseResponseDto result)
     {
         result = default!;
-        return false;
+        if (!IsContainsAnyKey(Attributes, databaseKeys))
+            return false;
+        result = Attributes.ConvertTo<TraceDatabaseResponseDto>();
+        return true;
     }
 
     public virtual bool TryParseException(out TraceExceptionResponseDto result)
     {
         result = default!;
-        return false;
+        if (!IsContainsAnyKey(Attributes, exceptionKeys))
+            return false;
+
+        result = Attributes.ConvertTo<TraceExceptionResponseDto>();
+        return true;
     }
 
     public virtual string GetDispalyName()
     {
-        if (TryParseHttp(out var traceHttpDto))
+        if (TryParseDatabase(out var databaseDto))
         {
-            if (Kind == TraceDtoKind.SPAN_KIND_SERVER)
-                return traceHttpDto.Target;
-            return traceHttpDto.Url;
+            return $"{(Attributes.ContainsKey("peer.service") ? Attributes["peer.service"] : "")}{databaseDto.System}{databaseDto.Name}";
         }
-        else if (TryParseDatabase(out var databaseDto))
+        else if (TryParseHttp(out var traceHttpDto))
         {
-            return databaseDto.Name;
+            return traceHttpDto.Url;
         }
         else if (TryParseException(out TraceExceptionResponseDto exceptionDto))
         {
@@ -63,5 +81,31 @@ public class TraceResponseDto
         }
         else
             return Name;
+    }
+
+    private static IEnumerable<string> ReadHeaderValues(object obj)
+    {
+        if (obj is JsonElement value)
+        {
+            if (value.ValueKind == JsonValueKind.Array)
+            {
+                return value.EnumerateArray().Select(item => item.ToString()).ToArray();
+            }
+            else
+            {
+                return new string[] { value.ToString() };
+            }
+        }
+        return new string[] { obj.ToString()! };
+    }
+
+    private static bool IsContainsAnyKey(Dictionary<string, object> source, string[] keys)
+    {
+        if (source == null || !source.Any() || keys == null || !keys.Any())
+            return false;
+        if (keys.Length == 1)
+            return source.ContainsKey(keys[0]);
+
+        return keys.Any(k => source.ContainsKey(k));
     }
 }
