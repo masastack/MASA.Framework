@@ -3,15 +3,15 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 
-public class SendOrdinaryMessageModel
+public class SendOrdinaryMessageByInternalModel
 {
     public string ChannelCode { get; set; } = string.Empty;
 
-    public ChannelTypes? ChannelType { get; set; }
+    public ChannelTypes ChannelType { get; set; }
 
     public SendTargets ReceiverType { get; set; }
 
-    public List<MessageTaskReceiverModel> Receivers { get; set; } = new();
+    public List<InternalReceiverModel> Receivers { get; set; } = new();
 
     public SendRuleModel SendRules { get; set; } = new();
 
@@ -19,5 +19,5 @@ public class SendOrdinaryMessageModel
 
     public ExtraPropertyDictionary Variables { get; set; } = new();
 
-    public Guid OperatorId { get; set; }
+    public Guid OperatorId { get; set; } = Guid.Empty;
 }

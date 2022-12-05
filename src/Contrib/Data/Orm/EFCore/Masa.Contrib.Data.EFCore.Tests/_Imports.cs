@@ -6,6 +6,7 @@ global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.Contrib.Data.Contracts;
 global using Masa.Contrib.Data.EFCore.Tests.Internal;
 global using Masa.Contrib.Data.EFCore.Tests.Models;
+global using Masa.Utils.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;

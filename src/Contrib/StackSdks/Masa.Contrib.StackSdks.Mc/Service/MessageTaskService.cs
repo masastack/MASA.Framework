@@ -19,15 +19,27 @@ public class MessageTaskService : IMessageTaskService
         return await _caller.GetAsync<MessageTaskModel>(requestUri);
     }
 
-    public async Task SendOrdinaryMessageAsync(SendOrdinaryMessageModel options)
+    public async Task SendOrdinaryMessageByInternalAsync(SendOrdinaryMessageByInternalModel options)
     {
-        var requestUri = $"{_party}/SendOrdinaryMessage";
+        var requestUri = $"{_party}/SendOrdinaryMessageByInternal";
         await _caller.PostAsync(requestUri, options);
     }
 
-    public async Task SendTemplateMessageAsync(SendTemplateMessageModel options)
+    public async Task SendTemplateMessageByInternalAsync(SendTemplateMessageByInternalModel options)
     {
-        var requestUri = $"{_party}/SendTemplateMessage";
+        var requestUri = $"{_party}/SendTemplateMessageByInternal";
+        await _caller.PostAsync(requestUri, options);
+    }
+
+    public async Task SendOrdinaryMessageByExternalAsync(SendOrdinaryMessageByExternalModel options)
+    {
+        var requestUri = $"{_party}/SendOrdinaryMessageByExternal";
+        await _caller.PostAsync(requestUri, options);
+    }
+
+    public async Task SendTemplateMessageByExternalAsync(SendTemplateMessageByExternalModel options)
+    {
+        var requestUri = $"{_party}/SendTemplateMessageByExternal";
         await _caller.PostAsync(requestUri, options);
     }
 }

@@ -523,5 +523,22 @@ public class MultilevelCacheClientTest : TestBase
         await Task.Delay(1000);
         Assert.AreEqual(null, await multilevelCacheClient.GetAsync<string>(key));
     }
+
+    [TestMethod]
+    public void TestFormatCacheKeys()
+    {
+        var list = new List<string>()
+        {
+            "Multilevel1",
+            "Multilevel2"
+        };
+        var data = ((MultilevelCacheClient)_multilevelCacheClient).FormatCacheKeys<string>(list, CacheKeyType.TypeName);
+        Assert.AreEqual(2, data.Count);
+
+        Assert.AreEqual("Multilevel1",data[0].Key);
+        Assert.AreEqual("String.Multilevel1",data[0].FormattedKey);
+        Assert.AreEqual("Multilevel2",data[1].Key);
+        Assert.AreEqual("String.Multilevel2",data[1].FormattedKey);
+    }
 }
 #pragma warning restore CS0618

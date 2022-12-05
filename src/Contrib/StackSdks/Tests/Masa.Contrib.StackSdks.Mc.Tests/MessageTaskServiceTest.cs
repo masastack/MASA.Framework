@@ -23,26 +23,50 @@ public class MessageTaskServiceTest
     }
 
     [TestMethod]
-    public async Task TestSendOrdinaryMessageAsync()
+    public async Task TestSendOrdinaryMessageByInternalAsync()
     {
-        var options = new SendOrdinaryMessageModel();
-        var requestUri = $"api/message-task/SendOrdinaryMessage";
+        var options = new SendOrdinaryMessageByInternalModel();
+        var requestUri = $"api/message-task/SendOrdinaryMessageByInternal";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
         var messageTaskService = new Mock<MessageTaskService>(caller.Object);
-        await messageTaskService.Object.SendOrdinaryMessageAsync(options);
+        await messageTaskService.Object.SendOrdinaryMessageByInternalAsync(options);
         caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 
     [TestMethod]
-    public async Task TestSendTemplateMessageAsync()
+    public async Task TestSendTemplateMessageByInternalAsync()
     {
-        var options = new SendTemplateMessageModel();
-        var requestUri = $"api/message-task/SendTemplateMessage";
+        var options = new SendTemplateMessageByInternalModel();
+        var requestUri = $"api/message-task/SendTemplateMessageByInternal";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
         var messageTaskService = new Mock<MessageTaskService>(caller.Object);
-        await messageTaskService.Object.SendTemplateMessageAsync(options);
+        await messageTaskService.Object.SendTemplateMessageByInternalAsync(options);
+        caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestSendOrdinaryMessageByExternalAsync()
+    {
+        var options = new SendOrdinaryMessageByExternalModel();
+        var requestUri = $"api/message-task/SendOrdinaryMessageByExternal";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
+        var messageTaskService = new Mock<MessageTaskService>(caller.Object);
+        await messageTaskService.Object.SendOrdinaryMessageByExternalAsync(options);
+        caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestSendTemplateMessageByExternalAsync()
+    {
+        var options = new SendTemplateMessageByExternalModel();
+        var requestUri = $"api/message-task/SendTemplateMessageByExternal";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
+        var messageTaskService = new Mock<MessageTaskService>(caller.Object);
+        await messageTaskService.Object.SendTemplateMessageByExternalAsync(options);
         caller.Verify(provider => provider.PostAsync(requestUri, options, true, default), Times.Once);
     }
 }

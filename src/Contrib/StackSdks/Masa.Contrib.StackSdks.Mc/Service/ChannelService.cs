@@ -24,4 +24,10 @@ public class ChannelService : IChannelService
         var requestUri = $"{_party}";
         return await _caller.GetAsync<GetChannelModel, PaginatedListModel<ChannelModel>>(requestUri, options) ?? new();
     }
+
+    public async Task CreateAsync(CreateChannelModel options)
+    {
+        var requestUri = $"{_party}";
+        await _caller.PostAsync(requestUri, options);
+    }
 }
