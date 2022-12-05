@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 
-public class ChannelCreateModel
+public class CreateChannelModel
 {
     public string DisplayName { get; set; } = string.Empty;
 
