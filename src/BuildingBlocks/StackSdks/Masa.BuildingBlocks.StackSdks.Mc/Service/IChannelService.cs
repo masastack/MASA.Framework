@@ -9,5 +9,5 @@ public interface IChannelService
 
     Task<PaginatedListModel<ChannelModel>> GetListAsync(GetChannelModel options);
 
-    Task CreateAsync(ChannelUpsertModel options);
+    Task CreateAsync(ChannelCreateModel options);
 }

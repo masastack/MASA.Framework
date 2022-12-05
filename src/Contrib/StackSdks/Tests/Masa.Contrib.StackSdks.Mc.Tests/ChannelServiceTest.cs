@@ -39,7 +39,7 @@ public class ChannelServiceTest
     [TestMethod]
     public async Task TestCreateAsync()
     {
-        var options = new ChannelUpsertModel();
+        var options = new ChannelCreateModel();
         var requestUri = $"api/channel";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();
