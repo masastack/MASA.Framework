@@ -10,6 +10,8 @@ global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.BuildingBlocks.ReadWriteSplitting.Cqrs.Commands;
 global using Masa.BuildingBlocks.ReadWriteSplitting.Cqrs.Queries;
+global using Masa.Utils.Models;
+global using System.Data;
 global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Text.Json.Serialization;
