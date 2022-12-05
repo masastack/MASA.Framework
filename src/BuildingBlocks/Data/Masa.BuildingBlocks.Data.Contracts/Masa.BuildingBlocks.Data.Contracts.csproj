@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Utils\Models\Masa.Utils.Models.Config\Masa.Utils.Models.Config.csproj" />
+  </ItemGroup>
+
 </Project>
