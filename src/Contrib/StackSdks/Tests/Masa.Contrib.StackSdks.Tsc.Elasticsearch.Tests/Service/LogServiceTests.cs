@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests.Service;
+namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests;
 
 [TestClass]
 public class LogServiceTests
@@ -24,7 +24,6 @@ public class LogServiceTests
     public void Initialize()
     {
         ServiceCollection services = new();
-        services.Clear();
         services.AddElasticClientLog(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_NAME);
         var serviceProvider = services.BuildServiceProvider();
         _logService = serviceProvider.GetRequiredService<ILogService>();
