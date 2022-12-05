@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Ddd\Domain\Masa.BuildingBlocks.Ddd.Domain\Masa.BuildingBlocks.Ddd.Domain.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
+    <ProjectReference Include="..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore\Masa.Contrib.Data.EFCore.csproj" />
   </ItemGroup>
 
 </Project>
