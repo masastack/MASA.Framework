@@ -8,4 +8,6 @@ public interface IChannelService
     Task<ChannelModel?> GetAsync(Guid id);
 
     Task<PaginatedListModel<ChannelModel>> GetListAsync(GetChannelModel options);
+
+    Task CreateAsync(CreateChannelModel options);
 }
