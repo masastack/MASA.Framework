@@ -60,7 +60,7 @@ public class MasaValidatorException : MasaArgumentException
         return stringBuilder.ToString();
     }
 
-    public new static void ThrowIfNullOrEmptyCollection<T>(IEnumerable<T>? arguments,
+    public new static void ThrowIfNullOrEmptyCollection<T>([NotNull] IEnumerable<T>? arguments,
         [CallerArgumentExpression("arguments")]
         string? paramName = null)
     {
@@ -70,7 +70,7 @@ public class MasaValidatorException : MasaArgumentException
     }
 
     public new static void ThrowIfNull(
-        object? argument,
+        [NotNull] object? argument,
         [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(argument is null,
@@ -88,7 +88,7 @@ public class MasaValidatorException : MasaArgumentException
     }
 
     public new static void ThrowIfNullOrWhiteSpace(
-        object? argument,
+        [NotNull] object? argument,
         [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(string.IsNullOrWhiteSpace(argument?.ToString()),
@@ -153,12 +153,12 @@ public class MasaValidatorException : MasaArgumentException
             maxValue);
     }
 
-    public new static void ThrowIfContain(string? argument,
+    public new static void ThrowIfContain([NotNull] string? argument,
         string parameter,
         [CallerArgumentExpression("argument")] string? paramName = null)
         => ThrowIfContain(argument, parameter, StringComparison.OrdinalIgnoreCase, paramName);
 
-    public new static void ThrowIfContain(string? argument,
+    public new static void ThrowIfContain([NotNull] string? argument,
         string parameter,
         StringComparison stringComparison,
         [CallerArgumentExpression("argument")] string? paramName = null)

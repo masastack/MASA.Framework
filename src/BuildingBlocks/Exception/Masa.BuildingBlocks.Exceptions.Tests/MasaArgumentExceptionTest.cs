@@ -23,4 +23,51 @@ public class MasaArgumentExceptionTest
             Assert.AreEqual("'{0}' must not be empty.", ex.GetErrorMessage());
         }
     }
+
+    [DataTestMethod]
+    [DataRow(null, Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR)]
+    [DataRow("", Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR)]
+    public void TestThrowIfNullOrEmpty(string? value, string code)
+    {
+        MasaValidatorException.ThrowIfNullOrEmpty("test");
+        try
+        {
+            MasaArgumentException.ThrowIfNullOrEmpty(value);
+        }
+        catch (MasaArgumentException ex)
+        {
+            Assert.AreEqual(code, ex.ErrorCode);
+        }
+    }
+
+    [DataTestMethod]
+    [DataRow(null, Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR)]
+    [DataRow("", Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR)]
+    [DataRow(" ", Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR)]
+    public void TestThrowIfNullOrWhiteSpace(string? value, string code)
+    {
+        MasaValidatorException.ThrowIfNullOrWhiteSpace("test");
+        try
+        {
+            MasaArgumentException.ThrowIfNullOrWhiteSpace(value);
+        }
+        catch (MasaArgumentException ex)
+        {
+            Assert.AreEqual(code, ex.ErrorCode);
+        }
+    }
+
+    [TestMethod]
+    public void TestThrowIfNullOrEmptyCollection()
+    {
+        List<string>? list = null;
+        try
+        {
+            MasaArgumentException.ThrowIfNullOrEmptyCollection(list);
+        }
+        catch (MasaArgumentException ex)
+        {
+            Assert.AreEqual(Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR, ex.ErrorCode);
+        }
+    }
 }

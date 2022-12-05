@@ -56,7 +56,7 @@ public class MasaArgumentException : MasaException
     {
     }
 
-    public static void ThrowIfNullOrEmptyCollection<T>(IEnumerable<T>? arguments,
+    public static void ThrowIfNullOrEmptyCollection<T>([NotNull] IEnumerable<T>? arguments,
         [CallerArgumentExpression("arguments")]
         string? paramName = null)
     {
@@ -65,21 +65,21 @@ public class MasaArgumentException : MasaException
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR);
     }
 
-    public static void ThrowIfNull(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public static void ThrowIfNull([NotNull] object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(argument is null,
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_VALIDATOR);
     }
 
-    public static void ThrowIfNullOrEmpty(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public static void ThrowIfNullOrEmpty([NotNull] object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(string.IsNullOrEmpty(argument?.ToString()),
             paramName,
             Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR);
     }
 
-    public static void ThrowIfNullOrWhiteSpace(object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
+    public static void ThrowIfNullOrWhiteSpace([NotNull] object? argument, [CallerArgumentExpression("argument")] string? paramName = null)
     {
         ThrowIf(string.IsNullOrWhiteSpace(argument?.ToString()),
             paramName,
@@ -143,12 +143,12 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
-    public static void ThrowIfContain(string? argument,
+    public static void ThrowIfContain([NotNull] string? argument,
         string parameter,
         [CallerArgumentExpression("argument")] string? paramName = null)
         => ThrowIfContain(argument, parameter, StringComparison.OrdinalIgnoreCase, paramName);
 
-    public static void ThrowIfContain(string? argument,
+    public static void ThrowIfContain([NotNull] string? argument,
         string parameter,
         StringComparison stringComparison,
         [CallerArgumentExpression("argument")] string? paramName = null)
