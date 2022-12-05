@@ -150,11 +150,11 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     {
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
         var list = GetListCore<T>(FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions)),
-            out List<(string Key, string MemoryCacheKey)> awaitCacheKeyItems);
+            out List<(string Key, string FormattedKey)> awaitCacheKeyItems);
 
         var awaitValues = new List<T?>();
         if (awaitCacheKeyItems.Any())
-            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.Key), CacheOptionsAction)).ToList();
+            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction)).ToList();
 
         return FillData(list, awaitCacheKeyItems, awaitValues, GetMemoryCacheEntryOptions(multilevelCacheOptions));
     }
@@ -318,7 +318,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
     {
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
-        var formattedKeys = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        var data = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        var formattedKeys = data.Select(item => item.FormattedKey).ToArray();
         Parallel.ForEach(formattedKeys, key =>
         {
             _memoryCache.TryGetValue(key, out _);
@@ -329,7 +330,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     public override async Task RefreshAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
     {
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
-        var formattedKeys = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        var data = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        var formattedKeys = data.Select(item => item.FormattedKey).ToArray();
         Parallel.ForEach(formattedKeys, key =>
         {
             _memoryCache.TryGetValue(key, out _);
@@ -365,12 +367,12 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             cacheKeyType,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName));
 
-    private IEnumerable<string> FormatCacheKeys<T>(IEnumerable<string> keys, CacheKeyType cacheKeyType)
+    public List<(string Key, string FormattedKey)> FormatCacheKeys<T>(IEnumerable<string> keys, CacheKeyType cacheKeyType)
     {
-        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(
+        return keys.Select(key => (key, CacheKeyHelper.FormatCacheKey<T>(
             key,
             cacheKeyType,
-            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)));
+            _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)))).ToList();
     }
 
     protected MultilevelCacheOptions GetMultilevelCacheOptions(Action<MultilevelCacheOptions>? action)
@@ -391,19 +393,19 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         => multilevelCacheOptions.MemoryCacheEntryOptions ?? GlobalCacheOptions.MemoryCacheEntryOptions;
 
     private List<CacheItemModel<T>> GetListCore<T>(
-        IEnumerable<string> keys,
+        List<(string Key, string FormattedKey)> data,
         out List<(string Key, string MemoryCacheKey)> awaitCacheKeyItems)
     {
-        ArgumentNullException.ThrowIfNull(keys);
+        ArgumentNullException.ThrowIfNull(data);
 
         List<CacheItemModel<T>> list = new();
 
-        foreach (var key in keys)
+        foreach (var item in data)
         {
-            CacheItemModel<T> item = !_memoryCache.TryGetValue(key, out T? value) ?
-                new(key, key, false, default) :
-                new(key, key, true, value);
-            list.Add(item);
+            CacheItemModel<T> cacheItemModel = !_memoryCache.TryGetValue(item.Key, out T? value) ?
+                new(item.Key, item.FormattedKey, false, default) :
+                new(item.Key, item.FormattedKey, true, value);
+            list.Add(cacheItemModel);
         }
         awaitCacheKeyItems = list.Where(x => !x.IsExist)
             .Select(x => (x.Key, x.MemoryCacheKey))
@@ -413,7 +415,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     private IEnumerable<T?> FillData<T>(List<CacheItemModel<T>> list,
-        List<(string Key, string MemoryCacheKey)> awaitKeys,
+        List<(string Key, string FormattedKey)> awaitKeys,
         List<T?> awaitValues,
         CacheEntryOptions? memoryCacheEntryOptions)
     {
@@ -428,7 +430,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
             SetCore(new SetOptions<T>()
             {
-                FormattedKey = cacheKeyItem.MemoryCacheKey,
+                FormattedKey = cacheKeyItem.FormattedKey,
                 Value = value,
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
