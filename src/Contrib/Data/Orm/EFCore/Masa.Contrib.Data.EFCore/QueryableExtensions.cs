@@ -11,7 +11,6 @@ public static class QueryableExtensions
         PaginatedOptions options,
         CancellationToken cancellationToken = default) where TEntity : class, IEntity
     {
-
         var result = await GetPaginatedListAsync(
             queryable,
             predicate,
@@ -35,7 +34,6 @@ public static class QueryableExtensions
         PaginatedOptions options,
         CancellationToken cancellationToken = default) where TEntity : class, IEntity
     {
-
         var result = await GetPaginatedListAsync(
             queryable,
             (options.Page - 1) * options.PageSize,
