@@ -25,8 +25,8 @@ public class MasaArgumentExceptionTest
     }
 
     [DataTestMethod]
-    [DataRow(null, Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR)]
-    [DataRow("", Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR)]
+    [DataRow(null, Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR)]
+    [DataRow("", Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR)]
     public void TestThrowIfNullOrEmpty(string? value, string code)
     {
         MasaValidatorException.ThrowIfNullOrEmpty("test");
