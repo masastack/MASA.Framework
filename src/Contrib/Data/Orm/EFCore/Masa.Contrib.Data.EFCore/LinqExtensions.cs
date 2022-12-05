@@ -47,7 +47,6 @@ public static class LinqExtensions
     public static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, string field, bool desc) where TEntity : class
     {
         ParameterExpression parameterExpression = Expression.Parameter(typeof(TEntity));
-        Expression key = Expression.Property(parameterExpression, field);
         var propertyInfo = GetPropertyInfo(typeof(TEntity), field);
         var orderExpression = GetOrderExpression(typeof(TEntity), propertyInfo);
         if (desc)
@@ -67,7 +66,6 @@ public static class LinqExtensions
     private static IQueryable<T> ThenBy<T>(this IQueryable<T> query, string field, bool desc) where T : class
     {
         ParameterExpression parameterExpression = Expression.Parameter(typeof(T));
-        Expression key = Expression.Property(parameterExpression, field);
         var propertyInfo = GetPropertyInfo(typeof(T), field);
         var orderExpression = GetOrderExpression(typeof(T), propertyInfo);
         if (desc)
