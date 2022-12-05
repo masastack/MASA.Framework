@@ -178,10 +178,10 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, staff);
     }
 
-    public async Task<List<UserPortraitModel>> GetUserPortraitsAsync(params Guid[] userIds)
+    public async Task<List<UserModel>> GetUserPortraitsAsync(params Guid[] userIds)
     {
         var requestUri = $"api/user/portraits";
-        return await _caller.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, userIds) ?? new();
+        return await _caller.PostAsync<Guid[], List<UserModel>>(requestUri, userIds) ?? new();
     }
 
     public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
