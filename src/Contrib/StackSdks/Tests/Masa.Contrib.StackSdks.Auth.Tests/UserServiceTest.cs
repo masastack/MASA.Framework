@@ -467,7 +467,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default))
             .ReturnsAsync(userPortraits).Verifiable();
         var userService = GetUserService(caller);
-        var data = await userService.GetUserPortraitsAsync(userId);
+        var data = await userService.GetUsersAsync(userId);
         caller.Verify(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
         Assert.IsTrue(data.Count == 1);
     }

@@ -178,9 +178,9 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, staff);
     }
 
-    public async Task<List<UserModel>> GetUsersByIdsAsync(params Guid[] userIds)
+    public async Task<List<UserModel>> GetUsersAsync(params Guid[] userIds)
     {
-        var requestUri = $"api/user/usersByids";
+        var requestUri = $"api/user/byIds";
         return await _caller.PostAsync<Guid[], List<UserModel>>(requestUri, userIds) ?? new();
     }
 
