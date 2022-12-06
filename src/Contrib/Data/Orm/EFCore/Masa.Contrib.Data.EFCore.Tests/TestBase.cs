@@ -7,8 +7,7 @@ public class TestBase
 {
     protected IServiceCollection Services;
 
-    [TestInitialize]
-    public void Initialize()
+    public TestBase()
     {
         Services = new ServiceCollection();
     }
