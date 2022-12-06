@@ -165,7 +165,7 @@ internal static class IElasticClientExtenstion
         object result = default!;
         await client.SearchAsync(ElasticConstant.Trace.IndexName, query,
        (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(query, false)
-       .AddSort(query)
+       .AddSort(query, false)
        .AddPageSize(query, false)
        .AddAggregate(query, false),
        (response, q) => result = SetAggregationResult(response, q));
