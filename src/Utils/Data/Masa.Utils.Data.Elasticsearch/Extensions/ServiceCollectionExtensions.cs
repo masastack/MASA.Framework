@@ -34,9 +34,9 @@ public static partial class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(name);
 
-        AddElasticsearchCore(services);
-
-        services.AddElasticsearchOptions(name, func.Invoke());
+        services
+            .AddElasticsearchCore()
+            .AddElasticsearchOptions(name, func.Invoke());
 
         return services;
     }

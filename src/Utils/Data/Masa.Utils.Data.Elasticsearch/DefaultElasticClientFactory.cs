@@ -21,7 +21,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
 
         if (elasticsearchOptions.Nodes is null) elasticsearchOptions = _elasticsearchOptions.Get(_names.FirstOrDefault());
 
-        if (elasticsearchOptions.Nodes is null) throw new Exception("The default ElasticClient is not found, please check if Elasticsearch is added");
+        if (elasticsearchOptions.Nodes is null) throw new ArgumentException("The default ElasticClient is not found, please check if Elasticsearch is added");
 
         return Create(elasticsearchOptions);
     }
@@ -34,7 +34,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
         return Create(elasticsearchOptions);
     }
 
-    private IElasticClient Create(ElasticsearchOptions elasticsearchOptions)
+    private static IElasticClient Create(ElasticsearchOptions elasticsearchOptions)
     {
         var settings = elasticsearchOptions.UseConnectionPool
             ? GetConnectionSettingsConnectionPool(elasticsearchOptions)
@@ -43,7 +43,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
         return new ElasticClient(settings);
     }
 
-    private ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
+    private static ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
     {
         var connectionSetting = new ConnectionSettings(new Uri(relation.Nodes[0]))
             .EnableApiVersioningHeader();
@@ -51,7 +51,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
         return connectionSetting;
     }
 
-    private ConnectionSettings GetConnectionSettingsConnectionPool(ElasticsearchOptions relation)
+    private static ConnectionSettings GetConnectionSettingsConnectionPool(ElasticsearchOptions relation)
     {
         var pool = new StaticConnectionPool(
             relation.Nodes.Select(node => new Uri(node)),

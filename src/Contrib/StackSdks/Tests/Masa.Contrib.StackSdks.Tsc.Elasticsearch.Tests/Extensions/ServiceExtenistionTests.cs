@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests.Extensions;
 
+#pragma warning disable CS0618
 [TestClass]
 public class ServiceExtenistionTests
 {
@@ -23,6 +24,7 @@ public class ServiceExtenistionTests
 
         var factory = services.BuildServiceProvider().GetRequiredService<IElasticsearchFactory>();
         Assert.IsNotNull(factory);
+
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
@@ -133,3 +135,4 @@ public class ServiceExtenistionTests
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
     }
 }
+#pragma warning restore CS0618
