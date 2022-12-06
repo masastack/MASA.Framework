@@ -21,7 +21,7 @@ public class StaticConnectionPoolOptions
         return this;
     }
 
-    internal StaticConnectionPoolOptions UseDateTimeProvider(IDateTimeProvider dateTimeProvider)
+    internal StaticConnectionPoolOptions UseDateTimeProvider(IDateTimeProvider? dateTimeProvider)
     {
         DateTimeProvider = dateTimeProvider;
         return this;

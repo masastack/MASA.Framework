@@ -117,7 +117,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentException($"indexName or alias exists");
 
         if (relation.IsDefault && relationsOptions.Relations.Any(r => r.IsDefault))
-            throw new ArgumentException("ElasticClient can only have one default", nameof(ElasticsearchRelations.IsDefault));
+            throw new ArgumentException("ElasticClient can only have one default", nameof(ElasticsearchOptions.IsDefault));
 
         relationsOptions.AddRelation(relation);
     }
