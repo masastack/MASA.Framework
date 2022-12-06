@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Moq;
+
 namespace Masa.Contrib.StackSdks.Auth.Tests;
 
 [TestClass]
@@ -452,8 +454,8 @@ public class UserServiceTest
     public async Task GetUserPortraitsAsync()
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
-        var userPortraits = new List<UserPortraitModel> {
-            new UserPortraitModel
+        var userPortraits = new List<UserModel> {
+            new UserModel
             {
                 Id = Guid.NewGuid(),
                 DisplayName = "DisplayName",
@@ -462,13 +464,13 @@ public class UserServiceTest
                 Avatar = "Avatar"
             }
         };
-        var requestUri = $"api/user/portraits";
+        var requestUri = $"api/user/byIds";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default))
+        caller.Setup(provider => provider.PostAsync<Guid[], List<UserModel>>(requestUri, new Guid[] { userId }, default))
             .ReturnsAsync(userPortraits).Verifiable();
         var userService = GetUserService(caller);
-        var data = await userService.GetUserPortraitsAsync(userId);
-        caller.Verify(provider => provider.PostAsync<Guid[], List<UserPortraitModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
+        var data = await userService.GetUsersAsync(userId);
+        caller.Verify(provider => provider.PostAsync<Guid[], List<UserModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
         Assert.IsTrue(data.Count == 1);
     }
 
