@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests.Service;
+namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests;
 
 [TestClass]
 public class TraceServiceTests
@@ -29,7 +29,6 @@ public class TraceServiceTests
     public void Initialize()
     {
         ServiceCollection services = new();
-        services.Clear();
         services.AddElasticClientTrace(options =>
         {
             options.UseNodes(new string[] { StaticConfig.HOST }).
@@ -116,16 +115,17 @@ public class TraceServiceTests
         Assert.IsTrue(values.All(s => !string.IsNullOrEmpty(s)));
     }
 
-
     [TestMethod]
     public void GetAllTest()
     {
-        List<TraceResponseDto> data=new List<TraceResponseDto>();
+        List<TraceResponseDto> data = new List<TraceResponseDto>();
 
-        var query = new ElasticsearchScrollRequestDto {
-            Scroll="1m"
+        var query = new ElasticsearchScrollRequestDto
+        {
+            Scroll = "1m"
         };
-        _traceService.GetAll(query, (result) => {
+        _traceService.GetAll(query, (result) =>
+        {
             if (result != null && result.Any())
                 data.AddRange(result);
         });

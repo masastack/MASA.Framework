@@ -39,8 +39,8 @@ public static class ServiceExtenistion
 
     public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, string[] nodes, string logIndexName, string traceIndexName)
     {
-        ElasticConstant.InitLog(logIndexName, false);
-        ElasticConstant.InitTrace(traceIndexName, false);
+        ElasticConstant.InitLog(logIndexName);
+        ElasticConstant.InitTrace(traceIndexName);
         AddElasticsearch(services, nodes, ElasticConstant.DEFAULT_CALLER_CLIENT_NAME)
             .AddSingleton<ILogService, LogService>()
             .AddSingleton<ITraceService, TraceService>();

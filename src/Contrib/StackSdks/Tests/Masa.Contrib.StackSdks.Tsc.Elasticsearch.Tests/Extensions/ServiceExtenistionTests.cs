@@ -7,13 +7,6 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests.Extensions;
 [TestClass]
 public class ServiceExtenistionTests
 {
-    [TestInitialize]
-    public void TestInitialize()
-    {
-        ServiceCollection services = new();
-        services.Clear();
-    }
-
     [TestMethod]
     public void AddLogNodesTest()
     {
@@ -28,6 +21,7 @@ public class ServiceExtenistionTests
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 
     [TestMethod]
@@ -51,6 +45,7 @@ public class ServiceExtenistionTests
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 
     [TestMethod]
@@ -66,6 +61,7 @@ public class ServiceExtenistionTests
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 
     [TestMethod]
@@ -89,6 +85,7 @@ public class ServiceExtenistionTests
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 
     [TestMethod]
@@ -106,6 +103,7 @@ public class ServiceExtenistionTests
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 
     [TestMethod]
@@ -133,6 +131,7 @@ public class ServiceExtenistionTests
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.LOG_CALLER_CLIENT_NAME));
         Assert.ThrowsException<NotSupportedException>(() => factory.CreateElasticClient(ElasticConstant.TRACE_CALLER_CLIENT_NAME));
         Assert.IsNotNull(factory.CreateElasticClient(ElasticConstant.DEFAULT_CALLER_CLIENT_NAME));
+        services.Clear();
     }
 }
 #pragma warning restore CS0618

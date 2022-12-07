@@ -14,6 +14,8 @@ public class CustomDbContext : MasaDbContext<CustomDbContext>
         modelBuilder.Entity<Student>();
         modelBuilder.Entity<Student>().OwnsOne(x => x.Address);
         modelBuilder.Entity<Student>().OwnsMany(t => t.Hobbies);
+
+        modelBuilder.Entity<User>();
     }
 }
 

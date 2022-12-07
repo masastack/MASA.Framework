@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.Internal;
+namespace System.Linq;
 
-internal static class LinqExtensions
+public static class LinqExtensions
 {
     public static IQueryable<TEntity> GetQueryable<TEntity>(this IQueryable<TEntity> query, Dictionary<string, object> fields) where TEntity : class
     {
@@ -44,10 +44,8 @@ internal static class LinqExtensions
         return query;
     }
 
-    internal static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, string field, bool desc) where TEntity : class
+    public static IQueryable<TEntity> OrderBy<TEntity>(this IQueryable<TEntity> query, string field, bool desc) where TEntity : class
     {
-        ParameterExpression parameterExpression = Expression.Parameter(typeof(TEntity));
-        Expression key = Expression.Property(parameterExpression, field);
         var propertyInfo = GetPropertyInfo(typeof(TEntity), field);
         var orderExpression = GetOrderExpression(typeof(TEntity), propertyInfo);
         if (desc)
@@ -66,8 +64,6 @@ internal static class LinqExtensions
 
     private static IQueryable<T> ThenBy<T>(this IQueryable<T> query, string field, bool desc) where T : class
     {
-        ParameterExpression parameterExpression = Expression.Parameter(typeof(T));
-        Expression key = Expression.Property(parameterExpression, field);
         var propertyInfo = GetPropertyInfo(typeof(T), field);
         var orderExpression = GetOrderExpression(typeof(T), propertyInfo);
         if (desc)
