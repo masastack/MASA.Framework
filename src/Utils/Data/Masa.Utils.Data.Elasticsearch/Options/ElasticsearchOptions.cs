@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Utils.Data.Elasticsearch;
 
 public class ElasticsearchOptions
@@ -17,17 +19,21 @@ public class ElasticsearchOptions
 
     internal Action<ConnectionSettings>? Action { get; private set; }
 
-    public ElasticsearchOptions(params string[] nodes)
+    public ElasticsearchOptions()
+    {
+        IsDefault = false;
+        ConnectionSettingsOptions = new();
+        StaticConnectionPoolOptions = new();
+        Action = null;
+    }
+
+    public ElasticsearchOptions(params string[] nodes) : this()
     {
         if (nodes.Length == 0)
             throw new ArgumentException("Please specify the Elasticsearch node address");
 
-        IsDefault = false;
         Nodes = nodes;
         UseConnectionPool = nodes.Length > 1;
-        ConnectionSettingsOptions = new();
-        StaticConnectionPoolOptions = new();
-        Action = null;
     }
 
     public ElasticsearchOptions UseDefault()
@@ -52,13 +58,13 @@ public class ElasticsearchOptions
         return this;
     }
 
-    public ElasticsearchOptions UseDateTimeProvider(IDateTimeProvider dateTimeProvider)
+    public ElasticsearchOptions UseDateTimeProvider(IDateTimeProvider? dateTimeProvider)
     {
         StaticConnectionPoolOptions.UseDateTimeProvider(dateTimeProvider);
         return this;
     }
 
-    public ElasticsearchOptions UseConnectionSettings(Action<ConnectionSettings> action)
+    public ElasticsearchOptions UseConnectionSettings(Action<ConnectionSettings>? action)
     {
         Action = action;
         return this;

@@ -5,11 +5,15 @@ namespace Masa.Utils.Data.Elasticsearch;
 
 public interface IElasticsearchFactory
 {
+    [Obsolete("Please use IMasaElasticClientFactory.Create() instead")]
     IMasaElasticClient CreateClient();
 
+    [Obsolete("Please use IMasaElasticClientFactory.Create(name) instead")]
     IMasaElasticClient CreateClient(string name);
 
+    [Obsolete("Please use IElasticClientFactory.Create() instead")]
     IElasticClient CreateElasticClient();
 
+    [Obsolete("Please use IElasticClientFactory.Create(name) instead")]
     IElasticClient CreateElasticClient(string name);
 }

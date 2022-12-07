@@ -7,9 +7,9 @@ internal class TraceService : ITraceService
 {
     private readonly IElasticClient _client;
 
-    public TraceService(IElasticsearchFactory elasticsearchFactory)
+    public TraceService(IElasticClientFactory elasticClientFactory)
     {
-        _client = elasticsearchFactory.CreateElasticClient(false);
+        _client = elasticClientFactory.CreateElasticClient(false);
     }
 
     public async Task<object> AggregateAsync(SimpleAggregateRequestDto query)
