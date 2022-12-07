@@ -13,4 +13,6 @@ public class DaprCaller : DaprCallerBase
     protected override string AppId { get; set; }
 
     public bool CallerProviderIsNotNull() => Caller != null;
+
+    public ICaller GetCaller() => Caller;
 }
