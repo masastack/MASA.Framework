@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Masa.Contrib.Service.Caller.Tests;
 
 [TestClass]
@@ -111,6 +109,28 @@ public class DefaultCallerProviderTest
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, configuration.Object);
+        string actualAppId = callerProvider.CompletionAppId(appId);
+        Assert.AreEqual(expectedAppId, actualAppId);
+    }
+
+    [TestMethod]
+    public void TestCompletionAppId6()
+    {
+        string appId = "appid";
+        string expectedAppId = $"{appId}-{Guid.NewGuid()}";
+        Environment.SetEnvironmentVariable($"{appId}-suffix", expectedAppId);
+        var builder = WebApplication.CreateBuilder();
+        builder.Services.Configure<DaprOptions>(options =>
+        {
+            options.AppPort = 5000;
+            options.AppIdSuffix = "suffix";
+        });
+
+        var serviceProvider = builder.Services.BuildServiceProvider();
+
+        var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+
+        var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration);
         string actualAppId = callerProvider.CompletionAppId(appId);
         Assert.AreEqual(expectedAppId, actualAppId);
     }
