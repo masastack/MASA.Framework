@@ -7,13 +7,15 @@ public class DefaultCallerProvider : ICallerProvider
 {
     private readonly IOptionsMonitor<DaprOptions> _daprOptions;
     private readonly IConfiguration? _configuration;
+    private readonly IMasaConfiguration? _masaConfiguration;
 
     public DefaultCallerProvider(IOptionsMonitor<DaprOptions> daprOptions,
         IConfiguration? configuration = null,
         IMasaConfiguration? masaConfiguration = null)
     {
         _daprOptions = daprOptions;
-        _configuration = masaConfiguration?.Local ?? configuration;
+        _configuration = configuration;
+        _masaConfiguration = masaConfiguration;
     }
 
     public string CompletionAppId(string appId)
@@ -21,7 +23,11 @@ public class DefaultCallerProvider : ICallerProvider
         var daprOptions = _daprOptions.CurrentValue;
         if (daprOptions.AppPort > 0 && daprOptions.IsIncompleteAppId())
             appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
+
         var value = _configuration?.GetSection(appId).Value;
+        if (value.IsNullOrWhiteSpace())
+            value = _masaConfiguration?.Local.GetSection(appId).Value;
+
         if (value.IsNullOrWhiteSpace()) return appId;
 
         return value;
