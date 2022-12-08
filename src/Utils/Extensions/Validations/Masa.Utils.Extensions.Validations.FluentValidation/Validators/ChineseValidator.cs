@@ -5,15 +5,11 @@
 
 namespace FluentValidation.Validators;
 
-public class ChineseValidator<T> : MasaRegularExpressionValidator<T>, IChineseValidator
+public class ChineseValidator<T> : MasaRegularExpressionValidator<T>
 {
     public override string Name => nameof(ChineseValidator<T>);
 
     public ChineseValidator() : base(RegularHelper.CHINESE)
     {
     }
-}
-
-public interface IChineseValidator : IPropertyValidator
-{
 }

@@ -5,11 +5,11 @@
 
 namespace FluentValidation.Validators;
 
-public class NumberValidator<T> : MasaRegularExpressionValidator<T>
+public class LetterNumberValidator<T> : MasaRegularExpressionValidator<T>
 {
-    public override string Name => nameof(NumberValidator<T>);
+    public override string Name => nameof(LetterNumberValidator<T>);
 
-    public NumberValidator() : base(RegularHelper.NUMBER)
+    public LetterNumberValidator() : base(RegularHelper.LETTER_NUMBER)
     {
     }
 }

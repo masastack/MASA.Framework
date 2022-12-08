@@ -10,24 +10,4 @@ public abstract class MasaRegularExpressionValidator<T> : RegularExpressionValid
     protected MasaRegularExpressionValidator(string expression) : base(expression)
     {
     }
-
-    protected MasaRegularExpressionValidator(Regex regex) : base(regex)
-    {
-    }
-
-    protected MasaRegularExpressionValidator(string expression, RegexOptions options) : base(expression, options)
-    {
-    }
-
-    protected MasaRegularExpressionValidator(Func<T, string> expressionFunc) : base(expressionFunc)
-    {
-    }
-
-    protected MasaRegularExpressionValidator(Func<T, Regex> regexFunc) : base(regexFunc)
-    {
-    }
-
-    protected MasaRegularExpressionValidator(Func<T, string> expression, RegexOptions options) : base(expression, options)
-    {
-    }
 }

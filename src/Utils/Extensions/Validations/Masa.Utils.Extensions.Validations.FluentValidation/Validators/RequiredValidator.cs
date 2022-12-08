@@ -5,11 +5,7 @@
 
 namespace FluentValidation.Validators;
 
-public class NumberValidator<T> : MasaRegularExpressionValidator<T>
+public class RequiredValidator<T, TProperty> : NotEmptyValidator<T, TProperty>
 {
-    public override string Name => nameof(NumberValidator<T>);
-
-    public NumberValidator() : base(RegularHelper.NUMBER)
-    {
-    }
+    public override string Name => nameof(RequiredValidator<T, TProperty>);
 }
