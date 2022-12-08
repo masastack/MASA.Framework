@@ -5,11 +5,11 @@ namespace System.Linq;
 
 public static class QueryableExtensions
 {
-    public static async Task<PaginatedList<TEntity>> GetPaginatedListAsync<TEntity>(
+    public static async Task<PaginatedListBase<TEntity>> GetPaginatedListAsync<TEntity>(
         this IQueryable<TEntity> queryable,
         Expression<Func<TEntity, bool>> predicate,
         PaginatedOptions options,
-        CancellationToken cancellationToken = default) where TEntity : class, IEntity
+        CancellationToken cancellationToken = default) where TEntity : class
     {
         var result = await GetPaginatedListAsync(
             queryable,
@@ -21,7 +21,7 @@ public static class QueryableExtensions
 
         var total = await queryable.LongCountAsync(predicate, cancellationToken);
 
-        return new PaginatedList<TEntity>()
+        return new PaginatedListBase<TEntity>()
         {
             Total = total,
             Result = result,
@@ -29,10 +29,10 @@ public static class QueryableExtensions
         };
     }
 
-    public static async Task<PaginatedList<TEntity>> GetPaginatedListAsync<TEntity>(
+    public static async Task<PaginatedListBase<TEntity>> GetPaginatedListAsync<TEntity>(
         this IQueryable<TEntity> queryable,
         PaginatedOptions options,
-        CancellationToken cancellationToken = default) where TEntity : class, IEntity
+        CancellationToken cancellationToken = default) where TEntity : class
     {
         var result = await GetPaginatedListAsync(
             queryable,
@@ -43,7 +43,7 @@ public static class QueryableExtensions
 
         var total = await queryable.LongCountAsync(cancellationToken);
 
-        return new PaginatedList<TEntity>()
+        return new PaginatedListBase<TEntity>()
         {
             Total = total,
             Result = result,
