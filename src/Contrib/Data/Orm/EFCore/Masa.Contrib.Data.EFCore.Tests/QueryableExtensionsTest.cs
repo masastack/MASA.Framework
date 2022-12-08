@@ -18,7 +18,7 @@ public class QueryableExtensionsTest : TestBase
             Email = "Makani@163.com",
             PhoneNumber = "15244499326",
             Age = 18,
-            CompanyName = "温州数闪",
+            CompanyName = "masa stack",
         });
         await context.Set<User>().AddAsync(new User()
         {
@@ -26,7 +26,7 @@ public class QueryableExtensionsTest : TestBase
             Email = "Beaudine@163.com",
             PhoneNumber = "16151288302",
             Age = 18,
-            CompanyName = "温州数闪",
+            CompanyName = "masa stack",
         });
         await context.SaveChangesAsync();
     }
