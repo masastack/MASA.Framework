@@ -550,7 +550,16 @@ public class DefaultMasaElasticClientTest
         var builder = service.AddElasticsearchClient("es", "http://localhost:9200");
         await builder.Client.DeleteIndexAsync(userIndexName);
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var client = serviceProvider.GetRequiredService<IMasaElasticClient>();
+        var clientFactory = serviceProvider.GetService<IMasaElasticClientFactory>();
+        Assert.IsNotNull(clientFactory);
+        var client = clientFactory.Create();
+        Assert.IsNotNull(client);
+
+        var masaElasticClientFactory = serviceProvider.GetService<IMasaElasticClientFactory>();
+        Assert.IsNotNull(masaElasticClientFactory);
+
+        client = masaElasticClientFactory.Create("es");
+        Assert.IsNotNull(client);
 
         var list = new AutoCompleteDocument<long>[]
         {

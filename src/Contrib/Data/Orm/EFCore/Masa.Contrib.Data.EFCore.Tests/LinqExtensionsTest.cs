@@ -17,7 +17,7 @@ public class LinqExtensionsTest : TestBase
             Email = "Makani@163.com",
             PhoneNumber = "15244499326",
             Age = 13,
-            CompanyName = "温州数闪",
+            CompanyName = "masa stack",
         });
         await context.Set<User>().AddAsync(new User()
         {
@@ -25,7 +25,7 @@ public class LinqExtensionsTest : TestBase
             Email = "Beaudine@163.com",
             PhoneNumber = "16151288302",
             Age = 18,
-            CompanyName = "温州数闪",
+            CompanyName = "masa stack",
         });
         await context.SaveChangesAsync();
     }
@@ -43,7 +43,7 @@ public class LinqExtensionsTest : TestBase
         Assert.IsTrue(user.Email == "Beaudine@163.com");
         Assert.IsTrue(user.PhoneNumber == "16151288302");
         Assert.IsTrue(user.Age == 18);
-        Assert.IsTrue(user.CompanyName == "温州数闪");
+        Assert.IsTrue(user.CompanyName == "masa stack");
     }
 
     [TestMethod]
@@ -58,7 +58,7 @@ public class LinqExtensionsTest : TestBase
         Assert.IsTrue(user.Email == "Makani@163.com");
         Assert.IsTrue(user.PhoneNumber == "15244499326");
         Assert.IsTrue(user.Age == 13);
-        Assert.IsTrue(user.CompanyName == "温州数闪");
+        Assert.IsTrue(user.CompanyName == "masa stack");
     }
 
     [TestMethod]
@@ -74,6 +74,6 @@ public class LinqExtensionsTest : TestBase
         Assert.IsTrue(user.Email == "Beaudine@163.com");
         Assert.IsTrue(user.PhoneNumber == "16151288302");
         Assert.IsTrue(user.Age == 18);
-        Assert.IsTrue(user.CompanyName == "温州数闪");
+        Assert.IsTrue(user.CompanyName == "masa stack");
     }
 }

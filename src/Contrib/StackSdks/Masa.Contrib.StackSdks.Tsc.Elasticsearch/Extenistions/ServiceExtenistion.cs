@@ -90,12 +90,12 @@ public static class ServiceExtenistion
              });
     }
 
-    internal static IElasticClient CreateElasticClient(this IElasticsearchFactory elasticsearchFactory, bool isLog)
+    internal static IElasticClient CreateElasticClient(this IElasticClientFactory elasticsearchFactory, bool isLog)
     {
         if (isLog)
-            return elasticsearchFactory.CreateElasticClient(ElasticConstant.Log.IsIndependent ? ElasticConstant.LOG_CALLER_CLIENT_NAME : ElasticConstant.DEFAULT_CALLER_CLIENT_NAME);
+            return elasticsearchFactory.Create(ElasticConstant.Log.IsIndependent ? ElasticConstant.LOG_CALLER_CLIENT_NAME : ElasticConstant.DEFAULT_CALLER_CLIENT_NAME);
         else
-            return elasticsearchFactory.CreateElasticClient(ElasticConstant.Trace.IsIndependent ? ElasticConstant.TRACE_CALLER_CLIENT_NAME : ElasticConstant.DEFAULT_CALLER_CLIENT_NAME);
+            return elasticsearchFactory.Create(ElasticConstant.Trace.IsIndependent ? ElasticConstant.TRACE_CALLER_CLIENT_NAME : ElasticConstant.DEFAULT_CALLER_CLIENT_NAME);
     }
 
     internal static ICaller Create(this ICallerFactory callerFactory, bool isLog)
