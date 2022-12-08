@@ -15,5 +15,7 @@ public class RegisterUserEvent
 
     public string Port { get; set; }
 
-    public string? Referer { get; set; }
+    public string Referer { get; set; }
+
+    public string? Remark { get; set; }
 }

@@ -21,12 +21,12 @@ public class RequiredValidatorTest
     [DataRow(" ", false)]
     [DataRow(null, false)]
     [DataTestMethod]
-    public void TestLowerLetter(string? url, bool expectedResult)
+    public void TestLowerLetter(string? remark, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
         {
-            Referer = url
+            Remark = remark
         });
         Assert.AreEqual(expectedResult, result.IsValid);
     }
@@ -35,7 +35,7 @@ public class RequiredValidatorTest
     {
         public RegisterUserEventValidator()
         {
-            RuleFor(r => r.Referer).Required();
+            RuleFor(r => r.Remark).Required();
         }
     }
 }
