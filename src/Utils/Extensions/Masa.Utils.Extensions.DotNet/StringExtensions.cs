@@ -7,10 +7,10 @@ namespace System;
 
 public static class StringExtensions
 {
-    public static bool IsNullOrWhiteSpace(this string? value)
+    public static bool IsNullOrWhiteSpace([NotNullWhen(false)] this string? value)
         => string.IsNullOrWhiteSpace(value);
 
-    public static bool IsNullOrEmpty(this string? value)
+    public static bool IsNullOrEmpty([NotNullWhen(false)] this string? value)
         => string.IsNullOrEmpty(value);
 
     public static void CheckIsNullOrWhiteSpace(this string? value, [CallerArgumentExpression("value")] string? paramName = null)

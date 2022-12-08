@@ -32,6 +32,11 @@ public class AutomaticCallerTest
         var serviceProvider = _builder.Services.BuildServiceProvider();
         var caller = serviceProvider.GetRequiredService<DaprCaller>();
         Assert.IsTrue(caller.CallerProviderIsNotNull());
+
+        var callerClient = (Masa.Contrib.Service.Caller.DaprClient.DaprCaller)caller.GetCaller();
+        var field = callerClient.GetType().GetField("AppId", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsNotNull(field);
+        Assert.AreEqual("DaprCaller", field.GetValue(callerClient));
     }
 
     [TestMethod]
@@ -43,5 +48,14 @@ public class AutomaticCallerTest
         var roleCaller = serviceProvider.GetRequiredService<RoleCaller>();
         var userCaller = serviceProvider.GetRequiredService<UserCaller>();
         Assert.IsTrue(roleCaller.GetAppId() == "User-Service" && userCaller.GetAppId() == "User-Service");
+    }
+
+    [TestMethod]
+    public void TestCallerProvider()
+    {
+        _builder.Services.AddCaller();
+        var serviceProvider = _builder.Services.BuildServiceProvider();
+        var callerProvider = serviceProvider.GetService<ICallerProvider>();
+        Assert.IsNotNull(callerProvider);
     }
 }
