@@ -56,6 +56,8 @@ public class DefaultCallerProviderTest
         masaConfiguration.Setup(configuration => configuration.Local.GetSection($"{appId}-{NetworkUtils.GetPhysicalAddress()}").Value)
             .Returns(() => expectedAppId);
         Mock<IConfiguration> configuration = new();
+        configuration.Setup(c => c.GetSection($"{appId}-{NetworkUtils.GetPhysicalAddress()}").Value)
+            .Returns(() => expectedAppId);
 
         var serviceProvider = services.BuildServiceProvider();
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
@@ -81,6 +83,8 @@ public class DefaultCallerProviderTest
         masaConfiguration.Setup(configuration => configuration.Local.GetSection($"{appId}-suffix").Value)
             .Returns(() => expectedAppId);
         Mock<IConfiguration> configuration = new();
+        configuration.Setup(c => c.GetSection($"{appId}-suffix").Value)
+            .Returns(() => expectedAppId);
 
         var serviceProvider = services.BuildServiceProvider();
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
