@@ -2,104 +2,60 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace FluentValidation;
 
 public static class FluentValidationExtensions
 {
     public static IRuleBuilderOptions<T, string> Chinese<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.CHINESE)
-                          .WithMessage("Can only input chinese of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new ChineseValidator<T>());
 
     public static IRuleBuilderOptions<T, string> Number<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.NUMBER)
-                          .WithMessage("Can only input number of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new NumberValidator<T>());
 
     public static IRuleBuilderOptions<T, string> Letter<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.LETTER)
-                          .WithMessage("Can only input letter of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new LetterValidator<T>());
 
     public static IRuleBuilderOptions<T, string> LowerLetter<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.LOWER_LETTER)
-                          .WithMessage("Can only input lower letter of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new LowerLetterValidator<T>());
 
     public static IRuleBuilderOptions<T, string> UpperLetter<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.UPPER_LETTER)
-                          .WithMessage("Can only input upper letter of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new UpperLetterValidator<T>());
 
     public static IRuleBuilderOptions<T, string> LetterNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.LETTER_NUMBER)
-                          .WithMessage("Can only input upper letter and number of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new LetterNumberValidator<T>());
+
+    public static IRuleBuilderOptions<T, string> ChineseLetterUnderline<T>(this IRuleBuilder<T, string> ruleBuilder)
+        => ruleBuilder.SetValidator(new ChineseLetterUnderlineValidator<T>());
 
     public static IRuleBuilderOptions<T, string> ChineseLetter<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.CHINESE_LETTER)
-                          .WithMessage("Can only input upper chinese and letter of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new ChineseLetterValidator<T>());
+
+    public static IRuleBuilderOptions<T, string> ChineseLetterNumberUnderline<T>(this IRuleBuilder<T, string> ruleBuilder)
+        => ruleBuilder.SetValidator(new ChineseLetterNumberUnderlineValidator<T>());
 
     public static IRuleBuilderOptions<T, string> ChineseLetterNumber<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.CHINESE_LETTER_NUMBER)
-                          .WithMessage("Can only input upper chinese and letter and number of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new ChineseLetterNumberValidator<T>());
 
-    public static IRuleBuilderOptions<T, string> Phone<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches<T>(RegularHelper.PHONE)
-                          .WithMessage("{PropertyName} format is incorrect");
-    }
+    public static IRuleBuilderOptions<T, string> Phone<T>(this IRuleBuilder<T, string> ruleBuilder, string? culture = null)
+        => ruleBuilder.SetValidator(new PhoneValidator<T>(culture));
 
-    public static IRuleBuilderOptions<T, string> Email<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.EMAIL)
-                          .WithMessage("{PropertyName} format is incorrect");
-    }
-
-    public static IRuleBuilderOptions<T, string> IdCard<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.IDCARD)
-                          .WithMessage("{PropertyName} format is incorrect");
-    }
+    /// <summary>
+    /// For the time being, it can only be used for the verification of ID card (China)
+    /// </summary>
+    /// <param name="ruleBuilder"></param>
+    /// <param name="culture"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static IRuleBuilderOptions<T, string> IdCard<T>(this IRuleBuilder<T, string> ruleBuilder, string? culture = null)
+        => ruleBuilder.SetValidator(new IdCardValidator<T>(culture));
 
     public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.URL)
-                          .WithMessage("{PropertyName} format is incorrect");
-    }
-
-    public static IRuleBuilderOptions<T, string> MinLength<T>(this IRuleBuilder<T, string> ruleBuilder, int minimumLength)
-    {
-        return ruleBuilder.MinimumLength(minimumLength)
-                    .WithMessage("Please enter a number greater than {MinLength} of {PropertyName}");
-    }
-
-    public static IRuleBuilderOptions<T, string> MaxLength<T>(this IRuleBuilder<T, string> ruleBuilder, int maximumLength)
-    {
-        return ruleBuilder.MaximumLength(maximumLength)
-                    .WithMessage("Please enter a number less than {MaxLength} of {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new UrlValidator<T>());
 
     public static IRuleBuilderOptions<T, string> Port<T>(this IRuleBuilder<T, string> ruleBuilder)
-    {
-        return ruleBuilder.Matches(RegularHelper.PORT)
-                          .WithMessage("Is not a valid port {PropertyName}");
-    }
+        => ruleBuilder.SetValidator(new PortValidator<T>());
 
     public static IRuleBuilderOptions<T, TProperty> Required<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder)
-    {
-        return ruleBuilder.NotNull()
-                        .NotEmpty()
-                        .WithMessage("{PropertyName} is required");
-    }
+        => ruleBuilder.SetValidator(new RequiredValidator<T, TProperty>());
 }
