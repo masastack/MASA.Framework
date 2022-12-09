@@ -38,7 +38,7 @@ public class MasaLanguageManager : LanguageManager
         }
     }
 
-    private ILanguageProvider? GetLanguageProvider(string language)
+    private static ILanguageProvider? GetLanguageProvider(string language)
     {
         switch (language)
         {
