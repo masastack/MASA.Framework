@@ -34,7 +34,7 @@ public class PhoneValidator<T> : PropertyValidator<T, string>
         switch (culture ?? GlobalValidationOptions.DefaultCulture)
         {
             case { } c when c.Equals("zh-CN", StringComparison.OrdinalIgnoreCase):
-                return RegularHelper.CHINA_PHONE;
+                return RegularHelper.CN_PHONE;
             case { } c when c.Equals("en-US", StringComparison.OrdinalIgnoreCase):
                 return RegularHelper.US_PHONE;
             case { } c when c.Equals("en-GB", StringComparison.OrdinalIgnoreCase):
