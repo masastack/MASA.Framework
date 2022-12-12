@@ -27,4 +27,7 @@ public class IdCardValidator<T> : PropertyValidator<T, string>
                 throw new NotSupportedException($"IdCard verification in the [{culture}] is not currently supported");
         }
     }
+
+    protected override string GetDefaultMessageTemplate(string errorCode)
+        => Localized(errorCode, Name);
 }

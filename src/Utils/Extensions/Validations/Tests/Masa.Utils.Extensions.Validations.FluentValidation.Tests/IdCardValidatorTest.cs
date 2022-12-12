@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class IdCardValidatorTest
+public class IdCardValidatorTest : ValidatorBaseTest
 {
+    public override string Message => "'Id Card' is not a valid ID.";
+
     [DataRow("410785195212123541", false)]
     [DataTestMethod]
     public void TestIdCard(string idCard, bool expectedResult)
@@ -16,6 +18,10 @@ public class IdCardValidatorTest
             IdCard = idCard
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     [TestMethod]

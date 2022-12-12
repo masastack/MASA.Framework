@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class PortValidatorTest
+public class PortValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Port' must be a legal port, it needs to be between [0 - 65535].";
+
     [DataRow("10", true)]
     [DataRow("-10", false)]
     [DataRow("65535", true)]
@@ -19,6 +21,10 @@ public class PortValidatorTest
             Port = port
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterPortEventValidator : AbstractValidator<RegisterPortEvent>

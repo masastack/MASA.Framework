@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class PhoneValidatorTest
+public class PhoneValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Phone' must be a valid mobile phone number.";
+
     [DataRow("13677777777", "zh-CN", true)]
     [DataRow("8613677777777", "zh-CN", true)]
     [DataRow("+8613677777777", "zh-CN", true)]
@@ -24,6 +26,10 @@ public class PhoneValidatorTest
             Phone = phone
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     [TestMethod]

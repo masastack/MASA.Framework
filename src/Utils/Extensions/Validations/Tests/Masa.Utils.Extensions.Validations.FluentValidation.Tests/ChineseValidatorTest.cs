@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class ChineseValidatorTest
+public class ChineseValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Name' must be Chinese.";
+
     [DataRow("团队", true)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", false)]
@@ -21,6 +23,10 @@ public class ChineseValidatorTest
             Name = name
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

@@ -46,4 +46,7 @@ public class PhoneValidator<T> : PropertyValidator<T, string>
 
     private static Regex CreateRegex(string expression, RegexOptions options = RegexOptions.None)
         => new(expression, options, TimeSpan.FromSeconds(2.0));
+
+    protected override string GetDefaultMessageTemplate(string errorCode)
+        => Localized(errorCode, Name);
 }

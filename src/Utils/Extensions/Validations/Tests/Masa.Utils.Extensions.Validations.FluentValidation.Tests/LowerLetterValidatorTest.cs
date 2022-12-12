@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class LowerLetterValidatorTest
+public class LowerLetterValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Name' must be lowercase.";
+
     [DataRow("团队", false)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", true)]
@@ -23,6 +25,10 @@ public class LowerLetterValidatorTest
             Name = name
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

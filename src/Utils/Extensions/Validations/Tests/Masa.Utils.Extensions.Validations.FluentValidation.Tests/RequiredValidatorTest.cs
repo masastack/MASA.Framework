@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class RequiredValidatorTest
+public class RequiredValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Remark' is required.";
+
     [DataRow("团队", true)]
     [DataRow("Masa团队", true)]
     [DataRow("masastack", true)]
@@ -29,6 +31,10 @@ public class RequiredValidatorTest
             Remark = remark
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

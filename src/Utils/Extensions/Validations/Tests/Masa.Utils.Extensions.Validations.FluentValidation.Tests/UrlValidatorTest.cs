@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class UrlValidatorTest
+public class UrlValidatorTest : ValidatorBaseTest
 {
+    public override string Message => "'Referer' must be a legal Url address.";
+
     [DataRow("团队", false)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", false)]
@@ -26,6 +28,10 @@ public class UrlValidatorTest
             Referer = url
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
