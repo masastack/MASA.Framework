@@ -67,6 +67,8 @@ public interface IUserService
 
     Task<T?> GetUserSystemDataAsync<T>(string systemId);
 
+    Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId);
+
     Task<bool> DisableUserAsync(DisableUserModel user);
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);

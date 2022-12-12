@@ -201,6 +201,13 @@ public class UserService : IUserService
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
 
+    public async Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId)
+    {
+        var requestUri = $"api/user/systemData";
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        return data is null ? default : JsonSerializer.Deserialize<T>(data);
+    }
+
     public async Task<bool> DisableUserAsync(DisableUserModel user)
     {
         var requestUri = $"api/user/disable";
