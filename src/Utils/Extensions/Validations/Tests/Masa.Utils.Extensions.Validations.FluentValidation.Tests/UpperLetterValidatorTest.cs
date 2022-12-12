@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class UpperLetterValidatorTest
+public class UpperLetterValidatorTest : ValidatorBaseTest
 {
+    public override string Message => "'Name' must be uppercase.";
+
     [DataRow("团队", false)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", false)]
@@ -23,6 +25,10 @@ public class UpperLetterValidatorTest
             Name = name
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

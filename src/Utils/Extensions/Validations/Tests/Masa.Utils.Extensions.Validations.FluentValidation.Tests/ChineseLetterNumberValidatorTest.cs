@@ -1,11 +1,13 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class ChineseLetterNumberValidatorTest
+public class ChineseLetterNumberValidatorTest : ValidatorBaseTest
 {
+    public override string Message => "'Name' must be Chinese, numbers, letters.";
+
     [DataRow("团队123", true)]
     [DataRow("Masa团队", true)]
     [DataRow("masastack", true)]
@@ -22,6 +24,10 @@ public class ChineseLetterNumberValidatorTest
             Name = name
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

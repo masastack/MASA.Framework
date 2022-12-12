@@ -18,8 +18,12 @@ public class MasaLanguageManager : LanguageManager
             if (languageProvider == null)
                 continue;
 
+            AddTranslation(language, nameof(ChineseLetterNumberValidator<string>),
+                languageProvider.GetTranslation(nameof(ChineseLetterNumberValidator<string>)));
             AddTranslation(language, nameof(ChineseLetterNumberUnderlineValidator<string>),
                 languageProvider.GetTranslation(nameof(ChineseLetterNumberUnderlineValidator<string>)));
+            AddTranslation(language, nameof(ChineseLetterValidator<string>),
+                languageProvider.GetTranslation(nameof(ChineseLetterValidator<string>)));
             AddTranslation(language, nameof(ChineseLetterUnderlineValidator<string>),
                 languageProvider.GetTranslation(nameof(ChineseLetterUnderlineValidator<string>)));
             AddTranslation(language, nameof(ChineseValidator<string>), languageProvider.GetTranslation(nameof(ChineseValidator<string>)));

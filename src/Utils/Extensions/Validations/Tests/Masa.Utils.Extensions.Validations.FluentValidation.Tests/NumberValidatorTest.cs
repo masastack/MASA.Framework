@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class NumberValidatorTest
+public class NumberValidatorTest: ValidatorBaseTest
 {
+    public override string Message => "'Id Card' must be Number.";
+
     [DataRow("团队", false)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", false)]
@@ -25,6 +27,10 @@ public class NumberValidatorTest
             IdCard = idCard
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>

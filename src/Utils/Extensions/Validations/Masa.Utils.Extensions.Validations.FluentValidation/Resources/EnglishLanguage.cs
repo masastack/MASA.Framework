@@ -20,11 +20,11 @@ internal class EnglishLanguage : ILanguageProvider
         "LetterValidator" => "'{PropertyName}' must be a letter.",
         "LowerLetterValidator" => "'{PropertyName}' must be lowercase.",
         "NumberValidator" => "'{PropertyName}' must be Number.",
-        "PhoneValidator" => "'{PropertyName}' must be a valid mobile phone number",
-        "PortValidator" => "'{PropertyName}' must be a legal port, it needs to be between [0 - 65535]",
-        "RequiredValidator" => "'{PropertyName}' is required",
+        "PhoneValidator" => "'{PropertyName}' must be a valid mobile phone number.",
+        "PortValidator" => "'{PropertyName}' must be a legal port, it needs to be between [0 - 65535].",
+        "RequiredValidator" => "'{PropertyName}' is required.",
         "UpperLetterValidator" => "'{PropertyName}' must be uppercase.",
-        "UrlValidator" => "'{PropertyName}' must be a legal Url address",
+        "UrlValidator" => "'{PropertyName}' must be a legal Url address.",
         _ => string.Empty,
     };
 }

@@ -4,8 +4,10 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class ChineseLetterNumberUnderlineValidatorTest
+public class ChineseLetterNumberUnderlineValidatorTest : ValidatorBaseTest
 {
+    public override string Message => "'Name' must be Chinese, numbers, letters or underscores.";
+
     [DataRow("团队123", true)]
     [DataRow("Masa团队", true)]
     [DataRow("masastack", true)]
@@ -23,6 +25,10 @@ public class ChineseLetterNumberUnderlineValidatorTest
             Name = name
         });
         Assert.AreEqual(expectedResult, result.IsValid);
+        if (!expectedResult)
+        {
+            Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
+        }
     }
 
     public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
