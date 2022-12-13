@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Extensions.DependencyInjection.Tests.Domain.Models;
-
 namespace Masa.Utils.Extensions.DependencyInjection.Tests;
 
 [TestClass]
@@ -32,10 +30,17 @@ public class DependencyInjectionTest
     }
 
     [TestMethod]
-    public void TestGetServiceTypesReturnCountIs5()
+    public void TestGetServiceTypesBySingletonReturnCountIs5()
     {
         var serviceTypes = _typeProvider.GetServiceTypes(_allTypes.ToList(), typeof(ISingletonDependency));
         Assert.IsTrue(serviceTypes.Count == 5);
+    }
+
+    [TestMethod]
+    public void TestGetServiceTypesByScopedReturnCountIs3()
+    {
+        var serviceTypes = _typeProvider.GetServiceTypes(_allTypes.ToList(), typeof(IScopedDependency));
+        Assert.IsTrue(serviceTypes.Count == 3);
     }
 
     [TestMethod]
@@ -71,10 +76,13 @@ public class DependencyInjectionTest
         Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(RepositoryBase<>), typeof(IRepository<>)));
         Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(RepositoryBase<User>), typeof(IRepository<User>)));
 
-        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<,>), typeof(UserRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(UserRepository<>), typeof(IRepository<,>)));
-        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<User>)));
+        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<,>), typeof(RepositoryBase<,>)));
+        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<,>), typeof(TestRepository<>)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>), typeof(RepositoryBase<>)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>), typeof(UserRepository)));
+        Assert.IsFalse(_typeProvider.IsAssignableFrom(typeof(RepositoryBase<,>), typeof(IRepository<,>)));
+        Assert.IsTrue(_typeProvider.IsAssignableFrom(typeof(IRepository<UserDbContext, User>),
+            typeof(RepositoryBase<UserDbContext, User>)));
     }
 
     [TestMethod]
@@ -100,10 +108,10 @@ public class DependencyInjectionTest
         Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(RepositoryBase<>), typeof(IRepository<>)));
         Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(RepositoryBase<User>), typeof(IRepository<User>)));
 
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<,>), typeof(UserRepository<>)));
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<>)));
-        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(UserRepository<>), typeof(IRepository<,>)));
-        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<UserDbContext, User>), typeof(UserRepository<User>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<,>), typeof(RepositoryBase<,>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<UserDbContext, User>), typeof(RepositoryBase<,>)));
+        Assert.IsTrue(_typeProvider.IsAssignableTo(typeof(RepositoryBase<,>), typeof(IRepository<,>)));
+        Assert.IsFalse(_typeProvider.IsAssignableTo(typeof(IRepository<UserDbContext, User>), typeof(RepositoryBase<,>)));
     }
 
     [TestMethod]
@@ -161,6 +169,12 @@ public class DependencyInjectionTest
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IRepository<User>>());
         Assert.IsTrue(serviceProvider.GetServices<IRepository<User>>().Count() == 1);
+
+        Assert.IsNull(serviceProvider.GetService<Repository<User>>());
+        Assert.IsNull(serviceProvider.GetService<RepositoryBase<UserDbContext, User>>());
+        Assert.IsNull(serviceProvider.GetService<UserRepository>());
+        Assert.IsNotNull(serviceProvider.GetService<IUserRepository>());
+        Assert.IsNull(serviceProvider.GetService<UserRepository>());
     }
 
     [TestMethod]

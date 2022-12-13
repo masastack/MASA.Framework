@@ -15,7 +15,14 @@ public class Repository<TEntity> : RepositoryBase<TEntity>
 
 }
 
-public class UserRepository<TEntity> : IRepository<UserDbContext, TEntity>
+public class RepositoryBase<TDbContext, TEntity> : IRepository<TDbContext, TEntity>
+    where TEntity : class
+    where TDbContext : class
+{
+
+}
+
+public class TestRepository<TEntity> : IRepository<UserDbContext, TEntity>
     where TEntity : class
 {
 

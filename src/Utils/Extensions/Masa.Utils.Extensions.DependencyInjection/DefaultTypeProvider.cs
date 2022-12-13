@@ -48,11 +48,13 @@ public class DefaultTypeProvider : TypeProviderBase
     public virtual List<Type> GetServiceTypes(List<Type> types, Type interfaceType)
     {
         var interfaceServiceTypes = types.Where(t => t.IsInterface && t != interfaceType && interfaceType.IsAssignableFrom(t));
-        return types.Where(type
-                => IsAssignableFrom(interfaceType, type) && !type.GetInterfaces().Any(t => interfaceServiceTypes.Contains(t)) &&
-                !IsSkip(type))
-            .Concat(interfaceServiceTypes)
-            .ToList();
+        var classServiceTypes = types.Where(type
+            => IsAssignableFrom(interfaceType, type) &&
+            !interfaceServiceTypes.Any(t => IsAssignableFrom(t, type)) &&
+            !IsSkip(type));
+
+        var list = new List<Type>(interfaceServiceTypes).Concat(classServiceTypes);
+        return list.ToList();
     }
 
     public virtual bool IsSkip(Type type)
