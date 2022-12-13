@@ -99,7 +99,7 @@ public class DispatcherOptions : IDispatcherOptions
     private int _retryBatchSize = 100;
 
     /// <summary>
-    /// maximum number of retries per retry
+    /// The maximum number of retrieved messages per retry
     /// </summary>
     public int RetryBatchSize
     {
@@ -109,6 +109,22 @@ public class DispatcherOptions : IDispatcherOptions
             MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(RetryBatchSize));
 
             _retryBatchSize = value;
+        }
+    }
+
+    private int _batchSize = 20;
+
+    /// <summary>
+    /// The maximum retrieval status is the number of messages waiting to be sent each time
+    /// </summary>
+    public int BatchSize
+    {
+        get => _batchSize;
+        set
+        {
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(BatchSize));
+
+            _batchSize = value;
         }
     }
 

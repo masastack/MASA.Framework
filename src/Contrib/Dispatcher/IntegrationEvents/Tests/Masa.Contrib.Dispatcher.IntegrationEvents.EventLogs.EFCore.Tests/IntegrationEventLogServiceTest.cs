@@ -49,7 +49,7 @@ public class IntegrationEventLogServiceTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestRetrieveEventLogsFailedToPublishAsync()
+    public async Task TestRetrieveEventLogsPendingToPublishAsync()
     {
         var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
         dispatcherOptions.UseEventLog<CustomDbContext>();
@@ -58,12 +58,12 @@ public class IntegrationEventLogServiceTest : TestBase
         var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
         await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
         var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = await logService.RetrieveEventLogsFailedToPublishAsync();
+        var list = await logService.RetrieveEventLogsPendingToPublishAsync(100);
         Assert.IsTrue(!list.Any());
     }
 
     [TestMethod]
-    public async Task TestRetrieveEventLogsFailedToPublish2Async()
+    public async Task TestRetrieveEventLogsPendingToPublish2Async()
     {
         var response = await InitializeAsync();
 
@@ -87,7 +87,46 @@ public class IntegrationEventLogServiceTest : TestBase
         #endregion
 
         var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = (await logService.RetrieveEventLogsFailedToPublishAsync()).ToList();
+        var list = (await logService.RetrieveEventLogsFailedToPublishAsync(100, 10, 60)).ToList();
+        Assert.IsTrue(list.Count == 1);
+
+        var eventLog = list.Select(log => log.Event).FirstOrDefault()!;
+        Assert.IsTrue(eventLog.Equals(@event));
+    }
+
+    [TestMethod]
+    public async Task TestRetrieveEventLogsFailedToPublishAsync()
+    {
+        var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
+        dispatcherOptions.UseEventLog<CustomDbContext>();
+        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
+        dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+        var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
+        await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
+        var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
+        var list = await logService.RetrieveEventLogsFailedToPublishAsync(100, 10, 60);
+        Assert.IsTrue(!list.Any());
+    }
+
+    [TestMethod]
+    public async Task TestRetrieveEventLogsFailedToPublish2Async()
+    {
+        var response = await InitializeAsync();
+
+        var logs = await response.CustomDbContext.Set<IntegrationEventLog>().ToListAsync();
+        response.CustomDbContext.Set<IntegrationEventLog>().RemoveRange(logs);
+
+        var @event = new OrderPaymentSucceededIntegrationEvent
+        {
+            OrderId = "1234567890123",
+            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+        };
+
+        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+        await logService.SaveEventAsync(@event, (await response.CustomDbContext.Database.BeginTransactionAsync()).GetDbTransaction());
+        await response.CustomDbContext.Database.CommitTransactionAsync();
+
+        var list = (await logService.RetrieveEventLogsPendingToPublishAsync(100)).ToList();
         Assert.IsTrue(list.Count == 1);
 
         var eventLog = list.Select(log => log.Event).FirstOrDefault()!;
@@ -318,5 +357,48 @@ public class IntegrationEventLogServiceTest : TestBase
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await customDbContext.Database.EnsureCreatedAsync();
         return new(customDbContext, serviceProvider);
+    }
+
+    [TestMethod]
+    public async Task TestDeleteExpiresAsync()
+    {
+        var response = await InitializeAsync();
+
+        #region Initialization data
+
+        var logs = await response.CustomDbContext.Set<IntegrationEventLog>().ToListAsync();
+        response.CustomDbContext.Set<IntegrationEventLog>().RemoveRange(logs);
+
+        var @event = new OrderPaymentSucceededIntegrationEvent
+        {
+            OrderId = "1234567890123",
+            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+        };
+
+        var integrationEventLogs = new List<IntegrationEventLog>()
+        {
+            new(@event, Guid.NewGuid())
+            {
+                State = IntegrationEventStates.InProgress,
+                ModificationTime = DateTime.UtcNow.AddSeconds(-120),
+            },
+            new(@event, Guid.NewGuid())
+            {
+                State = IntegrationEventStates.Published,
+                ModificationTime = DateTime.UtcNow.AddSeconds(-120),
+            },
+        };
+        await response.CustomDbContext.Set<IntegrationEventLog>().AddRangeAsync(integrationEventLogs);
+        await response.CustomDbContext.SaveChangesAsync();
+
+        Assert.AreEqual(integrationEventLogs.Count, await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync());
+
+        #endregion
+
+        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+
+        await logService.DeleteExpiresAsync(DateTime.UtcNow, 100);
+        Assert.AreEqual(integrationEventLogs.Count(e => e.State != IntegrationEventStates.Published),
+            await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync());
     }
 }

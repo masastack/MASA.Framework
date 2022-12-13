@@ -29,9 +29,9 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
-        int retryBatchSize = 200,
-        int maxRetryTimes = 10,
-        int minimumRetryInterval = 60,
+        int retryBatchSize,
+        int maxRetryTimes,
+        int minimumRetryInterval,
         CancellationToken cancellationToken = default)
     {
         //todo: Subsequent acquisition of the current time needs to be uniformly replaced with the unified time method provided by the framework, which is convenient for subsequent uniform replacement to UTC time or other urban time. The default setting here is Utc time.
@@ -44,6 +44,33 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             .Take(retryBatchSize)
             .ToListAsync(cancellationToken);
 
+        if (result.Any())
+        {
+            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
+                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
+
+            return result.OrderBy(o => o.CreationTime)
+                .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Retrieve pending messages
+    /// </summary>
+    /// <param name="batchSize">The maximum number of messages retrieved each time</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
+        int batchSize,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _eventLogContext.EventLogs
+            .Where(e => e.State == IntegrationEventStates.NotPublished)
+            .OrderBy(o => o.CreationTime)
+            .Take(batchSize)
+            .ToListAsync(cancellationToken);
         if (result.Any())
         {
             _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
@@ -127,7 +154,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         }, cancellationToken);
     }
 
-    public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount = 1000, CancellationToken token = default)
+    public async Task DeleteExpiresAsync(DateTime expiresAt, int batchCount, CancellationToken token = default)
     {
         var eventLogs = _eventLogContext.EventLogs.Where(e => e.ModificationTime < expiresAt && e.State == IntegrationEventStates.Published)
             .OrderBy(e => e.CreationTime).Take(batchCount);
