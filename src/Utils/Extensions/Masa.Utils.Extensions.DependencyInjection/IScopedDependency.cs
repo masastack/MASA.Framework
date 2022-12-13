@@ -6,16 +6,3 @@ namespace Microsoft.Extensions.DependencyInjection;
 public interface IScopedDependency
 {
 }
-
-
-public interface ITestService<T> : IScopedDependency
-    where T : class
-{
-
-}
-
-public class TestSerice<T> : ITestService<T>
-    where T : class
-{
-
-}
