@@ -14,7 +14,7 @@ namespace System.Text.Json;
 /// <remarks>
 /// It requires a reference to the "System.Linq.Expressions" assembly.
 /// </remarks>
-[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage]
 public static class JsonSerializerExtensions
 {
     /// <summary>
