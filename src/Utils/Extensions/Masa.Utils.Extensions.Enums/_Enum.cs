@@ -1,43 +1,44 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace System;
 
 public static class Enum<TEnum>
     where TEnum : Enum
 {
+    [Obsolete("Has no effect and will be deleted")]
     public static List<TAttribute> GetAttributes<TAttribute>()
         where TAttribute : Attribute, new()
     {
         var enumType = typeof(TEnum);
-        var names = Enum.GetNames(enumType);
-        var result = names.Select(name => EnumUtil.GetSubitemAttribute<TAttribute>(Enum.Parse(enumType, name))!).ToList();
+        var values = Enum.GetValues(enumType);
 
-        return result;
+        var list = new List<TAttribute>();
+        foreach (var value in values)
+        {
+            list.Add(EnumUtil.GetCustomAttribute<TAttribute>(enumType, value)!);
+        }
+
+        return list;
     }
 
+    [Obsolete("Use EnumUtil.GetCustomAttributeDictionary<TEnum, TAttribute>() instead")]
     public static Dictionary<TEnum, TAttribute> GetDictionary<TAttribute>()
         where TAttribute : Attribute, new()
-    {
-        var enumType = typeof(TEnum);
+        => EnumUtil.GetCustomAttributeDictionary<TEnum, TAttribute>();
 
-        return Enum.GetNames(enumType)
-            .Select(name => (TEnum)Enum.Parse(enumType, name))
-            .ToDictionary(@enum => @enum, @enum => EnumUtil.GetSubitemAttribute<TAttribute>(@enum)!);
-    }
+    [Obsolete("Use EnumUtil.GetItems<TEnum>() instead")]
+    public static List<TEnum> GetItems() => EnumUtil.GetItems<TEnum>().ToList();
 
-    public static List<TEnum> GetItems()
-    {
-        var enumType = typeof(TEnum);
-
-        return Enum.GetNames(enumType)
-            .Select(name => (TEnum)Enum.Parse(enumType, name)).ToList();
-    }
-
+    [Obsolete("Use EnumUtil.GetEnumList<TEnum>() or EnumUtil.GetList<TEnum>() instead")]
     public static List<EnumObject<int>> GetEnumObjectList(bool withAll = false, string allName = "所有", int allValue = 0)
         => GetEnumObjectList<int>(withAll, allName, allValue);
 
-    public static List<EnumObject<TValue>> GetEnumObjectList<TValue>(bool withAll = false, string allName = "所有", TValue? allValue = default)
+    [Obsolete("Use EnumUtil.GetEnumList<TEnum>() or EnumUtil.GetList<TEnum>() instead")]
+    public static List<EnumObject<TValue>> GetEnumObjectList<TValue>(bool withAll = false, string allName = "所有",
+        TValue? allValue = default)
     {
         var enumType = typeof(TEnum);
 
@@ -47,15 +48,7 @@ public static class Enum<TEnum>
             if (fieldInfo != null)
             {
                 var attribute = fieldInfo.GetCustomAttribute<DescriptionAttribute>(false);
-                if (attribute == null)
-                {
-                    return new EnumObject<TValue>()
-                    {
-                        Name = name,
-                        Value = (TValue)Enum.Parse(enumType, name)
-                    };
-                }
-                else
+                if (attribute != null)
                 {
                     return new EnumObject<TValue>()
                     {
@@ -64,15 +57,12 @@ public static class Enum<TEnum>
                     };
                 }
             }
-            else
+            return new EnumObject<TValue>()
             {
-                return new EnumObject<TValue>()
-                {
-                    Name = name,
-                    Value = (TValue)Enum.Parse(enumType, name)
-                };
-            }
-        }).Where(p => p != null).ToList();
+                Name = name,
+                Value = (TValue)Enum.Parse(enumType, name)
+            };
+        }).ToList();
 
         if (withAll)
         {
@@ -86,12 +76,15 @@ public static class Enum<TEnum>
         return lstResult;
     }
 
+    [Obsolete("Use EnumUtil.GetList<TEnum>() instead")]
     public static Dictionary<int, string> GetEnumObjectDictionary(bool withAll = false, string allName = "所有", int allValue = 0)
     {
         return GetEnumObjectDictionary<int>(withAll, allName, allValue);
     }
 
-    public static Dictionary<TValue, string> GetEnumObjectDictionary<TValue>(bool withAll = false, string allName = "所有", TValue allValue = default!)
+    [Obsolete("Use EnumUtil.GetEnumList<TEnum>() or EnumUtil.GetList<TEnum>() instead")]
+    public static Dictionary<TValue, string> GetEnumObjectDictionary<TValue>(bool withAll = false, string allName = "所有",
+        TValue allValue = default!)
         where TValue : notnull
     {
         Dictionary<TValue, string> keyValues = new Dictionary<TValue, string>();

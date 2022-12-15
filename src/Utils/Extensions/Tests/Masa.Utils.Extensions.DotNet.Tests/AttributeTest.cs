@@ -21,11 +21,19 @@ public class AttributeTest
     }
 
     [TestMethod]
-    public void TestGetFieldAttribute()
+    public void TestGetCustomAttribute()
     {
         var attribute = AttributeUtils.GetCustomAttribute<TestErrorCode, System.ComponentModel.DescriptionAttribute>(nameof(TestErrorCode.FRAMEWORK_PREFIX));
         Assert.IsNotNull(attribute);
         Assert.AreEqual("Test Framework Prefix", attribute.Description);
+
+        attribute = AttributeUtils.GetCustomAttribute<TestErrorCode, System.ComponentModel.DescriptionAttribute>(nameof(TestErrorCode.FRAMEWORK_SUFFIX),out bool existFieldInfo);
+        Assert.IsTrue(existFieldInfo);
+        Assert.IsNull(attribute);
+
+        attribute = AttributeUtils.GetCustomAttribute<TestErrorCode, System.ComponentModel.DescriptionAttribute>("test",out existFieldInfo);
+        Assert.IsFalse(existFieldInfo);
+        Assert.IsNull(attribute);
     }
 }
 
@@ -39,5 +47,7 @@ public class TestErrorCode
 {
     [System.ComponentModel.Description("Test Framework Prefix")]
     public const string FRAMEWORK_PREFIX = "MF";
+
+    public const string FRAMEWORK_SUFFIX = "MF_Suffix";
 }
 #pragma warning restore CS0618

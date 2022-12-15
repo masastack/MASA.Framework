@@ -1,36 +1,27 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace System;
 
 public static class EnumExtensions
 {
-    public static DescriptionAttribute GetDescription(this Enum enumSubitem)
+    public static string GetDescriptionValue(this Enum enumValue)
+        => enumValue.GetCustomAttribute(() => new DescriptionAttribute(enumValue.ToString()))!.Description;
+
+    public static DescriptionAttribute GetDescription(this Enum enumValue)
+        => enumValue.GetCustomAttribute(() => new DescriptionAttribute(enumValue.ToString()))!;
+
+    public static TAttribute GetCustomAttribute<TAttribute>(this Enum enumValue)
+        where TAttribute : Attribute, new()
+        => enumValue.GetCustomAttribute(() => new TAttribute())!;
+
+    public static TAttribute? GetCustomAttribute<TAttribute>(this Enum enumValue, Func<TAttribute?> defaultFunc)
+        where TAttribute : Attribute
     {
-        string value = enumSubitem.ToString();
+        var attribute = AttributeUtils.GetCustomAttribute<TAttribute>(enumValue.GetType(), enumValue.ToString(), inherit: false);
 
-        var fieldInfo = enumSubitem.GetType().GetField(value);
-
-        if (fieldInfo != null)
-        {
-            var attributes = fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false);
-
-            if (attributes == null || attributes.Length == 0)
-            {
-                return new DescriptionAttribute(value);
-            }
-            else
-            {
-                return (DescriptionAttribute)attributes[0];
-            }
-        }
-        else
-        {
-            return new DescriptionAttribute();
-        }
+        return attribute ?? defaultFunc();
     }
-
-    public static T? GetAttribute<T>(this Enum enumSubitem)
-        where T : Attribute, new()
-        => EnumUtil.GetSubitemAttribute<T>(enumSubitem);
 }
