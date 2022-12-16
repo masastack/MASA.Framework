@@ -7,7 +7,7 @@ public static partial class MasaServiceExtensions
 {
     public static IServiceCollection AddMasaTracing(this IServiceCollection services, Action<OpenTelemetryInstrumentationOptions>? configure = null)
     {
-        services.AddOpenTelemetryTracing((builder) =>
+        services.AddOpenTelemetry().WithTracing(builder =>
         {
             builder.SetSampler(new AlwaysOnSampler());
             var option = new OpenTelemetryInstrumentationOptions();
@@ -30,8 +30,8 @@ public static partial class MasaServiceExtensions
                 builder.AddRedisInstrumentation(option.Connection, option.StackExchangeRedisCallsInstrumentationOptions);
 
             option.BuildTraceCallback?.Invoke(builder);
-        });
-
+        }).StartWithHost();
+      
         return services;
     }
 }
