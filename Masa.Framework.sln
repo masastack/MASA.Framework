@@ -645,6 +645,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.Valid
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.Enums.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.Enums.Tests\Masa.Utils.Extensions.Enums.Tests.csproj", "{3AAD9D87-BC2D-446C-B56B-60F8A1492C30}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.Expressions.Tests", "src\Utils\Extensions\Tests\Masa.Utils.Extensions.Expressions.Tests\Masa.Utils.Extensions.Expressions.Tests.csproj", "{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2293,6 +2295,14 @@ Global
 		{3AAD9D87-BC2D-446C-B56B-60F8A1492C30}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3AAD9D87-BC2D-446C-B56B-60F8A1492C30}.Release|x64.ActiveCfg = Release|Any CPU
 		{3AAD9D87-BC2D-446C-B56B-60F8A1492C30}.Release|x64.Build.0 = Release|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2611,6 +2621,7 @@ Global
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1} = {E8681596-D4BF-484A-A428-06D749FD4C5D}
 		{351755B9-4C7F-4B51-B813-3203DC9A8284} = {9FEE5178-557E-4694-A088-F157267C989C}
 		{3AAD9D87-BC2D-446C-B56B-60F8A1492C30} = {C2FAC276-9D6E-498A-BBA2-F3F14ADF4D0D}
+		{FCD6DF86-4E3B-4CDC-9849-28884B3B40D8} = {C2FAC276-9D6E-498A-BBA2-F3F14ADF4D0D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
