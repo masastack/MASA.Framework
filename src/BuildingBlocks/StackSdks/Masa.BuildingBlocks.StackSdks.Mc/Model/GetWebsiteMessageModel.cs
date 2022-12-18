@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 
-public class GetWebsiteMessageModel : PaginatedOptionsModel
+public class GetWebsiteMessageModel : PaginatedOptions
 {
     public string Filter { get; set; } = string.Empty;
 
@@ -12,4 +12,9 @@ public class GetWebsiteMessageModel : PaginatedOptionsModel
     public Guid? ChannelId { get; set; }
 
     public bool? IsRead { get; set; }
+
+    public GetWebsiteMessageModel(int page, int pageSize, Dictionary<string, bool>? sorting = null) : base(page, pageSize, sorting)
+    {
+
+    }
 }
