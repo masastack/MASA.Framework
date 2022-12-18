@@ -6,7 +6,7 @@ namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 public class GetMessageTaskModel : PaginatedOptions
 {
     public string Filter { get; set; } = string.Empty;
-    public Guid? ChannelId { get; set; }
+    public Guid ChannelId { get; set; }
     public MessageTypes? EntityType { get; set; }
     public bool? IsDraft { get; set; }
     public bool? IsEnabled { get; set; }

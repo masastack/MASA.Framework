@@ -40,4 +40,6 @@ public class MessageTaskModel : AuditEntityModel<Guid, Guid>
     public MessageTaskStatuses Status { get; set; }
 
     public MessageTaskSources Source { get; set; }
+
+    public string ModifierName { get; set; } = string.Empty;
 }

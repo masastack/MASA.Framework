@@ -45,7 +45,7 @@ public class MessageTaskService : IMessageTaskService
 
     public async Task<PaginatedListModel<MessageTaskModel>> GetListAsync(GetMessageTaskModel options)
     {
-        var requestUri = $"{_party}/ListBySdk";
+        var requestUri = $"{_party}";
         return await _caller.GetAsync<GetMessageTaskModel, PaginatedListModel<MessageTaskModel>>(requestUri, options) ?? new();
     }
 
