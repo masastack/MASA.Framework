@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
+  </ItemGroup>
+
 </Project>

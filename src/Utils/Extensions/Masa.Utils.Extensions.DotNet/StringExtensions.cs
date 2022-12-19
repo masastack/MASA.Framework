@@ -38,4 +38,10 @@ public static class StringExtensions
 
         return value.Substring(0, value.Length - trimParameter.Length);
     }
+
+    public static byte[] ConvertToBytes(this string value, Encoding encoding)
+        => encoding.GetBytes(value);
+
+    public static byte[] FromBase64String(this string value)
+        => Convert.FromBase64String(value);
 }

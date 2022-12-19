@@ -5,19 +5,25 @@ namespace Masa.Utils.Security.Cryptography;
 
 public class EncryptBase
 {
+    protected EncryptBase() { }
+
     protected static string GetSpecifiedLengthString(
         string key,
         int length,
-        Func<Exception> func,
+        Action action,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ')
     {
         if (fillType == FillType.NoFile && key.Length < length)
+            action.Invoke();
+
+        var keyLength = key.Length;
+        if (keyLength == length)
         {
-            throw func.Invoke();
+            return key;
         }
 
-        if (key.Length >= length)
+        if (keyLength > length)
         {
             return key.Substring(0, length);
         }
@@ -33,6 +39,22 @@ public class EncryptBase
         }
 
         throw new NotSupportedException($"... Unsupported {nameof(fillType)}");
+    }
+
+    protected static byte[] GetBytes(string str,
+        Encoding encoding,
+        FillType fillType,
+        char fillCharacter,
+        int length,
+        Action action)
+    {
+        var result = GetSpecifiedLengthString(
+            str,
+            length,
+            action,
+            fillType,
+            fillCharacter);
+        return result.ConvertToBytes(encoding);
     }
 
     protected static Encoding GetSafeEncoding(Encoding? encoding = null)

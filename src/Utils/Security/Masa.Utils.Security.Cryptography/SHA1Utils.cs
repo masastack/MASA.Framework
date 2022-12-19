@@ -6,6 +6,7 @@ namespace Masa.Utils.Security.Cryptography;
 /// <summary>
 /// Hash algorithm encryption SHA1
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class SHA1Utils : HashAlgorithmBase
 {
     /// <summary>
@@ -15,6 +16,6 @@ public class SHA1Utils : HashAlgorithmBase
     /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     /// <returns>encrypted result</returns>
-    public static string Encrypt(string content, bool isToLower = false, Encoding? encoding = null)
+    public static string Encrypt(string content, bool isToLower = true, Encoding? encoding = null)
         => Encrypt(EncryptType.Sha1, content, isToLower, encoding);
 }

@@ -3,7 +3,9 @@
 
 namespace Masa.Utils.Security.Cryptography;
 
-public enum DESEncryType
+#pragma warning disable S2342
+// ReSharper disable once InconsistentNaming
+public enum DESEncryptType
 {
     /// <summary>
     /// original DES encryption
@@ -15,3 +17,4 @@ public enum DESEncryType
     /// </summary>
     Improved
 }
+#pragma warning restore S2342

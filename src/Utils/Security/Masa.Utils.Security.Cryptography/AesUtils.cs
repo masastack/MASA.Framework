@@ -5,6 +5,10 @@ namespace Masa.Utils.Security.Cryptography;
 
 public class AesUtils : EncryptBase
 {
+    private static readonly string DefaultEncryptKey = GetSpecifiedLengthString(GlobalConfigurationUtils.DefaultEncryptKey, 32, () =>
+    {
+    }, FillType.Right,' ');
+
     private static readonly byte[] DefaultIv =
     {
         0x41,
@@ -36,8 +40,10 @@ public class AesUtils : EncryptBase
         crypto.KeySize = length;
         crypto.BlockSize = 128;
         crypto.GenerateKey();
-        return Convert.ToBase64String(crypto.Key);
+        return crypto.Key.ToBase64String();
     }
+
+    #region Encrypt
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged encryption (RijndaelManaged (AES) algorithm is a block encryption algorithm)
@@ -50,7 +56,7 @@ public class AesUtils : EncryptBase
         string content,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-        => Encrypt(content, GlobalConfigurationUtils.DefaultEncryKey, FillType.Right, fillCharacter, encoding);
+        => Encrypt(content, DefaultEncryptKey, FillType.Right, fillCharacter, encoding);
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged encryption (RijndaelManaged (AES) algorithm is a block encryption algorithm)
@@ -87,20 +93,13 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var ivBuffer = GetSafeEncoding(encoding).GetBytes(GetSpecifiedLengthString(
-            iv,
-            16,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter));
-
-        return Encrypt(content,
-            key,
-            ivBuffer,
-            fillType,
-            fillCharacter,
-            encoding);
+        var currentEncoding = GetSafeEncoding(encoding);
+        var byteBuffer = EncryptToBytes(
+            currentEncoding.GetBytes(content),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter)
+        );
+        return byteBuffer.ToBase64String();
     }
 
     /// <summary>
@@ -108,7 +107,7 @@ public class AesUtils : EncryptBase
     /// </summary>
     /// <param name="content">String to be encrypted</param>
     /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="ivBuffer">16-bit length or complement by fillType to calculate an 16-bit string</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
@@ -116,27 +115,214 @@ public class AesUtils : EncryptBase
     public static string Encrypt(
         string content,
         string key,
-        byte[] iv,
+        byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
-        key = GetSpecifiedLengthString(
-            key,
-            32,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter);
-        using var aes = Aes.Create();
-        aes.Key = currentEncoding.GetBytes(key);
-        aes.IV = iv;
-        using ICryptoTransform cryptoTransform = aes.CreateEncryptor();
-        byte[] buffers = currentEncoding.GetBytes(content);
-        byte[] encryptedData = cryptoTransform.TransformFinalBlock(buffers, 0, buffers.Length);
-        return Convert.ToBase64String(encryptedData);
+        var byteBuffer = EncryptToBytes(
+            currentEncoding.GetBytes(content),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            ivBuffer);
+        return byteBuffer.ToBase64String();
     }
+
+    /// <summary>
+    /// Symmetric encryption algorithm AES RijndaelManaged encryption (RijndaelManaged (AES) algorithm is a block encryption algorithm)
+    /// </summary>
+    /// <param name="dataBuffers">data array to be encrypted</param>
+    /// <param name="keyBuffer">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="ivBuffer">16-bit length or complement by fillType to calculate an 16-bit string</param>
+    /// <returns>encrypted result</returns>
+    public static byte[] EncryptToBytes(
+        byte[] dataBuffers,
+        byte[] keyBuffer,
+        byte[] ivBuffer)
+    {
+        using var aes = Aes.Create();
+        using ICryptoTransform cryptoTransform = aes.CreateEncryptor(keyBuffer, ivBuffer);
+        return cryptoTransform.TransformFinalBlock(dataBuffers, 0, dataBuffers.Length);
+    }
+
+    /// <summary>
+    /// encrypted stream
+    /// </summary>
+    /// <param name="stream">streams that require encryption</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <returns>Returns the encrypted byte array</returns>
+    public static byte[] EncryptToBytes(
+        Stream stream,
+        string key,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+        => EncryptToBytes(stream, key, DefaultIv, fillType, fillCharacter, encoding);
+
+    /// <summary>
+    /// encrypted stream
+    /// </summary>
+    /// <param name="stream">streams that require encryption</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="iv">16-bit length. 16-bit length key or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <returns>Returns the encrypted byte array</returns>
+    public static byte[] EncryptToBytes(
+        Stream stream,
+        string key,
+        string iv,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var currentEncoding = GetSafeEncoding(encoding);
+
+        return EncryptToBytes(stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
+    }
+
+    /// <summary>
+    /// encrypted stream
+    /// </summary>
+    /// <param name="stream">streams that require encryption</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="ivBuffer">16-bit length</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <returns>Returns the encrypted byte array</returns>
+    public static byte[] EncryptToBytes(
+        Stream stream,
+        string key,
+        byte[] ivBuffer,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var currentEncoding = GetSafeEncoding(encoding);
+        return EncryptToBytes(
+            stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            ivBuffer);
+    }
+
+    /// <summary>
+    /// encrypted stream
+    /// </summary>
+    /// <param name="stream">streams that require encryption</param>
+    /// <param name="keyBuffer">Encryption key, 32-bit length</param>
+    /// <param name="ivBuffer">16-bit length</param>
+    /// <returns>Returns the encrypted byte array</returns>
+    public static byte[] EncryptToBytes(
+        Stream stream,
+        byte[] keyBuffer,
+        byte[] ivBuffer)
+    {
+        using var aes = Aes.Create();
+        using var cryptoTransform = aes.CreateEncryptor(keyBuffer, ivBuffer);
+        using MemoryStream ms = new MemoryStream();
+        var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
+        var dataBuffer = stream.ConvertToBytes();
+        cryptoStream.Write(dataBuffer, 0, dataBuffer.Length);
+        cryptoStream.FlushFinalBlock();
+        cryptoStream.Close();
+        return ms.ToArray();
+    }
+
+    /// <summary>
+    /// Encrypt the specified stream with AES and output a file
+    /// </summary>
+    /// <param name="stream">stream to be encrypted</param>
+    /// <param name="outputPath">output file path</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    public static void EncryptFile(
+        Stream stream,
+        string outputPath,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+        => EncryptFile(stream,
+            DefaultEncryptKey,
+            outputPath,
+            FillType.Right,
+            fillCharacter,
+            encoding);
+
+    /// <summary>
+    /// Encrypt the specified stream with AES and output a file
+    /// </summary>
+    /// <param name="stream">stream to be encrypted</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="outputPath">output file path</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    public static void EncryptFile(
+        Stream stream,
+        string key,
+        string outputPath,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+        => EncryptFile(stream, key, DefaultIv, outputPath, fillType, fillCharacter, encoding);
+
+    /// <summary>
+    /// Encrypt the specified stream with AES and output a file
+    /// </summary>
+    /// <param name="stream">stream to be encrypted</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="ivBuffer">16-bit length</param>
+    /// <param name="outputPath">output file path</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    public static void EncryptFile(
+        Stream stream,
+        string key,
+        byte[] ivBuffer,
+        string outputPath,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var encryptBuffer = EncryptToBytes(stream, key, ivBuffer, fillType, fillCharacter, encoding);
+        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
+        fileStreamOut.Write(encryptBuffer, 0, encryptBuffer.Length);
+    }
+
+    /// <summary>
+    /// Encrypt the specified stream with AES and output a file
+    /// </summary>
+    /// <param name="stream">stream to be encrypted</param>
+    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="iv">16-bit length or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="outputPath">output file path</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    public static void EncryptFile(
+        Stream stream,
+        string key,
+        string iv,
+        string outputPath,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var encryptBuffer = EncryptToBytes(stream, key, iv, fillType, fillCharacter, encoding);
+        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
+        fileStreamOut.Write(encryptBuffer, 0, encryptBuffer.Length);
+    }
+
+    #endregion
+
+    #region Decrypt
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged decrypts the string
@@ -149,7 +335,7 @@ public class AesUtils : EncryptBase
         string content,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-        => Decrypt(content, GlobalConfigurationUtils.DefaultEncryKey, FillType.Right, fillCharacter, encoding);
+        => Decrypt(content, DefaultEncryptKey, FillType.Right, fillCharacter, encoding);
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged decrypts the string
@@ -186,20 +372,12 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var ivBuffer = GetSafeEncoding(encoding).GetBytes(GetSpecifiedLengthString(
-            iv,
-            16,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter));
-
-        return Decrypt(content,
-            key,
-            ivBuffer,
-            fillType,
-            fillCharacter,
-            encoding);
+        var currentEncoding = GetSafeEncoding(encoding);
+        var decryptBuffer = DecryptToBytes(
+            content.FromBase64String(),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
+        return decryptBuffer.ConvertToString(currentEncoding);
     }
 
     /// <summary>
@@ -207,7 +385,7 @@ public class AesUtils : EncryptBase
     /// </summary>
     /// <param name="content">String to be decrypted</param>
     /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length. 16-bit length key or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="ivBuffer">16-bit length. 16-bit length key or complement by fillType to calculate an 16-bit string</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
@@ -215,125 +393,66 @@ public class AesUtils : EncryptBase
     public static string Decrypt(
         string content,
         string key,
-        byte[] iv,
+        byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
-        key = GetSpecifiedLengthString(
-            key,
-            32,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter);
+        var decryptBuffer = DecryptToBytes(
+            content.FromBase64String(),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            ivBuffer
+        );
+        return decryptBuffer.ConvertToString(currentEncoding);
+    }
+
+    /// <summary>
+    /// Symmetric encryption algorithm AES RijndaelManaged decrypts
+    /// </summary>
+    /// <param name="dataBuffers">data array to be decrypted</param>
+    /// <param name="keyBuffer">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="ivBuffer">16-bit length. 16-bit length key or complement by fillType to calculate an 16-bit string</param>
+    /// <returns></returns>
+    public static byte[] DecryptToBytes(
+        byte[] dataBuffers,
+        byte[] keyBuffer,
+        byte[] ivBuffer)
+    {
         using var aes = Aes.Create();
-        aes.Key = currentEncoding.GetBytes(key);
-        aes.IV = iv;
-        using ICryptoTransform rijndaelDecrypt = aes.CreateDecryptor();
-        byte[] buffers = Convert.FromBase64String(content);
-        byte[] decryptedData = rijndaelDecrypt.TransformFinalBlock(buffers, 0, buffers.Length);
-        return currentEncoding.GetString(decryptedData);
+        using ICryptoTransform rijndaelDecrypt = aes.CreateDecryptor(keyBuffer, ivBuffer);
+        return rijndaelDecrypt.TransformFinalBlock(dataBuffers, 0, dataBuffers.Length);
     }
 
     /// <summary>
-    /// encrypted file stream
+    /// Decrypt the stream
     /// </summary>
-    /// <param name="fileStream">File streams that require encryption</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="stream">stream to be decrypted</param>
+    /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>encrypted stream result</returns>
-    public static CryptoStream Encrypt(
-        FileStream fileStream,
+    /// <returns>returns the decrypted byte array</returns>
+    public static byte[] DecryptToBytes(
+        Stream stream,
         string key,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-        => Encrypt(fileStream, key, key, fillType, fillCharacter, encoding);
+        => DecryptToBytes(stream, key, DefaultIv, fillType, fillCharacter, encoding);
 
     /// <summary>
-    /// encrypted file stream
+    /// Decrypt the stream
     /// </summary>
-    /// <param name="fileStream">File streams that require encryption</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length. 16-bit length key or complement by fillType to calculate an 16-bit string</param>
-    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
-    /// <param name="fillCharacter">character for complement</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>encrypted stream result</returns>
-    public static CryptoStream Encrypt(
-        FileStream fileStream,
-        string key,
-        string iv,
-        FillType fillType = FillType.NoFile,
-        char fillCharacter = ' ',
-        Encoding? encoding = null)
-    {
-        var currentEncoding = GetSafeEncoding(encoding);
-
-        var ivBuffer = currentEncoding.GetBytes(GetSpecifiedLengthString(iv,
-            16,
-            () => throw new ArgumentException(nameof(iv),
-                $"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter));
-
-        return Encrypt(fileStream, key, ivBuffer, fillType, fillCharacter, encoding);
-    }
-
-    /// <summary>
-    /// encrypted file stream
-    /// </summary>
-    /// <param name="fileStream">File streams that require encryption</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length</param>
-    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
-    /// <param name="fillCharacter">character for complement</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>encrypted stream result</returns>
-    public static CryptoStream Encrypt(
-        FileStream fileStream,
-        string key,
-        byte[] iv,
-        FillType fillType = FillType.NoFile,
-        char fillCharacter = ' ',
-        Encoding? encoding = null)
-    {
-        if (iv.Length != 16)
-        {
-            throw new Exception($"The {nameof(iv)} length is invalid. The {nameof(iv)} iv length needs 16 bits！");
-        }
-
-        var currentEncoding = GetSafeEncoding(encoding);
-        key = GetSpecifiedLengthString(key,
-            32,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter);
-
-        using var aes = Aes.Create();
-        aes.Key = currentEncoding.GetBytes(key);
-        aes.IV = iv;
-        using var cryptoTransform = aes.CreateEncryptor();
-        return new CryptoStream(fileStream, cryptoTransform, CryptoStreamMode.Write);
-    }
-
-    /// <summary>
-    /// Decrypt the file stream
-    /// </summary>
-    /// <param name="fileStream">file stream to be decrypted</param>
+    /// <param name="stream">stream to be decrypted</param>
     /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
     /// <param name="iv">16-bit length</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>Decrypt the stream result</returns>
-    public static CryptoStream Decrypt(
-        FileStream fileStream,
+    /// <returns>returns the decrypted byte array</returns>
+    public static byte[] DecryptToBytes(
+        Stream stream,
         string key,
         string iv,
         FillType fillType = FillType.NoFile,
@@ -341,189 +460,175 @@ public class AesUtils : EncryptBase
         Encoding? encoding = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
-
-        var ivBuffer = currentEncoding.GetBytes(GetSpecifiedLengthString(iv,
-            16,
-            () => throw new ArgumentException(nameof(iv),
-                $"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter));
-
-        return Decrypt(fileStream, key, ivBuffer, fillType, fillCharacter, encoding);
+        return DecryptToBytes(
+            stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
     }
 
     /// <summary>
-    /// Decrypt the file stream
+    /// Decrypt the stream
     /// </summary>
-    /// <param name="fileStream">file stream to be decrypted</param>
+    /// <param name="stream">stream to be decrypted</param>
     /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length</param>
+    /// <param name="ivBuffer">16-bit length</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>Decrypt the stream result</returns>
-    public static CryptoStream Decrypt(
-        FileStream fileStream,
+    /// <returns>returns the decrypted byte array</returns>
+    public static byte[] DecryptToBytes(
+        Stream stream,
         string key,
-        byte[] iv,
+        byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        if (iv.Length != 16)
-        {
-            throw new Exception($"The {nameof(iv)} length is invalid. The {nameof(iv)} iv length needs 16 bits！");
-        }
-
-        key = GetSpecifiedLengthString(key,
-            32,
-            () => throw new ArgumentException(nameof(key),
-                $"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right"),
-            fillType,
-            fillCharacter);
-
         var currentEncoding = GetSafeEncoding(encoding);
-        using var aes = Aes.Create();
-        aes.Key = currentEncoding.GetBytes(key);
-        aes.IV = iv;
-        using var cryptoTransform = aes.CreateDecryptor();
-        return new CryptoStream(fileStream, cryptoTransform, CryptoStreamMode.Read);
+        return DecryptToBytes(stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            ivBuffer);
     }
 
     /// <summary>
-    /// Encrypt the specified stream with AES and output a file
+    /// Decrypt the stream
     /// </summary>
-    /// <param name="fileStream">file stream to be encrypted</param>
-    /// <param name="outputPath">output file path</param>
-    /// <param name="fillCharacter">character for complement</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    public static void EncryptFile(
-        FileStream fileStream,
-        string outputPath,
-        char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => EncryptFile(fileStream,
-            GlobalConfigurationUtils.DefaultEncryKey,
-            outputPath,
-            FillType.Right,
-            fillCharacter,
-            encoding);
-
-    /// <summary>
-    /// Encrypt the specified stream with AES and output a file
-    /// </summary>
-    /// <param name="fileStream">file stream to be encrypted</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="outputPath">output file path</param>
-    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
-    /// <param name="fillCharacter">character for complement</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    public static void EncryptFile(
-        FileStream fileStream,
-        string key,
-        string outputPath,
-        FillType fillType = FillType.NoFile,
-        char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => EncryptFile(fileStream, key, key, outputPath, fillType, fillCharacter, encoding);
-
-    /// <summary>
-    /// Encrypt the specified stream with AES and output a file
-    /// </summary>
-    /// <param name="fileStream">file stream to be encrypted</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length or complement by fillType to calculate an 16-bit string</param>
-    /// <param name="outputPath">output file path</param>
-    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
-    /// <param name="fillCharacter">character for complement</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    public static void EncryptFile(
-        FileStream fileStream,
-        string key,
-        string iv,
-        string outputPath,
-        FillType fillType = FillType.NoFile,
-        char fillCharacter = ' ',
-        Encoding? encoding = null)
+    /// <param name="stream">stream to be decrypted</param>
+    /// <param name="keyBuffer">Decryption key, 32-bit length</param>
+    /// <param name="ivBuffer">16-bit length</param>
+    /// <returns>returns the decrypted byte array</returns>
+    public static byte[] DecryptToBytes(
+        Stream stream,
+        byte[] keyBuffer,
+        byte[] ivBuffer)
     {
-        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
-        using var cryptoStream = Encrypt(fileStream, key, iv, fillType, fillCharacter, encoding);
-        byte[] buffers = new byte[1024];
-        while (true)
-        {
-            var count = cryptoStream.Read(buffers, 0, buffers.Length);
-            fileStreamOut.Write(buffers, 0, count);
-            if (count < buffers.Length)
-            {
-                break;
-            }
-        }
+        using var aes = Aes.Create();
+        using var cryptoTransform = aes.CreateDecryptor(keyBuffer, ivBuffer);
+        using MemoryStream ms = new MemoryStream();
+        var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
+        var cipherBytes = stream.ConvertToBytes();
+        cryptoStream.Write(cipherBytes, 0, cipherBytes.Length);
+        cryptoStream.FlushFinalBlock();
+        cryptoStream.Close();
+        return ms.ToArray();
     }
 
     /// <summary>
-    /// AES decrypt the specified file stream and output the file
+    /// AES decrypt the specified stream and output the file
     /// </summary>
-    /// <param name="fileStream">file stream to be decrypted</param>
+    /// <param name="stream">stream to be decrypted</param>
     /// <param name="outputPath">output file path</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     public static void DecryptFile(
-        FileStream fileStream,
+        Stream stream,
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-        => DecryptFile(fileStream, GlobalConfigurationUtils.DefaultEncryKey, outputPath, fillType, fillCharacter, encoding);
+        => DecryptFile(stream, DefaultEncryptKey, outputPath, fillType, fillCharacter, encoding);
 
     /// <summary>
-    /// AES decrypt the specified file stream and output the file
+    /// AES decrypt the specified stream and output the file
     /// </summary>
-    /// <param name="fileStream">file stream to be decrypted</param>
+    /// <param name="stream">stream to be decrypted</param>
     /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
     /// <param name="outputPath">output file path</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     public static void DecryptFile(
-        FileStream fileStream,
+        Stream stream,
         string key,
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
-        => DecryptFile(fileStream, key, key, outputPath, fillType, fillCharacter, encoding);
+        => DecryptFile(stream, key, DefaultIv, outputPath, fillType, fillCharacter, encoding);
 
     /// <summary>
-    /// AES decrypt the specified file stream and output the file
+    /// AES decrypt the specified stream and output the file
     /// </summary>
-    /// <param name="fileStream">file stream to be decrypted</param>
+    /// <param name="stream">stream to be decrypted</param>
     /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
-    /// <param name="iv">16-bit length or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="ivBuffer">16-bit length</param>
     /// <param name="outputPath">output file path</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     public static void DecryptFile(
-        FileStream fileStream,
+        Stream stream,
         string key,
-        string iv,
+        byte[] ivBuffer,
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
+        var decryptBuffer = DecryptToBytes(stream, key, ivBuffer, fillType, fillCharacter, encoding);
         using FileStream fileStreamOut = new(outputPath, FileMode.Create);
-        using CryptoStream cryptoStream = Decrypt(fileStream, key, iv, fillType, fillCharacter, encoding);
-        byte[] buffers = new byte[1024];
-        while (true)
-        {
-            var count = cryptoStream.Read(buffers, 0, buffers.Length);
-            fileStreamOut.Write(buffers, 0, count);
-            if (count < buffers.Length)
-            {
-                break;
-            }
-        }
+        fileStreamOut.Write(decryptBuffer, 0, decryptBuffer.Length);
     }
+
+    /// <summary>
+    /// AES decrypt the specified stream and output the file
+    /// </summary>
+    /// <param name="stream">stream to be decrypted</param>
+    /// <param name="key">Decryption key, same as encryption key. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="iv">16-bit length or complement by fillType to calculate an 16-bit string</param>
+    /// <param name="outputPath">output file path</param>
+    /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
+    /// <param name="fillCharacter">character for complement</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    public static void DecryptFile(
+        Stream stream,
+        string key,
+        string iv,
+        string outputPath,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ',
+        Encoding? encoding = null)
+    {
+        var decryptBuffer = DecryptToBytes(stream, key, iv, fillType, fillCharacter, encoding);
+        using FileStream fileStreamOut = new(outputPath, FileMode.Create);
+        fileStreamOut.Write(decryptBuffer, 0, decryptBuffer.Length);
+    }
+
+    #endregion
+
+    #region private methods
+
+    private static byte[] GetKeyBuffer(string key,
+        Encoding encoding,
+        FillType fillType,
+        char fillCharacter)
+    {
+        string paramName = nameof(key);
+        return GetBytes(
+            key,
+            encoding,
+            fillType,
+            fillCharacter,
+            32,
+            () => throw new ArgumentException($"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right", paramName));
+    }
+
+    private static byte[] GetIvBuffer(string iv,
+        Encoding encoding,
+        FillType fillType,
+        char fillCharacter)
+    {
+        string paramName = nameof(iv);
+        return GetBytes(
+            iv,
+            encoding,
+            fillType,
+            fillCharacter,
+            16,
+            () => throw new ArgumentException($"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right", paramName));
+    }
+
+    #endregion
+
 }
