@@ -25,16 +25,16 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// </summary>
     /// <param name="retryBatchSize">maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
-    /// <param name="minimum">minimum retry interval (unit: s)</param>
+    /// <param name="minimumRetryInterval">Minimum retry interval (unit: s)</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
         int retryBatchSize,
         int maxRetryTimes,
-        int minimum,
+        int minimumRetryInterval,
         CancellationToken cancellationToken = default)
     {
-        var time = DateTime.UtcNow.AddSeconds(-minimum);
+        var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
                 e.TimesSent <= maxRetryTimes &&

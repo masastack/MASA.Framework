@@ -10,13 +10,13 @@ public interface IIntegrationEventLogService
     /// </summary>
     /// <param name="retryBatchSize">The size of a single event to be retried</param>
     /// <param name="maxRetryTimes"></param>
-    /// <param name="minimum">minimum retry interval (unit: s)</param>
+    /// <param name="minimumRetryInterval">Minimum retry interval (unit: s)</param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsFailedToPublishAsync(
         int retryBatchSize,
         int maxRetryTimes,
-        int minimum,
+        int minimumRetryInterval,
         CancellationToken cancellationToken = default);
 
     /// <summary>

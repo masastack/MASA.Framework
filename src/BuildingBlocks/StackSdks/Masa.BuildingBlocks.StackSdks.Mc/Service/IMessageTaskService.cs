@@ -14,4 +14,16 @@ public interface IMessageTaskService
     Task SendOrdinaryMessageByExternalAsync(SendOrdinaryMessageByExternalModel options);
 
     Task SendTemplateMessageByExternalAsync(SendTemplateMessageByExternalModel options);
+
+    Task<PaginatedListModel<MessageTaskModel>> GetListAsync(GetMessageTaskModel options);
+
+    Task DeleteAsync(Guid id);
+
+    Task UpdateAsync(Guid id, MessageTaskUpsertModel messageTask);
+
+    Task SetIsEnabledAsync(Guid id, bool isEnabled);
+
+    Task WithdrawnAsync(Guid id);
+
+    Task ResendAsync(Guid id);
 }
