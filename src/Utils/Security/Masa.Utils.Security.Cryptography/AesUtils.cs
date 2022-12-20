@@ -7,7 +7,7 @@ public class AesUtils : EncryptBase
 {
     private static readonly string DefaultEncryptKey = GetSpecifiedLengthString(GlobalConfigurationUtils.DefaultEncryptKey, 32, () =>
     {
-    }, FillType.Right,' ');
+    }, FillType.Right, ' ');
 
     private static readonly byte[] DefaultIv =
     {
@@ -139,11 +139,7 @@ public class AesUtils : EncryptBase
         byte[] dataBuffers,
         byte[] keyBuffer,
         byte[] ivBuffer)
-    {
-        using var aes = Aes.Create();
-        using ICryptoTransform cryptoTransform = aes.CreateEncryptor(keyBuffer, ivBuffer);
-        return cryptoTransform.TransformFinalBlock(dataBuffers, 0, dataBuffers.Length);
-    }
+        => EncryptOrDecryptToBytes(dataBuffers, keyBuffer, ivBuffer, true);
 
     /// <summary>
     /// encrypted stream
@@ -223,17 +219,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         byte[] keyBuffer,
         byte[] ivBuffer)
-    {
-        using var aes = Aes.Create();
-        using var cryptoTransform = aes.CreateEncryptor(keyBuffer, ivBuffer);
-        using MemoryStream ms = new MemoryStream();
-        var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
-        var dataBuffer = stream.ConvertToBytes();
-        cryptoStream.Write(dataBuffer, 0, dataBuffer.Length);
-        cryptoStream.FlushFinalBlock();
-        cryptoStream.Close();
-        return ms.ToArray();
-    }
+        => EncryptOrDecryptToBytes(stream, keyBuffer, ivBuffer, true);
 
     /// <summary>
     /// Encrypt the specified stream with AES and output a file
@@ -291,9 +277,13 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var encryptBuffer = EncryptToBytes(stream, key, ivBuffer, fillType, fillCharacter, encoding);
-        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
-        fileStreamOut.Write(encryptBuffer, 0, encryptBuffer.Length);
+        var currentEncoding = GetSafeEncoding(encoding);
+        EncryptOrDecryptFile(
+            stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            ivBuffer,
+            true,
+            outputPath);
     }
 
     /// <summary>
@@ -315,9 +305,13 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var encryptBuffer = EncryptToBytes(stream, key, iv, fillType, fillCharacter, encoding);
-        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
-        fileStreamOut.Write(encryptBuffer, 0, encryptBuffer.Length);
+        var currentEncoding = GetSafeEncoding(encoding);
+        EncryptOrDecryptFile(
+            stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter),
+            true,
+            outputPath);
     }
 
     #endregion
@@ -418,11 +412,11 @@ public class AesUtils : EncryptBase
         byte[] dataBuffers,
         byte[] keyBuffer,
         byte[] ivBuffer)
-    {
-        using var aes = Aes.Create();
-        using ICryptoTransform rijndaelDecrypt = aes.CreateDecryptor(keyBuffer, ivBuffer);
-        return rijndaelDecrypt.TransformFinalBlock(dataBuffers, 0, dataBuffers.Length);
-    }
+        => EncryptOrDecryptToBytes(
+            dataBuffers,
+            keyBuffer,
+            ivBuffer,
+            false);
 
     /// <summary>
     /// Decrypt the stream
@@ -501,17 +495,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         byte[] keyBuffer,
         byte[] ivBuffer)
-    {
-        using var aes = Aes.Create();
-        using var cryptoTransform = aes.CreateDecryptor(keyBuffer, ivBuffer);
-        using MemoryStream ms = new MemoryStream();
-        var cryptoStream = new CryptoStream(ms, cryptoTransform, CryptoStreamMode.Write);
-        var cipherBytes = stream.ConvertToBytes();
-        cryptoStream.Write(cipherBytes, 0, cipherBytes.Length);
-        cryptoStream.FlushFinalBlock();
-        cryptoStream.Close();
-        return ms.ToArray();
-    }
+        => EncryptOrDecryptToBytes(stream, keyBuffer, ivBuffer, false);
 
     /// <summary>
     /// AES decrypt the specified stream and output the file
@@ -566,9 +550,8 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var decryptBuffer = DecryptToBytes(stream, key, ivBuffer, fillType, fillCharacter, encoding);
-        using FileStream fileStreamOut = new(outputPath, FileMode.Create);
-        fileStreamOut.Write(decryptBuffer, 0, decryptBuffer.Length);
+        var currentEncoding = GetSafeEncoding(encoding);
+        EncryptOrDecryptFile(stream, GetKeyBuffer(key, currentEncoding, fillType, fillCharacter), ivBuffer, false, outputPath);
     }
 
     /// <summary>
@@ -590,9 +573,13 @@ public class AesUtils : EncryptBase
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
-        var decryptBuffer = DecryptToBytes(stream, key, iv, fillType, fillCharacter, encoding);
-        using FileStream fileStreamOut = new(outputPath, FileMode.Create);
-        fileStreamOut.Write(decryptBuffer, 0, decryptBuffer.Length);
+        var currentEncoding = GetSafeEncoding(encoding);
+        EncryptOrDecryptFile(
+            stream,
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetIvBuffer(iv, currentEncoding, fillType, fillCharacter),
+            false,
+            outputPath);
     }
 
     #endregion
@@ -627,6 +614,55 @@ public class AesUtils : EncryptBase
             fillCharacter,
             16,
             () => throw new ArgumentException($"Please enter a 16-bit iv or allow {nameof(fillType)} to Left or Right", paramName));
+    }
+
+    public static byte[] EncryptOrDecryptToBytes(
+        byte[] dataBuffers,
+        byte[] keyBuffer,
+        byte[] ivBuffer,
+        bool isEncrypt)
+    {
+        using var aes = Aes.Create();
+        var transform = GetTransform(aes, keyBuffer, ivBuffer, isEncrypt);
+        return transform.TransformFinalBlock(dataBuffers, 0, dataBuffers.Length);
+    }
+
+    /// <summary>
+    /// Decrypt the stream
+    /// </summary>
+    /// <param name="stream">stream to be decrypted</param>
+    /// <param name="keyBuffer">Decryption key, 32-bit length</param>
+    /// <param name="ivBuffer">16-bit length</param>
+    /// <param name="isEncrypt">encrypt (true) or decrypt (false)</param>
+    /// <returns>returns the decrypted byte array</returns>
+    private static byte[] EncryptOrDecryptToBytes(
+        Stream stream,
+        byte[] keyBuffer,
+        byte[] ivBuffer,
+        bool isEncrypt)
+    {
+        using var aes = Aes.Create();
+        var transform = GetTransform(aes, keyBuffer, ivBuffer, isEncrypt);
+        using MemoryStream ms = new MemoryStream();
+        var cryptoStream = new CryptoStream(ms, transform, CryptoStreamMode.Write);
+        var cipherBytes = stream.ConvertToBytes();
+        cryptoStream.Write(cipherBytes, 0, cipherBytes.Length);
+        cryptoStream.FlushFinalBlock();
+        cryptoStream.Close();
+        return ms.ToArray();
+    }
+
+    private static void EncryptOrDecryptFile(
+        Stream stream,
+        byte[] keyBuffer,
+        byte[] ivBuffer,
+        bool isEncrypt,
+        string outputPath)
+    {
+        using var fileStreamOut = new FileStream(outputPath, FileMode.Create);
+        using var aes = Aes.Create();
+        var transform = GetTransform(aes, keyBuffer, ivBuffer, isEncrypt);
+        EncryptOrDecryptFile(stream, fileStreamOut, transform);
     }
 
     #endregion

@@ -57,6 +57,34 @@ public class EncryptBase
         return result.ConvertToBytes(encoding);
     }
 
+    protected static void EncryptOrDecryptFile(
+        Stream stream,
+        Stream outPutStream,
+        ICryptoTransform transform)
+    {
+        int bufferLength = 1024;
+        byte[] buffers = new byte[bufferLength];
+        long readLength = 0;
+        using var cryptoStream = new CryptoStream(outPutStream,
+            transform,
+            CryptoStreamMode.Write);
+        while (readLength < stream.Length)
+        {
+            var length = stream.Read(buffers, 0, bufferLength);
+            cryptoStream.Write(buffers, 0, length);
+            readLength += length;
+        }
+    }
+
+    protected static ICryptoTransform GetTransform(
+        SymmetricAlgorithm symmetricAlgorithm,
+        byte[] keyBuffer,
+        byte[] ivBuffer,
+        bool isEncrypt)
+        => isEncrypt ?
+            symmetricAlgorithm.CreateEncryptor(keyBuffer, ivBuffer) :
+            symmetricAlgorithm.CreateDecryptor(keyBuffer, ivBuffer);
+
     protected static Encoding GetSafeEncoding(Encoding? encoding = null)
         => GetSafeEncoding(() => Encoding.UTF8, encoding);
 
