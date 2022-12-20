@@ -105,7 +105,7 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestIdentityByYamlAndCustomerOptions()
+    public void TestIdentityByYamlAndCustomOptions()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentity(DataType.Yml.ToString(), option =>

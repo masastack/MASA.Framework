@@ -5,9 +5,9 @@ extern alias SnowflakeRedis;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Infrastructure;
 
-public class CustomerMachineClockIdGenerator : SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator
+public class CustomMachineClockIdGenerator : SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator
 {
-    public CustomerMachineClockIdGenerator(IDistributedCacheClient distributedCacheClient,
+    public CustomMachineClockIdGenerator(IDistributedCacheClient distributedCacheClient,
         IWorkerProvider workerProvider,
         RedisConfigurationOptions redisOptions,
         DistributedIdGeneratorOptions distributedIdGeneratorOptions)

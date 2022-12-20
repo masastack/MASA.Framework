@@ -3,12 +3,12 @@
 
 namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests;
 
-public class CustomerDispatcherOptions : IDispatcherOptions
+public class CustomDispatcherOptions : IDispatcherOptions
 {
     public IServiceCollection Services { get; }
     public Assembly[] Assemblies { get; }
 
-    public CustomerDispatcherOptions(IServiceCollection services, Assembly[] assemblies)
+    public CustomDispatcherOptions(IServiceCollection services, Assembly[] assemblies)
     {
         Services = services;
         Assemblies = assemblies;

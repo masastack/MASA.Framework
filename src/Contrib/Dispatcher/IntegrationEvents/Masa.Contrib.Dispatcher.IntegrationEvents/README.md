@@ -46,7 +46,7 @@ builder.Services
     });
 ```
 
-> CustomerDbContext needs to inherit MasaDbContext
+> CustomDbContext needs to inherit MasaDbContext
 
 2. Custom IntegrationEvent
 

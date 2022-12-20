@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Authentication.Identity.Tests;
 
-public class CustomerUser2 : IIdentityUser
+public class CustomUser2 : IIdentityUser
 {
     public string Id { get; set; }
 
@@ -13,7 +13,7 @@ public class CustomerUser2 : IIdentityUser
 
     public string[] Roles { get; set; }
 
-    public CustomerUser2(string id, string? userName, string? trueName, string[] roles)
+    public CustomUser2(string id, string? userName, string? trueName, string[] roles)
     {
         Id = id;
         UserName = userName;

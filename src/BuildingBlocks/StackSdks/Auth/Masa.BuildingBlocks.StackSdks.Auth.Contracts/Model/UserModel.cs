@@ -31,6 +31,10 @@ public class UserModel
 
     public string? Position { get; set; }
 
+    public bool Enabled { get; set; } = true;
+
+    public bool IsDeleted { get; set; }
+
     public AddressValueModel Address { get; set; } = new();
 
     public List<RoleModel> Roles { get; set; } = new();
