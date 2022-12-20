@@ -20,4 +20,6 @@ public class SendOrdinaryMessageByInternalModel
     public ExtraPropertyDictionary Variables { get; set; } = new();
 
     public Guid OperatorId { get; set; } = Guid.Empty;
+
+    public string SystemId { get; set; } = string.Empty;
 }

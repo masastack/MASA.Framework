@@ -25,7 +25,7 @@ public class WebsiteMessageServiceTest
     [TestMethod]
     public async Task TestGetListAsync()
     {
-        var options = new GetWebsiteMessageModel();
+        var options = new GetWebsiteMessageModel(1,10);
         var data = new PaginatedListModel<WebsiteMessageModel>();
         var requestUri = $"api/website-message";
         var caller = new Mock<ICaller>();
@@ -101,7 +101,7 @@ public class WebsiteMessageServiceTest
     [TestMethod]
     public async Task TestSetAllReadAsync()
     {
-        var options = new ReadAllWebsiteMessageModel();
+        var options = new ReadAllWebsiteMessageModel(1,10);
         var requestUri = $"api/website-message/SetAllRead";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync(requestUri, options, true, default)).Verifiable();

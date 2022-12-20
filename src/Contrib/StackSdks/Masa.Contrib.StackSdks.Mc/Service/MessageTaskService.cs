@@ -42,4 +42,40 @@ public class MessageTaskService : IMessageTaskService
         var requestUri = $"{_party}/SendTemplateMessageByExternal";
         await _caller.PostAsync(requestUri, options);
     }
+
+    public async Task<PaginatedListModel<MessageTaskModel>> GetListAsync(GetMessageTaskModel options)
+    {
+        var requestUri = $"{_party}";
+        return await _caller.GetAsync<GetMessageTaskModel, PaginatedListModel<MessageTaskModel>>(requestUri, options) ?? new();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var requestUri = $"{_party}/{id}";
+        await _caller.DeleteAsync(requestUri, null);
+    }
+
+    public async Task UpdateAsync(Guid id, MessageTaskUpsertModel messageTask)
+    {
+        var requestUri = $"{_party}/{id}";
+        await _caller.PutAsync(requestUri, messageTask);
+    }
+
+    public async Task SetIsEnabledAsync(Guid id, bool isEnabled)
+    {
+        var requestUri = $"{_party}/{id}/enabled/{isEnabled}";
+        await _caller.PutAsync(requestUri, new { });
+    }
+
+    public async Task WithdrawnAsync(Guid id)
+    {
+        var requestUri = $"{_party}/{id}/Withdrawn";
+        await _caller.PostAsync(requestUri, new { });
+    }
+
+    public async Task ResendAsync(Guid id)
+    {
+        var requestUri = $"{_party}/{id}/Resend";
+        await _caller.PostAsync(requestUri, new { });
+    }
 }
