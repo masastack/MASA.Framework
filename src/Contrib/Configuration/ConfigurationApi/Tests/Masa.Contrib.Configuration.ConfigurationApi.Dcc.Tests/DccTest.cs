@@ -456,7 +456,7 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestComplementAndCheckDccConfigurationOptionByCustomerDccOptions()
+    public void TestComplementAndCheckDccConfigurationOptionByCustomDccOptions()
     {
         string appid = "test";
         string environment = "dev";
@@ -477,14 +477,14 @@ public class DccTest
             "configObject3",
         };
 
-        string customerAppid = "customer-test";
-        string customerEnvironment = "customer-dev";
-        string customerCluster = "customer-default";
-        string customerPublic = "customer-public";
-        string customerPublicSecret = "customer-public-secret";
+        string customAppid = "custom-test";
+        string customEnvironment = "custom-dev";
+        string customCluster = "custom-default";
+        string customPublic = "custom-public";
+        string customPublicSecret = "custom-public-secret";
 
-        MockDistributedCacheClient(customerAppid, customerEnvironment, customerCluster, configObjects);
-        MockDistributedCacheClient(customerPublic, customerEnvironment, customerCluster, publicConfigObjects);
+        MockDistributedCacheClient(customAppid, customEnvironment, customCluster, configObjects);
+        MockDistributedCacheClient(customPublic, customEnvironment, customCluster, publicConfigObjects);
         MockDistributedCacheClientFactory();
 
         DccOptions dccOptions = new DccOptions()
@@ -497,29 +497,29 @@ public class DccTest
                     new()
                 }
             },
-            AppId = customerAppid,
-            Environment = customerEnvironment,
-            Cluster = customerCluster,
-            PublicId = customerPublic,
-            PublicSecret = customerPublicSecret
+            AppId = customAppid,
+            Environment = customEnvironment,
+            Cluster = customCluster,
+            PublicId = customPublic,
+            PublicSecret = customPublicSecret
         };
         var dccConfigurationOptions =
             MasaConfigurationExtensions.ComplementAndCheckDccConfigurationOption(_masaConfigurationBuilder.Object, dccOptions);
 
         Assert.IsNotNull(dccConfigurationOptions.DefaultSection);
-        Assert.AreEqual(customerAppid, dccConfigurationOptions.DefaultSection.AppId);
-        Assert.AreEqual(customerEnvironment, dccConfigurationOptions.DefaultSection.Environment);
-        Assert.AreEqual(customerCluster, dccConfigurationOptions.DefaultSection.Cluster);
+        Assert.AreEqual(customAppid, dccConfigurationOptions.DefaultSection.AppId);
+        Assert.AreEqual(customEnvironment, dccConfigurationOptions.DefaultSection.Environment);
+        Assert.AreEqual(customCluster, dccConfigurationOptions.DefaultSection.Cluster);
         Assert.AreEqual(string.Empty, dccConfigurationOptions.DefaultSection.Secret);
         Assert.AreEqual(configObjects.Count, dccConfigurationOptions.DefaultSection.ConfigObjects.Count);
         Assert.AreEqual(configObjects[0], dccConfigurationOptions.DefaultSection.ConfigObjects[0]);
         Assert.AreEqual(configObjects[1], dccConfigurationOptions.DefaultSection.ConfigObjects[1]);
 
         Assert.AreEqual(1, dccConfigurationOptions.ExpandSections.Count);
-        Assert.AreEqual(customerPublic, dccConfigurationOptions.ExpandSections[0].AppId);
-        Assert.AreEqual(customerEnvironment, dccConfigurationOptions.ExpandSections[0].Environment);
-        Assert.AreEqual(customerCluster, dccConfigurationOptions.ExpandSections[0].Cluster);
-        Assert.AreEqual(customerPublicSecret, dccConfigurationOptions.ExpandSections[0].Secret);
+        Assert.AreEqual(customPublic, dccConfigurationOptions.ExpandSections[0].AppId);
+        Assert.AreEqual(customEnvironment, dccConfigurationOptions.ExpandSections[0].Environment);
+        Assert.AreEqual(customCluster, dccConfigurationOptions.ExpandSections[0].Cluster);
+        Assert.AreEqual(customPublicSecret, dccConfigurationOptions.ExpandSections[0].Secret);
         Assert.AreEqual(publicConfigObjects.Count, dccConfigurationOptions.ExpandSections[0].ConfigObjects.Count);
         Assert.AreEqual(publicConfigObjects[0], dccConfigurationOptions.ExpandSections[0].ConfigObjects[0]);
         Assert.AreEqual(2, dccConfigurationOptions.GetAllSections().Count());

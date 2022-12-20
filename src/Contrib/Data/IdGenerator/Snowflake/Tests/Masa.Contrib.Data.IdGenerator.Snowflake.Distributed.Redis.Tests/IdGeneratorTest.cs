@@ -376,7 +376,7 @@ public class IdGeneratorTest
         {
             RefreshTimestampInterval = 500
         };
-        var machineClockIdGenerator = new CustomerMachineClockIdGenerator(
+        var machineClockIdGenerator = new CustomMachineClockIdGenerator(
             distributedCacheClient,
             workerProvider,
             redisConfigurationOptions,
@@ -399,7 +399,7 @@ public class IdGeneratorTest
         {
             RefreshTimestampInterval = 5000
         };
-        machineClockIdGenerator = new CustomerMachineClockIdGenerator(
+        machineClockIdGenerator = new CustomMachineClockIdGenerator(
             distributedCacheClient,
             workerProvider,
             redisConfigurationOptions,

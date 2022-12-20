@@ -39,18 +39,18 @@ internal static class ServiceCollectionRepositoryExtensions
 
     private static void TryAddCustomRepository(this IServiceCollection services, Type repositoryInterfaceType, List<Type> allTypes)
     {
-        var customerRepositoryInterfaceTypes = allTypes.Where(type
+        var customRepositoryInterfaceTypes = allTypes.Where(type
             => type.GetInterfaces().Any(t => t == repositoryInterfaceType) && type.IsInterface && !type.IsGenericType);
-        foreach (var customerRepositoryInterfaceType in customerRepositoryInterfaceTypes)
+        foreach (var customRepositoryInterfaceType in customRepositoryInterfaceTypes)
         {
-            var customerRepositoryImplementationTypes =
-                allTypes.Where(type => type.IsClass && customerRepositoryInterfaceType.IsAssignableFrom(type)).ToList();
-            if (customerRepositoryImplementationTypes.Count != 1)
+            var customRepositoryImplementationTypes =
+                allTypes.Where(type => type.IsClass && customRepositoryInterfaceType.IsAssignableFrom(type)).ToList();
+            if (customRepositoryImplementationTypes.Count != 1)
             {
                 throw new NotSupportedException(
-                    $"The number of types of {customerRepositoryInterfaceType.FullName} implementation classes must be 1");
+                    $"The number of types of {customRepositoryInterfaceType.FullName} implementation classes must be 1");
             }
-            services.TryAddScoped(customerRepositoryInterfaceType, customerRepositoryImplementationTypes.FirstOrDefault()!);
+            services.TryAddScoped(customRepositoryInterfaceType, customRepositoryImplementationTypes.FirstOrDefault()!);
         }
     }
 
