@@ -46,8 +46,14 @@ public abstract class DefaultResponseMessage : IResponseMessage
             case (HttpStatusCode)MasaHttpStatusCode.ValidatorException:
                 throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken));
             default:
+                await CustomConvertException(response);
                 return;
         }
+    }
+
+    public virtual async Task CustomConvertException(HttpResponseMessage response)
+    {
+        await Task.CompletedTask;
     }
 
     public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
