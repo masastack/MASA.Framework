@@ -54,7 +54,7 @@ public class MasaAppConfigureOptions
         return true;
     }
 
-    public void SetVariableAndDefaultValue(string key, string variable, string defaultValue)
+    public void SetVariable(string key, string variable, string defaultValue)
     {
         var variableInfo = VariableInfos.FirstOrDefault(v => v.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
         if (variableInfo != null) VariableInfos.Remove(variableInfo);
