@@ -122,4 +122,14 @@ public class DispatcherOptionTest
         _options.GetCurrentTime = () => DateTime.UtcNow;
         Assert.IsTrue((_options.GetCurrentTime.Invoke() - DateTime.UtcNow).Minutes == 0);
     }
+
+    [TestMethod]
+    public void SetBatchSize()
+    {
+        Assert.IsTrue(_options.BatchSize == 20);
+        _options.BatchSize = 5;
+        Assert.IsTrue(_options.BatchSize == 5);
+
+        Assert.ThrowsException<MasaArgumentException>(() => _options.BatchSize = -1);
+    }
 }

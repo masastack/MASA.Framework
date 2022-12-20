@@ -49,7 +49,7 @@ public class UnitOfWorkTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestUseTranscationAsync()
+    public async Task TestUseTransactionAsync()
     {
         _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
         var serviceProvider = _options.Object.Services.BuildServiceProvider();

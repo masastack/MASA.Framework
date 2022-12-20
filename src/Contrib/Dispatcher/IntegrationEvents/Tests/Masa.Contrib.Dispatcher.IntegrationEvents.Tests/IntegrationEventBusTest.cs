@@ -55,58 +55,69 @@ public class IntegrationEventBusTest
         Assert.IsTrue(options.AllEventTypes.Count == allEventTypes.Count());
     }
 
-    [TestMethod]
-    public async Task TestPublishIntegrationEventAsync()
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task TestPublishIntegrationEventAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
-            _logger.Object,
+            useLogger ? _logger.Object : null,
             _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
-            Account = "lisa",
+            Account = "masa",
             Password = "123456"
         };
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default),
+        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
             Times.Once);
+        _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Never);
     }
 
-    [TestMethod]
-    public async Task TestNotUseUoWAndLoggerAsync()
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task TestPublishIntegrationEventAndNotUoWAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
-            null,
+            useLogger ? _logger.Object : null,
             _eventBus.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
-            Account = "lisa",
+            Account = "masa",
             Password = "123456"
         };
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Never);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
     }
 
-    [TestMethod]
-    public async Task TestNotUseTransactionAsync()
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task TestNotUseTransactionAsync(bool useLogger)
     {
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
@@ -114,54 +125,30 @@ public class IntegrationEventBusTest
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
-            _logger.Object,
+            useLogger ? _logger.Object : null,
             _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
-            Account = "lisa",
+            Account = "masa",
             Password = "123456"
         };
         _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Never);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Never);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
+        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
     }
 
-    [TestMethod]
-    public async Task TestUseTranscationAndNotUseLoggerAsync()
-    {
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            null,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Once);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Never);
-    }
-
-    [TestMethod]
-    public async Task TestSaveEventFailedAndNotUseLoggerAsync()
+    [DataTestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public async Task TestSaveEventFailedAsync(bool useLogger)
     {
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
             .Callback(() => throw new Exception("custom exception"));
@@ -170,74 +157,19 @@ public class IntegrationEventBusTest
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
-            null,
+            useLogger ? _logger.Object : null,
             _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
-            Account = "lisa",
+            Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
         await Assert.ThrowsExceptionAsync<Exception>(async () => await integrationEventBus.PublishAsync(@event), "custom exception");
     }
 
     [TestMethod]
-    public async Task TestPublishIntegrationEventAndFailedAsync()
-    {
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            _logger.Object,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456"
-        };
-        _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Throws<Exception>();
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsInProgressAsync(@event.GetEventId(), It.IsAny<int>(), default), Times.Once);
-        _publisher.Verify(client => client.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsPublishedAsync(@event.GetEventId(), default), Times.Once);
-        _eventLog.Verify(eventLog => eventLog.MarkEventAsFailedAsync(@event.GetEventId(), default), Times.Once);
-    }
-
-    [TestMethod]
-    public async Task TestPublishIntegrationEventAndNotUoWAsync()
-    {
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            _logger.Object,
-            _eventBus.Object,
-            _uoW.Object);
-        RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
-        {
-            Account = "lisa",
-            Password = "123456",
-            UnitOfWork = _uoW.Object
-        };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
-            .Verifiable();
-        await integrationEventBus.PublishAsync(@event);
-
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default),
-            Times.Once);
-    }
-
-    [TestMethod]
-    public async Task TestPublishEventAsync()
+    public async Task TestPublishLocalEventAsync()
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(

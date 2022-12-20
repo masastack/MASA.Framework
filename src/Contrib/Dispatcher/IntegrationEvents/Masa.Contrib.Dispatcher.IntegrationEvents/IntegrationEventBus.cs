@@ -61,36 +61,8 @@ public class IntegrationEventBus : IIntegrationEventBus
         var topicName = @event.Topic;
         if (@event.UnitOfWork is { UseTransaction: true } && _eventLogService != null)
         {
-            bool isAdd = false;
-            try
-            {
-                _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
-                await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction, cancellationToken);
-                isAdd = true;
-
-                _logger?.LogDebug(
-                    "----- Publishing integration event: {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
-                    @event.GetEventId(),
-                    _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
-
-                await _eventLogService.MarkEventAsInProgressAsync(@event.GetEventId(),
-                    _dispatcherOptions.MinimumRetryInterval,
-                    cancellationToken);
-
-                _logger?.LogDebug("Publishing event {Event} to {TopicName}", @event, topicName);
-                await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);
-
-                await _eventLogService.MarkEventAsPublishedAsync(@event.GetEventId(), cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    @event.GetEventId(), _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
-                if (!isAdd) throw;
-
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(@event.GetEventId(), @event.Topic, @event));
-                await _eventLogService.MarkEventAsFailedAsync(@event.GetEventId(), cancellationToken);
-            }
+            _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
+            await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction, cancellationToken);
         }
         else
         {

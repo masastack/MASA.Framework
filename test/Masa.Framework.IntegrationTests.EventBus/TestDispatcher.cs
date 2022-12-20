@@ -7,7 +7,7 @@ namespace Masa.Framework.IntegrationTests.EventBus;
 public class TestDispatcher : TestBase
 {
     [TestMethod]
-    public async Task TestEventReturnNotUseTranscationAsync()
+    public async Task TestEventReturnNotUseTransactionAsync()
     {
         var serviceProvider = ServiceProvider;
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();

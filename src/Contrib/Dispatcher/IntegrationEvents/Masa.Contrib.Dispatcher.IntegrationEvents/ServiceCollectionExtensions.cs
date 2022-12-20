@@ -68,6 +68,7 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton<IProcessor, RetryByDataProcessor>();
             services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
+            services.AddSingleton<IProcessor, SendByDataProcessor>();
             services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
             services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
         }
