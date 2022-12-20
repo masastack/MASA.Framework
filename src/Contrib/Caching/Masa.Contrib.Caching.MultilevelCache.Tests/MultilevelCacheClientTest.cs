@@ -408,7 +408,7 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public void TestGetMemoryCacheEntryOptions()
     {
-        var customerDistributedCacheClient = new CustomerDistributedCacheClient(new Mock<IMemoryCache>().Object,
+        var customDistributedCacheClient = new CustomDistributedCacheClient(new Mock<IMemoryCache>().Object,
             new Mock<IDistributedCacheClient>().Object,
             new MultilevelCacheOptions()
             {
@@ -416,7 +416,7 @@ public class MultilevelCacheClientTest : TestBase
                 CacheKeyType = CacheKeyType.None
             },
             SubscribeKeyType.ValueTypeFullName);
-        var options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(new CacheEntryOptions()
+        var options = customDistributedCacheClient.GetBaseMemoryCacheEntryOptions(new CacheEntryOptions()
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1),
             SlidingExpiration = TimeSpan.FromHours(1)
@@ -426,7 +426,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual(TimeSpan.FromHours(1), options.SlidingExpiration);
         Assert.AreEqual(null, options.AbsoluteExpiration);
 
-        options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
+        options = customDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
         Assert.IsNull(options);
 
         DateTimeOffset dateNow = DateTimeOffset.Now.AddDays(2);
@@ -436,7 +436,7 @@ public class MultilevelCacheClientTest : TestBase
             AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(2),
             SlidingExpiration = TimeSpan.FromHours(3)
         };
-        customerDistributedCacheClient = new CustomerDistributedCacheClient(new Mock<IMemoryCache>().Object,
+        customDistributedCacheClient = new CustomDistributedCacheClient(new Mock<IMemoryCache>().Object,
             new Mock<IDistributedCacheClient>().Object,
             new MultilevelCacheOptions()
             {
@@ -444,7 +444,7 @@ public class MultilevelCacheClientTest : TestBase
                 CacheKeyType = CacheKeyType.None
             },
             SubscribeKeyType.ValueTypeFullName);
-        options = customerDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
+        options = customDistributedCacheClient.GetBaseMemoryCacheEntryOptions(null);
         Assert.IsNotNull(options);
         Assert.AreEqual(TimeSpan.FromDays(2), options.AbsoluteExpirationRelativeToNow);
         Assert.AreEqual(TimeSpan.FromHours(3), options.SlidingExpiration);

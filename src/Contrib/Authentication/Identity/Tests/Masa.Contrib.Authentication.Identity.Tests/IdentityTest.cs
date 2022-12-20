@@ -268,13 +268,13 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestCustomerUserModelReturnTrueNameEqualLisi()
+    public void TestCustomUserModelReturnTrueNameEqualLisi()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentityModel();
         services.Configure<IdentityClaimOptions>(option =>
         {
-            option.Mapping(nameof(CustomerUser.TrueName), "realname");
+            option.Mapping(nameof(CustomUser.TrueName), "realname");
         });
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -291,17 +291,17 @@ public class IdentityTest
             })
         };
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
-        var user = userContext.GetUser<CustomerUser>();
+        var user = userContext.GetUser<CustomUser>();
         Assert.IsTrue(user is { TrueName: "lisi" });
     }
 
     [TestMethod]
-    public void TestCustomerUserModel2ReturnTrueNameEqualLisi()
+    public void TestCustomUserModel2ReturnTrueNameEqualLisi()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentityModel(option =>
         {
-            option.Mapping(nameof(CustomerUser.TrueName), "realname");
+            option.Mapping(nameof(CustomUser.TrueName), "realname");
         });
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -318,17 +318,17 @@ public class IdentityTest
             })
         };
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
-        var user = userContext.GetUser<CustomerUser>();
+        var user = userContext.GetUser<CustomUser>();
         Assert.IsTrue(user is { TrueName: "lisi" });
     }
 
     [TestMethod]
-    public void TestCustomerUserModel3ReturnTrueNameEqualLisi()
+    public void TestCustomUserModel3ReturnTrueNameEqualLisi()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentityModel(option =>
         {
-            option.Mapping(nameof(CustomerUser2.TrueName), "realname");
+            option.Mapping(nameof(CustomUser2.TrueName), "realname");
         });
         var serviceProvider = services.BuildServiceProvider();
         var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -345,7 +345,7 @@ public class IdentityTest
             })
         };
         var userContext = serviceProvider.GetRequiredService<IUserContext>();
-        Assert.ThrowsException<InvalidOperationException>(() => userContext.GetUser<CustomerUser2>());
+        Assert.ThrowsException<InvalidOperationException>(() => userContext.GetUser<CustomUser2>());
     }
 
     [TestMethod]
@@ -411,7 +411,7 @@ public class IdentityTest
     }
 
     [TestMethod]
-    public void TestIdentityByYamlAndCustomerOptions()
+    public void TestIdentityByYamlAndCustomOptions()
     {
         var services = new ServiceCollection();
         services.AddMasaIdentityModel(DataType.Yml.ToString(), option =>
