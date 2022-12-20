@@ -14,4 +14,6 @@ public class MessageInfoUpsertModel
     public bool IsJump { get; set; }
 
     public string JumpUrl { get; set; } = string.Empty;
+
+    public ExtraPropertyDictionary ExtraProperties { get; set; } = new();
 }

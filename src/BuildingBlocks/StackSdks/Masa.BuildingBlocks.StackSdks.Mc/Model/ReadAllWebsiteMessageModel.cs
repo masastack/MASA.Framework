@@ -5,4 +5,8 @@ namespace Masa.BuildingBlocks.StackSdks.Mc.Model;
 
 public class ReadAllWebsiteMessageModel : GetWebsiteMessageModel
 {
+    public ReadAllWebsiteMessageModel(int page, int pageSize, Dictionary<string, bool>? sorting = null) : base(page, pageSize, sorting)
+    {
+
+    }
 }

@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.StackSdks.Mc;
 global using Masa.BuildingBlocks.StackSdks.Mc.Model;
+global using Masa.Contrib.StackSdks.Mc.Service;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;

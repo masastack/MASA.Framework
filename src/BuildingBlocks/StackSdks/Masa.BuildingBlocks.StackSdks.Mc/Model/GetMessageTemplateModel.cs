@@ -13,7 +13,7 @@ public class GetMessageTemplateModel : PaginatedOptions
 
     public ChannelTypes? ChannelType { get; set; }
 
-    public Guid? ChannelId { get; set; }
+    public Guid ChannelId { get; set; }
 
     public DateTime? StartTime { get; set; }
 
