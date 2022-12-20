@@ -12,21 +12,21 @@ public class DefaultMapper : IMapper
 
     public TDestination Map<TSource, TDestination>(TSource source, MapOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        MasaArgumentException.ThrowIfNull(source);
 
         return source.Adapt<TSource, TDestination>(_provider.GetConfig(source.GetType(), typeof(TDestination), options));
     }
 
     public TDestination Map<TDestination>(object source, MapOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        MasaArgumentException.ThrowIfNull(source);
 
         return source.Adapt<TDestination>(_provider.GetConfig(source.GetType(), typeof(TDestination), options));
     }
 
     public TDestination Map<TSource, TDestination>(TSource source, TDestination destination, MapOptions? options = null)
     {
-        ArgumentNullException.ThrowIfNull(source, nameof(source));
+        MasaArgumentException.ThrowIfNull(source);
 
         Type destinationType = destination?.GetType() ?? typeof(TDestination);
         return source.Adapt<TSource, TDestination>(destination, _provider.GetConfig(source.GetType(), destinationType, options));
