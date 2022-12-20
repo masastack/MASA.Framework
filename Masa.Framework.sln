@@ -127,8 +127,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ldap", "Ldap", "{0BC7A7F2-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{2D07F9AD-9951-475D-B7C7-980B23FDE9BB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Authentication", "Authentication", "{534346EF-1D11-48DB-9909-700CEC99FF08}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Caching.Memory", "src\Utils\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj", "{015C4181-A8D9-4FA5-89B9-38A37FA9D31D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Configuration.Json", "src\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj", "{8AB652AF-3957-42F9-8F3E-FAFE56A44BE1}"
@@ -172,8 +170,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Security.Cryptography", "src\Utils\Security\Masa.Utils.Security.Cryptography\Masa.Utils.Security.Cryptography.csproj", "{F43B5288-30F0-429E-A10F-9560E8CE318D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Security.Token", "src\Utils\Security\Masa.Utils.Security.Token\Masa.Utils.Security.Token.csproj", "{42A17DC6-7F8D-487A-98F0-1DAF6FF81A63}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Security.Authentication.OpenIdConnect", "src\Utils\Security\Authentication\Masa.Utils.Security.Authentication.OpenIdConnect\Masa.Utils.Security.Authentication.OpenIdConnect.csproj", "{386F0326-D591-4BED-A01A-91C0E9814467}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9823F0D1-B5F2-49B2-9C05-A41BB4178FD5}"
 EndProject
@@ -631,17 +627,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.StackSdks.Tsc.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Tests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Tests\Masa.Contrib.Ddd.Domain.Tests.csproj", "{2D87B9C4-E2FA-47DB-B6B9-BAFF8E0B7558}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests.csproj", "{AE12559A-5C8F-4590-9B18-B935155B15C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests", "src\Contrib\Ddd\Domain\Tests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests\Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests.csproj", "{AE12559A-5C8F-4590-9B18-B935155B15C5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models ", "Models ", "{6FB69510-B616-4F6D-82CC-36AD52CEF4D3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{6FB69510-B616-4F6D-82CC-36AD52CEF4D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Models.Config", "src\Utils\Models\Masa.Utils.Models.Config\Masa.Utils.Models.Config.csproj", "{29125077-70C0-456A-BACD-E614FD71B16E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Models.Config", "src\Utils\Models\Masa.Utils.Models.Config\Masa.Utils.Models.Config.csproj", "{29125077-70C0-456A-BACD-E614FD71B16E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9FEE5178-557E-4694-A088-F157267C989C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Configuration.Tests", "src\Contrib\Service\Caller\Tests\Scenes\Masa.Contrib.Service.Caller.Configuration.Tests\Masa.Contrib.Service.Caller.Configuration.Tests.csproj", "{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Service.Caller.Configuration.Tests", "src\Contrib\Service\Caller\Tests\Scenes\Masa.Contrib.Service.Caller.Configuration.Tests\Masa.Contrib.Service.Caller.Configuration.Tests.csproj", "{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Utils.Extensions.Validations.FluentValidation.Tests", "src\Utils\Extensions\Validations\Tests\Masa.Utils.Extensions.Validations.FluentValidation.Tests\Masa.Utils.Extensions.Validations.FluentValidation.Tests.csproj", "{351755B9-4C7F-4B51-B813-3203DC9A8284}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Extensions.Validations.FluentValidation.Tests", "src\Utils\Extensions\Validations\Tests\Masa.Utils.Extensions.Validations.FluentValidation.Tests\Masa.Utils.Extensions.Validations.FluentValidation.Tests.csproj", "{351755B9-4C7F-4B51-B813-3203DC9A8284}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1027,14 +1023,6 @@ Global
 		{42A17DC6-7F8D-487A-98F0-1DAF6FF81A63}.Release|Any CPU.Build.0 = Release|Any CPU
 		{42A17DC6-7F8D-487A-98F0-1DAF6FF81A63}.Release|x64.ActiveCfg = Release|Any CPU
 		{42A17DC6-7F8D-487A-98F0-1DAF6FF81A63}.Release|x64.Build.0 = Release|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Debug|x64.Build.0 = Debug|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Release|Any CPU.Build.0 = Release|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Release|x64.ActiveCfg = Release|Any CPU
-		{386F0326-D591-4BED-A01A-91C0E9814467}.Release|x64.Build.0 = Release|Any CPU
 		{9AC95FC3-EB2A-4D5C-AA57-FC27C5EFB6F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9AC95FC3-EB2A-4D5C-AA57-FC27C5EFB6F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AC95FC3-EB2A-4D5C-AA57-FC27C5EFB6F4}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2267,14 +2255,6 @@ Global
 		{29125077-70C0-456A-BACD-E614FD71B16E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29125077-70C0-456A-BACD-E614FD71B16E}.Release|x64.ActiveCfg = Release|Any CPU
 		{29125077-70C0-456A-BACD-E614FD71B16E}.Release|x64.Build.0 = Release|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|x64.Build.0 = Debug|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|Any CPU.Build.0 = Release|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|x64.ActiveCfg = Release|Any CPU
-		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|x64.Build.0 = Release|Any CPU
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2283,6 +2263,14 @@ Global
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Release|x64.ActiveCfg = Release|Any CPU
 		{BC1E63D5-C997-4269-BCE9-A5FBE7BA7CA1}.Release|x64.Build.0 = Release|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Debug|x64.Build.0 = Debug|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|Any CPU.Build.0 = Release|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|x64.ActiveCfg = Release|Any CPU
+		{351755B9-4C7F-4B51-B813-3203DC9A8284}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2342,7 +2330,6 @@ Global
 		{69A6DFD9-F5A2-4714-94BA-36E85CDA3EF4} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
 		{0BC7A7F2-F8E0-4A6A-90E2-A0ACD997EBB1} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
 		{2D07F9AD-9951-475D-B7C7-980B23FDE9BB} = {5944A182-13B8-4DA6-AEE2-0A01E64A9648}
-		{534346EF-1D11-48DB-9909-700CEC99FF08} = {2D07F9AD-9951-475D-B7C7-980B23FDE9BB}
 		{015C4181-A8D9-4FA5-89B9-38A37FA9D31D} = {AF921AB1-64D1-4478-AB49-192F3EE416FC}
 		{8AB652AF-3957-42F9-8F3E-FAFE56A44BE1} = {56917740-626B-42D5-8BB8-6895F79FB7D2}
 		{766E3633-7B82-49CC-B012-CAE6264D4628} = {706DA866-6226-430F-AB4D-98FEE7B0DDB0}
@@ -2365,7 +2352,6 @@ Global
 		{023DE7BB-49B6-4C14-9DAC-F7B4E3E2D12C} = {B477B68A-16F3-4005-BDAD-09905A3267A5}
 		{F43B5288-30F0-429E-A10F-9560E8CE318D} = {2D07F9AD-9951-475D-B7C7-980B23FDE9BB}
 		{42A17DC6-7F8D-487A-98F0-1DAF6FF81A63} = {2D07F9AD-9951-475D-B7C7-980B23FDE9BB}
-		{386F0326-D591-4BED-A01A-91C0E9814467} = {534346EF-1D11-48DB-9909-700CEC99FF08}
 		{9823F0D1-B5F2-49B2-9C05-A41BB4178FD5} = {2D07F9AD-9951-475D-B7C7-980B23FDE9BB}
 		{9AC95FC3-EB2A-4D5C-AA57-FC27C5EFB6F4} = {9823F0D1-B5F2-49B2-9C05-A41BB4178FD5}
 		{3198630F-C09B-40AE-B9A1-E79249296E48} = {950DA7D0-48C1-42BA-8E8F-F72C0DCE41C4}
