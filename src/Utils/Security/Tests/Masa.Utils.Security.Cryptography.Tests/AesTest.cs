@@ -7,7 +7,7 @@ namespace Masa.Utils.Security.Cryptography.Tests;
 public class AesTest
 {
     [TestMethod]
-    public void EncryptAndDecrypt()
+    public void TestEncryptAndDecrypt()
     {
         string str = "Hello MASA Stack";
         string key = "12345678901234567890123456789021";
@@ -26,8 +26,41 @@ public class AesTest
         Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFile));
     }
 
+    [DataRow(16)]
+    [DataRow(24)]
+    [DataRow(32)]
+    [DataRow(18)]
+    [DataTestMethod]
+    public void TestEncryptAndDecrypt2(int length)
+    {
+        GlobalConfigurationUtils.DefaultAesEncryptKey = "Hello MASA Stack";
+        if (length != 16 && length != 24 && length != 32)
+        {
+            Assert.ThrowsException<ArgumentException>(() => GlobalConfigurationUtils.DefaultAesEncryptKeyLength = length);
+        }
+        else
+        {
+            GlobalConfigurationUtils.DefaultAesEncryptKeyLength = length;
+        }
+        string str = "Hello MASA Stack";
+        string key = "12345678901234567890123456789021";
+        var source = AesUtils.Decrypt(AesUtils.Encrypt(str, key), key);
+        Assert.IsTrue(str == source);
+
+        var source2 = AesUtils.Decrypt(AesUtils.Encrypt(str));
+        Assert.IsTrue(str == source2);
+
+        var source3 = AesUtils.Decrypt(AesUtils.Encrypt(str, key, "123", FillType.Right), key, "123", FillType.Right);
+        Assert.IsTrue(str == source3);
+
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Encrypt(str, key, "123", FillType.NoFile));
+
+        string encryptResult = AesUtils.Encrypt(str, key, "123", FillType.Right);
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFile));
+    }
+
     [TestMethod]
-    public void EncryptAndDecryptToBytes()
+    public void TestEncryptAndDecryptToBytes()
     {
         var str = "Hello MASA Stack";
         var encoding = Encoding.UTF8;

@@ -44,4 +44,26 @@ public static class StringExtensions
 
     public static byte[] FromBase64String(this string value)
         => Convert.FromBase64String(value);
+
+    public static string GetSpecifiedLengthString(
+        this string value,
+        int length,
+        Action action,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ')
+    {
+        if (fillType == FillType.NoFile && value.Length < length)
+            action.Invoke();
+
+        var keyLength = value.Length;
+        if (keyLength == length) return value;
+
+        if (keyLength > length) return value.Substring(0, length);
+
+        if (fillType == FillType.Left) return value.PadLeft(length, fillCharacter);
+
+        if (fillType == FillType.Right) return value.PadRight(length, fillCharacter);
+
+        throw new NotSupportedException($"... Unsupported {nameof(fillType)}");
+    }
 }

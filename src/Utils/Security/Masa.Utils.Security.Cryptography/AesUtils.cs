@@ -3,44 +3,21 @@
 
 namespace Masa.Utils.Security.Cryptography;
 
+#pragma warning disable S107
 public class AesUtils : EncryptBase
 {
-    private static readonly string DefaultEncryptKey = GetSpecifiedLengthString(GlobalConfigurationUtils.DefaultEncryptKey, 32, () =>
-    {
-    }, FillType.Right, ' ');
+    private static readonly string DefaultEncryptKey = InitDefaultEncryptKey();
 
-    private static readonly byte[] DefaultIv =
-    {
-        0x41,
-        0x72,
-        0x65,
-        0x79,
-        0x6F,
-        0x75,
-        0x6D,
-        0x79,
-        0x53,
-        0x6E,
-        0x6F,
-        0x77,
-        0x6D,
-        0x61,
-        0x6E,
-        0x3F
-    };
+    private static readonly string DefaultEncryptIv = GlobalConfigurationUtils.DefaultAesEncryptIv;
 
-    /// <summary>
-    /// Generate a key that complies with AES encryption rules
-    /// </summary>
-    /// <param name="length"></param>
-    /// <returns></returns>
-    public static string GenerateKey(int length)
+    private static int DefaultEncryptKeyLength => GlobalConfigurationUtils.DefaultAesEncryptKeyLength;
+
+    static string InitDefaultEncryptKey()
     {
-        var crypto = Aes.Create();
-        crypto.KeySize = length;
-        crypto.BlockSize = 128;
-        crypto.GenerateKey();
-        return crypto.Key.ToBase64String();
+        return GlobalConfigurationUtils.DefaultAesEncryptKey.GetSpecifiedLengthString(
+            DefaultEncryptKeyLength, () =>
+            {
+            }, FillType.Right, ' ');
     }
 
     #region Encrypt
@@ -62,18 +39,20 @@ public class AesUtils : EncryptBase
     /// Symmetric encryption algorithm AES RijndaelManaged encryption (RijndaelManaged (AES) algorithm is a block encryption algorithm)
     /// </summary>
     /// <param name="content">String to be encrypted</param>
-    /// <param name="key">Encryption key, must have half-width characters. 32-bit length key or complement by fillType to calculate an 32-bit string</param>
+    /// <param name="key">Encryption key, must have half-width characters. 16-bit or 24-bit or 32-bit length key or complement by fillType to calculate an 16-bit or 24-bit or 32-bit string</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>encrypted result</returns>
     public static string Encrypt(
         string content,
         string key,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => Encrypt(content, key, DefaultIv, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => Encrypt(content, key, DefaultEncryptIv, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged encryption (RijndaelManaged (AES) algorithm is a block encryption algorithm)
@@ -84,6 +63,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>encrypted result</returns>
     public static string Encrypt(
         string content,
@@ -91,12 +71,13 @@ public class AesUtils : EncryptBase
         string iv,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         var byteBuffer = EncryptToBytes(
             currentEncoding.GetBytes(content),
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter)
         );
         return byteBuffer.ToBase64String();
@@ -111,6 +92,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>encrypted result</returns>
     public static string Encrypt(
         string content,
@@ -118,12 +100,13 @@ public class AesUtils : EncryptBase
         byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         var byteBuffer = EncryptToBytes(
             currentEncoding.GetBytes(content),
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             ivBuffer);
         return byteBuffer.ToBase64String();
     }
@@ -149,14 +132,16 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Returns the encrypted byte array</returns>
     public static byte[] EncryptToBytes(
         Stream stream,
         string key,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => EncryptToBytes(stream, key, DefaultIv, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => EncryptToBytes(stream, key, DefaultEncryptIv, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// encrypted stream
@@ -167,6 +152,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Returns the encrypted byte array</returns>
     public static byte[] EncryptToBytes(
         Stream stream,
@@ -174,12 +160,13 @@ public class AesUtils : EncryptBase
         string iv,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
 
         return EncryptToBytes(stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
     }
 
@@ -192,6 +179,7 @@ public class AesUtils : EncryptBase
     /// <param name="encoding">Encoding format, default UTF-8</param>
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Returns the encrypted byte array</returns>
     public static byte[] EncryptToBytes(
         Stream stream,
@@ -199,12 +187,13 @@ public class AesUtils : EncryptBase
         byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         return EncryptToBytes(
             stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             ivBuffer);
     }
 
@@ -249,14 +238,16 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void EncryptFile(
         Stream stream,
         string key,
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => EncryptFile(stream, key, DefaultIv, outputPath, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => EncryptFile(stream, key, DefaultEncryptIv, outputPath, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// Encrypt the specified stream with AES and output a file
@@ -268,6 +259,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void EncryptFile(
         Stream stream,
         string key,
@@ -275,12 +267,13 @@ public class AesUtils : EncryptBase
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         EncryptOrDecryptFile(
             stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             ivBuffer,
             true,
             outputPath);
@@ -296,6 +289,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void EncryptFile(
         Stream stream,
         string key,
@@ -303,12 +297,13 @@ public class AesUtils : EncryptBase
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         EncryptOrDecryptFile(
             stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter),
             true,
             outputPath);
@@ -339,14 +334,16 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Decryption success returns the decrypted string, failure returns empty</returns>
     public static string Decrypt(
         string content,
         string key,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => Decrypt(content, key, DefaultIv, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => Decrypt(content, key, DefaultEncryptIv, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// Symmetric encryption algorithm AES RijndaelManaged decrypts the string
@@ -357,6 +354,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Decryption success returns the decrypted string, failure returns empty</returns>
     public static string Decrypt(
         string content,
@@ -364,12 +362,13 @@ public class AesUtils : EncryptBase
         string iv,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         var decryptBuffer = DecryptToBytes(
             content.FromBase64String(),
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
         return decryptBuffer.ConvertToString(currentEncoding);
     }
@@ -383,6 +382,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>Decryption success returns the decrypted string, failure returns empty</returns>
     public static string Decrypt(
         string content,
@@ -390,12 +390,13 @@ public class AesUtils : EncryptBase
         byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         var decryptBuffer = DecryptToBytes(
             content.FromBase64String(),
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             ivBuffer
         );
         return decryptBuffer.ConvertToString(currentEncoding);
@@ -426,14 +427,16 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>returns the decrypted byte array</returns>
     public static byte[] DecryptToBytes(
         Stream stream,
         string key,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => DecryptToBytes(stream, key, DefaultIv, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => DecryptToBytes(stream, key, DefaultEncryptIv, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// Decrypt the stream
@@ -444,6 +447,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>returns the decrypted byte array</returns>
     public static byte[] DecryptToBytes(
         Stream stream,
@@ -451,12 +455,13 @@ public class AesUtils : EncryptBase
         string iv,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         return DecryptToBytes(
             stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter));
     }
 
@@ -469,6 +474,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     /// <returns>returns the decrypted byte array</returns>
     public static byte[] DecryptToBytes(
         Stream stream,
@@ -476,11 +482,12 @@ public class AesUtils : EncryptBase
         byte[] ivBuffer,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         return DecryptToBytes(stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             ivBuffer);
     }
 
@@ -522,14 +529,16 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void DecryptFile(
         Stream stream,
         string key,
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
-        => DecryptFile(stream, key, DefaultIv, outputPath, fillType, fillCharacter, encoding);
+        Encoding? encoding = null,
+        int? aesLength = null)
+        => DecryptFile(stream, key, DefaultEncryptIv, outputPath, fillType, fillCharacter, encoding, aesLength);
 
     /// <summary>
     /// AES decrypt the specified stream and output the file
@@ -541,6 +550,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void DecryptFile(
         Stream stream,
         string key,
@@ -548,10 +558,11 @@ public class AesUtils : EncryptBase
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
-        EncryptOrDecryptFile(stream, GetKeyBuffer(key, currentEncoding, fillType, fillCharacter), ivBuffer, false, outputPath);
+        EncryptOrDecryptFile(stream, GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength), ivBuffer, false, outputPath);
     }
 
     /// <summary>
@@ -564,6 +575,7 @@ public class AesUtils : EncryptBase
     /// <param name="fillType">Whether to complement the key? default: no fill(Only supports 32-bit keys or 16-bit iv)</param>
     /// <param name="fillCharacter">character for complement</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <param name="aesLength">Aes key length</param>
     public static void DecryptFile(
         Stream stream,
         string key,
@@ -571,12 +583,13 @@ public class AesUtils : EncryptBase
         string outputPath,
         FillType fillType = FillType.NoFile,
         char fillCharacter = ' ',
-        Encoding? encoding = null)
+        Encoding? encoding = null,
+        int? aesLength = null)
     {
         var currentEncoding = GetSafeEncoding(encoding);
         EncryptOrDecryptFile(
             stream,
-            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter),
+            GetKeyBuffer(key, currentEncoding, fillType, fillCharacter, aesLength),
             GetIvBuffer(iv, currentEncoding, fillType, fillCharacter),
             false,
             outputPath);
@@ -589,16 +602,22 @@ public class AesUtils : EncryptBase
     private static byte[] GetKeyBuffer(string key,
         Encoding encoding,
         FillType fillType,
-        char fillCharacter)
+        char fillCharacter,
+        int? aesLength = null)
     {
         string paramName = nameof(key);
+        if (aesLength != null && aesLength != 16 && aesLength != 24 && aesLength != 32)
+            throw new ArgumentException("Aes key length can only be 16, 24 or 32 bits", nameof(aesLength));
+
+        var length = aesLength ?? DefaultEncryptKeyLength;
         return GetBytes(
             key,
             encoding,
             fillType,
             fillCharacter,
-            32,
-            () => throw new ArgumentException($"Please enter a 32-bit AES key or allow {nameof(fillType)} to Left or Right", paramName));
+            length,
+            () => throw new ArgumentException($"Please enter a {length}-bit AES key or allow {nameof(fillType)} to Left or Right",
+                paramName));
     }
 
     private static byte[] GetIvBuffer(string iv,
@@ -668,3 +687,4 @@ public class AesUtils : EncryptBase
     #endregion
 
 }
+#pragma warning restore S107

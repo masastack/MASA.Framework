@@ -13,17 +13,24 @@ public class DESUtils : EncryptBase
     /// <summary>
     /// Default encryption key
     /// </summary>
-    private static readonly string DefaultEncryptKey = GetSpecifiedLengthString(
-        MD5Utils.EncryptRepeat(GlobalConfigurationUtils.DefaultEncryptKey, 2), 8,
-        () =>
-        {
+    private static readonly string DefaultEncryptKey =
+        GlobalConfigurationUtils.DefaultDesEncryptKey
+            .GetSpecifiedLengthString(8,
+                () =>
+                {
 
-        }, FillType.Right);
+                }, FillType.Right);
 
     /// <summary>
     /// Default encryption iv
     /// </summary>
-    private static readonly string DefaultEncryptIv = DefaultEncryptKey;
+    private static readonly string DefaultEncryptIv =
+        GlobalConfigurationUtils.DefaultDesEncryptIv
+            .GetSpecifiedLengthString(8,
+                () =>
+                {
+
+                }, FillType.Right);
 
 #pragma warning disable S5547
 #pragma warning disable S107
