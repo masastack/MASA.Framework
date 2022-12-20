@@ -46,7 +46,7 @@ builder.Services
     });
 ```
 
-> CustomerDbContext 需要继承MasaDbContext
+> CustomDbContext 需要继承MasaDbContext
 
 2. 自定义 IntegrationEvent
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Authentication.Identity.Tests;
 
-public class CustomerUser : IIdentityUser
+public class CustomUser : IIdentityUser
 {
     public string Id { get; set; }
 

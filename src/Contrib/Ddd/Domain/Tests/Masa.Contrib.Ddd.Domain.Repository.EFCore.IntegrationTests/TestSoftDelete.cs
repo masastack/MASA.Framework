@@ -16,7 +16,7 @@ public class TestSoftDelete
         {
             optionsBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
         });
-        var dispatcherOptions = new CustomerDispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
+        var dispatcherOptions = new CustomDispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
         dispatcherOptions.UseUoW<CustomDbContext>();
         dispatcherOptions.UseRepository<CustomDbContext>();
         _serviceProvider = services.BuildServiceProvider();
