@@ -16,7 +16,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         Logger = logger;
     }
 
-    public async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
+    public virtual async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
         await ProcessResponseAsync(response, cancellationToken);
@@ -31,7 +31,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         }
     }
 
-    public async Task ProcessResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
+    public virtual async Task ProcessResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         if (!response.IsSuccessStatusCode)
         {
@@ -46,15 +46,12 @@ public abstract class DefaultResponseMessage : IResponseMessage
             case (HttpStatusCode)MasaHttpStatusCode.ValidatorException:
                 throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken));
             default:
-                await CustomConvertException(response);
+                await ProcessCustomException(response);
                 return;
         }
     }
 
-    public virtual async Task CustomConvertException(HttpResponseMessage response)
-    {
-        await Task.CompletedTask;
-    }
+    public virtual Task ProcessCustomException(HttpResponseMessage response) => Task.CompletedTask;
 
     public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
