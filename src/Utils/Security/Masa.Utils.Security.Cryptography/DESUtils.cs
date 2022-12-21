@@ -6,8 +6,10 @@ namespace Masa.Utils.Security.Cryptography;
 /// <summary>
 /// DES symmetric encryption and decryption
 /// </summary>
+#pragma warning disable S101
 #pragma warning disable S2342
 // ReSharper disable once InconsistentNaming
+// ReSharper disable once ClassNeverInstantiated.Global
 public class DESUtils : EncryptBase
 {
     /// <summary>
@@ -354,6 +356,19 @@ public class DESUtils : EncryptBase
             outFilePath);
     }
 
+    private static void EncryptOrDecryptFile(
+        FileStream fileStream,
+        byte[] keyBuffer,
+        byte[] ivBuffer,
+        bool isEncrypt,
+        string outFilePath)
+    {
+        using var fileStreamOut = new FileStream(outFilePath, FileMode.Create);
+        using var des = DES.Create();
+        var transform = GetTransform(des, keyBuffer, ivBuffer, isEncrypt);
+        EncryptOrDecryptFile(fileStream, fileStreamOut, transform);
+    }
+
     private static byte[] GetKeyBuffer(string key,
         Encoding encoding,
         FillType fillType,
@@ -394,20 +409,8 @@ public class DESUtils : EncryptBase
             () => throw new ArgumentException(message, paramName));
     }
 
-    private static void EncryptOrDecryptFile(
-        FileStream fileStream,
-        byte[] keyBuffer,
-        byte[] ivBuffer,
-        bool isEncrypt,
-        string outFilePath)
-    {
-        using var fileStreamOut = new FileStream(outFilePath, FileMode.Create);
-        using var des = DES.Create();
-        var transform = GetTransform(des, keyBuffer, ivBuffer, isEncrypt);
-        EncryptOrDecryptFile(fileStream, fileStreamOut, transform);
-    }
-
 #pragma warning restore S107
 #pragma warning restore S2278
 }
 #pragma warning restore S2342
+#pragma warning restore S101

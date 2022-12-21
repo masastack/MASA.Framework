@@ -3,6 +3,7 @@
 
 namespace Masa.Utils.Extensions.Enums.Tests.Attributes;
 
+[AttributeUsage(AttributeTargets.All)]
 public class ENameAttribute : Attribute
 {
     public string Name { get; set; }

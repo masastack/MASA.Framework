@@ -9,7 +9,7 @@ public static class StreamExtensions
 {
     public static byte[] ConvertToBytes(this Stream stream)
     {
-        if (!stream.CanRead) return new byte[] { };
+        if (!stream.CanRead) return Array.Empty<byte>();
 
         if (!stream.CanSeek)
         {
@@ -24,16 +24,16 @@ public static class StreamExtensions
 
     public static async Task<byte[]> ConvertToBytesAsync(this Stream stream)
     {
-        if (!stream.CanRead) return new byte[] { };
+        if (!stream.CanRead) return Array.Empty<byte>();
 
         if (!stream.CanSeek)
         {
             stream.Seek(0, SeekOrigin.Begin);
         }
 
-        var bytes = new byte[stream.Length];
-        _ = await stream.ReadAsync(bytes, 0, bytes.Length);
+        var bytes = new Memory<byte>(new byte[stream.Length]);
+        _ = await stream.ReadAsync(bytes);
         stream.Seek(0, SeekOrigin.Begin);
-        return bytes;
+        return bytes.ToArray();
     }
 }
