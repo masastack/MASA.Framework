@@ -125,7 +125,9 @@ public static class ServiceCollectionExtensions
                     CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
         });
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
+        var settings = serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
+        GlobalI18nConfiguration.SetSupportedCultures(settings.SupportedCultures);
+        return settings;
     }
 
     private static IServiceCollection AddI18nCore<TResource>(
@@ -145,7 +147,7 @@ public static class ServiceCollectionExtensions
             options.Resources.TryAdd<TResource>(resource =>
             {
                 if (assemblies.Any()) resource.Assemblies = assemblies;
-                resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18nConstant.DefaultResourcePath,
+                resource.AddJson(localLanguageSettings.ResourcesDirectory!,
                     localLanguageSettings.SupportedCultures);
             });
         });
