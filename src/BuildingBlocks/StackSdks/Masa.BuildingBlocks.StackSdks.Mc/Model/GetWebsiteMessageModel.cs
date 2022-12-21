@@ -9,7 +9,7 @@ public class GetWebsiteMessageModel : PaginatedOptions
 
     public WebsiteMessageFilterType? FilterType { get; set; }
 
-    public Guid ChannelId { get; set; }
+    public Guid? ChannelId { get; set; }
 
     public bool? IsRead { get; set; }
 
