@@ -6,7 +6,7 @@ namespace Masa.Contrib.Configuration;
 public interface IMasaConfigurationSourceProvider
 {
     (List<IConfigurationSource> MigrateConfigurationSources, List<IConfigurationSource> ConfigurationSources) GetMigrated(
-        IConfigurationBuilder configurationBuilder,
+        IEnumerable<IConfigurationSource> originalConfigurationSources,
         List<Type> excludeConfigurationSourceTypes,
         List<Type> excludeConfigurationProviderTypes);
 }

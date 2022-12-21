@@ -81,23 +81,10 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
-        Action<IMasaConfigurationBuilder>? configureDelegate = null)
-    {
-        Action<ConfigurationOptions>? action = null;
-        return services.AddMasaConfiguration(configureDelegate, action);
-    }
-
-    public static IServiceCollection AddMasaConfiguration(
-        this IServiceCollection services,
         params Assembly[] assemblies)
         => services.AddMasaConfiguration(
             null,
             options => options.Assemblies = assemblies);
-
-    public static IServiceCollection AddMasaConfiguration(
-        this IServiceCollection services,
-        Action<ConfigurationOptions>? action)
-        => services.AddMasaConfiguration(null, action);
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
@@ -110,7 +97,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        Action<ConfigurationOptions>? action)
+        Action<ConfigurationOptions>? action = null)
     {
         services.InitializeAppConfiguration();
 
@@ -119,10 +106,10 @@ public static class ServiceCollectionExtensions
         var configurationBuilder = sourceConfiguration as IConfigurationBuilder ??
             (sourceConfiguration == null ? new ConfigurationBuilder() : new ConfigurationBuilder().AddConfiguration(sourceConfiguration));
 
-        IConfigurationRoot masaConfiguration =
+        var masaConfiguration =
             services.CreateMasaConfiguration(
                 configureDelegate,
-                configurationBuilder,
+                configurationBuilder.Sources,
                 action);
 
         if (!masaConfiguration.Providers.Any())
@@ -139,22 +126,10 @@ public static class ServiceCollectionExtensions
     public static IMasaConfiguration GetMasaConfiguration(this IServiceCollection services)
         => services.BuildServiceProvider().GetRequiredService<IMasaConfiguration>();
 
-    public static IConfigurationRoot CreateMasaConfiguration(
+    private static IConfigurationRoot CreateMasaConfiguration(
         this IServiceCollection services,
         Action<IMasaConfigurationBuilder>? configureDelegate,
-        IConfigurationBuilder configurationBuilder,
-        params Assembly[] assemblies)
-    {
-        return services.CreateMasaConfiguration(
-            configureDelegate,
-            configurationBuilder,
-            options => options.Assemblies = assemblies);
-    }
-
-    public static IConfigurationRoot CreateMasaConfiguration(
-        this IServiceCollection services,
-        Action<IMasaConfigurationBuilder>? configureDelegate,
-        IConfigurationBuilder configurationBuilder,
+        IEnumerable<IConfigurationSource> originalConfigurationSources,
         Action<ConfigurationOptions>? action)
     {
         if (services.Any(service => service.ImplementationType == typeof(MasaConfigurationProvider)))
@@ -171,7 +146,9 @@ public static class ServiceCollectionExtensions
         var configurationSourceResult = services
             .BuildServiceProvider()
             .GetRequiredService<IMasaConfigurationSourceProvider>()
-            .GetMigrated(configurationBuilder, configurationOptions.ExcludeConfigurationSourceTypes,
+            .GetMigrated(
+                originalConfigurationSources,
+                configurationOptions.ExcludeConfigurationSourceTypes,
                 configurationOptions.ExcludeConfigurationProviderTypes);
 
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services,
