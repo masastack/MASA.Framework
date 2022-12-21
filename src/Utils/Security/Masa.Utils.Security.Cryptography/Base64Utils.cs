@@ -17,7 +17,7 @@ public class Base64Utils : EncryptBase
     public static string Encrypt(string content, Encoding? encoding = null)
     {
         byte[] buffers = GetSafeEncoding(encoding).GetBytes(content);
-        return Convert.ToBase64String(buffers);
+        return buffers.ToBase64String();
     }
 
     /// <summary>
@@ -29,6 +29,6 @@ public class Base64Utils : EncryptBase
     public static string Decrypt(string content, Encoding? encoding = null)
     {
         byte[] buffers = Convert.FromBase64String(content);
-        return GetSafeEncoding(encoding).GetString(buffers);
+        return buffers.ConvertToString(GetSafeEncoding(encoding));
     }
 }

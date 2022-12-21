@@ -13,18 +13,6 @@ public static class StringExtensions
     public static bool IsNullOrEmpty([NotNullWhen(false)] this string? value)
         => string.IsNullOrEmpty(value);
 
-    public static void CheckIsNullOrWhiteSpace(this string? value, [CallerArgumentExpression("value")] string? paramName = null)
-    {
-        if (value.IsNullOrWhiteSpace())
-            throw new ArgumentException($"{paramName} cannot be WhiteSpace or Null");
-    }
-
-    public static void CheckIsNullOrEmpty(this string? value, [CallerArgumentExpression("value")] string? paramName = null)
-    {
-        if (value.IsNullOrEmpty())
-            throw new ArgumentException($"{paramName} cannot be Empty or Null");
-    }
-
     public static string TrimStart(this string value, string trimParameter)
         => value.TrimStart(trimParameter, StringComparison.CurrentCulture);
 
@@ -49,5 +37,33 @@ public static class StringExtensions
             return value;
 
         return value.Substring(0, value.Length - trimParameter.Length);
+    }
+
+    public static byte[] ConvertToBytes(this string value, Encoding encoding)
+        => encoding.GetBytes(value);
+
+    public static byte[] FromBase64String(this string value)
+        => Convert.FromBase64String(value);
+
+    public static string GetSpecifiedLengthString(
+        this string value,
+        int length,
+        Action action,
+        FillType fillType = FillType.NoFile,
+        char fillCharacter = ' ')
+    {
+        if (fillType == FillType.NoFile && value.Length < length)
+            action.Invoke();
+
+        var keyLength = value.Length;
+        if (keyLength == length) return value;
+
+        if (keyLength > length) return value.Substring(0, length);
+
+        if (fillType == FillType.Left) return value.PadLeft(length, fillCharacter);
+
+        if (fillType == FillType.Right) return value.PadRight(length, fillCharacter);
+
+        throw new NotSupportedException($"... Unsupported {nameof(fillType)}");
     }
 }

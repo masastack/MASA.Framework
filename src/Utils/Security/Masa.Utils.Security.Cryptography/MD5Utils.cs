@@ -6,6 +6,7 @@ namespace Masa.Utils.Security.Cryptography;
 /// <summary>
 /// MD5加密算法
 /// </summary>
+// ReSharper disable once InconsistentNaming
 public class MD5Utils : HashAlgorithmBase
 {
     /// <summary>
@@ -15,26 +16,11 @@ public class MD5Utils : HashAlgorithmBase
     /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     /// <returns></returns>
-    private static string Encrypt(
+    public static string Encrypt(
         string content,
         bool isToLower = true,
         Encoding? encoding = null)
         => Encrypt(content, string.Empty, isToLower, encoding);
-
-    /// <summary>
-    /// MD5 multiple encryption
-    /// </summary>
-    /// <param name="content">String to be encrypted</param>
-    /// <param name="encryptTimes">Encryption times,default: 1</param>
-    /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
-    /// <param name="encoding">Encoding format, default UTF-8</param>
-    /// <returns>encrypted result</returns>
-    public static string EncryptRepeat(
-        string content,
-        int encryptTimes = 1,
-        bool isToLower = true,
-        Encoding? encoding = null)
-        => EncryptRepeat(content, string.Empty, encryptTimes, false, isToLower, encoding);
 
     /// <summary>
     /// MD5 salt-encrypted string
@@ -55,9 +41,23 @@ public class MD5Utils : HashAlgorithmBase
     /// MD5 multiple encryption
     /// </summary>
     /// <param name="content">String to be encrypted</param>
+    /// <param name="encryptTimes">Encryption times,default: 1</param>
+    /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
+    /// <param name="encoding">Encoding format, default UTF-8</param>
+    /// <returns>encrypted result</returns>
+    public static string EncryptRepeat(
+        string content,
+        int encryptTimes = 1,
+        bool isToLower = true,
+        Encoding? encoding = null)
+        => EncryptRepeat(content, string.Empty, encryptTimes, isToLower, encoding);
+
+    /// <summary>
+    /// MD5 multiple encryption
+    /// </summary>
+    /// <param name="content">String to be encrypted</param>
     /// <param name="salt"></param>
     /// <param name="encryptTimes"></param>
-    /// <param name="isNeedSalt">When the number of executions is greater than 1, is it necessary to add salt and then encrypt after the second time? default: false (Salt encryption only for the first time)</param>
     /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
     /// <param name="encoding">Encoding format, default UTF-8</param>
     /// <returns>encrypted result</returns>
@@ -65,7 +65,6 @@ public class MD5Utils : HashAlgorithmBase
         string content,
         string salt,
         int encryptTimes,
-        bool isNeedSalt = false,
         bool isToLower = true,
         Encoding? encoding = null)
     {
@@ -76,8 +75,7 @@ public class MD5Utils : HashAlgorithmBase
         string result = Encrypt(content + salt, isToLower, encoding);
         while (times < encryptTimes)
         {
-            result = isNeedSalt ? result + salt : result;
-            result = Encrypt(result, isToLower, encoding);
+            result = Encrypt(result + salt, isToLower, encoding);
             times++;
         }
 
@@ -104,14 +102,10 @@ public class MD5Utils : HashAlgorithmBase
     /// <returns>encrypted result</returns>
     public static string EncryptStream(Stream stream, bool isToLower = true)
     {
-        stream.Position = 0;
-        byte[] buffers = new byte[stream.Length];
-        stream.Read(buffers, 0, buffers.Length);
-        stream.Seek(0, SeekOrigin.Begin);
+        byte[] buffers = stream.ConvertToBytes();
         using var md5 = MD5.Create();
         byte[] bytes = md5.ComputeHash(buffers);
         var encryptedContent = Encrypt(EncryptType.Md5, bytes, null, isToLower);
-        stream.Position = 0;
         return encryptedContent;
     }
 }
