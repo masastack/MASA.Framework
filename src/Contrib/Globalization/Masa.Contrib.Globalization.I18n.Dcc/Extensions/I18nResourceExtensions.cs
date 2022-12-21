@@ -11,12 +11,22 @@ public static class I18nResourceExtensions
         this I18nResource i18nResource,
         string appId,
         string configObjectPrefix,
+        params CultureModel[] supportedCultures)
+        => i18nResource.UseDcc(appId, configObjectPrefix, supportedCultures.ToList());
+
+    public static I18nResource UseDcc(
+        this I18nResource i18nResource,
+        string appId,
+        string configObjectPrefix,
         List<CultureModel> supportedCultures)
     {
         var serviceProvider = MasaApp.GetServices().BuildServiceProvider();
         var masaConfiguration = serviceProvider.GetRequiredService<IMasaConfiguration>();
-        var contributors = supportedCultures
-            .Select(supportedCulture => new DccI18nResourceContributor(appId, configObjectPrefix, supportedCulture.Culture, masaConfiguration)).ToList();
+        var contributors =
+            (supportedCultures.Any() ? supportedCultures :
+                serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value.SupportedCultures)
+            .Select(supportedCulture
+                => new DccI18nResourceContributor(appId, configObjectPrefix, supportedCulture.Culture, masaConfiguration)).ToList();
         foreach (var contributor in contributors)
         {
             i18nResource.AddContributor(contributor.CultureName, contributor);
