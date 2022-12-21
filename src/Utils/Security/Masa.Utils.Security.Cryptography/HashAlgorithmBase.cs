@@ -13,7 +13,7 @@ public class HashAlgorithmBase : EncryptBase
     /// <param name="isToLower">Whether to convert the encrypted string to lowercase</param>
     /// <param name="encoding"></param>
     /// <returns></returns>
-    public static string Encrypt(EncryptType encryptType, string content, bool isToLower = false, Encoding? encoding = null)
+    public static string Encrypt(EncryptType encryptType, string content, bool isToLower = true, Encoding? encoding = null)
     {
         using (var hashAlgorithm = HashAlgorithm.Create(encryptType.ToString()))
         {
@@ -26,7 +26,7 @@ public class HashAlgorithmBase : EncryptBase
         }
     }
 
-    protected static string Encrypt(EncryptType encryptType, byte[] buffer, HashAlgorithm? hashAlgorithm = null, bool isToLower = false)
+    protected static string Encrypt(EncryptType encryptType, byte[] buffer, HashAlgorithm? hashAlgorithm = null, bool isToLower = true)
     {
         using (hashAlgorithm ??= HashAlgorithm.Create(encryptType.ToString()))
         {

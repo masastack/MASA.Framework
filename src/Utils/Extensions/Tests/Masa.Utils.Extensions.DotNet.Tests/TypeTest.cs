@@ -10,9 +10,28 @@ public class TypeTest
     public void TestIsImplementerOfGeneric()
     {
         var res = typeof(Demo).IsImplementerOfGeneric(typeof(IEnumerable<>));
-        var res2 = typeof(Demo).IsImplementerOfGeneric(typeof(IList<>));
         Assert.IsTrue(res);
-        Assert.IsTrue(res2);
+
+        res = typeof(Demo).IsImplementerOfGeneric(typeof(IList<>));
+        Assert.IsTrue(res);
+
+        res = typeof(Repository<>).IsImplementerOfGeneric(typeof(IRepository<>));
+        Assert.IsTrue(res);
+
+        res = typeof(Repository<,>).IsImplementerOfGeneric(typeof(IRepository<>));
+        Assert.IsTrue(res);
+
+        res = typeof(IRepository<,>).IsImplementerOfGeneric(typeof(IRepository<>));
+        Assert.IsTrue(res);
+
+        res = typeof(UserRepository).IsImplementerOfGeneric(typeof(Repository<>));
+        Assert.IsTrue(res);
+
+        res = typeof(Repository<,>).IsImplementerOfGeneric(typeof(Repository<>));
+        Assert.IsTrue(res);
+
+        res = typeof(String).IsImplementerOfGeneric(typeof(IEquatable<>));
+        Assert.IsTrue(res);
     }
 
     public class Demo : List<int>

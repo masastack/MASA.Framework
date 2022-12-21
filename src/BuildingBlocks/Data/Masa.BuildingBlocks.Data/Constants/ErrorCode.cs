@@ -235,7 +235,7 @@ public static class ErrorCode
         var fields = classType.GetFields(BindingFlags.Static | BindingFlags.Public);
         foreach (var field in fields)
         {
-            var errorMessage = AttributeUtils.GetDescriptionByField(field);
+            var errorMessage = AttributeUtils.GetDescriptionValueByField(field);
 
             _errorCodeMessageDictionary.Add(field.GetRawConstantValue()!.ToString()!, errorMessage);
         }

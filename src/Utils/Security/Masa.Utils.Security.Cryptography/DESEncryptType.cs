@@ -3,15 +3,18 @@
 
 namespace Masa.Utils.Security.Cryptography;
 
-public enum FillType
+#pragma warning disable S2342
+// ReSharper disable once InconsistentNaming
+public enum DESEncryptType
 {
-    NoFile = 1,
     /// <summary>
-    /// left fill
+    /// original DES encryption
     /// </summary>
-    Left = 2,
+    Normal,
+
     /// <summary>
-    /// right fill
+    /// Easy to transfer in browser
     /// </summary>
-    Right = 3
+    Improved
 }
+#pragma warning restore S2342

@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace System;
+namespace System.Reflection;
 
 public static class MethodInfoExtensions
 {
