@@ -7,8 +7,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    internal static List<CultureModel> SupportedCultures;
-
     public static IServiceCollection AddI18n(
         this IServiceCollection services,
         string languageDirectory,
@@ -128,7 +126,7 @@ public static class ServiceCollectionExtensions
         });
         var serviceProvider = services.BuildServiceProvider();
         var settings = serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
-        SupportedCultures = settings.SupportedCultures;
+        GlobalI18nConfiguration.SetSupportedCultures(settings.SupportedCultures);
         return settings;
     }
 

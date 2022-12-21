@@ -95,9 +95,13 @@ public class I18nTest
 
     [DataTestMethod]
     [DataRow("zh-CN", "Name", "吉姆", false)]
+    [DataRow("zh-CN", "name", "吉姆", false)]
     [DataRow("en-US", "Name", "Jim", false)]
+    [DataRow("en-US", "name", "Jim", false)]
     [DataRow("zh-CN", "Name2", "吉姆2", true)]
+    [DataRow("zh-CN", "name2", "吉姆2", true)]
     [DataRow("en-US", "Name2", "Name2", true)]
+    [DataRow("en-US", "name2", "name2", true)]
     public void TestAddMultiResources2(string culture, string key, string expectedResult, bool isCustom)
     {
         var services = new ServiceCollection();
