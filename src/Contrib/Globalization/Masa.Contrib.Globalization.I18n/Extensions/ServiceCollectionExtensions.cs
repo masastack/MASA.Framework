@@ -7,6 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    internal static List<CultureModel> SupportedCultures;
+
     public static IServiceCollection AddI18n(
         this IServiceCollection services,
         string languageDirectory,
@@ -125,7 +127,9 @@ public static class ServiceCollectionExtensions
                     CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
         });
         var serviceProvider = services.BuildServiceProvider();
-        return serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
+        var settings = serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;
+        SupportedCultures = settings.SupportedCultures;
+        return settings;
     }
 
     private static IServiceCollection AddI18nCore<TResource>(
@@ -145,7 +149,7 @@ public static class ServiceCollectionExtensions
             options.Resources.TryAdd<TResource>(resource =>
             {
                 if (assemblies.Any()) resource.Assemblies = assemblies;
-                resource.AddJson(localLanguageSettings.ResourcesDirectory ?? ContribI18nConstant.DefaultResourcePath,
+                resource.AddJson(localLanguageSettings.ResourcesDirectory!,
                     localLanguageSettings.SupportedCultures);
             });
         });

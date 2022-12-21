@@ -28,7 +28,7 @@ public static class I18nResourceExtensions
         var resourceContributors = GetResourceContributors(
             resource,
             resourcesDirectory,
-            supportedCultures);
+            supportedCultures.Any() ? supportedCultures : ServiceCollectionExtensions.SupportedCultures);
         foreach (var resourceContributor in resourceContributors)
         {
             resource.AddContributor(resourceContributor.CultureName, resourceContributor);
