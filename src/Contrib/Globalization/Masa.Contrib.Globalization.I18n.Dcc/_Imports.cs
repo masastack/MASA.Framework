@@ -8,5 +8,6 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 global using Masa.Contrib.Globalization.I18n.Dcc;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Options;
 global using System.Diagnostics.CodeAnalysis;
 global using DccConstant = Masa.Contrib.Globalization.I18n.Dcc.Internal.Constant;

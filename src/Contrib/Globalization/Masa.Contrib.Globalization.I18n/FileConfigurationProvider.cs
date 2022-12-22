@@ -56,7 +56,7 @@ public abstract class FileConfigurationProvider : ConfigurationProvider
 
     private Dictionary<string, string> FormatData()
     {
-        var data = new Dictionary<string, string>();
+        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var item in _dictionary)
         {
             foreach (var resource in item.Value)
