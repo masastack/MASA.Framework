@@ -10,4 +10,9 @@ public class ClientCorsOrigin : Entity<Guid>
     public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
+
+    public ClientCorsOrigin(string origin)
+    {
+        Origin = origin;
+    }
 }

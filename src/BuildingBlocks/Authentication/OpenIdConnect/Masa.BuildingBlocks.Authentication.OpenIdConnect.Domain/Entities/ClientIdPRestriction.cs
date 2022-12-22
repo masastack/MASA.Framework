@@ -10,4 +10,9 @@ public class ClientIdPRestriction : Entity<Guid>
     public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
+
+    public ClientIdPRestriction(string provider)
+    {
+        Provider = provider;
+    }
 }

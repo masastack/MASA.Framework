@@ -12,4 +12,10 @@ public class ClientClaim : Entity<Guid>
     public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
+
+    public ClientClaim(string type, string value)
+    {
+        Type = type;
+        Value = value;
+    }
 }
