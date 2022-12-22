@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class ClientPostLogoutRedirectUri : Entity<Guid>
 {
-    public string PostLogoutRedirectUri { get; private set; } = string.Empty;
+    public string PostLogoutRedirectUri { get; private set; }
 
     public Guid ClientId { get; private set; }
 

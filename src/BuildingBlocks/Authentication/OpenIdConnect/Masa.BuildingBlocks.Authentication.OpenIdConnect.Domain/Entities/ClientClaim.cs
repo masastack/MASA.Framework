@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class ClientClaim : Entity<Guid>
 {
-    public string Type { get; private set; } = string.Empty;
+    public string Type { get; private set; }
 
-    public string Value { get; private set; } = string.Empty;
+    public string Value { get; private set; }
 
     public Guid ClientId { get; private set; }
 
