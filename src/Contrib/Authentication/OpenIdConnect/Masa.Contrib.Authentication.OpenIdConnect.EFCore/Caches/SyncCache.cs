@@ -58,7 +58,7 @@ public class SyncCache
 
     public async Task ResetAsync()
     {
-        var clients = await ClientQuery().ToListAsync();
+        var clients = await ClientQueryAsync();
         var apiScopes = await ApiScopeQuery().ToListAsync();
         var apiResources = await ApiResourceQuery().ToListAsync();
         var identityResource = await IdentityResourceQuery().ToListAsync();
@@ -69,18 +69,60 @@ public class SyncCache
         await _identityResourceCache.ResetAsync(identityResource);
     }
 
-    private IQueryable<Client> ClientQuery()
+    private async Task<IEnumerable<Client>> ClientQueryAsync()
     {
-        return _context.Set<Client>()
-                    .Include(c => c.AllowedGrantTypes)
-                    .Include(c => c.RedirectUris)
-                    .Include(c => c.PostLogoutRedirectUris)
-                    .Include(c => c.Properties)
-                    .Include(c => c.Claims)
-                    .Include(c => c.IdentityProviderRestrictions)
-                    .Include(c => c.AllowedCorsOrigins)
-                    .Include(c => c.ClientSecrets)
-                    .Include(c => c.AllowedScopes);
+        var datas = await(from client in _context.Set<Client>()
+
+                          join clientProperty in _context.Set<ClientProperty>()
+                          on client.Id equals clientProperty.ClientId into clientPropertyJoin
+                          from clientProperty in clientPropertyJoin.DefaultIfEmpty()
+
+                          join clientClaim in _context.Set<ClientClaim>()
+                          on client.Id equals clientClaim.ClientId into clientClaimJoin
+                          from clientClaim in clientClaimJoin.DefaultIfEmpty()
+
+                          join clientIdPRestriction in _context.Set<ClientIdPRestriction>()
+                          on client.Id equals clientIdPRestriction.ClientId into clientIdPRestrictionJoin
+                          from clientIdPRestriction in clientIdPRestrictionJoin.DefaultIfEmpty()
+
+                          join clientCorsOrigin in _context.Set<ClientCorsOrigin>()
+                          on client.Id equals clientCorsOrigin.ClientId into clientCorsOriginJoin
+                          from clientCorsOrigin in clientCorsOriginJoin.DefaultIfEmpty()
+
+                          join clientSecret in _context.Set<ClientSecret>()
+                          on client.Id equals clientSecret.ClientId into clientSecretJoin
+                          from clientSecret in clientSecretJoin.DefaultIfEmpty()
+
+                          select new
+                          {
+                              client,
+                              clientProperty,
+                              clientClaim,
+                              clientIdPRestriction,
+                              clientCorsOrigin,
+                              clientSecret,
+                          }).ToListAsync();
+
+        var clientGrantTypes = await _context.Set<ClientGrantType>().ToListAsync();
+        var clientRedirectUris = await _context.Set<ClientRedirectUri>().ToListAsync();
+        var clientPostLogoutRedirectUris = await _context.Set<ClientPostLogoutRedirectUri>().ToListAsync();
+        var clientScopes = await _context.Set<ClientScope>().ToListAsync();
+        var clients = datas.GroupBy(data => data.client.Id).Select(gp =>
+        {
+            var client = gp.First().client;
+            client.AllowedGrantTypes.AddRange(clientGrantTypes.Where(item => item.ClientId == client.Id));
+            client.RedirectUris.AddRange(clientRedirectUris.Where(item => item.ClientId == client.Id));
+            client.PostLogoutRedirectUris.AddRange(clientPostLogoutRedirectUris.Where(item => item.ClientId == client.Id));
+            client.Properties.AddRange(gp.Where(item => item.clientProperty is not null).Select(item => item.clientProperty));
+            client.Claims.AddRange(gp.Where(item => item.clientClaim is not null).Select(item => item.clientClaim));
+            client.IdentityProviderRestrictions.AddRange(gp.Where(item => item.clientIdPRestriction is not null).Select(item => item.clientIdPRestriction));
+            client.AllowedCorsOrigins.AddRange(gp.Where(item => item.clientCorsOrigin is not null).Select(item => item.clientCorsOrigin));
+            client.ClientSecrets.AddRange(gp.Where(item => item.clientSecret is not null).Select(item => item.clientSecret));
+            client.AllowedScopes.AddRange(clientScopes.Where(item => item.ClientId == client.Id));
+            return client;
+        });
+
+        return clients;
     }
 
     private IQueryable<IdentityResource> IdentityResourceQuery()
