@@ -143,22 +143,6 @@ public class ConfigurationTest
     }
 
     [TestMethod]
-    public void TestSpecifyAssembliesShouldKafKaOptionsExist2()
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.Host.ConfigureAppConfiguration((_, config) => config.Sources.Clear());
-        var chainedConfiguration = new ConfigurationBuilder()
-            .SetBasePath(builder.Environment.ContentRootPath)
-            .AddJsonFile("appsettings.json", true, true);
-        builder.Configuration.AddConfiguration(chainedConfiguration.Build());
-        builder.AddMasaConfiguration(option => option.Assemblies = new[] { typeof(KafkaOptions).Assembly });
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var kafkaOptions = serviceProvider.GetRequiredService<IOptions<KafkaOptions>>();
-        Assert.IsTrue(kafkaOptions is { Value: { Servers: "Kafka Server", ConnectionPoolSize: 10 } });
-    }
-
-    [TestMethod]
     public void TestSpecifyAssembliesShouldThrowException()
     {
         var builder = WebApplication.CreateBuilder();
@@ -335,23 +319,33 @@ public class ConfigurationTest
     }
 
     [TestMethod]
-    public void TestCreateMasaConfigurationShouldReturnRedisOptionsAndSystemOptionsExist()
+    public void TestAddMasaConfiguration()
     {
         var services = new ServiceCollection();
-        services.CreateMasaConfiguration(configurationBuilder =>
+        services.AddMasaConfiguration(configurationBuilder =>
         {
-            configurationBuilder.AddJsonFile("redis.json", true, true)
-                .AddJsonFile("rabbitMq.json", true, true);
+            configurationBuilder.AddJsonFile("appsettings.json", false, true);
+            configurationBuilder.AddJsonFile("rabbitMq.json", false, true);
+        }, options =>
+        {
+            options.Assemblies = new[] { typeof(RabbitMqOptions).Assembly };
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var configuration = serviceProvider.GetService<IConfiguration>();
+        Assert.IsNotNull(configuration);
+        Assert.AreEqual("localhost", configuration["Local:RabbitMq:HostName"]);
+        Assert.AreEqual("admin", configuration["Local:RabbitMq:UserName"]);
+        Assert.AreEqual("admin", configuration["Local:RabbitMq:Password"]);
+        Assert.AreEqual("/", configuration["Local:RabbitMq:VirtualHost"]);
+        Assert.AreEqual("5672", configuration["Local:RabbitMq:Port"]);
 
-            configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>().MappingLocal<SystemOptions>());
-        }, new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", true, true));
-        IServiceProvider serviceProvider = services.BuildServiceProvider();
-        var redisOption = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
-        Assert.IsTrue(redisOption.Value.Ip == "localhost");
+        var options = serviceProvider.GetService<IOptions<RabbitMqOptions>>();
+        Assert.IsNotNull(options);
 
-        var systemOptions = serviceProvider.GetRequiredService<IOptions<SystemOptions>>();
-        Assert.IsTrue(systemOptions is { Value.Name: "Masa TEST" });
+        Assert.AreEqual("localhost", options.Value.HostName);
+        Assert.AreEqual("admin", options.Value.UserName);
+        Assert.AreEqual("admin", options.Value.Password);
+        Assert.AreEqual("/", options.Value.VirtualHost);
+        Assert.AreEqual("5672", options.Value.Port);
     }
 }

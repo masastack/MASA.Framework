@@ -6,15 +6,15 @@ namespace Masa.Contrib.Configuration;
 public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourceProvider
 {
     public virtual (List<IConfigurationSource> MigrateConfigurationSources, List<IConfigurationSource> ConfigurationSources) GetMigrated(
-        IConfigurationBuilder configurationBuilder,
+        IEnumerable<IConfigurationSource> originalConfigurationSources,
         List<Type> excludeConfigurationSourceTypes,
         List<Type> excludeConfigurationProviderTypes)
     {
         List<IConfigurationSource> migrateConfigurationSources = new();
         List<IConfigurationSource> configurationSources = new();
-        foreach (var source in configurationBuilder.Sources)
+        foreach (var originalConfigurationSource in originalConfigurationSources)
         {
-            var result = GetMigrated(source, excludeConfigurationSourceTypes, excludeConfigurationProviderTypes);
+            var result = GetMigrated(originalConfigurationSource, excludeConfigurationSourceTypes, excludeConfigurationProviderTypes);
             migrateConfigurationSources.AddRange(result.MigrateConfigurationSources);
             configurationSources.AddRange(result.ConfigurationSources);
         }

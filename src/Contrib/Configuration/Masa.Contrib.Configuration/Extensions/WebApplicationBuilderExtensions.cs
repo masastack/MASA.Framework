@@ -35,15 +35,6 @@ public static class WebApplicationBuilderExtensions
     [Obsolete("Use Services.AddMasaConfiguration() instead")]
     public static WebApplicationBuilder AddMasaConfiguration(
         this WebApplicationBuilder builder,
-        Action<ConfigurationOptions>? action)
-    {
-        builder.Services.AddMasaConfiguration(action);
-        return builder;
-    }
-
-    [Obsolete("Use Services.AddMasaConfiguration() instead")]
-    public static WebApplicationBuilder AddMasaConfiguration(
-        this WebApplicationBuilder builder,
         Action<IMasaConfigurationBuilder>? configureDelegate,
         params Assembly[] assemblies)
     {
