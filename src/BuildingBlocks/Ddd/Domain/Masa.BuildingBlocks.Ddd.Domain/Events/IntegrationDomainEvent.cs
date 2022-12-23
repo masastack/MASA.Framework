@@ -6,7 +6,11 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 public abstract record IntegrationDomainEvent(Guid Id, DateTime CreationTime) : DomainEvent(Id, CreationTime), IIntegrationDomainEvent
 {
     [JsonIgnore]
-    public abstract string Topic { get; set; }
+    public virtual string Topic { get; set; }
 
-    protected IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    protected IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow)
+    {
+        // ReSharper disable once VirtualMemberCallInConstructor
+        if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().Name;
+    }
 }
