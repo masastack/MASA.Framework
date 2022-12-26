@@ -90,16 +90,6 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         }
     }
 
-    public Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class
-    {
-        var domainEventBus = GetDomainEventBus();
-        if (domainEventBus == null || @event is not IDomainEvent domainEvent)
-            return Task.CompletedTask;
-
-        domainEventBus.Enqueue(domainEvent);
-        return Task.CompletedTask;
-    }
-
     public async ValueTask DisposeAsync()
     {
         DisposeAsync(true);
