@@ -179,7 +179,8 @@ public class SyncCacheTest
         client.AllowedScopes.AddRange(clientScopes);
         await dbContext.Clients.AddAsync(client);
         await dbContext.SaveChangesAsync();
-        var clients = await dbContext.Clients.ToListAsync();
+        var sync = serviceProvider.GetRequiredService<SyncCache>();
+        var clients = await sync.ClientQueryAsync();
         client = clients.FirstOrDefault(item => item.ClientId == client.ClientId);
         Assert.IsTrue(client is not null);
         Assert.IsTrue(client!.AllowedGrantTypes.Any(item => item.GrantType == "grantType"));

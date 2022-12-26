@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Diagnostics.CodeAnalysis;
-
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Caches;
 
 public class SyncCache
@@ -71,8 +69,7 @@ public class SyncCache
         await _identityResourceCache.ResetAsync(identityResource);
     }
 
-    [ExcludeFromCodeCoverage]
-    private async Task<IEnumerable<Client>> ClientQueryAsync()
+    public async Task<IEnumerable<Client>> ClientQueryAsync()
     {
         var clients = await _context.Set<Client>().ToListAsync();     
         var clientPropertys = await _context.Set<ClientProperty>().ToListAsync();
