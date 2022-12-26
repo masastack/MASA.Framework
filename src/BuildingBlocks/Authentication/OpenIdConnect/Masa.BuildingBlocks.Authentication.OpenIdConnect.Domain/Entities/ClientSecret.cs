@@ -8,4 +8,12 @@ public class ClientSecret : Secret
     public Guid ClientId { get; private set; }
 
     public Client Client { get; private set; } = null!;
+
+    public ClientSecret(string description, string value, DateTime? expiration, string type)
+    {
+        Description = description;
+        Value = value;
+        Expiration = expiration;
+        Type = type;
+    }
 }

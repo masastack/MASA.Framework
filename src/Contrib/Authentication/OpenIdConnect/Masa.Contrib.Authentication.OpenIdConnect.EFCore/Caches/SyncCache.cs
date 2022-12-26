@@ -58,7 +58,7 @@ public class SyncCache
 
     public async Task ResetAsync()
     {
-        var clients = await ClientQuery().ToListAsync();
+        var clients = await ClientQueryAsync();
         var apiScopes = await ApiScopeQuery().ToListAsync();
         var apiResources = await ApiResourceQuery().ToListAsync();
         var identityResource = await IdentityResourceQuery().ToListAsync();
@@ -69,18 +69,33 @@ public class SyncCache
         await _identityResourceCache.ResetAsync(identityResource);
     }
 
-    private IQueryable<Client> ClientQuery()
+    public async Task<IEnumerable<Client>> ClientQueryAsync()
     {
-        return _context.Set<Client>()
-                    .Include(c => c.AllowedGrantTypes)
-                    .Include(c => c.RedirectUris)
-                    .Include(c => c.PostLogoutRedirectUris)
-                    .Include(c => c.Properties)
-                    .Include(c => c.Claims)
-                    .Include(c => c.IdentityProviderRestrictions)
-                    .Include(c => c.AllowedCorsOrigins)
-                    .Include(c => c.ClientSecrets)
-                    .Include(c => c.AllowedScopes);
+        var clients = await _context.Set<Client>().ToListAsync();     
+        var clientPropertys = await _context.Set<ClientProperty>().ToListAsync();
+        var clientClaims = await _context.Set<ClientClaim>().ToListAsync();
+        var clientIdPRestrictions = await _context.Set<ClientIdPRestriction>().ToListAsync();
+        var clientCorsOrigins = await _context.Set<ClientCorsOrigin>().ToListAsync();
+        var clientSecrets = await _context.Set<ClientSecret>().ToListAsync();
+        var clientGrantTypes = await _context.Set<ClientGrantType>().ToListAsync();
+        var clientRedirectUris = await _context.Set<ClientRedirectUri>().ToListAsync();
+        var clientPostLogoutRedirectUris = await _context.Set<ClientPostLogoutRedirectUri>().ToListAsync();
+        var clientScopes = await _context.Set<ClientScope>().ToListAsync();
+
+        foreach(var client in clients)
+        {
+            client.AllowedGrantTypes.AddRange(clientGrantTypes.Where(item => item.ClientId == client.Id));
+            client.RedirectUris.AddRange(clientRedirectUris.Where(item => item.ClientId == client.Id));
+            client.PostLogoutRedirectUris.AddRange(clientPostLogoutRedirectUris.Where(item => item.ClientId == client.Id));
+            client.Properties.AddRange(clientPropertys.Where(item => item.ClientId == client.Id));
+            client.Claims.AddRange(clientClaims.Where(item => item.ClientId == client.Id));
+            client.IdentityProviderRestrictions.AddRange(clientIdPRestrictions.Where(item => item.ClientId == client.Id));
+            client.AllowedCorsOrigins.AddRange(clientCorsOrigins.Where(item => item.ClientId == client.Id));
+            client.ClientSecrets.AddRange(clientSecrets.Where(item => item.ClientId == client.Id));
+            client.AllowedScopes.AddRange(clientScopes.Where(item => item.ClientId == client.Id));
+        }
+
+        return clients;
     }
 
     private IQueryable<IdentityResource> IdentityResourceQuery()

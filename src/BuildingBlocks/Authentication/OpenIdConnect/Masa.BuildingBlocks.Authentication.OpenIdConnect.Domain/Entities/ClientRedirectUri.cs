@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities;
 
 public class ClientRedirectUri : Entity<Guid>
 {
-    public string RedirectUri { get; private set; } = string.Empty;
+    public string RedirectUri { get; private set; }
 
     public Guid ClientId { get; private set; }
 
