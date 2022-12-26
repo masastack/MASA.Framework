@@ -45,7 +45,7 @@ public class TestSoftDelete
     }
 
     [TestMethod]
-    public async Task Test()
+    public async Task TestRemoveAsync()
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
         var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
@@ -61,5 +61,26 @@ public class TestSoftDelete
         await unitOfWork.CommitAsync();
 
         Assert.AreEqual(0, await customDbContext.Set<Orders>().CountAsync());
+    }
+
+    [TestMethod]
+    public async Task TestFindAsync()
+    {
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
+        var order = await customDbContext.Set<Orders>().FirstOrDefaultAsync(o => o.Id == 1);
+        Assert.IsNotNull(order);
+
+        customDbContext.Set<Orders>().Remove(order);
+        await customDbContext.SaveChangesAsync();
+
+        order = await customDbContext.Set<Orders>().FirstOrDefaultAsync(o => o.Id == 1);
+        Assert.IsNull(order);
+        var repository = scope.ServiceProvider.GetRequiredService<IRepository<Orders, int>>();
+        order = await repository.FindAsync(o => o.Id == 1);
+        Assert.IsNotNull(order);
+
+        order = await repository.FindAsync(1);
+        Assert.IsNotNull(order);
     }
 }

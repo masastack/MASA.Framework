@@ -51,13 +51,28 @@ public class Repository<TDbContext, TEntity> :
         CancellationToken cancellationToken = default)
     {
         Dictionary<string, object> fields = new(keyValues);
-        return Context.Set<TEntity>().IgnoreQueryFilters().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
+
+        if (IdDataFilter == null)
+            return Context.Set<TEntity>().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
+
+        using (IdDataFilter.Disable<ISoftDelete>())
+        {
+            return Context.Set<TEntity>().GetQueryable(fields).FirstOrDefaultAsync(cancellationToken);
+        }
     }
 
     public override Task<TEntity?> FindAsync(
         Expression<Func<TEntity, bool>> predicate,
         CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().Where(predicate).FirstOrDefaultAsync(cancellationToken);
+    {
+        if (IdDataFilter == null)
+            return Context.Set<TEntity>().Where(predicate).FirstOrDefaultAsync(cancellationToken);
+
+        using (IdDataFilter.Disable<ISoftDelete>())
+        {
+            return Context.Set<TEntity>().Where(predicate).FirstOrDefaultAsync(cancellationToken);
+        }
+    }
 
     public override async Task<long> GetCountAsync(CancellationToken cancellationToken = default)
         => await Context.Set<TEntity>().LongCountAsync(cancellationToken);
@@ -203,6 +218,23 @@ public class Repository<TDbContext, TEntity> :
         }
         CommitState = CommitState.UnCommited;
     }
+
+    private bool _isInitializeDataFilter;
+
+    private IDataFilter? _dataFilter;
+
+    protected IDataFilter? IdDataFilter
+    {
+        get
+        {
+            if (!_isInitializeDataFilter)
+            {
+                _dataFilter = ServiceProvider.GetService<IDataFilter>();
+                _isInitializeDataFilter = true;
+            }
+            return _dataFilter;
+        }
+    }
 }
 
 public class Repository<TDbContext, TEntity, TKey> :
@@ -217,7 +249,15 @@ public class Repository<TDbContext, TEntity, TKey> :
     }
 
     public virtual Task<TEntity?> FindAsync(TKey id, CancellationToken cancellationToken = default)
-        => Context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
+    {
+        if (IdDataFilter == null)
+            return Context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
+
+        using (IdDataFilter.Disable<ISoftDelete>())
+        {
+            return Context.Set<TEntity>().FirstOrDefaultAsync(entity => entity.Id.Equals(id), cancellationToken);
+        }
+    }
 
     public virtual Task RemoveAsync(TKey id, CancellationToken cancellationToken = default)
         => base.RemoveAsync(entity => entity.Id.Equals(id), cancellationToken);
