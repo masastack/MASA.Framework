@@ -8,13 +8,14 @@ public class TestSoftDelete
 {
     private IServiceProvider _serviceProvider;
 
-    [TestInitialize]
-    public void Initialize()
+    private void Initialize(bool enableSoftDelete = true)
     {
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
         {
-            optionsBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+            optionsBuilder
+                .UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}")
+                .UseFilter(options => options.EnableSoftDelete = enableSoftDelete);
         });
         var dispatcherOptions = new CustomDispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
         dispatcherOptions.UseUoW<CustomDbContext>();
@@ -47,6 +48,7 @@ public class TestSoftDelete
     [TestMethod]
     public async Task TestRemoveAsync()
     {
+        Initialize();
         await using var scope = _serviceProvider.CreateAsyncScope();
         var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.AreEqual(1, await customDbContext.Set<Orders>().CountAsync());
@@ -66,6 +68,7 @@ public class TestSoftDelete
     [TestMethod]
     public async Task TestFindAsync()
     {
+        Initialize();
         await using var scope = _serviceProvider.CreateAsyncScope();
         var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
         var order = await customDbContext.Set<Orders>().FirstOrDefaultAsync(o => o.Id == 1);
@@ -80,7 +83,41 @@ public class TestSoftDelete
         order = await repository.FindAsync(o => o.Id == 1);
         Assert.IsNotNull(order);
 
+        order = await repository.FindAsync(new List<KeyValuePair<string, object>>()
+        {
+            new("Id", 1)
+        });
+        Assert.IsNotNull(order);
+
         order = await repository.FindAsync(1);
         Assert.IsNotNull(order);
+    }
+
+    [TestMethod]
+    public async Task TestFindAsyncByNotUseSoftDelete()
+    {
+        Initialize(false);
+        await using var scope = _serviceProvider.CreateAsyncScope();
+        var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
+        var order = await customDbContext.Set<Orders>().FirstOrDefaultAsync(o => o.Id == 1);
+        Assert.IsNotNull(order);
+
+        customDbContext.Set<Orders>().Remove(order);
+        await customDbContext.SaveChangesAsync();
+
+        order = await customDbContext.Set<Orders>().FirstOrDefaultAsync(o => o.Id == 1);
+        Assert.IsNull(order);
+        var repository = scope.ServiceProvider.GetRequiredService<IRepository<Orders, int>>();
+        order = await repository.FindAsync(o => o.Id == 1);
+        Assert.IsNull(order);
+
+        order = await repository.FindAsync(new List<KeyValuePair<string, object>>()
+        {
+            new("Id", 1)
+        });
+        Assert.IsNull(order);
+
+        order = await repository.FindAsync(1);
+        Assert.IsNull(order);
     }
 }
