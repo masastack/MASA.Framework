@@ -108,7 +108,7 @@ public class I18nTest
         services.Configure<MasaI18nOptions>(options =>
             options.Resources
                 .Add<CustomResource>()
-                .AddJson(Path.Combine("Resources", "I18n2"),new List<CultureModel>()
+                .AddJson(Path.Combine("Resources", "I18n2"), new List<CultureModel>()
                 {
                     new("zh-CN")
                 }));
@@ -118,6 +118,28 @@ public class I18nTest
         actualResult = !isCustom ?
             BuildingBlocks.Globalization.I18n.I18n.T(key) :
             services.BuildServiceProvider().GetRequiredService<II18n<CustomResource>>().T(key);
+        Assert.AreEqual(expectedResult, actualResult);
+    }
+
+    [DataTestMethod]
+    [DataRow("zh-CN", "Name3", "吉姆3")]
+    [DataRow("zh-CN", "name3", "吉姆3")]
+    [DataRow("en-US", "Name3", "Jim3")]
+    [DataRow("en-US", "name3", "Jim3")]
+    public void TestAddMultiResources3(string culture, string key, string expectedResult)
+    {
+        var services = new ServiceCollection();
+        services.AddI18nByEmbedded(AppDomain.CurrentDomain.GetAssemblies(), settings =>
+        {
+            settings.SupportedCultures = new List<CultureModel>
+            {
+                new("en-US"),
+                new("zh-CN"),
+            };
+            settings.ResourcesDirectory = Path.Combine("Resources", "I18n3");
+        });
+        BuildingBlocks.Globalization.I18n.I18n.SetUiCulture(culture);
+        var actualResult = BuildingBlocks.Globalization.I18n.I18n.T(key);
         Assert.AreEqual(expectedResult, actualResult);
     }
 }

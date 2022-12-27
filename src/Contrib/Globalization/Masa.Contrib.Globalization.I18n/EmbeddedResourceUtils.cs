@@ -14,8 +14,20 @@ public class EmbeddedResourceUtils
     public EmbeddedResourceUtils(IEnumerable<Assembly> assemblies)
     {
         _list = assemblies
-            .Select(assembly => new KeyValuePair<Assembly, string[]>(assembly, assembly.GetManifestResourceNames()))
+            .Select(assembly => new KeyValuePair<Assembly, string[]>(assembly, GetManifestResourceNames(assembly)))
             .ToList();
+    }
+
+    private static string[] GetManifestResourceNames(Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetManifestResourceNames();
+        }
+        catch (Exception)
+        {
+            return Array.Empty<string>();
+        }
     }
 
     public List<KeyValuePair<Assembly, string[]>> GetResources(string resourcesDirectory)
