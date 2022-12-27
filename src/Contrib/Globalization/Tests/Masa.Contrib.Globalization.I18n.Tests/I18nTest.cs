@@ -126,7 +126,7 @@ public class I18nTest
     [DataRow("zh-CN", "name3", "吉姆3")]
     [DataRow("en-US", "Name3", "Jim3")]
     [DataRow("en-US", "name3", "Jim3")]
-    public void TestAddMultiResources3(string culture, string key, string expectedResult)
+    public void TestAddI18nByEmbedded(string culture, string key, string expectedResult)
     {
         var services = new ServiceCollection();
         services.AddI18nByEmbedded(AppDomain.CurrentDomain.GetAssemblies(), settings =>
