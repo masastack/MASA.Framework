@@ -33,11 +33,4 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     Task CommitAsync(CancellationToken cancellationToken = default);
 
     Task RollbackAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Provides support for enqueuing aggregate root realm events
-    /// </summary>
-    /// <param name="event"></param>
-    /// <typeparam name="TDomainEvent"></typeparam>
-    Task AddDomainEventAsync<TDomainEvent>(TDomainEvent @event) where TDomainEvent : class;
 }

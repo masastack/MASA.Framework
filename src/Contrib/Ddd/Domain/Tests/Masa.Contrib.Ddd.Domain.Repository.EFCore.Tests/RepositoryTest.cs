@@ -189,7 +189,6 @@ public class RepositoryTest
         unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
     }
 
-
     [TestMethod]
     public async Task TestRemoveReturnEntityStateEqualChangedAsync()
     {
