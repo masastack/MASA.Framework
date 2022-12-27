@@ -57,7 +57,7 @@ public class JsonConfigurationProviderByEmbedded : ConfigurationProvider
 
     private Dictionary<string, string> FormatData()
     {
-        var data = new Dictionary<string, string>();
+        var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var resource in _dictionary)
         {
             data[$"{_prefix}{ConfigurationPath.KeyDelimiter}{resource.Key}"] = resource.Value;
