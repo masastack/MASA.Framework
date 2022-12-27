@@ -47,29 +47,57 @@ public static class I18n
     /// Gets the string resource with the given name.
     /// </summary>
     /// <param name="name">The name of the string resource.</param>
-    /// <typeparam name="TResourceType">Customer Resource Type</typeparam>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
     /// <returns></returns>
-    public static string T<TResourceType>(string name)
-        => _serviceProvider.GetRequiredService<II18n<TResourceType>>().T(name);
+    public static string T<TResource>(string name)
+        => _serviceProvider.GetRequiredService<II18n<TResource>>().T(name);
+
+    /// <summary>
+    /// Gets the string resource with the given name.
+    /// </summary>
+    /// <param name="propertyExpression">attribute expression.</param>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    /// <returns></returns>
+    public static string T<TResource>(Expression<Func<TResource, string>> propertyExpression)
+        => T<TResource>(ExpressionExtensions.GetI18nName(propertyExpression));
 
     /// <summary>
     /// Gets the string resource with the given name.
     /// </summary>
     /// <param name="name">The name of the string resource.</param>
     /// <param name="returnKey">Return Key when key does not exist, default: true</param>
-    /// <typeparam name="TResourceType">Customer Resource Type</typeparam>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
     /// <returns></returns>
-    public static string? T<TResourceType>(string name, bool returnKey)
-        => _serviceProvider.GetRequiredService<II18n<TResourceType>>().T(name, returnKey);
+    public static string? T<TResource>(string name, bool returnKey)
+        => _serviceProvider.GetRequiredService<II18n<TResource>>().T(name, returnKey);
+
+    /// <summary>
+    /// Gets the string resource with the given name.
+    /// </summary>
+    /// <param name="propertyExpression">attribute expression.</param>
+    /// <param name="returnKey">Return Key when key does not exist, default: true</param>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    /// <returns></returns>
+    public static string? T<TResource>(Expression<Func<TResource, string>> propertyExpression, bool returnKey)
+        => T<TResource>(ExpressionExtensions.GetI18nName(propertyExpression), returnKey);
 
     /// <summary>
     /// Gets the string resource with the given name and formatted with the supplied arguments.
     /// </summary>
     /// <param name="name">The name of the string resource.</param>
     /// <param name="arguments">The values to format the string with.</param>
-    /// <typeparam name="TResourceType">Customer Resource Type</typeparam>
-    public static string T<TResourceType>(string name, params object[] arguments)
-        => _serviceProvider.GetRequiredService<II18n<TResourceType>>().T(name, arguments);
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    public static string T<TResource>(string name, params object[] arguments)
+        => _serviceProvider.GetRequiredService<II18n<TResource>>().T(name, arguments);
+
+    /// <summary>
+    /// Gets the string resource with the given name and formatted with the supplied arguments.
+    /// </summary>>
+    /// <param name="propertyExpression">attribute expression.</param>
+    /// <param name="arguments">The values to format the string with.</param>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    public static string T<TResource>(Expression<Func<TResource, string>> propertyExpression, params object[] arguments)
+        => T<TResource>(ExpressionExtensions.GetI18nName(propertyExpression), arguments);
 
     /// <summary>
     /// Gets the string resource with the given name and formatted with the supplied arguments.
@@ -77,9 +105,19 @@ public static class I18n
     /// <param name="name">The name of the string resource.</param>
     /// <param name="returnKey">Return Key when key does not exist, default: true</param>
     /// <param name="arguments">The values to format the string with.</param>
-    /// <typeparam name="TResourceType">Customer Resource Type</typeparam>
-    public static string? T<TResourceType>(string name, bool returnKey, params object[] arguments)
-        => _serviceProvider.GetRequiredService<II18n<TResourceType>>().T(name, returnKey, arguments);
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    public static string? T<TResource>(string name, bool returnKey, params object[] arguments)
+        => _serviceProvider.GetRequiredService<II18n<TResource>>().T(name, returnKey, arguments);
+
+    /// <summary>
+    /// Gets the string resource with the given name and formatted with the supplied arguments.
+    /// </summary>
+    /// <param name="propertyExpression">attribute expression.</param>
+    /// <param name="returnKey">Return Key when key does not exist, default: true</param>
+    /// <param name="arguments">The values to format the string with.</param>
+    /// <typeparam name="TResource">Customer Resource Type</typeparam>
+    public static string? T<TResource>(Expression<Func<TResource, string>> propertyExpression, bool returnKey, params object[] arguments)
+        => T<TResource>(ExpressionExtensions.GetI18nName(propertyExpression), returnKey, arguments);
 
     public static CultureInfo GetCultureInfo() => _i18n.GetCultureInfo();
 
