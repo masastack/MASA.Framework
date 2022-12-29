@@ -143,6 +143,17 @@ public class MasaArgumentException : MasaException
             maxValue);
     }
 
+    public static void ThrowIfNotEqual<T>(T argument, T value,
+        [CallerArgumentExpression("argument")] string? paramName = null) where T : IComparable
+    {
+        ThrowIf(
+            argument.CompareTo(value) != 0,
+            paramName,
+            Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_EQUAL_VALIDATOR,
+            null,
+            value);
+    }
+
     public static void ThrowIfContain([NotNull] string? argument,
         string parameter,
         [CallerArgumentExpression("argument")] string? paramName = null)
