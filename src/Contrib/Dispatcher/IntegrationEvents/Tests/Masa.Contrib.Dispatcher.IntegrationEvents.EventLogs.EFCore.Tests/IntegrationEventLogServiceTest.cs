@@ -12,8 +12,8 @@ public class IntegrationEventLogServiceTest : TestBase
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(builder => builder.UseTestSqlite(ConnectionString))
             .AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        IDispatcherOptions dispatcherOptions = CreateDispatcherOptions(services);
-        dispatcherOptions.UseEventLog<CustomDbContext>();
+        var options = CreateIntegrationEventOptions(services);
+        options.UseEventLog<CustomDbContext>();
         var serviceProvider = services.BuildServiceProvider();
 
         DbTransaction transaction = null!;
@@ -30,11 +30,11 @@ public class IntegrationEventLogServiceTest : TestBase
     [TestMethod]
     public void TestNullServices()
     {
-        var dispatcherOptions = CreateDispatcherOptions(null!);
+        var options = CreateIntegrationEventOptions(null!);
 
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
-            dispatcherOptions.UseEventLog<CustomDbContext>();
+            options.UseEventLog<CustomDbContext>();
         });
     }
 
@@ -42,8 +42,8 @@ public class IntegrationEventLogServiceTest : TestBase
     public void TestAddMultEventLog()
     {
         var services = new ServiceCollection();
-        IDispatcherOptions dispatcherOptions = CreateDispatcherOptions(services);
-        dispatcherOptions.UseEventLog<CustomDbContext>().UseEventLog<CustomDbContext>();
+        var options = CreateIntegrationEventOptions(services);
+        options.UseEventLog<CustomDbContext>().UseEventLog<CustomDbContext>();
         Assert.IsTrue(services.Count(service => service.ImplementationType == typeof(IntegrationEventLogModelCreatingProvider)) == 1);
         Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IntegrationEventLogContext)) == 1);
     }
@@ -51,11 +51,11 @@ public class IntegrationEventLogServiceTest : TestBase
     [TestMethod]
     public async Task TestRetrieveEventLogsPendingToPublishAsync()
     {
-        var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
-        dispatcherOptions.UseEventLog<CustomDbContext>();
-        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
-        dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
+        var options = CreateIntegrationEventOptions(new ServiceCollection());
+        options.UseEventLog<CustomDbContext>();
+        options.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
+        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+        var serviceProvider = options.Services.BuildServiceProvider();
         await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
         var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
         var list = await logService.RetrieveEventLogsPendingToPublishAsync(100);
@@ -97,11 +97,11 @@ public class IntegrationEventLogServiceTest : TestBase
     [TestMethod]
     public async Task TestRetrieveEventLogsFailedToPublishAsync()
     {
-        var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
-        dispatcherOptions.UseEventLog<CustomDbContext>();
-        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
-        dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
+        var options = CreateIntegrationEventOptions(new ServiceCollection());
+        options.UseEventLog<CustomDbContext>();
+        options.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
+        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+        var serviceProvider = options.Services.BuildServiceProvider();
         await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
         var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
         var list = await logService.RetrieveEventLogsFailedToPublishAsync(100, 10, 60);
@@ -341,19 +341,19 @@ public class IntegrationEventLogServiceTest : TestBase
 
     private async Task<(CustomDbContext CustomDbContext, IServiceProvider ServiceProvider)> InitializeAsync()
     {
-        var dispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
-        dispatcherOptions.UseEventLog<CustomDbContext>();
-        dispatcherOptions.Services.AddMasaDbContext<CustomDbContext>(option =>
+        var options = CreateIntegrationEventOptions(new ServiceCollection());
+        options.UseEventLog<CustomDbContext>();
+        options.Services.AddMasaDbContext<CustomDbContext>(option =>
             option.UseTestSqlite(Connection));
-        dispatcherOptions.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
         Mock<IIntegrationEventBus> integrationEventBus = new();
         var types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
             .ToList();
         integrationEventBus.Setup(eventBus => eventBus.GetAllEventTypes()).Returns(types).Verifiable();
-        dispatcherOptions.Services.AddScoped(_ => integrationEventBus.Object);
-        var serviceProvider = dispatcherOptions.Services.BuildServiceProvider();
+        options.Services.AddScoped(_ => integrationEventBus.Object);
+        var serviceProvider = options.Services.BuildServiceProvider();
         var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await customDbContext.Database.EnsureCreatedAsync();
         return new(customDbContext, serviceProvider);

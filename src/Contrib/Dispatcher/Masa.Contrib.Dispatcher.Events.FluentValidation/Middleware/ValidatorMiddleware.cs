@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Dispatcher.Events;
+namespace Masa.BuildingBlocks.Dispatcher.Events;
 
 public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
     where TEvent : IEvent

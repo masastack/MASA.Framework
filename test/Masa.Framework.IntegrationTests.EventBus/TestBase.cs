@@ -21,8 +21,7 @@ public class TestBase
         Services.AddDomainEventBus(dispatcherOptions =>
         {
             dispatcherOptions
-                .UseIntegrationEventBus<IntegrationEventLogService>(option => option.UseTestPub())
-                .UseEventLog<CustomDbContext>()
+                .UseIntegrationEventBus<IntegrationEventLogService>(option => option.UseTestPub().UseEventLog<CustomDbContext>())
                 .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordMiddleware<>)).UseMiddleware(typeof(ValidatorMiddleware<>)))
                 .UseUoW<CustomDbContext>(optionBuilder =>
                 {

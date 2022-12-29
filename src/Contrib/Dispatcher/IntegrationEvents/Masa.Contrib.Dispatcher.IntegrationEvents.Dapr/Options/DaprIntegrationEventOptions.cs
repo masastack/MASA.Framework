@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 
 [Obsolete("Later versions will be changed to Internal")]
-public class DispatcherOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Options.DispatcherOptions
+public class DaprIntegrationEventOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions
 {
     private string _pubSubName = "pubsub";
 
@@ -20,13 +20,13 @@ public class DispatcherOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Optio
         }
     }
 
-    public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
+    public DaprIntegrationEventOptions(IServiceCollection services, Assembly[] assemblies)
         : base(services, assemblies)
     {
     }
 
     [Obsolete("Later versions will be deleted")]
-    internal void CopyTo(Masa.Contrib.Dispatcher.IntegrationEvents.Options.DispatcherOptions dispatcherOptions)
+    internal void CopyTo(Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions dispatcherOptions)
     {
         dispatcherOptions.LocalRetryTimes = LocalRetryTimes;
         dispatcherOptions.MaxRetryTimes = MaxRetryTimes;

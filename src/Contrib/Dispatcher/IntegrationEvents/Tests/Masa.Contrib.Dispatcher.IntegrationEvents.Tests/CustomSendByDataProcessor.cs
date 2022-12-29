@@ -3,10 +3,10 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
-public class CustomerSendByDataProcessor : SendByDataProcessor
+public class CustomSendByDataProcessor : SendByDataProcessor
 {
-    public CustomerSendByDataProcessor(IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
+    public CustomSendByDataProcessor(IServiceProvider serviceProvider,
+        IOptions<IntegrationEventOptions> options,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<SendByDataProcessor>? logger = null)
         : base(serviceProvider, options, masaAppConfigureOptions, logger)

@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class SendByDataProcessor : ProcessorBase
 {
-    private readonly IOptions<DispatcherOptions> _options;
+    private readonly IOptions<IntegrationEventOptions> _options;
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly ILogger<SendByDataProcessor>? _logger;
 
@@ -13,7 +13,7 @@ public class SendByDataProcessor : ProcessorBase
 
     public SendByDataProcessor(
         IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
+        IOptions<IntegrationEventOptions> options,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<SendByDataProcessor>? logger = null) : base(serviceProvider)
     {

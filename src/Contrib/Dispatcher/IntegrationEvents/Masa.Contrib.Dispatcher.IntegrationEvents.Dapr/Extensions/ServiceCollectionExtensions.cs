@@ -7,12 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+
     #region Obsolete
 
     [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Action<DispatcherOptions>? options = null)
+        Action<DaprIntegrationEventOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.AddDaprEventBus<TIntegrationEventLogService>(MasaApp.GetAssemblies(), options);
 
@@ -20,7 +21,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DispatcherOptions>? options = null,
+        Action<DaprIntegrationEventOptions>? options = null,
         Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.TryAddDaprEventBus<TIntegrationEventLogService>(assemblies, options, builder);
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection TryAddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DispatcherOptions>? options,
+        Action<DaprIntegrationEventOptions>? options,
         Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
@@ -41,9 +42,9 @@ public static class ServiceCollectionExtensions
 
         return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
         {
-            DispatcherOptions daprDispatcherOptions = new DispatcherOptions(opt.Services, opt.Assemblies);
+            DaprIntegrationEventOptions daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
-            services.TryAddSingleton<IPublisher>(serviceProvider=> new Publisher(serviceProvider,daprDispatcherOptions.PubSubName));
+            services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(serviceProvider, daprDispatcherOptions.PubSubName));
 
             daprDispatcherOptions.CopyTo(opt);
         });
@@ -54,4 +55,5 @@ public static class ServiceCollectionExtensions
     }
 
     #endregion
+
 }

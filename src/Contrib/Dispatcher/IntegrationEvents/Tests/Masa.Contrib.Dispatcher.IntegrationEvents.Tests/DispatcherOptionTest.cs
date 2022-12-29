@@ -6,13 +6,13 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 [TestClass]
 public class DispatcherOptionTest
 {
-    private DispatcherOptions _options;
+    private IntegrationEventOptions _options;
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _options = new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
+        _options = new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies());
     }
 
     [TestMethod]

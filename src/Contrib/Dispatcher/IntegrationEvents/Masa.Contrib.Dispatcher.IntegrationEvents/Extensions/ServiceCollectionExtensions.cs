@@ -8,32 +8,32 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
-        Action<DispatcherOptions>? options = null)
+        Action<IntegrationEventOptions>? options = null)
         => services.AddIntegrationEventBus(MasaApp.GetAssemblies(), options);
 
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        Action<DispatcherOptions>? options = null)
+        Action<IntegrationEventOptions>? options = null)
         => services.TryAddIntegrationEventBus(assemblies, options);
 
     public static IServiceCollection AddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Action<DispatcherOptions>? options = null)
+        Action<IntegrationEventOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.AddIntegrationEventBus<TIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), options);
 
     public static IServiceCollection AddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DispatcherOptions>? options = null)
+        Action<IntegrationEventOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.TryAddIntegrationEventBus<TIntegrationEventLogService>(assemblies, options);
 
     internal static IServiceCollection TryAddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
         Assembly[] assemblies,
-        Action<DispatcherOptions>? options)
+        Action<IntegrationEventOptions>? options)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
         return services.TryAddIntegrationEventBus(assemblies, options, () =>
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
     internal static IServiceCollection TryAddIntegrationEventBus(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        Action<DispatcherOptions>? options,
+        Action<IntegrationEventOptions>? options,
         Action? action = null)
     {
         if (services.Any(service => service.ImplementationType == typeof(IntegrationEventBusProvider)))
@@ -54,10 +54,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IntegrationEventBusProvider>();
 
         MasaArgumentException.ThrowIfNull(assemblies);
-        var dispatcherOptions = new DispatcherOptions(services, assemblies.Distinct().ToArray());
+        var dispatcherOptions = new IntegrationEventOptions(services, assemblies.Distinct().ToArray());
         options?.Invoke(dispatcherOptions);
 
-        services.TryAddSingleton(typeof(IOptions<DispatcherOptions>),
+        services.TryAddSingleton(typeof(IOptions<IntegrationEventOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         LocalQueueProcessor.SetLogger(services);

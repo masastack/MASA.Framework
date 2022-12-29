@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Options;
 
-public class DispatcherOptions : IDispatcherOptions
+public class IntegrationEventOptions : IIntegrationEventOptions
 {
     public IServiceCollection Services { get; }
 
@@ -201,9 +201,9 @@ public class DispatcherOptions : IDispatcherOptions
 
     public List<Type> AllEventTypes { get; }
 
-    private DispatcherOptions(IServiceCollection services) => Services = services;
+    private IntegrationEventOptions(IServiceCollection services) => Services = services;
 
-    public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
+    public IntegrationEventOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
         Assemblies = assemblies;

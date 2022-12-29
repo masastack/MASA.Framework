@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore;
+// ReSharper disable once CheckNamespace
 
-public static class DispatcherOptionsExtensions
+namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
+
+public static class IntegrationEventOptionsExtensions
 {
     /// <summary>
     /// User database with IntegrationEventLogContext merge
@@ -13,8 +15,8 @@ public static class DispatcherOptionsExtensions
     /// <param name="options"></param>
     /// <param name="disableEntityTypeConfiguration">Disable configuration local message table configuration mapping relationship, default: false（If disabled, you need to configure the mapping manually）</param>
     /// <returns></returns>
-    public static IDispatcherOptions UseEventLog<TDbContext>(
-        this IDispatcherOptions options,
+    public static IIntegrationEventOptions UseEventLog<TDbContext>(
+        this IIntegrationEventOptions options,
         bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext, IMasaDbContext
     {
         if (options.Services == null)

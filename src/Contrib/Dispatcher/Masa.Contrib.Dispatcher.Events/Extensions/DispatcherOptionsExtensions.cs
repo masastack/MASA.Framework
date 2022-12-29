@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
 public static class DispatcherOptionsExtensions
@@ -24,6 +25,13 @@ public static class DispatcherOptionsExtensions
         this IDispatcherOptions options,
         Action<EventBusBuilder>? eventBusBuilder,
         ServiceLifetime lifetime)
+        => options.UseEventBus<IDispatcherOptions>(eventBusBuilder, lifetime);
+
+    internal static TDispatcherOptions UseEventBus<TDispatcherOptions>(
+        this TDispatcherOptions options,
+        Action<EventBusBuilder>? eventBusBuilder,
+        ServiceLifetime lifetime)
+        where TDispatcherOptions : IDispatcherOptions
     {
         ArgumentNullException.ThrowIfNull(options.Services, nameof(options.Services));
 

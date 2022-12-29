@@ -19,12 +19,12 @@ public class TestBase : IDisposable
         Connection.Close();
     }
 
-    protected IDispatcherOptions CreateDispatcherOptions(IServiceCollection services, Assembly[]? assemblies = null)
+    protected IIntegrationEventOptions CreateIntegrationEventOptions(IServiceCollection services, Assembly[]? assemblies = null)
     {
-        Mock<IDispatcherOptions> dispatcherOptions = new();
-        dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies ?? AppDomain.CurrentDomain.GetAssemblies())
+        Mock<IIntegrationEventOptions> options = new();
+        options.Setup(option => option.Services).Returns(services).Verifiable();
+        options.Setup(option => option.Assemblies).Returns(assemblies ?? AppDomain.CurrentDomain.GetAssemblies())
             .Verifiable();
-        return dispatcherOptions.Object;
+        return options.Object;
     }
 }

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Ddd.Domain.Options;
 
-public class DispatcherOptions : IDistributedDispatcherOptions
+public class DispatcherOptions : IDomainEventOptions
 {
     public IServiceCollection Services { get; }
 

@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
-    private readonly DispatcherOptions _dispatcherOptions;
+    private readonly IntegrationEventOptions _dispatcherOptions;
     private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
@@ -13,7 +13,7 @@ public class IntegrationEventBus : IIntegrationEventBus
     private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
-    public IntegrationEventBus(IOptions<DispatcherOptions> options,
+    public IntegrationEventBus(IOptions<IntegrationEventOptions> options,
         IPublisher publisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,

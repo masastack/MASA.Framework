@@ -7,7 +7,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 public class ProcessorTest
 {
     private IServiceProvider _serviceProvider;
-    private IOptions<DispatcherOptions> _options;
+    private IOptions<IntegrationEventOptions> _options;
 
     [TestInitialize]
     public void Initialize()
@@ -16,7 +16,7 @@ public class ProcessorTest
         MockPublisher(services);
         services.AddIntegrationEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
-        _options = _serviceProvider.GetRequiredService<IOptions<DispatcherOptions>>();
+        _options = _serviceProvider.GetRequiredService<IOptions<IntegrationEventOptions>>();
     }
 
     [TestMethod]
@@ -95,8 +95,8 @@ public class ProcessorTest
         }).Verifiable();
         services.AddSingleton(_ => dataConnectionStringProvider.Object);
 
-        Mock<IOptions<DispatcherOptions>> options = new();
-        options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        Mock<IOptions<IntegrationEventOptions>> options = new();
+        options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
         MasaAppConfigureOptions masaAppConfigureOptions = new()
         {
             AppId = "test"
@@ -185,8 +185,8 @@ public class ProcessorTest
         }).Verifiable();
         services.AddSingleton(_ => dataConnectionStringProvider.Object);
 
-        Mock<IOptions<DispatcherOptions>> options = new();
-        options.Setup(opt => opt.Value).Returns(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        Mock<IOptions<IntegrationEventOptions>> options = new();
+        options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
         MasaAppConfigureOptions masaAppConfigureOptions = new()
         {
             AppId = "test"

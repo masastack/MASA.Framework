@@ -5,7 +5,8 @@ namespace Masa.Framework.IntegrationTests.EventBus.Infrastructure.Extensions;
 
 public static class DispatcherOptionsExtensions
 {
-    public static IDispatcherOptions UseTestPub(this Contrib.Dispatcher.IntegrationEvents.Options.DispatcherOptions dispatcherOptions)
+    public static Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions UseTestPub(
+        this Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions dispatcherOptions)
     {
         dispatcherOptions.Services.TryAddSingleton<IPublisher, DefaultPublisher>();
         return dispatcherOptions;
