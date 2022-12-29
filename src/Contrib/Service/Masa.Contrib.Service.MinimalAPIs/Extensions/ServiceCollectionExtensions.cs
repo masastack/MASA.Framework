@@ -9,30 +9,6 @@ public static class ServiceCollectionExtensions
     /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
     /// <para>Notice: this method must be last call.</para>
     /// </summary>
-    /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
-    /// <param name="assemblies">The assembly collection where the MinimalApi service is located</param>
-    /// <returns></returns>
-    public static WebApplication AddServices(
-        this WebApplicationBuilder builder,
-        Assembly[]? assemblies = null)
-        => builder.Services.AddServices(builder, assemblies);
-
-    /// <summary>
-    /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
-    /// <para>Notice: this method must be last call.</para>
-    /// </summary>
-    /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static WebApplication AddServices(
-        this WebApplicationBuilder builder,
-        Action<ServiceGlobalRouteOptions> action)
-        => builder.Services.AddServices(builder, action);
-
-    /// <summary>
-    /// Add all classes that inherit from ServiceBase to Microsoft.Extensions.DependencyInjection.IServiceCollection
-    /// <para>Notice: this method must be last call.</para>
-    /// </summary>
     /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add the service to.</param>
     /// <param name="builder">The Microsoft.AspNetCore.Builder.WebApplicationBuilder.</param>
     /// <param name="assemblies">The assembly collection where the MinimalApi service is located</param>

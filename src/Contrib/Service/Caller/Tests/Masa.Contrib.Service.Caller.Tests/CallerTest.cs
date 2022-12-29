@@ -25,6 +25,7 @@ public class CallerTest
                 httpClientBuilder.Configure = builder => builder.Timeout = TimeSpan.FromSeconds(3);
                 httpClientBuilder.BaseAddress = "https://github.com/masastack";
             });
+            callerOptions.DisableAutoRegistration = true;
         });
         _ = _builder.Build();
         var serviceProvider = _builder.Services.BuildServiceProvider();
@@ -53,7 +54,7 @@ public class CallerTest
             age = 18
         };
         var result = provider.ConvertToDictionary(request);
-        Assert.IsTrue(System.Text.Json.JsonSerializer.Serialize(result) == System.Text.Json.JsonSerializer.Serialize(dictionary));
+        Assert.IsTrue(JsonSerializer.Serialize(result) == JsonSerializer.Serialize(dictionary));
     }
 
     [TestMethod]
@@ -66,7 +67,7 @@ public class CallerTest
             { "name", query.Name }
         };
         var result = provider.ConvertToDictionary(query);
-        Assert.IsTrue(System.Text.Json.JsonSerializer.Serialize(result) == System.Text.Json.JsonSerializer.Serialize(dictionary));
+        Assert.IsTrue(JsonSerializer.Serialize(result) == JsonSerializer.Serialize(dictionary));
     }
 
     [TestMethod]
@@ -77,7 +78,7 @@ public class CallerTest
         var result = provider.ConvertToDictionary(query);
         Assert.IsTrue(result.Count == 2);
         Assert.IsTrue(result["name"] == query.Name);
-        Assert.IsTrue(result["Tags"] == System.Text.Json.JsonSerializer.Serialize(new List<string>()
+        Assert.IsTrue(result["Tags"] == JsonSerializer.Serialize(new List<string>()
         {
             "Music",
             "Game"
@@ -104,7 +105,7 @@ public class CallerTest
         var query = new UserDetailQuery(null!, "Music", "Game");
         var result = provider.ConvertToDictionary(query);
         Assert.IsTrue(result.Count == 1);
-        Assert.IsTrue(result["Tags"] == System.Text.Json.JsonSerializer.Serialize(new List<string>()
+        Assert.IsTrue(result["Tags"] == JsonSerializer.Serialize(new List<string>()
         {
             "Music",
             "Game"
@@ -152,6 +153,7 @@ public class CallerTest
             {
                 httpClientBuilder.BaseApi = baseAddress;
             });
+            options.DisableAutoRegistration = true;
         });
 
         var caller = services.BuildServiceProvider().GetService<ICaller>();
@@ -176,6 +178,7 @@ public class CallerTest
             {
                 httpClientBuilder.BaseApi = "http://www.github.com";
             });
+            options.DisableAutoRegistration = true;
         });
         services.AddCaller(options =>
         {
@@ -183,6 +186,7 @@ public class CallerTest
             {
                 httpClientBuilder.BaseApi = "http://www.gitee.com";
             });
+            options.DisableAutoRegistration = true;
         });
 
         Assert.ThrowsException<ArgumentException>(() => services.BuildServiceProvider().GetService<ICaller>());

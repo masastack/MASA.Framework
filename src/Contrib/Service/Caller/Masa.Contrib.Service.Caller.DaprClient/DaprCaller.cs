@@ -11,11 +11,17 @@ public class DaprCaller : AbstractCaller
     protected readonly string AppId;
 
     public DaprCaller(IServiceProvider serviceProvider, string name, string appId)
+        : this(serviceProvider, null, name, appId)
+    {
+    }
+
+    public DaprCaller(IServiceProvider serviceProvider, Dapr.Client.DaprClient? daprClient, string name, string appId)
         : base(serviceProvider)
     {
         var optionsFactory = serviceProvider.GetRequiredService<IOptionsFactory<CallerDaprClientOptions>>();
         _callerDaprClientOptions = optionsFactory.Create(name);
         AppId = appId;
+        _daprClient = daprClient;
         var logger = serviceProvider.GetService<ILogger<DaprCaller>>();
         logger?.LogDebug("The Name of the initialized Caller is {Name}, and the AppId is {AppId}", name, appId);
     }

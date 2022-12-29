@@ -4,7 +4,6 @@
 using Masa.BuildingBlocks.StackSdks.Scheduler.Enum;
 using Masa.BuildingBlocks.StackSdks.Scheduler.Model;
 using Masa.BuildingBlocks.StackSdks.Scheduler.Request;
-using Masa.Contrib.StackSdks.Scheduler;
 
 namespace Masa.Contrib.StackSdks.Scheduler.Tests;
 

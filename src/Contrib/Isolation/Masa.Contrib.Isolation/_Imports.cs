@@ -7,6 +7,7 @@ global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Options;
+global using Masa.Contrib.Isolation;
 global using Masa.Contrib.Isolation.Middleware;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;

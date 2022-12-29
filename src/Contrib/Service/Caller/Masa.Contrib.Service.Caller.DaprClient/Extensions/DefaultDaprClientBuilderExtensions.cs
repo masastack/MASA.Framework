@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.Caller.DaprClient;
+// ReSharper disable once CheckNamespace
 
-public static class MasaDaprClientBuilderExtensions
+namespace Masa.BuildingBlocks.Service.Caller;
+
+public static class DefaultDaprClientBuilderExtensions
 {
     public static DefaultDaprClientBuilder AddHttpRequestMessage<TRequestMessage>(
         this DefaultDaprClientBuilder builder)
@@ -27,16 +29,14 @@ public static class MasaDaprClientBuilderExtensions
         return builder;
     }
 
-    public static IHttpClientBuilder AddHttpRequestMessage<TRequestMessage>(
-        this IHttpClientBuilder builder,
+    public static DefaultDaprClientBuilder AddHttpRequestMessage<TRequestMessage>(
+        this DefaultDaprClientBuilder builder,
         Func<IServiceProvider, TRequestMessage> configureHandler)
         where TRequestMessage : class, IDaprRequestMessage
     {
         ArgumentNullException.ThrowIfNull(nameof(builder));
 
         ArgumentNullException.ThrowIfNull(configureHandler);
-
-        builder.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IDaprRequestMessage), configureHandler, ServiceLifetime.Singleton));
 
         builder.Services.Configure<CallerDaprClientOptions>(builder.Name, options =>
         {

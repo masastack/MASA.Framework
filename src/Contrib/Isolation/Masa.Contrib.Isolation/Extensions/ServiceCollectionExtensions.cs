@@ -1,35 +1,13 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Isolation;
+// ReSharper disable once CheckNamespace
 
-public static class DispatcherOptionsExtensions
+namespace Microsoft.Extensions.DependencyInjection;
+
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// It is not recommended to use directly here, please use UseIsolationUoW
-    /// </summary>
-    /// <param name="eventBusBuilder"></param>
-    /// <param name="isolationBuilder"></param>
-    /// <returns></returns>
-    public static IEventBusBuilder UseIsolation(this IEventBusBuilder eventBusBuilder, Action<IsolationBuilder> isolationBuilder)
-    {
-        eventBusBuilder.Services.AddIsolation(isolationBuilder);
-        return eventBusBuilder;
-    }
-
-    /// <summary>
-    /// It is not recommended to use directly here, please use UseIsolationUoW
-    /// </summary>
-    /// <param name="options"></param>
-    /// <param name="isolationBuilder"></param>
-    /// <returns></returns>
-    public static IDispatcherOptions UseIsolation(this IDispatcherOptions options, Action<IsolationBuilder> isolationBuilder)
-    {
-        options.Services.AddIsolation(isolationBuilder);
-        return options;
-    }
-
-    private static void AddIsolation(this IServiceCollection services, Action<IsolationBuilder> isolationBuilder)
+    public static void AddIsolation(this IServiceCollection services, Action<IsolationBuilder> isolationBuilder)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(isolationBuilder);
@@ -55,14 +33,15 @@ public static class DispatcherOptionsExtensions
             .TryAddSingleton<IDbConnectionStringProvider, IsolationDbContextProvider>();
 
         if (services.Any(service => service.ServiceType == typeof(IConnectionStringProvider)))
-            services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider),
+                ServiceLifetime.Scoped));
         else
             services.TryAddScoped<IConnectionStringProvider, DefaultDbIsolationConnectionStringProvider>();
 
         MasaApp.TrySetServiceCollection(services);
     }
 
-    private static IServiceCollection TryAddConfigure<TOptions>(
+    public static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services)
         where TOptions : class
     {
@@ -74,7 +53,7 @@ public static class DispatcherOptionsExtensions
         if (configuration == null)
             return services;
 
-        string name = Options.DefaultName;
+        string name = Microsoft.Extensions.Options.Options.DefaultName;
         services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
             new ConfigurationChangeTokenSource<TOptions>(name, configuration));
         services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(

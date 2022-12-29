@@ -3,7 +3,7 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
-global using Masa.BuildingBlocks.Service.Caller.Options;
+global using Masa.Contrib.Service.Caller;
 global using Masa.Contrib.Service.Caller.Internal;
 global using Masa.Contrib.Service.Caller.Internal.Options;
 global using Microsoft.AspNetCore.Http;

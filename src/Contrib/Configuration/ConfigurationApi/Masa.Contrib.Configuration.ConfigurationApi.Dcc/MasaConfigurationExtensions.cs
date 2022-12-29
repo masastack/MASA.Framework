@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Configuration;
+namespace Microsoft.Extensions.Configuration;
 
 public static class MasaConfigurationExtensions
 {

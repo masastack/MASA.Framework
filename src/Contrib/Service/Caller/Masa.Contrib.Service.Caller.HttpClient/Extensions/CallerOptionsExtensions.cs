@@ -1,13 +1,17 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.Caller.HttpClient;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class CallerOptionsExtensions
 {
+    private static readonly string DefaultCallerName = Microsoft.Extensions.Options.Options.DefaultName;
+
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         Func<MasaHttpClientBuilder>? clientBuilder = null)
-        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
+        => callerOptions.UseHttpClient(DefaultCallerName, clientBuilder);
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,
@@ -24,7 +28,7 @@ public static class CallerOptionsExtensions
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         Action<MasaHttpClientBuilder>? clientBuilder)
-        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder);
+        => callerOptions.UseHttpClient(DefaultCallerName, clientBuilder);
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,

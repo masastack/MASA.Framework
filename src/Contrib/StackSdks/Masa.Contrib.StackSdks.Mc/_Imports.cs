@@ -3,12 +3,9 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
-global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.BuildingBlocks.StackSdks.Mc;
 global using Masa.BuildingBlocks.StackSdks.Mc.Model;
 global using Masa.BuildingBlocks.StackSdks.Mc.Service;
-global using Masa.Contrib.Service.Caller;
-global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Mc;
 global using Masa.Contrib.StackSdks.Mc.Infrastructure.Helper;
 global using Microsoft.AspNetCore.Authentication;

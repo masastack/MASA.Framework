@@ -6,7 +6,6 @@ global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;
-global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Enum;
 global using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Model;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;

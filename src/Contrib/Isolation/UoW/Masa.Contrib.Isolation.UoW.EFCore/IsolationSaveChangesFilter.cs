@@ -21,7 +21,7 @@ public class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesFil
     public void OnExecuting(ChangeTracker changeTracker)
     {
         changeTracker.DetectChanges();
-        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Added);
+        var entries = changeTracker.Entries().Where(entry => entry.State == Microsoft.EntityFrameworkCore.EntityState.Added);
         foreach (var entity in entries)
         {
             if (entity.Entity is IMultiTenant<TTenantId> && _tenantContext != null)

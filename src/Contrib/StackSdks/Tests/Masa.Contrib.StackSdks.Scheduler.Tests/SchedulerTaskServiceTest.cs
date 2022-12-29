@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using Masa.BuildingBlocks.StackSdks.Scheduler.Request;
-using Masa.Contrib.StackSdks.Scheduler;
 
 namespace Masa.Contrib.StackSdks.Scheduler.Tests;
 
