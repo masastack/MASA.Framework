@@ -3,5 +3,6 @@
 
 global using Masa.Utils.Extensions.DotNet.Tests.Infrastructure;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
+global using System.Globalization;
 global using System.Text;
 global using System.Text.Json;

@@ -66,4 +66,165 @@ public static class StringExtensions
 
         throw new NotSupportedException($"... Unsupported {nameof(fillType)}");
     }
+
+    /// <summary>
+    /// Support conversion from CamelCase, LowerCamelCase to SnakeCase
+    /// Example: UserName -> User_Name, userName -> User_Name
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="cultureInfo"></param>
+    /// <returns></returns>
+    public static string CamelCaseToSnakeCase(this string value, CultureInfo? cultureInfo = null)
+    {
+        var stringBuilder = new StringBuilder();
+        var index = 0;
+        var delimiter = '_';
+        foreach (var c in value.ToCharArray())
+        {
+            index++;
+            if (index == 1)
+            {
+                if (Char.IsUpper(c)) stringBuilder.Append(c);
+                else if (cultureInfo != null) stringBuilder.Append(Char.ToUpper(c, cultureInfo));
+                else stringBuilder.Append(Char.ToUpper(c));
+                continue;
+            }
+
+            if (Char.IsUpper(c)) stringBuilder.Append($"{delimiter}{c}");
+            else stringBuilder.Append(c);
+        }
+        return stringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Support conversion from CamelCase, LowerCamelCase to SnakeCase
+    /// Example: UserName -> user_name, userName -> user_name
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="cultureInfo"></param>
+    /// <returns></returns>
+    public static string CamelCaseToLowerSnakeCase(this string value, CultureInfo? cultureInfo = null)
+    {
+        var stringBuilder = new StringBuilder();
+        var index = 0;
+        var delimiter = '_';
+        foreach (var c in value.ToCharArray())
+        {
+            index++;
+            if (index == 1)
+            {
+                if (Char.IsLower(c)) stringBuilder.Append(c);
+                else if (cultureInfo != null) stringBuilder.Append(Char.ToLower(c, cultureInfo));
+                else stringBuilder.Append(Char.ToLower(c));
+                continue;
+            }
+
+            if (Char.IsUpper(c))
+            {
+                if (cultureInfo != null) stringBuilder.Append($"{delimiter}{Char.ToLower(c, cultureInfo)}");
+                else stringBuilder.Append($"{delimiter}{Char.ToLower(c)}");
+            }
+            else stringBuilder.Append(c);
+        }
+        return stringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Support conversion from SnakeCase, LowerSnakeCase to CamelCase
+    /// Example: User_Name -> UserName, user_name -> UserName, user_Name -> UserName, User_name -> UserName
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="cultureInfo"></param>
+    /// <returns></returns>
+    public static string SnakeCaseToCamelCase(this string value, CultureInfo? cultureInfo = null)
+        => value.ConvertToCamelCaseCore('_', cultureInfo);
+
+    /// <summary>
+    /// Support conversion from SnakeCase, LowerSnakeCase to CamelCase
+    /// Example: User_Name -> userName, user_name -> userName, user_Name -> userName, User_name -> userName
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="cultureInfo"></param>
+    /// <returns></returns>
+    public static string SnakeCaseToLowerCamelCase(this string value, CultureInfo? cultureInfo = null)
+        => value.ConvertToLowerCamelCaseCore('_', cultureInfo);
+
+    public static string ConvertToCamelCase(this string value, char delimiter, CultureInfo? cultureInfo = null)
+    {
+        if (value.IsNullOrEmpty()) return value;
+
+        if (value.Contains(delimiter)) return value.ConvertToCamelCaseCore(delimiter, cultureInfo);
+
+        var stringBuilder = new StringBuilder();
+        var c = value[0];
+        if (Char.IsUpper(c)) return value;
+
+        stringBuilder.Append(cultureInfo != null ? Char.ToUpper(c, cultureInfo) : Char.ToUpper(c));
+        if (value.Length > 1) stringBuilder.Append(value.Substring(1));
+        return stringBuilder.ToString();
+    }
+
+    public static string ConvertToLowerCamelCase(this string value, char delimiter, CultureInfo? cultureInfo = null)
+    {
+        if (value.IsNullOrEmpty()) return value;
+
+        if (value.Contains(delimiter)) return value.ConvertToLowerCamelCaseCore(delimiter, cultureInfo);
+
+        var c = value[0];
+        if (Char.IsLower(c)) return value;
+
+        var stringBuilder = new StringBuilder();
+        stringBuilder.Append(cultureInfo != null ? Char.ToLower(c, cultureInfo) : Char.ToLower(c));
+        if (value.Length > 1) stringBuilder.Append(value.Substring(1));
+        return stringBuilder.ToString();
+    }
+
+    private static string ConvertToCamelCaseCore(this string value, char delimiter, CultureInfo? cultureInfo = null)
+    {
+        var stringBuilder = new StringBuilder();
+        foreach (var item in value.Split(delimiter))
+        {
+            if (item.Length == 0)
+                continue;
+
+            char? c = item.ToArray()[0];
+            if (Char.IsUpper(c.Value)) stringBuilder.Append(c);
+            else if (cultureInfo != null) stringBuilder.Append(Char.ToUpper(c.Value, cultureInfo));
+            else stringBuilder.Append(Char.ToUpper(c.Value));
+
+            if (item.Length > 1) stringBuilder.Append(item.Substring(1));
+        }
+        return stringBuilder.ToString();
+    }
+
+    private static string ConvertToLowerCamelCaseCore(this string value, char delimiter, CultureInfo? cultureInfo = null)
+    {
+        var stringBuilder = new StringBuilder();
+        var index = 0;
+        foreach (var item in value.Split(delimiter))
+        {
+            if (item.Length == 0)
+                continue;
+
+            index++;
+
+            char? c = item.ToArray()[0];
+
+            if (index == 1)
+            {
+                if (Char.IsLower(c.Value)) stringBuilder.Append(c);
+                else if (cultureInfo != null) stringBuilder.Append(Char.ToLower(c.Value, cultureInfo));
+                else stringBuilder.Append(Char.ToLower(c.Value));
+            }
+            else
+            {
+                if (Char.IsUpper(c.Value)) stringBuilder.Append(c);
+                else if (cultureInfo != null) stringBuilder.Append(Char.ToUpper(c.Value, cultureInfo));
+                else stringBuilder.Append(Char.ToUpper(c.Value));
+            }
+
+            if (item.Length > 1) stringBuilder.Append(item.Substring(1));
+        }
+        return stringBuilder.ToString();
+    }
 }
