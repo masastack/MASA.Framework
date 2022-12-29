@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
-public static class DispatcherOptionsExtensions
+public static class DomainEventOptionsExtensions
 {
     #region Obsolete
 
