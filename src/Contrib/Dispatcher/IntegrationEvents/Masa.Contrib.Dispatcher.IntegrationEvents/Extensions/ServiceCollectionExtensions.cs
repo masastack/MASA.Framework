@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -35,12 +36,10 @@ public static class ServiceCollectionExtensions
         Assembly[] assemblies,
         Action<IntegrationEventOptions>? options)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
-    {
-        return services.TryAddIntegrationEventBus(assemblies, options, () =>
-        {
-            services.AddScoped<IIntegrationEventLogService, TIntegrationEventLogService>();
-        });
-    }
+        => services.TryAddIntegrationEventBus(
+            assemblies,
+            options,
+            services.TryAddScoped<IIntegrationEventLogService, TIntegrationEventLogService>);
 
     internal static IServiceCollection TryAddIntegrationEventBus(
         this IServiceCollection services,
@@ -71,6 +70,11 @@ public static class ServiceCollectionExtensions
             services.AddSingleton<IProcessor, SendByDataProcessor>();
             services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
             services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
+        }
+        else
+        {
+            var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
+            logger?.LogWarning("The local message table is not used correctly, it will cause integration events not to be sent normally");
         }
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
 

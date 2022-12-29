@@ -21,11 +21,11 @@ public class TestBase
         Services.AddDomainEventBus(dispatcherOptions =>
         {
             dispatcherOptions
-                .UseIntegrationEventBus<IntegrationEventLogService>(option => option.UseTestPub().UseEventLog<CustomDbContext>())
+                .UseIntegrationEventBus(option => option.UseTestPub().UseEventLog<CustomDbContext>())
                 .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordMiddleware<>)).UseMiddleware(typeof(ValidatorMiddleware<>)))
                 .UseUoW<CustomDbContext>(optionBuilder =>
                 {
-                    optionBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+                    optionBuilder.UseSqlite().UseFilter();
                 })
                 .UseRepository<CustomDbContext>();
         });
