@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Tests;
 
-public class CustomerResource
+public class CustomResource
 {
     public string Name { get; set; }
 

@@ -9,10 +9,10 @@ public class ExpressionTest
     [TestMethod]
     public void TestGetI18nName()
     {
-        var name = ExpressionExtensions.GetI18nName<CustomerResource>(c => c.Name);
+        var name = ExpressionExtensions.GetI18nName<CustomResource>(c => c.Name);
         Assert.AreEqual("Name", name);
 
-        name = ExpressionExtensions.GetI18nName<CustomerResource>(c => c.Order.Name);
+        name = ExpressionExtensions.GetI18nName<CustomResource>(c => c.Order.Name);
         Assert.AreEqual("Order.Name", name);
     }
 }
