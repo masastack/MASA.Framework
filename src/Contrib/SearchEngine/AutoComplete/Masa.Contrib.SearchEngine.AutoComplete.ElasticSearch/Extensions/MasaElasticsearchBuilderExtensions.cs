@@ -14,10 +14,7 @@ public static class MasaElasticsearchBuilderExtensions
         this MasaElasticsearchBuilder builder) where TValue : notnull
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
-        if (string.IsNullOrEmpty(indexName))
-            throw new ArgumentNullException(
-                nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
-                "The default IndexName is not set");
+        MasaArgumentException.ThrowIfNullOrEmpty(indexName, nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex));
 
         return builder.AddAutoComplete<AutoCompleteDocument<TValue>>(option => option.UseIndexName(indexName));
     }
@@ -39,6 +36,7 @@ public static class MasaElasticsearchBuilderExtensions
         return builder;
     }
 
+#pragma warning disable S2326
     [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
     public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
         this MasaElasticsearchBuilder builder)
@@ -53,16 +51,14 @@ public static class MasaElasticsearchBuilderExtensions
         where TDocument : AutoCompleteDocument
         where TValue : notnull
         => builder.AddAutoCompleteBySpecifyDocument(action);
+#pragma warning restore S2326
 
     public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
         this MasaElasticsearchBuilder builder)
         where TDocument : AutoCompleteDocument
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
-        if (string.IsNullOrEmpty(indexName))
-            throw new ArgumentNullException(
-                nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
-                "The default IndexName is not set");
+        MasaArgumentException.ThrowIfNullOrEmpty(indexName, nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex));
 
         return builder.AddAutoCompleteBySpecifyDocument<TDocument>(option => option.UseIndexName(indexName));
     }

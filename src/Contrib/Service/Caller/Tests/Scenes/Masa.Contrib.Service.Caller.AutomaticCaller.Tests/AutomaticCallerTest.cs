@@ -83,7 +83,7 @@ public class AutomaticCallerTest
         Assert.IsNotNull(caller);
 
         var response = await caller.TestGetString();
-        Assert.AreEqual(response, "success");
+        Assert.AreEqual("success", response);
     }
 
     [TestMethod]
@@ -119,6 +119,6 @@ public class AutomaticCallerTest
         var caller = serviceProvider.GetService<ICaller>();
         Assert.IsNotNull(caller);
         var response = await caller.GetStringAsync("masastack");
-        Assert.AreEqual(response, "success");
+        Assert.AreEqual("success", response);
     }
 }

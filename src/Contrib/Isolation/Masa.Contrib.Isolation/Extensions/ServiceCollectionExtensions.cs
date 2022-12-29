@@ -20,9 +20,9 @@ internal static class ServiceCollectionExtensions
         IsolationBuilder builder = new IsolationBuilder(services);
         isolationBuilder.Invoke(builder);
 
-        if (services.Count(service =>
+        if (!services.Any(service =>
                 service.ServiceType == typeof(IMultiTenantContext) ||
-                service.ServiceType == typeof(IMultiEnvironmentContext)) < 1)
+                service.ServiceType == typeof(IMultiEnvironmentContext)))
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
         services.AddHttpContextAccessor();

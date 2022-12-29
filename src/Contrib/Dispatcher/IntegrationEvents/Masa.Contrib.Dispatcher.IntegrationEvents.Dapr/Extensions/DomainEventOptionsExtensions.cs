@@ -30,7 +30,7 @@ public static class DomainEventOptionsExtensions
         Action<DaprClientBuilder>? builder)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
     {
-        ArgumentNullException.ThrowIfNull(dispatcherOptions.Services, nameof(dispatcherOptions.Services));
+        MasaArgumentException.ThrowIfNull(dispatcherOptions.Services, nameof(dispatcherOptions.Services));
 
         dispatcherOptions.Services.TryAddDaprEventBus<TIntegrationEventLogService>(dispatcherOptions.Assemblies, option =>
         {

@@ -19,7 +19,7 @@ public class TestBase : IDisposable
         Connection.Close();
     }
 
-    protected IIntegrationEventOptions CreateIntegrationEventOptions(IServiceCollection services, Assembly[]? assemblies = null)
+    protected static IIntegrationEventOptions CreateIntegrationEventOptions(IServiceCollection services, Assembly[]? assemblies = null)
     {
         Mock<IIntegrationEventOptions> options = new();
         options.Setup(option => option.Services).Returns(services).Verifiable();

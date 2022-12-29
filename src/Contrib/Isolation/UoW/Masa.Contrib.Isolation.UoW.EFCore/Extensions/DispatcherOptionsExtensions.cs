@@ -42,6 +42,7 @@ public static class DispatcherOptionsExtensions
             disableRollbackOnFailure,
             useTransaction);
 
+#pragma warning disable S2436
     internal static TDispatcherOptions UseIsolationUoW<TDispatcherOptions, TDbContext, TTenantId, TUserId>(
         this TDispatcherOptions options,
         Action<IsolationBuilder> isolationBuilder,
@@ -58,4 +59,5 @@ public static class DispatcherOptionsExtensions
             .UseUoW<TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
         return options;
     }
+#pragma warning restore S2436
 }

@@ -7,18 +7,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCaller(this IServiceCollection services)
-        => services.AddCaller(MasaApp.GetAssemblies());
-
     public static IServiceCollection AddCaller(this IServiceCollection services, params Assembly[] assemblies)
         => services.AddCaller(options => options.Assemblies = assemblies);
 
     public static IServiceCollection AddCaller(this IServiceCollection services,
         ServiceLifetime lifetime = ServiceLifetime.Scoped,
-        params Assembly[] assemblies)
+        IEnumerable<Assembly>? assemblies = null)
         => services.AddCaller(options =>
         {
-            options.Assemblies = assemblies;
+            options.Assemblies = assemblies == null ? MasaApp.GetAssemblies() : assemblies.ToArray();
             options.CallerLifetime = lifetime;
         });
 
@@ -49,6 +46,7 @@ public static class ServiceCollectionExtensions
         if (callerTypes.Count == 0)
             return;
 
+#pragma warning disable S3011
         callerTypes.Arrangement().ForEach(type =>
         {
             ServiceDescriptor serviceDescriptor = new ServiceDescriptor(type, serviceProvider =>
@@ -70,6 +68,7 @@ public static class ServiceCollectionExtensions
             }, callerOptions.CallerLifetime);
             services.TryAdd(serviceDescriptor);
         });
+#pragma warning disable S3011
 
         var serviceProvider = services.BuildServiceProvider();
         callerTypes.ForEach(type =>
@@ -79,7 +78,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static IServiceCollection TryOrUpdate(this IServiceCollection services, CallerOptions options)
+    private static void TryOrUpdate(this IServiceCollection services, CallerOptions options)
     {
         services.Configure<CallerFactoryOptions>(callerOptions =>
         {
@@ -98,7 +97,5 @@ public static class ServiceCollectionExtensions
             if (callerOptions.RequestIdKey != null && options.RequestIdKey != null)
                 callerOptions.RequestIdKey = options.RequestIdKey;
         });
-
-        return services;
     }
 }

@@ -32,7 +32,7 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         var options = CreateIntegrationEventOptions(null!);
 
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsException<MasaArgumentException>(() =>
         {
             options.UseEventLog<CustomDbContext>();
         });

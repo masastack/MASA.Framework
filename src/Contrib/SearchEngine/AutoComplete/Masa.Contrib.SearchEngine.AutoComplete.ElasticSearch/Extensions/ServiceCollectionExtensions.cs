@@ -38,6 +38,7 @@ internal static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
     }
 
+#pragma warning disable S2326
     public static void TryAddAutoCompleteRelation(this IServiceCollection services, AutoCompleteRelations relation)
     {
         var serviceProvider = services.BuildServiceProvider();
@@ -47,8 +48,9 @@ internal static class ServiceCollectionExtensions
             throw new ArgumentException($"indexName or alias exists");
 
         if (relation.IsDefault && relationsOptions.Relations.Any(r => r.IsDefault))
-            throw new ArgumentException("ElasticClient can only have one default", nameof(ElasticsearchOptions.IsDefault));
+            throw new ArgumentException("ElasticClient can only have one default", nameof(relation));
 
         relationsOptions.AddRelation(relation);
     }
+#pragma warning disable S2326
 }

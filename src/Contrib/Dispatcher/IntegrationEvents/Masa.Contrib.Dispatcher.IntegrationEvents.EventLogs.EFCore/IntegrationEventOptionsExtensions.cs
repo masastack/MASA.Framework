@@ -19,8 +19,7 @@ public static class IntegrationEventOptionsExtensions
         this IIntegrationEventOptions options,
         bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext, IMasaDbContext
     {
-        if (options.Services == null)
-            throw new ArgumentNullException(nameof(options.Services));
+        MasaArgumentException.ThrowIfNull(options.Services, nameof(options.Services));
 
         if (options.Services.Any(service => service.ImplementationType == typeof(EventLogProvider))) return options;
 
