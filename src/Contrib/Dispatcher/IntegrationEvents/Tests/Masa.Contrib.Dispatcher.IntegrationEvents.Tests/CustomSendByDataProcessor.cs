@@ -7,9 +7,8 @@ public class CustomSendByDataProcessor : SendByDataProcessor
 {
     public CustomSendByDataProcessor(IServiceProvider serviceProvider,
         IOptions<IntegrationEventOptions> options,
-        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
-        ILogger<SendByDataProcessor>? logger = null)
-        : base(serviceProvider, options, masaAppConfigureOptions, logger)
+        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null)
+        : base(serviceProvider, options, masaAppConfigureOptions)
     {
     }
 
