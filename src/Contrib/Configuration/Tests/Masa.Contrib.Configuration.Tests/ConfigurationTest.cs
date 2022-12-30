@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Configuration.Tests;
 
+#pragma warning disable CS0618
 [TestClass]
 public class ConfigurationTest
 {
@@ -19,7 +20,6 @@ public class ConfigurationTest
         Assert.IsTrue(!((IConfigurationSection)configurationApiConfiguration).Exists());
     }
 
-#pragma warning disable CS0618
     [TestMethod]
     public void TestAddMasaConfigurationShouldThrowException()
     {
@@ -135,7 +135,10 @@ public class ConfigurationTest
             .SetBasePath(builder.Environment.ContentRootPath)
             .AddJsonFile("appsettings.json", true, true);
         builder.Configuration.AddConfiguration(chainedConfiguration.Build());
-        builder.AddMasaConfiguration(typeof(KafkaOptions).Assembly);
+        builder.AddMasaConfiguration(new List<Assembly>()
+        {
+            typeof(KafkaOptions).Assembly
+        });
 
         var serviceProvider = builder.Services.BuildServiceProvider();
         var kafkaOptions = serviceProvider.GetRequiredService<IOptions<KafkaOptions>>();
@@ -163,7 +166,7 @@ public class ConfigurationTest
     {
         var builder = WebApplication.CreateBuilder();
         Assert.ThrowsException<MasaException>(
-            () => builder.AddMasaConfiguration(typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly),
+            () => builder.AddMasaConfiguration(new[] { typeof(ConfigurationTest).Assembly, typeof(EsOptions).Assembly }),
             $"[{It.IsAny<string>()}] must have a parameterless constructor");
     }
 
@@ -194,7 +197,7 @@ public class ConfigurationTest
             configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
-        }, typeof(ConfigurationTest).Assembly);
+        }, options => options.Assemblies = new[] { typeof(ConfigurationTest).Assembly });
 
         var serviceProvider = builder.Services.BuildServiceProvider();
         var redisOptions = serviceProvider.GetRequiredService<IOptions<RedisOptions>>();
@@ -247,7 +250,10 @@ public class ConfigurationTest
             configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
-        }, typeof(ConfigurationTest).Assembly);
+        }, options =>
+        {
+            options.Assemblies = new[] { typeof(ConfigurationTest).Assembly };
+        });
 
         Assert.IsTrue(builder.Configuration["project-name"] == "masa-unit-test");
     }
@@ -264,7 +270,10 @@ public class ConfigurationTest
             configurationBuilder.AddJsonFile("customAppConfig.json", true, true)
                 .AddJsonFile("rabbitMq.json", true, true);
             configurationBuilder.UseMasaOptions(option => option.MappingLocal<RedisOptions>());
-        }, typeof(ConfigurationTest).Assembly);
+        }, options =>
+        {
+            options.Assemblies = new[] { typeof(ConfigurationTest).Assembly };
+        });
         var localConfiguration = builder.GetMasaConfiguration().Local;
         Assert.IsTrue(localConfiguration[key] == value);
     }
@@ -282,7 +291,7 @@ public class ConfigurationTest
                 option.MappingLocal<RedisOptions>();
                 option.MappingLocal<RedisOptions>("RedisOptions2", "RedisOptions2");
             });
-        }, typeof(ConfigurationTest).Assembly);
+        }, options => options.Assemblies = new[] { typeof(ConfigurationTest).Assembly });
         var serviceProvider = builder.Services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptionsSnapshot<RedisOptions>>();
         Assert.IsNotNull(options);
@@ -295,7 +304,6 @@ public class ConfigurationTest
         Assert.AreEqual("123456", options2.Password);
         Assert.AreEqual(6378, options2.Port);
     }
-#pragma warning restore CS0618
 
     [TestMethod]
     public void TestMasaConfigurationBuilderShouldReturnSourceCount3()
@@ -349,3 +357,4 @@ public class ConfigurationTest
         Assert.AreEqual("5672", options.Value.Port);
     }
 }
+#pragma warning restore CS0618

@@ -81,18 +81,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
-        params Assembly[] assemblies)
+        IEnumerable<Assembly>? assemblies = null)
         => services.AddMasaConfiguration(
             null,
-            options => options.Assemblies = assemblies);
-
-    public static IServiceCollection AddMasaConfiguration(
-        this IServiceCollection services,
-        Action<IMasaConfigurationBuilder>? configureDelegate,
-        params Assembly[] assemblies)
-        => services.AddMasaConfiguration(
-            configureDelegate,
-            options => options.Assemblies = assemblies);
+            options =>
+            {
+                if (assemblies != null) options.Assemblies = assemblies.ToArray();
+            });
 
     public static IServiceCollection AddMasaConfiguration(
         this IServiceCollection services,
