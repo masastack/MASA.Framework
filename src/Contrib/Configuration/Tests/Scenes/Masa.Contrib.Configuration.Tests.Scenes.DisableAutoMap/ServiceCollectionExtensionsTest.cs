@@ -17,7 +17,7 @@ public class ServiceCollectionExtensionsTest
         services.AddMasaConfiguration(masaConfigurationBuilder =>
         {
             masaConfigurationBuilder.AddJsonFile("appsettings.json", true, true);
-        }, Array.Empty<Assembly>());
+        }, options => options.Assemblies = Array.Empty<Assembly>());
         var serviceProvider = services.BuildServiceProvider();
         var masaAppConfigureOptions = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()!;
 

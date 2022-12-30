@@ -3,34 +3,28 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Masa.BuildingBlocks.Ddd.Domain.Tests</RootNamespace>
   </PropertyGroup>
-  
+
   <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="coverlet.msbuild" Version="$(CoverletPackageVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
     <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
-    <Content Include="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\Masa.BuildingBlocks.Globalization.I18n\Masa.BuildingBlocks.Globalization.I18n.csproj" />
   </ItemGroup>
 
 </Project>

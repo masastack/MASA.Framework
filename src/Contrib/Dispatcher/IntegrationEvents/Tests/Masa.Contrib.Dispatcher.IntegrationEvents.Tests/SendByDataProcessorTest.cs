@@ -7,14 +7,14 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 public class SendByDataProcessorTest
 {
     private readonly IServiceCollection _services;
-    private readonly CustomerSendByDataProcessor _processor;
+    private readonly CustomSendByDataProcessor _processor;
 
     public SendByDataProcessorTest()
     {
         _services = new ServiceCollection();
         IOptions<DispatcherOptions> dispatcherOptions =
             Microsoft.Extensions.Options.Options.Create(new DispatcherOptions(_services, new[] { this.GetType().Assembly }));
-        _processor = new CustomerSendByDataProcessor(_services.BuildServiceProvider(), dispatcherOptions);
+        _processor = new CustomSendByDataProcessor(_services.BuildServiceProvider(), dispatcherOptions);
     }
 
     [TestMethod]
