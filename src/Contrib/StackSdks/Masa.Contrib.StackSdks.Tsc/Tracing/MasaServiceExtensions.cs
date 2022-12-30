@@ -31,7 +31,7 @@ public static partial class MasaServiceExtensions
 
             option.BuildTraceCallback?.Invoke(builder);
         }).StartWithHost();
-      
+
         return services;
     }
 }

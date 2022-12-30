@@ -5,14 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
 {
+    private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
+    private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
+
     /// <summary>
     /// Default record all data. You can replace it or set null
     /// </summary>
     public Action<AspNetCoreInstrumentationOptions> AspNetCoreInstrumentationOptions { get; set; } = options =>
     {
-        options.EnrichWithHttpRequest = async (activity, httpRequest) => await activity.AddMasaSupplement(httpRequest);
-        options.EnrichWithHttpResponse = (activity, httpResponse) => activity.AddMasaSupplement(httpResponse);
-        options.EnrichWithException = SetSexceptionTags;
+        options.EnrichWithHttpRequest = aspNetCoreInstrumentationHandler.OnHttpRequest;
+        options.EnrichWithHttpResponse = aspNetCoreInstrumentationHandler.OnHttpResponse;
+        options.EnrichWithException = aspNetCoreInstrumentationHandler.OnException;
     };
 
     /// <summary>
@@ -20,9 +23,11 @@ public class OpenTelemetryInstrumentationOptions
     /// </summary>
     public Action<HttpClientInstrumentationOptions> HttpClientInstrumentationOptions { get; set; } = options =>
     {
-        options.EnrichWithHttpRequestMessage = async (activity, httpRequestMessage) => await activity.AddMasaSupplement(httpRequestMessage);
-        options.EnrichWithHttpResponseMessage = (activity, httpResponseMessage) => activity.AddMasaSupplement(httpResponseMessage);
-        options.EnrichWithException= SetSexceptionTags;
+        options.EnrichWithException = httpClientInstrumentHandler.OnException;
+        options.EnrichWithHttpRequestMessage = httpClientInstrumentHandler.OnHttpRequestMessage;
+        options.EnrichWithHttpResponseMessage = httpClientInstrumentHandler.OnHttpResponseMessage;
+        options.EnrichWithHttpWebResponse = httpClientInstrumentHandler.OnHttpWebResponse;
+        options.EnrichWithHttpWebRequest = httpClientInstrumentHandler.OnHttpWebRequest;
     };
 
     /// <summary>
@@ -45,14 +50,5 @@ public class OpenTelemetryInstrumentationOptions
     /// <summary>
     /// Build trace callback, allow to supplement the build process
     /// </summary>
-    public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }    
-
-    private static void SetSexceptionTags(Activity activity, Exception exception)
-    {
-        if (exception != null)
-        {
-            activity.SetTag(OpenTelemetryAttributeName.Exception.MESSAGE, exception.Message);
-            activity.SetTag(OpenTelemetryAttributeName.Exception.STACKTRACE, exception.ToString());
-        }
-    }
+    public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
 }

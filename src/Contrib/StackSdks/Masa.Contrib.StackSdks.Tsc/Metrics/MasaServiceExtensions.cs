@@ -9,8 +9,9 @@ public static partial class MasaServiceExtensions
     {
         services.AddOpenTelemetry().WithMetrics(builder =>
         {
-            if (configure != null)
-                configure.Invoke(builder);
+            configure?.Invoke(builder);
+
+            builder.AddMeter(HttpMetricProviders.Meter.Name);
 
             builder.AddRuntimeInstrumentation()
             .AddAspNetCoreInstrumentation()
