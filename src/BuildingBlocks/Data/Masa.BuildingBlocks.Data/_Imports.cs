@@ -8,6 +8,7 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
 global using System.ComponentModel;
+global using System.Data.Common;
 global using System.Reflection;
 global using System.Runtime.Serialization;
 global using System.Text.Json;

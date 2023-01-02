@@ -51,7 +51,8 @@ public interface IRepository<TEntity>
 
     Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate, string sortField, bool isDescending = true, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TEntity>> GetListAsync(Expression<Func<TEntity, bool>> predicate, string sortField, bool isDescending = true,
+        CancellationToken cancellationToken = default);
 
     Task<long> GetCountAsync(CancellationToken cancellationToken = default);
 
@@ -111,12 +112,14 @@ public interface IRepository<TEntity>
         CancellationToken cancellationToken = default);
 
     #endregion
+
 }
 
 public interface IRepository<TEntity, TKey> : IRepository<TEntity>
     where TEntity : class, IEntity<TKey>
     where TKey : IComparable
 {
+
     #region Find
 
     Task<TEntity?> FindAsync(TKey id, CancellationToken cancellationToken = default);
@@ -130,4 +133,13 @@ public interface IRepository<TEntity, TKey> : IRepository<TEntity>
     Task RemoveRangeAsync(IEnumerable<TKey> ids, CancellationToken cancellationToken = default);
 
     #endregion
+
+}
+
+public interface IRepository<TDbContext, TEntity, TKey> : IRepository<TEntity, TKey>
+    where TDbContext : IMasaDbContext
+    where TEntity : class, IEntity<TKey>
+    where TKey : IComparable
+{
+
 }

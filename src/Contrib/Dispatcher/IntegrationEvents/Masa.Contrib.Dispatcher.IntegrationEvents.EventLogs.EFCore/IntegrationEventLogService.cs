@@ -163,7 +163,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {
             foreach (var log in eventLogs)
-                _eventLogContext.DbContext.Entry(log).State = EntityState.Detached;
+                _eventLogContext.DbContext.Entry(log).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         }
     }
 
@@ -208,6 +208,6 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     private void CheckAndDetached(IntegrationEventLog integrationEvent)
     {
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
-            _eventLogContext.DbContext.Entry(integrationEvent).State = EntityState.Detached;
+            _eventLogContext.DbContext.Entry(integrationEvent).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
     }
 }

@@ -15,4 +15,4 @@ global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System;
 global using System.Collections.Generic;
-global using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;
+global using EntityState = Masa.BuildingBlocks.Data.EntityState;
