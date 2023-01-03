@@ -3,12 +3,12 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Metrics.Instrumentation.Http;
 
-public class HttpRequestCountMeter : IHttpResponseMetric, IHttpRequestMetric
+public class HttpResponseMeter : IHttpResponseMetric
 {
     private readonly Dictionary<string, Counter<long>> _dicCounts = new();
     private readonly Meter _meter;
 
-    public HttpRequestCountMeter(Meter meter)
+    public HttpResponseMeter(Meter meter)
     {
         _meter = meter;
     }

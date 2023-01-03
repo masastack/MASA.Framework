@@ -10,7 +10,7 @@ public sealed class HttpMetricProviders
     static HttpMetricProviders()
     {
         Meter = new Meter("masa stack metrics", "1.0.0");
-        RegisterProvider(typeof(HttpRequestCountMeter), typeof(HttpRequestDurationMeter));
+        RegisterProvider(typeof(HttpResponseMeter));
     }
 
     internal static Meter Meter { get; private set; }
@@ -36,8 +36,7 @@ public sealed class HttpMetricProviders
             if (constructor == null)
                 continue;
             object instance = constructor.Invoke(new object[] { Meter });
-
-            //DiagnosticListener.AllListeners.Subscribe(new DiagnosticSourceListener())
+            
             if (interfaces.Any(i => i == typeof(IHttpRequestMetric)))
             {
                 Add(_httpRequestMetricProviders, instance, type);
