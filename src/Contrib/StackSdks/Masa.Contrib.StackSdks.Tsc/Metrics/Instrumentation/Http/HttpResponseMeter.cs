@@ -9,7 +9,7 @@ public class HttpResponseMeter : IHttpResponseMetric
 
     public HttpResponseMeter(Meter meter)
     {
-        responseHistogram = meter.CreateHistogram<double>("http.response", "", "http response duration histogram");
+        responseHistogram = meter.CreateHistogram<double>("http.response", "ms", "http response duration");
     }
 
     public void Handle(HttpResponse httpResponse)
