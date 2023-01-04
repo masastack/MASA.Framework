@@ -8,10 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPmClient(this IServiceCollection services, string pmServiceBaseAddress)
     {
-        if (string.IsNullOrWhiteSpace(pmServiceBaseAddress))
-        {
-            throw new ArgumentNullException(nameof(pmServiceBaseAddress));
-        }
+        MasaArgumentException.ThrowIfNull(pmServiceBaseAddress);
 
         return services.AddPmClient(callerOptions =>
         {
@@ -23,18 +20,15 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<Task<string>> pmServiceBaseAddress)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<Task<string>> pmServiceBaseAddressFunc)
     {
-        if (pmServiceBaseAddress == null)
-        {
-            throw new ArgumentNullException(nameof(pmServiceBaseAddress));
-        }
+        MasaArgumentException.ThrowIfNull(pmServiceBaseAddressFunc);
 
         return services.AddPmClient(callerOptions =>
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
             {
-                builder.BaseAddress = await pmServiceBaseAddress.Invoke();
+                builder.BaseAddress = await pmServiceBaseAddressFunc.Invoke();
             }, true);
             callerOptions.DisableAutoRegistration = true;
         });
@@ -42,7 +36,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
-        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+        MasaArgumentException.ThrowIfNull(callerOptions);
 
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
