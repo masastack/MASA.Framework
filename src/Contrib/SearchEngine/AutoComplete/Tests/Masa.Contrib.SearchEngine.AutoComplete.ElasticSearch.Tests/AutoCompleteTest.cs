@@ -58,7 +58,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
             .AddAutoComplete(option
                 => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
@@ -75,14 +75,14 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
             .AddAutoComplete(option
-                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefault().UseDefaultSearchType(SearchType.Precise)
+                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
                     .UseDefaultOperator(Operator.And));
         Assert.ThrowsException<ArgumentException>(()
             => builder.AddAutoComplete(option
-                => option.UseIndexName("employee_index").UseDefault().UseDefaultSearchType(SearchType.Precise)
+                => option.UseIndexName("employee_index").UseDefaultSearchType(SearchType.Precise)
                     .UseDefaultOperator(Operator.And)));
     }
 
@@ -94,7 +94,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -149,7 +149,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -186,7 +186,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -222,7 +222,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -417,7 +417,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
             .AddAutoComplete<long>(option =>
                 option.UseIndexName(userIndexName)
@@ -455,7 +455,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexAsync(userIndexName);
@@ -523,7 +523,7 @@ public class AutoCompleteTest
         string userIndexName = $"user_index_{Guid.NewGuid()}";
         string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -557,7 +557,7 @@ public class AutoCompleteTest
         string userIndexName = $"user_index_{Guid.NewGuid()}";
         string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -592,7 +592,7 @@ public class AutoCompleteTest
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -636,7 +636,7 @@ public class AutoCompleteTest
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -686,7 +686,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);

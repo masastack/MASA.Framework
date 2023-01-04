@@ -5,67 +5,38 @@ namespace Masa.Utils.Data.Elasticsearch;
 
 public class DefaultElasticClientFactory : IElasticClientFactory
 {
-    private readonly List<string> _names;
-    private readonly IOptionsSnapshot<ElasticsearchOptions> _elasticsearchOptions;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IOptionsSnapshot<ElasticsearchFactoryOptions> _elasticsearchFactoryOptions;
 
-    public DefaultElasticClientFactory(IOptionsSnapshot<ElasticsearchOptions> elasticsearchOptions,
-        IEnumerable<IConfigureOptions<ElasticsearchOptions>> options)
+    public DefaultElasticClientFactory(IServiceProvider serviceProvider,
+        IOptionsSnapshot<ElasticsearchFactoryOptions> elasticsearchFactoryOptions)
     {
-        _elasticsearchOptions = elasticsearchOptions;
-        _names = options.Select(opt => ((ConfigureNamedOptions<ElasticsearchOptions>)opt).Name).ToList();
+        _serviceProvider = serviceProvider;
+        _elasticsearchFactoryOptions = elasticsearchFactoryOptions;
     }
 
     public IElasticClient Create()
     {
-        var elasticsearchOptions = _elasticsearchOptions.Get(Microsoft.Extensions.Options.Options.DefaultName);
+        var options = _elasticsearchFactoryOptions.Value;
+        var defaultOptions = GetDefaultOptions(options.Options);
+        if (defaultOptions == null)
+            throw new NotImplementedException("No default ElasticClient found");
 
-        if (elasticsearchOptions.Nodes is null) elasticsearchOptions = _elasticsearchOptions.Get(_names.FirstOrDefault());
+        return defaultOptions.Func.Invoke(_serviceProvider);
+    }
 
-        if (elasticsearchOptions.Nodes is null) throw new ArgumentException("The default ElasticClient is not found, please check if Elasticsearch is added");
-
-        return Create(elasticsearchOptions);
+    private static ElasticsearchRelationsOptions? GetDefaultOptions(List<ElasticsearchRelationsOptions> optionsList)
+    {
+        return optionsList.SingleOrDefault(c => c.Name == Microsoft.Extensions.Options.Options.DefaultName) ??
+            optionsList.FirstOrDefault();
     }
 
     public IElasticClient Create(string name)
     {
-        var elasticsearchOptions = _elasticsearchOptions.Get(name);
-        if (elasticsearchOptions.Nodes is null) throw new NotSupportedException($"The ElasticClient whose name is {name} is not found");
+        var options = _elasticsearchFactoryOptions.Value.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (options == null)
+            throw new NotImplementedException($"Please make sure you have used [{name}] ElasticClient, it was not found");
 
-        return Create(elasticsearchOptions);
-    }
-
-    private static IElasticClient Create(ElasticsearchOptions elasticsearchOptions)
-    {
-        var settings = elasticsearchOptions.UseConnectionPool
-            ? GetConnectionSettingsConnectionPool(elasticsearchOptions)
-            : GetConnectionSettingsBySingleNode(elasticsearchOptions);
-
-        return new ElasticClient(settings);
-    }
-
-    private static ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
-    {
-        var connectionSetting = new ConnectionSettings(new Uri(relation.Nodes[0]))
-            .EnableApiVersioningHeader();
-        relation.Action?.Invoke(connectionSetting);
-        return connectionSetting;
-    }
-
-    private static ConnectionSettings GetConnectionSettingsConnectionPool(ElasticsearchOptions relation)
-    {
-        var pool = new StaticConnectionPool(
-            relation.Nodes.Select(node => new Uri(node)),
-            relation.StaticConnectionPoolOptions?.Randomize ?? true,
-            relation.StaticConnectionPoolOptions?.DateTimeProvider);
-
-        var settings = new ConnectionSettings(
-                pool,
-                relation.ConnectionSettingsOptions?.Connection,
-                relation.ConnectionSettingsOptions?.SourceSerializerFactory,
-                relation.ConnectionSettingsOptions?.PropertyMappingProvider)
-            .EnableApiVersioningHeader();
-
-        relation.Action?.Invoke(settings);
-        return settings;
+        return options.Func.Invoke(_serviceProvider);
     }
 }

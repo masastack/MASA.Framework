@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch;
+namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
 public class AutoCompleteFactoryOptions: MasaFactoryOptions<AutoCompleteRelationsOptions>
 {

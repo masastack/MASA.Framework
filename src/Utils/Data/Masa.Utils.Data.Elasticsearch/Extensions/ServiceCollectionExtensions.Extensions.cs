@@ -7,10 +7,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class ServiceCollectionExtensions
 {
-    private static MasaElasticsearchBuilder CreateElasticsearchClient(this IServiceCollection services, string name)
+    private static MasaElasticsearchBuilder CreateElasticsearchClient(this IServiceCollection services,
+        string name,
+        bool isSupportUpdate = false)
     {
-        var elasticClient = services.BuildServiceProvider().GetRequiredService<IElasticClientFactory>().Create(name);
-        return new MasaElasticsearchBuilder(services, elasticClient);
+        return new MasaElasticsearchBuilder(services, name, isSupportUpdate);
     }
 
     public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services)
@@ -25,10 +26,12 @@ public static partial class ServiceCollectionExtensions
         => services.AddElasticsearch(name, nodes).CreateElasticsearchClient(name);
 
     public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services, string name,
-        Action<ElasticsearchOptions> action)
-        => services.AddElasticsearch(name, action).CreateElasticsearchClient(name);
+        Action<ElasticsearchOptions> action,
+        bool isSupportUpdate = false)
+        => services.AddElasticsearch(name, action, isSupportUpdate).CreateElasticsearchClient(name, isSupportUpdate);
 
     public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services, string name,
-        Func<ElasticsearchOptions> func)
-        => services.AddElasticsearch(name, func).CreateElasticsearchClient(name);
+        Func<ElasticsearchOptions> func,
+        bool isSupportUpdate = false)
+        => services.AddElasticsearch(name, func, isSupportUpdate).CreateElasticsearchClient(name, isSupportUpdate);
 }

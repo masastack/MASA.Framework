@@ -9,15 +9,26 @@ public class MasaElasticsearchBuilder
 
     public string Name { get; }
 
-    public IElasticClient ElasticClient { get; }
+    private IElasticClient? _elasticClient;
 
-    public IMasaElasticClient Client { get; }
+    public IElasticClient ElasticClient
+    {
+        get
+        {
+            if (IsSupportUpdate) throw new NotSupportedException();
 
-    public MasaElasticsearchBuilder(IServiceCollection services, string name, IElasticClient elasticClient)
+            return _elasticClient ??= Services.BuildServiceProvider().GetRequiredService<IElasticClientFactory>().Create(Name);
+        }
+    }
+
+    public IMasaElasticClient Client => new DefaultMasaElasticClient(ElasticClient);
+
+    public bool IsSupportUpdate { get; }
+
+    public MasaElasticsearchBuilder(IServiceCollection services, string name, bool isSupportUpdate)
     {
         Services = services;
         Name = name;
-        ElasticClient = elasticClient;
-        Client = new DefaultMasaElasticClient(elasticClient);
+        IsSupportUpdate = isSupportUpdate;
     }
 }

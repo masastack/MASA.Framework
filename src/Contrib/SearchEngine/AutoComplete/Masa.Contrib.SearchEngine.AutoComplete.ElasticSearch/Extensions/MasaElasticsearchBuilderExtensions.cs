@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
 public static class MasaElasticsearchBuilderExtensions
@@ -28,15 +29,7 @@ public static class MasaElasticsearchBuilderExtensions
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder,
         Action<AutoCompleteOptions<AutoCompleteDocument<TValue>>>? action) where TValue : notnull
-    {
-        if (typeof(TValue).IsClass)
-            throw new ArgumentException($"TValue does not support Class, please use AddAutoCompleteBySpecifyDocument<TDocument>");
-
-        var options = new AutoCompleteOptions<AutoCompleteDocument<TValue>>();
-        action?.Invoke(options);
-        builder.Services.AddAutoCompleteCore(builder.Name, options);
-        return builder;
-    }
+        => builder.AddAutoCompleteBySpecifyDocument(action);
 
     [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
     public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
@@ -71,9 +64,38 @@ public static class MasaElasticsearchBuilderExtensions
         Action<AutoCompleteOptions<TDocument>>? action)
         where TDocument : AutoCompleteDocument
     {
-        AutoCompleteOptions<TDocument> options = new AutoCompleteOptions<TDocument>();
-        action?.Invoke(options);
-        builder.Services.AddAutoCompleteCore(builder.Name, options);
+        var options = new AutoCompleteOptions<TDocument>();
+        if (!builder.IsSupportUpdate && action != null)
+            action.Invoke(options);
+        builder.Services.AddAutoCompleteCore(builder.Name, relationsOptions =>
+        {
+            relationsOptions.Func = serviceProvider =>
+            {
+                if (builder.IsSupportUpdate)
+                {
+                    options = new AutoCompleteOptions<TDocument>();
+                    action?.Invoke(options);
+                    return new AutoCompleteClient(
+                        serviceProvider.GetRequiredService<IElasticClientFactory>().Create(relationsOptions.Name),
+                        serviceProvider.GetRequiredService<IMasaElasticClientFactory>().Create(relationsOptions.Name),
+                        options.IndexName,
+                        options.DefaultOperator,
+                        options.DefaultSearchType,
+                        options.EnableMultipleCondition,
+                        options.QueryAnalyzer
+                    );
+                }
+                return new AutoCompleteClient(
+                    builder.ElasticClient,
+                    builder.Client,
+                    options.IndexName,
+                    options.DefaultOperator,
+                    options.DefaultSearchType,
+                    options.EnableMultipleCondition,
+                    options.QueryAnalyzer
+                );
+            };
+        }, builder.IsSupportUpdate ? ServiceLifetime.Scoped : ServiceLifetime.Singleton);
         return builder;
     }
 }

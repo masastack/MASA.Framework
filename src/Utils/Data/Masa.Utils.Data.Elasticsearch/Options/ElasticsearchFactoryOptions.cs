@@ -3,7 +3,7 @@
 
 namespace Masa.Utils.Data.Elasticsearch.Options;
 
-public class MasaElasticsearchOptions
+public class ElasticsearchFactoryOptions
 {
-    public Action<ElasticsearchOptions> Action { get; set; }
+    public List<ElasticsearchRelationsOptions> Options { get; set; } = new();
 }
