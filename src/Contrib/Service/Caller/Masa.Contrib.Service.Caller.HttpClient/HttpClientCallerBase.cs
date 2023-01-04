@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
@@ -8,6 +8,8 @@ public abstract class HttpClientCallerBase : CallerBase
     protected abstract string BaseAddress { get; set; }
 
     protected virtual string Prefix { get; set; } = string.Empty;
+
+    protected virtual bool IsSupportUpdate { get; set; } = false;
 
     protected HttpClientCallerBase()
     {
@@ -27,7 +29,7 @@ public abstract class HttpClientCallerBase : CallerBase
             httpClientBuilder.Prefix = Prefix;
             httpClientBuilder.BaseAddress = BaseAddress;
             httpClientBuilder.Configure = ConfigureHttpClient;
-        });
+        }, IsSupportUpdate);
     }
 
     protected virtual void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
