@@ -6,9 +6,9 @@ namespace Masa.Utils.Data.Elasticsearch;
 public class DefaultElasticClientFactory : IElasticClientFactory
 {
     private readonly List<string> _names;
-    private readonly IOptionsMonitor<ElasticsearchOptions> _elasticsearchOptions;
+    private readonly IOptionsSnapshot<ElasticsearchOptions> _elasticsearchOptions;
 
-    public DefaultElasticClientFactory(IOptionsMonitor<ElasticsearchOptions> elasticsearchOptions,
+    public DefaultElasticClientFactory(IOptionsSnapshot<ElasticsearchOptions> elasticsearchOptions,
         IEnumerable<IConfigureOptions<ElasticsearchOptions>> options)
     {
         _elasticsearchOptions = elasticsearchOptions;

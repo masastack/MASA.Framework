@@ -7,13 +7,16 @@ public class MasaElasticsearchBuilder
 {
     public IServiceCollection Services { get; }
 
+    public string Name { get; }
+
     public IElasticClient ElasticClient { get; }
 
     public IMasaElasticClient Client { get; }
 
-    public MasaElasticsearchBuilder(IServiceCollection services, IElasticClient elasticClient)
+    public MasaElasticsearchBuilder(IServiceCollection services, string name, IElasticClient elasticClient)
     {
         Services = services;
+        Name = name;
         ElasticClient = elasticClient;
         Client = new DefaultMasaElasticClient(elasticClient);
     }

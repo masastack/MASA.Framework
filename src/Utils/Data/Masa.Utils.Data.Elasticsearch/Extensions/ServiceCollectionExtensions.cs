@@ -62,21 +62,22 @@ public static partial class ServiceCollectionExtensions
     private static void AddElasticsearchOptions(
         this IServiceCollection services,
         string name,
-        ElasticsearchOptions elasticsearchOptions)
+        Action<ElasticsearchOptions> action)
     {
-        services.Configure<ElasticsearchOptions>(name, options =>
+        services.Configure<MasaElasticsearchOptions>(name, options =>
         {
-            if (elasticsearchOptions.IsDefault) options.UseDefault();
-
-            options.UseNodes(elasticsearchOptions.Nodes);
-            options.UseRandomize(elasticsearchOptions.StaticConnectionPoolOptions.Randomize);
-            options.UseDateTimeProvider(elasticsearchOptions.StaticConnectionPoolOptions.DateTimeProvider);
-            options.ConnectionSettingsOptions.UseConnection(elasticsearchOptions.ConnectionSettingsOptions.Connection);
-            options.ConnectionSettingsOptions.UseSourceSerializerFactory(elasticsearchOptions.ConnectionSettingsOptions
-                .SourceSerializerFactory);
-            options.ConnectionSettingsOptions.UsePropertyMappingProvider(elasticsearchOptions.ConnectionSettingsOptions
-                .PropertyMappingProvider);
-            options.UseConnectionSettings(elasticsearchOptions.Action);
+            options.Action = action;
+            // if (elasticsearchOptions.IsDefault) options.UseDefault();
+            //
+            // options.UseNodes(elasticsearchOptions.Nodes);
+            // options.UseRandomize(elasticsearchOptions.StaticConnectionPoolOptions.Randomize);
+            // options.UseDateTimeProvider(elasticsearchOptions.StaticConnectionPoolOptions.DateTimeProvider);
+            // options.ConnectionSettingsOptions.UseConnection(elasticsearchOptions.ConnectionSettingsOptions.Connection);
+            // options.ConnectionSettingsOptions.UseSourceSerializerFactory(elasticsearchOptions.ConnectionSettingsOptions
+            //     .SourceSerializerFactory);
+            // options.ConnectionSettingsOptions.UsePropertyMappingProvider(elasticsearchOptions.ConnectionSettingsOptions
+            //     .PropertyMappingProvider);
+            // options.UseConnectionSettings(elasticsearchOptions.Action);
         });
     }
 }
