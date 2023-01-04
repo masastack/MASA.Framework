@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMcClient(this IServiceCollection services, string mcServiceBaseAddress)
     {
-        MasaArgumentException.ThrowIfNull(mcServiceBaseAddress);
+        MasaArgumentException.ThrowIfNullOrEmpty(mcServiceBaseAddress);
 
         return services.AddMcClient(callerOptions =>
         {

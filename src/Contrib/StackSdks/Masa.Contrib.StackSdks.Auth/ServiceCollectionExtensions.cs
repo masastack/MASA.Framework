@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress, RedisConfigurationOptions redisOptions)
     {
-        MasaArgumentException.ThrowIfNull(authServiceBaseAddress);
+        MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
         return services.AddAuthClient(callerOptions =>
         {

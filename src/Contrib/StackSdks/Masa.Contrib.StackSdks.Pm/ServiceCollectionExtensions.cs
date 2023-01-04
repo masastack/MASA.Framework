@@ -8,7 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPmClient(this IServiceCollection services, string pmServiceBaseAddress)
     {
-        MasaArgumentException.ThrowIfNull(pmServiceBaseAddress);
+        MasaArgumentException.ThrowIfNullOrEmpty(pmServiceBaseAddress);
 
         return services.AddPmClient(callerOptions =>
         {
