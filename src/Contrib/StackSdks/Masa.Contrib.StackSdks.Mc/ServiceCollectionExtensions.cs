@@ -23,6 +23,23 @@ public static class ServiceCollectionExtensions
         });
     }
 
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Func<Task<string>> mcServiceBaseAddress)
+    {
+        if (mcServiceBaseAddress == null)
+        {
+            throw new ArgumentNullException(nameof(mcServiceBaseAddress));
+        }
+
+        return services.AddMcClient(callerOptions =>
+        {
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            {
+                builder.BaseAddress = await mcServiceBaseAddress.Invoke();
+            }, true).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            callerOptions.DisableAutoRegistration = true;
+        });
+    }
+
     public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));

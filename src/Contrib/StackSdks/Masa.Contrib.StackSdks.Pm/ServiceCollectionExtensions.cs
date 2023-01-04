@@ -17,8 +17,25 @@ public static class ServiceCollectionExtensions
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Configure = opt => opt.BaseAddress = new Uri(pmServiceBaseAddress);
+                builder.BaseAddress = pmServiceBaseAddress;
             });
+            callerOptions.DisableAutoRegistration = true;
+        });
+    }
+
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<Task<string>> pmServiceBaseAddress)
+    {
+        if (pmServiceBaseAddress == null)
+        {
+            throw new ArgumentNullException(nameof(pmServiceBaseAddress));
+        }
+
+        return services.AddPmClient(callerOptions =>
+        {
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            {
+                builder.BaseAddress = await pmServiceBaseAddress.Invoke();
+            }, true);
             callerOptions.DisableAutoRegistration = true;
         });
     }
@@ -32,7 +49,7 @@ public static class ServiceCollectionExtensions
 
         services.AddCaller(callerOptions.Invoke);
 
-        services.AddSingleton<IPmClient>(serviceProvider =>
+        services.AddScoped<IPmClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var pmCaching = new PmClient(callProvider);

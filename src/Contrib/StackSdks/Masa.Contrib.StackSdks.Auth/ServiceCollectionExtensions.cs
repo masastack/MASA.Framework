@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
+                builder.BaseAddress = authServiceBaseAddress;
             });
             callerOptions.DisableAutoRegistration = true;
         }, redisOptions);
