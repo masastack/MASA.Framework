@@ -9,12 +9,12 @@ public class DefaultDeserializerFactory : MasaFactoryBase<IDeserializer, Deseria
     protected override string DefaultServiceNotFoundMessage => "Default deserializer not found, you need to add it, like services.AddJson()";
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] deserializer, it was not found";
-    protected override MasaFactoryOptions<DeserializerRelationOptions> FactoryOptions => _options.Value;
+    protected override MasaFactoryOptions<DeserializerRelationOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsSnapshot<DeserializerFactoryOptions> _options;
+    private readonly IOptionsMonitor<DeserializerFactoryOptions> _options;
 
     public DefaultDeserializerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsSnapshot<DeserializerFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<DeserializerFactoryOptions>>();
     }
 }

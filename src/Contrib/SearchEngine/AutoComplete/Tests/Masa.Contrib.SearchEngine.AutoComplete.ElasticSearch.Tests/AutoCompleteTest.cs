@@ -348,7 +348,7 @@ public class AutoCompleteTest
             option => option.UseNodes(_defaultNode).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
-        builder.AddAutoComplete<Employee, int>(option => option
+        builder.AddAutoCompleteBySpecifyDocument<Employee>(option => option
             .UseIndexName(employeeIndexName)
             .UseAlias(employeeAlias)
             .UseDefaultSearchType(SearchType.Precise)

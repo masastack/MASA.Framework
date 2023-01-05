@@ -25,10 +25,7 @@ public static class MasaElasticsearchBuilderExtensions
         string name) where TValue : notnull
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
-        if (string.IsNullOrEmpty(indexName))
-            throw new ArgumentNullException(
-                nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
-                "The default IndexName is not set");
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(indexName);
 
         return builder.AddAutoComplete<AutoCompleteDocument<TValue>>(name, option => option.UseIndexName(indexName));
     }
@@ -53,21 +50,6 @@ public static class MasaElasticsearchBuilderExtensions
         Action<AutoCompleteOptions<AutoCompleteDocument<TValue>>>? action) where TValue : notnull
         => builder.AddAutoCompleteBySpecifyDocument(name, action);
 
-    [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
-    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
-        this MasaElasticsearchBuilder builder)
-        where TDocument : AutoCompleteDocument
-        where TValue : notnull
-        => builder.AddAutoCompleteBySpecifyDocument<TDocument>(DefaultName);
-
-    [Obsolete($"{nameof(AddAutoComplete)} expired, please use {nameof(AddAutoCompleteBySpecifyDocument)}")]
-    public static MasaElasticsearchBuilder AddAutoComplete<TDocument, TValue>(
-        this MasaElasticsearchBuilder builder,
-        Action<AutoCompleteOptions<TDocument>>? action)
-        where TDocument : AutoCompleteDocument
-        where TValue : notnull
-        => builder.AddAutoCompleteBySpecifyDocument(DefaultName, action);
-
     public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
         this MasaElasticsearchBuilder builder)
         where TDocument : AutoCompleteDocument
@@ -79,10 +61,8 @@ public static class MasaElasticsearchBuilderExtensions
         where TDocument : AutoCompleteDocument
     {
         var indexName = builder.ElasticClient.ConnectionSettings.DefaultIndex;
-        if (string.IsNullOrEmpty(indexName))
-            throw new ArgumentNullException(
-                nameof(builder.ElasticClient.ConnectionSettings.DefaultIndex),
-                "The default IndexName is not set");
+
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(indexName);
 
         return builder.AddAutoCompleteBySpecifyDocument<TDocument>(name, option => option.UseIndexName(indexName));
     }
@@ -117,14 +97,7 @@ public static class MasaElasticsearchBuilderExtensions
                         serviceProvider.GetRequiredService<IElasticClientFactory>().Create(relationsOptions.Name),
                         serviceProvider.GetRequiredService<IMasaElasticClientFactory>().Create(relationsOptions.Name),
                         serviceProvider.GetService<ILogger<AutoCompleteClient<TDocument>>>(),
-                        options.IndexName,
-                        options.Alias,
-                        options.DefaultOperator,
-                        options.DefaultSearchType,
-                        options.EnableMultipleCondition,
-                        options.QueryAnalyzer,
-                        options.IndexSettingAction,
-                        options.Action
+                        options
                     );
                 }
 
@@ -132,14 +105,7 @@ public static class MasaElasticsearchBuilderExtensions
                     builder.ElasticClient,
                     builder.Client,
                     serviceProvider.GetService<ILogger<AutoCompleteClient<TDocument>>>(),
-                    options.IndexName,
-                    options.Alias,
-                    options.DefaultOperator,
-                    options.DefaultSearchType,
-                    options.EnableMultipleCondition,
-                    options.QueryAnalyzer,
-                    options.IndexSettingAction,
-                    options.Action
+                    options
                 );
             };
         }, builder.AlwaysGetNewestElasticClient ? ServiceLifetime.Scoped : ServiceLifetime.Singleton);

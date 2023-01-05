@@ -12,12 +12,12 @@ public class DefaultRulesEngineFactory : MasaFactoryBase<IRulesEngineClient, Rul
     protected override string SpecifyServiceNotFoundMessage
         => $"Please make sure you have used [{0}] {nameof(IRulesEngineClient)}, it was not found";
 
-    protected override MasaFactoryOptions<RulesEngineRelationOptions> FactoryOptions => _options.Value;
+    protected override MasaFactoryOptions<RulesEngineRelationOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsSnapshot<RulesEngineFactoryOptions> _options;
+    private readonly IOptionsMonitor<RulesEngineFactoryOptions> _options;
 
     public DefaultRulesEngineFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsSnapshot<RulesEngineFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<RulesEngineFactoryOptions>>();
     }
 }

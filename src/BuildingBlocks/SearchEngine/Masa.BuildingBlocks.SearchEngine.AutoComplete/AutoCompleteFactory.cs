@@ -9,13 +9,13 @@ public class AutoCompleteFactory : MasaFactoryBase<IAutoCompleteClient, AutoComp
 {
     protected override string DefaultServiceNotFoundMessage => "No default AutoComplete found";
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] AutoComplete, it was not found";
-    protected override MasaFactoryOptions<AutoCompleteRelationsOptions> FactoryOptions => _options.Value;
+    protected override MasaFactoryOptions<AutoCompleteRelationsOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsSnapshot<AutoCompleteFactoryOptions> _options;
+    private readonly IOptionsMonitor<AutoCompleteFactoryOptions> _options;
 
     public AutoCompleteFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsSnapshot<AutoCompleteFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<AutoCompleteFactoryOptions>>();
     }
 
     public IAutoCompleteClient CreateClient() => base.Create();

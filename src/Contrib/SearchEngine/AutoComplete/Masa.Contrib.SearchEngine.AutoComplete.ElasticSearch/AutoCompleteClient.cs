@@ -24,29 +24,21 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
         IElasticClient elasticClient,
         IMasaElasticClient client,
         ILogger<AutoCompleteClient<TDocument>>? logger,
-        string indexName,
-        string? alias,
-        Operator defaultOperator,
-        SearchType defaultSearchType,
-        bool enableMultipleCondition,
-        string queryAnalyzer,
-        Action<IIndexSettings>? indexSettingAction,
-        Action<TypeMappingDescriptor<TDocument>>? action)
+        AutoCompleteOptions<TDocument> options)
     {
         _elasticClient = elasticClient;
         _client = client;
         _logger = logger;
-        _indexName = indexName;
+        _indexName = options.IndexName;
 
-        MasaArgumentException.ThrowIfNullOrWhiteSpace(indexName);
-
-        _alias = alias;
-        _defaultOperator = defaultOperator;
-        _defaultSearchType = defaultSearchType;
-        _enableMultipleCondition = enableMultipleCondition;
-        _queryAnalyzer = queryAnalyzer;
-        _indexSettingAction = indexSettingAction;
-        _action = action;
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(options.IndexName);
+        _alias = options.Alias;
+        _defaultOperator = options.DefaultOperator;
+        _defaultSearchType = options.DefaultSearchType;
+        _enableMultipleCondition = options.EnableMultipleCondition;
+        _queryAnalyzer = options.QueryAnalyzer;
+        _indexSettingAction = options.IndexSettingAction;
+        _action = options.Action;
     }
 
     public override async Task<bool> BuildAsync(CancellationToken cancellationToken = default)

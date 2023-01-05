@@ -25,13 +25,13 @@ public class DefaultIdGeneratorFactory : MasaFactoryBase<IIdGenerator, IdGenerat
     protected override string SpecifyServiceNotFoundMessage { get; } =
         "Please make sure you have used [{0}] IdGenerator, it was not found";
 
-    protected override MasaFactoryOptions<IdGeneratorRelationOptions> FactoryOptions => _options.Value;
+    protected override MasaFactoryOptions<IdGeneratorRelationOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsSnapshot<IdGeneratorFactoryOptions> _options;
+    private readonly IOptionsMonitor<IdGeneratorFactoryOptions> _options;
 
     public DefaultIdGeneratorFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsSnapshot<IdGeneratorFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<IdGeneratorFactoryOptions>>();
     }
 
     public IIdGenerator<TOut> Create<TOut>() where TOut : notnull

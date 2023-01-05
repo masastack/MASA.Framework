@@ -6,10 +6,10 @@ namespace Masa.Utils.Data.Elasticsearch;
 public class DefaultElasticClientFactory : IElasticClientFactory
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly IOptionsSnapshot<ElasticsearchFactoryOptions> _elasticsearchFactoryOptions;
+    private readonly IOptionsMonitor<ElasticsearchFactoryOptions> _elasticsearchFactoryOptions;
 
     public DefaultElasticClientFactory(IServiceProvider serviceProvider,
-        IOptionsSnapshot<ElasticsearchFactoryOptions> elasticsearchFactoryOptions)
+        IOptionsMonitor<ElasticsearchFactoryOptions> elasticsearchFactoryOptions)
     {
         _serviceProvider = serviceProvider;
         _elasticsearchFactoryOptions = elasticsearchFactoryOptions;
@@ -17,7 +17,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
 
     public IElasticClient Create()
     {
-        var options = _elasticsearchFactoryOptions.Value;
+        var options = _elasticsearchFactoryOptions.CurrentValue;
         var defaultOptions = GetDefaultOptions(options.Options);
         if (defaultOptions == null)
             throw new NotSupportedException("No default ElasticClient found");
@@ -25,18 +25,18 @@ public class DefaultElasticClientFactory : IElasticClientFactory
         return defaultOptions.Func.Invoke(_serviceProvider);
     }
 
-    private static ElasticsearchRelationsOptions? GetDefaultOptions(List<ElasticsearchRelationsOptions> optionsList)
-    {
-        return optionsList.SingleOrDefault(c => c.Name == Microsoft.Extensions.Options.Options.DefaultName) ??
-            optionsList.FirstOrDefault();
-    }
-
     public IElasticClient Create(string name)
     {
-        var options = _elasticsearchFactoryOptions.Value.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var options = _elasticsearchFactoryOptions.CurrentValue.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (options == null)
             throw new NotSupportedException($"Please make sure you have used [{name}] ElasticClient, it was not found");
 
         return options.Func.Invoke(_serviceProvider);
+    }
+
+    private static ElasticsearchRelationsOptions? GetDefaultOptions(List<ElasticsearchRelationsOptions> optionsList)
+    {
+        return optionsList.SingleOrDefault(c => c.Name == Microsoft.Extensions.Options.Options.DefaultName) ??
+            optionsList.FirstOrDefault();
     }
 }
