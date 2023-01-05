@@ -7,15 +7,14 @@ public static partial class MasaServiceExtensions
 {
     public static IServiceCollection AddMasaMetrics(this IServiceCollection services, Action<MeterProviderBuilder>? configure = null)
     {
-        services.AddOpenTelemetryMetrics(builder =>
-           {
-               if (configure != null)
-                   configure.Invoke(builder);
-
-               builder.AddRuntimeMetrics()
-               .AddAspNetCoreInstrumentation()
-               .AddHttpClientInstrumentation();
-           });
+        services.AddOpenTelemetry().WithMetrics(builder =>
+        {
+            configure?.Invoke(builder);
+            builder.AddRuntimeInstrumentation()
+                        .AddAspNetCoreInstrumentation()
+                        .AddHttpClientInstrumentation()
+                        .AddMeter(HttpMetricProviders.Meter.Name);
+        }).StartWithHost();
         return services;
     }
 }

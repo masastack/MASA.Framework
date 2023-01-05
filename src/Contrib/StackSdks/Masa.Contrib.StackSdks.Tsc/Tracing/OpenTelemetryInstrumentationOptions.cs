@@ -5,12 +5,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
 {
+    private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
+    private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
+
     /// <summary>
     /// Default record all data. You can replace it or set null
     /// </summary>
     public Action<AspNetCoreInstrumentationOptions> AspNetCoreInstrumentationOptions { get; set; } = options =>
     {
-        options.Enrich = async (activity, eventName, rawObject) => await SetHttpTags(activity, eventName, rawObject);
+        options.EnrichWithHttpRequest = aspNetCoreInstrumentationHandler.OnHttpRequest;
+        options.EnrichWithHttpResponse = aspNetCoreInstrumentationHandler.OnHttpResponse;
+        options.EnrichWithException = aspNetCoreInstrumentationHandler.OnException;
     };
 
     /// <summary>
@@ -18,7 +23,11 @@ public class OpenTelemetryInstrumentationOptions
     /// </summary>
     public Action<HttpClientInstrumentationOptions> HttpClientInstrumentationOptions { get; set; } = options =>
     {
-        options.Enrich = async (activity, eventName, rawObject) => await SetHttpTags(activity, eventName, rawObject);
+        options.EnrichWithException = httpClientInstrumentHandler.OnException;
+        options.EnrichWithHttpRequestMessage = httpClientInstrumentHandler.OnHttpRequestMessage;
+        options.EnrichWithHttpResponseMessage = httpClientInstrumentHandler.OnHttpResponseMessage;
+        options.EnrichWithHttpWebResponse = httpClientInstrumentHandler.OnHttpWebResponse;
+        options.EnrichWithHttpWebRequest = httpClientInstrumentHandler.OnHttpWebRequest;
     };
 
     /// <summary>
@@ -42,43 +51,4 @@ public class OpenTelemetryInstrumentationOptions
     /// Build trace callback, allow to supplement the build process
     /// </summary>
     public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
-
-    private static async Task SetHttpTags(Activity activity, string eventName, object rawObject)
-    {
-        if (eventName.Equals("OnStartActivity"))
-        {
-            if (rawObject is HttpRequest httpRequest)
-            {
-                await activity.AddMasaSupplement(httpRequest);
-            }
-            else if (rawObject is HttpRequestMessage httpRequestMessage)
-            {
-                await activity.AddMasaSupplement(httpRequestMessage);
-            }
-        }
-        else if (eventName.Equals("OnStopActivity"))
-        {
-            if (rawObject is HttpResponse httpResponse)
-            {
-                activity.AddMasaSupplement(httpResponse);
-            }
-            else if (rawObject is HttpResponseMessage httpResponseMessage)
-            {
-                activity.AddMasaSupplement(httpResponseMessage);
-            }
-        }
-        else if (eventName.Equals("OnException"))
-        {
-            SetSexceptionTags(activity, rawObject);
-        }
-    }
-
-    private static void SetSexceptionTags(Activity activity, object rawObject)
-    {
-        if (rawObject is Exception exception)
-        {
-            activity.SetTag(OpenTelemetryAttributeName.Exception.MESSAGE, exception.Message);
-            activity.SetTag(OpenTelemetryAttributeName.Exception.STACKTRACE, exception.ToString());
-        }
-    }
 }
