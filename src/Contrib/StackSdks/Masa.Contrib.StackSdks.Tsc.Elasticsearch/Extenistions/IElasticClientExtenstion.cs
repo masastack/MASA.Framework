@@ -466,6 +466,8 @@ internal static class IElasticClientExtenstion
     internal static void ScrollQuery(this IElasticClient client, ElasticsearchScrollRequestDto query, Action<IEnumerable<TraceResponseDto>> action)
     {
         int numberOfSlices = Environment.ProcessorCount;
+        if (numberOfSlices <= 1)
+            numberOfSlices = 2;
         var scrollAllObservable = client.ScrollAll<object>(query.Scroll, numberOfSlices, sc => sc
            .MaxDegreeOfParallelism(numberOfSlices)
            .Search(s => s.Index(ElasticConstant.Trace.IndexName).AddCondition(query, false))
