@@ -7,13 +7,13 @@ public static class CallerOptionsExtensions
 {
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         Func<MasaHttpClientBuilder>? clientBuilder = null,
-        bool isSupportUpdate = false)
-        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder, isSupportUpdate);
+        bool alwaysGetNewestHttpClient = false)
+        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder, alwaysGetNewestHttpClient);
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,
         Func<MasaHttpClientBuilder>? clientBuilder = null,
-        bool isSupportUpdate = false)
+        bool alwaysGetNewestHttpClient = false)
     {
         return callerOptions.UseHttpClient(name, masaHttpClientBuilder =>
         {
@@ -21,20 +21,20 @@ public static class CallerOptionsExtensions
             masaHttpClientBuilder.BaseAddress = builder.BaseAddress;
             masaHttpClientBuilder.Prefix = builder.Prefix;
             masaHttpClientBuilder.Configure = builder.Configure;
-        }, isSupportUpdate);
+        }, alwaysGetNewestHttpClient);
     }
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         Action<MasaHttpClientBuilder>? clientBuilder,
-        bool isSupportUpdate = false)
-        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder, isSupportUpdate);
+        bool alwaysGetNewestHttpClient = false)
+        => callerOptions.UseHttpClient(Microsoft.Extensions.Options.Options.DefaultName, clientBuilder, alwaysGetNewestHttpClient);
 
     public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
         string name,
         Action<MasaHttpClientBuilder>? clientBuilder,
-        bool isSupportUpdate = false)
+        bool alwaysGetNewestHttpClient = false)
     {
-        if (isSupportUpdate)
+        if (alwaysGetNewestHttpClient)
         {
             var httpClientBuilder = callerOptions.Services.AddHttpClient(name);
             AddCallerExtensions.AddCaller(callerOptions, name, serviceProvider
