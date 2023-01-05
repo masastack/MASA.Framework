@@ -9,17 +9,21 @@ public static class MasaElasticsearchBuilderExtensions
 {
     private static readonly string DefaultName = Microsoft.Extensions.Options.Options.DefaultName;
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder)
         => builder.AddAutoComplete(DefaultName);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder,
         string name)
         => builder.AddAutoComplete<Guid>(name);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder) where TValue : notnull
         => builder.AddAutoComplete<TValue>(DefaultName);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder,
         string name) where TValue : notnull
@@ -30,10 +34,12 @@ public static class MasaElasticsearchBuilderExtensions
         return builder.AddAutoComplete<AutoCompleteDocument<TValue>>(name, option => option.UseIndexName(indexName));
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder,
         Action<AutoCompleteOptions<AutoCompleteDocument<Guid>>>? action)
         => builder.AddAutoComplete(DefaultName, action);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete(this MasaElasticsearchBuilder builder,
         string name,
         Action<AutoCompleteOptions<AutoCompleteDocument<Guid>>>? action)
@@ -44,17 +50,20 @@ public static class MasaElasticsearchBuilderExtensions
         Action<AutoCompleteOptions<AutoCompleteDocument<TValue>>>? action) where TValue : notnull
         => builder.AddAutoComplete(DefaultName, action);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoComplete<TValue>(
         this MasaElasticsearchBuilder builder,
         string name,
         Action<AutoCompleteOptions<AutoCompleteDocument<TValue>>>? action) where TValue : notnull
         => builder.AddAutoCompleteBySpecifyDocument(name, action);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
         this MasaElasticsearchBuilder builder)
         where TDocument : AutoCompleteDocument
         => builder.AddAutoCompleteBySpecifyDocument<TDocument>(DefaultName);
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
         this MasaElasticsearchBuilder builder,
         string name)
@@ -67,6 +76,7 @@ public static class MasaElasticsearchBuilderExtensions
         return builder.AddAutoCompleteBySpecifyDocument<TDocument>(name, option => option.UseIndexName(indexName));
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static MasaElasticsearchBuilder AddAutoCompleteBySpecifyDocument<TDocument>(
         this MasaElasticsearchBuilder builder,
         Action<AutoCompleteOptions<TDocument>>? action)
