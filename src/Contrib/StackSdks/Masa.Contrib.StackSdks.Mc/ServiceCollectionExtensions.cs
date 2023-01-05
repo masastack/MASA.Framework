@@ -8,10 +8,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMcClient(this IServiceCollection services, string mcServiceBaseAddress)
     {
-        if (string.IsNullOrWhiteSpace(mcServiceBaseAddress))
-        {
-            throw new ArgumentNullException(nameof(mcServiceBaseAddress));
-        }
+        MasaArgumentException.ThrowIfNullOrEmpty(mcServiceBaseAddress);
 
         return services.AddMcClient(callerOptions =>
         {
@@ -23,9 +20,23 @@ public static class ServiceCollectionExtensions
         });
     }
 
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Func<Task<string>> mcServiceBaseAddressFunc)
+    {
+        MasaArgumentException.ThrowIfNull(mcServiceBaseAddressFunc);
+
+        return services.AddMcClient(callerOptions =>
+        {
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            {
+                builder.BaseAddress = await mcServiceBaseAddressFunc.Invoke();
+            }, true).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            callerOptions.DisableAutoRegistration = true;
+        });
+    }
+
     public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
-        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+        MasaArgumentException.ThrowIfNull(callerOptions);
 
         if (services.Any(service => service.ServiceType == typeof(IMcClient)))
             return services;
