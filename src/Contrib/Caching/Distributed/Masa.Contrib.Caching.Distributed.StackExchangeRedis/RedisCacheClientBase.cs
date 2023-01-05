@@ -107,7 +107,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             await Db.ScriptEvaluateAsync(Const.SET_EXPIRE_SCRIPT,
                 awaitRefreshOptions.Select(item => item.Key).GetRedisKeys(),
                 awaitRefreshOptions.Select(item => (RedisValue)(item.Value?.TotalSeconds ?? -1)).ToArray()
-            );
+            ).ConfigureAwait(false);
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     {
         string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = (await Db
-                .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()))
+                .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()).ConfigureAwait(false))
             .ToDictionary();
         return GetListByArrayRedisResult(arrayRedisResult, getData);
     }
