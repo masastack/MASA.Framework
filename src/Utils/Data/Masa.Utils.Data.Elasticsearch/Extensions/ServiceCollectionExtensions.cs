@@ -19,6 +19,11 @@ public static partial class ServiceCollectionExtensions
         });
 
     public static IServiceCollection AddElasticsearch(this IServiceCollection services,
+        Action<ElasticsearchOptions> action,
+        bool alwaysGetNewestElasticClient = false)
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, action, alwaysGetNewestElasticClient);
+
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
         string name,
         Action<ElasticsearchOptions> action,
         bool alwaysGetNewestElasticClient = false)
@@ -53,6 +58,11 @@ public static partial class ServiceCollectionExtensions
                 };
             });
     }
+
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
+        Func<ElasticsearchOptions> func,
+        bool alwaysGetNewestElasticClient)
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, func, alwaysGetNewestElasticClient);
 
     public static IServiceCollection AddElasticsearch(this IServiceCollection services,
         string name,

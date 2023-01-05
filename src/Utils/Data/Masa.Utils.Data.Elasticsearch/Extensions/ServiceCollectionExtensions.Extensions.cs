@@ -24,13 +24,25 @@ public static partial class ServiceCollectionExtensions
     public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services, string name, params string[] nodes)
         => services.AddElasticsearch(name, nodes).CreateElasticsearchClient(name);
 
-    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services, string name,
+    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services,
+        Action<ElasticsearchOptions> action,
+        bool alwaysGetNewestElasticClient = false)
+        => services.AddElasticsearchClient(Constant.DEFAULT_CLIENT_NAME, action, alwaysGetNewestElasticClient);
+
+    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services,
+        string name,
         Action<ElasticsearchOptions> action,
         bool alwaysGetNewestElasticClient = false)
         => services.AddElasticsearch(name, action, alwaysGetNewestElasticClient)
             .CreateElasticsearchClient(name, alwaysGetNewestElasticClient);
 
-    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services, string name,
+    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services,
+        Func<ElasticsearchOptions> func,
+        bool alwaysGetNewestElasticClient = false)
+        => services.AddElasticsearchClient(Constant.DEFAULT_CLIENT_NAME, func, alwaysGetNewestElasticClient);
+
+    public static MasaElasticsearchBuilder AddElasticsearchClient(this IServiceCollection services,
+        string name,
         Func<ElasticsearchOptions> func,
         bool alwaysGetNewestElasticClient = false)
         => services.AddElasticsearch(name, func, alwaysGetNewestElasticClient)
