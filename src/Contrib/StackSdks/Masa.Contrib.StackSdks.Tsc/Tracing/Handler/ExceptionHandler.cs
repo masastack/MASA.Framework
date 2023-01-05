@@ -14,5 +14,5 @@ public class ExceptionHandler
         }
     }
 
-    public bool IsRecordException { get; set; }
+    public virtual bool IsRecordException { get; set; } = true;
 }

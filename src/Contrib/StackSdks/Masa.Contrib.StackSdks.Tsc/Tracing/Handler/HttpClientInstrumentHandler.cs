@@ -5,16 +5,6 @@ namespace Masa.Contrib.StackSdks.Tsc.Tracing.Handler;
 
 public class HttpClientInstrumentHandler : ExceptionHandler
 {
-    public virtual bool IsSkipHttpRequestMessage(HttpRequestMessage httpRequestMessage)
-    {
-        return false;
-    }
-
-    public virtual bool IsSkipHttpWebRequest(HttpWebRequest httpWebRequest)
-    {
-        return false;
-    }
-
     public virtual async void OnHttpRequestMessage(Activity activity, HttpRequestMessage httpRequestMessage)
     {
         await activity.AddMasaSupplement(httpRequestMessage);

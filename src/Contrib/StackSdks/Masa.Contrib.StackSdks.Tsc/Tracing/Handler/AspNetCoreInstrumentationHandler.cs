@@ -5,16 +5,6 @@ namespace Masa.Contrib.StackSdks.Tsc.Tracing.Handler;
 
 public class AspNetCoreInstrumentationHandler : ExceptionHandler
 {
-    /// <summary>
-    /// if return false or throw exception then not record ; return true then record
-    /// </summary>
-    /// <param name="httpContent"></param>
-    /// <returns></returns>
-    public virtual bool IsSkip(HttpContext httpContent)
-    {
-        return false;
-    }
-
     public virtual async void OnHttpRequest(Activity activity, HttpRequest httpRequest)
     {
         await activity.AddMasaSupplement(httpRequest);
@@ -26,10 +16,4 @@ public class AspNetCoreInstrumentationHandler : ExceptionHandler
         activity.AddMasaSupplement(httpResponse);
         HttpMetricProviders.AddHttpResponseMetric(httpResponse);
     }
-
-    public bool IsEnableGrpcAspNetCoreSupport
-    {
-        get;
-        set;
-    } = true;
 }
