@@ -218,9 +218,9 @@ public class CallerTest
         services.AddCaller();
         var serviceProvider = services.BuildServiceProvider();
         var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create(),
+        Assert.ThrowsException<NotSupportedException>(() => callerFactory.Create(),
             "No default Caller found, you may need service.AddCaller()");
-        Assert.ThrowsException<NotImplementedException>(() => callerFactory.Create("test"),
+        Assert.ThrowsException<NotSupportedException>(() => callerFactory.Create("test"),
             string.Format("Please make sure you have used [{0}] Caller, it was not found", "test"));
     }
 

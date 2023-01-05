@@ -20,7 +20,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
         var options = _elasticsearchFactoryOptions.Value;
         var defaultOptions = GetDefaultOptions(options.Options);
         if (defaultOptions == null)
-            throw new NotImplementedException("No default ElasticClient found");
+            throw new NotSupportedException("No default ElasticClient found");
 
         return defaultOptions.Func.Invoke(_serviceProvider);
     }
@@ -35,7 +35,7 @@ public class DefaultElasticClientFactory : IElasticClientFactory
     {
         var options = _elasticsearchFactoryOptions.Value.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (options == null)
-            throw new NotImplementedException($"Please make sure you have used [{name}] ElasticClient, it was not found");
+            throw new NotSupportedException($"Please make sure you have used [{name}] ElasticClient, it was not found");
 
         return options.Func.Invoke(_serviceProvider);
     }
