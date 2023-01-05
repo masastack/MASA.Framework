@@ -5,6 +5,10 @@ namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
 public abstract class AutoCompleteClientBase : IAutoCompleteClient
 {
+    public abstract Task<bool> BuildAsync(CancellationToken cancellationToken = default);
+
+    public abstract Task RebuildAsync(CancellationToken cancellationToken = default);
+
     public virtual Task<GetResponse<AutoCompleteDocument<Guid>>> GetAsync(
         string keyword,
         AutoCompleteOptions? options = null,

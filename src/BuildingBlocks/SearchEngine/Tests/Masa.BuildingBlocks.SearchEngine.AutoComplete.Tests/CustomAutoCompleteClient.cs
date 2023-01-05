@@ -5,6 +5,16 @@ namespace Masa.BuildingBlocks.SearchEngine.AutoComplete.Tests;
 
 public class CustomAutoCompleteClient : AutoCompleteClientBase
 {
+    public override Task<bool> BuildAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task RebuildAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public override Task<GetResponse<TAudoCompleteDocument>> GetBySpecifyDocumentAsync<TAudoCompleteDocument>(string keyword, AutoCompleteOptions? options = null,
         CancellationToken cancellationToken = default)
     {

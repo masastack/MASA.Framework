@@ -14,10 +14,10 @@ public class DefaultRulesEngineFactory : MasaFactoryBase<IRulesEngineClient, Rul
 
     protected override MasaFactoryOptions<RulesEngineRelationOptions> FactoryOptions => _options.Value;
 
-    private readonly IOptions<RulesEngineFactoryOptions> _options;
+    private readonly IOptionsSnapshot<RulesEngineFactoryOptions> _options;
 
     public DefaultRulesEngineFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptions<RulesEngineFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsSnapshot<RulesEngineFactoryOptions>>();
     }
 }

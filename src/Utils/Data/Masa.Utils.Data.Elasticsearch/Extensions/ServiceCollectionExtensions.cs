@@ -8,7 +8,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddElasticsearch(this IServiceCollection services, params string[] nodes)
-        => services.AddElasticsearch(Const.DEFAULT_CLIENT_NAME, nodes);
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, nodes);
 
     public static IServiceCollection AddElasticsearch(this IServiceCollection services, string name, params string[] nodes)
         => services.AddElasticsearch(name, options =>
@@ -21,15 +21,15 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection AddElasticsearch(this IServiceCollection services,
         string name,
         Action<ElasticsearchOptions> action,
-        bool isSupportUpdate = false)
+        bool alwaysGetNewestElasticClient = false)
     {
         ArgumentNullException.ThrowIfNull(name);
         return services
-            .AddElasticsearchCore(isSupportUpdate ? ServiceLifetime.Scoped : ServiceLifetime.Singleton)
+            .AddElasticsearchCore(alwaysGetNewestElasticClient ? ServiceLifetime.Scoped : ServiceLifetime.Singleton)
             .AddElasticsearchOptions(name, options =>
             {
                 ConnectionSettings? settings = null;
-                if (!isSupportUpdate)
+                if (!alwaysGetNewestElasticClient)
                 {
                     var elasticsearchOptions = new ElasticsearchOptions();
                     action.Invoke(elasticsearchOptions);
@@ -40,7 +40,7 @@ public static partial class ServiceCollectionExtensions
                 }
                 options.Func = _ =>
                 {
-                    if (isSupportUpdate)
+                    if (alwaysGetNewestElasticClient)
                     {
                         var elasticsearchOptions = new ElasticsearchOptions();
                         action.Invoke(elasticsearchOptions);
@@ -57,7 +57,7 @@ public static partial class ServiceCollectionExtensions
     public static IServiceCollection AddElasticsearch(this IServiceCollection services,
         string name,
         Func<ElasticsearchOptions> func,
-        bool isSupportUpdate)
+        bool alwaysGetNewestElasticClient)
     {
         return services.AddElasticsearch(name, options =>
         {
@@ -71,7 +71,7 @@ public static partial class ServiceCollectionExtensions
             options.ConnectionSettingsOptions.UsePropertyMappingProvider(elasticsearchOptions.ConnectionSettingsOptions
                 .PropertyMappingProvider);
             options.UseConnectionSettings(elasticsearchOptions.Action);
-        }, isSupportUpdate);
+        }, alwaysGetNewestElasticClient);
     }
 
     private static IServiceCollection AddElasticsearchCore(this IServiceCollection services, ServiceLifetime serviceLifetime)
@@ -105,7 +105,7 @@ public static partial class ServiceCollectionExtensions
         string name,
         Action<ElasticsearchRelationsOptions> action)
     {
-        services.Configure<ElasticsearchFactoryOptions>(name, options =>
+        services.Configure<ElasticsearchFactoryOptions>(options =>
         {
             if (options.Options.Any(o => o.Name == name))
                 throw new ArgumentException($"The es name already exists, please change the name, the repeat name is [{name}]");
@@ -119,6 +119,8 @@ public static partial class ServiceCollectionExtensions
 
     private static ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
     {
+        ArgumentNullException.ThrowIfNull(relation.Nodes);
+
         var connectionSetting = new ConnectionSettings(new Uri(relation.Nodes[0]))
             .EnableApiVersioningHeader();
         relation.Action?.Invoke(connectionSetting);
@@ -134,9 +136,9 @@ public static partial class ServiceCollectionExtensions
 
         var settings = new ConnectionSettings(
                 pool,
-                relation.ConnectionSettingsOptions?.Connection,
-                relation.ConnectionSettingsOptions?.SourceSerializerFactory,
-                relation.ConnectionSettingsOptions?.PropertyMappingProvider)
+                relation.ConnectionSettingsOptions.Connection,
+                relation.ConnectionSettingsOptions.SourceSerializerFactory,
+                relation.ConnectionSettingsOptions.PropertyMappingProvider)
             .EnableApiVersioningHeader();
 
         relation.Action?.Invoke(settings);

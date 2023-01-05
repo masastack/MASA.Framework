@@ -5,7 +5,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     internal static void AddAutoCompleteCore(this IServiceCollection services,
         string name,
@@ -33,12 +33,12 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<AutoCompleteFactoryOptions>(factoryOptions =>
         {
-            var options = new AutoCompleteRelationsOptions(name);
-            action.Invoke(options);
-            if (factoryOptions.Options.Any(relation => relation.Name == options.Name))
-                throw new ArgumentException($"The caller name already exists, please change the name, the repeat name is [{options.Name}]");
+            var relationsOptions = new AutoCompleteRelationsOptions(name);
+            action.Invoke(relationsOptions);
+            if (factoryOptions.Options.Any(relation => relation.Name == relationsOptions.Name))
+                throw new ArgumentException($"The caller name already exists, please change the name, the repeat name is [{relationsOptions.Name}]");
 
-            factoryOptions.Options.Add(options);
+            factoryOptions.Options.Add(relationsOptions);
         });
     }
 }
