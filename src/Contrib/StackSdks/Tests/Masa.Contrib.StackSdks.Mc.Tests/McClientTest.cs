@@ -20,13 +20,13 @@ public class McClientTest
     public void TestAddMcClientShouldThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddMcClient(mcServiceBaseAddress: null!));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddMcClient(mcServiceBaseAddress: null!));
     }
 
     [TestMethod]
     public void TestAddMcClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddMcClient(callerOptions: null!));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddMcClient(callerOptions: null!));
     }
 }

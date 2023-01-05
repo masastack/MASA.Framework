@@ -18,13 +18,13 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress, RedisConfigurationOptions redisOptions)
     {
-        ArgumentNullException.ThrowIfNull(authServiceBaseAddress, nameof(authServiceBaseAddress));
+        MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Configure = opt => opt.BaseAddress = new Uri(authServiceBaseAddress);
+                builder.BaseAddress = authServiceBaseAddress;
             });
             callerOptions.DisableAutoRegistration = true;
         }, redisOptions);
@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions, RedisConfigurationOptions redisOptions)
     {
-        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+        MasaArgumentException.ThrowIfNull(callerOptions);
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 

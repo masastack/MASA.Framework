@@ -29,14 +29,14 @@ public class AuthClientTest
     public void TestAddAuthClientShouldThrowArgumentNullException()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(authServiceBaseAddress: null!, new()));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(authServiceBaseAddress: null!, new()));
     }
 
     [TestMethod]
     public void TestAddAuthClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentNullException>(() => services.AddAuthClient(callerOptions: null!, new()));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(callerOptions: null!, new()));
     }
 }
 
