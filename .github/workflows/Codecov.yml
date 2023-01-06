@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         redis-version: [5]
+        node: [16]
 
     steps:
     - name: git pull
