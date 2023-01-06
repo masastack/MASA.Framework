@@ -35,7 +35,7 @@ public class MasaHttpClientBuilder
         Configure = configure;
     }
 
-    public virtual void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
+    internal void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
     {
         if (!string.IsNullOrEmpty(BaseAddress))
             httpClient.BaseAddress = new Uri(BaseAddress);

@@ -252,12 +252,9 @@ public class CallerTest
             })
             .Verifiable();
 
-        httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
-        services.AddSingleton(httpClientFactory.Object);
         var serviceProvider = services.BuildServiceProvider();
-        string name = "<Custom-Alias>";
         string prefix = "<Replace-Your-Service-Prefix>";
-        var caller = new HttpClientCaller(serviceProvider, name, prefix);
+        var caller = new HttpClientCaller(magicHttpClient, serviceProvider, prefix);
 
         var excuteCount = 0;
         caller.ConfigRequestMessage(httpRequestMessage =>

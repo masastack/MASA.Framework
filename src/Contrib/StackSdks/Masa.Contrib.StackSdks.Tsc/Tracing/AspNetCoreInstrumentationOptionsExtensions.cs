@@ -45,7 +45,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         {
             opt.Filter = IsDefaultFilter;
         };
-        openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
+        openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions += options;
     }
 
     private static bool IsDefaultFilter(HttpContext httpContext) => !(IsInterruptSignalrTracing && IsWebsocket(httpContext)
@@ -67,7 +67,7 @@ public static class AspNetCoreInstrumentationOptionsExtensions
         {
             opt.Filter = httpContext => IsDefaultFilter(httpContext) && IsBlazorFilter(httpContext);
         };
-        openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions = options;
+        openTelemetryInstrumentationOptions.AspNetCoreInstrumentationOptions += options;
     }
 
     private static bool IsBlazorFilter(HttpContext httpContext) => !IsReuqestPathMatchPrefix(httpContext, _BlazorFilterIgnorePrefix);

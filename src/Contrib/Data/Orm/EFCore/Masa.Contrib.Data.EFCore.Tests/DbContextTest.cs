@@ -204,7 +204,7 @@ public class DbContextTest : TestBase
         var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
         using (dataFilter.Disable<ISoftDelete>())
         {
-            var count = await dbContext.Set<Student>().IgnoreQueryFilters().CountAsync();
+            var count = await dbContext.Set<Student>().CountAsync();
             Assert.IsTrue(count == 1);
         }
     }

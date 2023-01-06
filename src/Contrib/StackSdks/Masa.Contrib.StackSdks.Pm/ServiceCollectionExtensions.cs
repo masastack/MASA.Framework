@@ -8,31 +8,42 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPmClient(this IServiceCollection services, string pmServiceBaseAddress)
     {
-        if (string.IsNullOrWhiteSpace(pmServiceBaseAddress))
-        {
-            throw new ArgumentNullException(nameof(pmServiceBaseAddress));
-        }
+        MasaArgumentException.ThrowIfNullOrEmpty(pmServiceBaseAddress);
 
         return services.AddPmClient(callerOptions =>
         {
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.Configure = opt => opt.BaseAddress = new Uri(pmServiceBaseAddress);
+                builder.BaseAddress = pmServiceBaseAddress;
             });
+            callerOptions.DisableAutoRegistration = true;
+        });
+    }
+
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<Task<string>> pmServiceBaseAddressFunc)
+    {
+        MasaArgumentException.ThrowIfNull(pmServiceBaseAddressFunc);
+
+        return services.AddPmClient(callerOptions =>
+        {
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            {
+                builder.BaseAddress = await pmServiceBaseAddressFunc.Invoke();
+            }, true);
             callerOptions.DisableAutoRegistration = true;
         });
     }
 
     public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
     {
-        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+        MasaArgumentException.ThrowIfNull(callerOptions);
 
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
         services.AddCaller(callerOptions.Invoke);
 
-        services.AddSingleton<IPmClient>(serviceProvider =>
+        services.AddScoped<IPmClient>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var pmCaching = new PmClient(callProvider);

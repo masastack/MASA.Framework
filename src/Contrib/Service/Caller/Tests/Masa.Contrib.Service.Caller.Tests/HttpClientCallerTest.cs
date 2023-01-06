@@ -31,7 +31,7 @@ public class HttpClientCallerTest
         var services = new ServiceCollection();
         services.AddCaller(opt => opt.UseHttpClient());
         var serviceProvider = services.BuildServiceProvider();
-        var caller = new CustomHttpClientCaller(serviceProvider, string.Empty, prefix);
+        var caller = new CustomHttpClientCaller(serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(), serviceProvider, prefix);
         Assert.IsTrue(caller.GetResult(methods) == result);
     }
 
@@ -63,12 +63,9 @@ public class HttpClientCallerTest
             })
             .Verifiable();
 
-        httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
-        services.AddSingleton(httpClientFactory.Object);
         var serviceProvider = services.BuildServiceProvider();
-        string name = "<Custom-Alias>";
         string prefix = "<Replace-Your-Service-Prefix>";
-        var caller = new HttpClientCaller(serviceProvider, name, prefix);
+        var caller = new HttpClientCaller(magicHttpClient, serviceProvider, prefix);
 
         var res = await caller.PostAsync<BaseResponse>("Hello", new RegisterUser("Jim", "123456"));
         Assert.IsNotNull(res);
@@ -92,7 +89,6 @@ public class HttpClientCallerTest
             }).Verifiable();
         services.AddSingleton(_ => requestMessage.Object);
         services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
-        Mock<IHttpClientFactory> httpClientFactory = new();
         var handlerMock = new Mock<HttpMessageHandler>();
         var magicHttpClient = new System.Net.Http.HttpClient(handlerMock.Object)
         {
@@ -113,12 +109,9 @@ public class HttpClientCallerTest
             })
             .Verifiable();
 
-        httpClientFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(magicHttpClient);
-        services.AddSingleton(httpClientFactory.Object);
         var serviceProvider = services.BuildServiceProvider();
-        string name = "<Custom-Alias>";
         string prefix = "<Replace-Your-Service-Prefix>";
-        var caller = new HttpClientCaller(serviceProvider, name, prefix);
+        var caller = new HttpClientCaller(magicHttpClient, serviceProvider, prefix);
 
         var res = await caller.PostAsync<BaseResponse>("Hello", registerUser);
         Assert.IsNotNull(res);
@@ -291,5 +284,35 @@ public class HttpClientCallerTest
         var res2 = await defaultResponseMessage.ProcessResponseAsync<DateTime>(httpResponseMessage);
         Assert.IsNotNull(res2);
         Assert.IsTrue(res2.ToString("yyyy-MM-dd HH:mm:ss") == date.ToString("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    [TestMethod]
+    public void TestChangeableBaseAddress()
+    {
+        var services = new ServiceCollection();
+        var key = "caller_test";
+        var baiduAddress = "http://www.baidu.com";
+        var githubAddress = "http://github.com";
+        Environment.SetEnvironmentVariable(key, baiduAddress);
+        var index = 0;
+        services.AddCaller(options =>
+        {
+            options.UseHttpClient(clientBuilder =>
+            {
+                Assert.AreEqual(string.Empty, clientBuilder.BaseAddress);
+                clientBuilder.BaseAddress = Environment.GetEnvironmentVariable(key)!;
+                if (index == 0) Assert.AreEqual(baiduAddress, clientBuilder.BaseAddress.ToString());
+                else if (index == 1) Assert.AreEqual(githubAddress, clientBuilder.BaseAddress.ToString());
+            }, true);
+        });
+        var serviceProvider = services.BuildServiceProvider();
+    start:
+        using (var scope = serviceProvider.CreateScope())
+        {
+            var caller = scope.ServiceProvider.GetRequiredService<ICaller>();
+            Environment.SetEnvironmentVariable(key, githubAddress);
+            index++;
+            if (index == 1) goto start;
+        }
     }
 }
