@@ -21,7 +21,7 @@ public class XmlRequestMessage : DefaultRequestMessage, IRequestMessage
 
     public async Task<HttpRequestMessage> ProcessHttpRequestMessageAsync<TRequest>(HttpRequestMessage requestMessage, TRequest data)
     {
-        requestMessage = await ProcessHttpRequestMessageAsync(requestMessage);
+        requestMessage = await ProcessHttpRequestMessageAsync(requestMessage).ConfigureAwait(false);
         requestMessage.Content = new StringContent(XmlUtils.Serializer(data!));
         return requestMessage;
     }

@@ -67,7 +67,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 var newValue = new Lazy<Task<object>>(() => Task.FromResult((object)result!));
                 _taskJsonObjects.AddOrUpdate(k, newValue, (_, _) => newValue);
                 valueChanged?.Invoke(result!);
-            });
+            }).ConfigureAwait(false);
             if (typeof(T).GetInterfaces().Any(type => type == typeof(IConvertible)))
             {
                 if (result.ConfigurationType == ConfigurationTypes.Text)
@@ -78,17 +78,17 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
             return JsonSerializer.Deserialize<T>(result.Raw, _dynamicJsonSerializerOptions) ??
                 throw new MasaException($"The content of [{configObject}] is wrong");
-        })).Value;
+        })).Value.ConfigureAwait(false);
 
         return (T)value;
     }
 
-    public async Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
+    public Task<dynamic> GetDynamicAsync(string environment, string cluster, string appId, string configObject,
         Action<dynamic>? valueChanged = null)
     {
         var key = FomartKey(environment, cluster, appId, configObject);
 
-        return await GetDynamicAsync(key, (k, value, options) =>
+        return GetDynamicAsync(key, (k, value, options) =>
         {
             var result = JsonSerializer.Deserialize<ExpandoObject>(value, options);
             var newValue = new Lazy<Task<ExpandoObject?>>(() => Task.FromResult(result)!);
@@ -103,12 +103,12 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         return GetDynamicAsync(key, null);
     }
 
-    protected virtual async Task<dynamic> GetDynamicAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
+    protected virtual Task<dynamic> GetDynamicAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
     {
         if (string.IsNullOrEmpty(key))
             throw new ArgumentNullException(nameof(key));
 
-        return await GetDynamicInternalAsync(key, valueChanged);
+        return GetDynamicInternalAsync(key, valueChanged);
     }
 
     private async Task<dynamic> GetDynamicInternalAsync(string key, Action<string, dynamic, JsonSerializerOptions>? valueChanged)
@@ -120,7 +120,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                 valueChanged?.Invoke(k, value, _dynamicJsonSerializerOptions);
             });
             return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
-        })).Value;
+        })).Value.ConfigureAwait(false);
 
         return await value;
     }
@@ -132,7 +132,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         {
             var result = FormatRaw(value, key);
             valueChanged?.Invoke(result.Raw);
-        });
+        }).ConfigureAwait(false);
 
         return FormatRaw(publishRelease, key);
     }

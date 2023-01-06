@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Utils.Data.Elasticsearch.Options.Document.Count;
+
 #pragma warning disable CS0618
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch.Tests;
 
@@ -20,7 +22,7 @@ public class AutoCompleteTest
     public void TestAddAutoCompleteAndNoIndexName()
     {
         var builder = _services.AddElasticsearchClient();
-        Assert.ThrowsException<ArgumentNullException>(()
+        Assert.ThrowsException<MasaArgumentException>(()
             => builder.AddAutoComplete<Guid>(option => option.UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And)));
     }
 
@@ -29,6 +31,7 @@ public class AutoCompleteTest
     {
         _services.AddElasticsearchClient("es", option =>
         {
+            option.UseNodes("http://localhost:9200");
             option.UseConnectionSettings(setting =>
             {
                 setting.EnableApiVersioningHeader(false);
@@ -46,44 +49,10 @@ public class AutoCompleteTest
         var autoCompleteClient2 = autoCompleteFactory.CreateClient();
         Assert.IsNotNull(autoCompleteClient2);
 
-        var elasticClientField = typeof(AutoCompleteClient).GetField("_elasticClient", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        var elasticClientField =
+            typeof(AutoCompleteClient<AutoCompleteDocument<Guid>>).GetField("_elasticClient",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
         Assert.IsTrue(elasticClientField.GetValue(autoCompleteClient) == elasticClientField.GetValue(autoCompleteClient2));
-    }
-
-    [TestMethod]
-    public void TestAddMultiAutoComplete()
-    {
-        string userIndexName = $"user_index_{Guid.NewGuid()}";
-        string userAlias = $"user_index_{Guid.NewGuid()}";
-
-        var builder = _services
-            .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
-                    .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
-            .AddAutoComplete(option
-                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefaultSearchType(SearchType.Precise)
-                    .UseDefaultOperator(Operator.And));
-        Assert.ThrowsException<ArgumentException>(() => builder.AddAutoComplete(option
-            => option.UseIndexName(userIndexName).UseDefaultSearchType(SearchType.Precise).UseDefaultOperator(Operator.And)));
-    }
-
-    [TestMethod]
-    public void TestAddMultiDefaultAutoComplete()
-    {
-        string userIndexName = $"user_index_{Guid.NewGuid()}";
-        string userAlias = $"user_index_{Guid.NewGuid()}";
-
-        var builder = _services
-            .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
-                    .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
-            .AddAutoComplete(option
-                => option.UseIndexName(userIndexName).UseAlias(userAlias).UseDefault().UseDefaultSearchType(SearchType.Precise)
-                    .UseDefaultOperator(Operator.And));
-        Assert.ThrowsException<ArgumentException>(()
-            => builder.AddAutoComplete(option
-                => option.UseIndexName("employee_index").UseDefault().UseDefaultSearchType(SearchType.Precise)
-                    .UseDefaultOperator(Operator.And)));
     }
 
     [TestMethod]
@@ -94,7 +63,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -106,7 +75,8 @@ public class AutoCompleteTest
                 .UseDefaultOperator(Operator.And));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
@@ -114,7 +84,7 @@ public class AutoCompleteTest
             new("张丽", 3)
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(response.IsValid && response.Total == 1);
@@ -149,7 +119,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -159,7 +129,8 @@ public class AutoCompleteTest
                 .UseAlias(userAlias));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
@@ -167,7 +138,7 @@ public class AutoCompleteTest
             new("李四", 3)
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张三 ls");
         Assert.IsTrue(response.Total == 2);
@@ -186,7 +157,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -197,7 +168,8 @@ public class AutoCompleteTest
                 .UseDefaultOperator(Operator.And));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
@@ -205,7 +177,7 @@ public class AutoCompleteTest
             new("张丽", 3)
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("张 li");
         Assert.IsTrue(response.Total == 1);
@@ -222,7 +194,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
@@ -234,7 +206,9 @@ public class AutoCompleteTest
                 .UseMultipleConditions(false));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userIndexName);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
+
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new("张三", 1),
@@ -243,7 +217,7 @@ public class AutoCompleteTest
             new("唐伯虎", 4),
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("唐 虎");
         Assert.IsTrue(response.Total == 0);
@@ -300,7 +274,9 @@ public class AutoCompleteTest
             }));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
+        var employeeClient = autoCompleteFactory.CreateClient();
+        await employeeClient.BuildAsync();
+
         await employeeClient.SetBySpecifyDocumentAsync(new Employee[]
         {
             new()
@@ -317,7 +293,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var employeeResponse = await employeeClient.GetBySpecifyDocumentAsync<Employee>("吉姆");
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 1);
@@ -341,7 +317,7 @@ public class AutoCompleteTest
             Phone = "13777777777"
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         employeeResponse = await employeeClient.GetBySpecifyDocumentAsync<Employee>("*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 2);
@@ -357,7 +333,7 @@ public class AutoCompleteTest
             IsOverride = false
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         employeeResponse = await employeeClient.GetBySpecifyDocumentAsync<Employee>("*", new AutoCompleteOptions(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.Data.Any(employee => employee.Phone == "13777777777"));
@@ -372,15 +348,17 @@ public class AutoCompleteTest
             option => option.UseNodes(_defaultNode).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexByAliasAsync(employeeAlias);
-        builder.AddAutoComplete<Employee, int>(option => option
+        builder.AddAutoCompleteBySpecifyDocument<Employee>(option => option
             .UseIndexName(employeeIndexName)
             .UseAlias(employeeAlias)
             .UseDefaultSearchType(SearchType.Precise)
             .UseDefaultOperator(Operator.And));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var employeeClient = autoCompleteFactory.CreateClient(employeeAlias);
-        var res = await employeeClient.SetAsync<Employee, int>(new[]
+        var employeeClient = autoCompleteFactory.CreateClient();
+        await employeeClient.BuildAsync();
+
+        await employeeClient.SetAsync<Employee, int>(new[]
         {
             new Employee()
             {
@@ -396,7 +374,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var employeeResponse = await employeeClient.GetAsync<Employee, int>("ji*", new(SearchType.Fuzzy));
         Assert.IsTrue(employeeResponse.IsValid && employeeResponse.Total == 1);
@@ -417,7 +395,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)))
             .AddAutoComplete<long>(option =>
                 option.UseIndexName(userIndexName)
@@ -426,7 +404,8 @@ public class AutoCompleteTest
         await builder.Client.ClearDocumentAsync(userAlias);
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -441,7 +420,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("Edward Adam Davis");
         Assert.IsTrue(response.IsValid && response.Total == 1);
@@ -455,7 +434,7 @@ public class AutoCompleteTest
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
         await builder.Client.DeleteIndexAsync(userIndexName);
@@ -467,7 +446,8 @@ public class AutoCompleteTest
                 .UseDefaultSearchType(SearchType.Precise));
 
         var autoCompleteFactory = builder.Services.BuildServiceProvider().GetRequiredService<IAutoCompleteFactory>();
-        var autoCompleteClient = autoCompleteFactory.CreateClient(userAlias);
+        var autoCompleteClient = autoCompleteFactory.CreateClient();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -482,7 +462,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.GetAsync<long>("Edward Adam Davis", new(SearchType.Fuzzy));
         Assert.IsTrue(response.IsValid && response.Total == 2);
@@ -496,7 +476,7 @@ public class AutoCompleteTest
 
         string analyzer = "ik_max_word_pinyin";
 
-        Assert.ThrowsException<ArgumentNullException>(() => builder.AddAutoCompleteBySpecifyDocument<Employee>(option => option
+        Assert.ThrowsException<MasaArgumentException>(() => builder.AddAutoCompleteBySpecifyDocument<Employee>(option => option
             .UseDefaultSearchType(SearchType.Precise)
             .UseDefaultOperator(Operator.And)
             .Mapping(descriptor =>
@@ -523,7 +503,7 @@ public class AutoCompleteTest
         string userIndexName = $"user_index_{Guid.NewGuid()}";
         string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -545,7 +525,7 @@ public class AutoCompleteTest
                 Value = 2
             }
         });
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.DeleteAsync(10);
         Assert.IsTrue(!response.IsValid);
@@ -557,7 +537,7 @@ public class AutoCompleteTest
         string userIndexName = $"user_index_{Guid.NewGuid()}";
         string userAlias = $"user_index_{Guid.NewGuid()}";
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -566,6 +546,8 @@ public class AutoCompleteTest
                 .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.BuildAsync();
+
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -579,7 +561,8 @@ public class AutoCompleteTest
                 Value = 2
             }
         });
-        Thread.Sleep(1000);
+
+        await Task.Delay(1000);
 
         var response = await autoCompleteClient.DeleteAsync(1);
         Assert.IsTrue(response.IsValid);
@@ -592,7 +575,7 @@ public class AutoCompleteTest
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -601,6 +584,7 @@ public class AutoCompleteTest
                 .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -615,7 +599,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
@@ -623,7 +607,7 @@ public class AutoCompleteTest
         var deleteResponse = await autoCompleteClient.DeleteAsync(new[] { 1 });
         Assert.IsTrue(deleteResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 0);
@@ -636,7 +620,7 @@ public class AutoCompleteTest
         string userAlias = $"user_index_{Guid.NewGuid()}";
 
         var builder = _services.AddElasticsearchClient("es",
-            option => option.UseNodes(_defaultNode).UseDefault()
+            option => option.UseNodes(_defaultNode)
                 .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
         await builder.Client.DeleteIndexAsync(userIndexName);
 
@@ -645,6 +629,7 @@ public class AutoCompleteTest
                 .UseDefaultOperator(Operator.And));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.BuildAsync();
         await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -659,7 +644,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
@@ -672,7 +657,7 @@ public class AutoCompleteTest
             deleteMultiResponse.Data.Count == 3 &&
             deleteMultiResponse.Data.Count(r => r.IsValid) == 2); //todo: Masa.Utils.Data.Elasticsearch response information error
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 0);
@@ -681,20 +666,22 @@ public class AutoCompleteTest
     [TestMethod]
     public async Task TestAsync()
     {
-        string userIndexName = $"auto_index_1";
-        string userAlias = $"auto_index";
+        string userIndexName = "auto_index_1";
+        string userAlias = "auto_index";
 
         var builder = _services
             .AddElasticsearchClient("es",
-                option => option.UseNodes(_defaultNode).UseDefault()
+                option => option.UseNodes(_defaultNode)
                     .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
 
+        await builder.Client.DeleteIndexAsync(userIndexName);
         await builder.Client.DeleteIndexByAliasAsync(userAlias);
 
         builder.AddAutoComplete(option
             => option.UseIndexName(userIndexName).UseAlias(userAlias));
         var serviceProvider = builder.Services.BuildServiceProvider();
         var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.BuildAsync();
         var res = await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
         {
             new()
@@ -709,7 +696,7 @@ public class AutoCompleteTest
             }
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var getResponse = await autoCompleteClient.GetAsync<long>("张三");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
@@ -725,5 +712,50 @@ public class AutoCompleteTest
 
         getResponse = await autoCompleteClient.GetAsync<long>("李四");
         Assert.IsTrue(getResponse.IsValid && getResponse.Total == 1);
+    }
+
+    [TestMethod]
+    public async Task TestRebuildAsync()
+    {
+        string userIndexName = "auto_index_1";
+        string userAlias = "auto_index";
+
+        var builder = _services
+            .AddElasticsearchClient("es",
+                option => option.UseNodes(_defaultNode)
+                    .UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false)));
+
+        await builder.Client.DeleteIndexAsync(userIndexName);
+        await builder.Client.DeleteIndexByAliasAsync(userAlias);
+
+        builder.AddAutoComplete(option
+            => option.UseIndexName(userIndexName).UseAlias(userAlias));
+        var serviceProvider = builder.Services.BuildServiceProvider();
+        var autoCompleteClient = serviceProvider.GetRequiredService<IAutoCompleteClient>();
+        await autoCompleteClient.BuildAsync();
+        await autoCompleteClient.SetAsync(new AutoCompleteDocument<long>[]
+        {
+            new()
+            {
+                Text = "张三:zhangsan:zhangsan@qq.com:18888888888",
+                Value = 1
+            },
+            new()
+            {
+                Text = "李四:lisi:lisi@qq.com:19999999999",
+                Value = 2
+            }
+        });
+
+        await Task.Delay(1000);
+
+        var countDocumentResponse = await builder.Client.DocumentCountAsync(new CountDocumentRequest(userIndexName));
+        Assert.AreEqual(2, countDocumentResponse.Count);
+
+        await autoCompleteClient.RebuildAsync();
+        await Task.Delay(1000);
+
+        countDocumentResponse = await builder.Client.DocumentCountAsync(new CountDocumentRequest(userIndexName));
+        Assert.AreEqual(0, countDocumentResponse.Count);
     }
 }

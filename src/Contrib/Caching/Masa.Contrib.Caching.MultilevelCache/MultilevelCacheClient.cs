@@ -81,7 +81,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         Action<MultilevelCacheOptions>? action = null) where T : default
         => GetCoreAsync(key, valueChanged, action,
             (formattedKey, cacheOptionsAction) =>
-                Task.FromResult(_distributedCacheClient.Get<T>(formattedKey, cacheOptionsAction))).GetAwaiter().GetResult();
+                Task.FromResult(_distributedCacheClient.Get<T>(formattedKey, cacheOptionsAction))).ConfigureAwait(false).GetAwaiter().GetResult();
 
     public override Task<T?> GetCoreAsync<T>(string key, Action<T?>? valueChanged, Action<MultilevelCacheOptions>? action = null)
         where T : default
@@ -101,7 +101,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         if (_memoryCache.TryGetValue(formattedKey, out T? value))
             return value;
 
-        value = await func.Invoke(formattedKey, CacheOptionsAction);
+        value = await func.Invoke(formattedKey, CacheOptionsAction).ConfigureAwait(false);
 
         SetCore(new SetOptions<T>()
         {
@@ -134,7 +134,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         Action<MultilevelCacheOptions>? action = null) where T : default
         => GetListCoreAsync<T>(keys, action,
             (formattedKeys, cacheOptionsAction) =>
-                Task.FromResult(_distributedCacheClient.GetList<T>(formattedKeys, cacheOptionsAction))).GetAwaiter().GetResult();
+                Task.FromResult(_distributedCacheClient.GetList<T>(formattedKeys, cacheOptionsAction))).ConfigureAwait(false).GetAwaiter().GetResult();
 
     public override Task<IEnumerable<T?>> GetListAsync<T>(
         IEnumerable<string> keys,
@@ -154,7 +154,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         var awaitValues = new List<T?>();
         if (awaitCacheKeyItems.Any())
-            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction)).ToList();
+            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction).ConfigureAwait(false)).ToList();
 
         return FillData(list, awaitCacheKeyItems, awaitValues, GetMemoryCacheEntryOptions(multilevelCacheOptions));
     }
@@ -203,7 +203,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             value = await _distributedCacheClient.GetOrSetAsync(
                 formattedKey,
                 combinedCacheEntry.DistributedCacheEntryFunc,
-                CacheOptionsAction);
+                CacheOptionsAction).ConfigureAwait(false);
 
             SetCore(new SetOptions<T>()
             {
@@ -212,7 +212,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = combinedCacheEntry.MemoryCacheEntryOptions
             });
 
-            await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, combinedCacheEntry.DistributedCacheEntryFunc.Invoke());
+            await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, combinedCacheEntry.DistributedCacheEntryFunc.Invoke()).ConfigureAwait(false);
         }
 
         return value;
@@ -248,7 +248,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
         var formattedKey = FormatCacheKey<T>(key, GetCacheKeyType(multilevelCacheOptions));
 
-        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction);
+        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction).ConfigureAwait(false);
 
         SetCore(new SetOptions<T>()
         {
@@ -257,7 +257,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             Value = value
         });
 
-        await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions);
+        await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions).ConfigureAwait(false);
     }
 
     public override void SetList<T>(
@@ -293,13 +293,13 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         await _distributedCacheClient.SetListAsync(
             formattedKeyValues.ToDictionary(keyValue => keyValue.Key.FormattedKey, keyValue => keyValue.Value),
             options?.DistributedCacheEntryOptions,
-            CacheOptionsAction);
+            CacheOptionsAction).ConfigureAwait(false);
 
         SetListCore(formattedKeyValues, options?.MemoryCacheEntryOptions);
 
         await Task.WhenAll(formattedKeyValues.Select(item
             => PubSubAsync(item.Key.Key, item.Key.FormattedKey, SubscribeOperation.Set, item.Value,
-                options?.DistributedCacheEntryOptions)));
+                options?.DistributedCacheEntryOptions))).ConfigureAwait(false);
     }
 
     private Dictionary<(string Key, string FormattedKey), T?> FormatKeyValues<T>(
@@ -336,7 +336,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         {
             _memoryCache.TryGetValue(key, out _);
         });
-        await _distributedCacheClient.RefreshAsync<T>(formattedKeys, CacheOptionsAction);
+        await _distributedCacheClient.RefreshAsync<T>(formattedKeys, CacheOptionsAction).ConfigureAwait(false);
     }
 
     #endregion
@@ -511,9 +511,9 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     {
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
         var formattedKey = FormatCacheKey<T>(key, GetCacheKeyType(multilevelCacheOptions));
-        await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction);
+        await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction).ConfigureAwait(false);
 
-        await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T));
+        await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T)).ConfigureAwait(false);
 
         _memoryCache.Remove(formattedKey);
     }
@@ -549,9 +549,9 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Key = formattedKey;
             subscribeOptions.Operation = operation;
             subscribeOptions.Value = new MultilevelCachePublish<T>(value, cacheEntryOptions);
-        });
+        }).ConfigureAwait(false);
 
-        if (operation == SubscribeOperation.Remove) await _distributedCacheClient.UnSubscribeAsync<T>(channel);
+        if (operation == SubscribeOperation.Remove) await _distributedCacheClient.UnSubscribeAsync<T>(channel).ConfigureAwait(false);
     }
 
     private string FormatSubscribeChannel<T>(string key) =>

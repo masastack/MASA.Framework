@@ -7,14 +7,32 @@ public class MasaElasticsearchBuilder
 {
     public IServiceCollection Services { get; }
 
-    public IElasticClient ElasticClient { get; }
+    public string Name { get; }
 
-    public IMasaElasticClient Client { get; }
+    private IElasticClientFactory? _elasticClientFactory;
 
-    public MasaElasticsearchBuilder(IServiceCollection services, IElasticClient elasticClient)
+    private IElasticClient? _elasticClient;
+
+    public IElasticClient ElasticClient
+    {
+        get
+        {
+            _elasticClientFactory ??= Services.BuildServiceProvider().GetRequiredService<IElasticClientFactory>();
+            if (AlwaysGetNewestElasticClient)
+                return _elasticClientFactory.Create(Name);
+
+            return _elasticClient ??= _elasticClientFactory.Create(Name);
+        }
+    }
+
+    public IMasaElasticClient Client => new DefaultMasaElasticClient(ElasticClient);
+
+    public bool AlwaysGetNewestElasticClient { get; }
+
+    public MasaElasticsearchBuilder(IServiceCollection services, string name, bool alwaysGetNewestElasticClient)
     {
         Services = services;
-        ElasticClient = elasticClient;
-        Client = new DefaultMasaElasticClient(elasticClient);
+        Name = name;
+        AlwaysGetNewestElasticClient = alwaysGetNewestElasticClient;
     }
 }

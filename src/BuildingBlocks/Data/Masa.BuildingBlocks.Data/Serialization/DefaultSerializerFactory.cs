@@ -9,12 +9,12 @@ public class DefaultSerializerFactory : MasaFactoryBase<ISerializer, SerializerR
     protected override string DefaultServiceNotFoundMessage => "Default serializer not found, you need to add it, like services.AddJson()";
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] serializer, it was not found";
-    protected override MasaFactoryOptions<SerializerRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+    protected override MasaFactoryOptions<SerializerRelationOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsMonitor<SerializerFactoryOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<SerializerFactoryOptions> _options;
 
     public DefaultSerializerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<SerializerFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<SerializerFactoryOptions>>();
     }
 }

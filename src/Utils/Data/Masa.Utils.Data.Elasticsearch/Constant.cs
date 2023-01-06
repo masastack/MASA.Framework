@@ -3,7 +3,7 @@
 
 namespace Masa.Utils.Data.Elasticsearch;
 
-public class Const
+public static class Constant
 {
     public const string DEFAULT_CLIENT_NAME = "es";
 }

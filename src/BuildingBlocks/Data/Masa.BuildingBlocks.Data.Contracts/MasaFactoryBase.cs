@@ -28,7 +28,7 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
     {
         var defaultOptions = GetDefaultOptions(FactoryOptions.Options);
         if (defaultOptions == null)
-            throw new NotImplementedException(DefaultServiceNotFoundMessage);
+            throw new NotSupportedException(DefaultServiceNotFoundMessage);
 
         return defaultOptions.Func.Invoke(ServiceProvider);
     }
@@ -37,7 +37,7 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
     {
         var options = FactoryOptions.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (options == null)
-            throw new NotImplementedException(string.Format(SpecifyServiceNotFoundMessage, name));
+            throw new NotSupportedException(string.Format(SpecifyServiceNotFoundMessage, name));
 
         return options.Func.Invoke(ServiceProvider);
     }

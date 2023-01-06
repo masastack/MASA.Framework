@@ -48,7 +48,7 @@ public class DefaultMasaElasticClientTest
         }, Guid.NewGuid().ToString()));
         Assert.IsTrue(createResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
         await _builder.Client.DeleteIndexAsync(indexName);
@@ -68,7 +68,7 @@ public class DefaultMasaElasticClientTest
         var response = await _builder.Client.DeleteMultiIndexAsync(new[] { userIndexName, personIndexName });
         Assert.IsTrue(response.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         Assert.IsTrue(!(await _builder.Client.IndexExistAsync(userIndexName)).Exists &&
             !(await _builder.Client.IndexExistAsync(personIndexName)).Exists);
     }
@@ -91,7 +91,7 @@ public class DefaultMasaElasticClientTest
             Aliases = aliases
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var getIndexResponse = await _builder.Client.GetAllIndexAsync();
         Assert.IsTrue(getIndexResponse.IsValid && getIndexResponse.IndexNames.Contains(userIndex1Name) &&
@@ -123,7 +123,7 @@ public class DefaultMasaElasticClientTest
             Aliases = aliases
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         aliasResponse = await _builder.Client.GetAllAliasAsync();
         Assert.IsTrue(aliasResponse.IsValid && aliasResponse.Aliases.Count() == oldAliasesCount + 1);
 
@@ -143,7 +143,7 @@ public class DefaultMasaElasticClientTest
             Aliases = aliases
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var aliasResponse = await _builder.Client.GetAliasByIndexAsync(userIndexName);
         Assert.IsTrue(aliasResponse.IsValid && aliasResponse.Aliases.Count() == 1 && aliasResponse.Aliases.Contains(aliasIndexName));
 
@@ -163,12 +163,12 @@ public class DefaultMasaElasticClientTest
             Aliases = aliases
         });
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var bulkAliasResponse = await _builder.Client.UnBindAliasAsync(new UnBindAliasIndexOptions(aliasIndexName, userIndexName));
         Assert.IsTrue(bulkAliasResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var existsResponse = await _builder.Client.IndexExistAsync(userIndexName);
         Assert.IsTrue(existsResponse.IsValid && existsResponse.Exists);
     }
@@ -199,7 +199,7 @@ public class DefaultMasaElasticClientTest
             createMultiResponse.Items.Count == 2 &&
             createMultiResponse.Items.Count(r => r.IsValid) == 2);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 2);
         await _builder.Client.DeleteIndexAsync(indexName);
@@ -215,7 +215,7 @@ public class DefaultMasaElasticClientTest
             id = id
         }, id.ToString()));
         Assert.IsTrue(createResponse.IsValid);
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var existsResponse = await _builder.Client.DocumentExistsAsync(new ExistDocumentRequest(indexName, id.ToString()));
         Assert.IsTrue(existsResponse.IsValid && existsResponse.Exists);
@@ -237,7 +237,7 @@ public class DefaultMasaElasticClientTest
         var deleteResponse = await _builder.Client.DeleteDocumentAsync(new DeleteDocumentRequest(indexName, id.ToString()));
         Assert.IsTrue(deleteResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 0);
 
@@ -269,7 +269,7 @@ public class DefaultMasaElasticClientTest
             await _builder.Client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(indexName, id, id2));
         Assert.IsTrue(deleteResponse.IsValid && deleteResponse.Data.Count == 2 && deleteResponse.Data.Count(r => r.IsValid) == 2);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 0);
 
@@ -301,7 +301,7 @@ public class DefaultMasaElasticClientTest
             await _builder.Client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(indexName, id, id2, Guid.NewGuid().ToString()));
         Assert.IsTrue(deleteResponse.IsValid && deleteResponse.Data.Count == 3 && deleteResponse.Data.Count(r => r.IsValid) == 2);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 0);
 
@@ -345,7 +345,7 @@ public class DefaultMasaElasticClientTest
         });
         Assert.IsTrue(setResponse.IsValid && setResponse.Items.Count == 2 && setResponse.Items.Count(item => item.IsValid) == 2);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
 
         var multiResponse = await _builder.Client.GetMultiAsync<object>(
             new GetMultiDocumentRequest(indexName, id.ToString(), id2.ToString(), id3.ToString()));
@@ -366,7 +366,7 @@ public class DefaultMasaElasticClientTest
             await _builder.Client.UpdateDocumentAsync(new UpdateDocumentRequest<ExpandoObject>(indexName, expandoObject, "1"));
         Assert.IsTrue(updateDocumentResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var response = await _builder.Client.GetAsync<ExpandoObject>(new GetDocumentRequest(indexName, "1"));
         Assert.IsTrue(response.IsValid && ((dynamic)(response.Document)).Id == "1");
         await _builder.Client.DeleteIndexAsync(indexName);
@@ -396,7 +396,7 @@ public class DefaultMasaElasticClientTest
             });
         Assert.IsTrue(updateDocumentResponse.IsValid);
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var response = await _builder.Client.GetAsync<ExpandoObject>(new GetDocumentRequest(indexName, "1"));
         Assert.IsTrue(response.IsValid && ((dynamic)(response.Document)).Id == "1");
         response = await _builder.Client.GetAsync<ExpandoObject>(new GetDocumentRequest(indexName, "2"));
@@ -412,7 +412,7 @@ public class DefaultMasaElasticClientTest
 
         await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { name = "jim" }, "1"));
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var response = await _builder.Client.GetListAsync(new QueryOptions<object>(indexName, "jim", "name", 0, 10));
         Assert.IsTrue(response.IsValid && response.Data.Count == 1);
 
@@ -427,7 +427,7 @@ public class DefaultMasaElasticClientTest
         await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { id = "1", name = "jim" }, "1"));
         await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { id = "2", name = "tom" }, "2"));
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var response =
             await _builder.Client.GetPaginatedListAsync(new PaginatedOptions<object>(indexName, "jim", "name", 1, 1));
         Assert.IsTrue(response.IsValid && response.Data.Count == 1);
@@ -457,7 +457,7 @@ public class DefaultMasaElasticClientTest
             id = Guid.NewGuid()
         }, Guid.NewGuid().ToString()));
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
@@ -490,7 +490,7 @@ public class DefaultMasaElasticClientTest
             id = Guid.NewGuid()
         }, Guid.NewGuid().ToString()));
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
@@ -524,7 +524,7 @@ public class DefaultMasaElasticClientTest
             id = Guid.NewGuid()
         }, Guid.NewGuid().ToString()));
 
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         var countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
@@ -542,14 +542,11 @@ public class DefaultMasaElasticClientTest
     }
 
     [TestMethod]
-    public async Task TestAsync()
+    public async Task TestSetDocumentAsync()
     {
+        var serviceProvider = _builder.Services.BuildServiceProvider();
         string userIndexName = $"user_index";
-
-        IServiceCollection service = new ServiceCollection();
-        var builder = service.AddElasticsearchClient("es", "http://localhost:9200");
-        await builder.Client.DeleteIndexAsync(userIndexName);
-        var serviceProvider = builder.Services.BuildServiceProvider();
+        await _builder.Client.DeleteIndexAsync(userIndexName);
         var clientFactory = serviceProvider.GetService<IMasaElasticClientFactory>();
         Assert.IsNotNull(clientFactory);
         var client = clientFactory.Create();
@@ -565,6 +562,7 @@ public class DefaultMasaElasticClientTest
         {
             new()
             {
+                Id = Guid.NewGuid().ToString("N"),
                 Text = "999999999@qq.com",
                 Value = 1
             }
@@ -575,6 +573,23 @@ public class DefaultMasaElasticClientTest
 
         var response = await client.SetDocumentAsync(request, default);
         Assert.IsTrue(response.IsValid);
-        await builder.Client.DeleteIndexAsync(userIndexName);
+
+        await Task.Delay(1000);
+        var existsResponse = await client.DocumentExistsAsync(new ExistDocumentRequest(userIndexName, list[0].Id));
+        Assert.AreEqual(true, existsResponse.Exists);
+        await _builder.Client.DeleteIndexAsync(userIndexName);
+    }
+
+    [TestMethod]
+    public void TestAddMultiElasticsearch()
+    {
+        _builder.Services.AddElasticsearch("es2", "http://localhost:9200");
+        var serviceProvider = _builder.Services.BuildServiceProvider();
+        var elasticClientFactory = serviceProvider.GetRequiredService<IElasticClientFactory>();
+        var elasticClient = elasticClientFactory.Create("es");
+        Assert.IsNotNull(elasticClient);
+
+        var elasticClient2 = elasticClientFactory.Create("es2");
+        Assert.IsNotNull(elasticClient2);
     }
 }

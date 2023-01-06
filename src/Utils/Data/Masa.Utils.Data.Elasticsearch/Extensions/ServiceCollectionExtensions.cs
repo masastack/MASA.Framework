@@ -7,67 +7,71 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static partial class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddElasticsearch(this IServiceCollection services, string[]? nodes = null)
-    {
-        if (nodes == null || nodes.Length == 0)
-        {
-            nodes = new[] { "http://localhost:9200" };
-        }
-
-        return services.AddElasticsearch(Const.DEFAULT_CLIENT_NAME, nodes);
-    }
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services, params string[] nodes)
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, nodes);
 
     public static IServiceCollection AddElasticsearch(this IServiceCollection services, string name, params string[] nodes)
-        => services.AddElasticsearch(name, options => options.UseNodes(nodes));
-
-    public static IServiceCollection AddElasticsearch(this IServiceCollection services, string name, Action<ElasticsearchOptions> action)
-    {
-        return services.AddElasticsearch(name, () =>
+        => services.AddElasticsearch(name, options =>
         {
-            ElasticsearchOptions options = new("http://localhost:9200");
-            action.Invoke(options);
-            return options;
-        });
-    }
+            if (nodes == null! || nodes.Length == 0) nodes = new[] { "http://localhost:9200" };
 
-    public static IServiceCollection AddElasticsearch(this IServiceCollection services, string name, Func<ElasticsearchOptions> func)
+            options.UseNodes(nodes);
+        });
+
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
+        Action<ElasticsearchOptions> action,
+        bool alwaysGetNewestElasticClient = false)
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, action, alwaysGetNewestElasticClient);
+
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
+        string name,
+        Action<ElasticsearchOptions> action,
+        bool alwaysGetNewestElasticClient = false)
     {
         ArgumentNullException.ThrowIfNull(name);
+        return services
+            .AddElasticsearchCore(alwaysGetNewestElasticClient ? ServiceLifetime.Scoped : ServiceLifetime.Singleton)
+            .AddElasticsearchOptions(name, options =>
+            {
+                ConnectionSettings? settings = null;
+                if (!alwaysGetNewestElasticClient)
+                {
+                    var elasticsearchOptions = new ElasticsearchOptions();
+                    action.Invoke(elasticsearchOptions);
 
-        services
-            .AddElasticsearchCore()
-            .AddElasticsearchOptions(name, func.Invoke());
+                    settings = elasticsearchOptions.UseConnectionPool
+                        ? GetConnectionSettingsConnectionPool(elasticsearchOptions)
+                        : GetConnectionSettingsBySingleNode(elasticsearchOptions);
+                }
+                options.Func = _ =>
+                {
+                    if (alwaysGetNewestElasticClient)
+                    {
+                        var elasticsearchOptions = new ElasticsearchOptions();
+                        action.Invoke(elasticsearchOptions);
 
-        return services;
+                        settings = elasticsearchOptions.UseConnectionPool
+                            ? GetConnectionSettingsConnectionPool(elasticsearchOptions)
+                            : GetConnectionSettingsBySingleNode(elasticsearchOptions);
+                    }
+                    return new ElasticClient(settings);
+                };
+            });
     }
 
-    private static IServiceCollection AddElasticsearchCore(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
+        Func<ElasticsearchOptions> func,
+        bool alwaysGetNewestElasticClient)
+        => services.AddElasticsearch(Constant.DEFAULT_CLIENT_NAME, func, alwaysGetNewestElasticClient);
 
-        services.TryAddSingleton<IElasticsearchFactory, DefaultElasticsearchFactory>();
-
-        services.TryAddSingleton(serviceProvider =>
-            serviceProvider.GetRequiredService<IElasticClientFactory>().Create());
-
-        services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<IMasaElasticClientFactory>().Create());
-
-        services.TryAddSingleton<IElasticClientFactory, DefaultElasticClientFactory>();
-        services.TryAddSingleton<IMasaElasticClientFactory, DefaultMasaElasticClientFactory>();
-
-        return services;
-    }
-
-    private static void AddElasticsearchOptions(
-        this IServiceCollection services,
+    public static IServiceCollection AddElasticsearch(this IServiceCollection services,
         string name,
-        ElasticsearchOptions elasticsearchOptions)
+        Func<ElasticsearchOptions> func,
+        bool alwaysGetNewestElasticClient)
     {
-        services.Configure<ElasticsearchOptions>(name, options =>
+        return services.AddElasticsearch(name, options =>
         {
-            if (elasticsearchOptions.IsDefault) options.UseDefault();
-
+            var elasticsearchOptions = func.Invoke();
             options.UseNodes(elasticsearchOptions.Nodes);
             options.UseRandomize(elasticsearchOptions.StaticConnectionPoolOptions.Randomize);
             options.UseDateTimeProvider(elasticsearchOptions.StaticConnectionPoolOptions.DateTimeProvider);
@@ -77,6 +81,77 @@ public static partial class ServiceCollectionExtensions
             options.ConnectionSettingsOptions.UsePropertyMappingProvider(elasticsearchOptions.ConnectionSettingsOptions
                 .PropertyMappingProvider);
             options.UseConnectionSettings(elasticsearchOptions.Action);
+        }, alwaysGetNewestElasticClient);
+    }
+
+    private static IServiceCollection AddElasticsearchCore(this IServiceCollection services, ServiceLifetime serviceLifetime)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.TryAddSingleton<IElasticsearchFactory, DefaultElasticsearchFactory>();
+
+        var elasticClientServiceDescriptor = new ServiceDescriptor(
+            typeof(IElasticClient),
+            serviceProvider => serviceProvider.GetRequiredService<IElasticClientFactory>().Create(),
+            serviceLifetime
+        );
+        services.TryAdd(elasticClientServiceDescriptor);
+
+        var masaElasticClientServiceDescriptor = new ServiceDescriptor(
+            typeof(IMasaElasticClient),
+            serviceProvider => serviceProvider.GetRequiredService<IMasaElasticClientFactory>().Create(),
+            serviceLifetime
+        );
+        services.TryAdd(masaElasticClientServiceDescriptor);
+
+        services.TryAddSingleton<IElasticClientFactory, DefaultElasticClientFactory>();
+        services.TryAddSingleton<IMasaElasticClientFactory, DefaultMasaElasticClientFactory>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddElasticsearchOptions(
+        this IServiceCollection services,
+        string name,
+        Action<ElasticsearchRelationsOptions> action)
+    {
+        services.Configure<ElasticsearchFactoryOptions>(options =>
+        {
+            if (options.Options.Any(o => o.Name == name))
+                throw new ArgumentException($"The es name already exists, please change the name, the repeat name is [{name}]");
+
+            var relationsOptions = new ElasticsearchRelationsOptions(name);
+            action.Invoke(relationsOptions);
+            options.Options.Add(relationsOptions);
         });
+        return services;
+    }
+
+    private static ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
+    {
+        ArgumentNullException.ThrowIfNull(relation.Nodes);
+
+        var connectionSetting = new ConnectionSettings(new Uri(relation.Nodes[0]))
+            .EnableApiVersioningHeader();
+        relation.Action?.Invoke(connectionSetting);
+        return connectionSetting;
+    }
+
+    private static ConnectionSettings GetConnectionSettingsConnectionPool(ElasticsearchOptions relation)
+    {
+        var pool = new StaticConnectionPool(
+            relation.Nodes.Select(node => new Uri(node)),
+            relation.StaticConnectionPoolOptions?.Randomize ?? true,
+            relation.StaticConnectionPoolOptions?.DateTimeProvider);
+
+        var settings = new ConnectionSettings(
+                pool,
+                relation.ConnectionSettingsOptions.Connection,
+                relation.ConnectionSettingsOptions.SourceSerializerFactory,
+                relation.ConnectionSettingsOptions.PropertyMappingProvider)
+            .EnableApiVersioningHeader();
+
+        relation.Action?.Invoke(settings);
+        return settings;
     }
 }

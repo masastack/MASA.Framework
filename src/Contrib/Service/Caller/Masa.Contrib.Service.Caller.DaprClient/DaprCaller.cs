@@ -29,18 +29,19 @@ public class DaprCaller : AbstractCaller
     public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)
         where TResponse : default
     {
-        var response = await DaprClient.InvokeMethodWithResponseAsync(request, cancellationToken);
-        return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken);
+        var response = await DaprClient.InvokeMethodWithResponseAsync(request, cancellationToken).ConfigureAwait(false);
+        return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
     }
 
     public override async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
     {
         var httpRequestMessage =
-            await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName));
+            await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName))
+                .ConfigureAwait(false);
 
         if (RequestMessageFunc != null)
         {
-            await RequestMessageFunc.Invoke(httpRequestMessage);
+            await RequestMessageFunc.Invoke(httpRequestMessage).ConfigureAwait(false);
         }
 
         DealRequestMessage(Action);
@@ -49,18 +50,19 @@ public class DaprCaller : AbstractCaller
 
         async void Action(IDaprRequestMessage requestMessage)
         {
-            await requestMessage.ProcessHttpRequestMessageAsync(httpRequestMessage);
+            await requestMessage.ProcessHttpRequestMessageAsync(httpRequestMessage).ConfigureAwait(false);
         }
     }
 
     public override async Task<HttpRequestMessage> CreateRequestAsync<TRequest>(HttpMethod method, string? methodName, TRequest data)
     {
         var httpRequestMessage =
-            await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName), data);
+            await RequestMessage.ProcessHttpRequestMessageAsync(DaprClient.CreateInvokeMethodRequest(method, AppId, methodName), data)
+                .ConfigureAwait(false);
 
         if (RequestMessageFunc != null)
         {
-            await RequestMessageFunc.Invoke(httpRequestMessage);
+            await RequestMessageFunc.Invoke(httpRequestMessage).ConfigureAwait(false);
         }
 
         DealRequestMessage(Action);
@@ -69,7 +71,7 @@ public class DaprCaller : AbstractCaller
 
         async void Action(IDaprRequestMessage requestMessage)
         {
-            await requestMessage.ProcessHttpRequestMessageAsync(httpRequestMessage);
+            await requestMessage.ProcessHttpRequestMessageAsync(httpRequestMessage).ConfigureAwait(false);
         }
     }
 
@@ -88,9 +90,7 @@ public class DaprCaller : AbstractCaller
     }
 
     public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return await DaprClient.InvokeMethodWithResponseAsync(request, cancellationToken);
-    }
+        => await DaprClient.InvokeMethodWithResponseAsync(request, cancellationToken).ConfigureAwait(false);
 
     public override Task SendGrpcAsync(string methodName, CancellationToken cancellationToken = default)
         => DaprClient.InvokeMethodGrpcAsync(AppId, methodName, cancellationToken);
