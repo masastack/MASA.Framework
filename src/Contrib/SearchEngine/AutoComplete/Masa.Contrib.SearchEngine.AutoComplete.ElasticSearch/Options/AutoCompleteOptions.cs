@@ -11,8 +11,6 @@ public class AutoCompleteOptions<TDocument>
 
     internal string? Alias { get; private set; }
 
-    internal bool IsDefault { get; private set; }
-
     internal SearchType DefaultSearchType { get; private set; } = SearchType.Fuzzy;
 
     internal Operator DefaultOperator { get; private set; } = Operator.Or;
@@ -39,16 +37,6 @@ public class AutoCompleteOptions<TDocument>
     public AutoCompleteOptions<TDocument> UseAlias(string alias)
     {
         Alias = alias;
-        return this;
-    }
-
-    /// <summary>
-    /// Set the default AutoComplete
-    /// </summary>
-    /// <returns></returns>
-    public AutoCompleteOptions<TDocument> UseDefault()
-    {
-        IsDefault = true;
         return this;
     }
 

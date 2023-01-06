@@ -3,9 +3,11 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public interface IAutoCompleteFactory
+public interface IAutoCompleteFactory : IMasaFactory<IAutoCompleteClient>
 {
+    [Obsolete("Use Create() instead")]
     IAutoCompleteClient CreateClient();
 
+    [Obsolete("Use Create(name) instead")]
     IAutoCompleteClient CreateClient(string name);
 }

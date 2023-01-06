@@ -11,12 +11,12 @@ public class DefaultTypeConvertFactory : MasaFactoryBase<ITypeConvertProvider, T
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] typeConvert, it was not found";
 
-    protected override MasaFactoryOptions<TypeConvertRelationOptions> FactoryOptions => _optionsMonitor.CurrentValue;
+    protected override MasaFactoryOptions<TypeConvertRelationOptions> FactoryOptions => _options.CurrentValue;
 
-    private readonly IOptionsMonitor<TypeConvertFactoryOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<TypeConvertFactoryOptions> _options;
 
     public DefaultTypeConvertFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<TypeConvertFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<TypeConvertFactoryOptions>>();
     }
 }

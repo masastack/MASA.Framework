@@ -19,7 +19,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
     public virtual async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        await ProcessResponseAsync(response, cancellationToken);
+        await ProcessResponseAsync(response, cancellationToken).ConfigureAwait(false);
 
         switch (response.StatusCode)
         {
@@ -27,7 +27,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
             case HttpStatusCode.NoContent:
                 return default;
             default:
-                return await FormatResponseAsync<TResponse>(response, cancellationToken);
+                return await FormatResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
         }
     }
 
@@ -35,18 +35,18 @@ public abstract class DefaultResponseMessage : IResponseMessage
     {
         if (!response.IsSuccessStatusCode)
         {
-            await ProcessResponseExceptionAsync(response, cancellationToken);
+            await ProcessResponseExceptionAsync(response, cancellationToken).ConfigureAwait(false);
             return;
         }
 
         switch (response.StatusCode)
         {
             case (HttpStatusCode)MasaHttpStatusCode.UserFriendlyException:
-                throw new UserFriendlyException(await response.Content.ReadAsStringAsync(cancellationToken));
+                throw new UserFriendlyException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
             case (HttpStatusCode)MasaHttpStatusCode.ValidatorException:
-                throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken));
+                throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
             default:
-                await ProcessCustomException(response);
+                await ProcessCustomException(response).ConfigureAwait(false);
                 return;
         }
     }
@@ -56,31 +56,31 @@ public abstract class DefaultResponseMessage : IResponseMessage
     public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         if (response.Content.Headers.ContentLength is > 0)
-            throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken));
+            throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
 
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
 
-    private async Task<TResponse?> FormatResponseAsync<TResponse>(
+    private Task<TResponse?> FormatResponseAsync<TResponse>(
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
         var responseType = typeof(TResponse);
         if (responseType == typeof(Guid) || responseType == typeof(Guid?))
-            return await FormatResponseByGuidAsync<TResponse>(response, cancellationToken);
+            return FormatResponseByGuidAsync<TResponse>(response, cancellationToken);
 
         if (responseType == typeof(DateTime) || responseType == typeof(DateTime?))
-            return await FormatResponseByDateTimeAsync<TResponse>(response, cancellationToken);
+            return FormatResponseByDateTimeAsync<TResponse>(response, cancellationToken);
 
         var actualType = Nullable.GetUnderlyingType(responseType);
 
         if (responseType.GetInterfaces().Any(type => type == typeof(IConvertible)) ||
             (actualType != null && actualType.GetInterfaces().Any(type => type == typeof(IConvertible))))
         {
-            return await FormatResponseByValueTypeAsync<TResponse>(responseType, actualType, response, cancellationToken);
+            return FormatResponseByValueTypeAsync<TResponse>(responseType, actualType, response, cancellationToken);
         }
 
-        return await FormatResponseAsync<TResponse>(response.Content, cancellationToken);
+        return FormatResponseAsync<TResponse>(response.Content, cancellationToken);
     }
 
     protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
@@ -91,7 +91,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         {
             return await httpContent.ReadFromJsonAsync<TResponse>(
                 Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
-                , cancellationToken);
+                , cancellationToken).ConfigureAwait(false);
         }
         catch (Exception exception)
         {
@@ -105,7 +105,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)).Replace("\"", "");
         if (IsNullOrEmpty(content))
             return default;
 
@@ -115,7 +115,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
     private static async Task<TResponse?> FormatResponseByDateTimeAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)).Replace("\"", "");
         if (IsNullOrEmpty(content))
             return default;
 
@@ -128,7 +128,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         if (IsNullOrEmpty(content))
             return default;
 

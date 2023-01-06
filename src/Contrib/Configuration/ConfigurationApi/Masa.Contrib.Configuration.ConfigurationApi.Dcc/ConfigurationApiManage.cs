@@ -22,12 +22,12 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
         bool isEncryption = false)
     {
         var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{isEncryption}";
-        var result = await _caller.PostAsync(requestUri, configObjects, default);
+        var result = await _caller.PostAsync(requestUri, configObjects, default).ConfigureAwait(false);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
         if ((int)result.StatusCode == 299 || !result.IsSuccessStatusCode)
         {
-            var error = await result.Content.ReadAsStringAsync();
+            var error = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             throw new HttpRequestException(error);
         }
     }
@@ -35,12 +35,12 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
     public async Task UpdateAsync(string environment, string cluster, string appId, string configObject, object value)
     {
         var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{GetConfigObject(configObject)}";
-        var result = await _caller.PutAsync(requestUri, value, default);
+        var result = await _caller.PutAsync(requestUri, value, default).ConfigureAwait(false);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
         if ((int)result.StatusCode == 299 || !result.IsSuccessStatusCode)
         {
-            var error = await result.Content.ReadAsStringAsync();
+            var error = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
             throw new HttpRequestException(error);
         }
     }

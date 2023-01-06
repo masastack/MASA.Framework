@@ -7,8 +7,6 @@ namespace Masa.Utils.Data.Elasticsearch;
 
 public class ElasticsearchOptions
 {
-    public bool IsDefault { get; set; }
-
     public bool UseConnectionPool { get; private set; }
 
     internal string[] Nodes { get; private set; }
@@ -21,7 +19,6 @@ public class ElasticsearchOptions
 
     public ElasticsearchOptions()
     {
-        IsDefault = false;
         ConnectionSettingsOptions = new();
         StaticConnectionPoolOptions = new();
         Action = null;
@@ -34,12 +31,6 @@ public class ElasticsearchOptions
 
         Nodes = nodes;
         UseConnectionPool = nodes.Length > 1;
-    }
-
-    public ElasticsearchOptions UseDefault()
-    {
-        IsDefault = true;
-        return this;
     }
 
     public ElasticsearchOptions UseNodes(params string[] nodes)

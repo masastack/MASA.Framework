@@ -2,40 +2,119 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch;
 
-public class AutoCompleteClient : AutoCompleteClientBase
+public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
+    where TDocument : AutoCompleteDocument
 {
     private readonly IElasticClient _elasticClient;
     private readonly IMasaElasticClient _client;
+    private readonly ILogger<AutoCompleteClient<TDocument>>? _logger;
+    private readonly string? _alias;
     private readonly string _indexName;
     private readonly Operator _defaultOperator;
     private readonly SearchType _defaultSearchType;
     private readonly bool _enableMultipleCondition;
     private readonly string _queryAnalyzer;
+    private readonly Action<IIndexSettings>? _indexSettingAction;
+    private readonly Action<TypeMappingDescriptor<TDocument>>? _action;
 
     public AutoCompleteClient(
         IElasticClient elasticClient,
         IMasaElasticClient client,
-        string indexName,
-        Operator defaultOperator,
-        SearchType defaultSearchType,
-        bool enableMultipleCondition,
-        string queryAnalyzer)
+        ILogger<AutoCompleteClient<TDocument>>? logger,
+        AutoCompleteOptions<TDocument> options)
     {
         _elasticClient = elasticClient;
         _client = client;
-        _indexName = indexName;
-        _defaultOperator = defaultOperator;
-        _defaultSearchType = defaultSearchType;
-        _enableMultipleCondition = enableMultipleCondition;
-        _queryAnalyzer = queryAnalyzer;
+        _logger = logger;
+        _indexName = options.IndexName;
+
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(options.IndexName);
+        _alias = options.Alias;
+        _defaultOperator = options.DefaultOperator;
+        _defaultSearchType = options.DefaultSearchType;
+        _enableMultipleCondition = options.EnableMultipleCondition;
+        _queryAnalyzer = options.QueryAnalyzer;
+        _indexSettingAction = options.IndexSettingAction;
+        _action = options.Action;
     }
 
-    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>> GetBySpecifyDocumentAsync<TAudoCompleteDocument>(
-        string keyword,
-        AutoCompleteOptions? options = null,
-        CancellationToken cancellationToken = default)
+    public override async Task<bool> BuildAsync(CancellationToken cancellationToken = default)
+    {
+        var existsResponse = await _client.IndexExistAsync(_indexName, cancellationToken);
+        if (!existsResponse.IsValid || existsResponse.Exists)
+        {
+            if (!existsResponse.IsValid)
+                _logger?.LogError("AutoComplete: Initialization index is abnormal, {Message}", existsResponse.Message);
+
+            return false;
+        }
+
+        IAnalysis analysis = new AnalysisDescriptor();
+        analysis.Analyzers = new Analyzers();
+        analysis.TokenFilters = new TokenFilters();
+        IIndexSettings indexSettings = new IndexSettings()
+        {
+            Analysis = analysis
+        };
+        string analyzer = "ik_max_word_pinyin";
+        if (_indexSettingAction != null)
+            _indexSettingAction.Invoke(indexSettings);
+        else
+        {
+            string pinyinFilter = "pinyin";
+            indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
+            {
+                Filter = new[] { pinyinFilter, "lowercase" },
+                Tokenizer = "ik_max_word"
+            });
+            indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
+        }
+
+        var mapping = new TypeMappingDescriptor<TDocument>();
+        if (_action != null) _action.Invoke(mapping);
+        else
+        {
+            mapping = mapping
+                .AutoMap<TDocument>()
+                .Properties(ps =>
+                    ps.Text(s =>
+                        s.Name(n => n.Text)
+                            .Analyzer(analyzer)
+                    )
+                );
+        }
+
+        IAliases? aliases = null;
+        if (_alias != null)
+        {
+            aliases = new Aliases();
+            aliases.Add(_alias, new Alias());
+        }
+        var createIndexResponse = _client.CreateIndexAsync(_indexName, new CreateIndexOptions()
+        {
+            Aliases = aliases,
+            Mappings = mapping,
+            IndexSettings = indexSettings
+        }, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+        return createIndexResponse.IsValid;
+    }
+
+    public override async Task<bool> RebuildAsync(CancellationToken cancellationToken = default)
+    {
+        if (_alias != null) await _client.DeleteIndexByAliasAsync(_alias, cancellationToken);
+        else await _client.DeleteIndexAsync(_indexName, cancellationToken);
+
+        return await BuildAsync(cancellationToken);
+    }
+
+    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>>
+        GetBySpecifyDocumentAsync<TAudoCompleteDocument>(
+            string keyword,
+            AutoCompleteOptions? options = null,
+            CancellationToken cancellationToken = default)
     {
         var newOptions = options ?? new(_defaultSearchType);
         var searchType = newOptions.SearchType ?? _defaultSearchType;
@@ -43,13 +122,14 @@ public class AutoCompleteClient : AutoCompleteClientBase
         keyword = keyword.Trim();
 
         if (string.IsNullOrEmpty(keyword))
-            return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(true, string.Empty, new List<TAudoCompleteDocument>());
+            return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.GetResponse<TAudoCompleteDocument>(true, string.Empty,
+                new List<TAudoCompleteDocument>());
 
         if (searchType == SearchType.Fuzzy)
         {
             var ret = await _client.GetPaginatedListAsync(
                 new PaginatedOptions<TAudoCompleteDocument>(
-                    _indexName,
+                    _alias ?? _indexName,
                     GetFuzzyKeyword(keyword),
                     newOptions.Field,
                     newOptions.Page,
@@ -69,7 +149,7 @@ public class AutoCompleteClient : AutoCompleteClientBase
         else
         {
             var ret = await _elasticClient.SearchAsync<TAudoCompleteDocument>(s => s
-                    .Index(_indexName)
+                    .Index(_alias ?? _indexName)
                     .From((newOptions.Page - 1) * newOptions.PageSize)
                     .Size(newOptions.PageSize)
                     .Query(q => GetQueryDescriptor(q, newOptions.Field, keyword.ToLower()))
@@ -146,14 +226,14 @@ public class AutoCompleteClient : AutoCompleteClientBase
     /// </summary>
     /// <param name="documents"></param>
     /// <param name="cancellationToken"></param>
-    /// <typeparam name="TDocument"></typeparam>
+    /// <typeparam name="TAudoCompleteDocument"></typeparam>
     /// <returns></returns>
-    private async Task<SetResponse> SetMultiAsync<TDocument>(
-        IEnumerable<TDocument> documents,
+    private async Task<SetResponse> SetMultiAsync<TAudoCompleteDocument>(
+        IEnumerable<TAudoCompleteDocument> documents,
         CancellationToken cancellationToken = default)
-        where TDocument : AutoCompleteDocument
+        where TAudoCompleteDocument : AutoCompleteDocument
     {
-        var request = new SetDocumentRequest<TDocument>(_indexName);
+        var request = new SetDocumentRequest<TAudoCompleteDocument>(_indexName);
         foreach (var document in documents)
             request.AddDocument(document, document.GetDocumentId());
 
@@ -172,12 +252,12 @@ public class AutoCompleteClient : AutoCompleteClientBase
     /// <param name="cancellationToken"></param>
     /// <typeparam name="TDocument"></typeparam>
     /// <returns></returns>
-    private async Task<SetResponse> SetByNotOverrideAsync<TDocument>(
-        IEnumerable<TDocument> documents,
+    private async Task<SetResponse> SetByNotOverrideAsync<TAudoCompleteDocument>(
+        IEnumerable<TAudoCompleteDocument> documents,
         CancellationToken cancellationToken = default)
-        where TDocument : AutoCompleteDocument
+        where TAudoCompleteDocument : AutoCompleteDocument
     {
-        var request = new CreateMultiDocumentRequest<TDocument>(_indexName);
+        var request = new CreateMultiDocumentRequest<TAudoCompleteDocument>(_indexName);
         foreach (var document in documents)
             request.AddDocument(document, document.GetDocumentId());
 

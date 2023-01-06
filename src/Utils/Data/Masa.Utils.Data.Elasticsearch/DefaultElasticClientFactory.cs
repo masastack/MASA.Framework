@@ -5,67 +5,38 @@ namespace Masa.Utils.Data.Elasticsearch;
 
 public class DefaultElasticClientFactory : IElasticClientFactory
 {
-    private readonly List<string> _names;
-    private readonly IOptionsMonitor<ElasticsearchOptions> _elasticsearchOptions;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IOptionsMonitor<ElasticsearchFactoryOptions> _elasticsearchFactoryOptions;
 
-    public DefaultElasticClientFactory(IOptionsMonitor<ElasticsearchOptions> elasticsearchOptions,
-        IEnumerable<IConfigureOptions<ElasticsearchOptions>> options)
+    public DefaultElasticClientFactory(IServiceProvider serviceProvider,
+        IOptionsMonitor<ElasticsearchFactoryOptions> elasticsearchFactoryOptions)
     {
-        _elasticsearchOptions = elasticsearchOptions;
-        _names = options.Select(opt => ((ConfigureNamedOptions<ElasticsearchOptions>)opt).Name).ToList();
+        _serviceProvider = serviceProvider;
+        _elasticsearchFactoryOptions = elasticsearchFactoryOptions;
     }
 
     public IElasticClient Create()
     {
-        var elasticsearchOptions = _elasticsearchOptions.Get(Microsoft.Extensions.Options.Options.DefaultName);
+        var options = _elasticsearchFactoryOptions.CurrentValue;
+        var defaultOptions = GetDefaultOptions(options.Options);
+        if (defaultOptions == null)
+            throw new NotSupportedException("No default ElasticClient found");
 
-        if (elasticsearchOptions.Nodes is null) elasticsearchOptions = _elasticsearchOptions.Get(_names.FirstOrDefault());
-
-        if (elasticsearchOptions.Nodes is null) throw new ArgumentException("The default ElasticClient is not found, please check if Elasticsearch is added");
-
-        return Create(elasticsearchOptions);
+        return defaultOptions.Func.Invoke(_serviceProvider);
     }
 
     public IElasticClient Create(string name)
     {
-        var elasticsearchOptions = _elasticsearchOptions.Get(name);
-        if (elasticsearchOptions.Nodes is null) throw new NotSupportedException($"The ElasticClient whose name is {name} is not found");
+        var options = _elasticsearchFactoryOptions.CurrentValue.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (options == null)
+            throw new NotSupportedException($"Please make sure you have used [{name}] ElasticClient, it was not found");
 
-        return Create(elasticsearchOptions);
+        return options.Func.Invoke(_serviceProvider);
     }
 
-    private static IElasticClient Create(ElasticsearchOptions elasticsearchOptions)
+    private static ElasticsearchRelationsOptions? GetDefaultOptions(List<ElasticsearchRelationsOptions> optionsList)
     {
-        var settings = elasticsearchOptions.UseConnectionPool
-            ? GetConnectionSettingsConnectionPool(elasticsearchOptions)
-            : GetConnectionSettingsBySingleNode(elasticsearchOptions);
-
-        return new ElasticClient(settings);
-    }
-
-    private static ConnectionSettings GetConnectionSettingsBySingleNode(ElasticsearchOptions relation)
-    {
-        var connectionSetting = new ConnectionSettings(new Uri(relation.Nodes[0]))
-            .EnableApiVersioningHeader();
-        relation.Action?.Invoke(connectionSetting);
-        return connectionSetting;
-    }
-
-    private static ConnectionSettings GetConnectionSettingsConnectionPool(ElasticsearchOptions relation)
-    {
-        var pool = new StaticConnectionPool(
-            relation.Nodes.Select(node => new Uri(node)),
-            relation.StaticConnectionPoolOptions?.Randomize ?? true,
-            relation.StaticConnectionPoolOptions?.DateTimeProvider);
-
-        var settings = new ConnectionSettings(
-                pool,
-                relation.ConnectionSettingsOptions?.Connection,
-                relation.ConnectionSettingsOptions?.SourceSerializerFactory,
-                relation.ConnectionSettingsOptions?.PropertyMappingProvider)
-            .EnableApiVersioningHeader();
-
-        relation.Action?.Invoke(settings);
-        return settings;
+        return optionsList.SingleOrDefault(c => c.Name == Microsoft.Extensions.Options.Options.DefaultName) ??
+            optionsList.FirstOrDefault();
     }
 }

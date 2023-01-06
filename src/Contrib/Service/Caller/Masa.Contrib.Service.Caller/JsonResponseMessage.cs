@@ -12,12 +12,12 @@ public class JsonResponseMessage : DefaultResponseMessage
     {
     }
 
-    protected override async Task<TResponse?> FormatResponseAsync<TResponse>(HttpContent httpContent,
+    protected override Task<TResponse?> FormatResponseAsync<TResponse>(HttpContent httpContent,
         CancellationToken cancellationToken = default) where TResponse : default
     {
         try
         {
-            return await httpContent.ReadFromJsonAsync<TResponse>(
+            return httpContent.ReadFromJsonAsync<TResponse>(
                 Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
                 , cancellationToken);
         }
