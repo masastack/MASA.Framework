@@ -118,7 +118,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
             var raw = await GetRawByKeyAsync(k, value =>
             {
                 valueChanged?.Invoke(k, value, _dynamicJsonSerializerOptions);
-            });
+            }).ConfigureAwait(false);
             return JsonSerializer.Deserialize<ExpandoObject>(raw.Raw, _dynamicJsonSerializerOptions) ?? throw new ArgumentException(key);
         })).Value.ConfigureAwait(false);
 
