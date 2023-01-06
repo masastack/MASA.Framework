@@ -46,6 +46,7 @@ public class ClientRepository : IClientRepository
                     .Include(c => c.AllowedCorsOrigins)
                     .Include(c => c.ClientSecrets)
                     .Include(c => c.AllowedScopes)
+                    .AsSplitQuery()
                     .FirstOrDefaultAsync();
     }
 
