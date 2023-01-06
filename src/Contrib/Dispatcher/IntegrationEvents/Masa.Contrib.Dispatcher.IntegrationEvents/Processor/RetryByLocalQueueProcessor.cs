@@ -6,14 +6,14 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 public class RetryByLocalQueueProcessor : ProcessorBase
 {
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
-    private readonly IOptions<DispatcherOptions> _options;
+    private readonly IOptions<IntegrationEventOptions> _options;
     private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
 
     public override int Delay => _options.Value.LocalFailedRetryInterval;
 
     public RetryByLocalQueueProcessor(
         IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
+        IOptions<IntegrationEventOptions> options,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
     {

@@ -19,7 +19,7 @@ public class UnitOfWorkTest : TestBase
     public void TestAddUoWAndNullServices()
     {
         var options = new Mock<IDispatcherOptions>();
-        Assert.ThrowsException<ArgumentNullException>(() => options.Object.UseUoW<CustomDbContext>());
+        Assert.ThrowsException<MasaArgumentException>(() => options.Object.UseUoW<CustomDbContext>());
     }
 
     [TestMethod]

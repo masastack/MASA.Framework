@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests;
 
-public class CustomDispatcherOptions : IDispatcherOptions
+public class CustomDispatcherOptions : IDomainEventOptions
 {
     public IServiceCollection Services { get; }
     public Assembly[] Assemblies { get; }

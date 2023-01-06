@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class RetryByDataProcessor : ProcessorBase
 {
-    private readonly IOptions<DispatcherOptions> _options;
+    private readonly IOptions<IntegrationEventOptions> _options;
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly ILogger<RetryByDataProcessor>? _logger;
 
@@ -13,7 +13,7 @@ public class RetryByDataProcessor : ProcessorBase
 
     public RetryByDataProcessor(
         IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
+        IOptions<IntegrationEventOptions> options,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<RetryByDataProcessor>? logger = null) : base(serviceProvider)
     {

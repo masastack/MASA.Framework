@@ -8,7 +8,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 public class ProcessorTest
 {
     private IServiceProvider _serviceProvider;
-    private IOptions<DispatcherOptions> _options;
+    private IOptions<DaprIntegrationEventOptions> _options;
 
     [TestInitialize]
     public void Initialize()
@@ -16,7 +16,7 @@ public class ProcessorTest
         var services = new ServiceCollection();
         services.AddDaprEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
-        _options = Microsoft.Extensions.Options.Options.Create(new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        _options = Microsoft.Extensions.Options.Options.Create(new DaprIntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
     }
 
     [TestMethod]

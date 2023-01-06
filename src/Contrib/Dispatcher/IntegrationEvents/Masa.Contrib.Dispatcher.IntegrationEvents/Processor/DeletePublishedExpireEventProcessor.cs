@@ -5,11 +5,11 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class DeletePublishedExpireEventProcessor : ProcessorBase
 {
-    private readonly IOptions<DispatcherOptions> _options;
+    private readonly IOptions<IntegrationEventOptions> _options;
 
     public override int Delay => _options.Value.CleaningExpireInterval;
 
-    public DeletePublishedExpireEventProcessor(IServiceProvider serviceProvider, IOptions<DispatcherOptions> options)
+    public DeletePublishedExpireEventProcessor(IServiceProvider serviceProvider, IOptions<IntegrationEventOptions> options)
         : base(serviceProvider)
     {
         _options = options;

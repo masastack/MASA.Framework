@@ -12,8 +12,8 @@ public class SendByDataProcessorTest
     public SendByDataProcessorTest()
     {
         _services = new ServiceCollection();
-        IOptions<DispatcherOptions> dispatcherOptions =
-            Microsoft.Extensions.Options.Options.Create(new DispatcherOptions(_services, new[] { this.GetType().Assembly }));
+        var dispatcherOptions =
+            Microsoft.Extensions.Options.Options.Create(new IntegrationEventOptions(_services, new[] { this.GetType().Assembly }));
         _processor = new CustomSendByDataProcessor(_services.BuildServiceProvider(), dispatcherOptions);
     }
 

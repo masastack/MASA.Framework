@@ -18,4 +18,3 @@ global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
 global using Nest;
-global using DeleteResponse = Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse;

@@ -7,15 +7,15 @@ using MicrosoftRulesEngine::RulesEngine.Models;
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Masa.BuildingBlocks.RulesEngine;
 
 public static class RulesEngineOptionsExtensions
 {
     public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions)
-        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.Options.DefaultName);
+        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.DefaultName);
 
     public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions, ReSettings? reSettings)
-        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.Options.DefaultName, reSettings);
+        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.DefaultName, reSettings);
 
     public static RulesEngineOptions UseMicrosoftRulesEngine(
         this RulesEngineOptions rulesEngineOptions,

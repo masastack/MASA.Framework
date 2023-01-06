@@ -7,7 +7,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 public class IntegrationEventBusTest
 {
     private Mock<IDispatcherOptions> _options;
-    private Mock<IOptions<DispatcherOptions>> _dispatcherOptions;
+    private Mock<IOptions<IntegrationEventOptions>> _dispatcherOptions;
     private Mock<IPublisher> _publisher;
     private Mock<ILogger<IntegrationEventBus>> _logger;
     private Mock<IIntegrationEventLogService> _eventLog;
@@ -23,7 +23,7 @@ public class IntegrationEventBusTest
         _dispatcherOptions = new();
         _dispatcherOptions
             .Setup(option => option.Value)
-            .Returns(() => new DispatcherOptions(_options.Object.Services, AppDomain.CurrentDomain.GetAssemblies()));
+            .Returns(() => new IntegrationEventOptions(_options.Object.Services, AppDomain.CurrentDomain.GetAssemblies()));
         _publisher = new();
         _logger = new();
         _eventLog = new();
@@ -48,7 +48,7 @@ public class IntegrationEventBusTest
     public void TestDispatcherOption()
     {
         var services = new ServiceCollection();
-        var options = new DispatcherOptions(services, new[] { typeof(IntegrationEventBusTest).Assembly });
+        var options = new IntegrationEventOptions(services, new[] { typeof(IntegrationEventBusTest).Assembly });
         Assert.IsTrue(options.Services.Equals(services));
         var allEventTypes = new[] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
@@ -246,7 +246,7 @@ public class IntegrationEventBusTest
     {
         _dispatcherOptions
             .Setup(option => option.Value)
-            .Returns(() => new DispatcherOptions(_options.Object.Services, new[] { typeof(IntegrationEventBusTest).Assembly }));
+            .Returns(() => new IntegrationEventOptions(_options.Object.Services, new[] { typeof(IntegrationEventBusTest).Assembly }));
         var integrationEventBus = new IntegrationEventBus(
             _dispatcherOptions.Object,
             _publisher.Object,
@@ -265,7 +265,7 @@ public class IntegrationEventBusTest
         var defaultAssembly = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly };
         _dispatcherOptions
             .Setup(option => option.Value)
-            .Returns(() => new DispatcherOptions(_options.Object.Services, defaultAssembly));
+            .Returns(() => new IntegrationEventOptions(_options.Object.Services, defaultAssembly));
         var allEventType = defaultAssembly
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))

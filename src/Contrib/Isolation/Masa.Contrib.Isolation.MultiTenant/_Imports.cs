@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Isolation.Parser;
+global using Masa.Contrib.Isolation.MultiTenant;
 global using Masa.Contrib.Isolation.MultiTenant.Middleware;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;

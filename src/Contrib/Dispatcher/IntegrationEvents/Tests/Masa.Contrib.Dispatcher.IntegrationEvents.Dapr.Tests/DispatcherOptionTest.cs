@@ -7,13 +7,13 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 [TestClass]
 public class DispatcherOptionTest
 {
-    private DispatcherOptions _options;
+    private DaprIntegrationEventOptions _options;
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _options = new DispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());
+        _options = new DaprIntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies());
     }
 
     [TestMethod]
@@ -35,10 +35,10 @@ public class DispatcherOptionTest
     {
         Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
         var services = new ServiceCollection();
-        Mock<IDistributedDispatcherOptions> distributedDispatcherOptions = new();
-        distributedDispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        distributedDispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
-        distributedDispatcherOptions.Object.UseDaprEventBus<CustomIntegrationEventLogService>("pubsub2");
+        Mock<IDomainEventOptions> options = new();
+        options.Setup(option => option.Services).Returns(services).Verifiable();
+        options.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
+        options.Object.UseDaprEventBus<CustomIntegrationEventLogService>("pubsub2");
         var serviceProvider = services.BuildServiceProvider();
 
         var integrationEventBus = serviceProvider.GetService<IIntegrationEventBus>();

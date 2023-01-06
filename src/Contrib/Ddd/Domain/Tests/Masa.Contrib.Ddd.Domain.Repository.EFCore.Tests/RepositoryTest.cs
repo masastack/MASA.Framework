@@ -236,7 +236,7 @@ public class RepositoryTest
         services.AddDbContext<CustomDbContext>();
         Mock<IUnitOfWork> unitOfWork = new();
         services.AddScoped(_ => unitOfWork.Object);
-        Mock<IDispatcherOptions> dispatcherOptions = new();
+        Mock<IDomainEventOptions> dispatcherOptions = new();
         dispatcherOptions.Setup(options => options.Assemblies).Returns(() => new[] { typeof(Orders).Assembly });
         dispatcherOptions.Setup(options => options.Services).Returns(() => services);
         dispatcherOptions.Object.UseRepository<CustomDbContext>();
@@ -254,7 +254,7 @@ public class RepositoryTest
         services.AddDbContext<CustomDbContext>();
         Mock<IUnitOfWork> unitOfWork = new();
         services.AddScoped(_ => unitOfWork.Object);
-        Mock<IDispatcherOptions> dispatcherOptions = new();
+        Mock<IDomainEventOptions> dispatcherOptions = new();
         dispatcherOptions.Setup(options => options.Assemblies).Returns(() => new[] { typeof(Orders).Assembly });
         dispatcherOptions.Setup(options => options.Services).Returns(() => services);
         dispatcherOptions.Object.UseRepository<CustomDbContext>(typeof(Orders));

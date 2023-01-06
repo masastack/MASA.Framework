@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
+
+namespace Masa.BuildingBlocks.Caching;
 
 public static class CachingBuilderExtensions
 {

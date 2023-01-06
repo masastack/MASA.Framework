@@ -268,10 +268,10 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
         };
     }
 
-    public override async Task<DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken = default)
+    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken = default)
     {
         var response = await _client.DeleteDocumentAsync(new DeleteDocumentRequest(_indexName, id), cancellationToken);
-        return new DeleteResponse(response.IsValid, response.Message);
+        return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse(response.IsValid, response.Message);
     }
 
     public override async Task<DeleteMultiResponse> DeleteAsync(IEnumerable<string> ids, CancellationToken cancellationToken = default)

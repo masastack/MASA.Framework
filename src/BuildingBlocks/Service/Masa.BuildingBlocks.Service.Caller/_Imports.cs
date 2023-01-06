@@ -3,7 +3,6 @@
 
 global using Google.Protobuf;
 global using Masa.BuildingBlocks.Data;
-global using Masa.BuildingBlocks.Service.Caller.Options;
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Reflection;
 global using System.Text.Json;

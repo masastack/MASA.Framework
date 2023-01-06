@@ -11,7 +11,7 @@ public class IntegrationEventLogContextTest : TestBase
     {
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(builder => builder.UseSqlite(ConnectionString));
-        var distributedDispatcherOptions = CreateDispatcherOptions(services);
+        var distributedDispatcherOptions = CreateIntegrationEventOptions(services);
         distributedDispatcherOptions.UseEventLog<CustomDbContext>();
         var serviceProvider = services.BuildServiceProvider();
 
@@ -49,7 +49,7 @@ public class IntegrationEventLogContextTest : TestBase
     [TestMethod]
     public void TestUseEventLog()
     {
-        var distributedDispatcherOptions = CreateDispatcherOptions(new ServiceCollection());
+        var distributedDispatcherOptions = CreateIntegrationEventOptions(new ServiceCollection());
         distributedDispatcherOptions.Services.AddDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
         distributedDispatcherOptions.UseEventLog<CustomDbContext>();
         var serviceProvider = distributedDispatcherOptions.Services.BuildServiceProvider();

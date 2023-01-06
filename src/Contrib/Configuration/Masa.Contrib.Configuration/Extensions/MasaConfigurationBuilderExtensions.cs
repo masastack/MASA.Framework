@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
-namespace Masa.BuildingBlocks.Configuration;
+
+namespace Microsoft.Extensions.Configuration;
 
 public static class MasaConfigurationBuilderExtensions
 {
