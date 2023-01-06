@@ -20,15 +20,15 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddMcClient(this IServiceCollection services, Func<Task<string>> mcServiceBaseAddressFunc)
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Func<string> mcServiceBaseAddressFunc)
     {
         MasaArgumentException.ThrowIfNull(mcServiceBaseAddressFunc);
 
         return services.AddMcClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.BaseAddress = await mcServiceBaseAddressFunc.Invoke();
+                builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
             }, true).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
             callerOptions.DisableAutoRegistration = true;
         });

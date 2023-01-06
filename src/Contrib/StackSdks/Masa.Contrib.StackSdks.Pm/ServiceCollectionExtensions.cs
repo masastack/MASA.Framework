@@ -20,15 +20,15 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<Task<string>> pmServiceBaseAddressFunc)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Func<string> pmServiceBaseAddressFunc)
     {
         MasaArgumentException.ThrowIfNull(pmServiceBaseAddressFunc);
 
         return services.AddPmClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, async builder =>
+            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
-                builder.BaseAddress = await pmServiceBaseAddressFunc.Invoke();
+                builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
             }, true);
             callerOptions.DisableAutoRegistration = true;
         });
