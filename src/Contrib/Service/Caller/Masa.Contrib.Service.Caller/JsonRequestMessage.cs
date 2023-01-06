@@ -24,7 +24,7 @@ public class JsonRequestMessage : DefaultRequestMessage, IRequestMessage
 
     public virtual async Task<HttpRequestMessage> ProcessHttpRequestMessageAsync<TRequest>(HttpRequestMessage requestMessage, TRequest data)
     {
-        requestMessage = await ProcessHttpRequestMessageAsync(requestMessage).ConfigureAwait(false);
+        requestMessage = await ProcessHttpRequestMessageAsync(requestMessage);
         requestMessage.Content = JsonContent.Create(data, options: _jsonSerializerOptions);
         return requestMessage;
     }

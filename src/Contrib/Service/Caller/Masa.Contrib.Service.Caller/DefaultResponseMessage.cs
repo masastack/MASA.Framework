@@ -19,7 +19,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
     public virtual async Task<TResponse?> ProcessResponseAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        await ProcessResponseAsync(response, cancellationToken).ConfigureAwait(false);
+        await ProcessResponseAsync(response, cancellationToken);
 
         switch (response.StatusCode)
         {
@@ -27,7 +27,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
             case HttpStatusCode.NoContent:
                 return default;
             default:
-                return await FormatResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
+                return await FormatResponseAsync<TResponse>(response, cancellationToken);
         }
     }
 
@@ -35,18 +35,18 @@ public abstract class DefaultResponseMessage : IResponseMessage
     {
         if (!response.IsSuccessStatusCode)
         {
-            await ProcessResponseExceptionAsync(response, cancellationToken).ConfigureAwait(false);
+            await ProcessResponseExceptionAsync(response, cancellationToken);
             return;
         }
 
         switch (response.StatusCode)
         {
             case (HttpStatusCode)MasaHttpStatusCode.UserFriendlyException:
-                throw new UserFriendlyException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+                throw new UserFriendlyException(await response.Content.ReadAsStringAsync(cancellationToken));
             case (HttpStatusCode)MasaHttpStatusCode.ValidatorException:
-                throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+                throw new MasaValidatorException(await response.Content.ReadAsStringAsync(cancellationToken));
             default:
-                await ProcessCustomException(response).ConfigureAwait(false);
+                await ProcessCustomException(response);
                 return;
         }
     }
@@ -56,7 +56,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
     public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         if (response.Content.Headers.ContentLength is > 0)
-            throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+            throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken));
 
         throw new MasaException($"ReasonPhrase: {response.ReasonPhrase ?? string.Empty}, StatusCode: {response.StatusCode}");
     }
@@ -91,7 +91,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         {
             return await httpContent.ReadFromJsonAsync<TResponse>(
                 Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
-                , cancellationToken).ConfigureAwait(false);
+                , cancellationToken);
         }
         catch (Exception exception)
         {
@@ -105,7 +105,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = (await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)).Replace("\"", "");
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
         if (IsNullOrEmpty(content))
             return default;
 
@@ -115,7 +115,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
     private static async Task<TResponse?> FormatResponseByDateTimeAsync<TResponse>(HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = (await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false)).Replace("\"", "");
+        var content = (await response.Content.ReadAsStringAsync(cancellationToken)).Replace("\"", "");
         if (IsNullOrEmpty(content))
             return default;
 
@@ -128,7 +128,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
         HttpResponseMessage response,
         CancellationToken cancellationToken = default)
     {
-        var content = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var content = await response.Content.ReadAsStringAsync(cancellationToken);
         if (IsNullOrEmpty(content))
             return default;
 
