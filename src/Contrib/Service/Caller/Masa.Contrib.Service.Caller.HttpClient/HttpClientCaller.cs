@@ -22,16 +22,16 @@ public class HttpClientCaller : AbstractCaller
     public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)
         where TResponse : default
     {
-        var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
-        return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken).ConfigureAwait(false);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
+        return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken);
     }
 
     public override async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
     {
-        var requestMessage = await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName))).ConfigureAwait(false);
+        var requestMessage = await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)));
         if (RequestMessageFunc != null)
         {
-            await RequestMessageFunc.Invoke(requestMessage).ConfigureAwait(false);
+            await RequestMessageFunc.Invoke(requestMessage);
         }
         return requestMessage;
     }
@@ -39,10 +39,10 @@ public class HttpClientCaller : AbstractCaller
     public override async Task<HttpRequestMessage> CreateRequestAsync<TRequest>(HttpMethod method, string? methodName, TRequest data)
     {
         var requestMessage =
-            await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data).ConfigureAwait(false);
+            await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data);
         if (RequestMessageFunc != null)
         {
-            await RequestMessageFunc.Invoke(requestMessage).ConfigureAwait(false);
+            await RequestMessageFunc.Invoke(requestMessage);
         }
         return requestMessage;
     }

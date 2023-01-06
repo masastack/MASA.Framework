@@ -30,9 +30,9 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var response = await SendAsync(request, cancellationToken).ConfigureAwait(false);
+        var response = await SendAsync(request, cancellationToken);
         if (autoThrowException)
-            await ResponseMessage.ProcessResponseAsync(response, cancellationToken).ConfigureAwait(false);
+            await ResponseMessage.ProcessResponseAsync(response, cancellationToken);
 
         return response;
     }
@@ -52,9 +52,9 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(method, methodName).ConfigureAwait(false);
+        HttpRequestMessage request = await CreateRequestAsync(method, methodName);
         request.Content = content;
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<HttpResponseMessage> SendAsync<TRequest>(
@@ -64,8 +64,8 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(method, methodName, data).ConfigureAwait(false);
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(method, methodName, data);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<TResponse?> SendAsync<TRequest, TResponse>(
@@ -74,8 +74,8 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(method, methodName, data).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(method, methodName, data);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public abstract Task<HttpRequestMessage> CreateRequestAsync(
@@ -114,9 +114,9 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName).ConfigureAwait(false);
-        var content = await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
-        return await content.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
+        var content = await SendAsync(request, autoThrowException, cancellationToken);
+        return await content.Content.ReadAsStringAsync(cancellationToken);
     }
 
     public virtual Task<string> GetStringAsync<TRequest>(
@@ -141,9 +141,9 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Get, methodName).ConfigureAwait(false);
-        HttpResponseMessage content = await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
-        return await content.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
+        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Get, methodName);
+        HttpResponseMessage content = await SendAsync(request, autoThrowException, cancellationToken);
+        return await content.Content.ReadAsByteArrayAsync(cancellationToken);
     }
 
     public virtual Task<byte[]> GetByteArrayAsync<TRequest>(
@@ -168,9 +168,9 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName).ConfigureAwait(false);
-        var content = await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
-        return await content.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
+        var content = await SendAsync(request, autoThrowException, cancellationToken);
+        return await content.Content.ReadAsStreamAsync(cancellationToken);
     }
 
     public virtual Task<Stream> GetStreamAsync<TRequest>(
@@ -207,8 +207,8 @@ public abstract class AbstractCaller : ICaller
         string? methodName,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual async Task<TResponse?> GetAsync<TRequest, TResponse>(
@@ -217,8 +217,8 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default) where TRequest : class
     {
         var request =
-            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data))).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data)));
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual async Task<TResponse?> GetAsync<TResponse>(
@@ -227,8 +227,8 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         var request =
-            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data))).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data)));
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual async Task<TResponse?> GetAsync<TResponse>(
@@ -236,8 +236,8 @@ public abstract class AbstractCaller : ICaller
         Dictionary<string, string> data,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, data)).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, data));
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     protected virtual string GetUrl(string? url, IEnumerable<KeyValuePair<string, string>> properties)
@@ -268,8 +268,8 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Post, methodName, data).ConfigureAwait(false);
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<TResponse?> PostAsync<TRequest, TResponse>(
@@ -277,8 +277,8 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual Task<TResponse?> PostAsync<TResponse>(
@@ -300,8 +300,8 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data).ConfigureAwait(false);
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<TResponse?> PatchAsync<TRequest, TResponse>(
@@ -309,8 +309,8 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual Task<TResponse?> PatchAsync<TResponse>(
@@ -332,8 +332,8 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data).ConfigureAwait(false);
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<TResponse?> PutAsync<TRequest, TResponse>(
@@ -341,8 +341,8 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual Task<TResponse?> PutAsync<TResponse>(
@@ -364,8 +364,8 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data).ConfigureAwait(false);
-        return await SendAsync(request, autoThrowException, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data);
+        return await SendAsync(request, autoThrowException, cancellationToken);
     }
 
     public virtual async Task<TResponse?> DeleteAsync<TRequest, TResponse>(
@@ -373,8 +373,8 @@ public abstract class AbstractCaller : ICaller
         TRequest data,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data).ConfigureAwait(false);
-        return await SendAsync<TResponse>(request, cancellationToken).ConfigureAwait(false);
+        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data);
+        return await SendAsync<TResponse>(request, cancellationToken);
     }
 
     public virtual Task<TResponse?> DeleteAsync<TResponse>(
