@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
                     return;
 
                 instance.AutoMapRoute(serviceMapOptions, serviceMapOptions.Pluralization);
-            }, serviceMapOptions.Assemblies);
+            }, serviceMapOptions.Assemblies.ToArray());
         }
 
         var serviceProvider = services.BuildServiceProvider();

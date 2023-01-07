@@ -26,14 +26,14 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<IntegrationEventOptions>? options = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.TryAddIntegrationEventBus<TIntegrationEventLogService>(assemblies, options);
 
     internal static IServiceCollection TryAddIntegrationEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<IntegrationEventOptions>? options)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
         => services.TryAddIntegrationEventBus(

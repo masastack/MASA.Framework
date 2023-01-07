@@ -14,7 +14,7 @@ public static class MasaConfigurationBuilderExtensions
         builder.AddRelations(relation.Relations.ToArray());
     }
 
-    internal static void AutoMapping(this MasaConfigurationBuilder builder, params Assembly[] assemblies)
+    internal static void AutoMapping(this MasaConfigurationBuilder builder, IEnumerable<Assembly> assemblies)
     {
         var optionTypes = assemblies
             .SelectMany(assembly => assembly.GetTypes())

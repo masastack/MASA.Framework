@@ -7,7 +7,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-
     #region Obsolete
 
     [Obsolete("Use AddIntegrationEventBus instead")]
@@ -20,7 +19,7 @@ public static class ServiceCollectionExtensions
     [Obsolete("Use AddIntegrationEventBus instead")]
     public static IServiceCollection AddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<DaprIntegrationEventOptions>? options = null,
         Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
@@ -28,7 +27,7 @@ public static class ServiceCollectionExtensions
 
     internal static IServiceCollection TryAddDaprEventBus<TIntegrationEventLogService>(
         this IServiceCollection services,
-        Assembly[] assemblies,
+        IEnumerable<Assembly> assemblies,
         Action<DaprIntegrationEventOptions>? options,
         Action<DaprClientBuilder>? builder = null)
         where TIntegrationEventLogService : class, IIntegrationEventLogService
@@ -55,5 +54,4 @@ public static class ServiceCollectionExtensions
     }
 
     #endregion
-
 }
