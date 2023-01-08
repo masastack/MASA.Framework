@@ -61,7 +61,6 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -91,7 +90,6 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAndNotUoWAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -121,7 +119,6 @@ public class IntegrationEventBusTest
     {
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -153,7 +150,6 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -173,7 +169,6 @@ public class IntegrationEventBusTest
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -193,7 +188,6 @@ public class IntegrationEventBusTest
     public async Task TestPublishEventAndNotEventBusAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -214,7 +208,6 @@ public class IntegrationEventBusTest
     public async Task TestCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -230,7 +223,6 @@ public class IntegrationEventBusTest
     public async Task TestNotUseUowCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
@@ -239,49 +231,6 @@ public class IntegrationEventBusTest
             null);
 
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());
-    }
-
-    [TestMethod]
-    public void TestGetAllEventTypes()
-    {
-        _dispatcherOptions
-            .Setup(option => option.Value)
-            .Returns(() => new IntegrationEventOptions(_options.Object.Services, new[] { typeof(IntegrationEventBusTest).Assembly }));
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            _logger.Object,
-            null,
-            null);
-
-        Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == _dispatcherOptions.Object.Value.AllEventTypes.Count());
-    }
-
-    [TestMethod]
-    public void TestUseEventBusGetAllEventTypes()
-    {
-        var defaultAssembly = new System.Reflection.Assembly[1] { typeof(IntegrationEventBusTest).Assembly };
-        _dispatcherOptions
-            .Setup(option => option.Value)
-            .Returns(() => new IntegrationEventOptions(_options.Object.Services, defaultAssembly));
-        var allEventType = defaultAssembly
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
-            .ToList();
-        _eventBus.Setup(eventBus => eventBus.GetAllEventTypes()).Returns(() => allEventType).Verifiable();
-        var integrationEventBus = new IntegrationEventBus(
-            _dispatcherOptions.Object,
-            _publisher.Object,
-            _eventLog.Object,
-            _masaAppConfigureOptions.Object,
-            _logger.Object,
-            _eventBus.Object,
-            null);
-
-        Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == _dispatcherOptions.Object.Value.AllEventTypes.Count());
-        Assert.IsTrue(integrationEventBus.GetAllEventTypes().Count() == allEventType.Count());
     }
 
     [TestMethod]

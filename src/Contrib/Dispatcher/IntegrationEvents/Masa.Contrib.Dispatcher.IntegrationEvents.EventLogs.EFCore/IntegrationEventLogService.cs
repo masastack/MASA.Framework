@@ -5,18 +5,17 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore;
 
 public class IntegrationEventLogService : IIntegrationEventLogService
 {
+    private readonly IEnumerable<Type> _integrationEventTypes;
     private readonly IntegrationEventLogContext _eventLogContext;
-    private readonly IServiceProvider _serviceProvider;
-    private readonly Logger<IntegrationEventLogService>? _logger;
-    private IEnumerable<Type>? _eventTypes;
+    private readonly ILogger<IntegrationEventLogService>? _logger;
 
     public IntegrationEventLogService(
+        IEnumerable<Type> integrationEventTypes,
         IntegrationEventLogContext eventLogContext,
-        IServiceProvider serviceProvider,
-        Logger<IntegrationEventLogService>? logger = null)
+        ILogger<IntegrationEventLogService>? logger = null)
     {
+        _integrationEventTypes = integrationEventTypes;
         _eventLogContext = eventLogContext;
-        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -45,11 +44,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 
         if (result.Any())
         {
-            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
-                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
-
             return result.OrderBy(e => e.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
+                .Select(e => e.DeserializeJsonContent(_integrationEventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
         return result;
@@ -72,11 +68,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             .ToListAsync(cancellationToken);
         if (result.Any())
         {
-            _eventTypes ??= _serviceProvider.GetRequiredService<IIntegrationEventBus>().GetAllEventTypes()
-                .Where(type => typeof(IIntegrationEvent).IsAssignableFrom(type));
-
             return result.OrderBy(e => e.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_eventTypes.First(t => t.Name == e.EventTypeShortName)));
+                .Select(e => e.DeserializeJsonContent(_integrationEventTypes.First(t => t.Name == e.EventTypeShortName)));
         }
 
         return result;
@@ -157,8 +150,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     {
         var eventLogs = _eventLogContext.EventLogs.Where(e => e.ModificationTime < expiresAt && e.State == IntegrationEventStates.Published)
             .OrderBy(e => e.CreationTime).Take(batchCount);
-        _eventLogContext.EventLogs.RemoveRange(eventLogs);
-        await _eventLogContext.DbContext.SaveChangesAsync(token);
+        if (eventLogs.Any())
+        {
+            _eventLogContext.EventLogs.RemoveRange(eventLogs);
+            await _eventLogContext.DbContext.SaveChangesAsync(token);
+        }
 
         if (_eventLogContext.DbContext.ChangeTracker.QueryTrackingBehavior != QueryTrackingBehavior.TrackAll)
         {

@@ -5,7 +5,6 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
-    private readonly IntegrationEventOptions _dispatcherOptions;
     private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
@@ -13,15 +12,13 @@ public class IntegrationEventBus : IIntegrationEventBus
     private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
-    public IntegrationEventBus(IOptions<IntegrationEventOptions> options,
-        IPublisher publisher,
+    public IntegrationEventBus(IPublisher publisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
         IEventBus? eventBus = null,
         IUnitOfWork? unitOfWork = null)
     {
-        _dispatcherOptions = options.Value;
         _publisher = publisher;
         _eventLogService = eventLogService;
         _masaAppConfigureOptions = masaAppConfigureOptions;
@@ -29,11 +26,6 @@ public class IntegrationEventBus : IIntegrationEventBus
         _eventBus = eventBus;
         _unitOfWork = unitOfWork;
     }
-
-    public IEnumerable<Type> GetAllEventTypes() =>
-        _eventBus == null
-            ? _dispatcherOptions.AllEventTypes
-            : _dispatcherOptions.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IEvent

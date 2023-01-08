@@ -6,399 +6,303 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.Tests;
 [TestClass]
 public class IntegrationEventLogServiceTest : TestBase
 {
-    [TestMethod]
-    public async Task TestNullDbTransactionAsync()
-    {
-        var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(builder => builder.UseTestSqlite(ConnectionString))
-            .AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var options = CreateIntegrationEventOptions(services);
-        options.UseEventLog<CustomDbContext>();
-        var serviceProvider = services.BuildServiceProvider();
+    private IServiceCollection _services;
 
-        DbTransaction transaction = null!;
-        var @event = new OrderPaymentSucceededIntegrationEvent()
+    [TestInitialize]
+    public void Initialize()
+    {
+        _services = new ServiceCollection();
+        _services.TryAddEnumerable(new ServiceDescriptor(typeof(IModelCreatingProvider),
+            typeof(IntegrationEventLogModelCreatingProvider),
+            ServiceLifetime.Singleton));
+        _services.TryAddScoped(typeof(IntegrationEventLogContext),
+            serviceProvider => new IntegrationEventLogContext(serviceProvider.GetRequiredService<CustomDbContext>()));
+        _services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestRetrieveEventLogsPendingToPublishAsync(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => await InsertDataAsync(eventLogContext),
+                isUseLogger
+            );
+        var list = await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(100, CancellationToken.None);
+        Assert.AreEqual(1, list.Count());
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestRetrieveEventLogsFailedToPublishAsync(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => await InsertDataAsync(eventLogContext),
+                isUseLogger
+            );
+        var list = await integrationEventLogService.RetrieveEventLogsFailedToPublishAsync(100, 10, 1, CancellationToken.None);
+        Assert.AreEqual(0, list.Count());
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestRetrieveEventLogsFailed2ToPublishAsync(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext =>
+                {
+                    await InsertDataAsync(eventLogContext);
+                    await InsertDataAsync(eventLogContext, IntegrationEventStates.Published);
+                    await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress, DateTime.UtcNow.AddSeconds(-1));
+                    await InsertDataAsync(eventLogContext, IntegrationEventStates.PublishedFailed, DateTime.UtcNow.AddSeconds(-1));
+                },
+                isUseLogger
+            );
+        var list = await integrationEventLogService.RetrieveEventLogsFailedToPublishAsync(100, 10, 1, CancellationToken.None);
+        Assert.AreEqual(2, list.Count());
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestSaveEventAsync(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                _ => Task.CompletedTask,
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+
+        var count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(0, count);
+
+        var orderPaymentSucceededIntegrationEvent = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-
-        var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await eventLogService.SaveEventAsync(@event, transaction));
-    }
-
-    [TestMethod]
-    public void TestNullServices()
-    {
-        var options = CreateIntegrationEventOptions(null!);
-
-        Assert.ThrowsException<MasaArgumentException>(() =>
-        {
-            options.UseEventLog<CustomDbContext>();
-        });
-    }
-
-    [TestMethod]
-    public void TestAddMultEventLog()
-    {
-        var services = new ServiceCollection();
-        var options = CreateIntegrationEventOptions(services);
-        options.UseEventLog<CustomDbContext>().UseEventLog<CustomDbContext>();
-        Assert.IsTrue(services.Count(service => service.ImplementationType == typeof(IntegrationEventLogModelCreatingProvider)) == 1);
-        Assert.IsTrue(services.Count(service => service.ServiceType == typeof(IntegrationEventLogContext)) == 1);
-    }
-
-    [TestMethod]
-    public async Task TestRetrieveEventLogsPendingToPublishAsync()
-    {
-        var options = CreateIntegrationEventOptions(new ServiceCollection());
-        options.UseEventLog<CustomDbContext>();
-        options.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
-        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var serviceProvider = options.Services.BuildServiceProvider();
-        await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
-        var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = await logService.RetrieveEventLogsPendingToPublishAsync(100);
-        Assert.IsTrue(!list.Any());
-    }
-
-    [TestMethod]
-    public async Task TestRetrieveEventLogsPendingToPublish2Async()
-    {
-        var response = await InitializeAsync();
-
-        #region Initialization data
-
-        var logs = await response.CustomDbContext.Set<IntegrationEventLog>().ToListAsync();
-        response.CustomDbContext.Set<IntegrationEventLog>().RemoveRange(logs);
-
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await response.CustomDbContext.Set<IntegrationEventLog>().AddAsync(new IntegrationEventLog(@event, Guid.NewGuid())
-        {
-            State = IntegrationEventStates.InProgress,
-            ModificationTime = DateTime.UtcNow.AddSeconds(-120),
-        });
-        await response.CustomDbContext.SaveChangesAsync();
-
-        #endregion
-
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = (await logService.RetrieveEventLogsFailedToPublishAsync(100, 10, 60)).ToList();
-        Assert.IsTrue(list.Count == 1);
-
-        var eventLog = list.Select(log => log.Event).FirstOrDefault()!;
-        Assert.IsTrue(eventLog.Equals(@event));
-    }
-
-    [TestMethod]
-    public async Task TestRetrieveEventLogsFailedToPublishAsync()
-    {
-        var options = CreateIntegrationEventOptions(new ServiceCollection());
-        options.UseEventLog<CustomDbContext>();
-        options.Services.AddMasaDbContext<CustomDbContext>(option => option.UseTestSqlite(Connection));
-        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        var serviceProvider = options.Services.BuildServiceProvider();
-        await serviceProvider.GetRequiredService<CustomDbContext>().Database.EnsureCreatedAsync();
-        var logService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var list = await logService.RetrieveEventLogsFailedToPublishAsync(100, 10, 60);
-        Assert.IsTrue(!list.Any());
-    }
-
-    [TestMethod]
-    public async Task TestRetrieveEventLogsFailedToPublish2Async()
-    {
-        var response = await InitializeAsync();
-
-        var logs = await response.CustomDbContext.Set<IntegrationEventLog>().ToListAsync();
-        response.CustomDbContext.Set<IntegrationEventLog>().RemoveRange(logs);
-
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        await logService.SaveEventAsync(@event, (await response.CustomDbContext.Database.BeginTransactionAsync()).GetDbTransaction());
-        await response.CustomDbContext.Database.CommitTransactionAsync();
-
-        var list = (await logService.RetrieveEventLogsPendingToPublishAsync(100)).ToList();
-        Assert.IsTrue(list.Count == 1);
-
-        var eventLog = list.Select(log => log.Event).FirstOrDefault()!;
-        Assert.IsTrue(eventLog.Equals(@event));
-    }
-
-    [TestMethod]
-    public async Task TestSaveEventAsync()
-    {
-        var response = await InitializeAsync();
-
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using (var transaction = await response.CustomDbContext.Database.BeginTransactionAsync())
-        {
-            var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-            var @event = new OrderPaymentSucceededIntegrationEvent
-            {
-                OrderId = "1234567890123",
-                PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-            };
-            await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-            await transaction.CommitAsync();
-        }
-
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 1);
-
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.NotPublished) == 1);
-    }
-
-    [TestMethod]
-    public async Task TestSaveEventByExceptionAsync()
-    {
-        var response = await InitializeAsync();
-
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await Assert.ThrowsExceptionAsync<Exception>(async () =>
-        {
-            await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-            var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-            var @event = new OrderPaymentSucceededIntegrationEvent
-            {
-                OrderId = "1234567890123",
-                PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-            };
-            await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-            throw new Exception("custom exception");
-        }, "custom exception");
-
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-    }
-
-    [TestMethod]
-    public async Task TestMarkEventAsInProgressAsync()
-    {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-
-        await logService.MarkEventAsInProgressAsync(@event.Id, 10);
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.InProgress) == 1);
+        await using var transaction = await integrationEventLogContext.DbContext.Database.BeginTransactionAsync();
+        await integrationEventLogService.SaveEventAsync(orderPaymentSucceededIntegrationEvent, transaction.GetDbTransaction());
+        await integrationEventLogContext.DbContext.SaveChangesAsync();
         await transaction.CommitAsync();
-
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.InProgress) == 1);
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 1);
+        count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(1, count);
     }
 
-
-    [TestMethod]
-    public async Task TestMultiJobMarkEventAsInProgressAsync()
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsPublishedAsync(bool isUseLogger)
     {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogService.MarkEventAsPublishedAsync(eventId, CancellationToken.None);
+        var count = await integrationEventLogContext.DbContext.Set<IntegrationEventLog>()
+            .CountAsync(eventLog => eventLog.EventId == eventId);
+        Assert.AreEqual(1, count);
+    }
 
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-
-        await logService.MarkEventAsInProgressAsync(@event.Id, 10);
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.InProgress) == 1);
-        await transaction.CommitAsync();
-
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsPublished2Async(bool isUseLogger)
+    {
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
+                isUseLogger
+            );
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
-            => await logService.MarkEventAsInProgressAsync(@event.Id, 60, default));
+            => await integrationEventLogService.MarkEventAsPublishedAsync(eventId, CancellationToken.None));
     }
 
-    [TestMethod]
-    public async Task TestMarkEventAsInProgress2Async()
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsInProgressAsync(bool isUseLogger)
     {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext),
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogService.MarkEventAsInProgressAsync(eventId, 1, CancellationToken.None);
+        var count = await integrationEventLogContext.DbContext.Set<IntegrationEventLog>()
+            .CountAsync(eventLog => eventLog.EventId == eventId);
+        Assert.AreEqual(1, count);
+    }
 
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsInProgress2Async(bool isUseLogger)
+    {
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
+                isUseLogger
+            );
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+            => await integrationEventLogService.MarkEventAsInProgressAsync(eventId, 1, CancellationToken.None));
+    }
 
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsInProgress3Async(bool isUseLogger)
+    {
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId =
+                    await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress, DateTime.UtcNow.AddSeconds(1)),
+                isUseLogger
+            );
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+            => await integrationEventLogService.MarkEventAsInProgressAsync(eventId, 10, CancellationToken.None));
+    }
 
-        var @event = new OrderPaymentSucceededIntegrationEvent
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsFailedAsync(bool isUseLogger)
+    {
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogService.MarkEventAsFailedAsync(eventId, CancellationToken.None);
+        var count = await integrationEventLogContext.DbContext.Set<IntegrationEventLog>()
+            .CountAsync(eventLog => eventLog.EventId == eventId && eventLog.State == IntegrationEventStates.PublishedFailed);
+        Assert.AreEqual(1, count);
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsFailed2Async(bool isUseLogger)
+    {
+        Guid eventId = default!;
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext),
+                isUseLogger
+            );
+        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
+            => await integrationEventLogService.MarkEventAsFailedAsync(eventId, CancellationToken.None));
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestMarkEventAsFailed3Async(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => _ = await InsertDataAsync(eventLogContext),
+                isUseLogger
+            );
+        await Assert.ThrowsExceptionAsync<ArgumentException>(async ()
+            => await integrationEventLogService.MarkEventAsFailedAsync(Guid.NewGuid(), CancellationToken.None));
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestDeleteExpiresAsync(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogService.DeleteExpiresAsync(DateTime.UtcNow.AddSeconds(1), 1, CancellationToken.None);
+        var count = await integrationEventLogContext.DbContext.Set<IntegrationEventLog>()
+            .CountAsync();
+        Assert.AreEqual(0, count);
+    }
+
+    [DataRow(true)]
+    [DataRow(false)]
+    [DataTestMethod]
+    public async Task TestDeleteExpires2Async(bool isUseLogger)
+    {
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(GetIntegrationEventTypes(typeof(OrderPaymentSucceededIntegrationEvent).Assembly),
+                async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
+                isUseLogger
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogService.DeleteExpiresAsync(DateTime.UtcNow.AddSeconds(-1), 1, CancellationToken.None);
+        var count = await integrationEventLogContext.DbContext.Set<IntegrationEventLog>()
+            .CountAsync();
+        Assert.AreEqual(1, count);
+    }
+
+    private async Task<IntegrationEventLogService> CreateIntegrationEventLogServiceAsync(
+        IEnumerable<Type> integrationEventTypes,
+        Func<IntegrationEventLogContext, Task> func,
+        bool isUseLogger)
+    {
+        if (isUseLogger) _services.AddLogging();
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+        await integrationEventLogContext.DbContext.Database.EnsureCreatedAsync();
+        await func.Invoke(integrationEventLogContext);
+        var logger = isUseLogger ? serviceProvider.GetRequiredService<ILogger<IntegrationEventLogService>>() : null;
+        return new IntegrationEventLogService(integrationEventTypes, integrationEventLogContext, logger);
+    }
+
+    private static IEnumerable<Type> GetIntegrationEventTypes(params Assembly[] assemblies)
+        => assemblies.SelectMany(assembly => assembly.GetTypes())
+            .Where(type => type.IsClass && typeof(IIntegrationEvent).IsAssignableFrom(type));
+
+    private static async Task<Guid> InsertDataAsync(
+        IntegrationEventLogContext integrationEventLogContext,
+        IntegrationEventStates? integrationEventStates = null,
+        DateTime? modificationTime = null)
+    {
+        var orderPaymentSucceededIntegrationEvent = new OrderPaymentSucceededIntegrationEvent
         {
             OrderId = "1234567890123",
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
-        await response.CustomDbContext.Set<IntegrationEventLog>().AddAsync(new IntegrationEventLog(@event, Guid.NewGuid())
+        await using var transaction = await integrationEventLogContext.DbContext.Database.BeginTransactionAsync();
+        var integrationEventLog = new IntegrationEventLog(orderPaymentSucceededIntegrationEvent, transaction.TransactionId)
         {
-            State = IntegrationEventStates.Published
-        });
-
-        await response.CustomDbContext.SaveChangesAsync();
-
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await logService.MarkEventAsInProgressAsync(@event.Id, 10));
-    }
-
-    [TestMethod]
-    public async Task TestMarkEventAsPublishedAsync()
-    {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+            State = integrationEventStates ?? IntegrationEventStates.NotPublished
         };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-
-        await logService.MarkEventAsInProgressAsync(@event.Id, 10);
-
-        await logService.MarkEventAsPublishedAsync(@event.Id);
-
-        await transaction.CommitAsync();
-
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.Published) == 1);
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync() == 1);
-    }
-
-    [TestMethod]
-    public async Task TestMarkEventAsPublished2Async()
-    {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await logService.MarkEventAsPublishedAsync(@event.Id));
-    }
-
-    [TestMethod]
-    public async Task TestMarkEventAsFailedAsync()
-    {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-        await logService.MarkEventAsInProgressAsync(@event.Id, 10);
-        await logService.MarkEventAsFailedAsync(@event.Id);
-        await transaction.CommitAsync();
-
-        Assert.IsTrue(await response.CustomDbContext.Set<IntegrationEventLog>()
-            .CountAsync(log => log.State == IntegrationEventStates.PublishedFailed) == 1);
-    }
-
-    [TestMethod]
-    public async Task TestMarkEventAsFailed2Async()
-    {
-        var response = await InitializeAsync();
-        Assert.IsFalse(await response.CustomDbContext.Set<IntegrationEventLog>().AnyAsync());
-
-        await using var transaction = await response.CustomDbContext.Database.BeginTransactionAsync();
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-        await logService.SaveEventAsync(@event, transaction.GetDbTransaction());
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () => await logService.MarkEventAsFailedAsync(@event.Id));
-    }
-
-    private async Task<(CustomDbContext CustomDbContext, IServiceProvider ServiceProvider)> InitializeAsync()
-    {
-        var options = CreateIntegrationEventOptions(new ServiceCollection());
-        options.UseEventLog<CustomDbContext>();
-        options.Services.AddMasaDbContext<CustomDbContext>(option =>
-            option.UseTestSqlite(Connection));
-        options.Services.AddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
-        Mock<IIntegrationEventBus> integrationEventBus = new();
-        var types = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
-            .ToList();
-        integrationEventBus.Setup(eventBus => eventBus.GetAllEventTypes()).Returns(types).Verifiable();
-        options.Services.AddScoped(_ => integrationEventBus.Object);
-        var serviceProvider = options.Services.BuildServiceProvider();
-        var customDbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await customDbContext.Database.EnsureCreatedAsync();
-        return new(customDbContext, serviceProvider);
-    }
-
-    [TestMethod]
-    public async Task TestDeleteExpiresAsync()
-    {
-        var response = await InitializeAsync();
-
-        #region Initialization data
-
-        var logs = await response.CustomDbContext.Set<IntegrationEventLog>().ToListAsync();
-        response.CustomDbContext.Set<IntegrationEventLog>().RemoveRange(logs);
-
-        var @event = new OrderPaymentSucceededIntegrationEvent
-        {
-            OrderId = "1234567890123",
-            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
-        };
-
-        var integrationEventLogs = new List<IntegrationEventLog>()
-        {
-            new(@event, Guid.NewGuid())
-            {
-                State = IntegrationEventStates.InProgress,
-                ModificationTime = DateTime.UtcNow.AddSeconds(-120),
-            },
-            new(@event, Guid.NewGuid())
-            {
-                State = IntegrationEventStates.Published,
-                ModificationTime = DateTime.UtcNow.AddSeconds(-120),
-            },
-        };
-        await response.CustomDbContext.Set<IntegrationEventLog>().AddRangeAsync(integrationEventLogs);
-        await response.CustomDbContext.SaveChangesAsync();
-
-        Assert.AreEqual(integrationEventLogs.Count, await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync());
-
-        #endregion
-
-        var logService = response.ServiceProvider.GetRequiredService<IIntegrationEventLogService>();
-
-        await logService.DeleteExpiresAsync(DateTime.UtcNow, 100);
-        Assert.AreEqual(integrationEventLogs.Count(e => e.State != IntegrationEventStates.Published),
-            await response.CustomDbContext.Set<IntegrationEventLog>().CountAsync());
+        if (modificationTime != null)
+            integrationEventLog.ModificationTime = modificationTime.Value;
+        await integrationEventLogContext.DbContext.Set<IntegrationEventLog>().AddAsync(integrationEventLog);
+        await integrationEventLogContext.DbContext.SaveChangesAsync();
+        await integrationEventLogContext.DbContext.Database.CommitTransactionAsync();
+        return integrationEventLog.EventId;
     }
 }

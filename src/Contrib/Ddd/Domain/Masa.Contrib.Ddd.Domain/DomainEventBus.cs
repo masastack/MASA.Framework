@@ -74,6 +74,4 @@ public class DomainEventBus : IDomainEventBus
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
         => await _unitOfWork.CommitAsync(cancellationToken);
-
-    public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 }

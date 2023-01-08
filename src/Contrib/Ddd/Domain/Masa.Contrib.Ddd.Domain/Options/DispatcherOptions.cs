@@ -17,8 +17,6 @@ public class DispatcherOptions : IDomainEventOptions
 
     private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => t.IsClass && type.IsAssignableFrom(t));
 
-    internal List<Type> AllEventTypes { get; private set; }
-
     internal List<Type> AllDomainServiceTypes { get; private set; }
 
     internal List<Type> AllAggregateRootTypes { get; private set; }
@@ -30,7 +28,6 @@ public class DispatcherOptions : IDomainEventOptions
     {
         Assemblies = assemblies;
         Types = assemblies.SelectMany(assembly => assembly.GetTypes());
-        AllEventTypes = GetTypes(typeof(IEvent)).ToList();
         AllDomainServiceTypes = GetTypes(typeof(DomainService)).ToList();
         AllAggregateRootTypes = GetTypes(typeof(IAggregateRoot)).Where(IsAggregateRootEntity).ToList();
     }

@@ -16,7 +16,6 @@ public class AssemblyResolutionTests
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
         Assert.IsNotNull(eventBus, "Event bus injection failed");
-        Assert.IsNotNull(eventBus.GetAllEventTypes());
     }
 
     [TestMethod]
@@ -62,7 +61,6 @@ public class AssemblyResolutionTests
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
         Assert.IsNotNull(eventBus, "Event bus injection failed");
-        Assert.IsNotNull(eventBus.GetAllEventTypes());
     }
 
     [TestMethod]

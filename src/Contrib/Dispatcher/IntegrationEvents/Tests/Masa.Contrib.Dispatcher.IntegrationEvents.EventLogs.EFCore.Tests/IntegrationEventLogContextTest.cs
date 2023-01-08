@@ -30,7 +30,7 @@ public class IntegrationEventLogContextTest : TestBase
         Assert.IsFalse(properties.Where(x => x.Name == "EventTypeName").Select(x => x.IsNullable).FirstOrDefault());
 
         var integrationEventLogDbContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
-        Assert.IsTrue(customDbContext == integrationEventLogDbContext.DbContext);
+        Assert.AreEqual(customDbContext, integrationEventLogDbContext.DbContext);
     }
 
     [TestMethod]
