@@ -18,15 +18,9 @@ public class DomainEventBusTest
         _integrationEventBus = new();
         _integrationEventBus.Setup(bus => bus.PublishAsync(It.IsAny<IIntegrationEvent>(), default)).Verifiable();
         Mock<IUnitOfWork> unitOfWork = new();
-        IOptions<DispatcherOptions> options =
-            Microsoft.Extensions.Options.Options.Create(
-                new DispatcherOptions(
-                    new ServiceCollection(),
-                    AppDomain.CurrentDomain.GetAssemblies()));
         _domainEventBus = new DomainEventBus(_eventBus.Object,
             _integrationEventBus.Object,
-            unitOfWork.Object,
-            options
+            unitOfWork.Object
         );
     }
 
