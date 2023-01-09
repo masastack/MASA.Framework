@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
-extern alias SnowflakeRedis;
 
+extern alias SnowflakeRedis;
 using SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake;
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests;
@@ -289,7 +289,7 @@ public class IdGeneratorTest
         var workerIdBits = 10;
         var maxWorkerId = ~(-1L << workerIdBits);
         var tasks = new ConcurrentBag<Task>();
-        ThreadPool.GetMinThreads(out _, out var minIoc);
+        ThreadPool.GetMinThreads(out int workerThreads, out var minIoc);
         ThreadPool.SetMinThreads((int)maxWorkerId, minIoc);
 
         int laterTime = 0;
@@ -310,6 +310,7 @@ public class IdGeneratorTest
             }
         }
         Assert.IsTrue(laterTime > 0);
+        ThreadPool.SetMinThreads(workerThreads, minIoc);
     }
 
     [TestMethod]

@@ -68,23 +68,44 @@ jobs:
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
         
-    - name: SonarScanner for .NET 6 with pull request decoration support
-      uses: highbyte/sonarscan-dotnet@v2.1.3
-      with:
-        # The key of the SonarQube project
-        sonarProjectKey: masastack_MASA.Framework
-        # The name of the SonarQube project
-        sonarProjectName:  MASA.Framework
-        # The name of the SonarQube organization in SonarCloud. For hosted SonarQube, skip this setting.
-        sonarOrganization: masastack
-        # Optional command arguments to dotnet test
-        dotnetTestArguments: --filter FullyQualifiedName!~Masa.Utils --no-build --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        # Optional extra command arguments the the SonarScanner 'begin' command
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+#    - name: SonarScanner for .NET 6 with pull request decoration support
+#      uses: highbyte/sonarscan-dotnet@v2.1.3
+#      with:
+#        # The key of the SonarQube project
+#        sonarProjectKey: masastack_MASA.Framework
+#        # The name of the SonarQube project
+#        sonarProjectName:  MASA.Framework
+#        # The name of the SonarQube organization in SonarCloud. For hosted SonarQube, skip this setting.
+#        sonarOrganization: masastack
+#        # Optional command arguments to dotnet test
+#        dotnetTestArguments: --filter FullyQualifiedName!~Masa.Utils --no-build --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+#        # Optional extra command arguments the the SonarScanner 'begin' command
+#        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+#        
+#env:
+#  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
-env:
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install SonarCloud scanner
+      run: |
+        dotnet tool install --global dotnet-sonarscanner
+        
+    - name: Build and analyze
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+        dotnet sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet build /p:ContinuousIntegrationBuild=true
+        # dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal --collect "Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        
+    - name: Opencover Test
+      run: |
+        dotnet test --filter FullyQualifiedName~Masa.Contrib --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+
+    - name: codecov
+      uses: codecov/codecov-action@v2
         
 #    - name: Install SonarCloud scanner
 #      run: |
@@ -95,10 +116,10 @@ env:
 #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
 #        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #      run: |
-#        dotnet sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+#        dotnet sonarscanner begin /k:"masastack_MASA.Framework" /o:"masastack" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
 #        dotnet build /p:ContinuousIntegrationBuild=true
-#        dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --verbosity normal --collect "Code Coverage" /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
+#        dotnet test --filter FullyQualifiedName!~Masa.Utils --no-build --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover /p:Exclude="[*.Tests]*"
 #        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 #
 #    - name: codecov
-#      uses: codecov/codecov-action@v2
+#      uses: codecov/codecov-action@v2 
