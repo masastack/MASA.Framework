@@ -160,10 +160,7 @@ internal static class IElasticClientExtenstion
         .AddPageSize(query, true),
         (response, q) =>
         {
-            if (q is ElasticsearchScrollRequestDto)
-                result = SetTraceScrollResult(response);
-            else
-                result = SetTraceResult(response);
+            result = q is ElasticsearchScrollRequestDto ? SetTraceScrollResult(response) : SetTraceResult(response);
         });
         return result;
     }
