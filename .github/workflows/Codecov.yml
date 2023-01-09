@@ -68,7 +68,7 @@ jobs:
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
         
-    - name: SonarScanner for .NET 7 with pull request decoration support
+    - name: SonarScanner for .NET 6 with pull request decoration support
       uses: highbyte/sonarscan-dotnet@v2.1.3
       with:
         # The key of the SonarQube project
