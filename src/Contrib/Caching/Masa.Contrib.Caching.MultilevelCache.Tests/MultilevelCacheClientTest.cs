@@ -188,10 +188,16 @@ public class MultilevelCacheClientTest : TestBase
             DistributedCacheEntryFunc = () => new CacheEntry<Guid?>(null, TimeSpan.FromSeconds(3))
         }));
 
+        Assert.AreEqual(null, await _multilevelCacheClient.GetOrSetAsync("test104", new CombinedCacheEntry<Guid?>()
+        {
+            DistributedCacheEntryAsyncFunc = () => Task.FromResult(new CacheEntry<Guid?>(null, TimeSpan.FromSeconds(3)))
+        }));
+
         await _multilevelCacheClient.RemoveAsync<string>("test100");
         await _multilevelCacheClient.RemoveAsync<decimal?>("test101");
         await _multilevelCacheClient.RemoveAsync<Guid?>("test102");
         await _multilevelCacheClient.RemoveAsync<Guid?>("test103");
+        await _multilevelCacheClient.RemoveAsync<Guid?>("test104");
     }
 
     [TestMethod]
