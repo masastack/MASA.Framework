@@ -80,8 +80,9 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         Action<T?>? valueChanged,
         Action<MultilevelCacheOptions>? action = null) where T : default
         => GetCoreAsync(key, valueChanged, action,
-            (formattedKey, cacheOptionsAction) =>
-                Task.FromResult(_distributedCacheClient.Get<T>(formattedKey, cacheOptionsAction))).ConfigureAwait(false).GetAwaiter().GetResult();
+                (formattedKey, cacheOptionsAction) =>
+                    Task.FromResult(_distributedCacheClient.Get<T>(formattedKey, cacheOptionsAction))).ConfigureAwait(false).GetAwaiter()
+            .GetResult();
 
     public override Task<T?> GetCoreAsync<T>(string key, Action<T?>? valueChanged, Action<MultilevelCacheOptions>? action = null)
         where T : default
@@ -133,8 +134,10 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         IEnumerable<string> keys,
         Action<MultilevelCacheOptions>? action = null) where T : default
         => GetListCoreAsync<T>(keys, action,
-            (formattedKeys, cacheOptionsAction) =>
-                Task.FromResult(_distributedCacheClient.GetList<T>(formattedKeys, cacheOptionsAction))).ConfigureAwait(false).GetAwaiter().GetResult();
+                (formattedKeys, cacheOptionsAction) =>
+                    Task.FromResult(_distributedCacheClient.GetList<T>(formattedKeys, cacheOptionsAction))).ConfigureAwait(false)
+            .GetAwaiter()
+            .GetResult();
 
     public override Task<IEnumerable<T?>> GetListAsync<T>(
         IEnumerable<string> keys,
@@ -154,7 +157,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         var awaitValues = new List<T?>();
         if (awaitCacheKeyItems.Any())
-            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction).ConfigureAwait(false)).ToList();
+            awaitValues = (await func.Invoke(awaitCacheKeyItems.Select(x => x.FormattedKey), CacheOptionsAction).ConfigureAwait(false))
+                .ToList();
 
         return FillData(list, awaitCacheKeyItems, awaitValues, GetMemoryCacheEntryOptions(multilevelCacheOptions));
     }
@@ -171,7 +175,19 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            value = _distributedCacheClient.GetOrSet(formattedKey, combinedCacheEntry.DistributedCacheEntryFunc, CacheOptionsAction);
+            CacheEntry<T> cacheEntry = default!;
+            if (combinedCacheEntry.DistributedCacheEntryFunc != null)
+            {
+                value = _distributedCacheClient.GetOrSet(
+                    formattedKey,
+                    () =>
+                    {
+                        cacheEntry = combinedCacheEntry.DistributedCacheEntryFunc.Invoke();
+                        return cacheEntry;
+                    },
+                    CacheOptionsAction);
+            }
+            else throw new NotSupportedException();
 
             SetCore(new SetOptions<T>()
             {
@@ -180,7 +196,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = combinedCacheEntry.MemoryCacheEntryOptions
             });
 
-            PubSub(key, formattedKey, SubscribeOperation.Set, value, combinedCacheEntry.DistributedCacheEntryFunc.Invoke());
+            PubSub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
         }
 
         return value;
@@ -200,10 +216,30 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            value = await _distributedCacheClient.GetOrSetAsync(
-                formattedKey,
-                combinedCacheEntry.DistributedCacheEntryFunc,
-                CacheOptionsAction).ConfigureAwait(false);
+            CacheEntry<T> cacheEntry = default!;
+            if (combinedCacheEntry.DistributedCacheEntryAsyncFunc != null)
+            {
+                value = await _distributedCacheClient.GetOrSetAsync(
+                    formattedKey,
+                    async () =>
+                    {
+                        cacheEntry = await combinedCacheEntry.DistributedCacheEntryAsyncFunc.Invoke();
+                        return cacheEntry;
+                    },
+                    CacheOptionsAction).ConfigureAwait(false);
+            }
+            else if (combinedCacheEntry.DistributedCacheEntryFunc != null)
+            {
+                value = await _distributedCacheClient.GetOrSetAsync(
+                    formattedKey,
+                    () =>
+                    {
+                        cacheEntry = combinedCacheEntry.DistributedCacheEntryFunc.Invoke();
+                        return cacheEntry;
+                    },
+                    CacheOptionsAction).ConfigureAwait(false);
+            }
+            else throw new NotSupportedException();
 
             SetCore(new SetOptions<T>()
             {
@@ -212,7 +248,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = combinedCacheEntry.MemoryCacheEntryOptions
             });
 
-            await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, combinedCacheEntry.DistributedCacheEntryFunc.Invoke()).ConfigureAwait(false);
+            await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
+                .ConfigureAwait(false);
         }
 
         return value;
@@ -248,7 +285,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         var multilevelCacheOptions = GetMultilevelCacheOptions(action);
         var formattedKey = FormatCacheKey<T>(key, GetCacheKeyType(multilevelCacheOptions));
 
-        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction).ConfigureAwait(false);
+        await _distributedCacheClient.SetAsync(formattedKey, value, options?.DistributedCacheEntryOptions, CacheOptionsAction)
+            .ConfigureAwait(false);
 
         SetCore(new SetOptions<T>()
         {

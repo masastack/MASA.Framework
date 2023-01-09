@@ -392,12 +392,12 @@ public class DistributedCacheClientTest : TestBase
         var res = await _distributedCacheClient.GetOrSetAsync(key, () =>
         {
             if (value == null)
-                return new CacheEntry<string?>(null);
+                return Task.FromResult(new CacheEntry<string?>(null));
 
             if (string.IsNullOrWhiteSpace(value))
-                return new CacheEntry<string?>("", TimeSpan.FromSeconds(30));
+                return Task.FromResult(new CacheEntry<string?>("", TimeSpan.FromSeconds(30)));
 
-            return new CacheEntry<string?>(value, TimeSpan.FromHours(1));
+            return Task.FromResult(new CacheEntry<string?>(value, TimeSpan.FromHours(1)));
         });
 
         Assert.AreEqual(value, res);
