@@ -116,7 +116,7 @@ public class StackExchangeRedisCacheTest : TestBase
                 }
             }));
 
-        Thread.Sleep(3000);
+        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
         distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
 
         var exist = distributedCacheClient.Exists(key);
@@ -125,7 +125,7 @@ public class StackExchangeRedisCacheTest : TestBase
 
         File.WriteAllText(Path.Combine(Path.Combine(rootPath, "appsettings.json")), oldContent);
 
-        Thread.Sleep(3000);
+        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
 
         distributedCacheClient.Remove(key);
     }

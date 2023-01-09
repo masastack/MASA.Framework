@@ -68,7 +68,7 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual(null, value);
 
         _multilevelCacheClient.Set(key, "test2");
-        Thread.Sleep(3000);
+        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
         Assert.AreEqual("test2", value);
         _multilevelCacheClient.Remove<string>(key);
     }
@@ -85,7 +85,7 @@ public class MultilevelCacheClientTest : TestBase
 
         CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
         await _multilevelCacheClient.SetAsync(key, "test2", combinedCacheEntryOptions);
-        Thread.Sleep(3000);
+        await Task.Delay(3000);
         Assert.AreEqual("test2", value);
         await _multilevelCacheClient.RemoveAsync<string>(key);
     }
