@@ -16,10 +16,9 @@ internal static class IElasticClientExtenstion
             if (resultFunc is null) return;
             ISearchResponse<TResult> searchResponse;
             if (query is ElasticsearchScrollRequestDto scrollQuery)
-                if (string.IsNullOrEmpty(scrollQuery.ScrollId))
-                    searchResponse = await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)).Scroll(scrollQuery.Scroll));
-                else
-                    searchResponse = await client.ScrollAsync<TResult>(scrollQuery.Scroll, scrollQuery.ScrollId);
+                searchResponse = string.IsNullOrEmpty(scrollQuery.ScrollId) ?
+                                            await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)).Scroll(scrollQuery.Scroll)) :
+                                            await client.ScrollAsync<TResult>(scrollQuery.Scroll, scrollQuery.ScrollId);
             else
                 searchResponse = await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)));
 
@@ -119,9 +118,7 @@ internal static class IElasticClientExtenstion
     public static void FriendlyElasticException<T>(this ISearchResponse<T> response) where T : class
     {
         if (!response.IsValid)
-        {
-            throw new UserFriendlyException($"elastic query error: status:{response.ServerError?.Status},message:{response.OriginalException?.Message ?? response.ServerError?.ToString()},DebugInformation:{response.DebugInformation}");
-        }
+            throw new UserFriendlyException($"elastic query error: status: {response.ServerError?.Status}, message: {response.OriginalException?.Message ?? response.ServerError?.ToString()}, DebugInformation: {response.DebugInformation}");
     }
 
     #endregion
