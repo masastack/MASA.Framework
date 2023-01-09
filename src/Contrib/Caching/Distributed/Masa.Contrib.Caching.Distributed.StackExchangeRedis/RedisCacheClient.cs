@@ -91,6 +91,9 @@ public class RedisCacheClient : RedisCacheClientBase
         return GetAndRefresh(key, () =>
         {
             var cacheEntry = setter();
+            if (cacheEntry.Value == null)
+                return default;
+
             SetCore(key, cacheEntry.Value, cacheEntry);
             return cacheEntry.Value;
         });
@@ -98,7 +101,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override async Task<T?> GetOrSetAsync<T>(
         string key,
-        Func<CacheEntry<T>> setter,
+        Func<Task<CacheEntry<T>>> setter,
         Action<CacheOptions>? action = null)
         where T : default
     {
@@ -109,7 +112,10 @@ public class RedisCacheClient : RedisCacheClientBase
         key = FormatCacheKey<T>(key, action);
         return await GetAndRefreshAsync(key, async () =>
         {
-            var cacheEntry = setter();
+            var cacheEntry = await setter();
+            if (cacheEntry.Value == null)
+                return default;
+
             await SetCoreAsync(key, cacheEntry.Value, cacheEntry).ConfigureAwait(false);
             return cacheEntry.Value;
         }).ConfigureAwait(false);

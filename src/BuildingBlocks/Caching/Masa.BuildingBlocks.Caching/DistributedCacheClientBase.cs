@@ -21,7 +21,10 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
 
     public abstract T? GetOrSet<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null);
 
-    public abstract Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null);
+    public virtual Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null)
+        => GetOrSetAsync(key, () => Task.FromResult(setter.Invoke()), action);
+
+    public abstract Task<T?> GetOrSetAsync<T>(string key, Func<Task<CacheEntry<T>>> setter, Action<CacheOptions>? action = null);
 
     public abstract void Refresh(params string[] keys);
 

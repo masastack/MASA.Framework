@@ -365,14 +365,18 @@ public class DistributedCacheClientTest : TestBase
     [DataTestMethod]
     [DataRow("test_1", "123")]
     [DataRow("test_2", "")]
-    public void TestGetOrSet(string key, string value)
+    [DataRow("test_2", null)]
+    public void TestGetOrSet(string key, string? value)
     {
         var res = _distributedCacheClient.GetOrSet(key, () =>
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return new CacheEntry<string>("", TimeSpan.FromSeconds(30));
+            if (value == null)
+                return new CacheEntry<string?>(null);
 
-            return new CacheEntry<string>(value, TimeSpan.FromHours(1));
+            if (string.IsNullOrWhiteSpace(value))
+                return new CacheEntry<string?>("", TimeSpan.FromSeconds(30));
+
+            return new CacheEntry<string?>(value, TimeSpan.FromHours(1));
         });
 
         Assert.AreEqual(value, res);
@@ -382,14 +386,18 @@ public class DistributedCacheClientTest : TestBase
     [DataTestMethod]
     [DataRow("test_1", "123")]
     [DataRow("test_2", "")]
-    public async Task TestGetOrSetAsync(string key, string value)
+    [DataRow("test_2", null)]
+    public async Task TestGetOrSetAsync(string key, string? value)
     {
         var res = await _distributedCacheClient.GetOrSetAsync(key, () =>
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return new CacheEntry<string>("", TimeSpan.FromSeconds(30));
+            if (value == null)
+                return Task.FromResult(new CacheEntry<string?>(null));
 
-            return new CacheEntry<string>(value, TimeSpan.FromHours(1));
+            if (string.IsNullOrWhiteSpace(value))
+                return Task.FromResult(new CacheEntry<string?>("", TimeSpan.FromSeconds(30)));
+
+            return Task.FromResult(new CacheEntry<string?>(value, TimeSpan.FromHours(1)));
         });
 
         Assert.AreEqual(value, res);

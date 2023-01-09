@@ -133,11 +133,36 @@ public class MultilevelCacheClientTest : TestBase
         {
             DistributedCacheEntryFunc = () => new CacheEntry<Guid>(guid, TimeSpan.FromSeconds(3))
         }));
+
+        Assert.AreEqual(null, _multilevelCacheClient.GetOrSet("test105", new CombinedCacheEntry<decimal?>()
+        {
+            DistributedCacheEntryFunc = () => new CacheEntry<decimal?>(null)
+        }));
         _multilevelCacheClient.Remove<string>("test100");
         _multilevelCacheClient.Remove<decimal?>("test101");
         _multilevelCacheClient.Remove<decimal>("test102");
         _multilevelCacheClient.Remove<Guid?>("test103");
         _multilevelCacheClient.Remove<Guid?>("test104");
+        _multilevelCacheClient.Remove<Guid?>("test105");
+    }
+
+    [TestMethod]
+    public void TestGetOrSet2()
+    {
+        Assert.ThrowsException<NotSupportedException>(() =>
+        {
+            _multilevelCacheClient.GetOrSet("test100", new CombinedCacheEntry<string>()
+            {
+                DistributedCacheEntryAsyncFunc = () => Task.FromResult(new CacheEntry<string>("success"))
+            });
+        });
+
+        Assert.ThrowsException<NotSupportedException>(() =>
+        {
+            _multilevelCacheClient.GetOrSet("test100", new CombinedCacheEntry<string>());
+        });
+
+        _multilevelCacheClient.Remove<string>("test100");
     }
 
     [TestMethod]
@@ -158,9 +183,32 @@ public class MultilevelCacheClientTest : TestBase
             DistributedCacheEntryFunc = () => new CacheEntry<Guid?>(guid, TimeSpan.FromSeconds(3))
         }));
 
+        Assert.AreEqual(null, await _multilevelCacheClient.GetOrSetAsync("test103", new CombinedCacheEntry<Guid?>()
+        {
+            DistributedCacheEntryFunc = () => new CacheEntry<Guid?>(null, TimeSpan.FromSeconds(3))
+        }));
+
+        Assert.AreEqual(null, await _multilevelCacheClient.GetOrSetAsync("test104", new CombinedCacheEntry<Guid?>()
+        {
+            DistributedCacheEntryAsyncFunc = () => Task.FromResult(new CacheEntry<Guid?>(null, TimeSpan.FromSeconds(3)))
+        }));
+
         await _multilevelCacheClient.RemoveAsync<string>("test100");
         await _multilevelCacheClient.RemoveAsync<decimal?>("test101");
         await _multilevelCacheClient.RemoveAsync<Guid?>("test102");
+        await _multilevelCacheClient.RemoveAsync<Guid?>("test103");
+        await _multilevelCacheClient.RemoveAsync<Guid?>("test104");
+    }
+
+    [TestMethod]
+    public async Task TestGetOrSet2Async()
+    {
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        {
+            await _multilevelCacheClient.GetOrSetAsync("test100", new CombinedCacheEntry<string?>());
+        });
+
+        await _multilevelCacheClient.RemoveAsync<string>("test100");
     }
 
     [TestMethod]
@@ -535,10 +583,10 @@ public class MultilevelCacheClientTest : TestBase
         var data = ((MultilevelCacheClient)_multilevelCacheClient).FormatCacheKeys<string>(list, CacheKeyType.TypeName);
         Assert.AreEqual(2, data.Count);
 
-        Assert.AreEqual("Multilevel1",data[0].Key);
-        Assert.AreEqual("String.Multilevel1",data[0].FormattedKey);
-        Assert.AreEqual("Multilevel2",data[1].Key);
-        Assert.AreEqual("String.Multilevel2",data[1].FormattedKey);
+        Assert.AreEqual("Multilevel1", data[0].Key);
+        Assert.AreEqual("String.Multilevel1", data[0].FormattedKey);
+        Assert.AreEqual("Multilevel2", data[1].Key);
+        Assert.AreEqual("String.Multilevel2", data[1].FormattedKey);
     }
 }
 #pragma warning restore CS0618

@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.Caching;
 
 public class CacheEntry<T> : CacheEntryOptions<T>
 {
-    public T Value { get; }
+    public T? Value { get; }
 
-    public CacheEntry(T value)
+    public CacheEntry(T? value)
     {
         Value = value;
     }

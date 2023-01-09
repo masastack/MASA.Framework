@@ -17,6 +17,8 @@ public interface IDistributedCacheClient : ICacheClient
 
     Task<T?> GetOrSetAsync<T>(string key, Func<CacheEntry<T>> setter, Action<CacheOptions>? action = null);
 
+    Task<T?> GetOrSetAsync<T>(string key, Func<Task<CacheEntry<T>>> setter, Action<CacheOptions>? action = null);
+
     /// <summary>
     /// Flush cache time to live
     /// </summary>
