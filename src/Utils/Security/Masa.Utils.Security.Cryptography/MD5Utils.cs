@@ -94,6 +94,7 @@ public class MD5Utils : HashAlgorithmBase
         return EncryptStream(fileStream, isToLower);
     }
 
+#pragma warning disable S4790
     /// <summary>
     /// Get the MD5 value of the data stream
     /// </summary>
@@ -108,4 +109,5 @@ public class MD5Utils : HashAlgorithmBase
         var encryptedContent = Encrypt(EncryptType.Md5, bytes, null, isToLower);
         return encryptedContent;
     }
+#pragma warning restore S4790
 }

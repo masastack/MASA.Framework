@@ -136,6 +136,7 @@ public class ProcessProvider : IProcessProvider
         return pIdList;
     }
 
+#pragma warning disable S6444
     private static List<string> GetResponse(string fileName, string arguments, string pattern)
     {
         var process = new Process()
@@ -155,6 +156,7 @@ public class ProcessProvider : IProcessProvider
         var output = process.StandardOutput.ReadToEnd();
         return Regex.Split(output, pattern).ToList();
     }
+#pragma warning restore S6444
 
     /// <summary>
     /// get the currently used port
