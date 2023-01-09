@@ -26,6 +26,7 @@ internal static class JsonElementExtensions
         };
     }
 
+#pragma warning disable S6444
     private static object GetNumber(JsonElement value)
     {
         var str = value.GetRawText();
@@ -41,6 +42,7 @@ internal static class JsonElementExtensions
             return num;
         }
     }
+#pragma warning restore S6444
 
     private static IEnumerable<KeyValuePair<string, object>> GetObject(JsonElement value)
     {

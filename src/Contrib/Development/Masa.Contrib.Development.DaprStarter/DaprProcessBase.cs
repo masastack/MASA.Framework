@@ -91,7 +91,7 @@ public abstract class DaprProcessBase
         SuccessDaprOptions ??= options;
         return commandLineBuilder;
     }
-
+#pragma warning disable S6444
     protected static ushort GetHttpPort(string data)
     {
         ushort httpPort = 0;
@@ -113,4 +113,5 @@ public abstract class DaprProcessBase
         }
         return grpcPort;
     }
+#pragma warning restore S6444
 }

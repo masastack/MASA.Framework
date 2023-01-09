@@ -18,7 +18,6 @@ public class Benchmarks
     public void GlobalSetup()
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddLogging(loggingBuilder => loggingBuilder.ClearProviders());
         services.AddMediatR(typeof(Benchmarks));
         services.AddEventBus();
         _serviceProvider = services.BuildServiceProvider();
@@ -39,9 +38,9 @@ public class Benchmarks
     [Benchmark(Baseline = true)]
     public async Task SendCouponByDirect()
     {
-        var _couponHandler = new CouponHandler(_serviceProvider);
-        await _couponHandler.SendCoupon(_userEvent);
-        await _couponHandler.SendNotice(_userEvent);
+        var couponHandler = new CouponHandler(_serviceProvider);
+        await couponHandler.SendCoupon(_userEvent);
+        await couponHandler.SendNotice(_userEvent);
     }
 
     [Benchmark]

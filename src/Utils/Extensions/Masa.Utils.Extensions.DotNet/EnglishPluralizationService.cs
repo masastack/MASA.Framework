@@ -826,6 +826,7 @@ public class EnglishPluralizationService : PluralizationService
     private bool IsCapitalized(string? word)
         => !string.IsNullOrEmpty(word) && char.IsUpper(word, 0);
 
+#pragma warning disable S6444
     private bool IsAlphabets(string word)
     {
         // return false when the word is "[\s]*" or leading or tailing with spaces
@@ -840,6 +841,7 @@ public class EnglishPluralizationService : PluralizationService
             return true;
         }
     }
+#pragma warning restore S6444
 
     [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
     private bool IsUninflective(string word)
