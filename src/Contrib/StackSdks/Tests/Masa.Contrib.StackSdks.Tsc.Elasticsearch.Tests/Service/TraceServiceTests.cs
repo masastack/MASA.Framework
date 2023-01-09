@@ -116,23 +116,25 @@ public class TraceServiceTests
     }
 
     [TestMethod]
-    public void GetAllTest()
+    public async Task GetScrollAsyncTest()
     {
-        List<TraceResponseDto> data = new List<TraceResponseDto>();
-
         var query = new ElasticsearchScrollRequestDto
         {
-            Scroll = "1m"
+            Scroll = "1m",
+            PageSize = 1
         };
-        _traceService.GetAll(query, (result) =>
-        {
-            if (result != null && result.Any())
-                data.AddRange(result);
-        });
+        var firstResult = await _traceService.ScrollAsync(query);
 
-        Assert.IsNotNull(data);
-        Assert.IsTrue(data.Any());
-        var hasNotNull = data.Any(s => s == null);
-        Assert.IsFalse(hasNotNull);
+        Assert.IsNotNull(firstResult);
+        Assert.IsNotNull(firstResult.Result);
+
+        var elasticsearchScrollResult = (ElasticsearchScrollResponseDto<TraceResponseDto>)firstResult;
+        Assert.IsNotNull(elasticsearchScrollResult.ScrollId);
+        query.ScrollId = elasticsearchScrollResult.ScrollId;
+
+        var secondResult = await _traceService.ScrollAsync(query);
+
+        Assert.IsNotNull(secondResult);
+        Assert.IsTrue(secondResult.Result.Any());       
     }
 }

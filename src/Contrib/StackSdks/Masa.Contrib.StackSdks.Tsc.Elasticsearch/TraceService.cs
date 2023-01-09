@@ -27,8 +27,10 @@ internal class TraceService : ITraceService
         return _client.SearchTraceAsync(query);
     }
 
-    public void GetAll(BaseRequestDto query, Action<IEnumerable<TraceResponseDto>> resultAction)
+    public Task<PaginatedListBase<TraceResponseDto>> ScrollAsync(BaseRequestDto query)
     {
-        _client.ScrollQuery((ElasticsearchScrollRequestDto)query, resultAction);
+        if (query is not ElasticsearchScrollRequestDto)
+            throw new UserFriendlyException("parameter: query must is type: ElasticsearchScrollRequestDto");
+        return _client.SearchTraceAsync(query);
     }
 }

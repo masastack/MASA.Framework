@@ -3,9 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Model;
 
-public class ElasticsearchScrollRequestDto : BaseRequestDto
+public class ElasticsearchScrollResponseDto<TResult>: PaginatedListBase<TResult> where TResult : class
 {
-    public string Scroll { get; set; }
-
     public string ScrollId { get; set; }
 }

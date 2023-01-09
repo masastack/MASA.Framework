@@ -13,14 +13,18 @@ internal static class IElasticClientExtenstion
     {
         try
         {
-            if (resultFunc is null)
-                return;
-            var searchResponse = await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)));
+            if (resultFunc is null) return;
+            ISearchResponse<TResult> searchResponse;
+            if (query is ElasticsearchScrollRequestDto scrollQuery)
+                searchResponse = string.IsNullOrEmpty(scrollQuery.ScrollId) ?
+                                            await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)).Scroll(scrollQuery.Scroll)) :
+                                            await client.ScrollAsync<TResult>(scrollQuery.Scroll, scrollQuery.ScrollId);
+            else
+                searchResponse = await client.SearchAsync<TResult>(s => searchDescriptorFunc(s.Index(indexName)));
+
             searchResponse.FriendlyElasticException();
             if (searchResponse.IsValid)
-            {
                 resultFunc.Invoke(searchResponse, query);
-            }
         }
         catch (Exception ex)
         {
@@ -114,9 +118,7 @@ internal static class IElasticClientExtenstion
     public static void FriendlyElasticException<T>(this ISearchResponse<T> response) where T : class
     {
         if (!response.IsValid)
-        {
-            throw new UserFriendlyException($"elastic query error: status:{response.ServerError?.Status},message:{response.OriginalException?.Message ?? response.ServerError?.ToString()}");
-        }
+            throw new UserFriendlyException($"elastic query error: status: {response.ServerError?.Status}, message: {response.OriginalException?.Message ?? response.ServerError?.ToString()}, DebugInformation: {response.DebugInformation}");
     }
 
     #endregion
@@ -156,7 +158,10 @@ internal static class IElasticClientExtenstion
         (SearchDescriptor<object> searchDescriptor) => searchDescriptor.AddCondition(query, false)
         .AddSort(query, false)
         .AddPageSize(query, true),
-        (response, q) => result = SetTraceResult(response));
+        (response, q) =>
+        {
+            result = q is ElasticsearchScrollRequestDto ? SetTraceScrollResult(response) : SetTraceResult(response);
+        });
         return result;
     }
 
@@ -292,7 +297,7 @@ internal static class IElasticClientExtenstion
             query.Page = 1;
         if (query.PageSize <= 0)
             query.PageSize = 20;
-        if (!hasPage)
+        if (query is ElasticsearchScrollRequestDto || !hasPage)
             return container.Size(query.PageSize);
 
         var start = (query.Page - 1) * query.PageSize;
@@ -326,8 +331,7 @@ internal static class IElasticClientExtenstion
 
     #endregion
 
-    #region set result
-
+    #region set result    
     private static PaginatedListBase<LogResponseDto> SetLogResult(ISearchResponse<object> response)
     {
         var options = new JsonSerializerOptions();
@@ -342,8 +346,15 @@ internal static class IElasticClientExtenstion
         var options = new JsonSerializerOptions();
         options.Converters.Add(new TraceResponseDtoConverter());
         var text = JsonSerializer.Serialize(response.Documents);
-
         return new PaginatedListBase<TraceResponseDto> { Total = response.Total, Result = JsonSerializer.Deserialize<List<TraceResponseDto>>(text, options)! };
+    }
+
+    private static ElasticsearchScrollResponseDto<TraceResponseDto> SetTraceScrollResult(ISearchResponse<object> response)
+    {
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new TraceResponseDtoConverter());
+        var text = JsonSerializer.Serialize(response.Documents);
+        return new ElasticsearchScrollResponseDto<TraceResponseDto> { Total = response.Total, Result = JsonSerializer.Deserialize<List<TraceResponseDto>>(text, options)!, ScrollId = response.ScrollId };
     }
 
     #endregion
@@ -457,38 +468,6 @@ internal static class IElasticClientExtenstion
             else
                 keyword = field;
         }
-    }
-
-    #endregion
-
-    #region scroll query
-
-    internal static void ScrollQuery(this IElasticClient client, ElasticsearchScrollRequestDto query, Action<IEnumerable<TraceResponseDto>> action)
-    {
-        int numberOfSlices = Environment.ProcessorCount;
-        if (numberOfSlices <= 1)
-            numberOfSlices = 2;
-        var scrollAllObservable = client.ScrollAll<object>(query.Scroll, numberOfSlices, sc => sc
-           .MaxDegreeOfParallelism(numberOfSlices)
-           .Search(s => s.Index(ElasticConstant.Trace.IndexName).AddCondition(query, false))
-       );
-
-        var waitHandle = new ManualResetEvent(false);
-        ExceptionDispatchInfo? info = null;
-
-        var scrollAllObserver = new ScrollAllObserver<object>(
-            onNext: response => action(SetTraceResult(response.SearchResponse).Result),
-            onError: e =>
-            {
-                info = ExceptionDispatchInfo.Capture(e);
-                waitHandle.Set();
-            },
-            onCompleted: () => waitHandle.Set()
-        );
-
-        scrollAllObservable.Subscribe(scrollAllObserver);
-        waitHandle.WaitOne();
-        info?.Throw();
     }
 
     #endregion
