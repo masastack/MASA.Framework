@@ -91,6 +91,9 @@ public class RedisCacheClient : RedisCacheClientBase
         return GetAndRefresh(key, () =>
         {
             var cacheEntry = setter();
+            if (cacheEntry.Value == null)
+                return default;
+
             SetCore(key, cacheEntry.Value, cacheEntry);
             return cacheEntry.Value;
         });
@@ -110,6 +113,9 @@ public class RedisCacheClient : RedisCacheClientBase
         return await GetAndRefreshAsync(key, async () =>
         {
             var cacheEntry = setter();
+            if (cacheEntry.Value == null)
+                return default;
+
             await SetCoreAsync(key, cacheEntry.Value, cacheEntry).ConfigureAwait(false);
             return cacheEntry.Value;
         }).ConfigureAwait(false);
