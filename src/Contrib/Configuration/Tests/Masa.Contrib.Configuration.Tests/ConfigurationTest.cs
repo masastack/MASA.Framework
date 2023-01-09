@@ -212,7 +212,8 @@ public class ConfigurationTest
         await File.WriteAllTextAsync(Path.Combine(rootPath, "customAppConfig.json"),
             System.Text.Json.JsonSerializer.Serialize(new { RedisOptions = newRedisOption }));
 
-        Thread.Sleep(2000);
+        await Task.Delay(2000);
+
         var option = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
         Assert.IsTrue(option.CurrentValue.Ip == "" && option.CurrentValue.Port == 6379);
 

@@ -8,7 +8,5 @@ public interface IEventBus
     Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IEvent;
 
-    IEnumerable<Type> GetAllEventTypes();
-
     Task CommitAsync(CancellationToken cancellationToken = default);
 }

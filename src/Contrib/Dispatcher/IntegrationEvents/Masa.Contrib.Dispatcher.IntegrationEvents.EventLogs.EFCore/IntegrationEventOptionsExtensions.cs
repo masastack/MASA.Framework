@@ -19,13 +19,17 @@ public static class IntegrationEventOptionsExtensions
         this IIntegrationEventOptions options,
         bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext, IMasaDbContext
     {
-        MasaArgumentException.ThrowIfNull(options.Services, nameof(options.Services));
+        MasaArgumentException.ThrowIfNull(options.Services);
 
         if (options.Services.Any(service => service.ImplementationType == typeof(EventLogProvider))) return options;
 
         options.Services.AddSingleton<EventLogProvider>();
 
-        options.Services.TryAddScoped<IIntegrationEventLogService, IntegrationEventLogService>();
+        var integrationEventTypes = options.Assemblies.SelectMany(assembly => assembly.GetTypes()).Where(type => type.IsClass &&typeof(IIntegrationEvent).IsAssignableFrom(type)).Distinct();
+        options.Services.TryAddScoped<IIntegrationEventLogService>(serviceProvider => new IntegrationEventLogService(
+            integrationEventTypes,
+            serviceProvider.GetRequiredService<IntegrationEventLogContext>(),
+            serviceProvider.GetService<ILogger<IntegrationEventLogService>>()));
 
         //Add local message table model mapping
         if (!disableEntityTypeConfiguration)

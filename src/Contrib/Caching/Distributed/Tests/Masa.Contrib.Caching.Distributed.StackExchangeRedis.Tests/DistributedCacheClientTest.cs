@@ -688,7 +688,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        Thread.Sleep(3000);
+        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
         Assert.IsTrue(timer == 1);
     }
 
@@ -713,7 +713,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        Thread.Sleep(3000);
+        await Task.Delay(3000);
         Assert.IsTrue(timer == 1);
     }
 

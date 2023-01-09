@@ -19,7 +19,7 @@ public static class MasaApp
 
     private static IServiceCollection Services { get; set; } = new ServiceCollection();
 
-    private static Assembly[]? Assemblies { get; set; }
+    private static IEnumerable<Assembly>? Assemblies { get; set; }
 
     /// <summary>
     /// Global JsonSerializerOptions configuration
@@ -67,13 +67,31 @@ public static class MasaApp
     }
 
     /// <summary>
+    /// Set the global Assembly collection (only if Assembly is not assigned a value)
+    /// </summary>
+    /// <param name="assemblies"></param>
+    public static void TrySetAssemblies(IEnumerable<Assembly> assemblies)
+    {
+        ArgumentNullException.ThrowIfNull(assemblies);
+
+        Assemblies ??= assemblies.ToArray();
+    }
+
+    /// <summary>
     /// Set the global Assembly collection
     /// </summary>
     /// <param name="assemblies"></param>
     public static void SetAssemblies(params Assembly[] assemblies)
         => Assemblies = assemblies;
 
-    public static Assembly[] GetAssemblies() => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
+    /// <summary>
+    /// Set the global Assembly collection
+    /// </summary>
+    /// <param name="assemblies"></param>
+    public static void SetAssemblies(IEnumerable<Assembly> assemblies)
+        => Assemblies = assemblies;
+
+    public static IEnumerable<Assembly> GetAssemblies() => Assemblies ?? AppDomain.CurrentDomain.GetAssemblies();
 
     public static void TrySetJsonSerializerOptions(JsonSerializerOptions jsonSerializerOptions)
     {

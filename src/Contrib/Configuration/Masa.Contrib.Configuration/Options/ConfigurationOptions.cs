@@ -7,7 +7,7 @@ namespace Masa.Contrib.Configuration;
 
 public class ConfigurationOptions
 {
-    public Assembly[] Assemblies { get; set; }
+    public IEnumerable<Assembly> Assemblies { get; set; }
 
     public List<Type> ExcludeConfigurationSourceTypes { get; set; }
 

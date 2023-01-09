@@ -8,20 +8,17 @@ public class DomainEventBus : IDomainEventBus
     private readonly IEventBus _eventBus;
     private readonly IIntegrationEventBus _integrationEventBus;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly DispatcherOptions _options;
 
     private readonly ConcurrentQueue<IDomainEvent> _eventQueue = new();
 
     public DomainEventBus(
         IEventBus eventBus,
         IIntegrationEventBus integrationEventBus,
-        IUnitOfWork unitOfWork,
-        IOptions<DispatcherOptions> options)
+        IUnitOfWork unitOfWork)
     {
         _eventBus = eventBus;
         _integrationEventBus = integrationEventBus;
         _unitOfWork = unitOfWork;
-        _options = options.Value;
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
@@ -74,6 +71,4 @@ public class DomainEventBus : IDomainEventBus
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
         => await _unitOfWork.CommitAsync(cancellationToken);
-
-    public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes.Concat(_eventBus.GetAllEventTypes()).Distinct();
 }

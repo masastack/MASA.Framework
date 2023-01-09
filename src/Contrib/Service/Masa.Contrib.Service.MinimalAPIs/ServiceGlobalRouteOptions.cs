@@ -5,7 +5,7 @@ namespace Masa.Contrib.Service.MinimalAPIs;
 
 public class ServiceGlobalRouteOptions : ServiceRouteOptions
 {
-    public Assembly[] Assemblies { get; set; }
+    public IEnumerable<Assembly> Assemblies { get; set; }
 
     public Action<RouteHandlerBuilder>? RouteHandlerBuilder { get; set; }
 

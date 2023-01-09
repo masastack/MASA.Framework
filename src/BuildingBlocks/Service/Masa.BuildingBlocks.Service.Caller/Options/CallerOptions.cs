@@ -11,9 +11,9 @@ public class CallerOptions
 
     public IServiceCollection Services { get; }
 
-    private Assembly[]? _assemblies;
+    private IEnumerable<Assembly>? _assemblies;
 
-    public Assembly[] Assemblies
+    public IEnumerable<Assembly> Assemblies
     {
         get => _assemblies ?? MasaApp.GetAssemblies();
         set

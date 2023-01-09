@@ -234,7 +234,7 @@ public class MultilevelCacheTest : TestBase
                     }
                 }
             }));
-        Thread.Sleep(2000);
+        await Task.Delay(2000);
 
         subscribeKeyPrefix =
             (string)multilevelCacheClientType.GetField(
