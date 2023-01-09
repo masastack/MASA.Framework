@@ -18,6 +18,6 @@ public class Publisher : IPublisher
 
     public async Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
     {
-        await DaprClient.PublishEventAsync(_pubSubName, topicName, @event, stoppingToken);
+        await DaprClient.PublishEventAsync<object>(_pubSubName, topicName, @event, stoppingToken);
     }
 }
