@@ -15,9 +15,9 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     bool TransactionHasBegun { get; }
 
     /// <summary>
-    /// Whether to use transaction
+    /// Whether to use transaction, when the value is null, the provider decides whether to use transaction according to the scenario
     /// </summary>
-    bool UseTransaction { get; set; }
+    bool? UseTransaction { get; set; }
 
     /// <summary>
     /// Disable transaction rollback after failure

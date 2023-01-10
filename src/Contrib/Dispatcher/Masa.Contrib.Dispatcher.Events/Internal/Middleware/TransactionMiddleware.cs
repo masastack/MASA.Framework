@@ -21,6 +21,8 @@ internal class TransactionMiddleware<TEvent> : Middleware<TEvent>
     {
         try
         {
+            if (_unitOfWork is { UseTransaction: null }) _unitOfWork.UseTransaction = true;
+
             await next();
 
             if (_unitOfWork != null)

@@ -12,7 +12,7 @@ internal static class ServiceCollectionExtensions
         string paramName,
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
-        bool useTransaction = true)
+        bool? useTransaction = null)
         where TDbContext : MasaDbContext, IMasaDbContext
         where TUserId : IComparable
     {

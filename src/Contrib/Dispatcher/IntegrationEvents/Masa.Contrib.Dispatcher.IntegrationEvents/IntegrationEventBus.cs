@@ -54,7 +54,12 @@ public class IntegrationEventBus : IIntegrationEventBus
         if (@event.UnitOfWork is { UseTransaction: true } && _eventLogService != null)
         {
             _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
-            await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork!.Transaction, cancellationToken);
+            await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork.Transaction, cancellationToken);
+
+#pragma warning disable S1135
+            //todo: Status changes will be notified by local messaging services after subsequent upgrades
+            @event.UnitOfWork.CommitState = CommitState.UnCommited;
+#pragma warning disable S1135
         }
         else
         {

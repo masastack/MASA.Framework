@@ -13,9 +13,11 @@ public class EventBus : IEventBus
 
     private readonly IUnitOfWork? _unitOfWork;
 
-    private readonly string LoadEventHelpLink = "https://github.com/masastack/Masa.Contrib/tree/main/docs/LoadEvent.md";
+#pragma warning disable S5332
+    private const string LOAD_EVENT_HELP_LINK = "http://docs.masastack.com/framework/concepts/faq/load-event";
+#pragma warning restore S5332
 
-    public readonly IInitializeServiceProvider _initializeServiceProvider;
+    private readonly IInitializeServiceProvider _initializeServiceProvider;
 
     public EventBus(IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
@@ -38,7 +40,7 @@ public class EventBus : IEventBus
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
             throw new NotSupportedException(
-                $"Getting \"{eventType.Name}\" relationship chain failed, see {LoadEventHelpLink} for details. ");
+                $"Getting \"{eventType.Name}\" relationship chain failed, see {LOAD_EVENT_HELP_LINK} for details. ");
         }
 
         if (_options.UnitOfWorkRelation[eventType])
@@ -58,8 +60,6 @@ public class EventBus : IEventBus
         };
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
-
-    public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes;
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
