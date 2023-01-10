@@ -13,7 +13,9 @@ public class EventBus : IEventBus
 
     private readonly IUnitOfWork? _unitOfWork;
 
-    private readonly string _loadEventHelpLink = "http://docs.masastack.com/framework/concepts/faq/load-event";
+#pragma warning disable S5332
+    private const string LOAD_EVENT_HELP_LINK = "http://docs.masastack.com/framework/concepts/faq/load-event";
+#pragma warning restore S5332
 
     private readonly IInitializeServiceProvider _initializeServiceProvider;
 
@@ -38,7 +40,7 @@ public class EventBus : IEventBus
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
             throw new NotSupportedException(
-                $"Getting \"{eventType.Name}\" relationship chain failed, see {_loadEventHelpLink} for details. ");
+                $"Getting \"{eventType.Name}\" relationship chain failed, see {LOAD_EVENT_HELP_LINK} for details. ");
         }
 
         if (_options.UnitOfWorkRelation[eventType])
