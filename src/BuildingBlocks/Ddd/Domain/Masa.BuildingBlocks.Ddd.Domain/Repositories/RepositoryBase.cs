@@ -149,7 +149,7 @@ public abstract class RepositoryBase<TEntity> :
         };
     }
 
-    public async Task<PaginatedList<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, PaginatedOptions options, CancellationToken cancellationToken = default)
+    public virtual async Task<PaginatedList<TEntity>> GetPaginatedListAsync(Expression<Func<TEntity, bool>> predicate, PaginatedOptions options, CancellationToken cancellationToken = default)
     {
         var result = await GetPaginatedListAsync(
             predicate,
