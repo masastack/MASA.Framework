@@ -6,13 +6,135 @@ namespace Masa.Contrib.Data.UoW.EFCore.Tests;
 [TestClass]
 public class UnitOfWorkTest : TestBase
 {
-    private Mock<IDispatcherOptions> _options;
+    private UnitOfWork<CustomDbContext> _unitOfWork;
+    private CustomDbContext _dbContext;
 
     [TestInitialize]
     public void Initialize()
     {
-        _options = new();
-        _options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(Connection));
+        var serviceProvider = services.BuildServiceProvider();
+        _dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        _dbContext.Database.EnsureCreated();
+        _unitOfWork = new UnitOfWork<CustomDbContext>(serviceProvider);
+    }
+
+    [TestMethod]
+    public void TestUnitOfWork()
+    {
+        _unitOfWork.UseTransaction = false;
+        Assert.ThrowsException<NotSupportedException>(() => _unitOfWork.Transaction);
+        Assert.AreEqual(false, _unitOfWork.TransactionHasBegun);
+        Assert.AreEqual(false, _unitOfWork.DisableRollbackOnFailure);
+        Assert.AreEqual(EntityState.UnChanged, _unitOfWork.EntityState);
+        Assert.AreEqual(CommitState.Commited, _unitOfWork.CommitState);
+    }
+
+    [TestMethod]
+    public async Task TestCommitByUseTransactionIsNullAsync()
+    {
+        Assert.AreEqual(null, _unitOfWork.UseTransaction);
+        var transaction = _unitOfWork.Transaction;
+        Assert.IsNotNull(transaction);
+        var user = new Users()
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        _unitOfWork.EntityState = EntityState.Changed;
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.CommitAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(1, count);
+    }
+
+    [TestMethod]
+    public async Task TestCommitByUseTransactionIsFalseAsync()
+    {
+        _unitOfWork.UseTransaction = false;
+        var user = new Users()
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        _unitOfWork.EntityState = EntityState.Changed;
+        await _unitOfWork.SaveChangesAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(1, count);
+    }
+
+    [TestMethod]
+    public async Task TestCommitByUseTransactionIsFalseAndEntityStateIsUnChangedAsync()
+    {
+        _unitOfWork.UseTransaction = false;
+        var user = new Users()
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        await _unitOfWork.SaveChangesAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(0, count);
+    }
+
+    [TestMethod]
+    public async Task TestCommitByUseTransactionIsTrueAsync()
+    {
+        _unitOfWork.UseTransaction = true;
+        _ = _unitOfWork.Transaction;
+        var user = new Users
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        _unitOfWork.EntityState = EntityState.Changed;
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.CommitAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(1, count);
+    }
+
+    [TestMethod]
+    public async Task TestRollbackAsync()
+    {
+        _unitOfWork.UseTransaction = true;
+        _ = _unitOfWork.Transaction;
+        var user = new Users
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        _unitOfWork.EntityState = EntityState.Changed;
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.RollbackAsync();
+        await _unitOfWork.CommitAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(0, count);
+    }
+
+    [TestMethod]
+    public async Task TestRollbackByUseTransactionIsFalseAsync()
+    {
+        _unitOfWork.UseTransaction = false;
+        Assert.AreEqual(false, _unitOfWork.TransactionHasBegun);
+        var user = new Users
+        {
+            Name = Guid.NewGuid().ToString()
+        };
+        _dbContext.Add(user);
+        _unitOfWork.EntityState = EntityState.Changed;
+        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.RollbackAsync();
+        await _unitOfWork.CommitAsync();
+
+        var count = await _dbContext.User.CountAsync();
+        Assert.AreEqual(1, count);
     }
 
     [TestMethod]
@@ -25,180 +147,30 @@ public class UnitOfWorkTest : TestBase
     [TestMethod]
     public void TestAddUoWAndUseSqlLite()
     {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetRequiredService<CustomDbContext>());
+        Mock<IDispatcherOptions> options = new();
+        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        options.Object.UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString));
+        var serviceProvider = options.Object.Services.BuildServiceProvider();
+        Assert.IsNotNull(serviceProvider.GetService<CustomDbContext>());
+        Assert.IsNotNull(serviceProvider.GetService<IDbConnectionStringProvider>());
+        Assert.IsNotNull(serviceProvider.GetService<IUnitOfWork>());
+        Assert.IsNotNull(serviceProvider.GetService<IUnitOfWorkAccessor>());
     }
 
     [TestMethod]
     public void TestAddMultUoW()
     {
-        _options.Object
-            .UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString))
-            .UseUoW<CustomDbContext>(options => options.UseTestSqlite(_connectionString));
+        Mock<IDispatcherOptions> options = new();
+        options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
+        options.Object
+            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString))
+            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString));
 
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
+        var serviceProvider = options.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);
-    }
-
-    [TestMethod]
-    public void TestTransaction()
-    {
-        Mock<IUnitOfWork> uoW = new();
-        Assert.IsTrue(new Transaction(uoW.Object).UnitOfWork!.Equals(uoW.Object));
-    }
-
-    [TestMethod]
-    public async Task TestUseTransactionAsync()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
-
-        var transaction = uoW.Transaction;
-        Users user = new Users()
-        {
-            Name = Guid.NewGuid().ToString()
-        };
-        dbContext.Add(user);
-        uoW.EntityState = EntityState.Changed;
-        await uoW.SaveChangesAsync();
-        uoW.CommitState = CommitState.UnCommited;
-        await uoW.RollbackAsync();
-
-        Assert.IsTrue(!dbContext.User.ToList().Any());
-    }
-
-    [TestMethod]
-    public async Task TestCommitAsync()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = new UnitOfWork<CustomDbContext>(serviceProvider);
-        var user = new Users()
-        {
-            Name = "Tom"
-        };
-        var transaction = uoW.Transaction;
-        dbContext.User.Add(user);
-        uoW.EntityState = EntityState.Changed;
-        await uoW.SaveChangesAsync();
-        uoW.CommitState = CommitState.UnCommited;//todo: Using Repository does not require manual changes to Commit status
-        await uoW.CommitAsync();
-
-        Assert.IsTrue(dbContext.User.ToList().Count == 1);
-    }
-
-    [TestMethod]
-    public async Task TestOpenRollbackAsync()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
-        var user = new Users();
-        var transaction = uoW.Transaction;
-        dbContext.User.Add(user);
-        await uoW.CommitAsync();
-
-        Assert.IsTrue(!await dbContext.User.AnyAsync());
-    }
-
-    [TestMethod]
-    public async Task TestAddLoggerAndOpenRollbackAsync()
-    {
-        _options.Object.Services.AddLogging();
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var uoW = serviceProvider.GetRequiredService<IUnitOfWork>();
-        var user = new Users();
-        var transaction = uoW.Transaction;
-        dbContext.User.Add(user);
-        await uoW.CommitAsync();
-
-        Assert.IsTrue(!await dbContext.User.AnyAsync());
-    }
-
-    [TestMethod]
-    public void TestDataConnectionString()
-    {
-        IConfiguration configuration = new ConfigurationManager();
-        _options.Object.Services.AddSingleton(_ => configuration);
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var dataConnectionStringProvider = serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
-        Assert.IsTrue(dataConnectionStringProvider.DbContextOptionsList.Count == 1 &&
-            dataConnectionStringProvider.DbContextOptionsList.Any(option => option.ConnectionString == _connectionString));
-    }
-
-    [TestMethod]
-    public void TestUnitOfWorkManager()
-    {
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseTestSqlite(Connection));
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
-        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        var dbContext2 = serviceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(dbContext.Equals(dbContext2));
-
-        var newUnitOfWork =
-            unitOfWorkManager.CreateDbContext(
-                new MasaDbContextConfigurationOptions(_connectionString));
-        Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
-        var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsFalse(dbContext.Equals(newDbContext));
-
-        Assert.ThrowsException<ArgumentException>(()
-            => unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("")));
-    }
-
-    [TestMethod]
-    public async Task TestUnitOfWorkAccessorAsync()
-    {
-        var services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
-        {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = _connectionString
-            };
-        });
-        _options.Setup(option => option.Services).Returns(services).Verifiable();
-        _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
-        var serviceProvider = _options.Object.Services.BuildServiceProvider();
-        var unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessor is { CurrentDbContextOptions: null });
-        var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-        Assert.IsNotNull(unitOfWork);
-        Assert.IsTrue(!unitOfWork.TransactionHasBegun);
-        unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null && unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString ==
-            _connectionString);
-
-        var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
-        var unitOfWorkNew = unitOfWorkManager.CreateDbContext(false);
-        var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null &&
-            unitOfWorkAccessorNew.CurrentDbContextOptions.ConnectionString ==
-            _connectionString);
-
-        var unitOfWorkNew2 =
-            unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("test"));
-        var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessorNew2!.CurrentDbContextOptions != null &&
-            unitOfWorkAccessorNew2.CurrentDbContextOptions.ConnectionString == "test");
-
-        var connectionString =
-            await unitOfWorkNew2.ServiceProvider.GetRequiredService<IConnectionStringProvider>().GetConnectionStringAsync();
-        Assert.IsTrue(connectionString == "test");
+        Assert.AreEqual(1, serviceProvider.GetServices<IDbConnectionStringProvider>().Count());
+        Assert.AreEqual(1, serviceProvider.GetServices<IUnitOfWork>().Count());
+        Assert.AreEqual(1, serviceProvider.GetServices<IUnitOfWorkAccessor>().Count());
     }
 
     [TestMethod]
@@ -216,63 +188,9 @@ public class UnitOfWorkTest : TestBase
         eventBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
         eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
 
-        var serviecProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkManager>());
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkAccessor>());
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWork>());
-    }
-
-#pragma warning disable CS0618
-    [TestMethod]
-    public void TestUnitOfWorkAndAddMasaConfiguationReturnUnitOfWorkIsNotNull()
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.AddMasaConfiguration();
-        Mock<IEventBusBuilder> eventBuilder = new();
-        eventBuilder.Setup(eb => eb.Services).Returns(builder.Services).Verifiable();
-        eventBuilder.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
-
-        var serviecProvider = builder.Services.BuildServiceProvider();
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkManager>());
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWorkAccessor>());
-        Assert.IsNotNull(serviecProvider.GetService<IUnitOfWork>());
-
-        var customDbContext = serviecProvider.GetRequiredService<CustomDbContext>();
-        Assert.IsTrue(GetDataBaseConnectionString(customDbContext) ==
-            serviecProvider.GetRequiredService<IMasaConfiguration>().Local[
-                "ConnectionStrings:DefaultConnection"]);
-    }
-#pragma warning restore CS0618
-
-    [TestMethod]
-    public async Task TestGetConnectionStringAndCurrentDbContextOptionsAsyncReturnTest1()
-    {
-        Mock<IUnitOfWorkAccessor> unitOfWorkAccessor = new();
-        string connectionString = "Test1";
-        unitOfWorkAccessor.Setup(accessor => accessor.CurrentDbContextOptions)
-            .Returns(new MasaDbContextConfigurationOptions(connectionString));
-        var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object, null!);
-        Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
-    }
-
-    [TestMethod]
-    public async Task TestGetConnectionStringAsyncReturnTest1()
-    {
-        Mock<IUnitOfWorkAccessor> unitOfWorkAccessor = new();
-        string connectionString = "Test1";
-        IServiceCollection services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
-        {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = connectionString
-            };
-        });
         var serviceProvider = services.BuildServiceProvider();
-        var connectionStringProvider = new DefaultConnectionStringProvider(unitOfWorkAccessor.Object,
-            serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>());
-        Assert.IsTrue(await connectionStringProvider.GetConnectionStringAsync() == connectionString);
+        Assert.IsNotNull(serviceProvider.GetService<IUnitOfWorkManager>());
+        Assert.IsNotNull(serviceProvider.GetService<IUnitOfWorkAccessor>());
+        Assert.IsNotNull(serviceProvider.GetService<IUnitOfWork>());
     }
-
-    private static string GetDataBaseConnectionString(CustomDbContext dbContext) => dbContext.Database.GetConnectionString()!;
 }

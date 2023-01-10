@@ -14,18 +14,16 @@ public class DispatcherOptions
 
     internal Dictionary<Type, bool> UnitOfWorkRelation { get; } = new();
 
-    public IEnumerable<Type> AllEventTypes { get; }
-
     private DispatcherOptions(IServiceCollection services) => Services = services;
 
     public DispatcherOptions(IServiceCollection services, Assembly[] assemblies)
         : this(services)
     {
         Assemblies = assemblies;
-        AllEventTypes = assemblies
+        var allEventTypes = assemblies
             .SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && typeof(IEvent).IsAssignableFrom(type))
             .ToList();
-        UnitOfWorkRelation = AllEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
+        UnitOfWorkRelation = allEventTypes.ToDictionary(type => type, IsSupportUnitOfWork);
     }
 }

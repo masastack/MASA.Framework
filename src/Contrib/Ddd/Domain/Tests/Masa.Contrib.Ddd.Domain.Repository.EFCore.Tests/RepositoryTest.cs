@@ -30,6 +30,29 @@ public class RepositoryTest
         await repository.AddRangeAsync(orders);
         dbContext.Verify(context => context.AddRangeAsync(It.IsAny<IEnumerable<Orders>>(), default), Times.Once);
         unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestAddRangeReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.AddRangeAsync(It.IsAny<Orders[]>(), default))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uow => uow.UseTransaction).Returns(false);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var orders = new List<Orders>()
+        {
+            new(9999)
+        };
+        await repository.AddRangeAsync(orders);
+        dbContext.Verify(context => context.AddRangeAsync(It.IsAny<IEnumerable<Orders>>(), default), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
         unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
@@ -76,6 +99,29 @@ public class RepositoryTest
         await repository.UpdateRangeAsync(orders);
         dbContext.Verify(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
         unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestUpdateRangeReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uow => uow.UseTransaction).Returns(false);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var orders = new List<Orders>()
+        {
+            new(9999)
+        };
+        await repository.UpdateRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
         unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
@@ -88,10 +134,9 @@ public class RepositoryTest
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
-        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(true).Verifiable();
         var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
-        Assert.IsTrue(repository.UnitOfWork.UseTransaction);
+        Assert.IsNull(repository.UnitOfWork.UseTransaction);
 
         var orders = new List<Orders>()
         {
@@ -104,6 +149,30 @@ public class RepositoryTest
     }
 
     [TestMethod]
+    public async Task TestUpdateRangeAndUseTransactionReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uoW => uoW.UseTransaction).Returns(false).Verifiable();
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+        Assert.IsFalse(repository.UnitOfWork.UseTransaction);
+
+        var orders = new List<Orders>()
+        {
+            new(9999)
+        };
+        await repository.UpdateRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().UpdateRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
+    }
+
+    [TestMethod]
     public async Task TestUpdateReturnEntityStateEqualChangedAsync()
     {
         Mock<CustomDbContext> dbContext = new();
@@ -112,6 +181,26 @@ public class RepositoryTest
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var order = new Orders(999);
+        await repository.UpdateAsync(order);
+        dbContext.Verify(context => context.Set<Orders>().Update(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestUpdateReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Update(It.IsAny<Orders>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uow => uow.UseTransaction).Returns(false);
         var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
@@ -162,6 +251,29 @@ public class RepositoryTest
         await repository.RemoveRangeAsync(orders);
         dbContext.Verify(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
         unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveRangeReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uow => uow.UseTransaction).Returns(false);
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var orders = new List<Orders>()
+        {
+            new(9999)
+        };
+        await repository.RemoveRangeAsync(orders);
+        dbContext.Verify(context => context.Set<Orders>().RemoveRange(It.IsAny<IEnumerable<Orders>>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
         unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Never);
     }
 
@@ -198,6 +310,26 @@ public class RepositoryTest
             .Verifiable();
 
         Mock<IUnitOfWork> unitOfWork = new();
+        var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
+        Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
+
+        var order = new Orders(999);
+        await repository.RemoveAsync(order);
+        dbContext.Verify(context => context.Set<Orders>().Remove(It.IsAny<Orders>()), Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.EntityState = EntityState.Changed, Times.Once);
+        unitOfWork.VerifySet(uoW => uoW.CommitState = CommitState.UnCommited, Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestRemoveReturnEntityStateEqualChanged2Async()
+    {
+        Mock<CustomDbContext> dbContext = new();
+        dbContext
+            .Setup(context => context.Set<Orders>().Remove(It.IsAny<Orders>()))
+            .Verifiable();
+
+        Mock<IUnitOfWork> unitOfWork = new();
+        unitOfWork.Setup(uow => uow.UseTransaction).Returns(false);
         var repository = new Repository<CustomDbContext, Orders>(dbContext.Object, unitOfWork.Object);
         Assert.IsTrue(repository.EntityState == EntityState.UnChanged);
 
