@@ -59,8 +59,6 @@ public class EventBus : IEventBus
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
-    public IEnumerable<Type> GetAllEventTypes() => _options.AllEventTypes;
-
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_unitOfWork is null)

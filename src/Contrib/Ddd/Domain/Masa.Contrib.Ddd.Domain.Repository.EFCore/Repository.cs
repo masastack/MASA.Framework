@@ -209,7 +209,7 @@ public class Repository<TDbContext, TEntity> :
     /// </summary>
     private void CheckAndOpenTransaction()
     {
-        if (!UnitOfWork.UseTransaction)
+        if (UnitOfWork.UseTransaction is false)
             return;
 
         if (!UnitOfWork.TransactionHasBegun)

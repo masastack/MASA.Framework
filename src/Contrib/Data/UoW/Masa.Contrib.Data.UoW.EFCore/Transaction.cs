@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EFCore;
 
+[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class Transaction : ITransaction
 {
     [JsonIgnore]

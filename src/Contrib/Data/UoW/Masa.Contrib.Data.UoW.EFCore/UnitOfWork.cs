@@ -15,7 +15,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
     {
         get
         {
-            if (!UseTransaction)
+            if (UseTransaction is false)
                 throw new NotSupportedException("Doesn't support transaction opening");
 
             if (TransactionHasBegun)
@@ -33,7 +33,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public CommitState CommitState { get; set; } = CommitState.Commited;
 
-    public bool UseTransaction { get; set; } = true;
+    public bool? UseTransaction { get; set; } = null;
 
     public UnitOfWork(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
@@ -48,7 +48,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        var domainEventBus = GetDomainEventBus();
+        var domainEventBus = ServiceProvider.GetService<IDomainEventBus>();
         while (domainEventBus != null && await domainEventBus.AnyQueueAsync())
         {
             await domainEventBus.PublishQueueAsync();
@@ -56,7 +56,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
             await SaveChangesAsync(cancellationToken);
         }
 
-        if (UseTransaction && TransactionHasBegun && CommitState == CommitState.UnCommited)
+        if (UseTransaction is not false && TransactionHasBegun && CommitState == CommitState.UnCommited)
         {
             await Context.Database.CommitTransactionAsync(cancellationToken);
             CommitState = CommitState.Commited;
@@ -65,7 +65,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
 
     public async Task RollbackAsync(CancellationToken cancellationToken = default)
     {
-        if (!UseTransaction || !TransactionHasBegun)
+        if (UseTransaction is false || !TransactionHasBegun)
             return;
 
         if (TransactionHasBegun)
@@ -80,8 +80,8 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
     /// </summary>
     private void DetachAll()
     {
-        var entityEntrys = Context.ChangeTracker.Entries();
-        foreach (var entry in entityEntrys)
+        var entityEntries = Context.ChangeTracker.Entries();
+        foreach (var entry in entityEntries)
         {
             if (entry != null)
             {
@@ -111,7 +111,4 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
     protected virtual void Dispose(bool disposing)
     {
     }
-
-    private IDomainEventBus? GetDomainEventBus()
-        => ServiceProvider.GetService<IDomainEventBus>();
 }
