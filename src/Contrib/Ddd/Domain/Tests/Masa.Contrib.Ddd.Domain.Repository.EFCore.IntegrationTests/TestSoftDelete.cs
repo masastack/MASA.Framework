@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Ddd.Domain.Repository.EFCore.IntegrationTests;
@@ -81,16 +81,16 @@ public class TestSoftDelete
         Assert.IsNull(order);
         var repository = scope.ServiceProvider.GetRequiredService<IRepository<Orders, int>>();
         order = await repository.FindAsync(o => o.Id == 1);
-        Assert.IsNotNull(order);
+        Assert.IsNull(order);
 
         order = await repository.FindAsync(new List<KeyValuePair<string, object>>()
         {
             new("Id", 1)
         });
-        Assert.IsNotNull(order);
+        Assert.IsNull(order);
 
         order = await repository.FindAsync(1);
-        Assert.IsNotNull(order);
+        Assert.IsNull(order);
     }
 
     [TestMethod]
