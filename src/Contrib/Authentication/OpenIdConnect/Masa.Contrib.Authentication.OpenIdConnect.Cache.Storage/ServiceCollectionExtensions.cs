@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddOidcCacheStorage(this IServiceCollection services, RedisConfigurationOptions options)
+    public static IServiceCollection AddOidcCacheStorage(this IServiceCollection services, RedisConfigurationOptions? options = null)
     {
         services.AddOidcCache(options);
         services.AddOidcCacheStorage();
