@@ -15,7 +15,7 @@
 
 ## Docs
 
-[https://docs.masastack.com/Framework/guide/concepts.html](https://docs.masastack.com/Framework/guide/concepts.html)
+[https://docs.masastack.com/framework/concepts/overview](https://docs.masastack.com/framework/concepts/overview)
 
 
 
