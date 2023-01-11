@@ -17,13 +17,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddOidcCacheStorage(this IServiceCollection services, RedisConfigurationOptions? options = null)
     {
         services.AddOidcCache(options);
-        services.AddOidcCacheStorage();
-
-        return services;
-    }
-
-    static IServiceCollection AddOidcCacheStorage(this IServiceCollection services)
-    {
         services.AddSingleton<IClientStore, ClientStore>();
         services.AddSingleton<IResourceStore, ResourceStore>();
         services.AddSingleton<IPersistedGrantStore, PersistedGrantStore>();
