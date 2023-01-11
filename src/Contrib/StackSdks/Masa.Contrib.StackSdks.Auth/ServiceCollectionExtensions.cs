@@ -81,7 +81,7 @@ public static class ServiceCollectionExtensions
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
-                multilevelCacheOptions.SubscribeKeyPrefix = DEFAULT_SUBSCRIBE_KEY_PREFIX;
+                multilevelCacheOptions.SubscribeKeyPrefix = $"{DEFAULT_SUBSCRIBE_KEY_PREFIX}-db-{redisOptions.DefaultDatabase}";
             }
         );
         services.AddSingleton<AuthClientMultilevelCacheProvider>();
