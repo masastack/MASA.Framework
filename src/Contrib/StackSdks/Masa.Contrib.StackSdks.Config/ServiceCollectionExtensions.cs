@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Text.Json;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -18,19 +16,15 @@ public static class ServiceCollectionExtensions
         masaStackConfig.SetValue(MasaStackConfigConst.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConst.IS_DEMO).ToString());
         masaStackConfig.SetValue(MasaStackConfigConst.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConst.DOMAIN_NAME) ?? "");
         masaStackConfig.SetValue(MasaStackConfigConst.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConst.TLS_NAME) ?? "");
+        masaStackConfig.SetValue(MasaStackConfigConst.CLUSTER, configuration.GetValue<string>(MasaStackConfigConst.CLUSTER) ?? "");
 
         masaStackConfig.SetValue(MasaStackConfigConst.REDIS, configuration.GetValue<string>(MasaStackConfigConst.REDIS) ?? "");
-
-        var allServer = configuration.GetValue<Dictionary<string, List<string>>>(MasaStackConfigConst.MASA_ALL_SERVER);
-        if (allServer != null)
-        {
-            masaStackConfig.SetValue(MasaStackConfigConst.MASA_ALL_SERVER, JsonSerializer.Serialize(allServer.Keys));
-        }
-
-
+        masaStackConfig.SetValue(MasaStackConfigConst.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConst.CONNECTIONSTRING) ?? "");
+        masaStackConfig.SetValue(MasaStackConfigConst.MASA_ALL_SERVER, configuration.GetValue<string>(MasaStackConfigConst.MASA_ALL_SERVER) ?? "");
+        masaStackConfig.SetValue(MasaStackConfigConst.ELASTIC, configuration.GetValue<string>(MasaStackConfigConst.ELASTIC) ?? "");
     }
 
-    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = false)
+    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = true)
     {
         services.TryAddSingleton<IMasaStackConfig>();
         if (init)

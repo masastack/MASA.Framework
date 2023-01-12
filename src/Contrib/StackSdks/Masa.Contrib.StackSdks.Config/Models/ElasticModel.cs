@@ -5,4 +5,7 @@ namespace Masa.Contrib.StackSdks.Config.Models;
 
 internal class ElasticModel
 {
+    public string ESNode { get; set; }
+
+    public string Index { get; set; }
 }
