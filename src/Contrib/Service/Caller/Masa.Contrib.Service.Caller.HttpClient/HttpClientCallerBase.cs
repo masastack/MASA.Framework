@@ -24,14 +24,19 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual MasaHttpClientBuilder UseHttpClient()
     {
-        var masaHttpClientBuilder = CallerOptions.UseHttpClient(Name!, httpClientBuilder =>
+        var masaHttpClientBuilder = CallerOptions.UseHttpClient(Name!, callerClient =>
         {
-            httpClientBuilder.Prefix = Prefix;
-            httpClientBuilder.BaseAddress = BaseAddress;
-            httpClientBuilder.Configure = ConfigureHttpClient;
+            callerClient.Prefix = Prefix;
+            callerClient.BaseAddress = BaseAddress;
+            callerClient.Configure = ConfigureHttpClient;
+            ConfigMasaCallerClient(callerClient);
         }, IsSupportUpdate);
         masaHttpClientBuilder.AddConfigHttpRequestMessage((_, requestMessage) => ConfigHttpRequestMessageAsync(requestMessage));
         return masaHttpClientBuilder;
+    }
+
+    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
+    {
     }
 
     protected virtual void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)

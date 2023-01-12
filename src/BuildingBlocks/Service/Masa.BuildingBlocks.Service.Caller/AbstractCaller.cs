@@ -34,7 +34,7 @@ public abstract class AbstractCaller : ICaller
 
         _typeConvertor = serviceProvider.GetRequiredService<ITypeConvertor>();
 
-        var options = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<CallerMiddlewareFactoryOptions>>().Value
+        var options = serviceProvider.GetRequiredService<IOptions<CallerMiddlewareFactoryOptions>>().Value
             .Options
             .FirstOrDefault(relationOptions => relationOptions.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         Middlewares = options?.Funcs;
@@ -96,7 +96,7 @@ public abstract class AbstractCaller : ICaller
             if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
         };
 
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return masaHttpContext.ResponseMessage;
     }

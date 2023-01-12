@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
+[ExcludeFromCodeCoverage]
 public class MasaHttpClientBuilder : IMasaCallerClientBuilder, IHttpClientBuilder
 {
     public string Name { get; }
@@ -13,11 +14,5 @@ public class MasaHttpClientBuilder : IMasaCallerClientBuilder, IHttpClientBuilde
     {
         Services = services;
         Name = name;
-    }
-
-    public MasaHttpClientBuilder(IHttpClientBuilder httpClientBuilder)
-        : this(httpClientBuilder.Services, httpClientBuilder.Name)
-    {
-
     }
 }

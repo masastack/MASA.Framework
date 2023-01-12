@@ -15,7 +15,7 @@ public abstract class UserDaprCallerBase : DaprCallerBase
 
     public string GetAppId() => AppId;
 
-    protected override DefaultDaprClientBuilder UseDapr()
+    protected override MasaDaprClientBuilder UseDapr()
     {
         return base.UseDapr().AddHttpRequestMessage<DefaultDaprRequestMessage>();
     }

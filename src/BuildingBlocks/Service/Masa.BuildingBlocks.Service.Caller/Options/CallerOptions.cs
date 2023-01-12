@@ -24,6 +24,8 @@ public class CallerOptions
         }
     }
 
+    public JsonSerializerOptions? JsonSerializerOptions { get; set; }
+
     public ServiceLifetime CallerLifetime { get; set; }
 
     public bool DisableAutoRegistration { get; set; } = false;

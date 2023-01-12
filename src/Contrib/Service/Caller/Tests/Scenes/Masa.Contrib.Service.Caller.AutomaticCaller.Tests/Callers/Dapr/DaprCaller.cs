@@ -11,7 +11,7 @@ public class DaprCaller : UserDaprCallerBase
     {
     }
 
-    public bool CallerProviderIsNotNull() => Caller != null;
+    public bool CallerProviderIsNotNull() => Caller != null!;
 
     public ICaller GetCaller() => Caller;
 }

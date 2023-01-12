@@ -9,34 +9,16 @@ public static class MasaCallerClientBuilderExtensions
 {
     // ReSharper disable once InconsistentNaming
     public static IMasaCallerClientBuilder UseI18n(this IMasaCallerClientBuilder masaCallerClientBuilder)
-    {
-        masaCallerClientBuilder.Services.Configure<CallerMiddlewareFactoryOptions>(middlewareOptions =>
-        {
-            middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, _ => new CultureMiddleware());
-        });
-        return masaCallerClientBuilder;
-    }
+        => masaCallerClientBuilder.AddMiddleware(_ => new CultureMiddleware());
 
     public static IMasaCallerClientBuilder AddConfigHttpRequestMessage(
         this IMasaCallerClientBuilder masaCallerClientBuilder,
         Func<IServiceProvider, HttpRequestMessage, Task> httpRequestMessageFunc)
-    {
-        masaCallerClientBuilder.Services.Configure<CallerMiddlewareFactoryOptions>(middlewareOptions =>
-        {
-            middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, _ => new DefaultCallerMiddleware(httpRequestMessageFunc));
-        });
-        return masaCallerClientBuilder;
-    }
+        => masaCallerClientBuilder.AddMiddleware(_ => new DefaultCallerMiddleware(httpRequestMessageFunc));
 
     public static IMasaCallerClientBuilder AddMiddleware<TMiddleware>(this IMasaCallerClientBuilder masaCallerClientBuilder)
         where TMiddleware : ICallerMiddleware
-    {
-        masaCallerClientBuilder.Services.Configure<CallerMiddlewareFactoryOptions>(middlewareOptions =>
-        {
-            middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
-        });
-        return masaCallerClientBuilder;
-    }
+        => masaCallerClientBuilder.AddMiddleware(serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
 
     public static IMasaCallerClientBuilder AddMiddleware(
         this IMasaCallerClientBuilder masaCallerClientBuilder,

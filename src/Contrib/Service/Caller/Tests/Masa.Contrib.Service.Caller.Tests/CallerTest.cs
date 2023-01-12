@@ -235,7 +235,6 @@ public class CallerTest
         services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         services.AddSingleton<IRequestMessage, XmlRequestMessage>();
         services.AddSingleton<IResponseMessage, DefaultXmlResponseMessage>();
-        Mock<IHttpClientFactory> httpClientFactory = new();
         var handlerMock = new Mock<HttpMessageHandler>();
         var magicHttpClient = new System.Net.Http.HttpClient(handlerMock.Object)
         {
@@ -258,7 +257,7 @@ public class CallerTest
 
         var serviceProvider = services.BuildServiceProvider();
         string prefix = "<Replace-Your-Service-Prefix>";
-        var caller = new HttpClientCaller(magicHttpClient, serviceProvider, prefix);
+        var caller = new HttpClientCaller(magicHttpClient, serviceProvider, "", prefix);
 
         var excuteCount = 0;
         caller.ConfigRequestMessage(httpRequestMessage =>

@@ -22,6 +22,7 @@ public class HttpClientCaller : AbstractCaller
         _prefixIsNullOrEmpty = string.IsNullOrEmpty(_prefix);
     }
 
+    [ExcludeFromCodeCoverage]
     public override HttpRequestMessage CreateRequest(HttpMethod method, string? methodName)
     {
         var requestMessage = new HttpRequestMessage(method, GetRequestUri(methodName));
@@ -29,6 +30,7 @@ public class HttpClientCaller : AbstractCaller
         return requestMessage;
     }
 
+    [ExcludeFromCodeCoverage]
     public override HttpRequestMessage CreateRequest<TRequest>(HttpMethod method, string? methodName, TRequest data)
     {
         var requestMessage = new HttpRequestMessage(method, GetRequestUri(methodName));
@@ -36,24 +38,29 @@ public class HttpClientCaller : AbstractCaller
         return requestMessage;
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         => _httpClient.SendAsync(request, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync(string methodName, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TResponse>(string methodName, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync<TRequest>(string methodName, TRequest request, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TRequest, TResponse>(string methodName, TRequest request,
         CancellationToken cancellationToken = default)
     {

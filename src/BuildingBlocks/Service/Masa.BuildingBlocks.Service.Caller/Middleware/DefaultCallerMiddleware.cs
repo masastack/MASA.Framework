@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Service.Caller;
+namespace Masa.BuildingBlocks.Service.Caller;
 
 public class DefaultCallerMiddleware : ICallerMiddleware
 {

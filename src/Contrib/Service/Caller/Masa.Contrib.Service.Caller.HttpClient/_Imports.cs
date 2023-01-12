@@ -4,3 +4,4 @@
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.Service.Caller.HttpClient;
 global using Microsoft.Extensions.DependencyInjection;
+global using System.Diagnostics.CodeAnalysis;
