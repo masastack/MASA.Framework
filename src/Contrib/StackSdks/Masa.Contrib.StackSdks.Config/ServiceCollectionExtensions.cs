@@ -16,7 +16,6 @@ public static class ServiceCollectionExtensions
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         //var keys = configuration.GetChildren();
-
         var masaStackConfig = serviceProvider.GetRequiredService<IMasaStackConfig>();
         //SsoDomain 
         masaStackConfig.SetValue("SsoDomain", configuration["SsoDomain"] ?? "");
