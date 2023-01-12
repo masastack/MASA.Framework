@@ -14,11 +14,15 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddOidcCache(this IServiceCollection services, RedisConfigurationOptions options)
+    public static IServiceCollection AddOidcCache(this IServiceCollection services, RedisConfigurationOptions? options = null)
     {
         services.AddMultilevelCache(
             Constants.DEFAULT_CLIENT_NAME,
-            distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache(options),
+            distributedCacheOptions =>
+            {
+                if (options is null) distributedCacheOptions.UseStackExchangeRedisCache();
+                else distributedCacheOptions.UseStackExchangeRedisCache(options);
+            }, 
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;

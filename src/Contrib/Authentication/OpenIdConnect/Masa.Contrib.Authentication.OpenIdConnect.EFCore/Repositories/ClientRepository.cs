@@ -5,11 +5,11 @@ namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Repositories;
 
 public class ClientRepository : IClientRepository
 {
-    IClientCache _cache;
+    SyncCache _cache;
     DbContext _context;
     IRepository<Client> _repository;
 
-    public ClientRepository(IClientCache cache, OidcDbContext context, IRepository<Client> repository)
+    public ClientRepository(SyncCache cache, OidcDbContext context, IRepository<Client> repository)
     {
         _cache = cache;
         _context = context;
@@ -70,8 +70,7 @@ public class ClientRepository : IClientRepository
     {
         var newClient = await _repository.AddAsync(client);
         await _context.SaveChangesAsync();
-        var detail = await GetDetailAsync(client.Id);
-        await _cache.SetAsync(detail!);
+        await _cache.SyncClientCacheAsync(client.Id);
         return newClient;
     }
 
@@ -79,8 +78,7 @@ public class ClientRepository : IClientRepository
     {
         var newClient = await _repository.UpdateAsync(client);
         await _context.SaveChangesAsync();
-        var detail = await GetDetailAsync(client.Id);
-        await _cache.SetAsync(detail!);
+        await _cache.SyncClientCacheAsync(client.Id);
         return newClient;
     }
 
@@ -88,6 +86,6 @@ public class ClientRepository : IClientRepository
     {
         await _repository.RemoveAsync(client);
         await _context.SaveChangesAsync();
-        await _cache.RemoveAsync(client);
+        await _cache.RemoveClientCacheAsync(client);
     }
 }
