@@ -15,7 +15,7 @@ namespace Masa.BuildingBlocks.StackSdks.Config
 
         public string TlsName { get; }
 
-        public List<string> ProjectList { get; }
+        public List<string> ProjectList();
 
         public string Version { get; }
 
