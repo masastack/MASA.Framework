@@ -14,4 +14,5 @@ public static class MasaStackConfigConst
     public const string CONNECTIONSTRING = "CONNECTIONSTRING";
     public const string MASA_ALL_SERVER = "MASA_ALL_SERVER";
     public const string TLS_NAME = "TLS_NAME";
+    public const string OTLP_URL = "OTLP_URL";
 }

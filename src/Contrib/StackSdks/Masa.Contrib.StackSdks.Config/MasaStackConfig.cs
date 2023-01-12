@@ -24,6 +24,8 @@ namespace Masa.Contrib.StackSdks.Config
 
         public string Cluster => GetValue(MasaStackConfigConst.CLUSTER);
 
+        public string OtlpUrl => GetValue(MasaStackConfigConst.OTLP_URL);
+
         public RedisModel? RedisModel
         {
             get
