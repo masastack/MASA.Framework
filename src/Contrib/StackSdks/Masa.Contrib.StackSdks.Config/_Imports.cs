@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.StackSdks.Config;
+global using Masa.BuildingBlocks.StackSdks.Config.Models;
 global using Masa.Contrib.StackSdks.Config;
-global using Masa.Contrib.StackSdks.Config.Models;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Options;
+global using System.Collections.Concurrent;
 global using System.Text.Json;
