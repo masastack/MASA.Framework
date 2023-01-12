@@ -26,8 +26,6 @@ public static class ServiceCollectionExtensions
             masaStackConfig.SetValue(MasaStackConfigConst.MASA_ALL_SERVER, configuration.GetValue<string>(MasaStackConfigConst.MASA_ALL_SERVER) ?? "");
             masaStackConfig.SetValue(MasaStackConfigConst.ELASTIC, configuration.GetValue<string>(MasaStackConfigConst.ELASTIC) ?? "");
         });
-
-        //TODO: Replace IConfiguration data source
     }
 
 

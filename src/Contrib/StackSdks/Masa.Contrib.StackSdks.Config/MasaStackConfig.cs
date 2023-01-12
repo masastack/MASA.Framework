@@ -27,7 +27,7 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
 
-    public List<string> ProjectList => this.GetAllServer().Keys.ToList();
+    public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 
     public string Version => GetValue(MasaStackConfigConst.VERSION);
 
