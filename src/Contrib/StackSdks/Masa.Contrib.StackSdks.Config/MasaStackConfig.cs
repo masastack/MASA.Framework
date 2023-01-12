@@ -19,5 +19,26 @@ namespace Masa.Contrib.StackSdks.Config
         }
 
         public void SetValue(string key, string value) => ConfigMap[key] = value;
+
+        public string Version => GetValue(MasaStackConfigConst.VERSION);
+
+        public string Cluster => GetValue(MasaStackConfigConst.CLUSTER);
+
+        public RedisModel? RedisModel
+        {
+            get
+            {
+                var redisStr = GetValue(MasaStackConfigConst.REDIS);
+                var redisModel = JsonSerializer.Deserialize<RedisModel>(redisStr);
+
+                return redisModel;
+            }
+        }
+
+        public string IsDemo => GetValue(MasaStackConfigConst.IS_DEMO);
+
+        public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
+
+        public List<string> ProjectList => this.GetAllServer().Keys.ToList();
     }
 }

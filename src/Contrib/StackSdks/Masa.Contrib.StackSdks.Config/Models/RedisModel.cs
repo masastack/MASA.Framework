@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Config.Models;
 
-internal class RedisModel
+public class RedisModel
 {
     public string RedisHost { get; set; }
 

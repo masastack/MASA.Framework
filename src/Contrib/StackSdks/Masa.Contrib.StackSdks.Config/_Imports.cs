@@ -3,5 +3,7 @@
 
 global using Masa.BuildingBlocks.StackSdks.Config;
 global using Masa.Contrib.StackSdks.Config;
+global using Masa.Contrib.StackSdks.Config.Models;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using System.Text.Json;

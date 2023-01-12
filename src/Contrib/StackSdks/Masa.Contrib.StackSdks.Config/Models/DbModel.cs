@@ -5,6 +5,7 @@ namespace Masa.Contrib.StackSdks.Config.Models;
 
 internal class DbModel
 {
+
     public string Server { get; set; }
 
     public int Port { get; set; } = 1433;
@@ -15,8 +16,8 @@ internal class DbModel
 
     public string Password { get; set; }
 
-    public override string ToString()
+    public string ToString(string datebase)
     {
-        return $"Server={Server},{Port};Database={Database};User Id={UserId};Password={Password};";
+        return $"Server={Server},{Port};Database={datebase};User Id={UserId};Password={Password};";
     }
 }
