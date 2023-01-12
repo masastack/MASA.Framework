@@ -27,13 +27,13 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
 
-    public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
-
     public string Version => GetValue(MasaStackConfigConst.VERSION);
 
     public string Cluster => GetValue(MasaStackConfigConst.CLUSTER);
 
     public string OtlpUrl => GetValue(MasaStackConfigConst.OTLP_URL);
+
+    public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 
     public string GetValue(string key) => _options.Value.GetValue(key);
 
