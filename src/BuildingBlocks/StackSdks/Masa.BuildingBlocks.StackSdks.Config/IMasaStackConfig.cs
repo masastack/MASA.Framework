@@ -1,26 +1,25 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.StackSdks.Config
+namespace Masa.BuildingBlocks.StackSdks.Config;
+
+public interface IMasaStackConfig
 {
-    public interface IMasaStackConfig
-    {
-        string GetValue(string key);
+    public RedisModel? RedisModel { get; }
 
-        void SetValue(string key, string value);
+    public string IsDemo { get; }
 
-        public RedisModel? RedisModel { get; }
+    public string TlsName { get; }
 
-        public string IsDemo { get; }
+    public string Version { get; }
 
-        public string TlsName { get; }
+    public string Cluster { get; }
 
-        public List<string> ProjectList();
+    public string OtlpUrl { get; }
 
-        public string Version { get; }
+    string GetValue(string key);
 
-        public string Cluster { get; }
+    void SetValue(string key, string value);
 
-        public string OtlpUrl { get; }
-    }
+    public List<string> ProjectList();
 }
