@@ -12,9 +12,6 @@ public abstract class DaprCallerTestBase : DaprCallerBase
         _daprClient = daprClient;
     }
 
-    protected override DefaultDaprClientBuilder UseDapr()
-    {
-        CallerOptions.UseDaprTest(Name!, AppId, _daprClient);
-        return new DefaultDaprClientBuilder(CallerOptions.Services, Name!);
-    }
+    protected override MasaDaprClientBuilder UseDapr()
+        => CallerOptions.UseDaprTest(Name!, AppId, _daprClient);
 }

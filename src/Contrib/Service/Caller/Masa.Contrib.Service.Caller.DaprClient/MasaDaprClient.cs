@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public class MasaDaprClientBuilder
+public class MasaDaprClient : MasaCallerClient
 {
     private string _appId = default!;
 
@@ -24,16 +24,16 @@ public class MasaDaprClientBuilder
 
     public Action<DaprClientBuilder>? Configure { get; set; }
 
-    internal MasaDaprClientBuilder()
+    internal MasaDaprClient()
     {
     }
 
-    public MasaDaprClientBuilder(string appid)
+    public MasaDaprClient(string appid)
         : this(appid, null)
     {
     }
 
-    public MasaDaprClientBuilder(string appid, Action<DaprClientBuilder>? configure)
+    public MasaDaprClient(string appid, Action<DaprClientBuilder>? configure)
     {
         AppId = appid;
         Configure = configure;

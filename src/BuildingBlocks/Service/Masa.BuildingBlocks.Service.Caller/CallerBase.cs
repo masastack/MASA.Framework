@@ -11,18 +11,7 @@ public abstract class CallerBase
 
     private ICaller? _caller;
 
-    protected ICaller Caller
-    {
-        get
-        {
-            if (_caller == null)
-            {
-                _caller = ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
-                _caller.ConfigRequestMessage(ConfigHttpRequestMessageAsync);
-            }
-            return _caller;
-        }
-    }
+    protected ICaller Caller => _caller ??= ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
 
     [Obsolete("CallerProvider has expired, please use Caller")]
     protected ICaller CallerProvider => Caller;

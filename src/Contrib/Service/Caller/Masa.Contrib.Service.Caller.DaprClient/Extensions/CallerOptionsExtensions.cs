@@ -9,13 +9,13 @@ public static class CallerOptionsExtensions
 {
     private static readonly string DefaultCallerName = Options.DefaultName;
 
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
-        Func<MasaDaprClientBuilder> clientBuilder)
+    public static MasaDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        Func<MasaDaprClient> clientBuilder)
         => callerOptions.UseDapr(DefaultCallerName, clientBuilder);
 
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+    public static MasaDaprClientBuilder UseDapr(this CallerOptions callerOptions,
         string name,
-        Func<MasaDaprClientBuilder> clientBuilder)
+        Func<MasaDaprClient> clientBuilder)
     {
         return callerOptions.UseDaprCore(name, () =>
         {
@@ -24,8 +24,9 @@ public static class CallerOptionsExtensions
 
             callerOptions.Services.AddDaprClient(daprClientBuilder =>
             {
-                if (callerOptions.JsonSerializerOptions != null)
-                    daprClientBuilder.UseJsonSerializationOptions(callerOptions.JsonSerializerOptions);
+                var jsonSerializerOptions = builder.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions();
+                if (jsonSerializerOptions != null)
+                    daprClientBuilder.UseJsonSerializationOptions(jsonSerializerOptions);
 
                 builder.Configure?.Invoke(daprClientBuilder);
             });
@@ -36,29 +37,31 @@ public static class CallerOptionsExtensions
                     var appid = serviceProvider.GetRequiredService<ICallerProvider>().CompletionAppId(builder.AppId);
                     var daprCaller = new DaprCaller(serviceProvider,
                         name,
-                        appid);
+                        appid,
+                        builder.RequestMessageFactory,
+                        builder.ResponseMessageFactory);
                     return daprCaller;
                 });
         });
     }
 
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
-        Action<MasaDaprClientBuilder> clientBuilder)
-        => callerOptions.UseDapr(DefaultCallerName, clientBuilder);
-
-    public static DefaultDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+    public static MasaDaprClientBuilder UseDapr(this CallerOptions callerOptions,
         string name,
-        Action<MasaDaprClientBuilder> clientBuilder)
+        Action<MasaDaprClient> clientBuilder)
     {
         ArgumentNullException.ThrowIfNull(clientBuilder, nameof(clientBuilder));
 
-        MasaDaprClientBuilder builder = new MasaDaprClientBuilder();
+        MasaDaprClient builder = new MasaDaprClient();
         clientBuilder.Invoke(builder);
 
         return callerOptions.UseDapr(name, () => builder);
     }
 
-    public static DefaultDaprClientBuilder UseDaprTest(this CallerOptions callerOptions,
+    public static MasaDaprClientBuilder UseDapr(this CallerOptions callerOptions,
+        Action<MasaDaprClient> clientBuilder)
+        => callerOptions.UseDapr(DefaultCallerName, clientBuilder);
+
+    public static MasaDaprClientBuilder UseDaprTest(this CallerOptions callerOptions,
         string name,
         string appId,
         DaprClient daprClient)
@@ -72,19 +75,21 @@ public static class CallerOptionsExtensions
                     var daprCaller = new DaprCaller(serviceProvider,
                         daprClient,
                         name,
-                        appid);
+                        appid,
+                        null,
+                        null);
                     return daprCaller;
                 });
         });
     }
 
-    private static DefaultDaprClientBuilder UseDaprCore(this CallerOptions callerOptions,
+    private static MasaDaprClientBuilder UseDaprCore(this CallerOptions callerOptions,
         string name,
         Action action)
     {
         callerOptions.Services.TryAddSingleton<ICallerProvider, DefaultCallerProvider>();
         callerOptions.Services.AddOptions();
         action.Invoke();
-        return new DefaultDaprClientBuilder(callerOptions.Services, name);
+        return new MasaDaprClientBuilder(callerOptions.Services, name);
     }
 }

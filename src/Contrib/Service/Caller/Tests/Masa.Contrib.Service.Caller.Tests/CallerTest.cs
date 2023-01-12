@@ -196,19 +196,19 @@ public class CallerTest
     [TestMethod]
     public void TestInitializationMasaHttpClientBuilderReturnEqual()
     {
-        var masaHttpClientBuilder = new MasaHttpClientBuilder();
+        var masaHttpClientBuilder = new MasaHttpClient();
         Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
         Assert.IsTrue(masaHttpClientBuilder.BaseAddress == string.Empty);
         Assert.IsTrue(masaHttpClientBuilder.Configure == null);
 
 
-        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", _ =>
+        masaHttpClientBuilder = new MasaHttpClient("http://www.github.com", _ =>
         {
         });
         Assert.IsTrue(masaHttpClientBuilder.Prefix == string.Empty);
         Assert.IsTrue(masaHttpClientBuilder.BaseAddress == "http://www.github.com");
 
-        masaHttpClientBuilder = new MasaHttpClientBuilder("http://www.github.com", "api", _ =>
+        masaHttpClientBuilder = new MasaHttpClient("http://www.github.com", "api", _ =>
         {
         });
         Assert.IsTrue(masaHttpClientBuilder.Prefix == "api");

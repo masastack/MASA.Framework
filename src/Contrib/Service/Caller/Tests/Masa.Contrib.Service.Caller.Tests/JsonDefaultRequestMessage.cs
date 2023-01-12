@@ -5,8 +5,8 @@ namespace Masa.Contrib.Service.Caller.Tests;
 
 public class JsonDefaultRequestMessage : DefaultRequestMessage
 {
-    public JsonDefaultRequestMessage(IServiceProvider serviceProvider, IOptions<CallerFactoryOptions>? options = null)
-        : base(serviceProvider, options)
+    public JsonDefaultRequestMessage(IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
     }
 

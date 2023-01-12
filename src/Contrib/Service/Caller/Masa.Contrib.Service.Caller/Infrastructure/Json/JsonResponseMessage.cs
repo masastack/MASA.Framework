@@ -1,15 +1,20 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Service.Caller;
 
 [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class JsonResponseMessage : DefaultResponseMessage
 {
+    private readonly JsonSerializerOptions? _jsonSerializerOptions;
+
     public JsonResponseMessage(
-        IOptions<CallerFactoryOptions> options,
-        ILoggerFactory? loggerFactory = null) : base(options, loggerFactory?.CreateLogger<DefaultResponseMessage>())
+        JsonSerializerOptions? jsonSerializerOptions,
+        ILoggerFactory? loggerFactory = null) : base(loggerFactory?.CreateLogger<DefaultResponseMessage>())
     {
+        _jsonSerializerOptions = jsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions();
     }
 
     protected override Task<TResponse?> FormatResponseAsync<TResponse>(HttpContent httpContent,
@@ -17,9 +22,7 @@ public class JsonResponseMessage : DefaultResponseMessage
     {
         try
         {
-            return httpContent.ReadFromJsonAsync<TResponse>(
-                Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
-                , cancellationToken);
+            return httpContent.ReadFromJsonAsync<TResponse>(_jsonSerializerOptions, cancellationToken);
         }
         catch (Exception exception)
         {

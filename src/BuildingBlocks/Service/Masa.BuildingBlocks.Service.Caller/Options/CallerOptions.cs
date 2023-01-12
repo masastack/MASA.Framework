@@ -26,10 +26,6 @@ public class CallerOptions
 
     public ServiceLifetime CallerLifetime { get; set; }
 
-    public JsonSerializerOptions? JsonSerializerOptions { get; set; }
-
-    public string? RequestIdKey { get; set; }
-
     public bool DisableAutoRegistration { get; set; } = false;
 
     public CallerOptions(IServiceCollection services)

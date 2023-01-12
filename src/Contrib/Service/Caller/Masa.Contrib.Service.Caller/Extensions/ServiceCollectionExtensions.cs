@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
         IEnumerable<Assembly>? assemblies = null)
         => services.AddCaller(options =>
         {
-            options.Assemblies = assemblies == null ? MasaApp.GetAssemblies() : assemblies.ToArray();
+            options.Assemblies = assemblies?.ToArray() ?? MasaApp.GetAssemblies();
             options.CallerLifetime = lifetime;
         });
 
@@ -64,6 +64,8 @@ public static class ServiceCollectionExtensions
                 {
                     callerBase.SetServiceProvider(serviceProvider);
                 }
+
+
                 return callerBase;
             }, callerOptions.CallerLifetime);
             services.TryAdd(serviceDescriptor);
@@ -90,12 +92,6 @@ public static class ServiceCollectionExtensions
 
                 callerOptions.Options.Add(caller);
             });
-
-            if (callerOptions.JsonSerializerOptions == null && options.JsonSerializerOptions != null)
-                callerOptions.JsonSerializerOptions = options.JsonSerializerOptions;
-
-            if (callerOptions.RequestIdKey != null && options.RequestIdKey != null)
-                callerOptions.RequestIdKey = options.RequestIdKey;
         });
     }
 }

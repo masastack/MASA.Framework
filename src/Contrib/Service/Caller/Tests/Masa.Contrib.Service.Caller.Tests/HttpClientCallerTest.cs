@@ -80,9 +80,9 @@ public class HttpClientCallerTest
 
         services.AddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         Mock<IRequestMessage> requestMessage = new();
-        requestMessage.Setup(req => req.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>()))
+        requestMessage.Setup(req => req.ProcessHttpRequestMessage(It.IsAny<HttpRequestMessage>()))
             .ReturnsAsync(new HttpRequestMessage(HttpMethod.Post, "Hello")).Verifiable();
-        requestMessage.Setup(req => req.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()))
+        requestMessage.Setup(req => req.ProcessHttpRequestMessage(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()))
             .ReturnsAsync(new HttpRequestMessage(HttpMethod.Post, "Hello")
             {
                 Content = JsonContent.Create(registerUser)
@@ -116,7 +116,7 @@ public class HttpClientCallerTest
         var res = await caller.PostAsync<BaseResponse>("Hello", registerUser);
         Assert.IsNotNull(res);
         Assert.IsTrue(res.Code == response.Code);
-        requestMessage.Verify(r => r.ProcessHttpRequestMessageAsync(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()), Times.Once);
+        requestMessage.Verify(r => r.ProcessHttpRequestMessage(It.IsAny<HttpRequestMessage>(), It.IsAny<object>()), Times.Once);
     }
 
     [TestMethod]

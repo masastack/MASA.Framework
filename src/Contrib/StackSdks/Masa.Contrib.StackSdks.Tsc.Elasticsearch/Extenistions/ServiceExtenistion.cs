@@ -13,7 +13,7 @@ public static class ServiceExtenistion
         return services;
     }
 
-    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName)
+    public static IServiceCollection AddElasticClientLog(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string indexName)
     {
         ElasticConstant.InitLog(indexName, true);
         AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.LOG_CALLER_CLIENT_NAME).AddSingleton<ILogService, LogService>();
@@ -29,7 +29,7 @@ public static class ServiceExtenistion
         return services;
     }
 
-    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string indexName)
+    public static IServiceCollection AddElasticClientTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string indexName)
     {
         ElasticConstant.InitTrace(indexName, true);
         AddElasticsearch(services, elasearchConnectionAction, callerAction, ElasticConstant.TRACE_CALLER_CLIENT_NAME).AddSingleton<ITraceService, TraceService>();
@@ -49,7 +49,7 @@ public static class ServiceExtenistion
         return services;
     }
 
-    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string logIndexName, string traceIndexName)
+    public static IServiceCollection AddElasticClientLogAndTrace(this IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string logIndexName, string traceIndexName)
     {
         ElasticConstant.InitLog(logIndexName);
         ElasticConstant.InitTrace(traceIndexName);
@@ -78,7 +78,7 @@ public static class ServiceExtenistion
             });
     }
 
-    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClientBuilder> callerAction, string name)
+    private static IServiceCollection AddElasticsearch(IServiceCollection services, Action<ElasticsearchOptions> elasearchConnectionAction, Action<MasaHttpClient> callerAction, string name)
     {
         ArgumentNullException.ThrowIfNull(callerAction);
 

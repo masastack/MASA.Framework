@@ -54,8 +54,7 @@ public static class MasaConfigurationExtensions
             if (action == null)
             {
                 options.UseHttpClient(callerName, ()
-                    => new MasaHttpClientBuilder(
-                        opt => opt.BaseAddress = new Uri(dccConfigurationOptions.ManageServiceAddress))
+                    => new MasaHttpClient(opt => opt.BaseAddress = new Uri(dccConfigurationOptions.ManageServiceAddress))
                 );
             }
             else

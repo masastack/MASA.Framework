@@ -8,11 +8,8 @@ public abstract class DefaultResponseMessage : IResponseMessage
 {
     protected ILogger<DefaultResponseMessage>? Logger { get; }
 
-    protected CallerFactoryOptions Options { get; }
-
-    protected DefaultResponseMessage(IOptions<CallerFactoryOptions> options, ILogger<DefaultResponseMessage>? logger = null)
+    protected DefaultResponseMessage(ILogger<DefaultResponseMessage>? logger = null)
     {
-        Options = options.Value;
         Logger = logger;
     }
 
@@ -83,23 +80,9 @@ public abstract class DefaultResponseMessage : IResponseMessage
         return FormatResponseAsync<TResponse>(response.Content, cancellationToken);
     }
 
-    protected virtual async Task<TResponse?> FormatResponseAsync<TResponse>(
+    protected abstract Task<TResponse?> FormatResponseAsync<TResponse>(
         HttpContent httpContent,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await httpContent.ReadFromJsonAsync<TResponse>(
-                Options.JsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions()
-                , cancellationToken);
-        }
-        catch (Exception exception)
-        {
-            Logger?.LogWarning(exception, "{Message}", exception.Message);
-            ExceptionDispatchInfo.Capture(exception).Throw();
-            return default; //This will never be executed, the previous line has already thrown an exception
-        }
-    }
+        CancellationToken cancellationToken = default);
 
     private static async Task<TResponse?> FormatResponseByGuidAsync<TResponse>(
         HttpResponseMessage response,
