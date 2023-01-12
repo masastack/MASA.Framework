@@ -5,7 +5,6 @@ namespace Masa.BuildingBlocks.StackSdks.Config.Models;
 
 public class DbModel
 {
-
     public string Server { get; set; }
 
     public int Port { get; set; } = 1433;
