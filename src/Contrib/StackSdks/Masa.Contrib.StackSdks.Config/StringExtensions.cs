@@ -7,7 +7,7 @@ public static class StringExtensions
 {
     public static string ToName(this string str)
     {
-        TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
-        return myTI.ToTitleCase(str.Replace('-', '.').Replace('_', '.'));
+        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+        return textInfo.ToTitleCase(str.Replace('-', '.').Replace('_', '.'));
     }
 }

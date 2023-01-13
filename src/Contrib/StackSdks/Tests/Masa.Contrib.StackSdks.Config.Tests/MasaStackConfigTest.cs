@@ -13,7 +13,6 @@ public class MasaStackConfigTest
     public void Initialize()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddJsonFile("Appsettings.json");
 
         builder.Services.AddMasaStackConfig();
         _stackConfig = builder.Services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
