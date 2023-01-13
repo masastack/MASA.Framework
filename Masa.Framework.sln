@@ -651,6 +651,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Conf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Config.Tests", "src\Contrib\StackSdks\Tests\Masa.Contrib.StackSdks.Config.Tests\Masa.Contrib.StackSdks.Config.Tests.csproj", "{5130EF56-9225-453C-A9AF-EB80A8A19E18}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F6BD4124-2DCA-453E-B73C-D9DB6323CCDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data.Tests", "src\BuildingBlocks\Data\Tests\Masa.BuildingBlocks.Data.Tests\Masa.BuildingBlocks.Data.Tests.csproj", "{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2331,6 +2335,14 @@ Global
 		{5130EF56-9225-453C-A9AF-EB80A8A19E18}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5130EF56-9225-453C-A9AF-EB80A8A19E18}.Release|x64.ActiveCfg = Release|Any CPU
 		{5130EF56-9225-453C-A9AF-EB80A8A19E18}.Release|x64.Build.0 = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|x64.Build.0 = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|x64.ActiveCfg = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2652,6 +2664,8 @@ Global
 		{AF718133-0A37-4F1A-96DF-61C3D9836B7F} = {8A9DBB76-6618-4982-87D7-6CBD8375EB15}
 		{F3C2B14A-C350-4E30-9EB5-5BFCCC4EEB5B} = {383995FF-B661-4E15-A830-640FC5BA8A1F}
 		{5130EF56-9225-453C-A9AF-EB80A8A19E18} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
+		{F6BD4124-2DCA-453E-B73C-D9DB6323CCDC} = {D2DF986D-5EA6-40ED-93F3-2CF3A035F26B}
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370} = {F6BD4124-2DCA-453E-B73C-D9DB6323CCDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
