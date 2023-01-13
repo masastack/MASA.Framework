@@ -42,7 +42,9 @@ public static class IMasaStackConfigExtensions
             var secondaryDomain = jsonObject[service]?.ToString();
             if (secondaryDomain != null)
             {
+#pragma warning disable S5332
                 domain = $"http://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
+#pragma warning restore S5332
             }
         }
         return domain;
@@ -102,7 +104,9 @@ public static class IMasaStackConfigExtensions
             {
                 continue;
             }
+#pragma warning disable S5332
             yield return new KeyValuePair<string, string>(uiName, $"http://{uiName}.{masaStackConfig.DomainName.TrimEnd('/')}");
+#pragma warning restore S5332
         }
     }
 
