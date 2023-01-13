@@ -42,7 +42,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
-        services.TryAddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
+        services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
         MasaApp.TrySetServiceCollection(services);
         return services;
