@@ -26,6 +26,28 @@ public class EventBusBuilderTest
         Assert.AreEqual(2, services.Count);
     }
 
+    [TestMethod]
+    public async Task TestMiddlewareByOrderOfExecutionAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddEventBus(new[] { typeof(CustomMiddleware<>).Assembly }, eventBusBuilder
+            => eventBusBuilder.UseMiddleware(new[] { typeof(CustomMiddleware<>), typeof(Custom2Middleware<>) }));
+        var serviceProvider = services.BuildServiceProvider();
+
+        var middlewares = serviceProvider.GetService<IEnumerable<IMiddleware<MiddlewareEvent>>>();
+        Assert.IsNotNull(middlewares);
+        Assert.AreEqual(3, middlewares.Count());
+
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+        var @event = new MiddlewareEvent();
+        await eventBus.PublishAsync(@event);
+
+        Assert.AreEqual(3, @event.Results.Count);
+        Assert.AreEqual(nameof(CustomMiddleware<MiddlewareEvent>), @event.Results[0]);
+        Assert.AreEqual(nameof(Custom2Middleware<MiddlewareEvent>), @event.Results[1]);
+        Assert.AreEqual(nameof(EventHandlers.MiddlewareEventHandler), @event.Results[2]);
+    }
+
     public class RequestMiddleware<TEvent> : Middleware<TEvent> where TEvent : IEvent
     {
         private readonly ILogger<RequestMiddleware<TEvent>>? _logger;
