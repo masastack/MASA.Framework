@@ -33,7 +33,7 @@ public static class IMasaStackConfigExtensions
         return dbModel?.ToString(datebaseName) ?? "";
     }
 
-    public static string GetDomain(this IMasaStackConfig masaStackConfig, string project, string service)
+    public static string GetDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
     {
         var domain = "";
         GetAllServer(masaStackConfig).TryGetValue(project, out JsonObject? jsonObject);
@@ -42,60 +42,68 @@ public static class IMasaStackConfigExtensions
             var secondaryDomain = jsonObject[service]?.ToString();
             if (secondaryDomain != null)
             {
-#pragma warning disable S5332
-                domain = $"http://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
-#pragma warning restore S5332
+                domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
             }
         }
         return domain;
     }
 
+    private static string GetHttpDomain(this IMasaStackConfig masaStackConfig, string project, string service)
+    {
+        return GetDomain(masaStackConfig, "http", project, service);
+    }
+
+    private static string GetHttpsDomain(this IMasaStackConfig masaStackConfig, string project, string service)
+    {
+        return GetDomain(masaStackConfig, "https", project, service);
+    }
+
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "auth", "server");
+        return GetHttpDomain(masaStackConfig, "auth", "server");
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "pm", "server");
+        return GetHttpDomain(masaStackConfig, "pm", "server");
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "dcc", "server");
+        return GetHttpDomain(masaStackConfig, "dcc", "server");
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "tsc", "server");
+        return GetHttpDomain(masaStackConfig, "tsc", "server");
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "alert", "server");
+        return GetHttpDomain(masaStackConfig, "alert", "server");
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "mc", "server");
+        return GetHttpDomain(masaStackConfig, "mc", "server");
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "scheduler", "server");
+        return GetHttpDomain(masaStackConfig, "scheduler", "server");
     }
 
     public static string GetWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "scheduler", "worker");
+        return GetHttpDomain(masaStackConfig, "scheduler", "worker");
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "auth", "sso");
+        return GetHttpsDomain(masaStackConfig, "auth", "sso");
     }
 
-    public static IEnumerable<KeyValuePair<string, string>> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
         foreach (var server in GetAllServer(masaStackConfig))
         {
@@ -104,9 +112,10 @@ public static class IMasaStackConfigExtensions
             {
                 continue;
             }
-#pragma warning disable S5332
-            yield return new KeyValuePair<string, string>(uiName, $"http://{uiName}.{masaStackConfig.DomainName.TrimEnd('/')}");
-#pragma warning restore S5332
+            yield return new KeyValuePair<string, List<string>>(uiName, new List<string> {
+                GetHttpDomain(masaStackConfig,server.Key,"ui"),
+                GetHttpsDomain(masaStackConfig,server.Key,"ui")
+            });
         }
     }
 
