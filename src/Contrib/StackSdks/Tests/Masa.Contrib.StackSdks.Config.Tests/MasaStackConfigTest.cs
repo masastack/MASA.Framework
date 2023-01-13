@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+
 namespace Masa.Contrib.StackSdks.Config.Tests;
 
 [TestClass]
@@ -27,5 +29,13 @@ public class MasaStackConfigTest
         var allServer = _stackConfig.GetAllServer();
 
         Assert.IsNotNull(allServer);
+    }
+
+    [TestMethod]
+    public void TestGetMiniDccOptions()
+    {
+        var dccOptions = _stackConfig.GetDccMiniOptions<DccOptions>();
+
+        Assert.IsNotNull(dccOptions?.RedisOptions);
     }
 }
