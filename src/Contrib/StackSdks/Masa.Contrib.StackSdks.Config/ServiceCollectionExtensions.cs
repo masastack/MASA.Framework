@@ -11,6 +11,9 @@ public static class ServiceCollectionExtensions
         {
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+            var masaConfiguration = serviceProvider.GetService<IMasaConfiguration>()?.Local;
+
+            configuration = masaConfiguration ?? configuration;
 
             masaStackConfig.SetValue(MasaStackConfigConst.VERSION, configuration.GetValue<string>(MasaStackConfigConst.VERSION) ?? "");
             masaStackConfig.SetValue(MasaStackConfigConst.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConst.IS_DEMO).ToString());
