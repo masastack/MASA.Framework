@@ -21,6 +21,15 @@ public class MasaStackConfig : IMasaStackConfig
         }
     }
 
+    public ElasticModel ElasticModel
+    {
+        get
+        {
+            var redisStr = GetValue(MasaStackConfigConst.ELASTIC);
+            return JsonSerializer.Deserialize<ElasticModel>(redisStr) ?? throw new JsonException();
+        }
+    }
+
     public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConst.IS_DEMO));
 
     public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);

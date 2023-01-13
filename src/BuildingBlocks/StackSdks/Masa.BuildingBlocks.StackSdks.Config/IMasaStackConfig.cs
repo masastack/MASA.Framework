@@ -7,6 +7,8 @@ public interface IMasaStackConfig
 {
     public RedisModel RedisModel { get; }
 
+    public ElasticModel ElasticModel { get; }
+
     public bool IsDemo { get; }
 
     public string TlsName { get; }
