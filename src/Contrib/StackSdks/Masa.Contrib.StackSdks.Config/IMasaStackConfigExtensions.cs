@@ -105,4 +105,22 @@ public static class IMasaStackConfigExtensions
             yield return uiName;
         }
     }
+
+    public static T? GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
+    {
+        var dccServerAddress = GetDccServiceDomain(masaStackConfig);
+        var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
+
+        var stringBuilder = new System.Text.StringBuilder(@"{""ManageServiceAddress"":");
+        stringBuilder.Append($"\"{dccServerAddress}\",");
+        stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
+        stringBuilder.Append($"\"{redis.RedisHost}\",");
+        stringBuilder.Append(@$"""Port"":{redis.RedisPort}");
+        stringBuilder.Append("}],");
+        stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
+        stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
+        stringBuilder.Append(@"}}");
+
+        return JsonSerializer.Deserialize<T>(stringBuilder.ToString());
+    }
 }

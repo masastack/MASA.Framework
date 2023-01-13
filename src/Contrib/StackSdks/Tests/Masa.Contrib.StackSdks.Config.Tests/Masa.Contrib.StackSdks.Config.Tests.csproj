@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\ConfigurationApi\Masa.Contrib.Configuration.ConfigurationApi.Dcc\Masa.Contrib.Configuration.ConfigurationApi.Dcc.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Config\Masa.Contrib.StackSdks.Config.csproj" />
   </ItemGroup>
 
