@@ -33,9 +33,8 @@ internal static class CallerDependExtensions
         {
             var constructorInfo = type.GetConstructors().MaxBy(con => con.GetParameters().Length)!;
             bool isExist = true;
-            foreach (var parameter in constructorInfo.GetParameters())
+            foreach (var parameterType in constructorInfo.GetParameters().Select(parameter => parameter.ParameterType))
             {
-                var parameterType = parameter.ParameterType;
                 if (typeof(CallerBase).IsAssignableFrom(parameterType) && !types.Contains(parameterType))
                 {
                     isExist = false;
@@ -65,7 +64,7 @@ internal static class CallerDependExtensions
         List<Type> types = new();
         callerTypes.ForEach(type =>
         {
-            if (!type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).IsDependCaller())
+            if (!type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).IsDependCaller())
                 types.Add(type);
         });
         return types;
@@ -79,9 +78,9 @@ internal static class CallerDependExtensions
 
     private static bool IsDependCaller(this ConstructorInfo constructorInfo)
     {
-        foreach (var parameter in constructorInfo.GetParameters())
+        foreach (var parameterType in constructorInfo.GetParameters().Select(parameter => parameter.ParameterType))
         {
-            if (typeof(CallerBase).IsAssignableFrom(parameter.ParameterType))
+            if (typeof(CallerBase).IsAssignableFrom(parameterType))
             {
                 return true;
             }

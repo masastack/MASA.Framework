@@ -37,7 +37,7 @@ public abstract class AbstractCaller : ICaller
         var options = serviceProvider.GetRequiredService<IOptions<CallerMiddlewareFactoryOptions>>().Value
             .Options
             .FirstOrDefault(relationOptions => relationOptions.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        Middlewares = options?.Middlewares.ToArray().Reverse().ToList() ?? new List<Func<IServiceProvider, ICallerMiddleware>>();
+        Middlewares = options?.Middlewares.AsEnumerable().Reverse().ToList() ?? new List<Func<IServiceProvider, ICallerMiddleware>>();
     }
 
     public virtual Task<HttpResponseMessage> SendAsync(

@@ -50,7 +50,7 @@ public abstract class DefaultResponseMessage : IResponseMessage
 
     public virtual Task ProcessCustomException(HttpResponseMessage response) => Task.CompletedTask;
 
-    public async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
+    public static async Task ProcessResponseExceptionAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         if (response.Content.Headers.ContentLength is > 0)
             throw new MasaException(await response.Content.ReadAsStringAsync(cancellationToken));
