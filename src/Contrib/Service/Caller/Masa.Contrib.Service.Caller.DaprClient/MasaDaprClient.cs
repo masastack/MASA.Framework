@@ -9,14 +9,10 @@ public class MasaDaprClient : MasaCallerClient
 
     public string AppId
     {
-        get
-        {
-            return _appId;
-        }
+        get => _appId;
         set
         {
-            if (string.IsNullOrEmpty(value))
-                throw new ArgumentNullException(nameof(AppId));
+            MasaArgumentException.ThrowIfNullOrWhiteSpace(value, nameof(AppId));
 
             _appId = value;
         }

@@ -61,28 +61,6 @@ public static class CallerOptionsExtensions
         Action<MasaDaprClient> clientBuilder)
         => callerOptions.UseDapr(DefaultCallerName, clientBuilder);
 
-    public static MasaDaprClientBuilder UseDaprTest(this CallerOptions callerOptions,
-        string name,
-        string appId,
-        DaprClient daprClient)
-    {
-        return callerOptions.UseDaprCore(name, () =>
-        {
-            AddCallerExtensions.AddCaller(callerOptions, name,
-                serviceProvider =>
-                {
-                    var appid = serviceProvider.GetRequiredService<ICallerProvider>().CompletionAppId(appId);
-                    var daprCaller = new DaprCaller(serviceProvider,
-                        daprClient,
-                        name,
-                        appid,
-                        null,
-                        null);
-                    return daprCaller;
-                });
-        });
-    }
-
     private static MasaDaprClientBuilder UseDaprCore(this CallerOptions callerOptions,
         string name,
         Action action)

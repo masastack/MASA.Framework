@@ -26,4 +26,10 @@
     <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.DaprClient\Masa.Contrib.Service.Caller.DaprClient.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

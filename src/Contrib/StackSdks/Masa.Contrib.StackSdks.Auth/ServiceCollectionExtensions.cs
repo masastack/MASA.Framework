@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.BaseAddress = authServiceBaseAddress;
-            }).AddMiddleware(_ => new AuthenticationMiddleware());
+            }).AddMiddleware(_ => new Masa.Contrib.StackSdks.Auth.AuthenticationMiddleware());
             callerOptions.DisableAutoRegistration = true;
         }, redisOptions);
     }

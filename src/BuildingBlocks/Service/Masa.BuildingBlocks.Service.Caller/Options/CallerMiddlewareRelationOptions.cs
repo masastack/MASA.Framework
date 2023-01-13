@@ -7,16 +7,16 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public class CallerMiddlewareRelationOptions : MasaRelationOptions
 {
-    public List<Func<IServiceProvider, ICallerMiddleware>> Funcs { get; }
+    public List<Func<IServiceProvider, ICallerMiddleware>> Middlewares { get; }
 
     public CallerMiddlewareRelationOptions(string name)
     {
         Name = name;
-        Funcs = new List<Func<IServiceProvider, ICallerMiddleware>>();
+        Middlewares = new List<Func<IServiceProvider, ICallerMiddleware>>();
     }
 
     public void AddMiddlewareFunc(Func<IServiceProvider, ICallerMiddleware> func)
     {
-        Funcs.Add(func);
+        Middlewares.Add(func);
     }
 }

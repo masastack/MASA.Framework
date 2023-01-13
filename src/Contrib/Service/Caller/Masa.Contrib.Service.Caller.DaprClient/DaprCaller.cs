@@ -15,25 +15,14 @@ public class DaprCaller : AbstractCaller
         string appId,
         Func<IServiceProvider, IRequestMessage>? requestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? responseMessageFactory)
-        : this(serviceProvider, null, name, appId, requestMessageFactory, responseMessageFactory)
-    {
-    }
-
-    public DaprCaller(
-        IServiceProvider serviceProvider,
-        Dapr.Client.DaprClient? daprClient,
-        string name,
-        string appId,
-        Func<IServiceProvider, IRequestMessage>? requestMessageFactory,
-        Func<IServiceProvider, IResponseMessage>? responseMessageFactory)
         : base(serviceProvider, name, requestMessageFactory, responseMessageFactory)
     {
         AppId = appId;
-        _daprClient = daprClient;
         var logger = serviceProvider.GetService<ILogger<DaprCaller>>();
         logger?.LogDebug("The Name of the initialized Caller is {Name}, and the AppId is {AppId}", name, appId);
     }
 
+    [ExcludeFromCodeCoverage]
     public override HttpRequestMessage CreateRequest(HttpMethod method, string? methodName)
     {
         var requestMessage = DaprClient.CreateInvokeMethodRequest(method, AppId, methodName);
@@ -41,6 +30,7 @@ public class DaprCaller : AbstractCaller
         return requestMessage;
     }
 
+    [ExcludeFromCodeCoverage]
     public override HttpRequestMessage CreateRequest<TRequest>(HttpMethod method, string? methodName, TRequest data)
     {
         var requestMessage = DaprClient.CreateInvokeMethodRequest(method, AppId, methodName);
@@ -48,18 +38,23 @@ public class DaprCaller : AbstractCaller
         return requestMessage;
     }
 
+    [ExcludeFromCodeCoverage]
     public override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         => await DaprClient.InvokeMethodWithResponseAsync(request, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync(string methodName, CancellationToken cancellationToken = default)
         => DaprClient.InvokeMethodGrpcAsync(AppId, methodName, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TResponse>(string methodName, CancellationToken cancellationToken = default)
         => DaprClient.InvokeMethodGrpcAsync<TResponse>(AppId, methodName, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync<TRequest>(string methodName, TRequest request, CancellationToken cancellationToken = default)
         => DaprClient.InvokeMethodGrpcAsync(AppId, methodName, request, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TRequest, TResponse>(
         string methodName,
         TRequest request,

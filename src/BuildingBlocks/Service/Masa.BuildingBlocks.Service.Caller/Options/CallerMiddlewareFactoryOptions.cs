@@ -13,7 +13,7 @@ public class CallerMiddlewareFactoryOptions : MasaFactoryOptions<CallerMiddlewar
         if (option != null) option.AddMiddlewareFunc(implementationFactory);
         else Options.Add(new CallerMiddlewareRelationOptions(name)
         {
-            Funcs = { implementationFactory }
+            Middlewares = { implementationFactory }
         });
     }
 }

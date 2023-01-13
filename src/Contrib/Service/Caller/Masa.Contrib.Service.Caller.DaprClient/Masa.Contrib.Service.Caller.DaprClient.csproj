@@ -17,8 +17,4 @@
     <ProjectReference Include="..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Options" />
-  </ItemGroup>
-
 </Project>

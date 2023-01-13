@@ -7,6 +7,8 @@ public class CustomXmlHttpCaller : HttpClientCallerBase
 {
     protected override string BaseAddress { get; set; } = "https://github.com/masastack/MASA.Framework";
 
+    protected override string Prefix { get; set; } = "custom_xml";
+
     protected override void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
     {
         httpClient.Timeout = TimeSpan.FromHours(2);

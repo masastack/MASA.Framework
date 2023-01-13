@@ -26,7 +26,7 @@ public static class MasaCallerClientBuilderExtensions
     {
         masaCallerClientBuilder.Services.Configure<CallerMiddlewareFactoryOptions>(middlewareOptions =>
         {
-            middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, implementationFactory.Invoke);
+            middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, implementationFactory);
         });
         return masaCallerClientBuilder;
     }

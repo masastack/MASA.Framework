@@ -1,17 +1,17 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.Caller.Configuration.Tests;
+namespace Masa.Contrib.Service.Caller.DaprClient.Tests.Scenes.MasaConfiguration;
 
 [TestClass]
 public class DefaultCallerProviderTest
 {
-    private readonly string _appid = "appid";
+    private const string APPID = "appid";
 
     [TestInitialize]
     public void InitializeData()
     {
-        Environment.SetEnvironmentVariable($"{_appid}-suffix", "");
+        Environment.SetEnvironmentVariable($"{APPID}-suffix", "");
     }
 
     [TestMethod]
@@ -19,7 +19,6 @@ public class DefaultCallerProviderTest
     {
         string expectedAppId = "expected-appid";
         var builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddJsonFile("customAppsettings.json");
         builder.Services.Configure<DaprOptions>(options =>
         {
             options.AppPort = 5000;
@@ -31,22 +30,22 @@ public class DefaultCallerProviderTest
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration);
-        string actualAppId = callerProvider.CompletionAppId(_appid);
+        string actualAppId = callerProvider.CompletionAppId(APPID);
         Assert.AreEqual(expectedAppId, actualAppId);
     }
 
     [TestMethod]
     public void TestCompletionAppId2()
     {
-        string expectedAppId = $"{_appid}-{Guid.NewGuid()}";
+        string expectedAppId = $"{APPID}-{Guid.NewGuid()}";
 
-        Environment.SetEnvironmentVariable($"{_appid}-suffix", expectedAppId);
+        Environment.SetEnvironmentVariable($"{APPID}-suffix", expectedAppId);
         var builder = WebApplication.CreateBuilder();
 
         //If the newly added data source exists, the environment variable data source will no longer be queried
-        builder.Configuration.AddJsonFile("customAppsettings.json");
         builder.Services.Configure<DaprOptions>(options =>
         {
+            options.AppId = APPID;
             options.AppPort = 5000;
             options.AppIdSuffix = "suffix";
         });
@@ -56,8 +55,8 @@ public class DefaultCallerProviderTest
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration);
-        string actualAppId = callerProvider.CompletionAppId(_appid);
-        Assert.AreEqual("expected-appid", actualAppId);
+        string actualAppId = callerProvider.CompletionAppId(APPID);
+        Assert.AreEqual(expectedAppId, actualAppId);
     }
 
     [TestMethod]
@@ -65,7 +64,7 @@ public class DefaultCallerProviderTest
     {
         string expectedAppId = "expected-appid";
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddMasaConfiguration(options => options.AddJsonFile("customAppsettings.json"));
+        builder.Services.AddMasaConfiguration();
         builder.Services.Configure<DaprOptions>(options =>
         {
             options.AppPort = 5000;
@@ -77,18 +76,18 @@ public class DefaultCallerProviderTest
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration, builder.Services.GetMasaConfiguration());
-        string actualAppId = callerProvider.CompletionAppId(_appid);
+        string actualAppId = callerProvider.CompletionAppId(APPID);
         Assert.AreEqual(expectedAppId, actualAppId);
     }
 
     [TestMethod]
     public void TestCompletionAppId4()
     {
-        string expectedAppId = $"{_appid}-{Guid.NewGuid()}";
+        string expectedAppId = $"{APPID}-{Guid.NewGuid()}";
 
-        Environment.SetEnvironmentVariable($"{_appid}-suffix", expectedAppId);
+        Environment.SetEnvironmentVariable($"{APPID}-suffix", expectedAppId);
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddMasaConfiguration(options => options.AddJsonFile("customAppsettings.json"));
+        builder.Services.AddMasaConfiguration();
         builder.Services.Configure<DaprOptions>(options =>
         {
             options.AppPort = 5000;
@@ -100,7 +99,7 @@ public class DefaultCallerProviderTest
         var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration, builder.Services.GetMasaConfiguration());
-        string actualAppId = callerProvider.CompletionAppId(_appid);
+        string actualAppId = callerProvider.CompletionAppId(APPID);
         Assert.AreEqual(expectedAppId, actualAppId);
     }
 }

@@ -5,6 +5,7 @@ namespace Masa.Contrib.Service.Caller.HttpClient;
 
 public class MasaHttpClient: MasaCallerClient
 {
+    [ExcludeFromCodeCoverage]
     [Obsolete($"recommended to use {nameof(BaseAddress)}, {nameof(BaseApi)} has expired")]
     public string BaseApi { get => BaseAddress; set => BaseAddress = value; }
 

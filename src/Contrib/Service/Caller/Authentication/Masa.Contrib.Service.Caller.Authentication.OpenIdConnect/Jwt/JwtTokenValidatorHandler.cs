@@ -13,12 +13,12 @@ public class JwtTokenValidatorHandler : ITokenValidatorHandler
 
     public JwtTokenValidatorHandler(IOptions<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
         IOptions<ClientRefreshTokenOptions> clientRefreshTokenOptions,
-        HttpClient httpClient,
+        IHttpClientFactory httpClientFactory,
         ILogger<JwtTokenValidatorHandler>? logger)
     {
         _jwtTokenValidatorOptions = jwtTokenValidatorOptions.Value;
         _clientRefreshTokenOptions = clientRefreshTokenOptions.Value;
-        _httpClient = httpClient;
+        _httpClient = httpClientFactory.CreateClient(Constant.HTTP_CLIENT_NAME);
         _logger = logger;
     }
 

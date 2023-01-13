@@ -6,16 +6,18 @@ namespace Masa.Contrib.Service.Caller.HttpClient.Tests;
 [TestClass]
 public class CallerTest
 {
-    private static FieldInfo _httpClientFieldInfo
-        => typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic)!;
+    private static FieldInfo HttpClientFieldInfo => GetCustomFieldInfo(typeof(HttpClientCaller), "_httpClient");
 
-    private static PropertyInfo? _requestMessagePropertyInfo
-        => typeof(HttpClientCaller).GetProperty("RequestMessage", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static FieldInfo MiddlewaresFieldInfo => GetCustomFieldInfo(typeof(HttpClientCaller), "Middlewares");
 
-    private static PropertyInfo? _responseMessagePropertyInfo
-        => typeof(HttpClientCaller).GetProperty("ResponseMessage", BindingFlags.Instance | BindingFlags.NonPublic);
+    private static FieldInfo PrefixFieldInfo => GetCustomFieldInfo(typeof(HttpClientCaller), "_prefix");
+
+    private static PropertyInfo RequestMessagePropertyInfo => GetCustomPropertyInfo(typeof(HttpClientCaller), "RequestMessage");
+
+    private static PropertyInfo ResponseMessagePropertyInfo => GetCustomPropertyInfo(typeof(HttpClientCaller), "ResponseMessage");
 
     private const string FRAMEWORK_BASE_ADDRESS = "https://github.com/masastack/MASA.Framework";
+
     private CallerOptions _callerOptions;
 
     [TestInitialize]
@@ -91,10 +93,7 @@ public class CallerTest
         var caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        var fieldInfo = typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        var httpClient = (System.Net.Http.HttpClient)fieldInfo.GetValue(caller)!;
+        var httpClient = GetHttpClient(caller);
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());
 
         Environment.SetEnvironmentVariable(key, docBaseAddress);
@@ -104,15 +103,12 @@ public class CallerTest
         caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        fieldInfo = typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        httpClient = (System.Net.Http.HttpClient)fieldInfo.GetValue(caller)!;
+        httpClient = GetHttpClient(caller);
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());
     }
 
     [TestMethod]
-    public void TestBaseAddressByUseHttpClientByAlwaysGetNewestHttpClientIsTrue()
+    public void TestHttpClientByUseHttpClientByAlwaysGetNewestHttpClientIsTrue()
     {
         var docBaseAddress = "https://docs.masastack.com";
         var key = "callerBaseAddress" + Guid.NewGuid();
@@ -123,6 +119,7 @@ public class CallerTest
         {
             callerOptions.UseHttpClient(client =>
             {
+                client.Prefix = "masa";
                 client.BaseAddress = Environment.GetEnvironmentVariable(key)!;
             }, true);
             callerOptions.DisableAutoRegistration = true;
@@ -134,10 +131,7 @@ public class CallerTest
         var caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        var fieldInfo = typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        var httpClient = (System.Net.Http.HttpClient)fieldInfo.GetValue(caller)!;
+        var httpClient = GetHttpClient(caller);
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());
 
         Environment.SetEnvironmentVariable(key, docBaseAddress);
@@ -147,11 +141,10 @@ public class CallerTest
         caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        fieldInfo = typeof(HttpClientCaller).GetField("_httpClient", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        httpClient = (System.Net.Http.HttpClient)fieldInfo.GetValue(caller)!;
+        httpClient = GetHttpClient(caller);
         Assert.AreEqual(new Uri(docBaseAddress).ToString(), httpClient.BaseAddress!.ToString());
+
+        Assert.AreEqual("masa", GetPrefix(caller));
     }
 
     [TestMethod]
@@ -171,10 +164,7 @@ public class CallerTest
         var caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        var fieldInfo = typeof(HttpClientCaller).GetField("Middlewares", BindingFlags.Instance | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        var middlewares = (IEnumerable<Func<IServiceProvider, ICallerMiddleware>>?)fieldInfo.GetValue(caller);
+        var middlewares = GetMiddlewares(caller);
         Assert.IsNotNull(middlewares);
         Assert.AreEqual(2, middlewares.Count());
     }
@@ -260,6 +250,8 @@ public class CallerTest
         var responseMessage = GetResponseMessage(callerBase.GetCaller());
         Assert.AreEqual(typeof(JsonResponseMessage), responseMessage.GetType());
 
+        Assert.AreEqual("custom", GetPrefix(callerBase.GetCaller()));
+
         var xmlCallerBase = serviceProvider.GetService<CustomXmlHttpCaller>();
         Assert.IsNotNull(xmlCallerBase);
 
@@ -273,17 +265,31 @@ public class CallerTest
 
         responseMessage = GetResponseMessage(xmlCallerBase.GetCaller());
         Assert.AreEqual(typeof(XmlResponseMessage), responseMessage.GetType());
+
+        Assert.AreEqual("custom_xml", GetPrefix(xmlCallerBase.GetCaller()));
     }
+
+    private static FieldInfo GetCustomFieldInfo(Type type, string name)
+        => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+    private static PropertyInfo GetCustomPropertyInfo(Type type, string name)
+        => type.GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     private Task ConfigHttpRequestMessageAsync(IServiceProvider serviceProvider, HttpRequestMessage requestMessage)
         => Task.CompletedTask;
 
     private static System.Net.Http.HttpClient GetHttpClient(ICaller caller)
-        => (System.Net.Http.HttpClient)_httpClientFieldInfo.GetValue(caller)!;
+        => (System.Net.Http.HttpClient)HttpClientFieldInfo.GetValue(caller)!;
+
+    private static IEnumerable<Func<IServiceProvider, ICallerMiddleware>>? GetMiddlewares(ICaller caller)
+        => (IEnumerable<Func<IServiceProvider, ICallerMiddleware>>?)MiddlewaresFieldInfo.GetValue(caller);
+
+    private static string GetPrefix(ICaller caller) =>
+        (string)PrefixFieldInfo.GetValue(caller)!;
 
     private static IRequestMessage GetRequestMessage(ICaller caller)
-        => (IRequestMessage)_requestMessagePropertyInfo.GetValue(caller);
+        => (IRequestMessage)RequestMessagePropertyInfo.GetValue(caller)!;
 
     private static IResponseMessage GetResponseMessage(ICaller caller)
-        => (IResponseMessage)_responseMessagePropertyInfo.GetValue(caller);
+        => (IResponseMessage)ResponseMessagePropertyInfo.GetValue(caller)!;
 }

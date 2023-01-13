@@ -37,8 +37,6 @@ public abstract class CallerBase
 
     protected virtual Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
-        var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
-        authenticationService?.ExecuteAsync(requestMessage);
         return Task.CompletedTask;
     }
 }

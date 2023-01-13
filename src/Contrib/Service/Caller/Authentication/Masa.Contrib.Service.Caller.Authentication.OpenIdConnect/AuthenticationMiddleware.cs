@@ -3,13 +3,13 @@
 
 namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 
-public class AuthenticationService : IAuthenticationService
+public class AuthenticationMiddleware : ICallerMiddleware
 {
     private readonly TokenProvider _tokenProvider;
     private readonly ITokenValidatorHandler? _tokenValidatorHandler;
     private readonly string _authenticateScheme;
 
-    public AuthenticationService(TokenProvider tokenProvider,
+    public AuthenticationMiddleware(TokenProvider tokenProvider,
         ITokenValidatorHandler? tokenValidatorHandler,
         string authenticateScheme)
     {
@@ -18,13 +18,13 @@ public class AuthenticationService : IAuthenticationService
         _authenticateScheme = authenticateScheme;
     }
 
-    public Task ExecuteAsync(HttpRequestMessage requestMessage)
+    public Task HandleAsync(MasaHttpContext masaHttpContext, CallerHandlerDelegate next, CancellationToken cancellationToken = default)
     {
         _tokenValidatorHandler?.ValidateTokenAsync(_tokenProvider);
 
         if (!_tokenProvider.AccessToken.IsNullOrWhiteSpace())
-            requestMessage.Headers.Authorization = new AuthenticationHeaderValue(_authenticateScheme, _tokenProvider.AccessToken);
-        
-        return Task.CompletedTask;
+            masaHttpContext.RequestMessage.Headers.Authorization = new AuthenticationHeaderValue(_authenticateScheme, _tokenProvider.AccessToken);
+
+        return next();
     }
 }
