@@ -11,23 +11,21 @@ public static class ServiceCollectionExtensions
         {
             var serviceProvider = services.BuildServiceProvider();
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            var masaConfiguration = serviceProvider.GetService<IMasaConfiguration>()?.Local;
 
-            configuration = masaConfiguration ?? configuration;
 
-            masaStackConfig.SetValue(MasaStackConfigConst.VERSION, configuration.GetValue<string>(MasaStackConfigConst.VERSION) ?? "");
+            masaStackConfig.SetValue(MasaStackConfigConst.VERSION, configuration.GetValue<string>(MasaStackConfigConst.VERSION));
             masaStackConfig.SetValue(MasaStackConfigConst.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConst.IS_DEMO).ToString());
-            masaStackConfig.SetValue(MasaStackConfigConst.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConst.DOMAIN_NAME) ?? "");
-            masaStackConfig.SetValue(MasaStackConfigConst.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConst.TLS_NAME) ?? "");
-            masaStackConfig.SetValue(MasaStackConfigConst.CLUSTER, configuration.GetValue<string>(MasaStackConfigConst.CLUSTER) ?? "");
-
-            masaStackConfig.SetValue(MasaStackConfigConst.REDIS, configuration.GetValue<string>(MasaStackConfigConst.REDIS) ?? "");
-            masaStackConfig.SetValue(MasaStackConfigConst.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConst.CONNECTIONSTRING) ?? "");
-            masaStackConfig.SetValue(MasaStackConfigConst.MASA_ALL_SERVER, configuration.GetValue<string>(MasaStackConfigConst.MASA_ALL_SERVER) ?? "");
-            masaStackConfig.SetValue(MasaStackConfigConst.ELASTIC, configuration.GetValue<string>(MasaStackConfigConst.ELASTIC) ?? "");
+            masaStackConfig.SetValue(MasaStackConfigConst.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConst.DOMAIN_NAME));
+            masaStackConfig.SetValue(MasaStackConfigConst.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConst.TLS_NAME));
+            masaStackConfig.SetValue(MasaStackConfigConst.CLUSTER, configuration.GetValue<string>(MasaStackConfigConst.CLUSTER));
+            masaStackConfig.SetValue(MasaStackConfigConst.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConst.OTLP_URL));
+            masaStackConfig.SetValue(MasaStackConfigConst.REDIS, configuration.GetValue<string>(MasaStackConfigConst.REDIS));
+            masaStackConfig.SetValue(MasaStackConfigConst.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConst.CONNECTIONSTRING));
+            masaStackConfig.SetValue(MasaStackConfigConst.MASA_ALL_SERVER, configuration.GetValue<string>(MasaStackConfigConst.MASA_ALL_SERVER));
+            masaStackConfig.SetValue(MasaStackConfigConst.ELASTIC, configuration.GetValue<string>(MasaStackConfigConst.ELASTIC));
+            masaStackConfig.SetValue(MasaStackConfigConst.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConst.ENVIRONMENT));
         });
     }
-
 
     public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = true)
     {
@@ -37,5 +35,10 @@ public static class ServiceCollectionExtensions
             InitializeMasaStackConfiguration(services);
         }
         return services;
+    }
+
+    public static IMasaStackConfig GetMasaStackConfig(this IServiceCollection services)
+    {
+        return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
     }
 }

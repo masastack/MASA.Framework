@@ -42,7 +42,9 @@ public static class IMasaStackConfigExtensions
             var secondaryDomain = jsonObject[service]?.ToString();
             if (secondaryDomain != null)
             {
-                domain = $"{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
+#pragma warning disable S5332
+                domain = $"http://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
+#pragma warning restore S5332
             }
         }
         return domain;
@@ -93,7 +95,7 @@ public static class IMasaStackConfigExtensions
         return GetDomain(masaStackConfig, "auth", "sso");
     }
 
-    public static IEnumerable<string> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<KeyValuePair<string, string>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
         foreach (var server in GetAllServer(masaStackConfig))
         {
@@ -102,7 +104,32 @@ public static class IMasaStackConfigExtensions
             {
                 continue;
             }
-            yield return uiName;
+#pragma warning disable S5332
+            yield return new KeyValuePair<string, string>(uiName, $"http://{uiName}.{masaStackConfig.DomainName.TrimEnd('/')}");
+#pragma warning restore S5332
         }
+    }
+
+    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project, string service)
+    {
+        return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+    }
+
+    public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
+    {
+        var dccServerAddress = GetDccServiceDomain(masaStackConfig);
+        var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
+
+        var stringBuilder = new System.Text.StringBuilder(@"{""ManageServiceAddress"":");
+        stringBuilder.Append($"\"{dccServerAddress}\",");
+        stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
+        stringBuilder.Append($"\"{redis.RedisHost}\",");
+        stringBuilder.Append(@$"""Port"":{redis.RedisPort}");
+        stringBuilder.Append("}],");
+        stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
+        stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
+        stringBuilder.Append(@"}}");
+
+        return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
     }
 }

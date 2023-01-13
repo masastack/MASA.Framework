@@ -5,17 +5,23 @@ namespace Masa.BuildingBlocks.StackSdks.Config;
 
 public interface IMasaStackConfig
 {
-    public RedisModel? RedisModel { get; }
+    public RedisModel RedisModel { get; }
 
-    public string IsDemo { get; }
+    public ElasticModel ElasticModel { get; }
+
+    public bool IsDemo { get; }
 
     public string TlsName { get; }
 
     public string Version { get; }
 
+    public string Environment { get; }
+
     public string Cluster { get; }
 
     public string OtlpUrl { get; }
+
+    public string DomainName { get; }
 
     string GetValue(string key);
 
