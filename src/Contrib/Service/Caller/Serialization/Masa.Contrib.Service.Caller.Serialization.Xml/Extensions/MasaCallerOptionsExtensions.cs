@@ -11,15 +11,14 @@ public static class MasaCallerOptionsExtensions
     /// Set the request handler and response handler for the specified Caller
     /// </summary>
     /// <param name="masaCallerOptions"></param>
-    /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public static MasaCallerClient UseJson(this MasaCallerClient masaCallerOptions, JsonSerializerOptions? jsonSerializerOptions)
+    public static MasaCallerClient UseXml(this MasaCallerClient masaCallerOptions)
     {
-        masaCallerOptions.RequestMessageFactory = _ => new JsonRequestMessage(jsonSerializerOptions);
+        masaCallerOptions.RequestMessageFactory = _ => new XmlRequestMessage();
         masaCallerOptions.ResponseMessageFactory = serviceProvider =>
         {
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            return new JsonResponseMessage(jsonSerializerOptions, loggerFactory);
+            return new XmlResponseMessage(loggerFactory);
         };
         return masaCallerOptions;
     }

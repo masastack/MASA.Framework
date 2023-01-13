@@ -3,7 +3,6 @@
 
 global using Dapr.Client;
 global using Masa.BuildingBlocks.Configuration;
-global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Development.DaprStarter;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.Service.Caller.DaprClient;

@@ -20,7 +20,7 @@ public abstract class AbstractCaller : ICaller
     protected IResponseMessage ResponseMessage => _responseMessage ??=
         _responseMessageFactory?.Invoke(ServiceProvider) ?? ServiceProvider.GetRequiredService<IResponseMessage>();
 
-    protected readonly IEnumerable<Func<IServiceProvider, ICallerMiddleware>>? Middlewares;
+    protected readonly List<Func<IServiceProvider, ICallerMiddleware>> Middlewares;
 
     protected AbstractCaller(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
@@ -37,7 +37,7 @@ public abstract class AbstractCaller : ICaller
         var options = serviceProvider.GetRequiredService<IOptions<CallerMiddlewareFactoryOptions>>().Value
             .Options
             .FirstOrDefault(relationOptions => relationOptions.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        Middlewares = options?.Middlewares;
+        Middlewares = options?.Middlewares.ToArray().Reverse().ToList() ?? new List<Func<IServiceProvider, ICallerMiddleware>>();
     }
 
     public virtual Task<HttpResponseMessage> SendAsync(
@@ -96,7 +96,7 @@ public abstract class AbstractCaller : ICaller
             if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
         };
 
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return masaHttpContext.ResponseMessage;
     }
@@ -112,7 +112,7 @@ public abstract class AbstractCaller : ICaller
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
             response = await masaHttpContext.ProcessResponseAsync<TResponse>(cancellationToken);
         };
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return response;
     }
@@ -164,7 +164,7 @@ public abstract class AbstractCaller : ICaller
             content = await masaHttpContext.ResponseMessage.Content.ReadAsStringAsync(cancellationToken);
         };
 
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }
@@ -201,7 +201,7 @@ public abstract class AbstractCaller : ICaller
 
             content = await masaHttpContext.ResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         };
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }
@@ -238,7 +238,7 @@ public abstract class AbstractCaller : ICaller
 
             content = await masaHttpContext.ResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
         };
-        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
+        await Middlewares.Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }

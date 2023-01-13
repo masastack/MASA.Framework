@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
+    <ProjectReference Include="..\..\Serialization\Masa.Contrib.Service.Caller.Serialization.Xml\Masa.Contrib.Service.Caller.Serialization.Xml.csproj" />
   </ItemGroup>
 
 </Project>
