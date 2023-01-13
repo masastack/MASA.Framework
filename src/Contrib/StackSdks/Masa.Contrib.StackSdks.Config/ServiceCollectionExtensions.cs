@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
         });
     }
 
-
     public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = true)
     {
         services.TryAddSingleton<IMasaStackConfig, MasaStackConfig>();

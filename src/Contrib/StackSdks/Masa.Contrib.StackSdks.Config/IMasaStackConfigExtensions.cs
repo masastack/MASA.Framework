@@ -42,7 +42,7 @@ public static class IMasaStackConfigExtensions
             var secondaryDomain = jsonObject[service]?.ToString();
             if (secondaryDomain != null)
             {
-                domain = $"{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
+                domain = $"http://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
             }
         }
         return domain;
@@ -93,7 +93,7 @@ public static class IMasaStackConfigExtensions
         return GetDomain(masaStackConfig, "auth", "sso");
     }
 
-    public static IEnumerable<string> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<KeyValuePair<string, string>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
         foreach (var server in GetAllServer(masaStackConfig))
         {
@@ -102,11 +102,16 @@ public static class IMasaStackConfigExtensions
             {
                 continue;
             }
-            yield return uiName;
+            yield return new KeyValuePair<string, string>(uiName, $"http://{uiName}.{masaStackConfig.DomainName.TrimEnd('/')}");
         }
     }
 
-    public static T? GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
+    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project, string service)
+    {
+        return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+    }
+
+    public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
     {
         var dccServerAddress = GetDccServiceDomain(masaStackConfig);
         var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
@@ -121,6 +126,6 @@ public static class IMasaStackConfigExtensions
         stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
         stringBuilder.Append(@"}}");
 
-        return JsonSerializer.Deserialize<T>(stringBuilder.ToString());
+        return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
     }
 }
