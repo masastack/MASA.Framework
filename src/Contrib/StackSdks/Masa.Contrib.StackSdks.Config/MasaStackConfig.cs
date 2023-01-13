@@ -33,6 +33,8 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string OtlpUrl => GetValue(MasaStackConfigConst.OTLP_URL);
 
+    public string DomainName => GetValue(MasaStackConfigConst.DOMAIN_NAME);
+
     public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 
     public string GetValue(string key) => _options.Value.GetValue(key);
