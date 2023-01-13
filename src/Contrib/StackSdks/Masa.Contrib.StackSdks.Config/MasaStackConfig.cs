@@ -42,6 +42,8 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string DomainName => GetValue(MasaStackConfigConst.DOMAIN_NAME);
 
+    public string Environment => GetValue(MasaStackConfigConst.ENVIRONMENT);
+
     public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 
     public string GetValue(string key) => _options.Value.GetValue(key);

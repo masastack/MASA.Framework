@@ -4,6 +4,5 @@
 global using Masa.BuildingBlocks.StackSdks.Config;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Microsoft.AspNetCore.Builder;
-global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
