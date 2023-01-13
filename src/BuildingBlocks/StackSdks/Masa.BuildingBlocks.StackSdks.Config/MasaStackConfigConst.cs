@@ -7,7 +7,7 @@ public static class MasaStackConfigConst
 {
     public const string VERSION = "VERSION";
     public const string ELASTIC = "ELASTIC";
-    public const string ENVIRONMENT = "ASPNETCORE_ENVIRONMENT";
+    public const string ENVIRONMENT = "ENVIRONMENT";
     public const string IS_DEMO = "IS_DEMO";
     public const string REDIS = "REDIS";
     public const string CLUSTER = "CLUSTER";
