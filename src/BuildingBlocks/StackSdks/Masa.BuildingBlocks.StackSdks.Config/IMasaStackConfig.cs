@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.StackSdks.Config;
 
 public interface IMasaStackConfig
 {
-    public RedisModel? RedisModel { get; }
+    public RedisModel RedisModel { get; }
 
-    public string IsDemo { get; }
+    public bool IsDemo { get; }
 
     public string TlsName { get; }
 

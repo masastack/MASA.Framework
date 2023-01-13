@@ -12,18 +12,16 @@ public class MasaStackConfig : IMasaStackConfig
         _options = options;
     }
 
-    public RedisModel? RedisModel
+    public RedisModel RedisModel
     {
         get
         {
             var redisStr = GetValue(MasaStackConfigConst.REDIS);
-            var redisModel = JsonSerializer.Deserialize<RedisModel>(redisStr);
-
-            return redisModel;
+            return JsonSerializer.Deserialize<RedisModel>(redisStr) ?? throw new JsonException();
         }
     }
 
-    public string IsDemo => GetValue(MasaStackConfigConst.IS_DEMO);
+    public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConst.IS_DEMO));
 
     public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
 
