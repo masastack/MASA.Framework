@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Dapr.Client;
-
 namespace Masa.Contrib.Service.Caller.DaprClient.Tests;
 
 [TestClass]
@@ -14,17 +12,9 @@ public class MasaDaprClientTest
         string appId = "masa";
         var daprClient = new MasaDaprClient(appId);
         Assert.AreEqual(appId, daprClient.AppId);
-        Assert.IsNull(daprClient.Configure);
 
         Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(null!));
         Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(string.Empty));
         Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(" "));
-
-        Action<DaprClientBuilder> configure = daprClientBuilder =>
-        {
-
-        };
-        daprClient = new MasaDaprClient(appId, configure);
-        Assert.AreEqual(configure, daprClient.Configure);
     }
 }

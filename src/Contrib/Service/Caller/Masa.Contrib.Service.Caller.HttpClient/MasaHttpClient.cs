@@ -6,6 +6,9 @@ namespace Masa.Contrib.Service.Caller.HttpClient;
 public class MasaHttpClient: MasaCallerClient
 {
     [ExcludeFromCodeCoverage]
+    public System.Text.Json.JsonSerializerOptions? JsonSerializerOptions { get; set; } = null;
+
+    [ExcludeFromCodeCoverage]
     [Obsolete($"recommended to use {nameof(BaseAddress)}, {nameof(BaseApi)} has expired")]
     public string BaseApi { get => BaseAddress; set => BaseAddress = value; }
 

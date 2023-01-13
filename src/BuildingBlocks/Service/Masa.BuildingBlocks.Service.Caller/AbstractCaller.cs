@@ -96,7 +96,7 @@ public abstract class AbstractCaller : ICaller
             if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
         };
 
-        await Middlewares.Aggregate(callerHandlerDelegate,
+        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return masaHttpContext.ResponseMessage;
     }
@@ -163,7 +163,8 @@ public abstract class AbstractCaller : ICaller
 
             content = await masaHttpContext.ResponseMessage.Content.ReadAsStringAsync(cancellationToken);
         };
-        await Middlewares.Aggregate(callerHandlerDelegate,
+
+        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }
@@ -200,7 +201,7 @@ public abstract class AbstractCaller : ICaller
 
             content = await masaHttpContext.ResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
         };
-        await Middlewares.Aggregate(callerHandlerDelegate,
+        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }
@@ -237,7 +238,7 @@ public abstract class AbstractCaller : ICaller
 
             content = await masaHttpContext.ResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
         };
-        await Middlewares.Aggregate(callerHandlerDelegate,
+        await Middlewares.Reverse().Aggregate(callerHandlerDelegate,
             (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
         return content;
     }

@@ -10,6 +10,4 @@ public class MasaCallerClient
     public Func<IServiceProvider, IRequestMessage>? RequestMessageFactory { get; set; } = null;
 
     public Func<IServiceProvider, IResponseMessage>? ResponseMessageFactory { get; set; } = null;
-
-    public JsonSerializerOptions? JsonSerializerOptions { get; set; } = null;
 }

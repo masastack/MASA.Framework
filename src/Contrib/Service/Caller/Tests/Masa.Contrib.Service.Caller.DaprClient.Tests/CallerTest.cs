@@ -33,6 +33,44 @@ public class CallerTest
     }
 
     [TestMethod]
+    public void TestAppIdByUseDaprAndAlwaysGetNewestDaprClient()
+    {
+        var services = new ServiceCollection();
+        var key = "callerBaseAddress" + Guid.NewGuid();
+        Environment.SetEnvironmentVariable(key, DEFAULT_APP_ID);
+        services.AddCaller(callerOptions =>
+        {
+            callerOptions.UseDapr(client =>
+            {
+                client.AppId = Environment.GetEnvironmentVariable(key)!;
+            }, alwaysGetNewestDaprClient: true);
+            callerOptions.DisableAutoRegistration = true;
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var callerFactory = serviceProvider.GetService<ICallerFactory>();
+        Assert.IsNotNull(callerFactory);
+
+        var caller = callerFactory.Create();
+        Assert.IsNotNull(caller);
+
+        Assert.AreEqual(DEFAULT_APP_ID, GetAppId(caller));
+
+        var expectedAppId = Guid.NewGuid().ToString();
+        Environment.SetEnvironmentVariable(key, expectedAppId);
+
+        callerFactory = serviceProvider.CreateScope().ServiceProvider.GetService<ICallerFactory>();
+        Assert.IsNotNull(callerFactory);
+
+        caller = callerFactory.Create();
+        Assert.IsNotNull(caller);
+
+        Assert.AreEqual(expectedAppId, GetAppId(caller));
+
+        Environment.SetEnvironmentVariable(key, string.Empty);
+    }
+
+    [TestMethod]
     public void TestAppIdByUseDaprAndSetEnvironment()
     {
         var services = new ServiceCollection();
@@ -76,7 +114,7 @@ public class CallerTest
         var caller = callerFactory.Create();
         Assert.IsNotNull(caller);
 
-        Assert.AreEqual(actualAppId, GetAppId(caller));
+        Assert.AreEqual(APP_ID_BY_JSON_CONFIG, GetAppId(caller));
         Environment.SetEnvironmentVariable(DEFAULT_APP_ID, string.Empty);
     }
 

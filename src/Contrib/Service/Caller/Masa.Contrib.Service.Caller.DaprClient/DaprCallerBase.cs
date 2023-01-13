@@ -24,12 +24,8 @@ public abstract class DaprCallerBase : CallerBase
         var daprClientBuilder = CallerOptions.UseDapr(Name!, callerClient =>
         {
             callerClient.AppId = AppId;
-            if (Configure != null)
-            {
-                callerClient.Configure = Configure;
-            }
             ConfigMasaCallerClient(callerClient);
-        });
+        }, Configure);
         daprClientBuilder.AddConfigHttpRequestMessage((_, requestMessage) => ConfigHttpRequestMessageAsync(requestMessage));
         return daprClientBuilder;
     }

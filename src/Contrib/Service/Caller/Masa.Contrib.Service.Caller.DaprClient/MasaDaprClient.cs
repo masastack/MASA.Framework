@@ -18,20 +18,12 @@ public class MasaDaprClient : MasaCallerClient
         }
     }
 
-    public Action<DaprClientBuilder>? Configure { get; set; }
-
     internal MasaDaprClient()
     {
     }
 
     public MasaDaprClient(string appid)
-        : this(appid, null)
-    {
-    }
-
-    public MasaDaprClient(string appid, Action<DaprClientBuilder>? configure)
     {
         AppId = appid;
-        Configure = configure;
     }
 }
