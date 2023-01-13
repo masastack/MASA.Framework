@@ -12,18 +12,25 @@ public class MasaStackConfig : IMasaStackConfig
         _options = options;
     }
 
-    public RedisModel? RedisModel
+    public RedisModel RedisModel
     {
         get
         {
             var redisStr = GetValue(MasaStackConfigConst.REDIS);
-            var redisModel = JsonSerializer.Deserialize<RedisModel>(redisStr);
-
-            return redisModel;
+            return JsonSerializer.Deserialize<RedisModel>(redisStr) ?? throw new JsonException();
         }
     }
 
-    public string IsDemo => GetValue(MasaStackConfigConst.IS_DEMO);
+    public ElasticModel ElasticModel
+    {
+        get
+        {
+            var redisStr = GetValue(MasaStackConfigConst.ELASTIC);
+            return JsonSerializer.Deserialize<ElasticModel>(redisStr) ?? throw new JsonException();
+        }
+    }
+
+    public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConst.IS_DEMO));
 
     public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
 
@@ -32,6 +39,10 @@ public class MasaStackConfig : IMasaStackConfig
     public string Cluster => GetValue(MasaStackConfigConst.CLUSTER);
 
     public string OtlpUrl => GetValue(MasaStackConfigConst.OTLP_URL);
+
+    public string DomainName => GetValue(MasaStackConfigConst.DOMAIN_NAME);
+
+    public string Environment => GetValue(MasaStackConfigConst.ENVIRONMENT);
 
     public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 

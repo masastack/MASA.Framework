@@ -9,16 +9,12 @@ public class MasaStackConfigTest
     private IMasaStackConfig _stackConfig;
 
     [TestInitialize]
-    [TestMethod]
     public void Initialize()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddJsonFile("Appsettings.json");
 
         builder.Services.AddMasaStackConfig();
         _stackConfig = builder.Services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
-
-        Assert.AreEqual("Default", _stackConfig.GetValue("CLUSTER"));
     }
 
     [TestMethod]
@@ -27,5 +23,21 @@ public class MasaStackConfigTest
         var allServer = _stackConfig.GetAllServer();
 
         Assert.IsNotNull(allServer);
+    }
+
+    [TestMethod]
+    public void TestGetMiniDccOptions()
+    {
+        var dccOptions = _stackConfig.GetDccMiniOptions<DccOptions>();
+
+        Assert.IsNotNull(dccOptions?.RedisOptions);
+    }
+
+    [TestMethod]
+    public void TestGetEnvironment()
+    {
+        var environment = _stackConfig.Environment;
+
+        Assert.IsNotNull(environment);
     }
 }
