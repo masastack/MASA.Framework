@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
-
 namespace Masa.Contrib.StackSdks.Config.Tests;
 
 [TestClass]
@@ -15,7 +13,6 @@ public class MasaStackConfigTest
     public void Initialize()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Configuration.AddJsonFile("Appsettings.json");
 
         builder.Services.AddMasaStackConfig();
         _stackConfig = builder.Services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
