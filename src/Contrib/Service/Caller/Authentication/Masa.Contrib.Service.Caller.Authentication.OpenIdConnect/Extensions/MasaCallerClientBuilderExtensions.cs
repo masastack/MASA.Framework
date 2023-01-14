@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using Microsoft.AspNetCore.Http;
+
 namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class MasaCallerClientBuilderExtensions
@@ -46,11 +48,11 @@ public static class MasaCallerClientBuilderExtensions
         this IMasaCallerClientBuilder masaCallerClientBuilder,
         string defaultScheme = Constant.DEFAULT_SCHEME)
     {
+        masaCallerClientBuilder.Services.AddHttpContextAccessor();
         masaCallerClientBuilder.Services.AddScoped<TokenProvider>();
         masaCallerClientBuilder.AddMiddleware(serviceProvider =>
             new AuthenticationMiddleware(
-                serviceProvider.GetRequiredService<TokenProvider>(),
-                serviceProvider.GetService<ITokenValidatorHandler>(),
+                serviceProvider.GetRequiredService<IHttpContextAccessor>(),
                 defaultScheme
             ));
         return masaCallerClientBuilder;

@@ -31,7 +31,7 @@ public abstract class HttpClientCallerBase : CallerBase
             callerClient.Configure = ConfigureHttpClient;
             ConfigMasaCallerClient(callerClient);
         }, IsSupportUpdate);
-        masaHttpClientBuilder.AddConfigHttpRequestMessage((_, requestMessage) => ConfigHttpRequestMessageAsync(requestMessage));
+        masaHttpClientBuilder.AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
         return masaHttpClientBuilder;
     }
 

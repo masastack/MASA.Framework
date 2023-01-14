@@ -156,7 +156,7 @@ public class CallerTest
             callerOptions.UseHttpClient(client =>
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
-            }, true).UseI18n().AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
+            }, true).UseI18n();
             callerOptions.DisableAutoRegistration = true;
         });
         var serviceProvider = services.BuildServiceProvider();
@@ -166,7 +166,7 @@ public class CallerTest
 
         var middlewares = GetMiddlewares(caller);
         Assert.IsNotNull(middlewares);
-        Assert.AreEqual(2, middlewares.Count());
+        Assert.AreEqual(1, middlewares.Count());
     }
 
     [TestMethod]
@@ -274,9 +274,6 @@ public class CallerTest
 
     private static PropertyInfo GetCustomPropertyInfo(Type type, string name)
         => type.GetProperty(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
-
-    private Task ConfigHttpRequestMessageAsync(IServiceProvider serviceProvider, HttpRequestMessage requestMessage)
-        => Task.CompletedTask;
 
     private static System.Net.Http.HttpClient GetHttpClient(ICaller caller)
         => (System.Net.Http.HttpClient)HttpClientFieldInfo.GetValue(caller)!;

@@ -88,7 +88,7 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var masaHttpContext = new MasaHttpContext(ServiceProvider, ResponseMessage, requestMessageFunc);
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -106,7 +106,7 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         TResponse? response = default;
-        var masaHttpContext = new MasaHttpContext(ServiceProvider, ResponseMessage, requestMessageFunc);
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -154,7 +154,7 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         string content = default!;
-        var masaHttpContext = new MasaHttpContext(ServiceProvider, ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -192,7 +192,7 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         byte[] content = default!;
-        var masaHttpContext = new MasaHttpContext(ServiceProvider, ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -229,7 +229,7 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         Stream content = default!;
-        var masaHttpContext = new MasaHttpContext(ServiceProvider, ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);

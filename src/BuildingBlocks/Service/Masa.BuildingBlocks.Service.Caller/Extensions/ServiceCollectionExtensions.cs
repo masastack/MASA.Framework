@@ -27,7 +27,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
         services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage(callerOption.JsonSerializerOptions));
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage(callerOption.JsonSerializerOptions));
-        services.TryAddScoped(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         if (!callerOption.DisableAutoRegistration) services.AddAutomaticCaller(callerOption);
@@ -49,7 +49,7 @@ public static class ServiceCollectionExtensions
 #pragma warning disable S3011
         callerTypes.Arrangement().ForEach(type =>
         {
-            ServiceDescriptor serviceDescriptor = new ServiceDescriptor(type, serviceProvider =>
+            var serviceDescriptor = new ServiceDescriptor(type, serviceProvider =>
             {
                 var constructorInfo = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                     .MaxBy(constructor => constructor.GetParameters().Length)!;
@@ -64,7 +64,6 @@ public static class ServiceCollectionExtensions
                 {
                     callerBase.SetServiceProvider(serviceProvider);
                 }
-
 
                 return callerBase;
             }, callerOptions.CallerLifetime);

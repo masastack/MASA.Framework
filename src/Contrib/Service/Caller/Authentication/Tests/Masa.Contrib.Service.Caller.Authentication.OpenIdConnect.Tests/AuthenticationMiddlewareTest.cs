@@ -7,22 +7,35 @@ namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests;
 public class AuthenticationServiceTest
 {
     private const string DEFAULT_SCHEME = "Bearer";
+    private IServiceCollection _services;
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessor = new();
+
+    [TestInitialize]
+    public void Initialize()
+    {
+        _services = new ServiceCollection();
+        _services.AddScoped<TokenProvider>();
+    }
 
     [TestMethod]
     public async Task TestAuthenticationMiddlewareAsync()
     {
-        Mock<IServiceProvider> serviceProvider = new();
-        Mock<IResponseMessage> responseMessage = new();
         var tokenProvider = new TokenProvider()
         {
             AccessToken = "accessToken"
         };
-        var authenticationService = new AuthenticationMiddleware(tokenProvider, null, DEFAULT_SCHEME);
+        _services.AddScoped(_ => tokenProvider);
+        _httpContextAccessor.Setup(accessor => accessor.HttpContext)?.Returns(new DefaultHttpContext()
+        {
+            RequestServices = _services.BuildServiceProvider()
+        });
+        Mock<IResponseMessage> responseMessage = new();
+        var authenticationService = new AuthenticationMiddleware(_httpContextAccessor.Object, DEFAULT_SCHEME);
         var httpRequestMessage = new HttpRequestMessage()
         {
             Headers = { }
         };
-        var masaHttpContext = new MasaHttpContext(serviceProvider.Object, responseMessage.Object, httpRequestMessage);
+        var masaHttpContext = new MasaHttpContext(responseMessage.Object, httpRequestMessage);
 
         var times = 0;
         CallerHandlerDelegate callerHandlerDelegate = () =>
@@ -40,15 +53,18 @@ public class AuthenticationServiceTest
     [TestMethod]
     public async Task TestAuthenticationMiddleware2Async()
     {
-        Mock<IServiceProvider> serviceProvider = new();
+        _services.AddScoped<TokenProvider>();
+        _httpContextAccessor.Setup(accessor => accessor.HttpContext)?.Returns(new DefaultHttpContext()
+        {
+            RequestServices = _services.BuildServiceProvider()
+        });
         Mock<IResponseMessage> responseMessage = new();
-        var tokenProvider = new TokenProvider();
-        var authenticationService = new AuthenticationMiddleware(tokenProvider, null, DEFAULT_SCHEME);
+        var authenticationService = new AuthenticationMiddleware(_httpContextAccessor.Object, DEFAULT_SCHEME);
         var httpRequestMessage = new HttpRequestMessage()
         {
             Headers = { }
         };
-        var masaHttpContext = new MasaHttpContext(serviceProvider.Object, responseMessage.Object, httpRequestMessage);
+        var masaHttpContext = new MasaHttpContext(responseMessage.Object, httpRequestMessage);
 
         var times = 0;
         CallerHandlerDelegate callerHandlerDelegate = () =>
@@ -60,5 +76,37 @@ public class AuthenticationServiceTest
         await authenticationService.HandleAsync(masaHttpContext, callerHandlerDelegate);
         Assert.IsNull(httpRequestMessage.Headers.Authorization);
         Assert.AreEqual(1, times);
+    }
+
+    [TestMethod]
+    public async Task TestAuthenticationMiddleware3Async()
+    {
+        Mock<ITokenValidatorHandler> tokenValidatorHandler = new();
+        _services.AddSingleton(_ => tokenValidatorHandler.Object);
+        _services.AddScoped<TokenProvider>();
+        _httpContextAccessor.Setup(accessor => accessor.HttpContext)?.Returns(new DefaultHttpContext()
+        {
+            RequestServices = _services.BuildServiceProvider()
+        });
+        Mock<IResponseMessage> responseMessage = new();
+        var authenticationService = new AuthenticationMiddleware(_httpContextAccessor.Object, DEFAULT_SCHEME);
+        var httpRequestMessage = new HttpRequestMessage()
+        {
+            Headers = { }
+        };
+        var masaHttpContext = new MasaHttpContext(responseMessage.Object, httpRequestMessage);
+
+        var times = 0;
+        CallerHandlerDelegate callerHandlerDelegate = () =>
+        {
+            times++;
+            return Task.FromResult(times);
+        };
+
+        await authenticationService.HandleAsync(masaHttpContext, callerHandlerDelegate);
+        Assert.IsNull(httpRequestMessage.Headers.Authorization);
+        Assert.AreEqual(1, times);
+
+        tokenValidatorHandler.Verify(tokenValidator => tokenValidator.ValidateTokenAsync(It.IsAny<TokenProvider>()), Times.Once);
     }
 }

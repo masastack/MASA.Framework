@@ -13,25 +13,21 @@ public class MasaHttpContext
 
     public HttpResponseMessage ResponseMessage { get; internal set; }
 
-    public IServiceProvider ServiceProvider { get; }
-
     private readonly IResponseMessage _responseMessage;
 
-    private MasaHttpContext(IServiceProvider serviceProvider, IResponseMessage responseMessage)
+    private MasaHttpContext(IResponseMessage responseMessage)
     {
-        ServiceProvider = serviceProvider;
         _responseMessage = responseMessage;
     }
 
-    public MasaHttpContext(IServiceProvider serviceProvider, IResponseMessage responseMessage, HttpRequestMessage requestMessage)
-        : this(serviceProvider, responseMessage)
+    public MasaHttpContext(IResponseMessage responseMessage, HttpRequestMessage requestMessage)
+        : this(responseMessage)
     {
-        ServiceProvider = serviceProvider;
         _requestMessage = requestMessage;
     }
 
-    public MasaHttpContext(IServiceProvider serviceProvider, IResponseMessage responseMessage, Func<HttpRequestMessage>? httpRequestMessageFunc)
-        : this(serviceProvider, responseMessage)
+    public MasaHttpContext(IResponseMessage responseMessage, Func<HttpRequestMessage>? httpRequestMessageFunc)
+        : this(responseMessage)
     {
         if (httpRequestMessageFunc != null) _httpRequestMessageFunc = httpRequestMessageFunc;
         else _requestMessage = new HttpRequestMessage();
