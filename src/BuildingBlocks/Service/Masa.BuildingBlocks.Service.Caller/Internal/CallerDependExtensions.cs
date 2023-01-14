@@ -77,14 +77,5 @@ internal static class CallerDependExtensions
     }
 
     private static bool IsDependCaller(this ConstructorInfo constructorInfo)
-    {
-        foreach (var parameterType in constructorInfo.GetParameters().Select(parameter => parameter.ParameterType))
-        {
-            if (typeof(CallerBase).IsAssignableFrom(parameterType))
-            {
-                return true;
-            }
-        }
-        return false;
-    }
+        => constructorInfo.GetParameters().Any(parameter => typeof(CallerBase).IsAssignableFrom(parameter.ParameterType));
 }
