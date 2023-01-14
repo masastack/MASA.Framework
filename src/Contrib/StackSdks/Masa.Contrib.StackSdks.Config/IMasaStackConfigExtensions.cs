@@ -17,17 +17,17 @@ public static class IMasaStackConfigExtensions
 
     public static bool HasAlert(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey("alert");
+        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConst.ALERT);
     }
 
     public static bool HasTsc(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey("tsc");
+        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConst.TSC);
     }
 
     public static bool HasScheduler(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey("scheduler");
+        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConst.SCHEDULER);
     }
 
     public static string GetConnectionString(this IMasaStackConfig masaStackConfig, string datebaseName)
@@ -71,47 +71,47 @@ public static class IMasaStackConfigExtensions
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
 
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "auth", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.AUTH, "server");
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "pm", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.PM, "server");
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "dcc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.DCC, "server");
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "tsc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.TSC, "server");
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "alert", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.ALERT, "server");
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "mc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.MC, "server");
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "scheduler", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.SCHEDULER, "server");
     }
 
     public static string GetSchedulerWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "scheduler", "worker");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConst.SCHEDULER, "worker");
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, "auth", "sso");
+        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, MasaStackConst.AUTH, "sso");
     }
 
     public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
