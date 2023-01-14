@@ -7,29 +7,29 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddDccClient(this IServiceCollection services, string sectionName = "DccOptions")
+    public static IServiceCollection AddDccClient(this IServiceCollection services, string sectionName = "DccOptions")
     {
         services.AddConfigure<RedisConfigurationOptions>($"{sectionName}:RedisOptions", DEFAULT_CLIENT_NAME);
-        services.AddDccClientCore();
+        return services.AddDccClientCore();
     }
 
-    public static void AddDccClient(this IServiceCollection services, Action<RedisConfigurationOptions> options)
+    public static IServiceCollection AddDccClient(this IServiceCollection services, Action<RedisConfigurationOptions> options)
     {
         services.Configure(DEFAULT_CLIENT_NAME, options);
-        services.AddDccClientCore();
+        return services.AddDccClientCore();
     }
 
-    public static void AddDccClient(this IServiceCollection services, RedisConfigurationOptions options)
+    public static IServiceCollection AddDccClient(this IServiceCollection services, RedisConfigurationOptions options)
     {
         services.AddDistributedCache(DEFAULT_CLIENT_NAME, distributedCacheOptions =>
         {
             distributedCacheOptions.UseStackExchangeRedisCache(options);
         });
 
-        services.AddDccClientCore(false);
+        return services.AddDccClientCore(false);
     }
 
-    private static void AddDccClientCore(this IServiceCollection services, bool isUseStackExchangeRedisCache = true)
+    private static IServiceCollection AddDccClientCore(this IServiceCollection services, bool isUseStackExchangeRedisCache = true)
     {
         if (isUseStackExchangeRedisCache)
             services.AddDistributedCache(DEFAULT_CLIENT_NAME, distributedCacheOptions =>
@@ -44,5 +44,6 @@ public static class ServiceCollectionExtensions
             return new DccClient(client);
         });
         MasaApp.TrySetServiceCollection(services);
+        return services;
     }
 }
