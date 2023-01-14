@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -28,6 +29,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IMiddleware<>), typeof(TransactionMiddleware<>), ServiceLifetime.Transient));
+
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
 
@@ -42,7 +45,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
-        services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
         MasaApp.TrySetServiceCollection(services);
         return services;
