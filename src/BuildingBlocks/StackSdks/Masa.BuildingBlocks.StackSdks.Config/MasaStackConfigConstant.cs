@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Config;
 
-public static class MasaStackConfigConst
+public static class MasaStackConfigConstant
 {
     public const string VERSION = "VERSION";
     public const string ELASTIC = "ELASTIC";

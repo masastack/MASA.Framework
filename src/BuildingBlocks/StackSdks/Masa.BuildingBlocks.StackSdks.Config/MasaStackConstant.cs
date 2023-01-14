@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Config;
 
-public class MasaStackConst
+public static class MasaStackConstant
 {
     public const string AUTH = "auth";
     public const string PM = "pm";
