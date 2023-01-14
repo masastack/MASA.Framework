@@ -40,4 +40,28 @@ public class MasaStackConfigTest
 
         Assert.IsNotNull(environment);
     }
+
+    [TestMethod]
+    public void TestGetAllUINames()
+    {
+        var allUIs = _stackConfig.GetAllUINames();
+
+        Assert.IsNotNull(allUIs);
+    }
+
+    [TestMethod]
+    public void TestGetSsoDomain()
+    {
+        var ssoDomain = _stackConfig.GetSsoDomain();
+
+        Assert.IsNotNull(ssoDomain);
+    }
+
+    [TestMethod]
+    public void TestGetAuthServiceDomain()
+    {
+        var authServiceDomain = _stackConfig.GetAuthServiceDomain();
+
+        Assert.IsNotNull(authServiceDomain);
+    }
 }

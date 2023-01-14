@@ -7,7 +7,12 @@ public static class IMasaStackConfigExtensions
 {
     public static Dictionary<string, JsonObject> GetAllServer(this IMasaStackConfig masaStackConfig)
     {
-        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(masaStackConfig.GetValue(MasaStackConfigConst.MASA_ALL_SERVER)) ?? new();
+        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(masaStackConfig.GetValue(MasaStackConfigConst.MASA_SERVER)) ?? new();
+    }
+
+    public static Dictionary<string, JsonObject> GetAllUI(this IMasaStackConfig masaStackConfig)
+    {
+        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(masaStackConfig.GetValue(MasaStackConfigConst.MASA_UI)) ?? new();
     }
 
     public static bool HasAlert(this IMasaStackConfig masaStackConfig)
@@ -33,7 +38,7 @@ public static class IMasaStackConfigExtensions
         return dbModel?.ToString(datebaseName) ?? "";
     }
 
-    public static string GetDomain(this IMasaStackConfig masaStackConfig, string project, string service)
+    public static string GetServerDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
     {
         var domain = "";
         GetAllServer(masaStackConfig).TryGetValue(project, out JsonObject? jsonObject);
@@ -42,9 +47,22 @@ public static class IMasaStackConfigExtensions
             var secondaryDomain = jsonObject[service]?.ToString();
             if (secondaryDomain != null)
             {
-#pragma warning disable S5332
-                domain = $"http://{secondaryDomain}.{masaStackConfig.GetValue(MasaStackConfigConst.DOMAIN_NAME).TrimStart('.')}";
-#pragma warning restore S5332
+                domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.Namespace}";
+            }
+        }
+        return domain;
+    }
+
+    public static string GetUIDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
+    {
+        var domain = "";
+        GetAllUI(masaStackConfig).TryGetValue(project, out JsonObject? jsonObject);
+        if (jsonObject != null)
+        {
+            var secondaryDomain = jsonObject[service]?.ToString();
+            if (secondaryDomain != null)
+            {
+                domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.DomainName.TrimStart('.')}";
             }
         }
         return domain;
@@ -52,67 +70,74 @@ public static class IMasaStackConfigExtensions
 
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "auth", "server");
+
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "auth", "server");
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "pm", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "pm", "server");
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "dcc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "dcc", "server");
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "tsc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "tsc", "server");
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "alert", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "alert", "server");
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "mc", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "mc", "server");
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "scheduler", "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "scheduler", "server");
     }
 
-    public static string GetWorkerDomain(this IMasaStackConfig masaStackConfig)
+    public static string GetSchedulerWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "scheduler", "worker");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, "scheduler", "worker");
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetDomain(masaStackConfig, "auth", "sso");
+        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, "auth", "sso");
     }
 
-    public static IEnumerable<KeyValuePair<string, string>> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
-        foreach (var server in GetAllServer(masaStackConfig))
+        foreach (var server in GetAllUI(masaStackConfig))
         {
             var uiName = server.Value["ui"]?.ToString();
             if (string.IsNullOrEmpty(uiName))
             {
                 continue;
             }
-#pragma warning disable S5332
-            yield return new KeyValuePair<string, string>(uiName, $"http://{uiName}.{masaStackConfig.DomainName.TrimEnd('/')}");
-#pragma warning restore S5332
+            yield return new KeyValuePair<string, List<string>>(uiName, new List<string> {
+                GetUIDomain(masaStackConfig,HttpProtocol.HTTP,server.Key,"ui"),
+                GetUIDomain(masaStackConfig,HttpProtocol.HTTPS,server.Key,"ui")
+            });
         }
     }
 
-    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project, string service)
+    public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = "server")
     {
         return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+    }
+
+    public static string GetUiId(this IMasaStackConfig masaStackConfig, string project, string service = "ui")
+    {
+        return masaStackConfig.GetAllUI()[project][service]?.ToString() ?? throw new KeyNotFoundException();
     }
 
     public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)

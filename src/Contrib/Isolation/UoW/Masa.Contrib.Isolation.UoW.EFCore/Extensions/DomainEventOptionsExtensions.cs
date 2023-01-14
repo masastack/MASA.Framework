@@ -10,7 +10,7 @@ public static class DomainEventOptionsExtensions
     public static IDomainEventOptions UseIsolationUoW<TDbContext>(
         this IDomainEventOptions options,
         Action<IsolationBuilder> isolationBuilder,
-        Action<MasaDbContextBuilder>? optionsBuilder,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -19,7 +19,7 @@ public static class DomainEventOptionsExtensions
     public static IDomainEventOptions UseIsolationUoW<TDbContext, TTenantId>(
         this IDomainEventOptions options,
         Action<IsolationBuilder> isolationBuilder,
-        Action<MasaDbContextBuilder>? optionsBuilder,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext
@@ -30,7 +30,7 @@ public static class DomainEventOptionsExtensions
     public static IDomainEventOptions UseIsolationUoW<TDbContext, TTenantId, TUserId>(
         this IDomainEventOptions options,
         Action<IsolationBuilder> isolationBuilder,
-        Action<MasaDbContextBuilder>? optionsBuilder,
+        Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDbContext : MasaDbContext, IMasaDbContext

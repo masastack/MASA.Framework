@@ -645,7 +645,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.StackSdks.Conf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.HttpClient.Tests", "src\Contrib\Service\Caller\Tests\Masa.Contrib.Service.Caller.HttpClient.Tests\Masa.Contrib.Service.Caller.HttpClient.Tests.csproj", "{2BD60D01-E28C-4887-BD48-49C950650E91}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F6BD4124-2DCA-453E-B73C-D9DB6323CCDC}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.DaprClient.Tests", "src\Contrib\Service\Caller\Tests\Masa.Contrib.Service.Caller.DaprClient.Tests\Masa.Contrib.Service.Caller.DaprClient.Tests.csproj", "{1C180CB0-DF6B-4AC8-815D-6EE2CBBA676F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Data.Tests", "src\BuildingBlocks\Data\Tests\Masa.BuildingBlocks.Data.Tests\Masa.BuildingBlocks.Data.Tests.csproj", "{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.DaprClient.Tests.Scenes.MasaConfiguration", "src\Contrib\Service\Caller\Tests\Scenes\Masa.Contrib.Service.Caller.DaprClient.Tests.Scenes.MasaConfiguration\Masa.Contrib.Service.Caller.DaprClient.Tests.Scenes.MasaConfiguration.csproj", "{CBF61DB2-035B-4084-9872-0350C4DDA9EE}"
 EndProject
@@ -2329,6 +2333,14 @@ Global
 		{CBF61DB2-035B-4084-9872-0350C4DDA9EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBF61DB2-035B-4084-9872-0350C4DDA9EE}.Release|x64.ActiveCfg = Release|Any CPU
 		{CBF61DB2-035B-4084-9872-0350C4DDA9EE}.Release|x64.Build.0 = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Debug|x64.Build.0 = Debug|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|x64.ActiveCfg = Release|Any CPU
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370}.Release|x64.Build.0 = Release|Any CPU
 		{6019A267-5675-44D2-89DB-A2A51FCEE523}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6019A267-5675-44D2-89DB-A2A51FCEE523}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6019A267-5675-44D2-89DB-A2A51FCEE523}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2666,6 +2678,8 @@ Global
 		{5130EF56-9225-453C-A9AF-EB80A8A19E18} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
 		{CBF61DB2-035B-4084-9872-0350C4DDA9EE} = {E8681596-D4BF-484A-A428-06D749FD4C5D}
 		{5BBCCDEC-C77C-4A68-9911-C69B38666E18} = {68491FED-7441-4B58-989D-DF6F198FC91A}
+		{F6BD4124-2DCA-453E-B73C-D9DB6323CCDC} = {D2DF986D-5EA6-40ED-93F3-2CF3A035F26B}
+		{4F1E9488-FAC5-4966-90E6-F1DFE35F8370} = {F6BD4124-2DCA-453E-B73C-D9DB6323CCDC}
 		{6019A267-5675-44D2-89DB-A2A51FCEE523} = {5BBCCDEC-C77C-4A68-9911-C69B38666E18}
 		{FCA667B6-3BAE-4F67-B2CB-845319275110} = {5BBCCDEC-C77C-4A68-9911-C69B38666E18}
 		{259A999E-123A-4A06-BEA2-691162D4C179} = {FCA667B6-3BAE-4F67-B2CB-845319275110}
