@@ -105,7 +105,7 @@ jobs:
         dotnet test --filter FullyQualifiedName~Masa.Contrib --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[*.Tests]*"
 
     - name: codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v3.1.1
         
 #    - name: Install SonarCloud scanner
 #      run: |
