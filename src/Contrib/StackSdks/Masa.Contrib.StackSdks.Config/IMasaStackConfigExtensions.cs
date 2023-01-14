@@ -130,9 +130,14 @@ public static class IMasaStackConfigExtensions
         }
     }
 
-    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project, string service)
+    public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = "server")
     {
         return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+    }
+
+    public static string GetUiId(this IMasaStackConfig masaStackConfig, string project, string service = "ui")
+    {
+        return masaStackConfig.GetAllUI()[project][service]?.ToString() ?? throw new KeyNotFoundException();
     }
 
     public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
