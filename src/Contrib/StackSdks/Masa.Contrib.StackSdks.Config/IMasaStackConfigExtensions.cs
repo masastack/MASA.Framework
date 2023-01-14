@@ -116,7 +116,7 @@ public static class IMasaStackConfigExtensions
 
     public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
-        foreach (var server in GetAllServer(masaStackConfig))
+        foreach (var server in GetAllUI(masaStackConfig))
         {
             var uiName = server.Value["ui"]?.ToString();
             if (string.IsNullOrEmpty(uiName))
