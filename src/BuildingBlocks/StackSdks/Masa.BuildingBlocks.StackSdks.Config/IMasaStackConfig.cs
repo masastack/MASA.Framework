@@ -17,6 +17,8 @@ public interface IMasaStackConfig
 
     public string Environment { get; }
 
+    public string Namespace { get; }
+
     public string Cluster { get; }
 
     public string OtlpUrl { get; }
