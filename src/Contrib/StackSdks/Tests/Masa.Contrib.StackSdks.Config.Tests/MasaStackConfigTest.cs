@@ -34,6 +34,12 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetAdminPwd()
+    {
+        Assert.IsNotNull(_stackConfig.AdminPwd);
+    }
+
+    [TestMethod]
     public void TestGetEnvironment()
     {
         var environment = _stackConfig.Environment;
