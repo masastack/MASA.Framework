@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddCaller(this IServiceCollection services, Action<CallerOptions> options)
     {
-        CallerOptions callerOption = new CallerOptions(services);
+        var callerOption = new CallerOptions(services);
         options.Invoke(callerOption);
 
         services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
@@ -85,7 +85,7 @@ public static class ServiceCollectionExtensions
         {
             options.Callers.ForEach(caller =>
             {
-                if (callerOptions.Options.Any(relation => relation.Name == caller.Name))
+                if (callerOptions.Options.Any(relation => relation.Name.Equals(caller.Name, StringComparison.OrdinalIgnoreCase)))
                     throw new ArgumentException(
                         $"The caller name already exists, please change the name, the repeat name is [{caller.Name}]");
 

@@ -19,7 +19,7 @@ public class HttpClientCaller : AbstractCaller
     {
         _httpClient = httpClient;
         _prefix = prefix;
-        _prefixIsNullOrEmpty = string.IsNullOrEmpty(_prefix);
+        _prefixIsNullOrEmpty = _prefix.IsNullOrEmpty();
     }
 
     [ExcludeFromCodeCoverage]

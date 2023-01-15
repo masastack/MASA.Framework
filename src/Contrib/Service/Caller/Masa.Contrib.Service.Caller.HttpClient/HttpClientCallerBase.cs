@@ -9,8 +9,6 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual string Prefix { get; set; } = string.Empty;
 
-    protected virtual bool IsSupportUpdate { get; set; } = false;
-
     protected HttpClientCallerBase()
     {
 
@@ -30,7 +28,7 @@ public abstract class HttpClientCallerBase : CallerBase
             callerClient.BaseAddress = BaseAddress;
             callerClient.Configure = ConfigureHttpClient;
             ConfigMasaCallerClient(callerClient);
-        }, IsSupportUpdate);
+        });
         masaHttpClientBuilder.AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
         return masaHttpClientBuilder;
     }

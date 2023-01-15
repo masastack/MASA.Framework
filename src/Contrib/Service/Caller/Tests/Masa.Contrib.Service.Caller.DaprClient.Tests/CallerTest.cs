@@ -43,7 +43,7 @@ public class CallerTest
             callerOptions.UseDapr(client =>
             {
                 client.AppId = Environment.GetEnvironmentVariable(key)!;
-            }, alwaysGetNewestDaprClient: true);
+            });
             callerOptions.DisableAutoRegistration = true;
         });
 

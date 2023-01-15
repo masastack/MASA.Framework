@@ -3,41 +3,10 @@
 
 // ReSharper disable once CheckNamespace
 
-using Microsoft.AspNetCore.Http;
-
 namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class MasaCallerClientBuilderExtensions
 {
-    /// <summary>
-    /// Caller uses Authentication
-    /// </summary>
-    /// <param name="masaCallerClientBuilder"></param>
-    /// <param name="action">Extended Check Token</param>
-    /// <returns></returns>
-    public static IMasaCallerClientBuilder UseAuthentication(
-        this IMasaCallerClientBuilder masaCallerClientBuilder,
-        Action<AuthenticationOptions>? action)
-        => masaCallerClientBuilder.UseAuthentication(Constant.DEFAULT_SCHEME, action);
-
-    /// <summary>
-    /// Caller uses Authentication
-    /// </summary>
-    /// <param name="masaCallerClientBuilder"></param>
-    /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
-    /// <param name="action">Extended Check Token</param>
-    /// <returns></returns>
-    public static IMasaCallerClientBuilder UseAuthentication(
-        this IMasaCallerClientBuilder masaCallerClientBuilder,
-        string defaultScheme,
-        Action<AuthenticationOptions>? action)
-    {
-        masaCallerClientBuilder.UseAuthentication(defaultScheme);
-        var authenticationOptions = new AuthenticationOptions(masaCallerClientBuilder.Services);
-        action?.Invoke(authenticationOptions);
-        return masaCallerClientBuilder;
-    }
-
     /// <summary>
     /// Caller uses Authentication
     /// </summary>
@@ -55,6 +24,37 @@ public static class MasaCallerClientBuilderExtensions
                 serviceProvider.GetRequiredService<IHttpContextAccessor>(),
                 defaultScheme
             ));
+        return masaCallerClientBuilder;
+    }
+
+    /// <summary>
+    /// Caller uses Authentication
+    /// </summary>
+    /// <param name="masaCallerClientBuilder"></param>
+    /// <param name="action">Extended Check Token</param>
+    /// <returns></returns>
+    public static IMasaCallerClientBuilder UseAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        Action<AuthenticationOptions> action)
+        => masaCallerClientBuilder.UseAuthentication(Constant.DEFAULT_SCHEME, action);
+
+    /// <summary>
+    /// Caller uses Authentication
+    /// </summary>
+    /// <param name="masaCallerClientBuilder"></param>
+    /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
+    /// <param name="action">Extended Check Token</param>
+    /// <returns></returns>
+    public static IMasaCallerClientBuilder UseAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        string defaultScheme,
+        Action<AuthenticationOptions> action)
+    {
+        MasaArgumentException.ThrowIfNull(action);
+
+        masaCallerClientBuilder.UseAuthentication(defaultScheme);
+        var authenticationOptions = new AuthenticationOptions(masaCallerClientBuilder.Services);
+        action(authenticationOptions);
         return masaCallerClientBuilder;
     }
 }

@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
-            }, true);
+            });
             callerOptions.DisableAutoRegistration = true;
         });
     }

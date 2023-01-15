@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
             {
                 builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
-            }, true).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
             callerOptions.DisableAutoRegistration = true;
         });
     }

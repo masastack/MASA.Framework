@@ -18,27 +18,6 @@ public class MasaHttpClient: MasaCallerClient
 
     public Action<System.Net.Http.HttpClient>? Configure { get; set; }
 
-    public MasaHttpClient() : this(null)
-    {
-    }
-
-    public MasaHttpClient(Action<System.Net.Http.HttpClient>? configure)
-        : this(string.Empty, configure)
-    {
-    }
-
-    public MasaHttpClient(string baseAddress, Action<System.Net.Http.HttpClient>? configure)
-        : this(baseAddress, string.Empty, configure)
-    {
-    }
-
-    public MasaHttpClient(string baseAddress, string prefix, Action<System.Net.Http.HttpClient>? configure)
-    {
-        BaseAddress = baseAddress;
-        Prefix = prefix;
-        Configure = configure;
-    }
-
     internal void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
     {
         if (!string.IsNullOrEmpty(BaseAddress))

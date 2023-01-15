@@ -9,7 +9,7 @@ public class CallerMiddlewareFactoryOptions : MasaFactoryOptions<CallerMiddlewar
 {
     public void AddMiddleware(string name, Func<IServiceProvider, ICallerMiddleware> implementationFactory)
     {
-        var option = this.Options.FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var option = Options.FirstOrDefault(o => o.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (option != null) option.AddMiddlewareFunc(implementationFactory);
         else Options.Add(new CallerMiddlewareRelationOptions(name)
         {

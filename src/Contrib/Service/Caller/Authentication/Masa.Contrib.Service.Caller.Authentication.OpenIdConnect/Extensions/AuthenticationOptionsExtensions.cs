@@ -11,6 +11,9 @@ public static class AuthenticationOptionsExtensions
         Action<JwtTokenValidatorOptions> jwtTokenValidatorOptionsAction,
         Action<ClientRefreshTokenOptions> clientRefreshTokenOptionsAction)
     {
+        MasaArgumentException.ThrowIfNull(jwtTokenValidatorOptionsAction);
+        MasaArgumentException.ThrowIfNull(clientRefreshTokenOptionsAction);
+
         authenticationOptions.Services.AddHttpClient(Constant.HTTP_CLIENT_NAME);
         authenticationOptions.Services.AddSingleton<ITokenValidatorHandler, JwtTokenValidatorHandler>();
         authenticationOptions.Services.Configure(jwtTokenValidatorOptionsAction);
