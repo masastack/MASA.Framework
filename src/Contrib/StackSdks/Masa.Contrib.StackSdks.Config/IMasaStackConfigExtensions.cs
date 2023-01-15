@@ -70,72 +70,71 @@ public static class IMasaStackConfigExtensions
 
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.AUTH, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.AUTH, MasaStackConstant.SERVER);
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.PM, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.PM, MasaStackConstant.SERVER);
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.DCC, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.DCC, MasaStackConstant.SERVER);
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.TSC, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.TSC, MasaStackConstant.SERVER);
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.ALERT, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.ALERT, MasaStackConstant.SERVER);
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.MC, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.MC, MasaStackConstant.SERVER);
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, "server");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, MasaStackConstant.SERVER);
     }
 
     public static string GetSchedulerWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, "worker");
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, MasaStackConstant.WORKER);
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, MasaStackConstant.AUTH, "sso");
+        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, MasaStackConstant.AUTH, MasaStackConstant.SSO);
     }
 
     public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
         foreach (var server in GetAllUI(masaStackConfig))
         {
-            var uiName = server.Value["ui"]?.ToString();
+            var uiName = server.Value[MasaStackConstant.UI]?.ToString();
             if (string.IsNullOrEmpty(uiName))
             {
                 continue;
             }
             yield return new KeyValuePair<string, List<string>>(uiName, new List<string> {
-                GetUIDomain(masaStackConfig,HttpProtocol.HTTP,server.Key,"ui"),
-                GetUIDomain(masaStackConfig,HttpProtocol.HTTPS,server.Key,"ui")
+                GetUIDomain(masaStackConfig,HttpProtocol.HTTP,server.Key,MasaStackConstant.UI),
+                GetUIDomain(masaStackConfig,HttpProtocol.HTTPS,server.Key,MasaStackConstant.UI)
             });
         }
     }
 
-    public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = "server")
+    public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.SERVER)
     {
         return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
     }
 
-    public static string GetUiId(this IMasaStackConfig masaStackConfig, string project, string service = "ui")
+    public static string GetWebId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.UI)
     {
         return masaStackConfig.GetAllUI()[project][service]?.ToString() ?? throw new KeyNotFoundException();
     }
