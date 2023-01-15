@@ -6,7 +6,7 @@ namespace Masa.Contrib.StackSdks.Auth.Model;
 public class AuthClientMultilevelCacheProvider
 {
     readonly IMultilevelCacheClientFactory _clientFactory;
-    IMultilevelCacheClient _multilevelCacheClient;
+    IMultilevelCacheClient? _multilevelCacheClient;
 
     public AuthClientMultilevelCacheProvider(IMultilevelCacheClientFactory clientFactory)
     {
