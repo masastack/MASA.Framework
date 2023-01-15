@@ -25,7 +25,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -49,7 +48,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -72,7 +70,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();

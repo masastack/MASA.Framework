@@ -6,8 +6,6 @@ namespace Masa.Contrib.StackSdks.Pm.Tests;
 [TestClass]
 public class PmClientTest
 {
-    public const string PM_CALLER_NAME = "masa.contrib.basicability.pm";
-
     [TestMethod]
     public void TestAddPmClient()
     {
@@ -15,7 +13,7 @@ public class PmClientTest
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(PM_CALLER_NAME, builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
@@ -51,7 +49,7 @@ public class PmClientTest
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(PM_CALLER_NAME, builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
@@ -59,7 +57,7 @@ public class PmClientTest
 
         services.AddPmClient(option =>
         {
-            option.UseHttpClient(PM_CALLER_NAME, builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });

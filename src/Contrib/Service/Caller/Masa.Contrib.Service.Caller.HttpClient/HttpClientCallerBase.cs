@@ -14,7 +14,7 @@ public abstract class HttpClientCallerBase : CallerBase
 
     }
 
-    protected HttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    public HttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
@@ -22,7 +22,7 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual MasaHttpClientBuilder UseHttpClient()
     {
-        var masaHttpClientBuilder = CallerOptions.UseHttpClient(Name!, callerClient =>
+        var masaHttpClientBuilder = CallerOptions.UseHttpClient(callerClient =>
         {
             callerClient.Prefix = Prefix;
             callerClient.BaseAddress = BaseAddress;

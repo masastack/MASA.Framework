@@ -11,7 +11,7 @@ public class JsonResponseMessage : DefaultResponseMessage
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
     public JsonResponseMessage(
-        JsonSerializerOptions? jsonSerializerOptions,
+        JsonSerializerOptions? jsonSerializerOptions = null,
         ILoggerFactory? loggerFactory = null) : base(loggerFactory?.CreateLogger<DefaultResponseMessage>())
     {
         _jsonSerializerOptions = jsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions();

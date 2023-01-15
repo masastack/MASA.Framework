@@ -10,7 +10,7 @@ public static class MasaConfigurationExtensions
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptions>? callerOptions = null,
+        Action<CallerOptionsBuilder>? callerOptions = null,
         string sectionName = "DccOptions")
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
@@ -22,7 +22,7 @@ public static class MasaConfigurationExtensions
         this IMasaConfigurationBuilder builder,
         DccOptions dccOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptions>? action = null)
+        Action<CallerOptionsBuilder>? action = null)
     {
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
@@ -48,18 +48,15 @@ public static class MasaConfigurationExtensions
 
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
         string callerName = DEFAULT_CLIENT_NAME;
-        services.AddCaller(options =>
+        services.AddCaller(callerName, options =>
         {
-            options.Assemblies = new[] { typeof(DccConfigurationProvider).Assembly };
             if (action == null)
             {
-                options.UseHttpClient(callerName, client => client.BaseAddress = dccConfigurationOptions.ManageServiceAddress);
+                options.UseHttpClient(client => client.BaseAddress = dccConfigurationOptions.ManageServiceAddress);
             }
             else
             {
                 action.Invoke(options);
-                callerName = options.Callers.Select(opt => opt.Name).FirstOrDefault()
-                    ?? throw new Exception("Missing Caller implementation, eg: options.UseHttpClient()");
             }
         });
 

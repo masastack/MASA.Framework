@@ -9,7 +9,7 @@ public class JsonRequestMessage : IRequestMessage
 {
     private readonly JsonSerializerOptions? _jsonSerializerOptions;
 
-    public JsonRequestMessage(JsonSerializerOptions? jsonSerializerOptions)
+    public JsonRequestMessage(JsonSerializerOptions? jsonSerializerOptions = null)
     {
         _jsonSerializerOptions = jsonSerializerOptions ?? MasaApp.GetJsonSerializerOptions();
     }

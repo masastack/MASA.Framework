@@ -19,7 +19,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -44,7 +43,6 @@ public class CallerTest
             {
                 client.AppId = Environment.GetEnvironmentVariable(key)!;
             });
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -79,7 +77,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -104,7 +101,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -127,7 +123,6 @@ public class CallerTest
         services.AddCaller(callerOptions =>
         {
             callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -144,7 +139,7 @@ public class CallerTest
     public void TestAutoRegistration()
     {
         var services = new ServiceCollection();
-        services.AddCaller();
+        services.AddAutoRegistrationCaller(typeof(CustomDaprCaller).Assembly);
         var serviceProvider = services.BuildServiceProvider();
         var customDaprCaller = serviceProvider.GetService<CustomDaprCaller>();
         Assert.IsNotNull(customDaprCaller);

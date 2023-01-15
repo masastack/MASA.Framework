@@ -18,37 +18,37 @@ public class CallerTest
 
     private const string FRAMEWORK_BASE_ADDRESS = "https://github.com/masastack/MASA.Framework";
 
-    private CallerOptions _callerOptions;
+    private CallerOptionsBuilder _callerOptions;
+    private const string NAME = "";
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _callerOptions = new CallerOptions(services);
+        _callerOptions = new CallerOptionsBuilder(services, NAME);
     }
 
     [TestMethod]
     public void TestUseHttpClient()
     {
-        string name = Options.DefaultName;
         var docBaseAddress = "https://docs.masastack.com";
         var key = "callerBaseAddress" + Guid.NewGuid();
         Environment.SetEnvironmentVariable(key, FRAMEWORK_BASE_ADDRESS);
-        var masaHttpClientBuilder = _callerOptions.UseHttpClient(name, httpClient =>
+        var masaHttpClientBuilder = _callerOptions.UseHttpClient(httpClient =>
         {
             httpClient.BaseAddress = Environment.GetEnvironmentVariable(key)!;
         });
-        Assert.AreEqual(name, masaHttpClientBuilder.Name);
+        Assert.AreEqual(NAME, masaHttpClientBuilder.Name);
         Assert.AreEqual(_callerOptions.Services, masaHttpClientBuilder.Services);
 
         var serviceProvider = masaHttpClientBuilder.Services.BuildServiceProvider();
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
         Assert.IsNotNull(httpClientFactory);
-        var httpClient = httpClientFactory.CreateClient(name);
+        var httpClient = httpClientFactory.CreateClient(NAME);
         Assert.IsNotNull(httpClient);
         Assert.IsNull(httpClient.BaseAddress);
         Environment.SetEnvironmentVariable(key, docBaseAddress);
-        httpClient = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);
+        httpClient = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(NAME);
         Assert.IsNull(httpClient.BaseAddress);
     }
 
@@ -67,7 +67,6 @@ public class CallerTest
                 client.Prefix = "masa";
                 client.BaseAddress = Environment.GetEnvironmentVariable(key)!;
             });
-            callerOptions.DisableAutoRegistration = true;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -102,7 +101,6 @@ public class CallerTest
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             }).UseI18n();
-            callerOptions.DisableAutoRegistration = true;
         });
         var serviceProvider = services.BuildServiceProvider();
         var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
@@ -124,7 +122,6 @@ public class CallerTest
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             });
-            callerOptions.DisableAutoRegistration = true;
         });
         var serviceProvider = services.BuildServiceProvider();
         var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
@@ -155,7 +152,6 @@ public class CallerTest
                 client.UseXml();
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             });
-            callerOptions.DisableAutoRegistration = true;
         });
         var serviceProvider = services.BuildServiceProvider();
         var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
@@ -179,7 +175,7 @@ public class CallerTest
     public void TestAutoRegistration()
     {
         var services = new ServiceCollection();
-        services.AddCaller();
+        services.AddAutoRegistrationCaller(typeof(CustomHttpCaller).Assembly);
         var serviceProvider = services.BuildServiceProvider();
         var callerBase = serviceProvider.GetService<CustomHttpCaller>();
         Assert.IsNotNull(callerBase);

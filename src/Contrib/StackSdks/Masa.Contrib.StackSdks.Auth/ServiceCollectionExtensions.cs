@@ -24,16 +24,13 @@ public static class ServiceCollectionExtensions
 
         return services.AddAuthClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
-            {
-                builder.BaseAddress = authServiceBaseAddress;
-            }).AddMiddleware(serviceProvider
-                => new Masa.Contrib.StackSdks.Auth.AuthenticationMiddleware(serviceProvider.GetRequiredService<IHttpContextAccessor>()));
-            callerOptions.DisableAutoRegistration = true;
+            callerOptions
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .AddMiddleware(serviceProvider => new AuthAuthenticationMiddleware(serviceProvider.GetRequiredService<IHttpContextAccessor>()));
         }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions,
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions,
         RedisConfigurationOptions redisOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptions);
@@ -42,7 +39,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddCaller(callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddAuthClientMultilevelCache(redisOptions);
         services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();

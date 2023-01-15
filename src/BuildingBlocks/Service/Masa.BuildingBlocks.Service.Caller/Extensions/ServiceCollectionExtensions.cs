@@ -7,38 +7,59 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCaller(this IServiceCollection services, params Assembly[] assemblies)
-        => services.AddCaller(options => options.Assemblies = assemblies);
+    public static IServiceCollection AddCaller(this IServiceCollection services, Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure);
 
-    public static IServiceCollection AddCaller(this IServiceCollection services,
-        ServiceLifetime lifetime = ServiceLifetime.Scoped,
-        IEnumerable<Assembly>? assemblies = null)
-        => services.AddCaller(options =>
-        {
-            options.Assemblies = assemblies?.ToArray() ?? MasaApp.GetAssemblies();
-            options.CallerLifetime = lifetime;
-        });
-
-    public static IServiceCollection AddCaller(this IServiceCollection services, Action<CallerOptions> options)
+    public static IServiceCollection AddCaller(this IServiceCollection services, string name, Action<CallerOptionsBuilder> configure)
     {
-        var callerOption = new CallerOptions(services);
-        options.Invoke(callerOption);
+        MasaArgumentException.ThrowIfNull(services);
 
-        services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
-        services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage(callerOption.JsonSerializerOptions));
-        services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage(callerOption.JsonSerializerOptions));
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.AddCallerCore();
 
-        services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
-        if (!callerOption.DisableAutoRegistration) services.AddAutomaticCaller(callerOption);
-        TryOrUpdate(services, callerOption);
-        MasaApp.TrySetServiceCollection(services);
+        var callerOption = new CallerOptionsBuilder(services, name);
+        configure.Invoke(callerOption);
+
         return services;
     }
 
-    private static void AddAutomaticCaller(this IServiceCollection services, CallerOptions callerOptions)
+    public static IServiceCollection AddAutoRegistrationCaller(
+        this IServiceCollection services,
+        ServiceLifetime callerLifetime = ServiceLifetime.Scoped)
+        => services.AddAutoRegistrationCaller(MasaApp.GetAssemblies(), callerLifetime);
+
+    public static IServiceCollection AddAutoRegistrationCaller(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        ServiceLifetime callerLifetime = ServiceLifetime.Scoped)
     {
-        var callerTypes = callerOptions.Assemblies.SelectMany(x => x.GetTypes())
+        MasaArgumentException.ThrowIfNull(services);
+
+        services.AddCallerCore();
+        services.AddAutomaticCaller(assemblies, callerLifetime);
+        return services;
+    }
+
+    public static IServiceCollection AddAutoRegistrationCaller(
+        this IServiceCollection services,
+        params Assembly[] assemblies)
+        => services.AddAutoRegistrationCaller(assemblies.AsEnumerable());
+
+    private static void AddCallerCore(this IServiceCollection services)
+    {
+        services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
+        services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage());
+        services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
+        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+
+        services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
+    }
+
+    private static void AddAutomaticCaller(
+        this IServiceCollection services,
+        IEnumerable<Assembly> assemblies,
+        ServiceLifetime callerLifetime)
+    {
+        var callerTypes = assemblies.SelectMany(x => x.GetTypes())
             .Where(type => typeof(CallerBase).IsAssignableFrom(type) && !type.IsAbstract).ToList();
 
         callerTypes = callerTypes.Except(services.Select(d => d.ServiceType)).ToList();
@@ -51,7 +72,7 @@ public static class ServiceCollectionExtensions
         {
             var serviceDescriptor = new ServiceDescriptor(type, serviceProvider =>
             {
-                var constructorInfo = type.GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+                var constructorInfo = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
                     .MaxBy(constructor => constructor.GetParameters().Length)!;
                 List<object?> parameters = new();
                 foreach (var parameter in constructorInfo.GetParameters())
@@ -59,14 +80,13 @@ public static class ServiceCollectionExtensions
                     parameters.Add(serviceProvider.GetService(parameter.ParameterType));
                 }
                 var callerBase = (constructorInfo.Invoke(parameters.ToArray()) as CallerBase)!;
-                callerBase.SetCallerOptions(callerOptions, type.FullName ?? type.Name);
-                if (callerBase.ServiceProvider == null)
-                {
-                    callerBase.SetServiceProvider(serviceProvider);
-                }
+
+                var name = callerBase.Name ?? type.FullName ?? type.Name;
+                callerBase.SetCallerOptions(new CallerOptionsBuilder(services, name), name);
+                if (callerBase.ServiceProvider == null) callerBase.SetServiceProvider(serviceProvider);
 
                 return callerBase;
-            }, callerOptions.CallerLifetime);
+            }, callerLifetime);
             services.TryAdd(serviceDescriptor);
         });
 #pragma warning disable S3011
@@ -79,18 +99,24 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    private static void TryOrUpdate(this IServiceCollection services, CallerOptions options)
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        string name,
+        Func<IServiceProvider, ICaller> implementationFactory)
     {
+        MasaArgumentException.ThrowIfNull(services);
+        MasaArgumentException.ThrowIfNull(name);
+
         services.Configure<CallerFactoryOptions>(callerOptions =>
         {
-            options.Callers.ForEach(caller =>
-            {
-                if (callerOptions.Options.Any(relation => relation.Name.Equals(caller.Name, StringComparison.OrdinalIgnoreCase)))
-                    throw new ArgumentException(
-                        $"The caller name already exists, please change the name, the repeat name is [{caller.Name}]");
+            if (callerOptions.Options.Any(relation => relation.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException(
+                    $"The caller name already exists, please change the name, the repeat name is [{name}]");
 
-                callerOptions.Options.Add(caller);
-            });
+            callerOptions.Options.Add(new CallerRelationOptions(name, implementationFactory));
         });
+
+        MasaApp.TrySetServiceCollection(services);
+        return services;
     }
 }

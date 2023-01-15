@@ -187,12 +187,12 @@ public class DccTest
             jsonSerializerOption.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
         }, option =>
         {
-            option.UseHttpClient("CustomHttpClient", builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
-        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
+        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
         Assert.IsNotNull(caller);
     }
 

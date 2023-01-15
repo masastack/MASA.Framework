@@ -12,11 +12,10 @@ public static class ServiceCollectionExtensions
 
         return services.AddMcClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
+            callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-            callerOptions.DisableAutoRegistration = true;
         });
     }
 
@@ -26,15 +25,14 @@ public static class ServiceCollectionExtensions
 
         return services.AddMcClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
+            callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-            callerOptions.DisableAutoRegistration = true;
         });
     }
 
-    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptions);
 
@@ -43,7 +41,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
-        services.AddCaller(callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddScoped<IMcClient>(serviceProvider =>
         {

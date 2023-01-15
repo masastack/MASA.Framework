@@ -13,7 +13,7 @@ public abstract class DaprCallerBase : CallerBase
     {
     }
 
-    protected DaprCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DaprCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
@@ -21,7 +21,7 @@ public abstract class DaprCallerBase : CallerBase
 
     protected virtual MasaDaprClientBuilder UseDapr()
     {
-        var daprClientBuilder = CallerOptions.UseDapr(Name!, callerClient =>
+        var daprClientBuilder = CallerOptions.UseDapr(callerClient =>
         {
             callerClient.AppId = AppId;
             ConfigMasaCallerClient(callerClient);

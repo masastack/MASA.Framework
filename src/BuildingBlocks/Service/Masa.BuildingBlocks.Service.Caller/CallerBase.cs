@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public abstract class CallerBase
 {
-    public virtual string? Name { get; set; }
+    public virtual string? Name { get; private set; } = null;
 
-    protected CallerOptions CallerOptions { get; private set; } = default!;
+    protected CallerOptionsBuilder CallerOptions { get; private set; } = default!;
 
     private ICaller? _caller;
 
@@ -18,16 +18,16 @@ public abstract class CallerBase
 
     public IServiceProvider? ServiceProvider { get; private set; }
 
-    protected CallerBase() => ServiceProvider = null;
+    public CallerBase() => ServiceProvider = null;
 
-    protected CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+    public CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
     public abstract void UseCallerExtension();
 
-    public void SetCallerOptions(CallerOptions options, string name)
+    public void SetCallerOptions(CallerOptionsBuilder callerOptionsBuilder, string name)
     {
-        CallerOptions = options;
-        Name ??= name;
+        CallerOptions = callerOptionsBuilder;
+        Name = name;
     }
 
     public void SetServiceProvider(IServiceProvider serviceProvider)
