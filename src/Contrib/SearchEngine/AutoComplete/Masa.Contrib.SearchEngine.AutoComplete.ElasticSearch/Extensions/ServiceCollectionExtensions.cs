@@ -17,7 +17,6 @@ internal static class ServiceCollectionExtensions
         services.TryOrUpdate(name, action);
 
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create());
 
         var serviceDescriptor = new ServiceDescriptor(
             typeof(IAutoCompleteClient),

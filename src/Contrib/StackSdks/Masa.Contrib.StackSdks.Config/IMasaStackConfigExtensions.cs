@@ -152,8 +152,12 @@ public static class IMasaStackConfigExtensions
         stringBuilder.Append("}],");
         stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
         stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
-        stringBuilder.Append(@"}}");
-
+        stringBuilder.Append(@"},");
+        stringBuilder.Append(@"""ConfigObjectSecret"":");
+        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\",");
+        stringBuilder.Append(@"""PublicSecret"":");
+        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\"");
+        stringBuilder.Append(@"}");
         return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
     }
 }
