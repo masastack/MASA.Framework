@@ -25,6 +25,8 @@ public interface IMasaStackConfig
 
     public string DomainName { get; }
 
+    public bool SingleSsoClient { get; }
+
     string GetValue(string key);
 
     void SetValue(string key, string value);
