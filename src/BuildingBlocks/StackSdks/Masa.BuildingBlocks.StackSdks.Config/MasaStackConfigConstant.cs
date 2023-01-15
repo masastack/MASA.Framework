@@ -18,4 +18,6 @@ public static class MasaStackConfigConstant
     public const string MASA_SERVER = "MASA_SERVER";
     public const string TLS_NAME = "TLS_NAME";
     public const string OTLP_URL = "OTLP_URL";
+    public const string ADMIN_PWD = "ADMIN_PWD";
+    public const string DCC_SECRET = "DCC_SECRET";
 }
