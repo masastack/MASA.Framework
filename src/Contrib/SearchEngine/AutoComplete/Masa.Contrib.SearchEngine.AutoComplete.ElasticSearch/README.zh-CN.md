@@ -17,21 +17,25 @@ Install-Package Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch
 * 使用默认模型`AutoCompleteDocument<TValue>`，其中TValue仅支持简单类型
 
 ``` C#
-string userIndexName = "user_index_01";
-string userAlias = "user_index";
-builder.Services
-       .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
-       .AddAutoComplete<long>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+builder.Services.AddAutoComplete<long>(autoCompleteOptions =>
+    autoCompleteOptions.UseElasticSearch(options =>
+    {
+        options.ElasticsearchOptions.UseNodes("http://localhost:9200");
+        options.IndexName = "user_index_01";
+        options.Alias = "user_index";
+    }));
 ```
 
 * 使用自定义模型，例如: `UserDocument`
 
 ``` C#
-string userIndexName = "user_index_01";
-string userAlias = "user_index";
-builder.Services
-       .AddElasticsearchClient("es", option => option.UseNodes("http://localhost:9200").UseDefault())
-       .AddAutoCompleteBySpecifyDocument<UserDocument>(option => option.UseIndexName(userIndexName).UseAlias(userAlias));
+builder.Services.AddAutoCompleteBySpecifyDocument<User>(autoCompleteOptions =>
+    autoCompleteOptions.UseElasticSearch(options =>
+    {
+        options.ElasticsearchOptions.UseNodes("http://localhost:9200");
+        options.IndexName = "user_index_01";
+        options.Alias = "user_index";
+    }));
 
 public class User : AutoCompleteDocument
 {

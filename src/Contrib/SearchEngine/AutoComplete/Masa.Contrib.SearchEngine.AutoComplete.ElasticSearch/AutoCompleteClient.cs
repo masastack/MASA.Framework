@@ -3,14 +3,15 @@
 
 // ReSharper disable once CheckNamespace
 
+using System.Reflection;
+
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch;
 
-public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
-    where TDocument : AutoCompleteDocument
+public class AutoCompleteClient : AutoCompleteClientBase
 {
     private readonly IElasticClient _elasticClient;
     private readonly IMasaElasticClient _client;
-    private readonly ILogger<AutoCompleteClient<TDocument>>? _logger;
+    private readonly ILogger<AutoCompleteClient>? _logger;
     private readonly string? _alias;
     private readonly string _indexName;
     private readonly Operator _defaultOperator;
@@ -18,13 +19,18 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
     private readonly bool _enableMultipleCondition;
     private readonly string _queryAnalyzer;
     private readonly Action<IIndexSettings>? _indexSettingAction;
-    private readonly Action<TypeMappingDescriptor<TDocument>>? _action;
+    private readonly Action<ITypeMapping>? _action;
+    private readonly Type _documentType;
+
+    private static readonly MethodInfo AutoMapMethodInfo = typeof(AutoCompleteClient).GetMethod(nameof(AutoMap),
+        BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)!;
 
     public AutoCompleteClient(
         IElasticClient elasticClient,
         IMasaElasticClient client,
-        ILogger<AutoCompleteClient<TDocument>>? logger,
-        AutoCompleteOptions<TDocument> options)
+        ILogger<AutoCompleteClient>? logger,
+        ElasticSearchAutoCompleteOptions options,
+        Type documentType)
     {
         _elasticClient = elasticClient;
         _client = client;
@@ -39,6 +45,7 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
         _queryAnalyzer = options.QueryAnalyzer;
         _indexSettingAction = options.IndexSettingAction;
         _action = options.Action;
+        _documentType = documentType;
     }
 
     public override async Task<bool> BuildAsync(CancellationToken cancellationToken = default)
@@ -73,18 +80,13 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
             indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
         }
 
-        var mapping = new TypeMappingDescriptor<TDocument>();
+        var typeMappingDescriptorType = typeof(TypeMappingDescriptor<>).MakeGenericType(_documentType);
+        var mapping = (ITypeMapping)Activator.CreateInstance(typeMappingDescriptorType)!;
+        // var mapping = new TypeMappingDescriptor();
         if (_action != null) _action.Invoke(mapping);
         else
         {
-            mapping = mapping
-                .AutoMap<TDocument>()
-                .Properties(ps =>
-                    ps.Text(s =>
-                        s.Name(n => n.Text)
-                            .Analyzer(analyzer)
-                    )
-                );
+            mapping = (ITypeMapping)AutoMapMethodInfo.MakeGenericMethod(_documentType).Invoke(this, new object?[] { mapping, analyzer })!;
         }
 
         IAliases? aliases = null;
@@ -100,6 +102,21 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
             IndexSettings = indexSettings
         }, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
         return createIndexResponse.IsValid;
+    }
+
+    private static TypeMappingDescriptor<TDocument> AutoMap<TDocument>(
+        TypeMappingDescriptor<TDocument> mapping,
+        string analyzer) where TDocument : AutoCompleteDocument
+    {
+        mapping = mapping
+            .AutoMap<TDocument>()
+            .Properties(ps =>
+                ps.Text(s =>
+                    s.Name(n => n.Text)
+                        .Analyzer(analyzer)
+                )
+            );
+        return mapping;
     }
 
     public override async Task<bool> RebuildAsync(CancellationToken cancellationToken = default)
@@ -250,7 +267,7 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
     /// </summary>
     /// <param name="documents"></param>
     /// <param name="cancellationToken"></param>
-    /// <typeparam name="TDocument"></typeparam>
+    /// <typeparam name="TAudoCompleteDocument"></typeparam>
     /// <returns></returns>
     private async Task<SetResponse> SetByNotOverrideAsync<TAudoCompleteDocument>(
         IEnumerable<TAudoCompleteDocument> documents,
@@ -268,7 +285,8 @@ public class AutoCompleteClient<TDocument> : AutoCompleteClientBase
         };
     }
 
-    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse> DeleteAsync(string id, CancellationToken cancellationToken = default)
+    public override async Task<Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse> DeleteAsync(string id,
+        CancellationToken cancellationToken = default)
     {
         var response = await _client.DeleteDocumentAsync(new DeleteDocumentRequest(_indexName, id), cancellationToken);
         return new Masa.BuildingBlocks.SearchEngine.AutoComplete.Response.DeleteResponse(response.IsValid, response.Message);
