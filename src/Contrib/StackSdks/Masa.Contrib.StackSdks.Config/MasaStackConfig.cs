@@ -16,7 +16,7 @@ public class MasaStackConfig : IMasaStackConfig
     {
         get
         {
-            var redisStr = GetValue(MasaStackConfigConst.REDIS);
+            var redisStr = GetValue(MasaStackConfigConstant.REDIS);
             return JsonSerializer.Deserialize<RedisModel>(redisStr) ?? throw new JsonException();
         }
     }
@@ -25,26 +25,26 @@ public class MasaStackConfig : IMasaStackConfig
     {
         get
         {
-            var redisStr = GetValue(MasaStackConfigConst.ELASTIC);
+            var redisStr = GetValue(MasaStackConfigConstant.ELASTIC);
             return JsonSerializer.Deserialize<ElasticModel>(redisStr) ?? throw new JsonException();
         }
     }
 
-    public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConst.IS_DEMO));
+    public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConstant.IS_DEMO));
 
-    public string TlsName => GetValue(MasaStackConfigConst.TLS_NAME);
+    public string TlsName => GetValue(MasaStackConfigConstant.TLS_NAME);
 
-    public string Version => GetValue(MasaStackConfigConst.VERSION);
+    public string Version => GetValue(MasaStackConfigConstant.VERSION);
 
-    public string Cluster => GetValue(MasaStackConfigConst.CLUSTER);
+    public string Cluster => GetValue(MasaStackConfigConstant.CLUSTER);
 
-    public string OtlpUrl => GetValue(MasaStackConfigConst.OTLP_URL);
+    public string OtlpUrl => GetValue(MasaStackConfigConstant.OTLP_URL);
 
-    public string DomainName => GetValue(MasaStackConfigConst.DOMAIN_NAME);
+    public string DomainName => GetValue(MasaStackConfigConstant.DOMAIN_NAME);
 
-    public string Environment => GetValue(MasaStackConfigConst.ENVIRONMENT);
+    public string Environment => GetValue(MasaStackConfigConstant.ENVIRONMENT);
 
-    public string Namespace => GetValue(MasaStackConfigConst.NAMESPACE);
+    public string Namespace => GetValue(MasaStackConfigConstant.NAMESPACE);
 
     public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
 
