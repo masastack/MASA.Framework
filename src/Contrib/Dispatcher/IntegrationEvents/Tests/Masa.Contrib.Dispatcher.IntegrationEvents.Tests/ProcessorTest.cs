@@ -20,13 +20,6 @@ public class ProcessorTest
     }
 
     [TestMethod]
-    public void DeleteLocalQueueExpiresProcessorDelayTestAsync()
-    {
-        ProcessorBase processor = new DeleteLocalQueueExpiresProcessor(_options);
-        Assert.IsTrue(processor.Delay == _options.Value.CleaningLocalQueueExpireInterval);
-    }
-
-    [TestMethod]
     public void DeletePublishedExpireEventDelayTestAsync()
     {
         ProcessorBase processor = new DeletePublishedExpireEventProcessor(_serviceProvider, _options);

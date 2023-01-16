@@ -17,7 +17,7 @@ public class BackgroundServiceTest
         Mock<IProcessingServer> processingServer = new();
         processingServer.Setup(service => service.ExecuteAsync(default)).Verifiable();
 
-        var integrationEventHostedService = new CustomIntegrationEventHostedService(processingServer.Object);
+        var integrationEventHostedService = new CustomIntegrationEventHostedService(new[] { processingServer.Object });
         await integrationEventHostedService.TestExecuteAsync(default);
 
         processingServer.Verify(service => service.ExecuteAsync(default), Times.Once);
@@ -29,7 +29,7 @@ public class BackgroundServiceTest
         Mock<IProcessingServer> processingServer = new();
         processingServer.Setup(service => service.ExecuteAsync(default)).Verifiable();
 
-        var integrationEventHostedService = new CustomIntegrationEventHostedService(processingServer.Object, new NullLoggerFactory());
+        var integrationEventHostedService = new CustomIntegrationEventHostedService(new[] { processingServer.Object }, new NullLoggerFactory());
         await integrationEventHostedService.TestExecuteAsync(default);
 
         processingServer.Verify(service => service.ExecuteAsync(default), Times.Once);

@@ -19,8 +19,11 @@ public class DefaultHostedService : IProcessingServer
         if (_serviceProvider.GetService<IUnitOfWorkManager>() == null)
             return Task.CompletedTask;
 
-        var processorTasks = _processors.Select(processor => new InfiniteLoopProcessor(_serviceProvider, processor))
-            .Select(process => process.ExecuteAsync(stoppingToken));
-        return Task.WhenAll(processorTasks);
+        return Task.Run(() =>
+        {
+            var processorTasks = _processors.Select(processor => new InfiniteLoopProcessor(_serviceProvider, processor))
+                .Select(process => process.ExecuteAsync(stoppingToken));
+            return Task.WhenAll(processorTasks);
+        }, stoppingToken);
     }
 }

@@ -55,14 +55,17 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// Retrieve pending messages
     /// </summary>
     /// <param name="batchSize">The maximum number of messages retrieved each time</param>
+    /// <param name="minimumInterval"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     public async Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
         int batchSize,
+        int minimumInterval,
         CancellationToken cancellationToken = default)
     {
+        var time = DateTime.UtcNow.AddMilliseconds(-minimumInterval);
         var result = await _eventLogContext.EventLogs
-            .Where(e => e.State == IntegrationEventStates.NotPublished)
+            .Where(e => e.State == IntegrationEventStates.NotPublished && e.CreationTime < time)
             .OrderBy(e => e.CreationTime)
             .Take(batchSize)
             .ToListAsync(cancellationToken);
@@ -80,8 +83,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         MasaArgumentException.ThrowIfNull(transaction);
 
         if (_eventLogContext.DbContext.Database.CurrentTransaction == null)
-            await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(),
-                cancellationToken: cancellationToken);
+            await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(), cancellationToken);
 
         var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry, cancellationToken);

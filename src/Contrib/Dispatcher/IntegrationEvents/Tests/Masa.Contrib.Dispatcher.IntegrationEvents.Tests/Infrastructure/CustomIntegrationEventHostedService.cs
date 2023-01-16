@@ -6,8 +6,8 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests.Infrastructure;
 public class CustomIntegrationEventHostedService : IntegrationEventHostedService
 {
     public CustomIntegrationEventHostedService(
-        IProcessingServer processingServer, ILoggerFactory? loggerFactory = null) :
-        base(processingServer, loggerFactory?.CreateLogger<IntegrationEventHostedService>())
+        IEnumerable<IProcessingServer> processingServers, ILoggerFactory? loggerFactory = null) :
+        base(processingServers, loggerFactory?.CreateLogger<IntegrationEventHostedService>())
     {
     }
 

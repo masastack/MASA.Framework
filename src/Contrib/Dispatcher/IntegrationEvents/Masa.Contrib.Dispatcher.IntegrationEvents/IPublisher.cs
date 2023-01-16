@@ -3,6 +3,9 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
+/// <summary>
+/// Integrate event providers to provide pub capabilities
+/// </summary>
 public interface IPublisher
 {
     Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent;

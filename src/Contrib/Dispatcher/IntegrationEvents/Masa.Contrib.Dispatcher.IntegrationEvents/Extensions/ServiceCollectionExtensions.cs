@@ -59,25 +59,26 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(typeof(IOptions<IntegrationEventOptions>),
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
-        LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
         action?.Invoke();
 
         if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))
         {
+            services.AddSingleton<LocalQueueEventLogService>();
             services.AddSingleton<IProcessor, RetryByDataProcessor>();
             services.AddSingleton<IProcessor, RetryByLocalQueueProcessor>();
             services.AddSingleton<IProcessor, SendByDataProcessor>();
             services.AddSingleton<IProcessor, DeletePublishedExpireEventProcessor>();
             services.AddSingleton<IProcessor, DeleteLocalQueueExpiresProcessor>();
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IProcessingServer),typeof(EventLogRegisterService),ServiceLifetime.Singleton));
+            services.AddSingleton<SqlClientObserver>();
         }
         else
         {
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
             logger?.LogWarning("The local message table is not used correctly, it will cause integration events not to be sent normally");
         }
-        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
-
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IProcessingServer),typeof(DefaultHostedService),ServiceLifetime.Singleton));
         services.AddHostedService<IntegrationEventHostedService>();
 
         if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))

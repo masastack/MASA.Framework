@@ -9,7 +9,7 @@ public class CustomProcessor : ProcessorBase
 
     public override int Delay => 2;
 
-    public CustomProcessor(IServiceProvider? serviceProvider) : base(serviceProvider)
+    public CustomProcessor(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

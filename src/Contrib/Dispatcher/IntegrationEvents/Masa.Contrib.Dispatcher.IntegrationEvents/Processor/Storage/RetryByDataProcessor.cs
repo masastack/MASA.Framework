@@ -1,21 +1,23 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
+// ReSharper disable once CheckNamespace
 
-public class RetryByLocalQueueProcessor : ProcessorBase
+namespace Masa.Contrib.Dispatcher.IntegrationEvents;
+
+public class RetryByDataProcessor : ProcessorBase
 {
-    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly IOptions<IntegrationEventOptions> _options;
-    private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
+    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
+    private readonly ILogger<RetryByDataProcessor>? _logger;
 
-    public override int Delay => _options.Value.LocalFailedRetryInterval;
+    public override int Delay => _options.Value.FailedRetryInterval;
 
-    public RetryByLocalQueueProcessor(
+    public RetryByDataProcessor(
         IServiceProvider serviceProvider,
         IOptions<IntegrationEventOptions> options,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
-        ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
+        ILogger<RetryByDataProcessor>? logger = null) : base(serviceProvider)
     {
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _options = options;
@@ -32,32 +34,34 @@ public class RetryByLocalQueueProcessor : ProcessorBase
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
         var retrieveEventLogs =
-            LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
-                _options.Value.RetryBatchSize);
+            await eventLogService.RetrieveEventLogsFailedToPublishAsync(
+                _options.Value.RetryBatchSize,
+                _options.Value.MaxRetryTimes,
+                _options.Value.MinimumRetryInterval,
+                stoppingToken);
 
         foreach (var eventLog in retrieveEventLogs)
         {
             try
             {
-                LocalQueueProcessor.Default.RetryJobs(eventLog.EventId);
+                if (LocalQueueEventLogService.IsExist(eventLog.EventId))
+                    continue; // The local queue is retrying, no need to retry
 
                 await eventLogService.MarkEventAsInProgressAsync(eventLog.EventId, _options.Value.MinimumRetryInterval, stoppingToken);
 
-                _logger?.LogDebug(
-                    "Publishing integration event {Event} to {TopicName}",
+                _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                     eventLog,
-                    eventLog.Topic);
+                    eventLog.Event.Topic);
 
-                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Event.Topic, eventLog.Event, stoppingToken);
+
+                LocalQueueEventLogService.RemoveJobs(eventLog.EventId);
 
                 await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
-
-                LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
             }
             catch (UserFriendlyException)
             {
-                //Update state due to multitasking contention
-                LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
+                //Update state due to multitasking contention, no processing required
             }
             catch (Exception ex)
             {

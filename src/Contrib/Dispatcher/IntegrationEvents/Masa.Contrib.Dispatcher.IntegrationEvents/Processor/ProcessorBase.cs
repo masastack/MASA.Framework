@@ -5,21 +5,26 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public abstract class ProcessorBase : IProcessor
 {
-    protected readonly IServiceProvider? ServiceProvider;
+    private readonly IServiceProvider? _serviceProvider;
+    internal readonly LocalQueueEventLogService LocalQueueEventLogService;
 
     /// <summary>
     /// Task delay time, unit: seconds
     /// </summary>
     public virtual int Delay { get; }
 
-    protected ProcessorBase(IServiceProvider? serviceProvider) => ServiceProvider = serviceProvider;
+    protected ProcessorBase(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+        LocalQueueEventLogService = serviceProvider.GetRequiredService<LocalQueueEventLogService>();
+    }
 
     public virtual async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        if (ServiceProvider != null)
+        if (_serviceProvider != null)
         {
-            var unitOfWorkManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
-            var dataConnectionStringProvider = ServiceProvider.GetRequiredService<IDbConnectionStringProvider>();
+            var unitOfWorkManager = _serviceProvider.GetRequiredService<IUnitOfWorkManager>();
+            var dataConnectionStringProvider = _serviceProvider.GetRequiredService<IDbConnectionStringProvider>();
             var optionsList = dataConnectionStringProvider.DbContextOptionsList;
             foreach (var option in optionsList)
             {

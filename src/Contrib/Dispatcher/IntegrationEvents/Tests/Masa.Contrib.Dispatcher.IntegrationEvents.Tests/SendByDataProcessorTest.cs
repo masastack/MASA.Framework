@@ -38,7 +38,7 @@ public class SendByDataProcessorTest
             log.DeserializeJsonContent(typeof(RegisterUserEvent));
         }
         logService
-            .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
+            .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, It.IsAny<int>(), default))
             .ReturnsAsync(() => eventLogs);
         logService
             .Setup(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default))
@@ -56,7 +56,7 @@ public class SendByDataProcessorTest
 
         await _processor.TestExecuteAsync(_services.BuildServiceProvider(), CancellationToken.None);
 
-        logService.Verify(l => l.RetrieveEventLogsPendingToPublishAsync(It.IsAny<int>(), default), Times.Once);
+        logService.Verify(l => l.RetrieveEventLogsPendingToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Never);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Once);
@@ -84,7 +84,7 @@ public class SendByDataProcessorTest
             log.DeserializeJsonContent(typeof(RegisterUserEvent));
         }
         logService
-            .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
+            .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, It.IsAny<int>(), default))
             .ReturnsAsync(() => eventLogs);
         logService
             .Setup(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default))
@@ -102,7 +102,7 @@ public class SendByDataProcessorTest
 
         await _processor.TestExecuteAsync(_services.BuildServiceProvider(), CancellationToken.None);
 
-        logService.Verify(l => l.RetrieveEventLogsPendingToPublishAsync(It.IsAny<int>(), default), Times.Once);
+        logService.Verify(l => l.RetrieveEventLogsPendingToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Never);

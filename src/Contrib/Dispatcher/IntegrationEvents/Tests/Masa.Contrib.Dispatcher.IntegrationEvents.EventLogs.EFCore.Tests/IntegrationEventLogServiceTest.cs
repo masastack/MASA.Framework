@@ -30,7 +30,7 @@ public class IntegrationEventLogServiceTest : TestBase
                 async eventLogContext => await InsertDataAsync(eventLogContext),
                 isUseLogger
             );
-        var list = await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(100, CancellationToken.None);
+        var list = await integrationEventLogService.RetrieveEventLogsPendingToPublishAsync(100, 300, CancellationToken.None);
         Assert.AreEqual(1, list.Count());
     }
 

@@ -59,6 +59,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork where TDbContext : MasaDbConte
         if (UseTransaction is not false && TransactionHasBegun && CommitState == CommitState.UnCommited)
         {
             await Context.Database.CommitTransactionAsync(cancellationToken);
+
             CommitState = CommitState.Commited;
         }
     }

@@ -1,20 +1,22 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Internal;
 
-internal class LocalQueueProcessor
+internal class LocalQueueEventLogService
 {
+    private readonly ILogger<LocalQueueEventLogService>? _logger;
+    /// <summary>
+    ///
+    /// </summary>
     private readonly ConcurrentDictionary<Guid, IntegrationEventLogItem> _retryEventLogs;
+    private readonly TimeSpan _delayTimeSpan;
 
-    public static ILogger<LocalQueueProcessor>? Logger;
-    public static readonly LocalQueueProcessor Default = new();
-
-    public LocalQueueProcessor() => _retryEventLogs = new();
-
-    public static void SetLogger(IServiceCollection services)
+    public LocalQueueEventLogService(ILogger<LocalQueueEventLogService>? logger)
     {
-        Logger = services.BuildServiceProvider().GetService<ILogger<LocalQueueProcessor>>();
+        _logger = logger;
+        _retryEventLogs = new ConcurrentDictionary<Guid, IntegrationEventLogItem>();
+        _delayTimeSpan = TimeSpan.FromSeconds(2);
     }
 
     public void AddJobs(IntegrationEventLogItem items)
@@ -40,7 +42,7 @@ internal class LocalQueueProcessor
         eventLogItems.ForEach(item => RemoveJobs(item.EventId));
     }
 
-    public List<IntegrationEventLogItem> RetrieveEventLogsFailedToPublishAsync(int maxRetryTimes, int retryBatchSize)
+    public async Task<List<IntegrationEventLogItem>> RetrieveEventLogsToPublishAsync(int maxRetryTimes, int retryBatchSize)
     {
         try
         {
@@ -54,9 +56,9 @@ internal class LocalQueueProcessor
         }
         catch (Exception ex)
         {
-            Logger?.LogWarning(ex, "... getting local retry queue error");
+            _logger?.LogWarning(ex, "... Get the queue error of the local message to be sent");
 
-            Thread.Sleep(TimeSpan.FromSeconds(2));
+            await Task.Delay(_delayTimeSpan);
             return new List<IntegrationEventLogItem>();
         }
     }

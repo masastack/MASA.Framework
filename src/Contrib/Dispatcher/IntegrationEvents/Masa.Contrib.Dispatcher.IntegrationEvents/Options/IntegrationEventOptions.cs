@@ -77,6 +77,23 @@ public class IntegrationEventOptions : IIntegrationEventOptions
         }
     }
 
+    private int _minimumInterval = 300;
+
+    /// <summary>
+    /// How long ago to send the local message to be sent, the default is to send the local message 5 minutes ago
+    /// Default is 300 seconds.
+    /// </summary>
+    public int MinimumInterval
+    {
+        get => _minimumInterval;
+        set
+        {
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(MinimumInterval));
+
+            _minimumInterval = value;
+        }
+    }
+
     private int _localFailedRetryInterval = 3;
 
     /// <summary>

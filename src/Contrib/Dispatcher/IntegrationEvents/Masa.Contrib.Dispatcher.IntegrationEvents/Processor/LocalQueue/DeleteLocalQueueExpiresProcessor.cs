@@ -1,7 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class DeleteLocalQueueExpiresProcessor : ProcessorBase
 {
@@ -9,7 +11,9 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase
 
     public override int Delay => _options.Value.CleaningLocalQueueExpireInterval;
 
-    public DeleteLocalQueueExpiresProcessor(IOptions<IntegrationEventOptions> options) : base(null)
+    public DeleteLocalQueueExpiresProcessor(
+        IServiceProvider serviceProvider,
+        IOptions<IntegrationEventOptions> options) : base(serviceProvider)
     {
         _options = options;
     }
@@ -20,6 +24,6 @@ public class DeleteLocalQueueExpiresProcessor : ProcessorBase
     /// <returns></returns>
     protected override void Executing()
     {
-        LocalQueueProcessor.Default.Delete(_options.Value.LocalRetryTimes);
+        LocalQueueEventLogService.Delete(_options.Value.LocalRetryTimes);
     }
 }

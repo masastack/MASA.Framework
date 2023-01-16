@@ -23,10 +23,12 @@ public interface IIntegrationEventLogService
     /// Retrieve pending messages
     /// </summary>
     /// <param name="batchSize">The maximum number of messages retrieved each time</param>
+    /// <param name="minimumInterval"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
         int batchSize,
+        int minimumInterval,
         CancellationToken cancellationToken = default);
 
     Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default);

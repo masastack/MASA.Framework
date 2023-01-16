@@ -34,7 +34,10 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
     }
 
-    public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(int batchSize, CancellationToken cancellationToken = default)
+    public Task<IEnumerable<IntegrationEventLog>> RetrieveEventLogsPendingToPublishAsync(
+        int batchSize,
+        int minimumInterval,
+        CancellationToken cancellationToken = default)
     {
         return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
     }
