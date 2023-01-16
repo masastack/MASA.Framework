@@ -7,5 +7,7 @@ public class ElasticModel
 {
     public string ESNode { get; set; }
 
+    public int ESPort { get; set; }
+
     public string Index { get; set; }
 }

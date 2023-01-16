@@ -70,4 +70,12 @@ public class MasaStackConfigTest
 
         Assert.IsNotNull(authServiceDomain);
     }
+
+    [TestMethod]
+    public void TestGetElasticModel()
+    {
+        var esModel = _stackConfig.ElasticModel;
+
+        Assert.IsNotNull(esModel);
+    }
 }
