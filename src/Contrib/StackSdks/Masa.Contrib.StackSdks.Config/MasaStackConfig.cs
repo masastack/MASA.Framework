@@ -46,6 +46,10 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string Namespace => GetValue(MasaStackConfigConstant.NAMESPACE);
 
+    public string AdminPwd => GetValue(MasaStackConfigConstant.ADMIN_PWD);
+
+    public string DccSecret => GetValue(MasaStackConfigConstant.DCC_SECRET);
+
     public bool SingleSsoClient { get; }
 
     public List<string> ProjectList() => this.GetAllServer().Keys.ToList();

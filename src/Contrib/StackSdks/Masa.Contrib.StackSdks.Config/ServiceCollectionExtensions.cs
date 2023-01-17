@@ -25,6 +25,8 @@ public static class ServiceCollectionExtensions
             masaStackConfig.SetValue(MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI));
             masaStackConfig.SetValue(MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC));
             masaStackConfig.SetValue(MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT));
+            masaStackConfig.SetValue(MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD));
+            masaStackConfig.SetValue(MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET));
         });
     }
 
