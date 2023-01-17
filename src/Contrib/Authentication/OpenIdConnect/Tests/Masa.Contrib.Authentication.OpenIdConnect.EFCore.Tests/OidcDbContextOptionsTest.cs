@@ -9,76 +9,53 @@ public class OidcDbContextOptionsTest
     [TestMethod]
     public async Task TestSeedStandardResources1Async()
     {
-        var serviceCollection = new ServiceCollection();
-        var publisher = new Mock<IPublisher>();
-        serviceCollection.TryAddSingleton(serviceProvider => publisher.Object);
-        serviceCollection.AddDomainEventBus(dispatcherOptions =>
-        {
-            dispatcherOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())
-            .UseEventBus(eventBusBuilder =>
-            {
-            })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources1"), false, false
-            )
-            .UseRepository<CustomDbContext>();
-        });
-        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryTestDatabase(Guid.NewGuid().ToString()));
 
-        var userClaimRepository = new Mock<IUserClaimRepository>();
-        userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => userClaimRepository.Object);
+        Mock<IUserClaimRepository> userClaimRepository = new();
+        userClaimRepository.Setup(u => u.AddStandardUserClaimsAsync()).Verifiable();
 
-        var identityResourceRepository = new Mock<IIdentityResourceRepository>();
-        identityResourceRepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => identityResourceRepository.Object);
+        Mock<IIdentityResourceRepository> identityResourceRepository = new();
+        identityResourceRepository.Setup(u => u.AddStandardIdentityResourcesAsync()).Verifiable();
+        services.AddScoped(serviceProvider => new OidcDbContext(serviceProvider.GetRequiredService<CustomDbContext>()));
 
-        serviceCollection.AddScoped<OidcDbContextOptions>();
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<OidcDbContextOptions>();
-        await options.SeedStandardResourcesAsync();
-        userClaimRepository.Verify(provider => provider.AddStandardUserClaimsAsync(), Times.Once);
-        identityResourceRepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Once);
+        services.AddScoped(_ => userClaimRepository.Object);
+        services.AddScoped(_ => identityResourceRepository.Object);
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+
+        var oidcDbContextOptions = new OidcDbContextOptions(serviceProvider);
+        await oidcDbContextOptions.SeedStandardResourcesAsync();
+
+        userClaimRepository.Verify(r => r.AddStandardUserClaimsAsync(), Times.Once);
+        identityResourceRepository.Verify(r => r.AddStandardIdentityResourcesAsync(), Times.Once);
     }
 
     [TestMethod]
     public async Task TestSeedStandardResources2Async()
     {
-        var serviceCollection = new ServiceCollection();
-        var publisher = new Mock<IPublisher>();
-        serviceCollection.TryAddSingleton(serviceProvider => publisher.Object);
-        serviceCollection.AddDomainEventBus(dispatcherOptions =>
-        {
-            dispatcherOptions
-            .UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseEventLog<CustomDbContext>())
-            .UseEventBus(eventBusBuilder =>
-            {
-            })
-            .UseUoW<CustomDbContext>(
-                dbOptions => dbOptions.UseInMemoryTestDatabase("TestSeedStandardResources2"), false, false
-            )
-            .UseRepository<CustomDbContext>();
-        });
-        serviceCollection.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryTestDatabase(Guid.NewGuid().ToString()));
 
-        var userClaimRepository = new Mock<IUserClaimRepository>();
-        userClaimRepository.Setup(provider => provider.AddStandardUserClaimsAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => userClaimRepository.Object);
+        Mock<IUserClaimRepository> userClaimRepository = new();
+        userClaimRepository.Setup(u => u.AddStandardUserClaimsAsync()).Verifiable();
 
-        var identityResourceRepository = new Mock<IIdentityResourceRepository>();
-        identityResourceRepository.Setup(provider => provider.AddStandardIdentityResourcesAsync()).Verifiable();
-        serviceCollection.AddScoped(provider => identityResourceRepository.Object);
+        Mock<IIdentityResourceRepository> identityResourceRepository = new();
+        identityResourceRepository.Setup(u => u.AddStandardIdentityResourcesAsync()).Verifiable();
+        services.AddScoped(serviceProvider => new OidcDbContext(serviceProvider.GetRequiredService<CustomDbContext>()));
 
-        serviceCollection.AddScoped<OidcDbContextOptions>();
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        services.AddScoped(_ => userClaimRepository.Object);
+        services.AddScoped(_ => identityResourceRepository.Object);
+        var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Set<UserClaim>().AddAsync(new("sub","1"));
-        await dbContext.Set<IdentityResource>().AddAsync(new("email","email","email",true,true,default,true,true));
+        await dbContext.Set<UserClaim>().AddAsync(new("sub", "1"));
+        await dbContext.Set<IdentityResource>().AddAsync(new("email", "email", "email", true, true, default, true, true));
         await dbContext.SaveChangesAsync();
-        var options = serviceProvider.GetRequiredService<OidcDbContextOptions>();
-        await options.SeedStandardResourcesAsync();
-        userClaimRepository.Verify(provider => provider.AddStandardUserClaimsAsync(), Times.Never);
-        identityResourceRepository.Verify(provider => provider.AddStandardIdentityResourcesAsync(), Times.Never);
+
+        var oidcDbContextOptions = new OidcDbContextOptions(serviceProvider);
+        await oidcDbContextOptions.SeedStandardResourcesAsync();
+
+        userClaimRepository.Verify(r => r.AddStandardUserClaimsAsync(), Times.Never);
+        identityResourceRepository.Verify(r => r.AddStandardIdentityResourcesAsync(), Times.Never);
     }
 }

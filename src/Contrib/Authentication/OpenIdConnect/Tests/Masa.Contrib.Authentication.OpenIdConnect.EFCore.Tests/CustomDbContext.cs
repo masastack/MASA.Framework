@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.EFCore.Tests;
 
-public class CustomDbContext : IsolationDbContext
+public class CustomDbContext : MasaDbContext
 {
     public DbSet<UserClaim> UserClaims { get; set; }
 
