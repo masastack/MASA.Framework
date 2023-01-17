@@ -95,12 +95,16 @@ public class AutoCompleteClient : AutoCompleteClientBase
             aliases = new Aliases();
             aliases.Add(_alias, new Alias());
         }
-        var createIndexResponse = _client.CreateIndexAsync(_indexName, new CreateIndexOptions()
+        var createIndexResponse = await _client.CreateIndexAsync(_indexName, new CreateIndexOptions()
         {
             Aliases = aliases,
             Mappings = mapping,
             IndexSettings = indexSettings
-        }, cancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+        }, cancellationToken).ConfigureAwait(false);
+        if (!createIndexResponse.IsValid)
+        {
+            _logger?.LogWarning("Create index failed {Message}", createIndexResponse.Message);
+        }
         return createIndexResponse.IsValid;
     }
 

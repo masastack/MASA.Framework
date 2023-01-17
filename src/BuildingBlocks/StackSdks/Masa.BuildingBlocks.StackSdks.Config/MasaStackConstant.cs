@@ -12,4 +12,9 @@ public static class MasaStackConstant
     public const string SCHEDULER = "scheduler";
     public const string ALERT = "alert";
     public const string TSC = "tsc";
+
+    public const string UI = "ui";
+    public const string SERVER = "server";
+    public const string SSO = "sso";
+    public const string WORKER = "worker";
 }
