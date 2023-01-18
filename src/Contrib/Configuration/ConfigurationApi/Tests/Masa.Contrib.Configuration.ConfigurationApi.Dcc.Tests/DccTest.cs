@@ -199,6 +199,21 @@ public class DccTest
     [TestMethod]
     public void TestUseMultiDcc()
     {
+        var brand = new Brands("Microsoft");
+        var response = new PublishReleaseModel()
+        {
+            Content = JsonSerializer.Serialize(brand),
+            ConfigFormat = ConfigFormats.Json
+        };
+        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        memoryCacheClient
+            .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
+            .Returns(() => response);
+        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
+        memoryCacheClientFactory
+            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
+            .Returns(() => memoryCacheClient.Object);
+        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
         _masaConfigurationBuilder.Object.UseDcc();
         var serviceCount = _masaConfigurationBuilder.Object.Services.Count;
         _masaConfigurationBuilder.Object.UseDcc();

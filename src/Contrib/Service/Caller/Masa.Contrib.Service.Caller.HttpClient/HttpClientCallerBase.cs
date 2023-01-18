@@ -14,7 +14,7 @@ public abstract class HttpClientCallerBase : CallerBase
 
     }
 
-    public HttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected HttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

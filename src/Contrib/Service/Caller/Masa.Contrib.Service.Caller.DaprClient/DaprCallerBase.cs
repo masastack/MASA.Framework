@@ -13,7 +13,7 @@ public abstract class DaprCallerBase : CallerBase
     {
     }
 
-    public DaprCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected DaprCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 

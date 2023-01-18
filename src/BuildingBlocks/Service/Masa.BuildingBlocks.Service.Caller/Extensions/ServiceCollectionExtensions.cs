@@ -22,6 +22,27 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        string name,
+        Func<IServiceProvider, ICaller> implementationFactory)
+    {
+        MasaArgumentException.ThrowIfNull(services);
+        MasaArgumentException.ThrowIfNull(name);
+
+        services.Configure<CallerFactoryOptions>(callerOptions =>
+        {
+            if (callerOptions.Options.Any(relation => relation.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException(
+                    $"The caller name already exists, please change the name, the repeat name is [{name}]");
+
+            callerOptions.Options.Add(new CallerRelationOptions(name, implementationFactory));
+        });
+
+        MasaApp.TrySetServiceCollection(services);
+        return services;
+    }
+
     public static IServiceCollection AddAutoRegistrationCaller(
         this IServiceCollection services,
         ServiceLifetime callerLifetime = ServiceLifetime.Scoped)
@@ -97,26 +118,5 @@ public static class ServiceCollectionExtensions
             var callerBase = (CallerBase)serviceProvider.GetRequiredService(type);
             callerBase.UseCallerExtension();
         });
-    }
-
-    public static IServiceCollection AddCaller(
-        this IServiceCollection services,
-        string name,
-        Func<IServiceProvider, ICaller> implementationFactory)
-    {
-        MasaArgumentException.ThrowIfNull(services);
-        MasaArgumentException.ThrowIfNull(name);
-
-        services.Configure<CallerFactoryOptions>(callerOptions =>
-        {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
-                throw new ArgumentException(
-                    $"The caller name already exists, please change the name, the repeat name is [{name}]");
-
-            callerOptions.Options.Add(new CallerRelationOptions(name, implementationFactory));
-        });
-
-        MasaApp.TrySetServiceCollection(services);
-        return services;
     }
 }

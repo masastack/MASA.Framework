@@ -18,9 +18,9 @@ public abstract class CallerBase
 
     public IServiceProvider? ServiceProvider { get; private set; }
 
-    public CallerBase() => ServiceProvider = null;
+    protected CallerBase() => ServiceProvider = null;
 
-    public CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+    protected CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
 
     public abstract void UseCallerExtension();
 
