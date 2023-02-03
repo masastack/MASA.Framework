@@ -36,7 +36,7 @@ public class EventBus : IEventBus
         ArgumentNullException.ThrowIfNull(@event, nameof(@event));
         var eventType = @event.GetType();
 
-        var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IMiddleware<TEvent>>>();
+        var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
             throw new NotSupportedException(

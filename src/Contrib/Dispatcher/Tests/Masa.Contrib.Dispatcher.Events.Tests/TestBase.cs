@@ -33,7 +33,7 @@ public class TestBase
             });
         }
 
-        _services.AddTransient(typeof(IMiddleware<>), typeof(LoggingMiddleware<>));
+        _services.AddTransient(typeof(IEventMiddleware<>), typeof(LoggingEventMiddleware<>));
         func?.Invoke(_services);
         _services = assemblies == null ? _services.AddTestEventBus(_defaultAssemblies, ServiceLifetime.Scoped) : _services.AddTestEventBus(assemblies, ServiceLifetime.Scoped);
         _serviceProvider = _services.BuildServiceProvider();

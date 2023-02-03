@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Tests.Perfs.Extensions.Middleware;
 
-public class LoggingMiddleware<TEvent> : Middleware<TEvent> where TEvent : notnull, IEvent
+public class LoggingMiddleware<TEvent> : EventMiddleware<TEvent> where TEvent : notnull, IEvent
 {
     private readonly ILogger<LoggingMiddleware<TEvent>>? _logger;
     public LoggingMiddleware(ILogger<LoggingMiddleware<TEvent>>? logger = null) => _logger = logger;
