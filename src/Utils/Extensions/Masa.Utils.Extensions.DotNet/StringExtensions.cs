@@ -216,6 +216,7 @@ public static class StringExtensions
         return Regex.Replace(str, @"(\B[A-Z])", "-$1", RegexOptions.None, TimeSpan.FromSeconds(2.0)).ToLower();
     }
 
+#pragma warning disable S3776
     /// <summary>
     /// Converts given PascalCase/camelCase string to snake case.
     /// Example: "ThisIsSampleSentence" is converted to "this_is_a_sample_sentence".
@@ -284,6 +285,7 @@ public static class StringExtensions
 
         return builder.ToString();
     }
+#pragma warning restore S3776
 
     private static bool IsAllUpperCase(string input)
     {
