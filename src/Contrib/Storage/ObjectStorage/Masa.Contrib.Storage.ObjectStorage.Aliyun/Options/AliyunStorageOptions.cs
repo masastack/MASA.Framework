@@ -5,7 +5,7 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
 
 public class AliyunStorageOptions : AliyunOptions
 {
-    public AliyunStsOptions Sts { get; set; } = new();
+    public AliyunStsOptions? Sts { get; set; }
 
     private string _endpoint;
 
@@ -68,6 +68,10 @@ public class AliyunStorageOptions : AliyunOptions
     /// </summary>
     public bool Quiet { get; set; }
 
+    private readonly List<KeyValuePair<string, string>> _bucketNames = new();
+
+    public BucketNames BucketNames { get; set; }
+
     public AliyunStorageOptions()
     {
         Quiet = true;
@@ -76,6 +80,7 @@ public class AliyunStorageOptions : AliyunOptions
         EnableResumableUpload = true;
         PartSize = null;
         BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
+        BucketNames = new BucketNames(_bucketNames);
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
@@ -134,5 +139,11 @@ public class AliyunStorageOptions : AliyunOptions
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
         return this;
+    }
+
+    public void TryAddBucketName(string name, string bucketName)
+    {
+        if (_bucketNames.All(item => item.Key != name))
+            _bucketNames.Add(new KeyValuePair<string, string>(name, bucketName));
     }
 }
