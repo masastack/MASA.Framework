@@ -34,8 +34,8 @@ public class TestDispatcher : TestBase
         };
         await eventBus.PublishAsync(command);
 
-        Assert.IsTrue(RecordMiddleware<RegisterUserCommand>.Time == 1);
-        Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);
+        Assert.IsTrue(RecordEventMiddleware<RegisterUserCommand>.Time == 1);
+        Assert.IsTrue(RecordEventMiddleware<CheckUserQuery>.Time == 0);
 
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsTrue(dbContext.Set<User>().Count() == 1);
@@ -61,8 +61,8 @@ public class TestDispatcher : TestBase
         await eventBus.PublishAsync(query);
         Assert.IsTrue(query.Result == default);
 
-        Assert.IsTrue(RecordMiddleware<UserAgeQuery>.Time == 1);
-        Assert.IsTrue(RecordMiddleware<CheckUserQuery>.Time == 0);
+        Assert.IsTrue(RecordEventMiddleware<UserAgeQuery>.Time == 1);
+        Assert.IsTrue(RecordEventMiddleware<CheckUserQuery>.Time == 0);
     }
 
     [TestMethod]
