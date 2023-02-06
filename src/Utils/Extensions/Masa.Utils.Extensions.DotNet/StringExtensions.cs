@@ -94,6 +94,14 @@ public static class StringExtensions
     }
 
     /// <summary>
+    /// Converts new line const in the string to <see cref="Environment.NewLine"/>.
+    /// </summary>
+    public static string NormalizeLineBreak(this string str)
+    {
+        return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
+    }
+
+    /// <summary>
     /// Gets a substring of a string from beginning of the string.
     /// </summary>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="str"/> is null</exception>
@@ -106,80 +114,6 @@ public static class StringExtensions
         }
 
         return str.Substring(0, len);
-    }
-
-    /// <summary>
-    /// Converts new line const in the string to <see cref="Environment.NewLine"/>.
-    /// </summary>
-    public static string NormalizeLineBreak(this string str)
-    {
-        return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
-    }
-
-    /// <summary>
-    /// Deletes the first occurrence of the given suffix from the end of the given string.
-    /// </summary>
-    /// <param name="str">The string.</param>
-    /// <param name="suffixes">one or more suffix.</param>
-    /// <returns>Modified string or the same string if it has not any of given suffixes</returns>
-    public static string RemoveSuffix(this string str, params string[] suffixes)
-    {
-        return str.RemoveSuffix(StringComparison.Ordinal, suffixes);
-    }
-
-    /// <summary>
-    /// Deletes the first occurrence of the given suffix from the end of the given string.
-    /// </summary>
-    /// <param name="str">The string.</param>
-    /// <param name="comparisonType">String comparison type</param>
-    /// <param name="suffixes">one or more suffix.</param>
-    /// <returns>Modified string or the same string if it has not any of given suffixes</returns>
-    public static string RemoveSuffix(this string str, StringComparison comparisonType, params string[] suffixes)
-    {
-        if (str.IsNullOrEmpty() || suffixes.IsNullOrEmpty())
-        {
-            return str;
-        }
-
-        foreach (var suffix in suffixes.Where(s => str.EndsWith(s, comparisonType)))
-        {
-            return str.Left(str.Length - suffix.Length);
-        }
-
-        return str;
-    }
-
-    /// <summary>
-    /// Removes the first occurrence of the given prefix from the beginning of the given string.
-    /// </summary>
-    /// <param name="str">The string.</param>
-    /// <param name="preFixes">one or more prefix.</param>
-    /// <returns>Modified string or the same string if it has not any of given prefixes</returns>
-    public static string RemovePreFix(this string str, params string[] preFixes)
-    {
-        return str.RemovePreFix(StringComparison.Ordinal, preFixes);
-    }
-
-    /// <summary>
-    /// Removes the first occurrence of the given prefix from the beginning of the given string.
-    /// </summary>
-    /// <param name="str">The string.</param>
-    /// <param name="comparisonType">String comparison type</param>
-    /// <param name="preFixes">one or more prefix.</param>
-    /// <returns>Modified string or the same string if it has not any of given prefixes</returns>
-    public static string RemovePreFix(this string str, StringComparison comparisonType, params string[] preFixes)
-    {
-        if (str.IsNullOrEmpty() || preFixes.IsNullOrEmpty())
-        {
-            return str;
-        }
-
-        foreach (var preFix in preFixes.Where(s => str.StartsWith(s, comparisonType)))
-        {
-            return str.Right(str.Length - preFix.Length);
-        }
-
-        return str;
     }
 
     /// <summary>
@@ -285,7 +219,7 @@ public static class StringExtensions
     /// <summary>
     /// Converts given PascalCase/camelCase string to snake case.
     /// Example: "ThisIsSampleSentence" is converted to "this_is_a_sample_sentence".
-    /// https://github.com/npgsql/npgsql/blob/dev/src/Npgsql/NameTranslation/NpgsqlSnakeCaseNameTranslator.cs#L51
+    /// https://github.com/npgsql/npgsql/blob/main/src/Npgsql/NameTranslation/NpgsqlSnakeCaseNameTranslator.cs#L53
     /// </summary>
     /// <param name="str">String to convert.</param>
     /// <returns></returns>
