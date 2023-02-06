@@ -68,9 +68,9 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Adds a char to end of given string if it does not ends with the char.
+    /// If the given string does not end with char, char is added to the end of the given string.
     /// </summary>
-    public static string EnsureEndsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
+    public static string EnsureEndWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
     {
         if (str.EndsWith(c.ToString(), comparisonType))
         {
@@ -81,9 +81,9 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Adds a char to beginning of given string if it does not starts with the char.
+    /// If the given string does not start with char, char is added to the beginning of the given string.
     /// </summary>
-    public static string EnsureStartsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
+    public static string EnsureStartWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
     {
         if (str.StartsWith(c.ToString(), comparisonType))
         {
@@ -102,55 +102,50 @@ public static class StringExtensions
     {
         if (str.Length < len)
         {
-            throw new ArgumentException("len argument can not be bigger than given string's length!");
+            throw new ArgumentException("len argument can`t be greater than string's length!");
         }
 
         return str.Substring(0, len);
     }
 
     /// <summary>
-    /// Converts line endings in the string to <see cref="Environment.NewLine"/>.
+    /// Converts new line const in the string to <see cref="Environment.NewLine"/>.
     /// </summary>
-    public static string NormalizeLineEndings(this string str)
+    public static string NormalizeLineBreak(this string str)
     {
         return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", Environment.NewLine);
     }
 
     /// <summary>
-    /// Removes first occurrence of the given postfixes from end of the given string.
+    /// Deletes the first occurrence of the given suffix from the end of the given string.
     /// </summary>
     /// <param name="str">The string.</param>
-    /// <param name="postFixes">one or more postfix.</param>
-    /// <returns>Modified string or the same string if it has not any of given postfixes</returns>
-    public static string RemovePostFix(this string str, params string[] postFixes)
+    /// <param name="suffixes">one or more suffix.</param>
+    /// <returns>Modified string or the same string if it has not any of given suffixes</returns>
+    public static string RemoveSuffix(this string str, params string[] suffixes)
     {
-        return str.RemovePostFix(StringComparison.Ordinal, postFixes);
+        return str.RemoveSuffix(StringComparison.Ordinal, suffixes);
     }
 
     /// <summary>
-    /// Removes first occurrence of the given postfixes from end of the given string.
+    /// Deletes the first occurrence of the given suffix from the end of the given string.
     /// </summary>
     /// <param name="str">The string.</param>
     /// <param name="comparisonType">String comparison type</param>
-    /// <param name="postFixes">one or more postfix.</param>
-    /// <returns>Modified string or the same string if it has not any of given postfixes</returns>
-    public static string RemovePostFix(this string str, StringComparison comparisonType, params string[] postFixes)
+    /// <param name="suffixes">one or more suffix.</param>
+    /// <returns>Modified string or the same string if it has not any of given suffixes</returns>
+    public static string RemoveSuffix(this string str, StringComparison comparisonType, params string[] suffixes)
     {
-        if (str.IsNullOrEmpty())
+        if (str.IsNullOrEmpty() || suffixes.IsNullOrEmpty())
         {
             return str;
         }
 
-        if (postFixes.IsNullOrEmpty())
+        foreach (var suffix in suffixes)
         {
-            return str;
-        }
-
-        foreach (var postFix in postFixes)
-        {
-            if (str.EndsWith(postFix, comparisonType))
+            if (str.EndsWith(suffix, comparisonType))
             {
-                return str.Left(str.Length - postFix.Length);
+                return str.Left(str.Length - suffix.Length);
             }
         }
 
@@ -158,7 +153,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Removes first occurrence of the given prefixes from beginning of the given string.
+    /// Removes the first occurrence of the given prefix from the beginning of the given string.
     /// </summary>
     /// <param name="str">The string.</param>
     /// <param name="preFixes">one or more prefix.</param>
@@ -169,7 +164,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Removes first occurrence of the given prefixes from beginning of the given string.
+    /// Removes the first occurrence of the given prefix from the beginning of the given string.
     /// </summary>
     /// <param name="str">The string.</param>
     /// <param name="comparisonType">String comparison type</param>
@@ -177,12 +172,7 @@ public static class StringExtensions
     /// <returns>Modified string or the same string if it has not any of given prefixes</returns>
     public static string RemovePreFix(this string str, StringComparison comparisonType, params string[] preFixes)
     {
-        if (str.IsNullOrEmpty())
-        {
-            return str;
-        }
-
-        if (preFixes.IsNullOrEmpty())
+        if (str.IsNullOrEmpty() || preFixes.IsNullOrEmpty())
         {
             return str;
         }
@@ -198,17 +188,6 @@ public static class StringExtensions
         return str;
     }
 
-    public static string ReplaceFirst(this string str, string search, string replace, StringComparison comparisonType = StringComparison.Ordinal)
-    {
-        var pos = str.IndexOf(search, comparisonType);
-        if (pos < 0)
-        {
-            return str;
-        }
-
-        return str.Substring(0, pos) + replace + str.Substring(pos + search.Length);
-    }
-
     /// <summary>
     /// Gets a substring of a string from end of the string.
     /// </summary>
@@ -218,30 +197,24 @@ public static class StringExtensions
     {
         if (str.Length < len)
         {
-            throw new ArgumentException("len argument can not be bigger than given string's length!");
+            throw new ArgumentException("len argument can`t be greater than string's length!");
         }
 
         return str.Substring(str.Length - len, len);
     }
 
-    /// <summary>
-    /// Uses string.Split method to split given string by given separator.
-    /// </summary>
     public static string[] Split(this string str, string separator)
     {
         return str.Split(new[] { separator }, StringSplitOptions.None);
     }
 
-    /// <summary>
-    /// Uses string.Split method to split given string by given separator.
-    /// </summary>
     public static string[] Split(this string str, string separator, StringSplitOptions options)
     {
         return str.Split(new[] { separator }, options);
     }
 
     /// <summary>
-    /// Uses string.Split method to split given string by <see cref="Environment.NewLine"/>.
+    /// split string by <see cref="Environment.NewLine"/>.
     /// </summary>
     public static string[] SplitToLines(this string str)
     {
@@ -249,7 +222,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Uses string.Split method to split given string by <see cref="Environment.NewLine"/>.
+    /// split string by <see cref="Environment.NewLine"/>.
     /// </summary>
     public static string[] SplitToLines(this string str, StringSplitOptions options)
     {
@@ -265,7 +238,7 @@ public static class StringExtensions
     /// <returns>camelCase of the string</returns>
     public static string ToCamelCase(this string str, bool useCurrentCulture = false, bool handleAbbreviations = false)
     {
-        if (string.IsNullOrWhiteSpace(str))
+        if (str.IsNullOrWhiteSpace())
         {
             return str;
         }
@@ -291,7 +264,7 @@ public static class StringExtensions
     /// <param name="useCurrentCulture">set true to use current culture. Otherwise, invariant culture will be used.</param>
     public static string ToSentenceCase(this string str, bool useCurrentCulture = false)
     {
-        if (string.IsNullOrWhiteSpace(str))
+        if (str.IsNullOrWhiteSpace())
         {
             return str;
         }
@@ -308,7 +281,7 @@ public static class StringExtensions
     /// <param name="useCurrentCulture">set true to use current culture. Otherwise, invariant culture will be used.</param>
     public static string ToKebabCase(this string str, bool useCurrentCulture = false)
     {
-        if (string.IsNullOrEmpty(str))
+        if (str.IsNullOrEmpty())
         {
             return str;
         }
@@ -324,7 +297,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ToSnakeCase(this string str)
     {
-        if (string.IsNullOrWhiteSpace(str))
+        if (str.IsNullOrWhiteSpace())
         {
             return str;
         }
@@ -382,64 +355,6 @@ public static class StringExtensions
         }
 
         return builder.ToString();
-    }
-
-    /// <summary>
-    /// Converts string to enum value.
-    /// </summary>
-    /// <typeparam name="T">Type of enum</typeparam>
-    /// <param name="value">String value to convert</param>
-    /// <returns>Returns enum object</returns>
-    public static T ToEnum<T>(this string value)
-        where T : struct
-    {
-        return (T)Enum.Parse(typeof(T), value);
-    }
-
-    /// <summary>
-    /// Converts string to enum value.
-    /// </summary>
-    /// <typeparam name="T">Type of enum</typeparam>
-    /// <param name="value">String value to convert</param>
-    /// <param name="ignoreCase">Ignore case</param>
-    /// <returns>Returns enum object</returns>
-    public static T ToEnum<T>(this string value, bool ignoreCase)
-        where T : struct
-    {
-        return (T)Enum.Parse(typeof(T), value, ignoreCase);
-    }
-
-    public static string ToMd5(this string str)
-    {
-        using (var md5 = MD5.Create())
-        {
-            var inputBytes = Encoding.UTF8.GetBytes(str);
-            var hashBytes = md5.ComputeHash(inputBytes);
-
-            var sb = new StringBuilder();
-            foreach (var hashByte in hashBytes)
-            {
-                sb.Append(hashByte.ToString("X2"));
-            }
-
-            return sb.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Converts given string to a byte array using <see cref="Encoding.UTF8"/> encoding.
-    /// </summary>
-    public static byte[] GetBytes(this string str)
-    {
-        return str.GetBytes(Encoding.UTF8);
-    }
-
-    /// <summary>
-    /// Converts given string to a byte array using the given <paramref name="encoding"/>
-    /// </summary>
-    public static byte[] GetBytes(this string str, Encoding encoding)
-    {
-        return encoding.GetBytes(str);
     }
 
     private static bool IsAllUpperCase(string input)
