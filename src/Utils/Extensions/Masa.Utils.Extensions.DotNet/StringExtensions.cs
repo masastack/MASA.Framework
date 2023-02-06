@@ -70,7 +70,7 @@ public static class StringExtensions
     /// <summary>
     /// If the given string does not end with char, char is added to the end of the given string.
     /// </summary>
-    public static string EnsureEndWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
+    public static string EnsureEndsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
     {
         if (str.EndsWith(c.ToString(), comparisonType))
         {
@@ -83,7 +83,7 @@ public static class StringExtensions
     /// <summary>
     /// If the given string does not start with char, char is added to the beginning of the given string.
     /// </summary>
-    public static string EnsureStartWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
+    public static string EnsureStartsWith(this string str, char c, StringComparison comparisonType = StringComparison.Ordinal)
     {
         if (str.StartsWith(c.ToString(), comparisonType))
         {
@@ -141,12 +141,9 @@ public static class StringExtensions
             return str;
         }
 
-        foreach (var suffix in suffixes)
+        foreach (var suffix in suffixes.Where(s => str.EndsWith(s, comparisonType)))
         {
-            if (str.EndsWith(suffix, comparisonType))
-            {
-                return str.Left(str.Length - suffix.Length);
-            }
+            return str.Left(str.Length - suffix.Length);
         }
 
         return str;
@@ -177,12 +174,9 @@ public static class StringExtensions
             return str;
         }
 
-        foreach (var preFix in preFixes)
+        foreach (var preFix in preFixes.Where(s => str.StartsWith(s, comparisonType)))
         {
-            if (str.StartsWith(preFix, comparisonType))
-            {
-                return str.Right(str.Length - preFix.Length);
-            }
+            return str.Right(str.Length - preFix.Length);
         }
 
         return str;
@@ -270,8 +264,8 @@ public static class StringExtensions
         }
 
         return useCurrentCulture
-            ? Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1]))
-            : Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLowerInvariant(m.Value[1]));
+            ? Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1]), RegexOptions.None, TimeSpan.FromSeconds(2.0))
+            : Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLowerInvariant(m.Value[1]), RegexOptions.None, TimeSpan.FromSeconds(2.0));
     }
 
     /// <summary>
@@ -285,7 +279,7 @@ public static class StringExtensions
         {
             return str;
         }
-        return Regex.Replace(str, @"(\B[A-Z])", "-$1").ToLower();
+        return Regex.Replace(str, @"(\B[A-Z])", "-$1", RegexOptions.None, TimeSpan.FromSeconds(2.0)).ToLower();
     }
 
     /// <summary>

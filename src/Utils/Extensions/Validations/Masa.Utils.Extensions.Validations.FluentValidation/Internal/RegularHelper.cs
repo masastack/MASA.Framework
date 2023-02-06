@@ -21,7 +21,9 @@ internal static class RegularHelper
     internal const string IDCARD = "^\\s{0}$|(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)";
     internal const string URL = "^\\s{0}$|[a-zA-z]+://[^s]*";
     internal const string EMAIL = @"^\s{0}$|^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+#pragma warning disable S2068
     internal const string PASSWORD_REGULAR = @"^\s{0}$|^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Za-z])\S*$";
+#pragma warning restore S2068
 
     internal const string PORT =
         "^\\s{0}$|^([1-9]|[1-9]\\d|[1-9]\\d{2}|[1-9]\\d{3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$";
