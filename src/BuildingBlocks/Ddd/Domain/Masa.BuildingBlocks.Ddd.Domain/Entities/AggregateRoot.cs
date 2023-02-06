@@ -26,15 +26,6 @@ public abstract class AggregateRoot : Entity, IAggregateRoot, IGenerateDomainEve
     {
         _domainEvents.Clear();
     }
-
-    public async Task PublishDomainEventsAsync(IDomainEventBus eventBus)
-    {
-        while (_domainEvents.Any())
-        {
-            await eventBus.PublishAsync(_domainEvents.First());
-            _domainEvents.RemoveAt(0);
-        }
-    }
 }
 
 public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey>, IGenerateDomainEvents
@@ -67,14 +58,5 @@ public abstract class AggregateRoot<TKey> : Entity<TKey>, IAggregateRoot<TKey>, 
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
-    }
-
-    public async Task PublishDomainEventsAsync(IDomainEventBus eventBus)
-    {
-        while (_domainEvents.Any())
-        {
-            await eventBus.PublishAsync(_domainEvents.First());
-            _domainEvents.RemoveAt(0);
-        }
     }
 }
