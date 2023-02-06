@@ -22,7 +22,7 @@ public static class RulesEngineOptionsExtensions
         string name,
         ReSettings? reSettings = null)
     {
-        rulesEngineOptions.Services.Configure<RulesEngineFactoryOptions>(name, options =>
+        rulesEngineOptions.Services.Configure<RulesEngineFactoryOptions>(options =>
         {
             options.TryAddRulesEngine(name,
                 serviceProvider => new RulesEngineClient(reSettings, serviceProvider.GetService<ILogger<RulesEngineClient>>())
