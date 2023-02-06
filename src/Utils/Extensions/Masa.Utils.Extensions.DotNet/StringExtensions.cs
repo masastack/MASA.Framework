@@ -446,7 +446,7 @@ public static class StringExtensions
     {
         for (int i = 0; i < input.Length; i++)
         {
-            if (Char.IsLetter(input[i]) && !Char.IsUpper(input[i]))
+            if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
             {
                 return false;
             }
