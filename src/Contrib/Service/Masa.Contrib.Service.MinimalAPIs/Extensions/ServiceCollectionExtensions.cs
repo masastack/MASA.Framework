@@ -62,6 +62,41 @@ public static class ServiceCollectionExtensions
         return app;
     }
 
+    public static IServiceCollection AddMasaMinimalAPIs(
+        this IServiceCollection services,
+        Action<ServiceGlobalRouteOptions>? action = null)
+    {
+        if (services.All(service => service.ImplementationType != typeof(MinimalApisMarkerService)))
+        {
+            services.AddSingleton<MinimalApisMarkerService>();
+
+            services.AddHttpContextAccessor();
+            if (action == null)
+            {
+                services.Configure<ServiceGlobalRouteOptions>(_ =>
+                {
+
+                });
+            }
+            else
+            {
+                services.Configure(action);
+            }
+
+            MasaApp.TrySetServiceCollection(services);
+            var serviceProvider = services.BuildServiceProvider();
+            var serviceMapOptions = serviceProvider.GetRequiredService<IOptions<ServiceGlobalRouteOptions>>().Value;
+            var serviceTypes = TypeHelper.GetServiceTypes<ServiceBase>(serviceMapOptions.Assemblies.ToArray());
+            foreach (var serviceType in serviceTypes)
+            {
+                GlobalMinimalApiOptions.AddService(serviceType);
+                services.AddSingleton(serviceType);
+            }
+        }
+
+        return services;
+    }
+
     private sealed class MinimalApisMarkerService
     {
 
