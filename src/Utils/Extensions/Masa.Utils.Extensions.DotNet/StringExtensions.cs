@@ -226,6 +226,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ToSnakeCase(this string str)
     {
+#pragma warning disable S3776
         if (str.IsNullOrWhiteSpace())
         {
             return str;
@@ -282,7 +283,7 @@ public static class StringExtensions
             builder.Append(currentChar);
             previousCategory = currentCategory;
         }
-
+#pragma warning restore S3776
         return builder.ToString();
     }
 #pragma warning restore S3776
