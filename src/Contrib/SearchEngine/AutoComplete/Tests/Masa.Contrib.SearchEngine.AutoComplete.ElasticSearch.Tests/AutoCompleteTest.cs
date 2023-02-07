@@ -295,7 +295,7 @@ public class AutoCompleteTest
         await VerifyByCustomModelAsync(employeeClient);
     }
 
-    private async Task VerifyByCustomModelAsync(IAutoCompleteClient autoCompleteClient)
+    private static async Task VerifyByCustomModelAsync(IAutoCompleteClient autoCompleteClient)
     {
         await autoCompleteClient.BuildAsync();
 

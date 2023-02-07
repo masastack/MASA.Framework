@@ -14,6 +14,23 @@ public static class ServiceCollectionExtensions
         Action<AutoCompleteOptionsBuilder> configure)
         => services.AddAutoComplete<Guid>(name, configure);
 
+    public static IServiceCollection AddAutoComplete(
+        this IServiceCollection services,
+        string name,
+        Func<IServiceProvider, IAutoCompleteClient> implementationFactory)
+    {
+        MasaArgumentException.ThrowIfNull(implementationFactory);
+
+        services.Configure<AutoCompleteFactoryOptions>(factoryOptions =>
+        {
+            if (factoryOptions.Options.Any(relation => relation.Name == name))
+                throw new ArgumentException($"The {nameof(IAutoCompleteClient)} name already exists, please change the name, the repeat name is [{name}]");
+
+            factoryOptions.Options.Add(new AutoCompleteRelationsOptions(name, implementationFactory));
+        });
+        return services.AddAutoCompleteBySpecifyDocumentCore(name);
+    }
+
     public static IServiceCollection AddAutoComplete<TValue>(
         this IServiceCollection services,
         Action<AutoCompleteOptionsBuilder> configure)
@@ -38,23 +55,6 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(configure);
         configure.Invoke(new AutoCompleteOptionsBuilder(services, name, typeof(TDocument)));
         return services;
-    }
-
-    public static IServiceCollection AddAutoComplete(
-        this IServiceCollection services,
-        string name,
-        Func<IServiceProvider, IAutoCompleteClient> implementationFactory)
-    {
-        MasaArgumentException.ThrowIfNull(implementationFactory);
-
-        services.Configure<AutoCompleteFactoryOptions>(factoryOptions =>
-        {
-            if (factoryOptions.Options.Any(relation => relation.Name == name))
-                throw new ArgumentException($"The {nameof(IAutoCompleteClient)} name already exists, please change the name, the repeat name is [{name}]");
-
-            factoryOptions.Options.Add(new AutoCompleteRelationsOptions(name, implementationFactory));
-        });
-        return services.AddAutoCompleteBySpecifyDocumentCore(name);
     }
 
     private static IServiceCollection AddAutoCompleteBySpecifyDocumentCore(

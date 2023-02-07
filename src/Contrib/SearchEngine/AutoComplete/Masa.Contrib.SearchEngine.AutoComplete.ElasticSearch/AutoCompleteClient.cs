@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using System.Reflection;
-
 namespace Masa.Contrib.SearchEngine.AutoComplete.ElasticSearch;
 
 public class AutoCompleteClient : AutoCompleteClientBase
@@ -22,8 +20,10 @@ public class AutoCompleteClient : AutoCompleteClientBase
     private readonly Action<ITypeMapping>? _action;
     private readonly Type _documentType;
 
+#pragma warning disable S3011
     private static readonly MethodInfo AutoMapMethodInfo = typeof(AutoCompleteClient).GetMethod(nameof(AutoMap),
         BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)!;
+#pragma warning restore S3011
 
     public AutoCompleteClient(
         IElasticClient elasticClient,
@@ -82,7 +82,7 @@ public class AutoCompleteClient : AutoCompleteClientBase
 
         var typeMappingDescriptorType = typeof(TypeMappingDescriptor<>).MakeGenericType(_documentType);
         var mapping = (ITypeMapping)Activator.CreateInstance(typeMappingDescriptorType)!;
-        // var mapping = new TypeMappingDescriptor();
+
         if (_action != null) _action.Invoke(mapping);
         else
         {
