@@ -70,7 +70,7 @@ public class DESUtils : EncryptBase
         string key,
         DESEncryptType desEncryptType = DESEncryptType.Improved,
         bool isToLower = true,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => Encrypt(content, key, DefaultEncryptIv, desEncryptType, isToLower, fillType, fillCharacter, encoding);
@@ -93,7 +93,7 @@ public class DESUtils : EncryptBase
         string iv,
         DESEncryptType desEncryptType = DESEncryptType.Improved,
         bool isToLower = true,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
@@ -146,7 +146,7 @@ public class DESUtils : EncryptBase
         string content,
         string key,
         DESEncryptType desEncryptType = DESEncryptType.Improved,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => Decrypt(content, key, DefaultEncryptIv, desEncryptType, fillType, fillCharacter, encoding);
@@ -167,7 +167,7 @@ public class DESUtils : EncryptBase
         string key,
         string iv,
         DESEncryptType desEncryptType = DESEncryptType.Improved,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
@@ -208,7 +208,7 @@ public class DESUtils : EncryptBase
         FileStream fileStream,
         string key,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => EncryptOrDecryptFile(fileStream, key, outFilePath, true, fillType, fillCharacter, encoding);
@@ -228,7 +228,7 @@ public class DESUtils : EncryptBase
         string key,
         string iv,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => EncryptOrDecryptFile(fileStream, key, iv, true, outFilePath, fillType, fillCharacter, encoding);
@@ -248,7 +248,7 @@ public class DESUtils : EncryptBase
         string key,
         byte[] ivBuffer,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
@@ -274,7 +274,7 @@ public class DESUtils : EncryptBase
         FileStream fileStream,
         string key,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => EncryptOrDecryptFile(fileStream, key, outFilePath, false, fillType, fillCharacter, encoding);
@@ -294,7 +294,7 @@ public class DESUtils : EncryptBase
         string key,
         string iv,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => EncryptOrDecryptFile(fileStream, key, iv, false, outFilePath, fillType, fillCharacter, encoding);
@@ -314,7 +314,7 @@ public class DESUtils : EncryptBase
         string key,
         byte[] ivBuffer,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {
@@ -332,7 +332,7 @@ public class DESUtils : EncryptBase
         string key,
         string outFilePath,
         bool isEncrypt,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => EncryptOrDecryptFile(fileStream, key, DefaultEncryptKey, isEncrypt, outFilePath, fillType, fillCharacter, encoding);
@@ -343,7 +343,7 @@ public class DESUtils : EncryptBase
         string iv,
         bool isEncrypt,
         string outFilePath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
     {

@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -25,6 +25,9 @@ internal class EnglishLanguage : ILanguageProvider
         "RequiredValidator" => "'{PropertyName}' is required.",
         "UpperLetterValidator" => "'{PropertyName}' must be uppercase.",
         "UrlValidator" => "'{PropertyName}' must be a legal Url address.",
+        "EmailRegularValidator" => "'{PropertyName}' must be a legal Email.",
+        "PasswordValidator" => "'{PropertyName}' password validation rule failed.",
+        "IdentityValidator" => "'{PropertyName}' must be numbers, letters or . and - .",
         _ => string.Empty,
     };
 }

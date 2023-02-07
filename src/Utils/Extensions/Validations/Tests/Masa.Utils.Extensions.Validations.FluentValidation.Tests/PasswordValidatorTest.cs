@@ -4,27 +4,24 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class NumberValidatorTest : ValidatorBaseTest
+public class PasswordValidatorTest : ValidatorBaseTest
 {
-    public override string Message => "'Id Card' must be Number.";
+    public override string Message => "'Password' password validation rule failed.";
 
-    [DataRow("团队", false)]
     [DataRow("Masa团队", false)]
     [DataRow("masastack", false)]
-    [DataRow("masastack123", false)]
-    [DataRow("masa", false)]
-    [DataRow("MASA", false)]
+    [DataRow("masastack@123", true)]
     [DataRow("Masa", false)]
-    [DataRow("Masa123", false)]
-    [DataRow("123", true)]
+    [DataRow("Masa@123", true)]
+    [DataRow("123", false)]
     [DataRow("123.", false)]
     [DataTestMethod]
-    public void TestNumber(string idCard, bool expectedResult)
+    public void TestPassword(string pwd, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
         {
-            IdCard = idCard
+            Password = pwd
         });
         Assert.AreEqual(expectedResult, result.IsValid);
         if (!expectedResult)
@@ -37,7 +34,7 @@ public class NumberValidatorTest : ValidatorBaseTest
     {
         public RegisterUserEventValidator()
         {
-            RuleFor(r => r.IdCard).Number();
+            RuleFor(r => r.Password).Password();
         }
     }
 }

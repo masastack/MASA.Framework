@@ -385,14 +385,28 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        Parallel.ForEach(keys, key => RemoveOne<T>(key, action));
+        var multilevelCacheOptions = GetMultilevelCacheOptions(action);
+        var list = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        _distributedCacheClient.Remove<T>(list.Select(item => item.FormattedKey), CacheOptionsAction);
+
+        list.ForEach(item =>
+        {
+            RemoveOne<T>(item.Key, item.FormattedKey);
+        });
     }
 
-    public override Task RemoveAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+    public override async Task RemoveAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        return Task.WhenAll(keys.Select(key => RemoveOneAsync<T>(key, action)));
+        var multilevelCacheOptions = GetMultilevelCacheOptions(action);
+        var list = FormatCacheKeys<T>(keys, GetCacheKeyType(multilevelCacheOptions));
+        await _distributedCacheClient.RemoveAsync<T>(list.Select(item => item.FormattedKey), CacheOptionsAction);
+
+        foreach (var item in list)
+        {
+            await RemoveOneAsync<T>(item.Key, item.FormattedKey);
+        }
     }
 
     #endregion
@@ -533,24 +547,15 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         };
     }
 
-    private void RemoveOne<T>(string key, Action<CacheOptions>? action)
+    private void RemoveOne<T>(string key, string formattedKey)
     {
-        var multilevelCacheOptions = GetMultilevelCacheOptions(action);
-        var formattedKey = FormatCacheKey<T>(key, GetCacheKeyType(multilevelCacheOptions));
-
-        _distributedCacheClient.Remove<T>(formattedKey, CacheOptionsAction);
-
         PubSub(key, formattedKey, SubscribeOperation.Remove, default(T));
 
         _memoryCache.Remove(formattedKey);
     }
 
-    private async Task RemoveOneAsync<T>(string key, Action<CacheOptions>? action)
+    private async Task RemoveOneAsync<T>(string key, string formattedKey)
     {
-        var multilevelCacheOptions = GetMultilevelCacheOptions(action);
-        var formattedKey = FormatCacheKey<T>(key, GetCacheKeyType(multilevelCacheOptions));
-        await _distributedCacheClient.RemoveAsync<T>(formattedKey, CacheOptionsAction).ConfigureAwait(false);
-
         await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T)).ConfigureAwait(false);
 
         _memoryCache.Remove(formattedKey);

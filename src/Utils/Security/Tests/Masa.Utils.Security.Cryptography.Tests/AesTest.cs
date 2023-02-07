@@ -20,10 +20,10 @@ public class AesTest
         var source3 = AesUtils.Decrypt(AesUtils.Encrypt(str, key, "123", FillType.Right), key, "123", FillType.Right);
         Assert.IsTrue(str == source3);
 
-        Assert.ThrowsException<ArgumentException>(() => AesUtils.Encrypt(str, key, "123", FillType.NoFile));
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Encrypt(str, key, "123", FillType.NoFill));
 
         string encryptResult = AesUtils.Encrypt(str, key, "123", FillType.Right);
-        Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFile));
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFill));
     }
 
     [DataRow(16)]
@@ -53,10 +53,10 @@ public class AesTest
         var source3 = AesUtils.Decrypt(AesUtils.Encrypt(str, key, "123", FillType.Right), key, "123", FillType.Right);
         Assert.IsTrue(str == source3);
 
-        Assert.ThrowsException<ArgumentException>(() => AesUtils.Encrypt(str, key, "123", FillType.NoFile));
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Encrypt(str, key, "123", FillType.NoFill));
 
         string encryptResult = AesUtils.Encrypt(str, key, "123", FillType.Right);
-        Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFile));
+        Assert.ThrowsException<ArgumentException>(() => AesUtils.Decrypt(encryptResult, key, "123", FillType.NoFill));
     }
 
     [TestMethod]
