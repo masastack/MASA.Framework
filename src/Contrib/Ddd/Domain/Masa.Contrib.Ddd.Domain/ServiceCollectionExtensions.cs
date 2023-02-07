@@ -41,11 +41,29 @@ public static class ServiceCollectionExtensions
 
         foreach (var domainServiceType in dispatcherOptions.AllDomainServiceTypes)
         {
-            services.TryAddScoped(domainServiceType);
+            var constructorInfo = domainServiceType
+                .GetConstructors()
+                .MaxBy(c => c.GetParameters().Length);
+            MasaArgumentException.ThrowIfNull(constructorInfo);
+
+            services.TryAddScoped(domainServiceType, serviceProvider =>
+            {
+                List<object?> parameters = new();
+                foreach (var parameter in constructorInfo.GetParameters())
+                {
+                    parameters.Add(serviceProvider.GetService(parameter.ParameterType));
+                }
+                var domainServiceInstance = constructorInfo.Invoke(parameters.ToArray());
+                var domainService = (domainServiceInstance as DomainService)!;
+                if (domainService.EventBus == default!)
+                {
+                    domainService.SetDomainEventBus(serviceProvider.GetRequiredService<IDomainEventBus>());
+                }
+                return domainServiceInstance;
+            });
         }
 
         services.TryAddScoped<IDomainEventBus, DomainEventBus>();
-        services.TryAddScoped<IDomainService, DomainService>();
         MasaApp.TrySetServiceCollection(services);
         return services;
     }
