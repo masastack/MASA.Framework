@@ -48,7 +48,7 @@ public class AesUtils : EncryptBase
     public static string Encrypt(
         string content,
         string key,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -69,7 +69,7 @@ public class AesUtils : EncryptBase
         string content,
         string key,
         string iv,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -98,7 +98,7 @@ public class AesUtils : EncryptBase
         string content,
         string key,
         byte[] ivBuffer,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -137,7 +137,7 @@ public class AesUtils : EncryptBase
     public static byte[] EncryptToBytes(
         Stream stream,
         string key,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -158,7 +158,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         string iv,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -185,7 +185,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         byte[] ivBuffer,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -243,7 +243,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -265,7 +265,7 @@ public class AesUtils : EncryptBase
         string key,
         byte[] ivBuffer,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -295,7 +295,7 @@ public class AesUtils : EncryptBase
         string key,
         string iv,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -339,7 +339,7 @@ public class AesUtils : EncryptBase
     public static string Decrypt(
         string content,
         string key,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -360,7 +360,7 @@ public class AesUtils : EncryptBase
         string content,
         string key,
         string iv,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -388,7 +388,7 @@ public class AesUtils : EncryptBase
         string content,
         string key,
         byte[] ivBuffer,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -432,7 +432,7 @@ public class AesUtils : EncryptBase
     public static byte[] DecryptToBytes(
         Stream stream,
         string key,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -453,7 +453,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         string iv,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -480,7 +480,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         byte[] ivBuffer,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -515,7 +515,7 @@ public class AesUtils : EncryptBase
     public static void DecryptFile(
         Stream stream,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null)
         => DecryptFile(stream, DefaultEncryptKey, outputPath, fillType, fillCharacter, encoding);
@@ -534,7 +534,7 @@ public class AesUtils : EncryptBase
         Stream stream,
         string key,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -556,7 +556,7 @@ public class AesUtils : EncryptBase
         string key,
         byte[] ivBuffer,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)
@@ -581,7 +581,7 @@ public class AesUtils : EncryptBase
         string key,
         string iv,
         string outputPath,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ',
         Encoding? encoding = null,
         int? aesLength = null)

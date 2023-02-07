@@ -4,27 +4,20 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class NumberValidatorTest : ValidatorBaseTest
+public class EmailValidatorTest : ValidatorBaseTest
 {
-    public override string Message => "'Id Card' must be Number.";
+    public override string Message => "'Email' must be a legal Email.";
 
-    [DataRow("团队", false)]
-    [DataRow("Masa团队", false)]
-    [DataRow("masastack", false)]
-    [DataRow("masastack123", false)]
-    [DataRow("masa", false)]
-    [DataRow("MASA", false)]
-    [DataRow("Masa", false)]
-    [DataRow("Masa123", false)]
-    [DataRow("123", true)]
-    [DataRow("123.", false)]
+    [DataRow("masastack123@", false)]
+    [DataRow("123", false)]
+    [DataRow("123@qq.com", true)]
     [DataTestMethod]
-    public void TestNumber(string idCard, bool expectedResult)
+    public void TestEmail(string email, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
         {
-            IdCard = idCard
+            Email = email
         });
         Assert.AreEqual(expectedResult, result.IsValid);
         if (!expectedResult)
@@ -37,7 +30,7 @@ public class NumberValidatorTest : ValidatorBaseTest
     {
         public RegisterUserEventValidator()
         {
-            RuleFor(r => r.IdCard).Number();
+            RuleFor(r => r.Email).Email();
         }
     }
 }
