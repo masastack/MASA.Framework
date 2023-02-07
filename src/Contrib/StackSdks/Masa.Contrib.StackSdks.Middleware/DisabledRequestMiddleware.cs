@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Middleware;
 
-internal class DisabledRequestMiddleware : IMiddleware
+public class DisabledRequestMiddleware : IMiddleware
 {
     private readonly IDisabledRequestDeterminer _disabledRequestDeterminer;
 
@@ -17,11 +17,12 @@ internal class DisabledRequestMiddleware : IMiddleware
         if (_disabledRequestDeterminer.Determiner())
         {
             var endpoint = context.GetEndpoint();
-            var disabledRouteAttribute = (endpoint as RouteEndpoint)?.Metadata
+            var disabledRouteAttribute = context.GetEndpoint()?.Metadata
                 .GetMetadata<DisabledRouteAttribute>();
             if (disabledRouteAttribute != null)
             {
-                //throw new UserFriendlyException(errorCode: UserFriendlyExceptionCodes.DEMO_ENVIRONMENT_FORBIDDEN);
+                //context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                throw new UserFriendlyException("FORBIDDEN");
             }
         }
 

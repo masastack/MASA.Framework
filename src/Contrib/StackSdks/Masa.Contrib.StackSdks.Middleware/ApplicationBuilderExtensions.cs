@@ -1,15 +1,22 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Builder;
-
 namespace Masa.Contrib.StackSdks.Middleware;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseAddStackMiddleware(this IApplicationBuilder app)
+    public static WebApplication UseAddStackMiddleware(this WebApplication app)
     {
         app.UseMiddleware<DisabledRequestMiddleware>();
+        app.MapHealthChecks("/hc", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.MapHealthChecks("/liveness", new HealthCheckOptions
+        {
+            Predicate = r => r.Name.Contains("self")
+        });
         return app;
     }
 }

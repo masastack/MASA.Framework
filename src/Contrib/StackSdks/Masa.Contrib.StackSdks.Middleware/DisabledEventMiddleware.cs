@@ -6,14 +6,14 @@ namespace Masa.Contrib.StackSdks.Middleware;
 internal class DisabledEventMiddleware<TEvent> : EventMiddleware<TEvent>
     where TEvent : notnull, IEvent
 {
-    readonly ILogger<DisabledEventMiddleware<TEvent>> _logger;
+    readonly ILogger<DisabledEventMiddleware<TEvent>>? _logger;
     readonly IDisabledEventDeterminer _disabledEventDeterminer;
 
     public DisabledEventMiddleware(
-        ILogger<DisabledEventMiddleware<TEvent>> logger,
-        IDisabledEventDeterminer disabledEventDeterminer)
+        IDisabledEventDeterminer disabledEventDeterminer,
+        ILoggerFactory? loggerFactory = null)
     {
-        _logger = logger;
+        _logger = loggerFactory?.CreateLogger<DisabledEventMiddleware<TEvent>>();
         _disabledEventDeterminer = disabledEventDeterminer;
     }
 
@@ -24,8 +24,8 @@ internal class DisabledEventMiddleware<TEvent> : EventMiddleware<TEvent>
             var allowedEventAttribute = Attribute.GetCustomAttribute(typeof(TEvent), typeof(AllowedEventAttribute));
             if (allowedEventAttribute == null)
             {
-                _logger.LogWarning("disabled event operation");
-                //throw new UserFriendlyException(errorCode: UserFriendlyExceptionCodes.GUEST_ACCOUNT_OPERATE);
+                _logger?.LogWarning("disabled event operation");
+                throw new UserFriendlyException("DISABLED_OPERATE");
             }
         }
         await next();

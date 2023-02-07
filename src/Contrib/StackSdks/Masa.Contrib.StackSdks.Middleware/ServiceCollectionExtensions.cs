@@ -7,8 +7,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddStackMiddleware(this IServiceCollection services)
     {
-        services.AddScoped<DisabledRequestMiddleware>();
         services.AddPluggableServices();
+        services.AddScoped<DisabledRequestMiddleware>();
+        services.AddTransient(typeof(IEventMiddleware<>), typeof(DisabledEventMiddleware<>));
         return services;
     }
 
