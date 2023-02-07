@@ -83,9 +83,9 @@ public interface IUserService
 
     Task SendEmailAsync(SendEmailModel model);
 
-    Task RegisterByPhoneAsync(RegisterByPhoneModel model);
+    Task<UserModel?> RegisterByPhoneAsync(RegisterByPhoneModel model);
 
-    Task RegisterByEmailAsync(RegisterByEmailModel model);
+    Task<UserModel?> RegisterByEmailAsync(RegisterByEmailModel model);
 
     Task<bool> HasPasswordAsync(Guid userId = default);
 

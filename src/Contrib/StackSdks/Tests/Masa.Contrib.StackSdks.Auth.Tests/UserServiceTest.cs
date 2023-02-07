@@ -603,10 +603,10 @@ public class UserServiceTest
         var model = new RegisterByEmailModel();
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UserModel?>(requestUri, model, default)).Verifiable();
         var userService = GetUserService(caller);
         await userService.RegisterByEmailAsync(model);
-        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UserModel?>(requestUri, model, default), Times.Once);
     }
 
     [TestMethod]
@@ -615,10 +615,10 @@ public class UserServiceTest
         var model = new RegisterByPhoneModel();
         var requestUri = $"api/user/register";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync(requestUri, model, true, default)).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UserModel?>(requestUri, model, default)).Verifiable();
         var userService = GetUserService(caller);
         await userService.RegisterByPhoneAsync(model);
-        caller.Verify(provider => provider.PostAsync(requestUri, model, true, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UserModel?>(requestUri, model, default), Times.Once);
     }
 
     [TestMethod]
