@@ -11,7 +11,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services
-            .AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingMiddleware<>)))
+            .AddEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingEventMiddleware<>)))
             .AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
@@ -57,7 +57,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped,eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingMiddleware<>)));
+        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped,eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingEventMiddleware<>)));
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
         Assert.IsNotNull(eventBus, "Event bus injection failed");
@@ -72,7 +72,7 @@ public class AssemblyResolutionTests
         Mock<IDispatcherOptions> dispatcherOptions = new();
         dispatcherOptions.Setup(option => option.Assemblies).Returns(assemblies).Verifiable();
         dispatcherOptions.Setup(option => option.Services).Returns(services).Verifiable();
-        dispatcherOptions.Object.UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(LoggingMiddleware<>)));
+        dispatcherOptions.Object.UseEventBus(eventBuilder => eventBuilder.UseMiddleware(typeof(LoggingEventMiddleware<>)));
         var eventBus = services.BuildServiceProvider().GetService<IEventBus>();
         Assert.IsNotNull(eventBus);
     }

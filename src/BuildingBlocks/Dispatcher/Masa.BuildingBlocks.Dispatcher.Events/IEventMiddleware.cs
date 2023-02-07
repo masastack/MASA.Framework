@@ -6,16 +6,16 @@ namespace Masa.BuildingBlocks.Dispatcher.Events;
 public delegate Task EventHandlerDelegate();
 
 /// <summary>
-/// Middleware is assembled into an event pipeline to handle invoke event and result
+/// IEventMiddleware is assembled into an event pipeline to handle invoke event and result
 /// </summary>
-public interface IMiddleware<in TEvent>
+public interface IEventMiddleware<in TEvent>
     where TEvent : IEvent
 {
     Task HandleAsync(TEvent @event, EventHandlerDelegate next);
 
     /// <summary>
-    /// If Recursive is not supported, the current Middleware only executes once
-    /// If Recursive is supported, Middleware will be executed everytime when EventBus is nested
+    /// If Recursive is not supported, the current IEventMiddleware only executes once
+    /// If Recursive is supported, IEventMiddleware will be executed everytime when EventBus is nested
     /// </summary>
     bool SupportRecursive { get; }
 }

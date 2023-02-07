@@ -23,8 +23,8 @@
 
     <PackageId>$(AssemblyName)</PackageId>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <Authors>masastack</Authors>
-    <Copyright>© masastack Corporation. All rights reserved.</Copyright>
+    <Authors>MASA Stack</Authors>
+    <Copyright>© MASA Stack Corporation. All rights reserved.</Copyright>
     <PackageIconUrl>packageIcon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/masastack/MASA.Framework</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

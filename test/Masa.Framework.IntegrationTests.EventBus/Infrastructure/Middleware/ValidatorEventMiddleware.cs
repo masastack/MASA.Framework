@@ -1,14 +1,14 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Framework.IntegrationTests.EventBus.Infrastructure.Middleware;
 
-public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
+public class ValidatorEventMiddleware<TEvent> : EventMiddleware<TEvent>
     where TEvent : notnull, IEvent
 {
     private readonly IEnumerable<IValidator<TEvent>> _validators;
 
-    public ValidatorMiddleware(IEnumerable<IValidator<TEvent>> validators)
+    public ValidatorEventMiddleware(IEnumerable<IValidator<TEvent>> validators)
     {
         _validators = validators;
     }
