@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(MicrosoftPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.Events\Masa.BuildingBlocks.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\ReadWriteSplitting\Masa.BuildingBlocks.ReadWriteSplitting.Cqrs\Masa.BuildingBlocks.ReadWriteSplitting.Cqrs.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Auth\Masa.BuildingBlocks.StackSdks.Auth.Contracts\Masa.BuildingBlocks.StackSdks.Auth.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Config\Masa.BuildingBlocks.StackSdks.Config.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Middleware\Masa.BuildingBlocks.StackSdks.Middleware.csproj" />
+  </ItemGroup>
+
+</Project>
