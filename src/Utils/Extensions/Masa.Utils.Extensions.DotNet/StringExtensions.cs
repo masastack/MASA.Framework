@@ -49,10 +49,10 @@ public static class StringExtensions
         this string value,
         int length,
         Action action,
-        FillType fillType = FillType.NoFile,
+        FillType fillType = FillType.NoFill,
         char fillCharacter = ' ')
     {
-        if (fillType == FillType.NoFile && value.Length < length)
+        if (fillType == FillType.NoFill && value.Length < length)
             action.Invoke();
 
         var keyLength = value.Length;
@@ -131,16 +131,6 @@ public static class StringExtensions
         return str.Substring(str.Length - len, len);
     }
 
-    public static string[] Split(this string str, string separator)
-    {
-        return str.Split(new[] { separator }, StringSplitOptions.None);
-    }
-
-    public static string[] Split(this string str, string separator, StringSplitOptions options)
-    {
-        return str.Split(new[] { separator }, options);
-    }
-
     /// <summary>
     /// split string by <see cref="Environment.NewLine"/>.
     /// </summary>
@@ -157,90 +147,108 @@ public static class StringExtensions
         return str.Split(Environment.NewLine, options);
     }
 
+    public static string UpperFirstChar(string str)
+    {
+        return char.ToUpperInvariant(str[0]) + str.Substring(1);
+    }
+
+    public static string LowerFirstChar(string str)
+    {
+        return char.ToLowerInvariant(str[0]) + str.Substring(1);
+    }
+
     /// <summary>
-    /// Converts PascalCase string to camelCase string.
+    /// Conversion string to PascalCase.
+    /// Example: User_Name -> UserName, user_name -> UserName, user_Name -> UserName, User_name -> UserName
     /// </summary>
-    /// <param name="str">String to convert</param>
-    /// <param name="useCurrentCulture">set true to use current culture. Otherwise, invariant culture will be used.</param>
-    /// <param name="handleAbbreviations">set true to if you want to convert 'XYZ' to 'xyz'.</param>
-    /// <returns>camelCase of the string</returns>
-    public static string ToCamelCase(this string str, bool useCurrentCulture = false, bool handleAbbreviations = false)
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string ToPascalCase(this string str)
+    {
+        if (str.IsNullOrWhiteSpace())
+        {
+            return str;
+        }
+        return string.Join("", str.Split(new[] { '-', '_', ' ' })
+            .Where(s => !s.IsNullOrWhiteSpace())
+            .Select(c => UpperFirstChar(c)));
+    }
+
+    /// <summary>
+    /// Conversion string to CamelCase.
+    /// Example: User_Name -> userName, user_name -> userName, user_Name -> userName, User_name -> userName
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string ToCamelCase(this string str)
+    {
+        if (str.IsNullOrWhiteSpace())
+        {
+            return str;
+        }
+        return string.Join("", str.Split(new[] { '-', '_', ' ' })
+            .Where(s => !s.IsNullOrWhiteSpace())
+            .Select((c, i) => i == 0 ? LowerFirstChar(c) : UpperFirstChar(c)));
+    }
+
+    /// <summary>
+    /// Conversion PascalCase/camelCase string to sentence (splitting words by space).
+    /// Example: "ThisIsSampleSentence" is converted to "This is sample sentence".
+    /// </summary>
+    /// <param name="str"></param>
+    public static string ToSentenceCase(this string str)
     {
         if (str.IsNullOrWhiteSpace())
         {
             return str;
         }
 
-        if (str.Length == 1)
-        {
-            return useCurrentCulture ? str.ToLower() : str.ToLowerInvariant();
-        }
-
-        if (handleAbbreviations && IsAllUpperCase(str))
-        {
-            return useCurrentCulture ? str.ToLower() : str.ToLowerInvariant();
-        }
-
-        return (useCurrentCulture ? char.ToLower(str[0]) : char.ToLowerInvariant(str[0])) + str.Substring(1);
+        return UpperFirstChar(ConvertCase(str, ' '));
     }
 
     /// <summary>
-    /// Converts given PascalCase/camelCase string to sentence (by splitting words by space).
-    /// Example: "ThisIsSampleSentence" is converted to "This is a sample sentence".
+    /// Conversion PascalCase/camelCase string to kebab-case.
+    /// Example: "UserName" is converted to "user-name".
     /// </summary>
-    /// <param name="str">String to convert.</param>
-    /// <param name="useCurrentCulture">set true to use current culture. Otherwise, invariant culture will be used.</param>
-    public static string ToSentenceCase(this string str, bool useCurrentCulture = false)
-    {
-        if (str.IsNullOrWhiteSpace())
-        {
-            return str;
-        }
-
-        return useCurrentCulture
-            ? Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLower(m.Value[1]), RegexOptions.None, TimeSpan.FromSeconds(2.0))
-            : Regex.Replace(str, "[a-z][A-Z]", m => m.Value[0] + " " + char.ToLowerInvariant(m.Value[1]), RegexOptions.None, TimeSpan.FromSeconds(2.0));
-    }
-
-    /// <summary>
-    /// Converts given PascalCase/camelCase string to kebab-case.
-    /// </summary>
-    /// <param name="str">String to convert.</param>
-    /// <param name="useCurrentCulture">set true to use current culture. Otherwise, invariant culture will be used.</param>
-    public static string ToKebabCase(this string str, bool useCurrentCulture = false)
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string ToKebabCase(this string str)
     {
         if (str.IsNullOrEmpty())
         {
             return str;
         }
-        return Regex.Replace(str, @"(\B[A-Z])", "-$1", RegexOptions.None, TimeSpan.FromSeconds(2.0)).ToLower();
+        return ConvertCase(str, '-');
     }
 
-#pragma warning disable S3776
     /// <summary>
-    /// Converts given PascalCase/camelCase string to snake case.
-    /// Example: "ThisIsSampleSentence" is converted to "this_is_a_sample_sentence".
-    /// https://github.com/npgsql/npgsql/blob/main/src/Npgsql/NameTranslation/NpgsqlSnakeCaseNameTranslator.cs#L53
+    /// conversion PascalCase/camelCase string to snake case.
+    /// Example: "UserName" is converted to "user_name".
     /// </summary>
-    /// <param name="str">String to convert.</param>
+    /// <param name="str"></param>
     /// <returns></returns>
     public static string ToSnakeCase(this string str)
     {
-#pragma warning disable S3776
         if (str.IsNullOrWhiteSpace())
         {
             return str;
         }
 
+        return ConvertCase(str, '_');
+    }
+
+#pragma warning disable S3776
+    private static string ConvertCase(string str, char wordDelimiter)
+    {
         var builder = new StringBuilder(str.Length + Math.Min(2, str.Length / 5));
         var previousCategory = default(UnicodeCategory?);
-
+        //https://github.com/npgsql/npgsql/blob/main/src/Npgsql/NameTranslation/NpgsqlSnakeCaseNameTranslator.cs#L53
         for (var currentIndex = 0; currentIndex < str.Length; currentIndex++)
         {
             var currentChar = str[currentIndex];
-            if (currentChar == '_')
+            if (currentChar == wordDelimiter)
             {
-                builder.Append('_');
+                builder.Append(wordDelimiter);
                 previousCategory = null;
                 continue;
             }
@@ -258,7 +266,7 @@ public static class StringExtensions
                         currentIndex + 1 < str.Length &&
                         char.IsLower(str[currentIndex + 1]))
                     {
-                        builder.Append('_');
+                        builder.Append(wordDelimiter);
                     }
 
                     currentChar = char.ToLower(currentChar);
@@ -268,7 +276,7 @@ public static class StringExtensions
                 case UnicodeCategory.DecimalDigitNumber:
                     if (previousCategory == UnicodeCategory.SpaceSeparator)
                     {
-                        builder.Append('_');
+                        builder.Append(wordDelimiter);
                     }
                     break;
 
@@ -283,21 +291,7 @@ public static class StringExtensions
             builder.Append(currentChar);
             previousCategory = currentCategory;
         }
-#pragma warning restore S3776
         return builder.ToString();
     }
 #pragma warning restore S3776
-
-    private static bool IsAllUpperCase(string input)
-    {
-        for (int i = 0; i < input.Length; i++)
-        {
-            if (char.IsLetter(input[i]) && !char.IsUpper(input[i]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
 }
