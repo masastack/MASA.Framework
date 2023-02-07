@@ -147,13 +147,21 @@ public static class StringExtensions
         return str.Split(Environment.NewLine, options);
     }
 
-    public static string UpperFirstChar(string str)
+    public static string ToFirstCharUpper(this string str)
     {
+        if (str.IsNullOrWhiteSpace())
+        {
+            return str;
+        }
         return char.ToUpperInvariant(str[0]) + str.Substring(1);
     }
 
-    public static string LowerFirstChar(string str)
+    public static string ToFirstCharLower(this string str)
     {
+        if (str.IsNullOrWhiteSpace())
+        {
+            return str;
+        }
         return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }
 
@@ -171,7 +179,7 @@ public static class StringExtensions
         }
         return string.Join("", str.Split(new[] { '-', '_', ' ' })
             .Where(s => !s.IsNullOrWhiteSpace())
-            .Select(c => UpperFirstChar(c)));
+            .Select(c => ToFirstCharUpper(c)));
     }
 
     /// <summary>
@@ -188,7 +196,7 @@ public static class StringExtensions
         }
         return string.Join("", str.Split(new[] { '-', '_', ' ' })
             .Where(s => !s.IsNullOrWhiteSpace())
-            .Select((c, i) => i == 0 ? LowerFirstChar(c) : UpperFirstChar(c)));
+            .Select((c, i) => i == 0 ? ToFirstCharLower(c) : ToFirstCharUpper(c)));
     }
 
     /// <summary>
@@ -203,7 +211,7 @@ public static class StringExtensions
             return str;
         }
 
-        return UpperFirstChar(ConvertCase(str, ' '));
+        return ToFirstCharUpper(ConvertCase(str, ' '));
     }
 
     /// <summary>
@@ -242,7 +250,6 @@ public static class StringExtensions
     {
         var builder = new StringBuilder(str.Length + Math.Min(2, str.Length / 5));
         var previousCategory = default(UnicodeCategory?);
-        //https://github.com/npgsql/npgsql/blob/main/src/Npgsql/NameTranslation/NpgsqlSnakeCaseNameTranslator.cs#L53
         for (var currentIndex = 0; currentIndex < str.Length; currentIndex++)
         {
             var currentChar = str[currentIndex];

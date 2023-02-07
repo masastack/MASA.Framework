@@ -47,7 +47,7 @@ public static class ObjectExtensions
             }
 
             //struct           
-            return GetObjValue(type, obj, preStr, isEnumString, isCamelCase, isUrlEncode);            
+            return GetObjValue(type, obj, preStr, isEnumString, isCamelCase, isUrlEncode);
         }
 
         if (type.IsArray || type.GetInterfaces().Any(t => t.Name.IndexOf("IEnumerable") == 0))
@@ -68,7 +68,7 @@ public static class ObjectExtensions
 
         foreach (var item in properties)
         {
-            var str = GetMemerInfoValue(item, item.GetValue(obj), preStr, isEnumString, isCamelCase, isUrlEncode);
+            var str = GetMemberInfoValue(item, item.GetValue(obj), preStr, isEnumString, isCamelCase, isUrlEncode);
             if (string.IsNullOrEmpty(str))
                 continue;
             list.Add(str);
@@ -76,7 +76,7 @@ public static class ObjectExtensions
 
         foreach (var item in fields)
         {
-            var str = GetMemerInfoValue(item, item.GetValue(obj), preStr, isEnumString, isCamelCase, isUrlEncode);
+            var str = GetMemberInfoValue(item, item.GetValue(obj), preStr, isEnumString, isCamelCase, isUrlEncode);
             if (string.IsNullOrEmpty(str))
                 continue;
             list.Add(str);
@@ -89,7 +89,7 @@ public static class ObjectExtensions
         return string.Join('&', list);
     }
 
-    private static string? GetMemerInfoValue(MemberInfo info, object? value, string preStr, bool isEnumString = false, bool isCamelCase = true, bool isUrlEncode = true)
+    private static string? GetMemberInfoValue(MemberInfo info, object? value, string preStr, bool isEnumString = false, bool isCamelCase = true, bool isUrlEncode = true)
     {
         if (value == null)
             return null;

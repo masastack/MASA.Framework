@@ -28,6 +28,7 @@ public class StringTest
     [DataRow("user Name", "userName")]
     [DataRow("_name", "name")]
     [DataRow("name_", "name")]
+    [DataRow("user_id", "userId")]
     public void TestToCamelCase(string value, string expected)
     {
         var actual = value.ToCamelCase();
@@ -40,6 +41,7 @@ public class StringTest
     [DataRow("user Name", "UserName")]
     [DataRow("_name", "Name")]
     [DataRow("name_", "Name")]
+    [DataRow("user_id", "UserId")]
     public void TestToPascalCase(string value, string expected)
     {
         var actual = value.ToPascalCase();
