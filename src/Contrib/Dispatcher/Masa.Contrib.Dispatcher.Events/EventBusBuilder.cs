@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.Events;
@@ -18,10 +18,10 @@ public class EventBusBuilder : IEventBusBuilder
     /// <exception cref="ArgumentException"></exception>
     public IEventBusBuilder UseMiddleware(Type middlewareType, ServiceLifetime middlewareLifetime = ServiceLifetime.Transient)
     {
-        if (!typeof(IMiddleware<>).IsGenericInterfaceAssignableFrom(middlewareType))
+        if (!typeof(IEventMiddleware<>).IsGenericInterfaceAssignableFrom(middlewareType))
             throw new ArgumentException($"{middlewareType.Name} doesn't implement IMiddleware<>");
 
-        var descriptor = new ServiceDescriptor(typeof(IMiddleware<>), middlewareType, middlewareLifetime);
+        var descriptor = new ServiceDescriptor(typeof(IEventMiddleware<>), middlewareType, middlewareLifetime);
         Services.TryAddEnumerable(descriptor);
         return this;
     }

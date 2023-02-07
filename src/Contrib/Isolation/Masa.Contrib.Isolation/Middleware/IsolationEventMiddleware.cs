@@ -3,12 +3,12 @@
 
 namespace Masa.Contrib.Isolation.Middleware;
 
-public class IsolationMiddleware<TEvent> : Middleware<TEvent> where TEvent : IEvent
+public class IsolationEventMiddleware<TEvent> : EventMiddleware<TEvent> where TEvent : IEvent
 {
     private readonly IEnumerable<IIsolationMiddleware> _middlewares;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public IsolationMiddleware(IEnumerable<IIsolationMiddleware> middlewares, IHttpContextAccessor httpContextAccessor)
+    public IsolationEventMiddleware(IEnumerable<IIsolationMiddleware> middlewares, IHttpContextAccessor httpContextAccessor)
     {
         _middlewares = middlewares;
         _httpContextAccessor = httpContextAccessor;

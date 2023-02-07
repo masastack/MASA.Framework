@@ -22,7 +22,7 @@ public class TestBase
         {
             dispatcherOptions
                 .UseIntegrationEventBus(option => option.UseTestPub().UseEventLog<CustomDbContext>())
-                .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordMiddleware<>)).UseMiddleware(typeof(ValidatorMiddleware<>)))
+                .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordEventMiddleware<>)).UseMiddleware(typeof(ValidatorEventMiddleware<>)))
                 .UseUoW<CustomDbContext>(optionBuilder =>
                 {
                     optionBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();

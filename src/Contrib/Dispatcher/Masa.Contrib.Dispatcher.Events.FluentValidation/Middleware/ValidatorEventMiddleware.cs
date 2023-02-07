@@ -1,17 +1,17 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
 
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
-public class ValidatorMiddleware<TEvent> : Middleware<TEvent>
+public class ValidatorEventMiddleware<TEvent> : EventMiddleware<TEvent>
     where TEvent : IEvent
 {
-    private readonly ILogger<ValidatorMiddleware<TEvent>>? _logger;
+    private readonly ILogger<ValidatorEventMiddleware<TEvent>>? _logger;
     private readonly IEnumerable<IValidator<TEvent>> _validators;
 
-    public ValidatorMiddleware(IEnumerable<IValidator<TEvent>> validators, ILogger<ValidatorMiddleware<TEvent>>? logger = null)
+    public ValidatorEventMiddleware(IEnumerable<IValidator<TEvent>> validators, ILogger<ValidatorEventMiddleware<TEvent>>? logger = null)
     {
         _validators = validators;
         _logger = logger;

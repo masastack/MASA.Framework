@@ -29,7 +29,7 @@ internal static class ServiceCollectionExtensions
 
         services
             .TryAddConfigure<IsolationDbConnectionOptions>()
-            .AddTransient(typeof(IMiddleware<>), typeof(IsolationMiddleware<>))
+            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
             .TryAddSingleton<IDbConnectionStringProvider, IsolationDbContextProvider>();
 
         if (services.Any(service => service.ServiceType == typeof(IConnectionStringProvider)))
