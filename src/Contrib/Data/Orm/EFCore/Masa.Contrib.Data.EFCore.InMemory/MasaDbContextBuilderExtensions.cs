@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
 public static class MasaDbContextBuilderExtensions
@@ -9,9 +11,9 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
     {
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
         {
-            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
             var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
             dbContextOptionsBuilder.UseInMemoryDatabase(
                 connectionStringProvider.GetConnectionString(name),
@@ -40,20 +42,6 @@ public static class MasaDbContextBuilderExtensions
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseInMemoryDatabase(databaseName, inMemoryOptionsAction);
-        return builder.UseInMemoryDatabaseCore(databaseName, isTest);
-    }
-
-    private static MasaDbContextBuilder UseInMemoryDatabaseCore(
-        this MasaDbContextBuilder builder,
-        string databaseName,
-        bool isTest = false)
-    {
-        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
-        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
-        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
-            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
-
-        dbConnectionOptions.TryAddConnectionString(name, databaseName);
-        return builder;
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(databaseName, isTest);
     }
 }

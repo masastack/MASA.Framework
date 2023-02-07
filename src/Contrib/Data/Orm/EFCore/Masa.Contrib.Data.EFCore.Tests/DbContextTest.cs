@@ -287,4 +287,32 @@ public class DbContextTest : TestBase
 
         Assert.IsTrue(result.Result.Count == result.Total);
     }
+
+    [TestMethod]
+    public void TestSpecifyConnectionStringsReturnDbConnectionStringProviderIsNotNull()
+    {
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseTestSqlite(connectionString).UseFilter());
+        var serviceProvider = Services.BuildServiceProvider();
+        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
+        Assert.IsNotNull(dbConnectionStringProvider);
+        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
+        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
+    }
+
+    [TestMethod]
+    public void TestUseJsonConfigurationReturnDbConnectionStringProviderIsNotNull()
+    {
+        var connectionString = "data source=test;";
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        Services.AddSingleton<IConfiguration>(configuration);
+        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite().UseFilter());
+        var serviceProvider = Services.BuildServiceProvider();
+        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
+        Assert.IsNotNull(dbConnectionStringProvider);
+        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
+        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
+    }
 }
