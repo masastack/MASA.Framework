@@ -7,7 +7,7 @@ public static class CollectionExtensions
 {
     public static bool IsNullOrEmpty<T>(this ICollection<T> source)
     {
-        return source == null || source.Count <= 0;
+        return source == null || !source.Any();
     }
 
     public static bool AddIfNotContains<T>(this ICollection<T> source, T item)
@@ -21,9 +21,8 @@ public static class CollectionExtensions
         return true;
     }
 
-    public static IEnumerable<T> AddIfNotContains<T>(this ICollection<T> source, IEnumerable<T> items)
+    public static void AddIfNotContains<T>(this ICollection<T> source, IEnumerable<T> items)
     {
-        var addedItems = new List<T>();
         foreach (var item in items)
         {
             if (source.Contains(item))
@@ -31,13 +30,10 @@ public static class CollectionExtensions
                 continue;
             }
             source.Add(item);
-            addedItems.Add(item);
         }
-
-        return addedItems;
     }
 
-    public static IList<T> RemoveAll<T>(this ICollection<T> source, Func<T, bool> predicate)
+    public static int RemoveAll<T>(this ICollection<T> source, Func<T, bool> predicate)
     {
         var items = source.Where(predicate).ToList();
         foreach (var item in items)
@@ -45,7 +41,7 @@ public static class CollectionExtensions
             source.Remove(item);
         }
 
-        return items;
+        return items.Count;
     }
 
     public static void RemoveAll<T>(this ICollection<T> source, IEnumerable<T> items)
