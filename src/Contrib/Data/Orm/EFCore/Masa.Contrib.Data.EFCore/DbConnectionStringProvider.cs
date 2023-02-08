@@ -7,10 +7,10 @@ namespace Microsoft.EntityFrameworkCore;
 
 public class DbConnectionStringProvider : DbConnectionStringProviderBase
 {
-    private readonly IOptionsMonitor<MasaDbConnectionOptions> _options;
+    private readonly IOptionsSnapshot<MasaDbConnectionOptions> _options;
 
-    public DbConnectionStringProvider(IOptionsMonitor<MasaDbConnectionOptions> options) => _options = options;
+    public DbConnectionStringProvider(IOptionsSnapshot<MasaDbConnectionOptions> options) => _options = options;
 
     protected override List<MasaDbContextConfigurationOptions> GetDbContextOptionsList()
-        => _options.CurrentValue.ConnectionStrings.Select(item => new MasaDbContextConfigurationOptions(item.Value)).Distinct().ToList();
+        => _options.Value.ConnectionStrings.Select(item => new MasaDbContextConfigurationOptions(item.Value)).Distinct().ToList();
 }

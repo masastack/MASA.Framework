@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
         services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
-        services.TryAddSingleton<IDbConnectionStringProvider, DbConnectionStringProvider>();
+        services.TryAddScoped<IDbConnectionStringProvider, DbConnectionStringProvider>();
 
         services.TryAdd(
             new ServiceDescriptor(

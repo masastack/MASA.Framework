@@ -18,7 +18,7 @@ public class DefaultConnectionStringProviderTest
             };
         });
         var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
         var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
         var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("Test1", connectionString);
@@ -36,7 +36,7 @@ public class DefaultConnectionStringProviderTest
             };
         });
         var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
         var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
         var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
         Assert.AreEqual("Test1", connectionString);
