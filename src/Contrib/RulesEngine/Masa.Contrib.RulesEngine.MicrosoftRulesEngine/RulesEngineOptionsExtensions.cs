@@ -12,19 +12,15 @@ namespace Masa.BuildingBlocks.RulesEngine;
 public static class RulesEngineOptionsExtensions
 {
     public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions)
-        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.DefaultName);
-
-    public static RulesEngineOptions UseMicrosoftRulesEngine(this RulesEngineOptions rulesEngineOptions, ReSettings? reSettings)
-        => rulesEngineOptions.UseMicrosoftRulesEngine(Options.DefaultName, reSettings);
+        => rulesEngineOptions.UseMicrosoftRulesEngine(null);
 
     public static RulesEngineOptions UseMicrosoftRulesEngine(
         this RulesEngineOptions rulesEngineOptions,
-        string name,
-        ReSettings? reSettings = null)
+        ReSettings? reSettings)
     {
-        rulesEngineOptions.Services.Configure<RulesEngineFactoryOptions>(name, options =>
+        rulesEngineOptions.Services.Configure<RulesEngineFactoryOptions>(options =>
         {
-            options.TryAddRulesEngine(name,
+            options.TryAddRulesEngine(rulesEngineOptions.Name,
                 serviceProvider => new RulesEngineClient(reSettings, serviceProvider.GetService<ILogger<RulesEngineClient>>())
             );
         });
