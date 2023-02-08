@@ -153,12 +153,12 @@ public class MasaValidatorException : MasaArgumentException
             maxValue);
     }
 
-    public new static void ThrowIfContain([NotNull] string? argument,
+    public new static void ThrowIfContain(string? argument,
         string parameter,
         [CallerArgumentExpression("argument")] string? paramName = null)
         => ThrowIfContain(argument, parameter, StringComparison.OrdinalIgnoreCase, paramName);
 
-    public new static void ThrowIfContain([NotNull] string? argument,
+    public new static void ThrowIfContain(string? argument,
         string parameter,
         StringComparison stringComparison,
         [CallerArgumentExpression("argument")] string? paramName = null)
@@ -171,7 +171,7 @@ public class MasaValidatorException : MasaArgumentException
     }
 
     public new static void ThrowIf(
-        bool condition,
+        [DoesNotReturnIf(true)] bool condition,
         string? paramName,
         string errorCode,
         LogLevel? logLevel = null,
@@ -182,7 +182,7 @@ public class MasaValidatorException : MasaArgumentException
     }
 
     public new static void ThrowIf(
-        bool condition,
+        [DoesNotReturnIf(true)] bool condition,
         string? paramName,
         string errorCode,
         string? errorMessage,
