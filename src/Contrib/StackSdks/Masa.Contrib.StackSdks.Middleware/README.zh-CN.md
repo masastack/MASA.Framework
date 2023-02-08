@@ -21,7 +21,7 @@ app.UseAddStackMiddleware();
 可以根据业务需要重写`IDisabledEventDeterminer`和`IDisabledRequestDeterminer`替换默认实现。
 
 ```C#
-builder.Services.AddScoped<IDisabledEventDeterminer,CustomizeDisabledEventDeterminer>();
+builder.Services.AddScoped<IDisabledEventDeterminer, CustomizeDisabledEventDeterminer>();
 
 builder.Services.AddStackMiddleware();
 ```
