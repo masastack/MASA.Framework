@@ -1,11 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.AspNetCore.Builder;
 
 public abstract class ServiceBase : IService
 {
-    public WebApplication App => MasaApp.GetRequiredService<WebApplication>();
+    private WebApplication? _webApplication;
+
+    public WebApplication App => _webApplication ??= GlobalMinimalApiOptions.WebApplication ?? MasaApp.GetRequiredService<WebApplication>();
 
     public string BaseUri { get; init; }
 
