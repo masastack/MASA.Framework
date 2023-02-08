@@ -13,7 +13,7 @@ public class EventMiddlewareTest
     {
         var builder = WebApplication.CreateBuilder();
 
-        builder.Services.AddMasaIdentityModel(options =>
+        builder.Services.AddMasaIdentity(options =>
         {
             options.Mapping(nameof(MasaUser.Account), "ACCOUNT");
         });
@@ -51,7 +51,7 @@ public class EventMiddlewareTest
     {
         var command = new TestAllowCommand();
         await _eventBus.PublishAsync(command);
-        Assert.AreEqual(command.Count, 1);
+        Assert.AreEqual(1, command.Count);
     }
 
     [TestMethod]

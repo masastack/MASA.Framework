@@ -30,7 +30,6 @@ internal class ValidatorEventMiddleware<TEvent> : EventMiddleware<TEvent>
         if (failures.Any())
         {
             _logger.LogError("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, action, failures);
-
             throw new ValidationException("Validation exception", failures);
         }
 

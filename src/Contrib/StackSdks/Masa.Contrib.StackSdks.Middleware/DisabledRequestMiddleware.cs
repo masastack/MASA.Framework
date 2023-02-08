@@ -16,12 +16,10 @@ public class DisabledRequestMiddleware : IMiddleware
     {
         if (_disabledRequestDeterminer.Determiner())
         {
-            var endpoint = context.GetEndpoint();
             var disabledRouteAttribute = context.GetEndpoint()?.Metadata
                 .GetMetadata<DisabledRouteAttribute>();
             if (disabledRouteAttribute != null)
             {
-                //context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 throw new UserFriendlyException("FORBIDDEN");
             }
         }

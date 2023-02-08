@@ -5,6 +5,7 @@ namespace Masa.Contrib.StackSdks.Middleware.Tests.Application;
 
 public class Handler
 {
+#pragma warning disable CA1822
     [EventHandler]
     public void TestCommand(TestCommand testCommand)
     {
@@ -22,4 +23,5 @@ public class Handler
     {
         testQuery.Result = true;
     }
+#pragma warning restore CA1822
 }
