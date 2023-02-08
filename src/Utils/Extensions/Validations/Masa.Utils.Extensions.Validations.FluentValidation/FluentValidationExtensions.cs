@@ -50,6 +50,9 @@ public static class FluentValidationExtensions
     public static IRuleBuilderOptions<T, string> IdCard<T>(this IRuleBuilder<T, string> ruleBuilder, string? culture = null)
         => ruleBuilder.SetValidator(new IdCardValidator<T>(culture));
 
+    public static IRuleBuilderOptions<T, string> Email<T>(this IRuleBuilder<T, string> ruleBuilder)
+        => ruleBuilder.SetValidator(new EmailRegularValidator<T>());
+
     public static IRuleBuilderOptions<T, string> Url<T>(this IRuleBuilder<T, string> ruleBuilder)
         => ruleBuilder.SetValidator(new UrlValidator<T>());
 
@@ -58,4 +61,10 @@ public static class FluentValidationExtensions
 
     public static IRuleBuilderOptions<T, TProperty> Required<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder)
         => ruleBuilder.SetValidator(new RequiredValidator<T, TProperty>());
+
+    public static IRuleBuilderOptions<T, string> Identity<T>(this IRuleBuilder<T, string> ruleBuilder)
+        => ruleBuilder.SetValidator(new IdentityValidator<T>());
+
+    public static IRuleBuilderOptions<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder, string expression = RegularHelper.PASSWORD_REGULAR)
+        => ruleBuilder.SetValidator(new PasswordValidator<T>(expression));
 }

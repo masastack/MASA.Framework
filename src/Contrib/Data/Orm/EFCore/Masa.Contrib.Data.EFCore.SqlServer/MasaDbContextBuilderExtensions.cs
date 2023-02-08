@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
 public static class MasaDbContextBuilderExtensions
@@ -9,9 +11,9 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
         {
-            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
             var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
             dbContextOptionsBuilder.UseSqlServer(
                 connectionStringProvider.GetConnectionString(name),
@@ -25,6 +27,18 @@ public static class MasaDbContextBuilderExtensions
         string connectionString,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
         => builder.UseSqlServerCore(connectionString, false, sqlServerOptionsAction);
+
+    public static MasaDbContextBuilder UseSqlServer(
+        this MasaDbContextBuilder builder,
+        DbConnection connection,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
+        => builder.UseSqlServerCore(connection, false, sqlServerOptionsAction);
+
+    public static MasaDbContextBuilder UseTestSqlServer(
+        this MasaDbContextBuilder builder,
+        DbConnection connection,
+        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
+        => builder.UseSqlServerCore(connection, true, sqlServerOptionsAction);
 
     public static MasaDbContextBuilder UseTestSqlServer(
         this MasaDbContextBuilder builder,
@@ -40,20 +54,8 @@ public static class MasaDbContextBuilderExtensions
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
-        return builder.UseSqlServerCore(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
     }
-
-    public static MasaDbContextBuilder UseSqlServer(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
-        => builder.UseSqlServerCore(connection, false, sqlServerOptionsAction);
-
-    public static MasaDbContextBuilder UseTestSqlServer(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
-        => builder.UseSqlServerCore(connection, true, sqlServerOptionsAction);
 
     private static MasaDbContextBuilder UseSqlServerCore(
         this MasaDbContextBuilder builder,
@@ -62,20 +64,6 @@ public static class MasaDbContextBuilderExtensions
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
-        return builder.UseSqlServerCore(connection.ConnectionString, isTest);
-    }
-
-    private static MasaDbContextBuilder UseSqlServerCore(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        bool isTest = false)
-    {
-        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
-        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
-        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
-            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
-
-        dbConnectionOptions.TryAddConnectionString(name, connectionString);
-        return builder;
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
     }
 }

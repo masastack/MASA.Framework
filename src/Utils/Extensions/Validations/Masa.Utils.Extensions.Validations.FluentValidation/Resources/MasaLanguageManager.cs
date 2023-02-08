@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -39,6 +39,9 @@ public class MasaLanguageManager : LanguageManager
             AddTranslation(language, nameof(RequiredValidator<string, string>), languageProvider.GetTranslation(nameof(RequiredValidator<string, string>)));
             AddTranslation(language, nameof(UpperLetterValidator<string>), languageProvider.GetTranslation(nameof(UpperLetterValidator<string>)));
             AddTranslation(language, nameof(UrlValidator<string>), languageProvider.GetTranslation(nameof(UrlValidator<string>)));
+            AddTranslation(language, nameof(EmailRegularValidator<string>), languageProvider.GetTranslation(nameof(EmailRegularValidator<string>)));
+            AddTranslation(language, nameof(PasswordValidator<string>), languageProvider.GetTranslation(nameof(PasswordValidator<string>)));
+            AddTranslation(language, nameof(IdentityValidator<string>), languageProvider.GetTranslation(nameof(IdentityValidator<string>)));
         }
     }
 

@@ -321,16 +321,16 @@ public class UserService : IUserService
         await _caller.PostAsync(requestUri, model);
     }
 
-    public async Task RegisterByPhoneAsync(RegisterByPhoneModel model)
+    public async Task<UserModel?> RegisterByPhoneAsync(RegisterByPhoneModel model)
     {
         var requestUri = $"api/user/register";
-        await _caller.PostAsync(requestUri, model);
+        return await _caller.PostAsync<UserModel?>(requestUri, model);
     }
 
-    public async Task RegisterByEmailAsync(RegisterByEmailModel model)
+    public async Task<UserModel?> RegisterByEmailAsync(RegisterByEmailModel model)
     {
         var requestUri = $"api/user/register";
-        await _caller.PostAsync(requestUri, model);
+        return await _caller.PostAsync<UserModel?>(requestUri, model);
     }
 
     public async Task<bool> HasPasswordAsync(Guid userId = default)

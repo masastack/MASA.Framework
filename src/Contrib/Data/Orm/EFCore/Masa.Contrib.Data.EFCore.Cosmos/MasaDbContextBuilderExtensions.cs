@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
 public static class MasaDbContextBuilderExtensions
@@ -9,10 +11,10 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
+        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
         builder.Builder = (serviceProvider, dbContextOptionsBuilder) =>
         {
             var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
-            var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
             var configurationDic = connectionStringProvider.GetConnectionString(name).ToDictionary();
 
             if (!configurationDic.TryGetValue("Database", out string? databaseName))
@@ -42,6 +44,20 @@ public static class MasaDbContextBuilderExtensions
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
         => builder.UseCosmosCore(accountEndpoint, accountKey, databaseName, false, cosmosOptionsAction);
 
+    public static MasaDbContextBuilder UseCosmos(
+        this MasaDbContextBuilder builder,
+        string connectionString,
+        string databaseName,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(connectionString, databaseName, false, cosmosOptionsAction);
+
+    public static MasaDbContextBuilder UseTestCosmos(
+        this MasaDbContextBuilder builder,
+        string connectionString,
+        string databaseName,
+        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
+        => builder.UseCosmosCore(connectionString, databaseName, true, cosmosOptionsAction);
+
     public static MasaDbContextBuilder UseTestCosmos(
         this MasaDbContextBuilder builder,
         string accountEndpoint,
@@ -60,22 +76,8 @@ public static class MasaDbContextBuilderExtensions
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
-        return builder.UseCosmosCore($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};", isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations($"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};", isTest);
     }
-
-    public static MasaDbContextBuilder UseCosmos(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        string databaseName,
-        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
-        => builder.UseCosmosCore(connectionString, databaseName, false, cosmosOptionsAction);
-
-    public static MasaDbContextBuilder UseTestCosmos(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        string databaseName,
-        Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
-        => builder.UseCosmosCore(connectionString, databaseName, true, cosmosOptionsAction);
 
     private static MasaDbContextBuilder UseCosmosCore(
         this MasaDbContextBuilder builder,
@@ -86,20 +88,6 @@ public static class MasaDbContextBuilderExtensions
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
-        return builder.UseCosmosCore($"{connectionString};Database={databaseName};", isTest);
-    }
-
-    private static MasaDbContextBuilder UseCosmosCore(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        bool isTest = false)
-    {
-        var dbConnectionOptions = builder.ServiceProvider.GetRequiredService<IOptionsMonitor<MasaDbConnectionOptions>>().CurrentValue;
-        var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
-        if (!isTest && dbConnectionOptions.ConnectionStrings.ContainsKey(name))
-            throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
-
-        dbConnectionOptions.TryAddConnectionString(name, connectionString);
-        return builder;
+        return builder.ConfigMasaDbContextAndConnectionStringRelations($"{connectionString};Database={databaseName};", isTest);
     }
 }

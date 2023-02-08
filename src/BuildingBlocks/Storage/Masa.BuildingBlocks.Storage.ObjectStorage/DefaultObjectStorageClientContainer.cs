@@ -3,21 +3,21 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class DefaultClientContainer<TContainer>
-    : DefaultClientContainer, IClientContainer<TContainer> where TContainer : class
+public class DefaultObjectStorageClientContainer<TContainer>
+    : DefaultObjectStorageClientContainer, IObjectStorageClientContainer<TContainer> where TContainer : class
 {
-    public DefaultClientContainer(IClient client, IBucketNameProvider bucketNameProvider)
+    public DefaultObjectStorageClientContainer(IObjectStorageClient client, IBucketNameProvider bucketNameProvider)
         : base(client, bucketNameProvider.GetBucketName<TContainer>())
     {
     }
 }
 
-public class DefaultClientContainer : IClientContainer
+public class DefaultObjectStorageClientContainer : IObjectStorageClientContainer
 {
-    private readonly IClient _client;
+    private readonly IObjectStorageClient _client;
     private readonly string _bucketName;
 
-    public DefaultClientContainer(IClient client, string bucketName)
+    public DefaultObjectStorageClientContainer(IObjectStorageClient client, string bucketName)
     {
         _client = client;
         _bucketName = bucketName;

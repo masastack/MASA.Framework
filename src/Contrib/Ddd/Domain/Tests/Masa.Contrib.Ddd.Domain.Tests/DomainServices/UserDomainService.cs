@@ -1,9 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Storage.ObjectStorage;
+namespace Masa.Contrib.Ddd.Domain.Tests.DomainServices;
 
-public interface IClientFactory
+public class UserDomainService : DomainService
 {
-    IClientContainer Create(string bucketName);
 }
