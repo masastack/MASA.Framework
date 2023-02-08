@@ -15,21 +15,21 @@ internal class ValidatorEventMiddleware<TEvent> : EventMiddleware<TEvent>
         _logger = logger;
     }
 
-    public override async Task HandleAsync(TEvent action, EventHandlerDelegate next)
+    public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
     {
-        var typeName = action.GetType().FullName;
+        var typeName = @event.GetType().FullName;
 
         _logger.LogInformation("----- Validating command {CommandType}", typeName);
 
         var failures = _validators
-            .Select(v => v.Validate(action))
+            .Select(v => v.Validate(@event))
             .SelectMany(result => result.Errors)
             .Where(error => error != null)
             .ToList();
 
         if (failures.Any())
         {
-            _logger.LogError("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, action, failures);
+            _logger.LogError("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, @event, failures);
             throw new ValidationException("Validation exception", failures);
         }
 
