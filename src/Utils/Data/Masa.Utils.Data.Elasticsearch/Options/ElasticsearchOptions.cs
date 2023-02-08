@@ -7,15 +7,33 @@ namespace Masa.Utils.Data.Elasticsearch;
 
 public class ElasticsearchOptions
 {
-    public bool UseConnectionPool { get; private set; }
+    private bool? _useConnectionPool;
 
-    internal string[] Nodes { get; private set; }
+    public bool UseConnectionPool
+    {
+        get => (_useConnectionPool == null && Nodes.Count() > 1) || _useConnectionPool == true;
+        set => _useConnectionPool = value;
+    }
 
-    internal StaticConnectionPoolOptions StaticConnectionPoolOptions { get; }
+    private IEnumerable<string> _nodes;
 
-    internal ConnectionSettingsOptions ConnectionSettingsOptions { get; }
+    public IEnumerable<string> Nodes
+    {
+        get => _nodes;
+        set
+        {
+            if (value == null || !value.Any())
+                throw new ArgumentException("Please enter the Elasticsearch node address");
 
-    internal Action<ConnectionSettings>? Action { get; private set; }
+            _nodes = value;
+        }
+    }
+
+    public StaticConnectionPoolOptions StaticConnectionPoolOptions { get; }
+
+    public ConnectionSettingsOptions ConnectionSettingsOptions { get; }
+
+    public Action<ConnectionSettings>? Action { get; set; }
 
     public ElasticsearchOptions()
     {
@@ -24,34 +42,23 @@ public class ElasticsearchOptions
         Action = null;
     }
 
-    public ElasticsearchOptions(params string[] nodes) : this()
-    {
-        if (nodes.Length == 0)
-            throw new ArgumentException("Please specify the Elasticsearch node address");
-
-        Nodes = nodes;
-        UseConnectionPool = nodes.Length > 1;
-    }
+    public ElasticsearchOptions(params string[] nodes) : this() => Nodes = nodes;
 
     public ElasticsearchOptions UseNodes(params string[] nodes)
     {
-        if (nodes == null || nodes.Length == 0)
-            throw new ArgumentException("Please enter the Elasticsearch node address");
-
         Nodes = nodes;
-        UseConnectionPool = nodes.Length > 1;
         return this;
     }
 
     public ElasticsearchOptions UseRandomize(bool randomize)
     {
-        StaticConnectionPoolOptions.UseRandomize(randomize);
+        StaticConnectionPoolOptions.Randomize = randomize;
         return this;
     }
 
     public ElasticsearchOptions UseDateTimeProvider(IDateTimeProvider? dateTimeProvider)
     {
-        StaticConnectionPoolOptions.UseDateTimeProvider(dateTimeProvider);
+        StaticConnectionPoolOptions.DateTimeProvider = dateTimeProvider;
         return this;
     }
 
