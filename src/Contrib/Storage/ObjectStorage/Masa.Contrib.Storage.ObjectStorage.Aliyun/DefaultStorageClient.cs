@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class DefaultStorageClient : BaseClient, IClient
+public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClient
 {
     private readonly ILogger<DefaultStorageClient>? _logger;
 

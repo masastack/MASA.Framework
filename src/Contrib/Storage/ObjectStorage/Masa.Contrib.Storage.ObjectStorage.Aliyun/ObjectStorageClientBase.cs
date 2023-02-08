@@ -3,26 +3,26 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public abstract class BaseClient
+public abstract class ObjectStorageClientBase
 {
     protected readonly ICredentialProvider CredentialProvider;
     protected IAliyunStorageOptionProvider OptionProvider { get; }
     protected AliyunStorageOptions Options => OptionProvider.GetOptions();
 
-    public BaseClient(ICredentialProvider credentialProvider,
+    protected ObjectStorageClientBase(ICredentialProvider credentialProvider,
         IAliyunStorageOptionProvider optionProvider)
     {
         CredentialProvider = credentialProvider;
         OptionProvider = optionProvider;
     }
 
-    public virtual IOss GetClient()
+    protected virtual IOss GetClient()
     {
         var credential = GetCredential();
         return new OssClient(Options.Endpoint, credential.AccessKeyId, credential.AccessKeySecret, credential.SecurityToken);
     }
 
-    public virtual (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
+    protected virtual (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
     {
         if (OptionProvider.IncompleteStsOptions)
             return new(Options.AccessKeyId, Options.AccessKeySecret, null);

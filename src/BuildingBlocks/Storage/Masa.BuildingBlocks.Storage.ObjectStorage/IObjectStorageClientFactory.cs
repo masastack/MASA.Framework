@@ -3,7 +3,6 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public interface IClientFactory
+public interface IObjectStorageClientFactory : IMasaFactory<IObjectStorageClientContainer>
 {
-    IClientContainer Create(string bucketName);
 }

@@ -5,15 +5,5 @@ namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
 public class StorageOptions
 {
-    private static readonly List<KeyValuePair<string, string>> _bucketNames = new();
-
     public BucketNames BucketNames { get; set; }
-
-    public StorageOptions() => BucketNames = new BucketNames(_bucketNames);
-
-    public void TryAddBucketName(string name, string bucketName)
-    {
-        if (_bucketNames.All(item => item.Key != name))
-            _bucketNames.Add(new KeyValuePair<string, string>(name, bucketName));
-    }
 }

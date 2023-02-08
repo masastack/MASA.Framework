@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public interface IClient
+public interface IObjectStorageClient
 {
     /// <summary>
     /// Obtain temporary authorization credentials through STS service

@@ -19,4 +19,10 @@ public class MasaRelationOptions<TService> : MasaRelationOptions
     {
         Name = name;
     }
+
+    public MasaRelationOptions(string name, Func<IServiceProvider, TService> func)
+        : this(name)
+    {
+        Func = func;
+    }
 }
