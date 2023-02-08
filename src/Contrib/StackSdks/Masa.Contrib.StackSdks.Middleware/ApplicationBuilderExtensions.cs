@@ -8,6 +8,7 @@ public static class ApplicationBuilderExtensions
     public static WebApplication UseAddStackMiddleware(this WebApplication app)
     {
         app.UseMiddleware<DisabledRequestMiddleware>();
+
         app.MapHealthChecks("/hc", new HealthCheckOptions()
         {
             Predicate = _ => true,

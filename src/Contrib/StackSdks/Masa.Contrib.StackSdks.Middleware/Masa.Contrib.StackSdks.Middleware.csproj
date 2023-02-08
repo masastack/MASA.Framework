@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Auth\Masa.BuildingBlocks.StackSdks.Auth.Contracts\Masa.BuildingBlocks.StackSdks.Auth.Contracts.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Config\Masa.BuildingBlocks.StackSdks.Config.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Middleware\Masa.BuildingBlocks.StackSdks.Middleware.csproj" />
+    <ProjectReference Include="..\..\Dispatcher\Masa.Contrib.Dispatcher.Events.FluentValidation\Masa.Contrib.Dispatcher.Events.FluentValidation.csproj" />
   </ItemGroup>
 
 </Project>

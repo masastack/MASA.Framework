@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
         services.AddPluggableServices();
         services.AddScoped<DisabledRequestMiddleware>();
         services.AddTransient(typeof(IEventMiddleware<>), typeof(DisabledEventMiddleware<>));
+        services.AddTransient(typeof(IEventMiddleware<>), typeof(ValidatorEventMiddleware<>));
         return services;
     }
 

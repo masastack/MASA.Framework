@@ -11,7 +11,7 @@ Install-Package Masa.Contrib.StackSdks.Middleware
 ```C#
 builder.Services.AddStackMiddleware();
 
-xxxxxxxx
+...
 
 app.UseAddStackMiddleware();
 ```
