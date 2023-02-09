@@ -7,5 +7,9 @@ public class AliyunStorageConfigureOptions : AliyunOptions
 {
     public AliyunStorageOptions Storage { get; set; } = new();
 
-    public AliyunStsOptions Sts { get; set; } = new();
+    /// <summary>
+    /// Aliyun STS configuration, it is not necessarily a storage configuration
+    ///
+    /// </summary>
+    public AliyunStsOptions? Sts { get; set; }
 }

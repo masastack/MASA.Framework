@@ -10,4 +10,9 @@ public class AutoCompleteRelationsOptions : MasaRelationOptions<IAutoCompleteCli
     public AutoCompleteRelationsOptions(string name) : base(name)
     {
     }
+
+    public AutoCompleteRelationsOptions(string name, Func<IServiceProvider, IAutoCompleteClient> func) : this(name)
+    {
+        Func = func;
+    }
 }

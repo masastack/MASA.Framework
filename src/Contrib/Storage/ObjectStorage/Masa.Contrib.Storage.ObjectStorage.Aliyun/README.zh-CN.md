@@ -47,15 +47,15 @@ Install-Package Masa.Contrib.Storage.ObjectStorage.Aliyun
 2. 添加阿里云存储服务
 
 ```C#
-builder.Services.AddAliyunStorage();
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage());
 ```
 
-3. 从DI获取`IClient`
+3. 从DI获取`IObjectStorageClient`
 
     ``` C#
     //上传文件
     var fileStream = File.OpenRead("D://favicon.png");//更换本地文件路径
-    await serviceProvider.GetService<IClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
+    await serviceProvider.GetService<IObjectStorageClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
     ```
 
 ### 用法2：
@@ -73,10 +73,10 @@ var aliyunStorageOptions = new AliyunStorageOptions(
 {
     Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
 };
-builder.Services.AddAliyunStorage(aliyunStorageOptions);
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage(aliyunStorageOptions));
 ```
 
-2. 从DI获取`IClient`，并使用相应的方法
+2. 从DI获取`IObjectStorageClient`，并使用相应的方法
 
 ### 用法3
 
@@ -84,7 +84,7 @@ builder.Services.AddAliyunStorage(aliyunStorageOptions);
 
 ```C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(() =>
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage(() =>
 {
     return new AliyunStorageOptions(
         configuration["Aliyun:AccessKeyId"],
@@ -95,10 +95,10 @@ builder.Services.AddAliyunStorage(() =>
     {
         Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
     };
-});
+}));
 ```
 
-2. 从DI获取`IClient`，并使用相应的方法
+2. 从DI获取`IObjectStorageClient`，并使用相应的方法
 
 > 与用法2的区别在于延缓获取配置
 
@@ -106,10 +106,8 @@ builder.Services.AddAliyunStorage(() =>
 
 1. 添加阿里云存储服务
 
-   1.1. 同步
-
     ``` C#
-    builder.Services.AddAliyunStorage((serviceProvider) =>
+    builder.Services.AddObjectStorage(options => options.UseAliyunStorage(serviceProvider =>
     {
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         return new AliyunStorageOptions(
@@ -121,28 +119,10 @@ builder.Services.AddAliyunStorage(() =>
         {
             Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
         };
-    });
+    }));
     ```
 
-   1.2. 异步
-
-    ``` C#
-    builder.Services.AddAliyunStorage(async serviceProvider =>
-    {
-        var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-        var accessId = (await daprClient.GetSecretAsync("localsecretstore", "access_id")).First().Value;
-        var accessSecret = (await daprClient.GetSecretAsync("localsecretstore", "access_secret")).First().Value;
-        var endpoint = (await daprClient.GetSecretAsync("localsecretstore", "endpoint")).First().Value;
-        var roleArn = (await daprClient.GetSecretAsync("localsecretstore", "roleArn")).First().Value;
-        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest") {
-            Sts = new AliyunStsOptions() {
-                RegionId = "cn-hangzhou"
-            }
-        };
-    });
-    ```
-
-2. 从DI获取`IClient`，并使用相应的方法
+2. 从DI获取`IObjectStorageClient`，并使用相应的方法
 
 > 与用法3的区别在于可以通过serviceProvider获取配置所需要的服务，最后返回配置对象
 

@@ -14,7 +14,7 @@ public class CustomClient : DefaultStorageClient
     {
     }
 
-    public override IOss GetClient()
+    protected override IOss GetClient()
     {
         if (Oss != null)
             return Oss.Object;

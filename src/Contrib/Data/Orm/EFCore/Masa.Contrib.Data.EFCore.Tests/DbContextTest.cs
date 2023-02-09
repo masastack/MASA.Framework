@@ -287,4 +287,79 @@ public class DbContextTest : TestBase
 
         Assert.IsTrue(result.Result.Count == result.Total);
     }
+
+    [TestMethod]
+    public void TestSpecifyConnectionStringsReturnDbConnectionStringProviderIsNotNull()
+    {
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseTestSqlite(connectionString).UseFilter());
+        var serviceProvider = Services.BuildServiceProvider();
+        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
+        Assert.IsNotNull(dbConnectionStringProvider);
+        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
+        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
+    }
+
+    [TestMethod]
+    public void TestUseJsonConfigurationReturnDbConnectionStringProviderIsNotNull()
+    {
+        var connectionString = "data source=test;";
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        Services.AddSingleton<IConfiguration>(configuration);
+        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite().UseFilter());
+        var serviceProvider = Services.BuildServiceProvider();
+        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
+        Assert.IsNotNull(dbConnectionStringProvider);
+        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
+        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
+    }
+
+    [TestMethod]
+    public async Task TestModifyConnectionString()
+    {
+        var services = new ServiceCollection();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => optionsBuilder.UseSqlite());
+
+        var serviceProvider = services.BuildServiceProvider();
+        var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
+        Assert.IsNotNull(connectionStringProvider);
+
+        var connectionString = await connectionStringProvider.GetConnectionStringAsync();
+        Assert.AreEqual("data source=test;", connectionString);
+
+        var rootPath = AppDomain.CurrentDomain.BaseDirectory;
+
+        var expectedNewConnectionString = "data source=test2;";
+        var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"),
+            System.Text.Json.JsonSerializer.Serialize(new
+            {
+                ConnectionStrings = new
+                {
+                    DefaultConnection = expectedNewConnectionString
+                }
+            }));
+
+        await Task.Delay(2000);
+
+        connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
+        Assert.IsNotNull(connectionStringProvider);
+
+        connectionString = await connectionStringProvider.GetConnectionStringAsync();
+        Assert.AreEqual("data source=test;", connectionString);
+
+        connectionStringProvider = serviceProvider.CreateScope().ServiceProvider.GetService<IConnectionStringProvider>();
+        Assert.IsNotNull(connectionStringProvider);
+
+        connectionString = await connectionStringProvider.GetConnectionStringAsync();
+        Assert.AreEqual(expectedNewConnectionString, connectionString);
+
+        await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
+    }
 }

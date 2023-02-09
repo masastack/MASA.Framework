@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IMiddleware<>), typeof(TransactionMiddleware<>), ServiceLifetime.Transient));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>), ServiceLifetime.Transient));
 
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
@@ -74,7 +74,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
-        services.AddTransient(typeof(IMiddleware<>), typeof(TransactionMiddleware<>));
+        services.AddTransient(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>));
         services.AddScoped(typeof(IEventBus), typeof(EventBus));
 
         return services;

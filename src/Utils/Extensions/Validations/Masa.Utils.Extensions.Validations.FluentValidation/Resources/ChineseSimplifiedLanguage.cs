@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -25,6 +25,9 @@ internal class ChineseSimplifiedLanguage : ILanguageProvider
         "RequiredValidator" => "'{PropertyName}' 是必需的",
         "UpperLetterValidator" => "'{PropertyName}' 必须是大写字母.",
         "UrlValidator" => "'{PropertyName}' 必须是一个合法的Url地址",
+        "EmailRegularValidator" => "'{PropertyName}' 必须是一个合法的Email",
+        "PasswordValidator" => "'{PropertyName}' 密码验证规则不通过",
+        "IdentityValidator" => "'{PropertyName}' 必须是数字、字母或中划线和点",
         _ => string.Empty,
     };
 }
