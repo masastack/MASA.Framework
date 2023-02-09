@@ -173,7 +173,9 @@ public static class IMasaStackConfigExtensions
 
     static Guid CreateGuid(string str)
     {
+#pragma warning disable CA5350
         using var md5 = MD5.Create();
+#pragma warning restore CA5350
         byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(str));
         return new Guid(hash);
     }
