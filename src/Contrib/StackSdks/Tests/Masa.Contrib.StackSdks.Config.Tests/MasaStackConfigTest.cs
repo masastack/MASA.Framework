@@ -80,6 +80,22 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetVersion()
+    {
+        var version = _stackConfig.Version;
+
+        Assert.IsNotNull(version);
+    }
+
+    [TestMethod]
+    public void TestGetWebId()
+    {
+        var pmWebId = _stackConfig.GetWebId(MasaStackConstant.PM);
+
+        Assert.AreEqual("masa-pm-ui-demo", pmWebId);
+    }
+
+    [TestMethod]
     public void TestGetDefaultUserId()
     {
         var userId = _stackConfig.GetDefaultUserId();
