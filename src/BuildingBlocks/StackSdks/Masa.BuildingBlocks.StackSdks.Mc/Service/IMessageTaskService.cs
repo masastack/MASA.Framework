@@ -26,4 +26,6 @@ public interface IMessageTaskService
     Task WithdrawnAsync(Guid id);
 
     Task ResendAsync(Guid id);
+
+    Task BindClientIdAsync(BindClientIdModel options);
 }
