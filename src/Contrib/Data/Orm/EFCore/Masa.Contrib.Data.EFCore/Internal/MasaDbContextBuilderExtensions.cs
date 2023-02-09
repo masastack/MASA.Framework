@@ -1,11 +1,20 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Cosmos")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.InMemory")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.MySql")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Oracle")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Pomelo.MySql")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.PostgreSql")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Sqlite")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.SqlServer")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.EntityFrameworkCore;
 
-public static class MasaDbContextBuilderExtensions
+internal static class MasaDbContextBuilderExtensions
 {
     public static MasaDbContextBuilder ConfigMasaDbContextAndConnectionStringRelations(
         this MasaDbContextBuilder builder,
