@@ -78,4 +78,24 @@ public class MasaStackConfigTest
 
         Assert.IsNotNull(esModel);
     }
+
+    [TestMethod]
+    public void TestGetDefaultUserId()
+    {
+        var userId = _stackConfig.GetDefaultUserId();
+        Assert.IsNotNull(userId);
+
+        var userId2 = _stackConfig.GetDefaultUserId();
+        Assert.AreEqual(userId, userId2);
+    }
+
+    [TestMethod]
+    public void TestGetDefaultTeamId()
+    {
+        var teamId = _stackConfig.GetDefaultTeamId();
+        Assert.IsNotNull(teamId);
+
+        var teamId2 = _stackConfig.GetDefaultTeamId();
+        Assert.AreEqual(teamId, teamId2);
+    }
 }
