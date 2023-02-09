@@ -3,16 +3,26 @@
 
 namespace Masa.Contrib.StackSdks.Config;
 
-public static class IMasaStackConfigExtensions
+public static class MasaStackConfigExtensions
 {
     public static Dictionary<string, JsonObject> GetAllServer(this IMasaStackConfig masaStackConfig)
     {
-        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(masaStackConfig.GetValue(MasaStackConfigConstant.MASA_SERVER)) ?? new();
+        var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_SERVER);
+        if (string.IsNullOrEmpty(value))
+        {
+            return new();
+        }
+        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(value) ?? new();
     }
 
     public static Dictionary<string, JsonObject> GetAllUI(this IMasaStackConfig masaStackConfig)
     {
-        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(masaStackConfig.GetValue(MasaStackConfigConstant.MASA_UI)) ?? new();
+        var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_UI);
+        if (string.IsNullOrEmpty(value))
+        {
+            return new();
+        }
+        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(value) ?? new();
     }
 
     public static bool HasAlert(this IMasaStackConfig masaStackConfig)
@@ -131,12 +141,14 @@ public static class IMasaStackConfigExtensions
 
     public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.SERVER)
     {
-        return masaStackConfig.GetAllServer()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+        masaStackConfig.GetAllServer().TryGetValue(project, out var obj);
+        return obj?[service]?.ToString() ?? "";
     }
 
     public static string GetWebId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.UI)
     {
-        return masaStackConfig.GetAllUI()[project][service]?.ToString() ?? throw new KeyNotFoundException();
+        masaStackConfig.GetAllUI().TryGetValue(project, out var obj);
+        return obj?[service]?.ToString() ?? "";
     }
 
     public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
