@@ -7,10 +7,6 @@ namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextBuilder : IMasaDbContextBuilder
 {
-    private IServiceProvider? _serviceProvider;
-
-    public IServiceProvider ServiceProvider => _serviceProvider ??= Services.BuildServiceProvider();
-
     public IServiceCollection Services { get; }
 
     public Type DbContextType { get; }
