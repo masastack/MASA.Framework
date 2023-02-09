@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -15,15 +16,14 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
+            callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
             }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-            callerOptions.DisableAutoRegistration = true;
         });
     }
 
-    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
+    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
     {
         ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
 
@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SchedulerProvider>();
         services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddHttpContextAccessor();
-        services.AddCaller(callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {

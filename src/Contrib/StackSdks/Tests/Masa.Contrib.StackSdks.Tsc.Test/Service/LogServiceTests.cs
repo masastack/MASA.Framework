@@ -21,11 +21,10 @@ public class LogServiceTests
         {
             BaseAddress = new Uri(HOST)
         };
-        _httpClientFactory.Setup(factory => factory.CreateClient(HTTP_CLIENT_NAME)).Returns(httpClient);       
-        services.AddCaller(builder =>
+        _httpClientFactory.Setup(factory => factory.CreateClient(HTTP_CLIENT_NAME)).Returns(httpClient);
+        services.AddCaller(HTTP_CLIENT_NAME, builder =>
         {
-            builder.UseHttpClient(HTTP_CLIENT_NAME, options=>options.BaseAddress=HOST);
-            builder.DisableAutoRegistration = true;
+            builder.UseHttpClient(options => options.BaseAddress = HOST);
         });
         var factory = services.BuildServiceProvider().GetRequiredService<ICallerFactory>();
         _client = new TscClient(factory.Create(HTTP_CLIENT_NAME));
@@ -75,7 +74,8 @@ public class LogServiceTests
         Assert.IsTrue(query.End > DateTime.MinValue);
         Assert.IsTrue(query.IsDesc);
 
-        var str = "{\"timestamp\":\"2022-11-15T07:01:28.2196126Z\",\"traceFlags\":0,\"severityText\":\"Information\",\"severityNumber\":9,\"body\":\"Request finished HTTP/2 GET https://localhost:18012/_blazor?id=_GmR6JVGGEuWA8wo5_vEgg&_=1668495688201 text/plain;charset=UTF-8 - - 200 1203 application/octet-stream 11.1170ms\",\"resource\":{\"service.instance.id\":\"57f5a1db-e0de-434d-aceb-45eb53a2efc8\",\"service.name\":\"masa-tsc-web-admin\",\"service.namespace\":\"Development\",\"service.version\":\"0.1.0\",\"telemetry.sdk.language\":\"dotnet\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.3.0.519\"},\"attributes\":{\"dotnet.ilogger.category\":\"Microsoft.AspNetCore.Hosting.Diagnostics\"}}";
+        var str =
+            "{\"timestamp\":\"2022-11-15T07:01:28.2196126Z\",\"traceFlags\":0,\"severityText\":\"Information\",\"severityNumber\":9,\"body\":\"Request finished HTTP/2 GET https://localhost:18012/_blazor?id=_GmR6JVGGEuWA8wo5_vEgg&_=1668495688201 text/plain;charset=UTF-8 - - 200 1203 application/octet-stream 11.1170ms\",\"resource\":{\"service.instance.id\":\"57f5a1db-e0de-434d-aceb-45eb53a2efc8\",\"service.name\":\"masa-tsc-web-admin\",\"service.namespace\":\"Development\",\"service.version\":\"0.1.0\",\"telemetry.sdk.language\":\"dotnet\",\"telemetry.sdk.name\":\"opentelemetry\",\"telemetry.sdk.version\":\"1.3.0.519\"},\"attributes\":{\"dotnet.ilogger.category\":\"Microsoft.AspNetCore.Hosting.Diagnostics\"}}";
         SetTestData(str);
         var result = await _client.LogService.GetLatestAsync(query);
         Assert.IsNotNull(result);
@@ -85,10 +85,10 @@ public class LogServiceTests
     {
         _mockHandler.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-           .ReturnsAsync(new HttpResponseMessage()
-           {
-               StatusCode = httpStatusCode,
-               Content = new StringContent(result)
-           });
+            .ReturnsAsync(new HttpResponseMessage()
+            {
+                StatusCode = httpStatusCode,
+                Content = new StringContent(result)
+            });
     }
 }

@@ -5,13 +5,13 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public class DefaultDaprClientBuilder
+public class MasaDaprClientBuilder : IMasaCallerClientBuilder
 {
-    public IServiceCollection Services { get; private set; }
+    public IServiceCollection Services { get; }
 
-    public string Name { get; private set; }
+    public string Name { get; }
 
-    public DefaultDaprClientBuilder(IServiceCollection services, string name)
+    public MasaDaprClientBuilder(IServiceCollection services, string name)
     {
         Services = services;
         Name = name;

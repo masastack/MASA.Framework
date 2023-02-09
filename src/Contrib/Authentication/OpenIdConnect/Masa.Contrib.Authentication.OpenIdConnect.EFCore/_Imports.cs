@@ -15,6 +15,6 @@ global using Masa.Contrib.Authentication.OpenIdConnect.EFCore.Repositories;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;
-global using System.Data;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Linq.Expressions;
 global using System.Reflection;

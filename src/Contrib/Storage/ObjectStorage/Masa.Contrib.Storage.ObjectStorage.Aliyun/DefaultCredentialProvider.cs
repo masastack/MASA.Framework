@@ -33,7 +33,7 @@ public class DefaultCredentialProvider : ICredentialProvider
         if (!_cache.TryGetValue(Options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
         {
             temporaryCredentials = GetTemporaryCredentials(
-                Options.Sts.RegionId!,
+                Options.Sts!.RegionId!,
                 Options.AccessKeyId,
                 Options.AccessKeySecret,
                 Options.RoleArn,
@@ -84,9 +84,9 @@ public class DefaultCredentialProvider : ICredentialProvider
         // throw new Exception(message);
     }
 
-    public virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
+    protected virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
     {
-        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - Options.Sts.GetEarlyExpires();
+        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - Options.Sts!.GetEarlyExpires();
         if (timespan >= 0) _cache.Set(Options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
     }
 }

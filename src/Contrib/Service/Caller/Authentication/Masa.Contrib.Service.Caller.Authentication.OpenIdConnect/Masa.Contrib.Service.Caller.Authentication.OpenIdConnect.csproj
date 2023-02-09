@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\BuildingBlocks\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj" />
     <ProjectReference Include="..\..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -12,11 +13,10 @@ public static class ServiceCollectionExtensions
 
         return services.AddPmClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
+            callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddress;
             });
-            callerOptions.DisableAutoRegistration = true;
         });
     }
 
@@ -26,22 +26,21 @@ public static class ServiceCollectionExtensions
 
         return services.AddPmClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
+            callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
-            }, true);
-            callerOptions.DisableAutoRegistration = true;
+            });
         });
     }
 
-    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptions> callerOptions)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptions);
 
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
-        services.AddCaller(callerOptions.Invoke);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions.Invoke);
 
         services.AddScoped<IPmClient>(serviceProvider =>
         {

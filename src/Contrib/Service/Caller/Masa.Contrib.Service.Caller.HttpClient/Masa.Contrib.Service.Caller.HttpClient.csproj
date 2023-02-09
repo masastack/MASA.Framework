@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Masa.Contrib.Service.Caller\Masa.Contrib.Service.Caller.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Service\Masa.BuildingBlocks.Service.Caller\Masa.BuildingBlocks.Service.Caller.csproj" />
   </ItemGroup>
-
+  
 </Project>

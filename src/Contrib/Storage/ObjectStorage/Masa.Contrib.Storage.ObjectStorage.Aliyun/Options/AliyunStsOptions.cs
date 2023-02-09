@@ -51,7 +51,12 @@ public class AliyunStsOptions
         }
     }
 
-    public AliyunStsOptions(string? regionId = null)
+    public AliyunStsOptions()
+    {
+        RegionId = null;
+    }
+
+    public AliyunStsOptions(string? regionId)
     {
         RegionId = regionId;
     }

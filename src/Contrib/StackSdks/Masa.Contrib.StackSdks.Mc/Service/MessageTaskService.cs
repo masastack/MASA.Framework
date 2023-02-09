@@ -78,4 +78,10 @@ public class MessageTaskService : IMessageTaskService
         var requestUri = $"{_party}/{id}/Resend";
         await _caller.PostAsync(requestUri, new { });
     }
+
+    public async Task BindClientIdAsync(BindClientIdModel options)
+    {
+        var requestUri = $"{_party}/BindClientId";
+        await _caller.PostAsync(requestUri, options);
+    }
 }

@@ -5,11 +5,11 @@ namespace Masa.Utils.Data.Elasticsearch.Options;
 
 public class ConnectionSettingsOptions
 {
-    internal IConnection? Connection { get; set; }
+    public IConnection? Connection { get; set; }
 
-    internal ConnectionSettings.SourceSerializerFactory? SourceSerializerFactory { get; set; }
+    public ConnectionSettings.SourceSerializerFactory? SourceSerializerFactory { get; set; }
 
-    internal IPropertyMappingProvider? PropertyMappingProvider { get; set; }
+    public IPropertyMappingProvider? PropertyMappingProvider { get; set; }
 
     public ConnectionSettingsOptions()
     {

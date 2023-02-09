@@ -5,18 +5,18 @@ namespace Masa.Contrib.Isolation;
 
 public class IsolationDbContextProvider : DbConnectionStringProviderBase
 {
-    private readonly IOptionsMonitor<IsolationDbConnectionOptions> _options;
+    private readonly IOptionsSnapshot<IsolationDbConnectionOptions> _options;
 
-    public IsolationDbContextProvider(IOptionsMonitor<IsolationDbConnectionOptions> options) => _options = options;
+    public IsolationDbContextProvider(IOptionsSnapshot<IsolationDbConnectionOptions> options) => _options = options;
 
     protected override List<MasaDbContextConfigurationOptions> GetDbContextOptionsList()
     {
-        var connectionStrings = _options.CurrentValue.IsolationConnectionStrings
+        var connectionStrings = _options.Value.IsolationConnectionStrings
             .Select(connectionString => connectionString.ConnectionString)
             .Distinct()
             .ToList();
-        if (!connectionStrings.Contains(_options.CurrentValue.ConnectionStrings.DefaultConnection))
-            connectionStrings.Add(_options.CurrentValue.ConnectionStrings.DefaultConnection);
+        if (!connectionStrings.Contains(_options.Value.ConnectionStrings.DefaultConnection))
+            connectionStrings.Add(_options.Value.ConnectionStrings.DefaultConnection);
 
         return connectionStrings.Select(connectionString => new MasaDbContextConfigurationOptions(connectionString)).ToList();
     }

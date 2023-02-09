@@ -5,8 +5,6 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public interface ICaller
 {
-    void ConfigRequestMessage(Func<HttpRequestMessage, Task> func);
-
     Task<TResponse?> SendAsync<TResponse>(
         HttpRequestMessage request,
         CancellationToken cancellationToken = default);

@@ -7,8 +7,5 @@ public class AuthenticationOptions
 {
     public IServiceCollection Services { get; }
 
-    public AuthenticationOptions(IServiceCollection services)
-    {
-        Services = services;
-    }
+    public AuthenticationOptions(IServiceCollection services) => Services = services;
 }

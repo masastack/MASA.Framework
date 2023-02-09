@@ -7,7 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, IConfiguration configuration, string? authServiceBaseAddress = null)
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, IConfiguration configuration,
+        string? authServiceBaseAddress = null)
     {
         var redisOptions = configuration.GetSection("$public.RedisConfig").Get<RedisConfigurationOptions>();
         authServiceBaseAddress ??= configuration.GetValue<string>("$public.AppSettings:AuthClient:Url");
@@ -16,21 +17,21 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress, RedisConfigurationOptions redisOptions)
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, string authServiceBaseAddress,
+        RedisConfigurationOptions redisOptions)
     {
         MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
         return services.AddAuthClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(DEFAULT_CLIENT_NAME, builder =>
-            {
-                builder.BaseAddress = authServiceBaseAddress;
-            });
-            callerOptions.DisableAutoRegistration = true;
+            callerOptions
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .AddMiddleware(serviceProvider => new AuthAuthenticationMiddleware(serviceProvider.GetRequiredService<IHttpContextAccessor>()));
         }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptions> callerOptions, RedisConfigurationOptions redisOptions)
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions,
+        RedisConfigurationOptions redisOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptions);
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
@@ -38,7 +39,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddCaller(callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddAuthClientMultilevelCache(redisOptions);
         services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();
@@ -47,22 +48,6 @@ public static class ServiceCollectionExtensions
         {
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-
-            callProvider.ConfigRequestMessage(httpRequestMessage =>
-            {
-                var tokenProvider = serviceProvider.GetService<TokenProvider>();
-                if (tokenProvider != null)
-                {
-                    httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-                }
-                var environment = serviceProvider.GetService<IEnvironmentProvider>();
-                if (environment != null)
-                {
-                    httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
-                }
-                return Task.CompletedTask;
-            });
-
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
             var authClient = new AuthClient(callProvider, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;

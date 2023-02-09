@@ -17,22 +17,21 @@ public class MasaElasticsearchBuilder
     {
         get
         {
-            _elasticClientFactory ??= Services.BuildServiceProvider().GetRequiredService<IElasticClientFactory>();
-            if (AlwaysGetNewestElasticClient)
-                return _elasticClientFactory.Create(Name);
+            if (_elasticClient == null)
+            {
+                _elasticClientFactory ??= Services.BuildServiceProvider().GetRequiredService<IElasticClientFactory>();
+                _elasticClient = _elasticClientFactory.Create(Name);
+            }
 
-            return _elasticClient ??= _elasticClientFactory.Create(Name);
+            return _elasticClient;
         }
     }
 
     public IMasaElasticClient Client => new DefaultMasaElasticClient(ElasticClient);
 
-    public bool AlwaysGetNewestElasticClient { get; }
-
-    public MasaElasticsearchBuilder(IServiceCollection services, string name, bool alwaysGetNewestElasticClient)
+    public MasaElasticsearchBuilder(IServiceCollection services, string name)
     {
         Services = services;
         Name = name;
-        AlwaysGetNewestElasticClient = alwaysGetNewestElasticClient;
     }
 }

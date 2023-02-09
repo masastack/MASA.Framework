@@ -24,7 +24,7 @@ public class DefaultCallerProvider : ICallerProvider
         if (daprOptions.AppPort > 0 && daprOptions.IsIncompleteAppId())
             appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
 
-        var value = _configuration?.GetSection(appId).Value;
+        var value = _configuration == null ? Environment.GetEnvironmentVariable(appId) : _configuration?.GetSection(appId).Value;
         if (value.IsNullOrWhiteSpace())
             value = _masaConfiguration?.Local.GetSection(appId).Value;
 

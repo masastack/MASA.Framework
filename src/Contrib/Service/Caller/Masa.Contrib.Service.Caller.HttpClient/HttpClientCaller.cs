@@ -11,62 +11,56 @@ public class HttpClientCaller : AbstractCaller
 
     public HttpClientCaller(System.Net.Http.HttpClient httpClient,
         IServiceProvider serviceProvider,
-        string prefix)
-        : base(serviceProvider)
+        string name,
+        string prefix,
+        Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
+        Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory)
+        : base(serviceProvider, name, currentRequestMessageFactory, currentResponseMessageFactory)
     {
         _httpClient = httpClient;
         _prefix = prefix;
-        _prefixIsNullOrEmpty = string.IsNullOrEmpty(_prefix);
+        _prefixIsNullOrEmpty = _prefix.IsNullOrEmpty();
     }
 
-    public override async Task<TResponse?> SendAsync<TResponse>(HttpRequestMessage request, CancellationToken cancellationToken = default)
-        where TResponse : default
+    [ExcludeFromCodeCoverage]
+    public override HttpRequestMessage CreateRequest(HttpMethod method, string? methodName)
     {
-        var response = await _httpClient.SendAsync(request, cancellationToken);
-        return await ResponseMessage.ProcessResponseAsync<TResponse>(response, cancellationToken);
-    }
-
-    public override async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string? methodName)
-    {
-        var requestMessage = await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)));
-        if (RequestMessageFunc != null)
-        {
-            await RequestMessageFunc.Invoke(requestMessage);
-        }
+        var requestMessage = new HttpRequestMessage(method, GetRequestUri(methodName));
+        RequestMessage.ProcessHttpRequestMessage(requestMessage);
         return requestMessage;
     }
 
-    public override async Task<HttpRequestMessage> CreateRequestAsync<TRequest>(HttpMethod method, string? methodName, TRequest data)
+    [ExcludeFromCodeCoverage]
+    public override HttpRequestMessage CreateRequest<TRequest>(HttpMethod method, string? methodName, TRequest data)
     {
-        var requestMessage =
-            await RequestMessage.ProcessHttpRequestMessageAsync(new HttpRequestMessage(method, GetRequestUri(methodName)), data);
-        if (RequestMessageFunc != null)
-        {
-            await RequestMessageFunc.Invoke(requestMessage);
-        }
+        var requestMessage = new HttpRequestMessage(method, GetRequestUri(methodName));
+        RequestMessage.ProcessHttpRequestMessage(requestMessage, data);
         return requestMessage;
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return _httpClient.SendAsync(request, cancellationToken);
-    }
+        => _httpClient.SendAsync(request, cancellationToken);
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync(string methodName, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TResponse>(string methodName, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task SendGrpcAsync<TRequest>(string methodName, TRequest request, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     public override Task<TResponse> SendGrpcAsync<TRequest, TResponse>(string methodName, TRequest request,
         CancellationToken cancellationToken = default)
     {

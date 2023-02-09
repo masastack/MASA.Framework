@@ -187,18 +187,17 @@ public class DccTest
             jsonSerializerOption.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
         }, option =>
         {
-            option.UseHttpClient("CustomHttpClient", builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });
         });
-        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create("CustomHttpClient");
+        var caller = _services.BuildServiceProvider().GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
         Assert.IsNotNull(caller);
     }
 
-    [DataTestMethod]
-    [DataRow("Development", "Default", "WebApplication1", "Brand")]
-    public void TestUseMultiDcc(string environment, string cluster, string appId, string configObject)
+    [TestMethod]
+    public void TestUseMultiDcc()
     {
         var brand = new Brands("Microsoft");
         var response = new PublishReleaseModel()
@@ -215,26 +214,10 @@ public class DccTest
             .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
             .Returns(() => memoryCacheClient.Object);
         _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
-        var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
-            _jsonSerializerOptions,
-            new Mock<DccOptions>().Object,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
-
-        _masaConfigurationBuilder.Object.UseDcc().UseDcc();
-        var result = configurationApiClient.GetRawAsync(
-            environment,
-            cluster,
-            appId,
-            configObject,
-            It.IsAny<Action<string>>()).ConfigureAwait(false).GetAwaiter().GetResult();
-        Assert.IsTrue(result.Raw == JsonSerializer.Serialize(brand));
-
-        var httpClient = _services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>().CreateClient(DEFAULT_CLIENT_NAME);
-        Assert.IsTrue(httpClient.BaseAddress!.ToString() == "http://localhost:6379/");
+        _masaConfigurationBuilder.Object.UseDcc();
+        var serviceCount = _masaConfigurationBuilder.Object.Services.Count;
+        _masaConfigurationBuilder.Object.UseDcc();
+        Assert.AreEqual(serviceCount, _masaConfigurationBuilder.Object.Services.Count);
     }
 
 #pragma warning disable CS0618
@@ -273,7 +256,7 @@ public class DccTest
     }
 
     [TestMethod]
-    public void TestGetSecretRenturnSecretEqualSecret()
+    public void TestGetSecretReturnSecretEqualSecret()
     {
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");

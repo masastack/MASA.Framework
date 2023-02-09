@@ -11,10 +11,20 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
 
     public bool IncompleteStsOptions { get; private set; }
 
-    public DefaultAliyunStorageOptionProvider(AliyunStorageOptions aliyunStorageOptions)
+    private DefaultAliyunStorageOptionProvider(AliyunStorageOptions aliyunStorageOptions)
     {
         _aliyunStorageOptions = aliyunStorageOptions;
         Refresh();
+    }
+
+    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageOptions> options)
+        : this(options.CurrentValue)
+    {
+        options.OnChange(aliyunStorageOptions =>
+        {
+            _aliyunStorageOptions = aliyunStorageOptions;
+            Refresh();
+        });
     }
 
     public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options)
@@ -34,20 +44,23 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
         AliyunStorageOptions aliyunStorageOptions = options.Storage;
         aliyunStorageOptions.AccessKeyId = TryUpdate(options.Storage.AccessKeyId, options.AccessKeyId)!;
         aliyunStorageOptions.AccessKeySecret = TryUpdate(options.Storage.AccessKeySecret, options.AccessKeySecret)!;
-        aliyunStorageOptions.Sts.RegionId = TryUpdate(options.Storage.Sts.RegionId, options.Sts.RegionId);
-        aliyunStorageOptions.Sts.DurationSeconds = TryUpdate(options.Storage.Sts.DurationSeconds, options.Sts.DurationSeconds) ??
-            options.Sts.GetDurationSeconds();
-        aliyunStorageOptions.Sts.EarlyExpires =
-            TryUpdate(options.Storage.Sts.EarlyExpires, options.Sts.EarlyExpires) ?? options.Sts.GetEarlyExpires();
+        if (options.Storage.Sts != null)
+        {
+            aliyunStorageOptions.Sts = new AliyunStsOptions(options.Storage.Sts.RegionId)
+            {
+                DurationSeconds = options.Storage.Sts.DurationSeconds ?? options.Storage.Sts.GetDurationSeconds(),
+                EarlyExpires = options.Storage.Sts.EarlyExpires ?? options.Storage.Sts.GetEarlyExpires(),
+            };
+        }
+        else if (options.Sts != null)
+        {
+            aliyunStorageOptions.Sts = new AliyunStsOptions(options.Sts.RegionId)
+            {
+                DurationSeconds = options.Sts.DurationSeconds ?? options.Sts.GetDurationSeconds(),
+                EarlyExpires = options.Sts.EarlyExpires ?? options.Sts.GetEarlyExpires(),
+            };
+        }
         return aliyunStorageOptions;
-    }
-
-    private static long? TryUpdate(long? source, long? destination)
-    {
-        if (source != null)
-            return source;
-
-        return destination;
     }
 
     private static string? TryUpdate(string? source, string? destination)
@@ -63,7 +76,8 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
         SupportCallback = !string.IsNullOrEmpty(_aliyunStorageOptions.CallbackBody) &&
             !string.IsNullOrEmpty(_aliyunStorageOptions.CallbackUrl);
 
-        IncompleteStsOptions = string.IsNullOrEmpty(_aliyunStorageOptions.Sts.RegionId) ||
+        IncompleteStsOptions = _aliyunStorageOptions.Sts == null ||
+            string.IsNullOrEmpty(_aliyunStorageOptions.Sts.RegionId) ||
             string.IsNullOrEmpty(_aliyunStorageOptions.RoleArn) ||
             string.IsNullOrEmpty(_aliyunStorageOptions.RoleSessionName);
     }

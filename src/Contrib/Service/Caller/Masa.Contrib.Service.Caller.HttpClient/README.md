@@ -15,12 +15,9 @@ Install-Package Masa.Contrib.Service.Caller.HttpClient
 1. Register `Caller`, modify `Program.cs`
 
 ``` C#
-builder.Services.AddCaller(options =>
+builder.Services.AddCaller("UserCaller", options =>
 {
-    options.UseHttpClient("UserCaller", clientBuilder =>
-    {
-        clientBuilder.BaseAddress = "http://localhost:5000" ;
-    });
+    options.UseHttpClient(client => client.BaseAddress = "http://localhost:5000");
 });
 ```
 
@@ -36,16 +33,13 @@ app.MapGet("/Test/User/Hello", ([FromServices] ICaller caller, string name)
 3. When there are multiple HttpClients, modify `Program.cs`
 
 ``` C#
-builder.Services.AddCaller(options =>
+builder.Services.AddCaller("UserCaller", options =>
 {
-    options.UseHttpClient("UserCaller", clientBuilder =>
-    {
-        clientBuilder.BaseAddress = "http://localhost:5000" ;
-    });
-    options.UseHttpClient("OrderCaller", clientBuilder =>
-    {
-        clientBuilder.BaseAddress = "http://localhost:6000" ;
-    });
+    options.UseHttpClient(client => client.BaseAddress = "http://localhost:5000");
+});
+builder.Services.AddCaller("OrderCaller", options =>
+{
+    options.UseHttpClient("OrderCaller", client => client.BaseAddress = "http://localhost:6000");
 });
 ```
 

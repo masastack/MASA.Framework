@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.StackSdks.Tsc.Tests")]
+
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -16,13 +17,12 @@ public static class ServiceExtensions
         if (services.Any(service => service.ServiceType == typeof(ITscClient)))
             return services;
 
-        services.AddCaller(builder =>
+        services.AddCaller(DEFAULT_CLIENT_NAME, builder =>
         {
-            builder.UseHttpClient(DEFAULT_CLIENT_NAME, options =>
+            builder.UseHttpClient(options =>
             {
                 options.BaseAddress = tscServiceBaseUrl;
             });
-            builder.DisableAutoRegistration = true;
         });
 
         services.AddSingleton<ITscClient>(serviceProvider =>

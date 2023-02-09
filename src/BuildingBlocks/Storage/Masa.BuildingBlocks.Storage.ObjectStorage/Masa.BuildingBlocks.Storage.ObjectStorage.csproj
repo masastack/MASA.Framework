@@ -9,5 +9,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+  </ItemGroup>
   
 </Project>

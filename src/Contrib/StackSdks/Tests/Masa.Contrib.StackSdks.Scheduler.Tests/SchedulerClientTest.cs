@@ -13,7 +13,7 @@ public class SchedulerClientTest
 
         services.AddSchedulerClient(option =>
         {
-            option.UseHttpClient("masa.contrib.basicability.scheduler", builder =>
+            option.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri("https://github.com");
             });

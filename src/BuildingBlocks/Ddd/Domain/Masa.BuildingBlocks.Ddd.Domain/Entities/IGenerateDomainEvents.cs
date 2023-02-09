@@ -5,6 +5,10 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Entities;
 
 public interface IGenerateDomainEvents
 {
+    void AddDomainEvent(IDomainEvent domainEvent);
+
+    void RemoveDomainEvent(IDomainEvent domainEvent);
+
     IEnumerable<IDomainEvent> GetDomainEvents();
 
     void ClearDomainEvents();
