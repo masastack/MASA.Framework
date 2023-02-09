@@ -160,4 +160,23 @@ public static class IMasaStackConfigExtensions
         stringBuilder.Append(@"}");
         return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
     }
+
+    public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)
+    {
+        return CreateGuid(masaStackConfig.Namespace);
+    }
+
+    public static Guid GetDefaultTeamId(this IMasaStackConfig masaStackConfig)
+    {
+        return CreateGuid(masaStackConfig.Namespace + " team");
+    }
+
+    static Guid CreateGuid(string str)
+    {
+#pragma warning disable S4790
+        using var md5 = MD5.Create();
+#pragma warning restore S4790
+        byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(str));
+        return new Guid(hash);
+    }
 }
