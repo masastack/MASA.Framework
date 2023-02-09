@@ -48,7 +48,7 @@ public class AutoCompleteDocument<TValue> : AutoCompleteDocument where TValue : 
             {
                 var val = Value.ToString();
                 MasaArgumentException.ThrowIfNullOrEmpty(val, nameof(Id));
-                return val!;
+                return val;
             }
 
             return _id;

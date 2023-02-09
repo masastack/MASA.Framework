@@ -45,15 +45,15 @@ support:
 2. Add Aliyun Storage Service
 
 ``` C#
-builder.Services.AddAliyunStorage();
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage());
 ```
 
-3. Get `IClient` from DI
+3. Get `IObjectStorageClient` from DI
 
      ``` C#
      //upload files
      var fileStream = File.OpenRead("D://favicon.png");//Replace the local file path
-     await serviceProvider.GetService<IClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
+     await serviceProvider.GetService<IObjectStorageClient>().PutObjectAsync("storage1-test", "1.png", fileStream);
      ```
 
 ### Usage 2
@@ -71,10 +71,10 @@ var aliyunStorageOptions = new AliyunStorageOptions(
 {
     Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"]);
 };
-builder.Services.AddAliyunStorage(aliyunStorageOptions);
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage(aliyunStorageOptions));
 ```
 
-2. Get `IClient` from DI and use the corresponding method
+2. Get `IObjectStorageClient` from DI and use the corresponding method
 
 ### Usage 3:
 
@@ -82,7 +82,7 @@ builder.Services.AddAliyunStorage(aliyunStorageOptions);
 
 ``` C#
 var configuration = builder.Configuration;
-builder.Services.AddAliyunStorage(() =>
+builder.Services.AddObjectStorage(options => options.UseAliyunStorage(() =>
 {
     return new AliyunStorageOptions(
         configuration["Aliyun:AccessKeyId"],
@@ -93,10 +93,10 @@ builder.Services.AddAliyunStorage(() =>
     {
         Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
     };
-});
+}));
 ```
 
-2. Get `IClient` from DI and use the corresponding method
+2. Get `IObjectStorageClient` from DI and use the corresponding method
 
 > The difference from usage 2 is to defer getting the configuration
 
@@ -104,10 +104,8 @@ builder.Services.AddAliyunStorage(() =>
 
 1. Add Aliyun Storage Service
 
-   1.1. Sync
-
     ``` C#
-    builder.Services.AddAliyunStorage((serviceProvider) =>
+    builder.Services.AddObjectStorage(options => options.UseAliyunStorage(serviceProvider =>
     {
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         return new AliyunStorageOptions(
@@ -119,28 +117,10 @@ builder.Services.AddAliyunStorage(() =>
         {
             Sts = new AliyunStsOptions(configuration["Aliyun:RegionId"])
         };
-    });
+    }));
     ```
 
-   1.2. Async
-
-    ``` C#
-    builder.Services.AddAliyunStorage(async serviceProvider =>
-    {
-        var daprClient = serviceProvider.GetRequiredService<DaprClient>();
-        var accessId = (await daprClient.GetSecretAsync("localsecretstore", "access_id")).First().Value;
-        var accessSecret = (await daprClient.GetSecretAsync("localsecretstore", "access_secret")).First().Value;
-        var endpoint = (await daprClient.GetSecretAsync("localsecretstore", "endpoint")).First().Value;
-        var roleArn = (await daprClient.GetSecretAsync("localsecretstore", "roleArn")).First().Value;
-        return new AliyunStorageOptions(accessId, accessSecret, endpoint, roleArn, "SessionTest") {
-            Sts = new AliyunStsOptions() {
-                RegionId = "cn-hangzhou"
-            }
-        };
-    });
-    ```
-
-2. Get `IClient` from DI and use the corresponding method
+2. Get `IObjectStorageClient` from DI and use the corresponding method
 
 > The difference from usage 3 is that the service required for configuration can be obtained through serviceProvider, and finally the configuration object is returned
 

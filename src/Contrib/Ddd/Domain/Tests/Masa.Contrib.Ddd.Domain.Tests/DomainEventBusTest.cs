@@ -43,4 +43,21 @@ public class DomainEventBusTest
         _integrationEventBus.Verify(bus => bus.PublishAsync(It.IsAny<IIntegrationEvent>(), default), Times.Once);
         _eventBus.Verify(bus => bus.PublishAsync(It.IsAny<IEvent>(), default), Times.Never);
     }
+
+    [TestMethod]
+    public void TestAddDomainEventBusReturnDomainServiceIsNotNull()
+    {
+        var services = new ServiceCollection();
+        Mock<IEventBus> eventBus = new();
+        Mock<IIntegrationEventBus> integrationEventBus = new();
+        Mock<IUnitOfWork> unitOfWork = new();
+        services.AddScoped(_ => eventBus.Object);
+        services.AddScoped(_ => integrationEventBus.Object);
+        services.AddScoped(_ => unitOfWork.Object);
+        services.AddDomainEventBus();
+        var serviceProvider = services.BuildServiceProvider();
+        var domainService = serviceProvider.GetService<UserDomainService>();
+        Assert.IsNotNull(domainService);
+        Assert.AreNotEqual(default, domainService.EventBus);
+    }
 }

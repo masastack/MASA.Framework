@@ -3,12 +3,14 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public interface IClientContainer<TContainer> : IClientContainer where TContainer : class
+#pragma warning disable S2326
+public interface IObjectStorageClientContainer<TContainer> : IObjectStorageClientContainer where TContainer : class
 {
 
 }
+#pragma warning restore S2326
 
-public interface IClientContainer
+public interface IObjectStorageClientContainer
 {
     /// <summary>
     /// Obtain temporary authorization credentials through STS service
