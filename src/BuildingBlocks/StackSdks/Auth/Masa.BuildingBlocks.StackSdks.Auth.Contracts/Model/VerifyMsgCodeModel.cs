@@ -9,9 +9,7 @@ public class VerifyMsgCodeModel
 
     public string Code { get; set; }
 
-    public VerifyMsgCodeModel(Guid userId, string code)
-    {
-        UserId = userId;
-        Code = code;
-    }
+    public string? PhoneNumber { get; set; }
+
+    public SendMsgCodeTypes SendMsgCodeType { get; set; } = SendMsgCodeTypes.VerifiyPhoneNumber;
 }

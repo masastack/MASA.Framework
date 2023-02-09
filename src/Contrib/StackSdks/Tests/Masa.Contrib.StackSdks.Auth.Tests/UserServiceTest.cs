@@ -354,7 +354,7 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestVerifyMsgCodeAsync()
     {
-        var code = new VerifyMsgCodeModel(default, "283417");
+        var code = new VerifyMsgCodeModel();
         var requestUri = $"api/user/verifyMsgCode";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PostAsync<bool>(requestUri, code, default)).Verifiable();
