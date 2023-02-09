@@ -60,6 +60,7 @@ public class TestALiYunStorageOptions
         var options = new AliyunStorageOptions(accessKeyId, accessKeySecret, endpoint, roleArn, roleSessionName);
         Assert.IsTrue(options.AccessKeyId == accessKeyId);
         Assert.IsTrue(options.AccessKeySecret == accessKeySecret);
+        Assert.IsNotNull(options.Sts);
         Assert.IsTrue(options.Sts.RegionId == null);
         Assert.IsTrue(options.RoleArn == roleArn);
         Assert.IsTrue(options.RoleSessionName == roleSessionName);

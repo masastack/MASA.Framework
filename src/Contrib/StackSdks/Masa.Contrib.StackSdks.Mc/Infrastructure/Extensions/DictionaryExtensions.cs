@@ -63,7 +63,7 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey">Type of the key</typeparam>
     /// <typeparam name="TValue">Type of the value</typeparam>
     /// <returns>Value if found, default if can not found.</returns>
-    public static TValue? GetOrDefault<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, TKey key)
+    public static TValue? GetOrDefault<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, TKey key) where TKey : notnull
     {
         return dictionary.TryGetValue(key, out var obj) ? obj : default;
     }
@@ -111,7 +111,8 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey">Type of the key</typeparam>
     /// <typeparam name="TValue">Type of the value</typeparam>
     /// <returns>Value if found, default if can not found.</returns>
-    public static TValue GetOrAdd<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, [NotNull] TKey key, Func<TValue> factory)
+    public static TValue GetOrAdd<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dictionary, [NotNull] TKey key,
+        Func<TValue> factory) where TKey : notnull
     {
         return dictionary.GetOrAdd(key, k => factory());
     }
