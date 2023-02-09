@@ -56,6 +56,7 @@ public class SyncCache
         await _clientCache.SetAsync(client);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task RemoveApiResourceCacheAsync(ApiResource apiResource)
     {
         if (_apiResourceCache is null) return;
@@ -63,6 +64,7 @@ public class SyncCache
         await _apiResourceCache.RemoveAsync(apiResource);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task RemoveApiScopeCacheAsync(ApiScope apiScope)
     {
         if (_apiScopeCache is null) return;
@@ -70,6 +72,7 @@ public class SyncCache
         await _apiScopeCache.RemoveAsync(apiScope);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task RemoveIdentityResourceCacheAsync(IdentityResource identityResource)
     {
         if (_identityResourceCache is null) return;
@@ -77,6 +80,7 @@ public class SyncCache
         await _identityResourceCache.RemoveAsync(identityResource);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task RemoveClientCacheAsync(Client client)
     {
         if (_clientCache is null) return;
@@ -84,6 +88,7 @@ public class SyncCache
         await _clientCache.RemoveAsync(client);
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task ResetAsync()
     {
         if (_clientCache is not null)
@@ -108,6 +113,7 @@ public class SyncCache
         }
     }
 
+    [ExcludeFromCodeCoverage]
     public async Task<IEnumerable<Client>> ClientQueryAsync()
     {
         var clients = await _context.Set<Client>().ToListAsync();

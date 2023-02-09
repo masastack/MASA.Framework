@@ -8,81 +8,120 @@ public abstract class AbstractCaller : ICaller
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;
 
+    private readonly Func<IServiceProvider, IRequestMessage>? _requestMessageFactory;
+    private readonly Func<IServiceProvider, IResponseMessage>? _responseMessageFactory;
+
     private IRequestMessage? _requestMessage;
     private IResponseMessage? _responseMessage;
-    protected IRequestMessage RequestMessage => _requestMessage ??= ServiceProvider.GetRequiredService<IRequestMessage>();
-    protected IResponseMessage ResponseMessage => _responseMessage ??= ServiceProvider.GetRequiredService<IResponseMessage>();
-    protected Func<HttpRequestMessage, Task>? RequestMessageFunc;
 
-    protected AbstractCaller(IServiceProvider serviceProvider)
+    protected IRequestMessage RequestMessage => _requestMessage ??=
+        _requestMessageFactory?.Invoke(ServiceProvider) ?? ServiceProvider.GetRequiredService<IRequestMessage>();
+
+    protected IResponseMessage ResponseMessage => _responseMessage ??=
+        _responseMessageFactory?.Invoke(ServiceProvider) ?? ServiceProvider.GetRequiredService<IResponseMessage>();
+
+    protected readonly List<Func<IServiceProvider, ICallerMiddleware>> Middlewares;
+
+    protected AbstractCaller(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+
+    protected AbstractCaller(IServiceProvider serviceProvider,
+        string name,
+        Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
+        Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory) : this(serviceProvider)
     {
+        _requestMessageFactory = currentRequestMessageFactory;
+        _responseMessageFactory = currentResponseMessageFactory;
+
         _typeConvertor = serviceProvider.GetRequiredService<ITypeConvertor>();
-        ServiceProvider = serviceProvider;
+
+        var options = serviceProvider.GetRequiredService<IOptions<CallerMiddlewareFactoryOptions>>().Value
+            .Options
+            .FirstOrDefault(relationOptions => relationOptions.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        Middlewares = options?.Middlewares.AsEnumerable().Reverse().ToList() ?? new List<Func<IServiceProvider, ICallerMiddleware>>();
     }
 
-    public virtual void ConfigRequestMessage(Func<HttpRequestMessage, Task> func)
-    {
-        RequestMessageFunc = func;
-    }
-
-    public virtual async Task<HttpResponseMessage> SendAsync(
+    public virtual Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var response = await SendAsync(request, cancellationToken);
-        if (autoThrowException)
-            await ResponseMessage.ProcessResponseAsync(response, cancellationToken);
+        => SendAsync(() => request, autoThrowException, cancellationToken);
 
-        return response;
-    }
-
-    public abstract Task<TResponse?> SendAsync<TResponse>(
+    public virtual Task<TResponse?> SendAsync<TResponse>(
         HttpRequestMessage request,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default)
+        => SendAsync<TResponse>(() => request, cancellationToken);
 
     public abstract Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken = default);
 
-    public virtual async Task<HttpResponseMessage> SendAsync(
+    public virtual Task<HttpResponseMessage> SendAsync(
         HttpMethod method,
         string? methodName,
         HttpContent? content,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        HttpRequestMessage request = await CreateRequestAsync(method, methodName);
-        request.Content = content;
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(() =>
+        {
+            var request = CreateRequest(method, methodName);
+            request.Content = content;
+            return request;
+        }, autoThrowException, cancellationToken);
 
-    public virtual async Task<HttpResponseMessage> SendAsync<TRequest>(
+    public virtual Task<HttpResponseMessage> SendAsync<TRequest>(
         HttpMethod method,
         string? methodName,
         TRequest data,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(method, methodName, data);
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(() => CreateRequest(method, methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> SendAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> SendAsync<TRequest, TResponse>(
         HttpMethod method,
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default)
+        => SendAsync<TResponse?>(() => CreateRequest(method, methodName, data), cancellationToken);
+
+    protected virtual async Task<HttpResponseMessage> SendAsync(
+        Func<HttpRequestMessage> requestMessageFunc,
+        bool autoThrowException = true,
+        CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(method, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
+        CallerHandlerDelegate callerHandlerDelegate = async () =>
+        {
+            masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
+
+            if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
+        };
+
+        await Middlewares.Aggregate(callerHandlerDelegate,
+            (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
+        return masaHttpContext.ResponseMessage;
     }
 
-    public abstract Task<HttpRequestMessage> CreateRequestAsync(
+    protected virtual async Task<TResponse?> SendAsync<TResponse>(
+        Func<HttpRequestMessage> requestMessageFunc,
+        CancellationToken cancellationToken = default)
+    {
+        TResponse? response = default;
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
+        CallerHandlerDelegate callerHandlerDelegate = async () =>
+        {
+            masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
+            response = await masaHttpContext.ProcessResponseAsync<TResponse>(cancellationToken);
+        };
+        await Middlewares.Aggregate(callerHandlerDelegate,
+            (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
+        return response;
+    }
+
+    public abstract HttpRequestMessage CreateRequest(
         HttpMethod method,
         string? methodName);
 
-    public abstract Task<HttpRequestMessage> CreateRequestAsync<TRequest>(
+    public abstract HttpRequestMessage CreateRequest<TRequest>(
         HttpMethod method,
         string? methodName,
         TRequest data);
@@ -114,9 +153,20 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
-        var content = await SendAsync(request, autoThrowException, cancellationToken);
-        return await content.Content.ReadAsStringAsync(cancellationToken);
+        string content = default!;
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        CallerHandlerDelegate callerHandlerDelegate = async () =>
+        {
+            masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
+
+            if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
+
+            content = await masaHttpContext.ResponseMessage.Content.ReadAsStringAsync(cancellationToken);
+        };
+
+        await Middlewares.Aggregate(callerHandlerDelegate,
+            (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
+        return content;
     }
 
     public virtual Task<string> GetStringAsync<TRequest>(
@@ -141,9 +191,19 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Get, methodName);
-        HttpResponseMessage content = await SendAsync(request, autoThrowException, cancellationToken);
-        return await content.Content.ReadAsByteArrayAsync(cancellationToken);
+        byte[] content = default!;
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        CallerHandlerDelegate callerHandlerDelegate = async () =>
+        {
+            masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
+
+            if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
+
+            content = await masaHttpContext.ResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
+        };
+        await Middlewares.Aggregate(callerHandlerDelegate,
+            (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
+        return content;
     }
 
     public virtual Task<byte[]> GetByteArrayAsync<TRequest>(
@@ -168,9 +228,19 @@ public abstract class AbstractCaller : ICaller
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
     {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
-        var content = await SendAsync(request, autoThrowException, cancellationToken);
-        return await content.Content.ReadAsStreamAsync(cancellationToken);
+        Stream content = default!;
+        var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        CallerHandlerDelegate callerHandlerDelegate = async () =>
+        {
+            masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
+
+            if (autoThrowException) await masaHttpContext.ProcessResponseAsync(cancellationToken);
+
+            content = await masaHttpContext.ResponseMessage.Content.ReadAsStreamAsync(cancellationToken);
+        };
+        await Middlewares.Aggregate(callerHandlerDelegate,
+            (next, func) => () => func.Invoke(ServiceProvider).HandleAsync(masaHttpContext, next, cancellationToken))();
+        return content;
     }
 
     public virtual Task<Stream> GetStreamAsync<TRequest>(
@@ -203,42 +273,32 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => GetAsync(GetUrl(methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> GetAsync<TResponse>(
+    public virtual Task<TResponse?> GetAsync<TResponse>(
         string? methodName,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Get, methodName);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(() => CreateRequest(HttpMethod.Get, methodName), cancellationToken);
 
-    public virtual async Task<TResponse?> GetAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> GetAsync<TRequest, TResponse>(
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default) where TRequest : class
-    {
-        var request =
-            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data)));
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(
+            () => CreateRequest(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data))),
+            cancellationToken);
 
-    public virtual async Task<TResponse?> GetAsync<TResponse>(
+    public virtual Task<TResponse?> GetAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
-    {
-        var request =
-            await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data)));
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(
+            () => CreateRequest(HttpMethod.Get, GetUrl(methodName, _typeConvertor.ConvertToKeyValuePairs(data))),
+            cancellationToken);
 
-    public virtual async Task<TResponse?> GetAsync<TResponse>(
+    public virtual Task<TResponse?> GetAsync<TResponse>(
         string? methodName,
         Dictionary<string, string> data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Get, GetUrl(methodName, data));
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(CreateRequest(HttpMethod.Get, GetUrl(methodName, data)), cancellationToken);
 
     protected virtual string GetUrl(string? url, IEnumerable<KeyValuePair<string, string>> properties)
     {
@@ -262,24 +322,18 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => SendAsync(HttpMethod.Post, methodName, content, autoThrowException, cancellationToken);
 
-    public virtual async Task<HttpResponseMessage> PostAsync<TRequest>(
+    public virtual Task<HttpResponseMessage> PostAsync<TRequest>(
         string? methodName,
         TRequest data,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(CreateRequest(HttpMethod.Post, methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> PostAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> PostAsync<TRequest, TResponse>(
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default)
-    {
-        HttpRequestMessage request = await CreateRequestAsync(HttpMethod.Post, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(CreateRequest(HttpMethod.Post, methodName, data), cancellationToken);
 
     public virtual Task<TResponse?> PostAsync<TResponse>(
         string? methodName,
@@ -294,24 +348,18 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => SendAsync(HttpMethod.Patch, methodName, content, autoThrowException, cancellationToken);
 
-    public virtual async Task<HttpResponseMessage> PatchAsync<TRequest>(
+    public virtual Task<HttpResponseMessage> PatchAsync<TRequest>(
         string? methodName,
         TRequest data,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(CreateRequest(HttpMethod.Patch, methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> PatchAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> PatchAsync<TRequest, TResponse>(
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Patch, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(() => CreateRequest(HttpMethod.Patch, methodName, data), cancellationToken);
 
     public virtual Task<TResponse?> PatchAsync<TResponse>(
         string? methodName,
@@ -326,24 +374,18 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => SendAsync(HttpMethod.Put, methodName, content, autoThrowException, cancellationToken);
 
-    public virtual async Task<HttpResponseMessage> PutAsync<TRequest>(
+    public virtual Task<HttpResponseMessage> PutAsync<TRequest>(
         string? methodName,
         TRequest data,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data);
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(() => CreateRequest(HttpMethod.Put, methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> PutAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> PutAsync<TRequest, TResponse>(
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Put, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(() => CreateRequest(HttpMethod.Put, methodName, data), cancellationToken);
 
     public virtual Task<TResponse?> PutAsync<TResponse>(
         string? methodName,
@@ -358,28 +400,23 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => SendAsync(HttpMethod.Delete, methodName, content, autoThrowException, cancellationToken);
 
-    public virtual async Task<HttpResponseMessage> DeleteAsync<TRequest>(
+    public virtual Task<HttpResponseMessage> DeleteAsync<TRequest>(
         string? methodName,
         TRequest data,
         bool autoThrowException = true,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data);
-        return await SendAsync(request, autoThrowException, cancellationToken);
-    }
+        => SendAsync(() => CreateRequest(HttpMethod.Delete, methodName, data), autoThrowException, cancellationToken);
 
-    public virtual async Task<TResponse?> DeleteAsync<TRequest, TResponse>(
+    public virtual Task<TResponse?> DeleteAsync<TRequest, TResponse>(
         string? methodName,
         TRequest data,
         CancellationToken cancellationToken = default)
-    {
-        var request = await CreateRequestAsync(HttpMethod.Delete, methodName, data);
-        return await SendAsync<TResponse>(request, cancellationToken);
-    }
+        => SendAsync<TResponse>(() => CreateRequest(HttpMethod.Delete, methodName, data), cancellationToken);
 
     public virtual Task<TResponse?> DeleteAsync<TResponse>(
         string? methodName,
         object data,
         CancellationToken cancellationToken = default)
         => DeleteAsync<object, TResponse>(methodName, data, cancellationToken);
+
 }

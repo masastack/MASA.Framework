@@ -9,8 +9,6 @@ public abstract class HttpClientCallerBase : CallerBase
 
     protected virtual string Prefix { get; set; } = string.Empty;
 
-    protected virtual bool IsSupportUpdate { get; set; } = false;
-
     protected HttpClientCallerBase()
     {
 
@@ -22,14 +20,21 @@ public abstract class HttpClientCallerBase : CallerBase
 
     public override void UseCallerExtension() => UseHttpClient();
 
-    protected virtual IHttpClientBuilder UseHttpClient()
+    protected virtual MasaHttpClientBuilder UseHttpClient()
     {
-        return CallerOptions.UseHttpClient(Name!, httpClientBuilder =>
+        var masaHttpClientBuilder = CallerOptions.UseHttpClient(callerClient =>
         {
-            httpClientBuilder.Prefix = Prefix;
-            httpClientBuilder.BaseAddress = BaseAddress;
-            httpClientBuilder.Configure = ConfigureHttpClient;
-        }, IsSupportUpdate);
+            callerClient.Prefix = Prefix;
+            callerClient.BaseAddress = BaseAddress;
+            callerClient.Configure = ConfigureHttpClient;
+            ConfigMasaCallerClient(callerClient);
+        });
+        masaHttpClientBuilder.AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
+        return masaHttpClientBuilder;
+    }
+
+    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
+    {
     }
 
     protected virtual void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)

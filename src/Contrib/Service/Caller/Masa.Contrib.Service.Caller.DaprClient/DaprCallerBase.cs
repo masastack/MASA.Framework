@@ -19,16 +19,18 @@ public abstract class DaprCallerBase : CallerBase
 
     public override void UseCallerExtension() => UseDapr();
 
-    protected virtual DefaultDaprClientBuilder UseDapr()
+    protected virtual MasaDaprClientBuilder UseDapr()
     {
-        CallerOptions.UseDapr(Name!, opt =>
+        var daprClientBuilder = CallerOptions.UseDapr(callerClient =>
         {
-            opt.AppId = AppId;
-            if (Configure != null)
-            {
-                opt.Configure = Configure;
-            }
-        });
-        return new DefaultDaprClientBuilder(CallerOptions.Services, Name!);
+            callerClient.AppId = AppId;
+            ConfigMasaCallerClient(callerClient);
+        }, Configure);
+        daprClientBuilder.AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
+        return daprClientBuilder;
+    }
+
+    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
+    {
     }
 }

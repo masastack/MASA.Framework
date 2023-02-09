@@ -7,64 +7,36 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class CallerOptionsExtensions
 {
-    private static readonly string DefaultCallerName = Microsoft.Extensions.Options.Options.DefaultName;
+    public static MasaHttpClientBuilder UseHttpClient(this CallerOptionsBuilder callerOptionsBuilder)
+        => callerOptionsBuilder.UseHttpClientCore(null);
 
-    public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
-        Func<MasaHttpClientBuilder>? clientBuilder = null,
-        bool alwaysGetNewestHttpClient = false)
-        => callerOptions.UseHttpClient(DefaultCallerName, clientBuilder, alwaysGetNewestHttpClient);
-
-    public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
-        string name,
-        Func<MasaHttpClientBuilder>? clientBuilder = null,
-        bool alwaysGetNewestHttpClient = false)
+    public static MasaHttpClientBuilder UseHttpClient(this CallerOptionsBuilder callerOptionsBuilder,
+        Action<MasaHttpClient> clientConfigure)
     {
-        return callerOptions.UseHttpClient(name, masaHttpClientBuilder =>
-        {
-            var builder = clientBuilder == null ? new MasaHttpClientBuilder() : clientBuilder.Invoke();
-            masaHttpClientBuilder.BaseAddress = builder.BaseAddress;
-            masaHttpClientBuilder.Prefix = builder.Prefix;
-            masaHttpClientBuilder.Configure = builder.Configure;
-        }, alwaysGetNewestHttpClient);
+        MasaArgumentException.ThrowIfNull(clientConfigure);
+
+        return callerOptionsBuilder.UseHttpClientCore(clientConfigure);
     }
 
-    public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
-        Action<MasaHttpClientBuilder>? clientBuilder,
-        bool alwaysGetNewestHttpClient = false)
-        => callerOptions.UseHttpClient(DefaultCallerName, clientBuilder, alwaysGetNewestHttpClient);
-
-    public static IHttpClientBuilder UseHttpClient(this CallerOptions callerOptions,
-        string name,
-        Action<MasaHttpClientBuilder>? clientBuilder,
-        bool alwaysGetNewestHttpClient = false)
+    private static MasaHttpClientBuilder UseHttpClientCore(this CallerOptionsBuilder callerOptionsBuilder,
+        Action<MasaHttpClient>? clientConfigure)
     {
-        if (alwaysGetNewestHttpClient)
+        callerOptionsBuilder.Services.AddHttpClient(callerOptionsBuilder.Name);
+
+        callerOptionsBuilder.Services.AddCaller(callerOptionsBuilder.Name, serviceProvider =>
         {
-            var httpClientBuilder = callerOptions.Services.AddHttpClient(name);
-            AddCallerExtensions.AddCaller(callerOptions, name, serviceProvider
-                =>
-            {
-                var masaHttpClientBuilder = new MasaHttpClientBuilder();
-                clientBuilder?.Invoke(masaHttpClientBuilder);
-                var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);
-                masaHttpClientBuilder.ConfigureHttpClient(httpClient);
-                return new HttpClientCaller(httpClient, serviceProvider, masaHttpClientBuilder.Prefix);
-            });
-            return httpClientBuilder;
-        }
-        else
-        {
-            var masaHttpClientBuilder = new MasaHttpClientBuilder();
-            clientBuilder?.Invoke(masaHttpClientBuilder);
-            var httpClientBuilder =
-                callerOptions.Services.AddHttpClient(name, httpClient => masaHttpClientBuilder.ConfigureHttpClient(httpClient));
-            AddCallerExtensions.AddCaller(callerOptions, name, serviceProvider
-                =>
-            {
-                var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(name);
-                return new HttpClientCaller(httpClient, serviceProvider, masaHttpClientBuilder.Prefix);
-            });
-            return httpClientBuilder;
-        }
+            var masaHttpClient = new MasaHttpClient();
+            clientConfigure?.Invoke(masaHttpClient);
+            var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(callerOptionsBuilder.Name);
+            masaHttpClient.ConfigureHttpClient(httpClient);
+            return new HttpClientCaller(
+                httpClient,
+                serviceProvider,
+                callerOptionsBuilder.Name,
+                masaHttpClient.Prefix,
+                masaHttpClient.RequestMessageFactory,
+                masaHttpClient.ResponseMessageFactory);
+        });
+        return new MasaHttpClientBuilder(callerOptionsBuilder.Services, callerOptionsBuilder.Name);
     }
 }

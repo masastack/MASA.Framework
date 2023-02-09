@@ -24,12 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Ddd\Domain\Masa.Contrib.Ddd.Domain.Repository.EFCore\Masa.Contrib.Ddd.Domain.Repository.EFCore.csproj" />
-    <ProjectReference Include="..\..\..\..\Ddd\Domain\Masa.Contrib.Ddd.Domain\Masa.Contrib.Ddd.Domain.csproj" />
-    <ProjectReference Include="..\..\..\..\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore\Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.csproj" />
-    <ProjectReference Include="..\..\..\..\Dispatcher\IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.csproj" />
-    <ProjectReference Include="..\..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
-    <ProjectReference Include="..\..\..\..\Isolation\UoW\Masa.Contrib.Isolation.UoW.EFCore\Masa.Contrib.Isolation.UoW.EFCore.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage\Masa.Contrib.Authentication.OpenIdConnect.Cache.Storage.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.Cache\Masa.Contrib.Authentication.OpenIdConnect.Cache.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Authentication.OpenIdConnect.EFCore\Masa.Contrib.Authentication.OpenIdConnect.EFCore.csproj" />

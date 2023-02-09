@@ -5,24 +5,13 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public abstract class CallerBase
 {
-    public virtual string? Name { get; set; }
+    public virtual string? Name { get; private set; } = null;
 
-    protected CallerOptions CallerOptions { get; private set; } = default!;
+    protected CallerOptionsBuilder CallerOptions { get; private set; } = default!;
 
     private ICaller? _caller;
 
-    protected ICaller Caller
-    {
-        get
-        {
-            if (_caller == null)
-            {
-                _caller = ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
-                _caller.ConfigRequestMessage(ConfigHttpRequestMessageAsync);
-            }
-            return _caller;
-        }
-    }
+    protected ICaller Caller => _caller ??= ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
 
     [Obsolete("CallerProvider has expired, please use Caller")]
     protected ICaller CallerProvider => Caller;
@@ -35,10 +24,10 @@ public abstract class CallerBase
 
     public abstract void UseCallerExtension();
 
-    public void SetCallerOptions(CallerOptions options, string name)
+    public void SetCallerOptions(CallerOptionsBuilder callerOptionsBuilder, string name)
     {
-        CallerOptions = options;
-        Name ??= name;
+        CallerOptions = callerOptionsBuilder;
+        Name = name;
     }
 
     public void SetServiceProvider(IServiceProvider serviceProvider)
@@ -48,8 +37,6 @@ public abstract class CallerBase
 
     protected virtual Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
-        var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
-        authenticationService?.ExecuteAsync(requestMessage);
         return Task.CompletedTask;
     }
 }

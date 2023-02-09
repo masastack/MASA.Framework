@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public interface IRequestMessage
 {
-    Task<HttpRequestMessage> ProcessHttpRequestMessageAsync(HttpRequestMessage requestMessage);
+    void ProcessHttpRequestMessage(HttpRequestMessage requestMessage);
 
-    Task<HttpRequestMessage> ProcessHttpRequestMessageAsync<TRequest>(HttpRequestMessage requestMessage, TRequest data);
+    void ProcessHttpRequestMessage<TRequest>(HttpRequestMessage requestMessage, TRequest data);
 }

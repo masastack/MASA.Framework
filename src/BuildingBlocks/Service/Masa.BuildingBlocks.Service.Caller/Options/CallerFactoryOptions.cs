@@ -7,7 +7,4 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public class CallerFactoryOptions : MasaFactoryOptions<CallerRelationOptions>
 {
-    public JsonSerializerOptions? JsonSerializerOptions { get; set; }
-
-    public string? RequestIdKey { get; set; }
 }
