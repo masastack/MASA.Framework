@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Config;
 
-public static class IMasaStackConfigExtensions
+public static class MasaStackConfigExtensions
 {
     public static Dictionary<string, JsonObject> GetAllServer(this IMasaStackConfig masaStackConfig)
     {
