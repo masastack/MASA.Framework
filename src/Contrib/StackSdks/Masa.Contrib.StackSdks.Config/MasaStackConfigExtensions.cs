@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
+
 namespace Masa.Contrib.StackSdks.Config;
 
 public static class MasaStackConfigExtensions
@@ -151,12 +153,12 @@ public static class MasaStackConfigExtensions
         return obj?[service]?.ToString() ?? "";
     }
 
-    public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
+    public static DccOptions GetDefaultDccOptions(this IMasaStackConfig masaStackConfig)
     {
         var dccServerAddress = GetDccServiceDomain(masaStackConfig);
         var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
 
-        var stringBuilder = new System.Text.StringBuilder(@"{""ManageServiceAddress"":");
+        var stringBuilder = new StringBuilder(@"{""ManageServiceAddress"":");
         stringBuilder.Append($"\"{dccServerAddress}\",");
         stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
         stringBuilder.Append($"\"{redis.RedisHost}\",");
@@ -169,8 +171,9 @@ public static class MasaStackConfigExtensions
         stringBuilder.Append($"\"{masaStackConfig.DccSecret}\",");
         stringBuilder.Append(@"""PublicSecret"":");
         stringBuilder.Append($"\"{masaStackConfig.DccSecret}\"");
-        stringBuilder.Append(@"}");
-        return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
+        stringBuilder.Append('}');
+
+        return JsonSerializer.Deserialize<DccOptions>(stringBuilder.ToString()) ?? throw new JsonException();
     }
 
     public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)

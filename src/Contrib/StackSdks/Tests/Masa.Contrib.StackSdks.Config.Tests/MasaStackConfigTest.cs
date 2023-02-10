@@ -28,7 +28,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetMiniDccOptions()
     {
-        var dccOptions = _stackConfig.GetDccMiniOptions<DccOptions>();
+        var dccOptions = _stackConfig.GetDefaultDccOptions();
 
         Assert.IsNotNull(dccOptions?.RedisOptions);
     }
