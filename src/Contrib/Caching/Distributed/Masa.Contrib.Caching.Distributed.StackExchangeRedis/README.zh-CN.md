@@ -25,7 +25,6 @@ builder.Services.AddDistributedCache(distributedCacheOptions =>
     var redisConfigurationOptions = new RedisConfigurationOptions()
     {
         DefaultDatabase = 1,
-        ConnectionPoolSize = 10,
         Servers = new List<RedisServerOptions>()
         {
             new("localhost", 6379)
@@ -55,8 +54,7 @@ distributedCacheClient.Set(key, "test_content");
         "Port": 6379
       }
     ],
-    "DefaultDatabase": 3,
-    "ConnectionPoolSize": 10
+    "DefaultDatabase": 3
   }
 }
 ```
