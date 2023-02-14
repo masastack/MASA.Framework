@@ -1,16 +1,18 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace System.Collections;
+// ReSharper disable once CheckNamespace
 
-public static class CollectionExtensions
+namespace System.Collections.Generic;
+
+public static class Collection
 {
-    public static bool IsNullOrEmpty<T>(this ICollection<T> source)
+    public static bool IsNullOrEmpty<T>(this ICollection<T>? source)
     {
         return source == null || !source.Any();
     }
 
-    public static bool AddIfNotContains<T>(this ICollection<T> source, T item)
+    public static bool TryAdd<T>(this ICollection<T> source, T item)
     {
         if (source.Contains(item))
         {
@@ -21,7 +23,7 @@ public static class CollectionExtensions
         return true;
     }
 
-    public static void AddIfNotContains<T>(this ICollection<T> source, IEnumerable<T> items)
+    public static void TryAddRange<T>(this ICollection<T> source, IEnumerable<T> items)
     {
         foreach (var item in items)
         {
