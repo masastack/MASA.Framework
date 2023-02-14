@@ -13,7 +13,7 @@ public class MasaStackConfigTest
     {
         var builder = WebApplication.CreateBuilder();
 
-        builder.Services.AddMasaStackConfig();
+        builder.Services.AddMasaStackConfig(true);
         _stackConfig = builder.Services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
     }
 

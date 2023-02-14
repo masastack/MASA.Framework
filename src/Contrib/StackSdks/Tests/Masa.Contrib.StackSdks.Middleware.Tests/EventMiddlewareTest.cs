@@ -18,7 +18,7 @@ public class EventMiddlewareTest
             options.Mapping(nameof(MasaUser.Account), "ACCOUNT");
         });
 
-        builder.Services.AddMasaStackConfig();
+        builder.Services.AddMasaStackConfig(true);
         builder.Services.AddTestEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
         builder.Services.AddStackMiddleware();
 

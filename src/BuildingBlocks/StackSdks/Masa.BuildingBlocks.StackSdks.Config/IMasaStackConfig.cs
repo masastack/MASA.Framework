@@ -35,5 +35,5 @@ public interface IMasaStackConfig
 
     void SetValue(string key, string value);
 
-    public List<string> ProjectList();
+    List<string> GetProjectList();
 }

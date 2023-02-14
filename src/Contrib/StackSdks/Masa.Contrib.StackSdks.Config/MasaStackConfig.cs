@@ -1,15 +1,33 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+
 namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    private readonly IOptions<MasaStackConfigOptions> _options;
+    private readonly MasaStackConfigOptions _options = new();
 
-    public MasaStackConfig(IOptions<MasaStackConfigOptions> options)
+    public MasaStackConfig(MasaStackConfigOptions? options, IConfigurationApiClient? client)
     {
-        _options = options;
+        if (client is not null)
+        {
+            var configs = client.GetAsync<Dictionary<string, string>>(
+                Environment,
+                Cluster,
+                DEFAULT_PUBLIC_ID,
+                DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            foreach (var config in configs)
+            {
+                _options.SetValue(config.Key, config.Value);
+            }
+        }
+        if (options is not null)
+        {
+            _options = options;
+        }
     }
 
     public RedisModel RedisModel
@@ -52,9 +70,9 @@ public class MasaStackConfig : IMasaStackConfig
 
     public bool SingleSsoClient { get; }
 
-    public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
+    public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
 
-    public string GetValue(string key) => _options.Value.GetValue(key);
+    public string GetValue(string key) => _options.GetValue(key);
 
-    public void SetValue(string key, string value) => _options.Value.SetValue(key, value);
+    public void SetValue(string key, string value) => _options.SetValue(key, value);
 }

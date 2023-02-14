@@ -5,7 +5,7 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfigOptions
 {
-    private ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     public string GetValue(string key) => GetValue(key, () => string.Empty);
 

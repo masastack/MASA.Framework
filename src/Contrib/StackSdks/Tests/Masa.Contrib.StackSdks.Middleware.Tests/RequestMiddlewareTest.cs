@@ -11,7 +11,7 @@ public class RequestMiddlewareTest
     public RequestMiddlewareTest()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddMasaStackConfig()
+        builder.Services.AddMasaStackConfig(true)
             .AddStackMiddleware();
 
         _serviceProvider = builder.Services.BuildServiceProvider();

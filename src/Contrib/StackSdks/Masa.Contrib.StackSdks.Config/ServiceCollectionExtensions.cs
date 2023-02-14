@@ -1,44 +1,92 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    private static void InitializeMasaStackConfiguration(this IServiceCollection services)
+    private static async void InitializeMasaStackConfiguration(this IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-        services.Configure<MasaStackConfigOptions>(masaStackConfig =>
+        var configs = new Dictionary<string, string>()
         {
-            masaStackConfig.SetValue(MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION));
-            masaStackConfig.SetValue(MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString());
-            masaStackConfig.SetValue(MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME));
-            masaStackConfig.SetValue(MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE));
-            masaStackConfig.SetValue(MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME));
-            masaStackConfig.SetValue(MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER));
-            masaStackConfig.SetValue(MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL));
-            masaStackConfig.SetValue(MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS));
-            masaStackConfig.SetValue(MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING));
-            masaStackConfig.SetValue(MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER));
-            masaStackConfig.SetValue(MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI));
-            masaStackConfig.SetValue(MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC));
-            masaStackConfig.SetValue(MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT));
-            masaStackConfig.SetValue(MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD));
-            masaStackConfig.SetValue(MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET));
+            { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
+            { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
+            { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
+            { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
+            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
+            { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
+            { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
+            { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
+            { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
+            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
+            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
+            { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
+            { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
+            { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+        };
+
+        //services.Configure<MasaStackConfigOptions>(masaStackConfig =>
+        //{
+        //foreach (var config in configs)
+        //{
+        //    masaStackConfig.SetValue(config.Key, config.Value);
+        //}
+        //});
+
+        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
+        {
+            var options = new MasaStackConfigOptions();
+            foreach (var config in configs)
+            {
+                options.SetValue(config.Key, config.Value);
+            }
+            return new MasaStackConfig(options, null);
         });
 
-        services.AddMasaConfiguration(builder => builder.UseDcc());
+        var masaStackConfig = services.GetMasaStackConfig();
+        var dccOptions = masaStackConfig.GetDefaultDccOptions();
+        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
+
+        var serviceProvider2 = services.BuildServiceProvider();
+        var configurationApiManage = serviceProvider2.GetRequiredService<IConfigurationApiManage>();
+        var configurationApiClient = serviceProvider2.GetRequiredService<IConfigurationApiClient>();
+
+        await configurationApiManage.AddAsync(masaStackConfig.Environment, masaStackConfig.Cluster, DEFAULT_PUBLIC_ID, new Dictionary<string, string>
+            {
+                { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+            });
+
+        var (Raw, ConfigurationType) = await configurationApiClient.GetRawAsync(masaStackConfig.Environment,
+            masaStackConfig.Cluster,
+            DEFAULT_PUBLIC_ID,
+            DEFAULT_CONFIG_NAME,
+            value =>
+            {
+                UpdateMasaStackConfigContent(masaStackConfig, value);
+            });
     }
 
-    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = true)
+    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = false)
     {
-        services.TryAddSingleton<IMasaStackConfig, MasaStackConfig>();
         if (init)
         {
             InitializeMasaStackConfiguration(services);
         }
+        else
+        {
+            services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
+            {
+                var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+                return new MasaStackConfig(null, client);
+            });
+        }
+
         return services;
     }
 
@@ -47,26 +95,15 @@ public static class ServiceCollectionExtensions
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
     }
 
-    //private static DccOptions GetDefaultDccOptions(this IMasaStackConfig masaStackConfig)
-    //{
-    //    var dccServerAddress = GetDccServiceDomain(masaStackConfig);
-    //    var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
-
-    //    var stringBuilder = new StringBuilder(@"{""ManageServiceAddress"":");
-    //    stringBuilder.Append($"\"{dccServerAddress}\",");
-    //    stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
-    //    stringBuilder.Append($"\"{redis.RedisHost}\",");
-    //    stringBuilder.Append(@$"""Port"":{redis.RedisPort}");
-    //    stringBuilder.Append("}],");
-    //    stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
-    //    stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
-    //    stringBuilder.Append(@"},");
-    //    stringBuilder.Append(@"""ConfigObjectSecret"":");
-    //    stringBuilder.Append($"\"{masaStackConfig.DccSecret}\",");
-    //    stringBuilder.Append(@"""PublicSecret"":");
-    //    stringBuilder.Append($"\"{masaStackConfig.DccSecret}\"");
-    //    stringBuilder.Append('}');
-
-    //    return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
-    //}
+    private static void UpdateMasaStackConfigContent(IMasaStackConfig masaStackConfig, string content)
+    {
+        var remoteRaw = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+        if (remoteRaw != null)
+        {
+            foreach (var config in remoteRaw)
+            {
+                masaStackConfig.SetValue(config.Key, config.Value);
+            }
+        }
+    }
 }
