@@ -3,6 +3,7 @@
 
 global using IdentityModel.Client;
 global using Masa.BuildingBlocks.Authentication.Identity;
+global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Constans;
 global using Masa.BuildingBlocks.Caching;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Service.Caller;

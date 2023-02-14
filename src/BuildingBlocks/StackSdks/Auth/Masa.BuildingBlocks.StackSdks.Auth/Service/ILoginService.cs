@@ -3,9 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Service;
 
-public interface IThirdPartyIdpService
+public interface ILoginService
 {
-    Task<List<ThirdPartyIdpModel>> GetAllAsync();
-
-    Task<List<ThirdPartyIdpModel>> GetAllFromCacheAsync();
+    Task<TokenModel> LoginByPhoneNumberAsync(LoginByPhoneNumberFromSsoModel login);
 }

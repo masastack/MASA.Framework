@@ -236,36 +236,6 @@ public class UserService : IUserService
         return await _caller.PostAsync<UserModel>(requestUri, login);
     }
 
-    public async Task<TokenModel> LoginByPhoneNumberFromSsoAsync(string address, LoginByPhoneNumberFromSso login)
-    {
-        using var client = new HttpClient();
-        var disco = await client.GetDiscoveryDocumentAsync(address);
-        if (disco.IsError)
-            throw new UserFriendlyException(disco.Error);
-
-        var paramter = new Dictionary<string, string>
-        {
-            ["client_Id"] = login.ClientId,
-            ["client_secret"] = login.ClientSecret,
-            ["grant_type"] = "phone_code",
-            ["scope"] = string.Join(' ', login.Scope),
-            ["PhoneNumber"] = login.PhoneNumber,
-            ["code"] = login.Code
-        };
-
-        var tokenResponse = await client.RequestTokenRawAsync(disco.TokenEndpoint, new Parameters(paramter));
-        if (tokenResponse.IsError)
-            throw new UserFriendlyException(tokenResponse.Error);
-
-        return new TokenModel
-        {
-            AccessToken = tokenResponse.AccessToken,
-            IdentityToken = tokenResponse.IdentityToken,
-            RefreshToken = tokenResponse.RefreshToken,
-            ExpiresIn = tokenResponse.ExpiresIn,
-        };
-    }
-
     public async Task RemoveUserRolesAsync(RemoveUserRolesModel user)
     {
         var requestUri = $"api/user/userRoles";

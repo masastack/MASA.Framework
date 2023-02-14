@@ -1,0 +1,105 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Contrib.StackSdks.Auth.Service;
+
+public class LoginService : ILoginService
+{
+    readonly IHttpClientFactory _httpClientFactory;
+
+    public LoginService(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+
+    public async Task<TokenModel> LoginByPasswordAsync(LoginByPassword login)
+    {
+        var httpClient = CreateHttpClient();
+        var request = new PasswordTokenRequest()
+        {
+            ClientId = login.ClientId,
+            ClientSecret = login.ClientSecret,
+            GrantType = GrantType.RESOURCE_OWNER_PASSWORD,
+            UserName = login.Account,
+            Password = login.Password,
+            Scope = string.Join(' ', login.Scope),
+        };
+        var tokenResponse = await httpClient.RequestPasswordTokenAsync(request);
+
+        return ToModel(tokenResponse);
+    }
+
+    public async Task<TokenModel> LoginByPhoneNumberAsync(LoginByPhoneNumberFromSsoModel login)
+    {
+        var client = CreateHttpClient();
+
+        var paramter = new Dictionary<string, string>
+        {
+            ["client_Id"] = login.ClientId,
+            ["client_secret"] = login.ClientSecret,
+            ["grant_type"] = GrantType.PHONE_CODE,
+            ["scope"] = string.Join(' ', login.Scope),
+            ["PhoneNumber"] = login.PhoneNumber,
+            ["code"] = login.Code
+        };
+
+        var tokenResponse = await RequestTokenRawAsync(client, paramter);
+
+        return ToModel(tokenResponse);
+    }
+
+    public async Task<LoginByThirdPartyIdpResultModel> LoginByThirdPartyIdpAsync(LoginByThirdPartyIdpModel login)
+    {
+        var client = CreateHttpClient();
+
+        var paramter = new Dictionary<string, string>
+        {
+            ["client_Id"] = login.ClientId,
+            ["client_secret"] = login.ClientSecret,
+            ["grant_type"] = GrantType.PHONE_CODE,
+            ["scope"] = string.Join(' ', login.Scope),
+            ["scheme"] = login.Scheme,
+            ["code"] = login.Code
+        };
+
+        var tokenResponse = await RequestTokenRawAsync(client, paramter);
+
+        return new LoginByThirdPartyIdpResultModel();
+    }
+
+    HttpClient CreateHttpClient()
+    {
+        return _httpClientFactory.CreateClient(DEFAULT_SSO_CLIENT_NAME);
+    }
+
+    async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(HttpClient httpClient)
+    {
+        var disco = await httpClient.GetDiscoveryDocumentAsync();
+        if (disco.IsError)
+            throw new UserFriendlyException(disco.Error);
+
+        return disco;
+    }
+
+    async Task<TokenResponse> RequestTokenRawAsync(HttpClient httpClient, Dictionary<string, string> paramter)
+    {
+        var disco = await GetDiscoveryDocumentAsync(httpClient);
+        var tokenResponse = await httpClient.RequestTokenRawAsync(disco.TokenEndpoint, new Parameters(paramter));
+
+        return tokenResponse;
+    }
+
+    TokenModel ToModel(TokenResponse tokenResponse)
+    {
+        if (tokenResponse.IsError)
+            throw new UserFriendlyException(tokenResponse.Error);
+
+        return new TokenModel
+        {
+            AccessToken = tokenResponse.AccessToken,
+            IdentityToken = tokenResponse.IdentityToken,
+            RefreshToken = tokenResponse.RefreshToken,
+            ExpiresIn = tokenResponse.ExpiresIn,
+        };
+    }
+}
