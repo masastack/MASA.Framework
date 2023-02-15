@@ -41,26 +41,29 @@ public static class ServiceCollectionExtensions
         var configurationApiManage = serviceProvider2.GetRequiredService<IConfigurationApiManage>();
         var configurationApiClient = serviceProvider2.GetRequiredService<IConfigurationApiClient>();
 
-        var remoteConfigs = await configurationApiClient.GetAsync<Dictionary<string, string>>(
-            masaStackConfig.Environment,
-            masaStackConfig.Cluster,
-            DEFAULT_PUBLIC_ID,
-            DEFAULT_CONFIG_NAME,
-            value =>
-            {
-                masaStackConfig.UpdateMasaStackConfigContent(value);
-            });
-
-        if (remoteConfigs != null)
+        try
         {
-            await configurationApiManage.UpdateAsync(
+            var remoteConfigs = await configurationApiClient.GetAsync<Dictionary<string, string>>(
                 masaStackConfig.Environment,
                 masaStackConfig.Cluster,
                 DEFAULT_PUBLIC_ID,
                 DEFAULT_CONFIG_NAME,
-                configs);
+                value =>
+                {
+                    masaStackConfig.UpdateMasaStackConfigContent(value);
+                });
+
+            if (remoteConfigs != null)
+            {
+                await configurationApiManage.UpdateAsync(
+                    masaStackConfig.Environment,
+                    masaStackConfig.Cluster,
+                    DEFAULT_PUBLIC_ID,
+                    DEFAULT_CONFIG_NAME,
+                    configs);
+            }
         }
-        else
+        catch (ArgumentException)
         {
             await configurationApiManage.AddAsync(masaStackConfig.Environment, masaStackConfig.Cluster, DEFAULT_PUBLIC_ID, new Dictionary<string, string>
             {
