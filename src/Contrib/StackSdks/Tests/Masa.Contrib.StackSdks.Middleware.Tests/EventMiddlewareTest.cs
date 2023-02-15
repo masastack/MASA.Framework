@@ -26,7 +26,7 @@ public class EventMiddlewareTest
         {
             return new MasaStackConfig(new Dictionary<string, string>()
             {
-                {"IS_DEMO",builder.Configuration.GetValue<string>("IS_DEMO") }
+                { MasaStackConfigConstant.IS_DEMO, builder.Configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() }
             }, null);
         });
         builder.Services.AddTestEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
