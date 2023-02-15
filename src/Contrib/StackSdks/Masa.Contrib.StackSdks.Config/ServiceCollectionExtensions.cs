@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    private static async void InitializeMasaStackConfiguration(this IServiceCollection services)
+    private static async Task InitializeMasaStackConfiguration(this IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
@@ -76,7 +76,7 @@ public static class ServiceCollectionExtensions
     {
         if (init)
         {
-            InitializeMasaStackConfiguration(services);
+            InitializeMasaStackConfiguration(services).ConfigureAwait(false);
         }
         else
         {

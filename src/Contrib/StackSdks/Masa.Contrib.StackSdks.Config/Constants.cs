@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Config;
 
-internal class Constants
+internal static class Constants
 {
     internal const string DEFAULT_PUBLIC_ID = "public-$Config";
 
