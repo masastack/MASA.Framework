@@ -26,7 +26,7 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
-    public void TestGetMiniDccOptions()
+    public void TestGetDefaultDccOptions()
     {
         var dccOptions = _stackConfig.GetDefaultDccOptions();
 
