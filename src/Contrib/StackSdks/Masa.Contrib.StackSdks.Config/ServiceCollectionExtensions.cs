@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Configuration;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -30,23 +28,9 @@ public static class ServiceCollectionExtensions
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
             { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
         };
-
-        //services.Configure<MasaStackConfigOptions>(masaStackConfig =>
-        //{
-        //foreach (var config in configs)
-        //{
-        //    masaStackConfig.SetValue(config.Key, config.Value);
-        //}
-        //});
-
-        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
+        services.TryAddSingleton<IMasaStackConfig>(serviceProvider =>
         {
-            var options = new MasaStackConfigOptions();
-            foreach (var config in configs)
-            {
-                options.SetValue(config.Key, config.Value);
-            }
-            return new MasaStackConfig(options, null);
+            return new MasaStackConfig(configs, null);
         });
 
         var masaStackConfig = services.GetMasaStackConfig();
@@ -57,19 +41,32 @@ public static class ServiceCollectionExtensions
         var configurationApiManage = serviceProvider2.GetRequiredService<IConfigurationApiManage>();
         var configurationApiClient = serviceProvider2.GetRequiredService<IConfigurationApiClient>();
 
-        await configurationApiManage.AddAsync(masaStackConfig.Environment, masaStackConfig.Cluster, DEFAULT_PUBLIC_ID, new Dictionary<string, string>
-            {
-                { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
-            });
-
-        var (Raw, ConfigurationType) = await configurationApiClient.GetRawAsync(masaStackConfig.Environment,
+        var remoteConfigs = await configurationApiClient.GetAsync<Dictionary<string, string>>(
+            masaStackConfig.Environment,
             masaStackConfig.Cluster,
             DEFAULT_PUBLIC_ID,
             DEFAULT_CONFIG_NAME,
             value =>
             {
-                UpdateMasaStackConfigContent(masaStackConfig, value);
+                masaStackConfig.UpdateMasaStackConfigContent(value);
             });
+
+        if (remoteConfigs != null)
+        {
+            await configurationApiManage.UpdateAsync(
+                masaStackConfig.Environment,
+                masaStackConfig.Cluster,
+                DEFAULT_PUBLIC_ID,
+                DEFAULT_CONFIG_NAME,
+                configs);
+        }
+        else
+        {
+            await configurationApiManage.AddAsync(masaStackConfig.Environment, masaStackConfig.Cluster, DEFAULT_PUBLIC_ID, new Dictionary<string, string>
+            {
+                { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+            });
+        }
     }
 
     public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = false)
@@ -83,7 +80,7 @@ public static class ServiceCollectionExtensions
             services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
             {
                 var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-                return new MasaStackConfig(null, client);
+                return new MasaStackConfig(new(), client);
             });
         }
 
@@ -95,15 +92,11 @@ public static class ServiceCollectionExtensions
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
     }
 
-    private static void UpdateMasaStackConfigContent(IMasaStackConfig masaStackConfig, string content)
+    private static void UpdateMasaStackConfigContent(this IMasaStackConfig masaStackConfig, Dictionary<string, string> configMap)
     {
-        var remoteRaw = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
-        if (remoteRaw != null)
+        if (configMap != null)
         {
-            foreach (var config in remoteRaw)
-            {
-                masaStackConfig.SetValue(config.Key, config.Value);
-            }
+            masaStackConfig.SetValues(configMap);
         }
     }
 }

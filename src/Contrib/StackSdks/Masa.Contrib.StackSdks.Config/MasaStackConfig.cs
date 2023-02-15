@@ -1,15 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Configuration;
-
 namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    private readonly MasaStackConfigOptions _options = new();
-
-    public MasaStackConfig(MasaStackConfigOptions? options, IConfigurationApiClient? client)
+    public MasaStackConfig(Dictionary<string, string> configMap, IConfigurationApiClient? client)
     {
         if (client is not null)
         {
@@ -19,14 +15,12 @@ public class MasaStackConfig : IMasaStackConfig
                 DEFAULT_PUBLIC_ID,
                 DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            foreach (var config in configs)
-            {
-                _options.SetValue(config.Key, config.Value);
-            }
+            MasaStackConfigOptions.SetValues(configs);
         }
-        if (options is not null)
+
+        if (configMap.Any())
         {
-            _options = options;
+            MasaStackConfigOptions.SetValues(configMap);
         }
     }
 
@@ -72,7 +66,9 @@ public class MasaStackConfig : IMasaStackConfig
 
     public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
 
-    public string GetValue(string key) => _options.GetValue(key);
+    public string GetValue(string key) => MasaStackConfigOptions.GetValue(key);
 
-    public void SetValue(string key, string value) => _options.SetValue(key, value);
+    public void SetValue(string key, string value) => MasaStackConfigOptions.SetValue(key, value);
+
+    public void SetValues(Dictionary<string, string> configMap) => MasaStackConfigOptions.SetValues(configMap);
 }
