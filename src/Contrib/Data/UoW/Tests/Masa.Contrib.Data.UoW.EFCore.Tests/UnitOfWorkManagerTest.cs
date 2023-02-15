@@ -12,7 +12,7 @@ public class UnitOfWorkManagerTest : TestBase
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(Connection));
+        services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(Connection));
         services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<CustomDbContext>(serviceProvider)
         {
             DisableRollbackOnFailure = false,

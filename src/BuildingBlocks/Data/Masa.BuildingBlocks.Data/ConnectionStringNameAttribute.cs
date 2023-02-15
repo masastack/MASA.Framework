@@ -10,7 +10,6 @@ public class ConnectionStringNameAttribute : Attribute
 
     public ConnectionStringNameAttribute(string name = "") => Name = name;
 
-    private static bool _isUseDefaultConnectionStringName;
     private static readonly List<DbContextNameRelationOptions> DbContextNameRelationOptions = new();
 
     public static string GetConnStringName<T>() => GetConnStringName(typeof(T));
@@ -20,19 +19,9 @@ public class ConnectionStringNameAttribute : Attribute
         var options = DbContextNameRelationOptions.FirstOrDefault(c => c.DbContextType == type);
         if (options != null) return options.Name;
 
-        var nameAttribute = type.GetTypeInfo().GetCustomAttribute<ConnectionStringNameAttribute>();
-
-        var name = nameAttribute?.Name;
-        if (name.IsNullOrWhiteSpace())
-        {
-            if (_isUseDefaultConnectionStringName) name = type.FullName;
-            else
-            {
-                _isUseDefaultConnectionStringName = true;
-                name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME;
-            }
-        }
-        DbContextNameRelationOptions.Add(new DbContextNameRelationOptions(name!, type));
+        var name = type.GetTypeInfo().GetCustomAttribute<ConnectionStringNameAttribute>()?.Name;
+        if (name.IsNullOrWhiteSpace()) name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME;
+        DbContextNameRelationOptions.Add(new DbContextNameRelationOptions(name, type));
         return name!;
     }
 }

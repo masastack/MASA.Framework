@@ -29,49 +29,33 @@ public static class MasaDbContextBuilderExtensions
         string connectionString,
         ServerVersion serverVersion,
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySqlCore(connectionString, serverVersion, false, mySqlOptionsAction);
+        => builder.UseMySqlCore(connectionString, serverVersion, mySqlOptionsAction);
 
     public static MasaDbContextBuilder UseMySql(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         ServerVersion serverVersion,
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySqlCore(connection, serverVersion, false, mySqlOptionsAction);
-
-    public static MasaDbContextBuilder UseTestMySql(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        ServerVersion serverVersion,
-        Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySqlCore(connection, serverVersion, true, mySqlOptionsAction);
-
-    public static MasaDbContextBuilder UseTestMySql(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        ServerVersion serverVersion,
-        Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySqlCore(connectionString, serverVersion, true, mySqlOptionsAction);
+        => builder.UseMySqlCore(connection, serverVersion, mySqlOptionsAction);
 
     private static MasaDbContextBuilder UseMySqlCore(
         this MasaDbContextBuilder builder,
         string connectionString,
         ServerVersion serverVersion,
-        bool isTest,
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseMySql(connectionString, serverVersion, mySqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseMySqlCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         ServerVersion serverVersion,
-        bool isTest,
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseMySql(connection, serverVersion, mySqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }

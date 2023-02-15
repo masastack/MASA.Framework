@@ -150,7 +150,7 @@ public class SyncCacheTest
     static ServiceCollection InitializingData()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryTestDatabase(Guid.NewGuid().ToString()));
+        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         services.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
 
 

@@ -17,7 +17,7 @@ public class IntegrationEventLogServiceTest : TestBase
             ServiceLifetime.Singleton));
         _services.TryAddScoped(typeof(IntegrationEventLogContext),
             serviceProvider => new IntegrationEventLogContext(serviceProvider.GetRequiredService<CustomDbContext>()));
-        _services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(Connection));
+        _services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(Connection));
     }
 
     [DataRow(true)]

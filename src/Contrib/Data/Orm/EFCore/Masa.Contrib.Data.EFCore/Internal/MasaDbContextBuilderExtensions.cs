@@ -18,14 +18,14 @@ internal static class MasaDbContextBuilderExtensions
 {
     public static MasaDbContextBuilder ConfigMasaDbContextAndConnectionStringRelations(
         this MasaDbContextBuilder builder,
-        string connectionString,
-        bool isTest = false)
+        string connectionString)
     {
         var name = ConnectionStringNameAttribute.GetConnStringName(builder.DbContextType);
 
         builder.Services.Configure<MasaDbConnectionOptions>(masaDbConnectionOptions =>
         {
-            if (!isTest && masaDbConnectionOptions.ConnectionStrings.ContainsKey(name))
+            if (masaDbConnectionOptions.ConnectionStrings.ContainsKey(name) &&
+                connectionString != masaDbConnectionOptions.ConnectionStrings.GetConnectionString(name))
                 throw new ArgumentException($"The [{builder.DbContextType.Name}] Database Connection String already exists");
 
             masaDbConnectionOptions.TryAddConnectionString(name, connectionString);

@@ -26,22 +26,15 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string databaseName,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
-        => builder.UseInMemoryDatabaseCore(databaseName, false, inMemoryOptionsAction);
-
-    public static MasaDbContextBuilder UseInMemoryTestDatabase(
-        this MasaDbContextBuilder builder,
-        string databaseName,
-        Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
-        => builder.UseInMemoryDatabaseCore(databaseName, true, inMemoryOptionsAction);
+        => builder.UseInMemoryDatabaseCore(databaseName, inMemoryOptionsAction);
 
     private static MasaDbContextBuilder UseInMemoryDatabaseCore(
         this MasaDbContextBuilder builder,
         string databaseName,
-        bool isTest,
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseInMemoryDatabase(databaseName, inMemoryOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(databaseName, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(databaseName);
     }
 }
