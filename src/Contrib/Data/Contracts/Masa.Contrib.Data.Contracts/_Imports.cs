@@ -8,5 +8,3 @@ global using Masa.Contrib.Data.Contracts.Options;
 global using Masa.Utils.Caching.Memory;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
-global using System.Linq.Expressions;
-global using System.Reflection;

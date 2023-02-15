@@ -5,8 +5,6 @@ global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.Contrib.Dispatcher.Events;
-global using Masa.Contrib.Isolation.MultiEnvironment;
-global using Masa.Contrib.Isolation.MultiTenant;
 global using Masa.Contrib.Isolation.UoW.EFCore.Web.Tests.Events;
 global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Http;

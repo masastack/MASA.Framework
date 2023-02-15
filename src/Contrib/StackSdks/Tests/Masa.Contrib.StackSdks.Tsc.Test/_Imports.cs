@@ -5,8 +5,6 @@ global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.BuildingBlocks.StackSdks.Tsc;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Contracts.Model.Aggregate;
 global using Masa.BuildingBlocks.StackSdks.Tsc.Model;
-global using Masa.Contrib.Service.Caller;
-global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Contrib.StackSdks.Tsc.Service;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;

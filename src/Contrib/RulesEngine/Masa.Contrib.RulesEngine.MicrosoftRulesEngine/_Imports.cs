@@ -4,5 +4,4 @@
 global using Masa.BuildingBlocks.RulesEngine;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
-global using Microsoft.Extensions.Options;
 global using Newtonsoft.Json;
