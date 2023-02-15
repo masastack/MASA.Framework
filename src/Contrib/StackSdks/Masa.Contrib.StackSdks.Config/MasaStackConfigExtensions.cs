@@ -90,7 +90,7 @@ public static class MasaStackConfigExtensions
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTPS, MasaStackConstant.DCC, MasaStackConstant.SERVER);
+        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.DCC, MasaStackConstant.SERVER);
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Config;
 
-public class MasaStackConfigOptions
+public static class MasaStackConfigOptions
 {
     public static ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
