@@ -11,9 +11,7 @@ public class MasaStackConfigTest
     [TestInitialize]
     public void Initialize()
     {
-        var builder = WebApplication.CreateBuilder();
-
-        var configuration = builder.Configuration;
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
         var configs = new Dictionary<string, string>()
         {
             { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
