@@ -56,15 +56,23 @@ public class LoginService : ILoginService
         {
             ["client_Id"] = login.ClientId,
             ["client_secret"] = login.ClientSecret,
-            ["grant_type"] = GrantType.PHONE_CODE,
+            ["grant_type"] = GrantType.THIRD_PARTY_IDP,
             ["scope"] = string.Join(' ', login.Scope),
             ["scheme"] = login.Scheme,
             ["code"] = login.Code
         };
 
         var tokenResponse = await RequestTokenRawAsync(client, paramter);
+        var tokenModel = ToModel(tokenResponse);
+        var thirdPartyUser = tokenResponse.Json.GetProperty("thirdPartyUserData").Deserialize<ThirdPartyIdentityModel>();
+        var registerSuccess = tokenResponse.Json.TryGetBoolean("registerSuccess");
 
-        return new LoginByThirdPartyIdpResultModel();
+        return new LoginByThirdPartyIdpResultModel
+        {
+            ThirdPartyIdpLoginResultType = registerSuccess is true ? ThirdPartyIdpLoginResultTypes.Success : ThirdPartyIdpLoginResultTypes.NotRegister,
+            Token = tokenModel,
+            ThirdPartyIdentity = thirdPartyUser
+        };
     }
 
     HttpClient CreateHttpClient()

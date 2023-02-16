@@ -11,8 +11,6 @@ public class LoginByThirdPartyIdpModel
 
     public List<string> Scope { get; set; } = new() { "openid", "profile" };
 
-    public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
-
     public string Scheme { get; set; }
 
     public string Code { get; set; } = "";

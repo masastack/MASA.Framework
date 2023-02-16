@@ -7,7 +7,7 @@ public class LoginByThirdPartyIdpResultModel
 {
     public TokenModel? Token { get; set; }
 
-    public Dictionary<string, string> ThirdPartyIdpUserData { get; set; }
+    public ThirdPartyIdentityModel? ThirdPartyIdentity { get; set; }
 
     public ThirdPartyIdpLoginResultTypes ThirdPartyIdpLoginResultType { get; set; }
 }

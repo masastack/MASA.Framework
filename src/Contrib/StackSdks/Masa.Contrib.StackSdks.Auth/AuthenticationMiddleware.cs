@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.StackSdks.Auth;
@@ -19,6 +19,6 @@ public class AuthenticationMiddleware : ICallerMiddleware
         if (environment != null)
             masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
 
-        return Task.CompletedTask;
+        return next.Invoke();
     }
 }

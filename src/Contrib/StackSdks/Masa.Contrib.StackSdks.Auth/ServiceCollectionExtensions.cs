@@ -79,7 +79,7 @@ public static class ServiceCollectionExtensions
         {
             httpClient.BaseAddress = new Uri(ssoServiceBaseAddressFunc());
         });
-        services.AddSingleton<ISsoClient>();
+        services.AddSingleton<ISsoClient,SsoClient>();
 
         return services;
     }
