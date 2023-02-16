@@ -1,10 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Config;
-using Masa.Contrib.StackSdks.Config;
-using Microsoft.Extensions.Configuration;
-
 namespace Masa.Contrib.StackSdks.Middleware.Tests;
 
 [TestClass]
@@ -22,12 +18,21 @@ public class EventMiddlewareTest
             options.Mapping(nameof(MasaUser.Account), "ACCOUNT");
         });
 
+        Mock<IConfigurationApiClient> dccClient = new();
+        var configs = new Dictionary<string, string>()
+        {
+            { MasaStackConfigConstant.IS_DEMO, builder.Configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() }
+        };
+        dccClient.Setup(aa => aa.GetAsync(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<Action<Dictionary<string, string>>>()!))
+            .ReturnsAsync(configs);
+
         builder.Services.AddSingleton<IMasaStackConfig>(serviceProvider =>
         {
-            return new MasaStackConfig(new Dictionary<string, string>()
-            {
-                { MasaStackConfigConstant.IS_DEMO, builder.Configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() }
-            }, null);
+            return new MasaStackConfig(dccClient.Object);
         });
         builder.Services.AddTestEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
         builder.Services.AddStackMiddleware();

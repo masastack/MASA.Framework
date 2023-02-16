@@ -9,6 +9,8 @@ public static class ServiceCollectionExtensions
     {
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var configurationApiManage = serviceProvider.GetRequiredService<IConfigurationApiManage>();
+        var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
 
         var configs = new Dictionary<string, string>()
         {
@@ -28,36 +30,20 @@ public static class ServiceCollectionExtensions
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
             { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
         };
-        services.TryAddSingleton<IMasaStackConfig>(serviceProvider =>
-        {
-            return new MasaStackConfig(configs, null);
-        });
-
-        var masaStackConfig = services.GetMasaStackConfig();
-        var dccOptions = masaStackConfig.GetDefaultDccOptions();
-        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
-
-        var serviceProvider2 = services.BuildServiceProvider();
-        var configurationApiManage = serviceProvider2.GetRequiredService<IConfigurationApiManage>();
-        var configurationApiClient = serviceProvider2.GetRequiredService<IConfigurationApiClient>();
 
         try
         {
             var remoteConfigs = await configurationApiClient.GetAsync<Dictionary<string, string>>(
-                masaStackConfig.Environment,
-                masaStackConfig.Cluster,
+                configs[MasaStackConfigConstant.ENVIRONMENT],
+                configs[MasaStackConfigConstant.CLUSTER],
                 DEFAULT_PUBLIC_ID,
-                DEFAULT_CONFIG_NAME,
-                value =>
-                {
-                    masaStackConfig.UpdateMasaStackConfigContent(value);
-                });
+                DEFAULT_CONFIG_NAME);
 
             if (remoteConfigs != null)
             {
                 await configurationApiManage.UpdateAsync(
-                    masaStackConfig.Environment,
-                    masaStackConfig.Cluster,
+                    configs[MasaStackConfigConstant.ENVIRONMENT],
+                    configs[MasaStackConfigConstant.CLUSTER],
                     DEFAULT_PUBLIC_ID,
                     DEFAULT_CONFIG_NAME,
                     configs);
@@ -65,10 +51,14 @@ public static class ServiceCollectionExtensions
         }
         catch (ArgumentException)
         {
-            await configurationApiManage.AddAsync(masaStackConfig.Environment, masaStackConfig.Cluster, DEFAULT_PUBLIC_ID, new Dictionary<string, string>
-            {
-                { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
-            });
+            await configurationApiManage.AddAsync(
+                configs[MasaStackConfigConstant.ENVIRONMENT],
+                configs[MasaStackConfigConstant.CLUSTER],
+                DEFAULT_PUBLIC_ID,
+                new Dictionary<string, string>
+                {
+                    { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+                });
         }
     }
 
@@ -78,14 +68,12 @@ public static class ServiceCollectionExtensions
         {
             InitializeMasaStackConfiguration(services).ConfigureAwait(false);
         }
-        else
+
+        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
         {
-            services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
-            {
-                var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-                return new MasaStackConfig(new(), client);
-            });
-        }
+            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            return new MasaStackConfig(client);
+        });
 
         return services;
     }
@@ -93,13 +81,5 @@ public static class ServiceCollectionExtensions
     public static IMasaStackConfig GetMasaStackConfig(this IServiceCollection services)
     {
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
-    }
-
-    private static void UpdateMasaStackConfigContent(this IMasaStackConfig masaStackConfig, Dictionary<string, string> configMap)
-    {
-        if (configMap != null)
-        {
-            masaStackConfig.SetValues(configMap);
-        }
     }
 }

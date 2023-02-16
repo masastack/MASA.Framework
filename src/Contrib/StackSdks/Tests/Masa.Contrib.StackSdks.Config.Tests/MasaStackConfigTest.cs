@@ -1,17 +1,21 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+using Moq;
+
 namespace Masa.Contrib.StackSdks.Config.Tests;
 
 [TestClass]
 public class MasaStackConfigTest
 {
-    private IMasaStackConfig _stackConfig;
+    private MasaStackConfig _stackConfig;
 
     [TestInitialize]
     public void Initialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true, true).Build();
+        var builder = WebApplication.CreateBuilder();
+        var configuration = builder.Configuration.AddJsonFile("appsettings.json", true, true).Build();
         var configs = new Dictionary<string, string>()
         {
             { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
@@ -31,7 +35,17 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
         };
 
-        _stackConfig = new MasaStackConfig(configs, null);
+        Mock<IConfigurationApiClient> dccClient = new();
+
+        dccClient.Setup(aa => aa.GetAsync(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<Action<Dictionary<string, string>>>()!))
+            .ReturnsAsync(configs);
+
+        _stackConfig = new MasaStackConfig(dccClient.Object);
+
     }
 
     [TestMethod]

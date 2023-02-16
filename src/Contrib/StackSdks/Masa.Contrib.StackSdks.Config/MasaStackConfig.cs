@@ -5,23 +5,15 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    public MasaStackConfig(Dictionary<string, string> configMap, IConfigurationApiClient? client)
+    public MasaStackConfig(IConfigurationApiClient client)
     {
-        if (client is not null)
-        {
-            var configs = client.GetAsync<Dictionary<string, string>>(
-                Environment,
-                Cluster,
-                DEFAULT_PUBLIC_ID,
-                DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
+        var configs = client.GetAsync<Dictionary<string, string>>(
+            Environment,
+            Cluster,
+            DEFAULT_PUBLIC_ID,
+            DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            MasaStackConfigOptions.SetValues(configs);
-        }
-
-        if (configMap.Any())
-        {
-            MasaStackConfigOptions.SetValues(configMap);
-        }
+        MasaStackConfigOptions.SetValues(configs);
     }
 
     public RedisModel RedisModel

@@ -156,22 +156,23 @@ public static class MasaStackConfigExtensions
         var dccServerAddress = GetDccServiceDomain(masaStackConfig);
         var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
 
-        var stringBuilder = new StringBuilder(@"{""ManageServiceAddress"":");
-        stringBuilder.Append($"\"{dccServerAddress}\",");
-        stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
-        stringBuilder.Append($"\"{redis.RedisHost}\",");
-        stringBuilder.Append(@$"""Port"":{redis.RedisPort}");
-        stringBuilder.Append("}],");
-        stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
-        stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
-        stringBuilder.Append(@"},");
-        stringBuilder.Append(@"""ConfigObjectSecret"":");
-        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\",");
-        stringBuilder.Append(@"""PublicSecret"":");
-        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\"");
-        stringBuilder.Append('}');
+        var options = new DccOptions
+        {
+            ManageServiceAddress = dccServerAddress,
+            RedisOptions = new Caching.Distributed.StackExchangeRedis.RedisConfigurationOptions
+            {
+                Servers = new List<Caching.Distributed.StackExchangeRedis.RedisServerOptions>
+                {
+                    new Caching.Distributed.StackExchangeRedis.RedisServerOptions(redis.RedisHost,redis.RedisPort)
+                },
+                DefaultDatabase = redis.RedisDb,
+                Password = redis.RedisPassword
+            },
+            Secret = masaStackConfig.DccSecret,
+            PublicSecret = masaStackConfig.DccSecret
+        };
 
-        return JsonSerializer.Deserialize<DccOptions>(stringBuilder.ToString()) ?? throw new JsonException();
+        return options;
     }
 
     public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)
