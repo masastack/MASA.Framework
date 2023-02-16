@@ -3,17 +3,25 @@
 
 namespace Masa.Contrib.StackSdks.Config;
 
-public class MasaStackConfigOptions
+public static class MasaStackConfigOptions
 {
-    private ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    private static ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
-    public string GetValue(string key) => GetValue(key, () => string.Empty);
+    public static string GetValue(string key) => GetValue(key, () => string.Empty);
 
-    public string GetValue(string key, Func<string> defaultFunc)
+    public static string GetValue(string key, Func<string> defaultFunc)
     {
         if (ConfigMap.ContainsKey(key)) return ConfigMap[key];
         return defaultFunc.Invoke();
     }
 
-    public void SetValue(string key, string value) => ConfigMap[key] = value;
+    public static void SetValue(string key, string value) => ConfigMap[key] = value;
+
+    public static void SetValues(Dictionary<string, string> configMap)
+    {
+        foreach (var config in configMap)
+        {
+            SetValue(config.Key, config.Value);
+        }
+    }
 }
