@@ -11,9 +11,13 @@ public static class MasaCallerClientBuilderExtensions
     public static IMasaCallerClientBuilder UseI18n(this IMasaCallerClientBuilder masaCallerClientBuilder)
         => masaCallerClientBuilder.AddMiddleware(_ => new CultureMiddleware());
 
-    public static IMasaCallerClientBuilder AddMiddleware<TMiddleware>(this IMasaCallerClientBuilder masaCallerClientBuilder)
-        where TMiddleware : ICallerMiddleware
-        => masaCallerClientBuilder.AddMiddleware(serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
+    public static IMasaCallerClientBuilder AddMiddleware<TMiddleware>(
+        this IMasaCallerClientBuilder masaCallerClientBuilder)
+        where TMiddleware : class, ICallerMiddleware
+    {
+        masaCallerClientBuilder.Services.TryAddSingleton<TMiddleware>();
+        return masaCallerClientBuilder.AddMiddleware(serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
+    }
 
     public static IMasaCallerClientBuilder AddMiddleware(
         this IMasaCallerClientBuilder masaCallerClientBuilder,
