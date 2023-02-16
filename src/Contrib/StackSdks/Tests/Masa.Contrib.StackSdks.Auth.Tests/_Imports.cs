@@ -12,3 +12,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Text.Json;
+global using IdentityModel.Client;

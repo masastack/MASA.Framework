@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using System;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -79,7 +77,7 @@ public static class ServiceCollectionExtensions
         {
             httpClient.BaseAddress = new Uri(ssoServiceBaseAddressFunc());
         });
-        services.AddSingleton<ISsoClient,SsoClient>();
+        services.AddSingleton<ISsoClient, SsoClient>();
 
         return services;
     }

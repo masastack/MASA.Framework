@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Auth;
 
-internal static class Constants
+public static class Constants
 {
     public const string DEFAULT_CLIENT_NAME = "masa.contrib.basicability.auth";
     public const string DEFAULT_SSO_CLIENT_NAME = "masa.contrib.basicability.auth.sso";
