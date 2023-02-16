@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Service;
 
 public interface ILoginService
 {
-    Task<TokenModel> LoginByPasswordAsync(LoginByPassword login);
+    Task<TokenModel> LoginByPasswordAsync(LoginByPasswordModel login);
 
     Task<TokenModel> LoginByPhoneNumberAsync(LoginByPhoneNumberFromSsoModel login);
 

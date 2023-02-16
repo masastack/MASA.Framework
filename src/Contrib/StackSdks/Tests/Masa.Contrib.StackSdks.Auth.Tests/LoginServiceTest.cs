@@ -1,9 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Moq.Protected;
-using System.Net;
-
 namespace Masa.Contrib.StackSdks.Auth.Tests;
 
 [TestClass]
@@ -26,7 +23,7 @@ public class LoginServiceTest
     public async Task TestLoginByPasswordAsync()
     {
         SetTestData(new { });
-        var login = new LoginByPassword
+        var login = new LoginByPasswordModel
         {
             ClientId = "test_client_id",
             ClientSecret = "test_client_secret",

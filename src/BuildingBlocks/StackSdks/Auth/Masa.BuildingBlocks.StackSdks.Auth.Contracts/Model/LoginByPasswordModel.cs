@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByPassword
+public class LoginByPasswordModel
 {
     public string ClientId { get; set; } = "";
 

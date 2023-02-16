@@ -12,7 +12,7 @@ public class LoginService : ILoginService
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<TokenModel> LoginByPasswordAsync(LoginByPassword login)
+    public async Task<TokenModel> LoginByPasswordAsync(LoginByPasswordModel login)
     {
         var httpClient = CreateHttpClient();
         var request = new PasswordTokenRequest()
@@ -80,7 +80,7 @@ public class LoginService : ILoginService
         return _httpClientFactory.CreateClient(DEFAULT_SSO_CLIENT_NAME);
     }
 
-    async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(HttpClient httpClient)
+    static async Task<DiscoveryDocumentResponse> GetDiscoveryDocumentAsync(HttpClient httpClient)
     {
         var disco = await httpClient.GetDiscoveryDocumentAsync();
         if (disco.IsError)
@@ -89,7 +89,7 @@ public class LoginService : ILoginService
         return disco;
     }
 
-    async Task<TokenResponse> RequestTokenRawAsync(HttpClient httpClient, Dictionary<string, string> paramter)
+    static async Task<TokenResponse> RequestTokenRawAsync(HttpClient httpClient, Dictionary<string, string> paramter)
     {
         var disco = await GetDiscoveryDocumentAsync(httpClient);
         var tokenResponse = await httpClient.RequestTokenRawAsync(disco.TokenEndpoint, new Parameters(paramter));
@@ -97,7 +97,7 @@ public class LoginService : ILoginService
         return tokenResponse;
     }
 
-    TokenModel ToModel(TokenResponse tokenResponse)
+    static TokenModel ToModel(TokenResponse tokenResponse)
     {
         if (tokenResponse.IsError)
             throw new UserFriendlyException(tokenResponse.Error);
