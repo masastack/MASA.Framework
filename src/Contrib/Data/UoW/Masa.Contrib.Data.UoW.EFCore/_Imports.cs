@@ -12,6 +12,7 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
+global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Data.Common;
 global using System.Text.Json.Serialization;
 global using EntityState = Masa.BuildingBlocks.Data.UoW.EntityState;

@@ -26,44 +26,30 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
-        => builder.UseOracleCore(connectionString, false, oracleOptionsAction);
+        => builder.UseOracleCore(connectionString, oracleOptionsAction);
 
     public static MasaDbContextBuilder UseOracle(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
-        => builder.UseOracleCore(connection, false, oracleOptionsAction);
-
-    public static MasaDbContextBuilder UseTestOracle(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
-        => builder.UseOracleCore(connection, true, oracleOptionsAction);
-
-    public static MasaDbContextBuilder UseTestOracle(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
-        => builder.UseOracleCore(connectionString, true, oracleOptionsAction);
+        => builder.UseOracleCore(connection, oracleOptionsAction);
 
     private static MasaDbContextBuilder UseOracleCore(
         this MasaDbContextBuilder builder,
         string connectionString,
-        bool isTest,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseOracle(connectionString, oracleOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseOracleCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
-        bool isTest = false,
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseOracle(connection, oracleOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }

@@ -26,44 +26,30 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
-        => builder.UseNpgsqlCore(connectionString, false, npgsqlOptionsAction);
+        => builder.UseNpgsqlCore(connectionString, npgsqlOptionsAction);
 
     public static MasaDbContextBuilder UseNpgsql(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
-        => builder.UseNpgsqlCore(connection, false, npgsqlOptionsAction);
-
-    public static MasaDbContextBuilder UseTestNpgsql(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
-        => builder.UseNpgsqlCore(connection, true, npgsqlOptionsAction);
-
-    public static MasaDbContextBuilder UseTestNpgsql(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
-        => builder.UseNpgsqlCore(connectionString, true, npgsqlOptionsAction);
+        => builder.UseNpgsqlCore(connection, npgsqlOptionsAction);
 
     private static MasaDbContextBuilder UseNpgsqlCore(
         this MasaDbContextBuilder builder,
         string connectionString,
-        bool isTest,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseNpgsql(connectionString, npgsqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseNpgsqlCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
-        bool isTest,
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseNpgsql(connection, npgsqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }

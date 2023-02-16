@@ -21,7 +21,6 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Options;
 global using Nest;
-global using System.Collections.Concurrent;
 global using System.Runtime.Serialization;
 global using MASABulkAliasResponse = Masa.Utils.Data.Elasticsearch.Response.Alias.BulkAliasResponse;
 global using MASAGetAliasResponse = Masa.Utils.Data.Elasticsearch.Response.Alias.GetAliasResponse;

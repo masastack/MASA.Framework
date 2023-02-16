@@ -13,7 +13,7 @@ public class UnitOfWorkTest : TestBase
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(Connection));
+        services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(Connection));
         var serviceProvider = services.BuildServiceProvider();
         _dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         _dbContext.Database.EnsureCreated();
@@ -149,7 +149,7 @@ public class UnitOfWorkTest : TestBase
     {
         Mock<IDispatcherOptions> options = new();
         options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
-        options.Object.UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString));
+        options.Object.UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(_connectionString));
         var serviceProvider = options.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<CustomDbContext>());
         Assert.IsNotNull(serviceProvider.GetService<IDbConnectionStringProvider>());
@@ -163,8 +163,8 @@ public class UnitOfWorkTest : TestBase
         Mock<IDispatcherOptions> options = new();
         options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
         options.Object
-            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString))
-            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseTestSqlite(_connectionString));
+            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(_connectionString))
+            .UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(_connectionString));
 
         var serviceProvider = options.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);

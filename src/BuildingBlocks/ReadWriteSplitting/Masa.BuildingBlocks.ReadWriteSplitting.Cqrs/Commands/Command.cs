@@ -8,6 +8,7 @@ public abstract record Command : ICommand
     private Guid _eventId;
     private DateTime _creationTime;
 
+    [NotMapped]
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 

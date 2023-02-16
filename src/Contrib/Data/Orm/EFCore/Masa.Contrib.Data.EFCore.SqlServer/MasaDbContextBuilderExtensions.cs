@@ -26,44 +26,30 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
-        => builder.UseSqlServerCore(connectionString, false, sqlServerOptionsAction);
+        => builder.UseSqlServerCore(connectionString, sqlServerOptionsAction);
 
     public static MasaDbContextBuilder UseSqlServer(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
-        => builder.UseSqlServerCore(connection, false, sqlServerOptionsAction);
-
-    public static MasaDbContextBuilder UseTestSqlServer(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
-        => builder.UseSqlServerCore(connection, true, sqlServerOptionsAction);
-
-    public static MasaDbContextBuilder UseTestSqlServer(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
-        => builder.UseSqlServerCore(connectionString, true, sqlServerOptionsAction);
+        => builder.UseSqlServerCore(connection, sqlServerOptionsAction);
 
     private static MasaDbContextBuilder UseSqlServerCore(
         this MasaDbContextBuilder builder,
         string connectionString,
-        bool isTest,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseSqlServerCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
-        bool isTest,
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }

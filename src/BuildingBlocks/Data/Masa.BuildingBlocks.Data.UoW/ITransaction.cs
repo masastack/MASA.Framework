@@ -5,6 +5,7 @@ namespace Masa.BuildingBlocks.Data.UoW;
 
 public interface ITransaction
 {
+    [NotMapped]
     [JsonIgnore]
     IUnitOfWork? UnitOfWork { get; set; }
 }

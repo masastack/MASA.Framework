@@ -19,4 +19,3 @@ global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Data.Common;
-global using System.Reflection;
