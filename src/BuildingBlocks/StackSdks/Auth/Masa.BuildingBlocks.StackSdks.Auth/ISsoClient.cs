@@ -5,6 +5,6 @@ namespace Masa.BuildingBlocks.StackSdks.Auth;
 
 public interface ISsoClient
 {
-    IThirdPartyIdpCacheService ThirdPartyIdpCacheService { get; }   
+    ILoginService LoginService { get; }   
 }
 

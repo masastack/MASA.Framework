@@ -3,11 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class UpsertThirdPartyUserModel : UpsertUserModel
+public class RegisterThirdPartyUserResultModel
 {
-    public string ThridPartyIdentity { get; set; } = "";
+    public TokenModel? Token { get; set; }
 
-    public object ExtendedData { get; set; }
-
-    public string Scheme { get; set; }
+    public UserModel? User { get; set; }
 }

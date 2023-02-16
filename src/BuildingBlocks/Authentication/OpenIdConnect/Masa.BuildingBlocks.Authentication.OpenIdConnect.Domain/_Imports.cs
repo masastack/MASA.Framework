@@ -6,6 +6,7 @@ global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Entities.Ab
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Enums;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Domain.Utils;
 global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Constans;
+global using Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.Enums;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;

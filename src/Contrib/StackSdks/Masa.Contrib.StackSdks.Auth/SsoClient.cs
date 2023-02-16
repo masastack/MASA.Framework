@@ -5,11 +5,11 @@ namespace Masa.Contrib.StackSdks.Auth;
 
 public class SsoClient : ISsoClient
 {
-    public IThirdPartyIdpCacheService ThirdPartyIdpCacheService { get; }
-
-    public SsoClient(IThirdPartyIdpCacheService thirdPartyIdpCacheService)
+    public SsoClient(IHttpClientFactory httpClientFactory)
     {
-        ThirdPartyIdpCacheService = thirdPartyIdpCacheService;
+        LoginService =  new LoginService(httpClientFactory);
     }
+
+    public ILoginService LoginService { get; set; }
 }
 

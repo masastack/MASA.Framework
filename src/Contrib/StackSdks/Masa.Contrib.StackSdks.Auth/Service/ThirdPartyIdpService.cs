@@ -6,15 +6,23 @@ namespace Masa.Contrib.StackSdks.Auth.Service;
 public class ThirdPartyIdpService : IThirdPartyIdpService
 {
     readonly ICaller _caller;
+    readonly IMultilevelCacheClient _memoryCacheClient;
 
-    public ThirdPartyIdpService(ICaller caller)
+    public ThirdPartyIdpService(ICaller caller, IMultilevelCacheClient memoryCacheClient)
     {
         _caller = caller;
+        _memoryCacheClient = memoryCacheClient;
     }
 
     public async Task<List<ThirdPartyIdpModel>> GetAllAsync()
     {
         var requestUri = $"api/thirdPartyIdp/getAll";
         return await _caller.GetAsync<List<ThirdPartyIdpModel>>(requestUri) ?? new();
+    }
+
+    public async Task<List<ThirdPartyIdpModel>> GetAllFromCacheAsync()
+    {
+        var thirdPartyIdps = await _memoryCacheClient.GetAsync<List<ThirdPartyIdpModel>>(CacheKeyConsts.ALL_THIRD_PARTY_IDP);
+        return thirdPartyIdps ?? new();
     }
 }

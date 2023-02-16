@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByPhoneNumberFromSso
+public class LoginByPasswordModel
 {
     public string ClientId { get; set; } = "";
 
@@ -11,7 +11,7 @@ public class LoginByPhoneNumberFromSso
 
     public List<string> Scope { get; set; } = new (){ "openid", "profile" };
 
-    public string PhoneNumber { get; set; } = "";
+    public string Account { get; set; }
 
-    public string Code { get; set; } = "";
+    public string Password { get; set; }
 }

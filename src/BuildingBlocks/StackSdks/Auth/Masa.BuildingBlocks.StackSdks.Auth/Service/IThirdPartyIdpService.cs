@@ -6,4 +6,6 @@ namespace Masa.BuildingBlocks.StackSdks.Auth.Service;
 public interface IThirdPartyIdpService
 {
     Task<List<ThirdPartyIdpModel>> GetAllAsync();
+
+    Task<List<ThirdPartyIdpModel>> GetAllFromCacheAsync();
 }
