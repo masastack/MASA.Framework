@@ -186,7 +186,7 @@ public class UserService : IUserService
 
     public async Task SaveUserSystemDataAsync<T>(Guid userId, string systemId, T data)
     {
-        var requestUri = $"api/user/systemData";
+        var requestUri = "api/user/systemData";
         await _caller.PostAsync<object>(requestUri,
             new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(data) },
             true);
