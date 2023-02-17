@@ -63,6 +63,8 @@ public interface IUserService
 
     Task<List<UserModel>> GetUsersAsync(params Guid[] userIds);
 
+    Task SaveUserSystemDataAsync<T>(Guid userId, string systemId, T data);
+
     Task SaveUserSystemDataAsync<T>(string systemId, T data);
 
     Task<T?> GetUserSystemDataAsync<T>(string systemId);
