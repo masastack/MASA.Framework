@@ -9,7 +9,7 @@ public class AddThirdPartyUserModel
 
     public object ExtendedData { get; set; }
 
-    public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
+    public string Scheme { get; set; }
 
     public AddUserModel User { get; set; }
 }

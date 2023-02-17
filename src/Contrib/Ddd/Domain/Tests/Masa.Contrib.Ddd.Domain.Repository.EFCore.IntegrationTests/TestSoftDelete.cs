@@ -14,7 +14,7 @@ public class TestSoftDelete
         services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
         {
             optionsBuilder
-                .UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}")
+                .UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}")
                 .UseFilter(options => options.EnableSoftDelete = enableSoftDelete);
         });
         var dispatcherOptions = new CustomDispatcherOptions(services, AppDomain.CurrentDomain.GetAssemblies());

@@ -13,6 +13,5 @@ global using Masa.Utils.Data.Elasticsearch;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using System.Data;
 global using System.Text;
 global using System.Text.Json;

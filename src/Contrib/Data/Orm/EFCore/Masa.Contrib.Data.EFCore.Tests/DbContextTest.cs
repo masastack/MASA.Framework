@@ -48,7 +48,7 @@ public class DbContextTest : TestBase
                 DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"
             };
         });
-        await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider, false);
+        await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var student = new Student()
         {
             Id = 1,
@@ -108,8 +108,8 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         string connectionString = $"data source=test-{Guid.NewGuid()}";
         string connectionStringByQuery = connectionString;
-        services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseTestSqlite(connectionStringByQuery).UseFilter());
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseTestSqlite(connectionString).UseFilter());
+        services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite(connectionStringByQuery).UseFilter());
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
@@ -177,7 +177,7 @@ public class DbContextTest : TestBase
     public async Task TestDisabledSoftDelete()
     {
         Services.AddMasaDbContext<CustomDbContext>(options
-            => options.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter());
+            => options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter());
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -226,7 +226,7 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(opt =>
         {
-            opt.UseTestSqlite(Guid.NewGuid().ToString()).UseFilter();
+            opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -292,7 +292,7 @@ public class DbContextTest : TestBase
     public void TestSpecifyConnectionStringsReturnDbConnectionStringProviderIsNotNull()
     {
         string connectionString = $"data source=test-{Guid.NewGuid()}";
-        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseTestSqlite(connectionString).UseFilter());
+        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite(connectionString).UseFilter());
         var serviceProvider = Services.BuildServiceProvider();
         var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
         Assert.IsNotNull(dbConnectionStringProvider);

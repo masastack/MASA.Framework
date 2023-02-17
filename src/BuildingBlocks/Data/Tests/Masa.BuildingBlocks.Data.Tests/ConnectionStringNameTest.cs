@@ -13,10 +13,10 @@ public class ConnectionStringNameTest
         Assert.AreEqual(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, name);
 
         name = ConnectionStringNameAttribute.GetConnStringName<CustomQueryDbContext>();
-        Assert.AreEqual(typeof(CustomQueryDbContext).FullName, name);
+        Assert.AreEqual(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, name);
 
         name = ConnectionStringNameAttribute.GetConnStringName<CustomQuery2DbContext>();
-        Assert.AreEqual(typeof(CustomQuery2DbContext).FullName, name);
+        Assert.AreEqual(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, name);
 
         name = ConnectionStringNameAttribute.GetConnStringName<CustomQuery3DbContext>();
         Assert.AreEqual("query3", name);

@@ -5,11 +5,15 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    private readonly IOptions<MasaStackConfigOptions> _options;
-
-    public MasaStackConfig(IOptions<MasaStackConfigOptions> options)
+    public MasaStackConfig(IConfigurationApiClient client)
     {
-        _options = options;
+        var configs = client.GetAsync<Dictionary<string, string>>(
+            Environment,
+            Cluster,
+            DEFAULT_PUBLIC_ID,
+            DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        MasaStackConfigOptions.SetValues(configs);
     }
 
     public RedisModel RedisModel
@@ -52,9 +56,11 @@ public class MasaStackConfig : IMasaStackConfig
 
     public bool SingleSsoClient { get; }
 
-    public List<string> ProjectList() => this.GetAllServer().Keys.ToList();
+    public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
 
-    public string GetValue(string key) => _options.Value.GetValue(key);
+    public string GetValue(string key) => MasaStackConfigOptions.GetValue(key);
 
-    public void SetValue(string key, string value) => _options.Value.SetValue(key, value);
+    public void SetValue(string key, string value) => MasaStackConfigOptions.SetValue(key, value);
+
+    public void SetValues(Dictionary<string, string> configMap) => MasaStackConfigOptions.SetValues(configMap);
 }

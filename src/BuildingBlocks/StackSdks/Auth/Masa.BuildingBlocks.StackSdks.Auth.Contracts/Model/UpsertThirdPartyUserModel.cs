@@ -9,5 +9,5 @@ public class UpsertThirdPartyUserModel : UpsertUserModel
 
     public object ExtendedData { get; set; }
 
-    public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
+    public string Scheme { get; set; }
 }

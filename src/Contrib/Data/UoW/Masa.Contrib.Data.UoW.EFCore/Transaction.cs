@@ -6,6 +6,7 @@ namespace Masa.Contrib.Data.UoW.EFCore;
 [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 public class Transaction : ITransaction
 {
+    [NotMapped]
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork { get; set; }
 

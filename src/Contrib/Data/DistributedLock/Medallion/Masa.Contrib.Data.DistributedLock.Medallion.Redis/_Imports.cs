@@ -3,7 +3,6 @@
 
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Data.DistributedLock.Medallion;
-global using Masa.Contrib.Data.DistributedLock.Medallion.Redis.Internal;
 global using Medallion.Threading;
 global using Medallion.Threading.Redis;
 global using Microsoft.Extensions.Options;

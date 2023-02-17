@@ -51,7 +51,7 @@ public class DataFilterTest
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(options =>
         {
-            options.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+            options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
         });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();

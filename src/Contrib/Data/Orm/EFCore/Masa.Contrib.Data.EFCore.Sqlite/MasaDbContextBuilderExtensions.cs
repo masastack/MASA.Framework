@@ -26,44 +26,30 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connectionString, false, sqliteOptionsAction);
+        => builder.UseSqliteCore(connectionString, sqliteOptionsAction);
 
     public static MasaDbContextBuilder UseSqlite(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connection, false, sqliteOptionsAction);
-
-    public static MasaDbContextBuilder UseTestSqlite(
-        this MasaDbContextBuilder builder,
-        DbConnection connection,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connection, true, sqliteOptionsAction);
-
-    public static MasaDbContextBuilder UseTestSqlite(
-        this MasaDbContextBuilder builder,
-        string connectionString,
-        Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
-        => builder.UseSqliteCore(connectionString, true, sqliteOptionsAction);
+        => builder.UseSqliteCore(connection, sqliteOptionsAction);
 
     private static MasaDbContextBuilder UseSqliteCore(
         this MasaDbContextBuilder builder,
         string connectionString,
-        bool isTest,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseSqlite(connectionString, sqliteOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseSqliteCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
-        bool isTest,
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseSqlite(connection, sqliteOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }

@@ -12,18 +12,14 @@ public class TestBase
         Services = new ServiceCollection();
     }
 
-    protected CustomDbContext CreateDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider,
-        bool initConnectionString = true)
+    protected CustomDbContext CreateDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider)
     {
         Services.AddMasaDbContext<CustomDbContext>(options =>
         {
             if (enableSoftDelete)
                 options.UseFilter();
 
-            if (initConnectionString)
-                options.UseTestSqlite($"data source=test-{Guid.NewGuid()}");
-            else
-                options.UseSqlite();
+            options.UseSqlite($"data source=test-{Guid.NewGuid()}");
         });
         serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
@@ -38,7 +34,7 @@ public class TestBase
             if (enableSoftDelete)
                 options.UseFilter();
 
-            options.UseTestSqlite($"data source=test2-{Guid.NewGuid()}");
+            options.UseSqlite($"data source=test2-{Guid.NewGuid()}");
         });
         serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();

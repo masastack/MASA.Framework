@@ -16,8 +16,6 @@ global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Common;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Config;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Model;
-global using Masa.Contrib.Service.Caller;
-global using Masa.Contrib.Service.Caller.HttpClient;
 global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Extensions.Caching.Memory;

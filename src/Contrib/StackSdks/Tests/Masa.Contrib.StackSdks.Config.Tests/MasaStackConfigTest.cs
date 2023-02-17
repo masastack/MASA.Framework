@@ -1,20 +1,51 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+using Moq;
+
 namespace Masa.Contrib.StackSdks.Config.Tests;
 
 [TestClass]
 public class MasaStackConfigTest
 {
-    private IMasaStackConfig _stackConfig;
+    private MasaStackConfig _stackConfig;
 
     [TestInitialize]
     public void Initialize()
     {
         var builder = WebApplication.CreateBuilder();
+        var configuration = builder.Configuration.AddJsonFile("appsettings.json", true, true).Build();
+        var configs = new Dictionary<string, string>()
+        {
+            { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
+            { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
+            { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
+            { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
+            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
+            { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
+            { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
+            { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
+            { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
+            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
+            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
+            { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
+            { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
+            { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+        };
 
-        builder.Services.AddMasaStackConfig();
-        _stackConfig = builder.Services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
+        Mock<IConfigurationApiClient> dccClient = new();
+
+        dccClient.Setup(aa => aa.GetAsync(
+            It.IsAny<string>(),
+            It.IsAny<string>(),
+            It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<Action<Dictionary<string, string>>>()!))
+            .ReturnsAsync(configs);
+
+        _stackConfig = new MasaStackConfig(dccClient.Object);
+
     }
 
     [TestMethod]
@@ -26,9 +57,9 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
-    public void TestGetMiniDccOptions()
+    public void TestGetDefaultDccOptions()
     {
-        var dccOptions = _stackConfig.GetDccMiniOptions<DccOptions>();
+        var dccOptions = _stackConfig.GetDefaultDccOptions();
 
         Assert.IsNotNull(dccOptions?.RedisOptions);
     }

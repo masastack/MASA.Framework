@@ -151,26 +151,28 @@ public static class MasaStackConfigExtensions
         return obj?[service]?.ToString() ?? "";
     }
 
-    public static T GetDccMiniOptions<T>(this IMasaStackConfig masaStackConfig)
+    public static DccOptions GetDefaultDccOptions(this IMasaStackConfig masaStackConfig)
     {
         var dccServerAddress = GetDccServiceDomain(masaStackConfig);
         var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
 
-        var stringBuilder = new System.Text.StringBuilder(@"{""ManageServiceAddress"":");
-        stringBuilder.Append($"\"{dccServerAddress}\",");
-        stringBuilder.Append(@"""RedisOptions"": {""Servers"": [{""Host"": ");
-        stringBuilder.Append($"\"{redis.RedisHost}\",");
-        stringBuilder.Append(@$"""Port"":{redis.RedisPort}");
-        stringBuilder.Append("}],");
-        stringBuilder.Append(@$"""DefaultDatabase"":{redis.RedisDb},");
-        stringBuilder.Append(@$"""Password"": ""{redis.RedisPassword}""");
-        stringBuilder.Append(@"},");
-        stringBuilder.Append(@"""ConfigObjectSecret"":");
-        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\",");
-        stringBuilder.Append(@"""PublicSecret"":");
-        stringBuilder.Append($"\"{masaStackConfig.DccSecret}\"");
-        stringBuilder.Append(@"}");
-        return JsonSerializer.Deserialize<T>(stringBuilder.ToString()) ?? throw new JsonException();
+        var options = new DccOptions
+        {
+            ManageServiceAddress = dccServerAddress,
+            RedisOptions = new Caching.Distributed.StackExchangeRedis.RedisConfigurationOptions
+            {
+                Servers = new List<Caching.Distributed.StackExchangeRedis.RedisServerOptions>
+                {
+                    new Caching.Distributed.StackExchangeRedis.RedisServerOptions(redis.RedisHost,redis.RedisPort)
+                },
+                DefaultDatabase = redis.RedisDb,
+                Password = redis.RedisPassword
+            },
+            Secret = masaStackConfig.DccSecret,
+            PublicSecret = masaStackConfig.DccSecret
+        };
+
+        return options;
     }
 
     public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)

@@ -13,7 +13,7 @@ public class AuthClient : IAuthClient
         ProjectService = new ProjectService(caller, userContext);
         PermissionService = new PermissionService(caller, userContext);
         CustomLoginService = new CustomLoginService(caller);
-        ThirdPartyIdpService = new ThirdPartyIdpService(caller);
+        ThirdPartyIdpService = new ThirdPartyIdpService(caller, multilevelCacheClient);
     }
 
     public IUserService UserService { get; }

@@ -20,4 +20,6 @@ public static class GrantType
     public const string PHONE_CODE = "phone_code";
 
     public const string LOCAL_PHONE = "local_phone";
+
+    public const string THIRD_PARTY_IDP = "third_party_idp";
 }

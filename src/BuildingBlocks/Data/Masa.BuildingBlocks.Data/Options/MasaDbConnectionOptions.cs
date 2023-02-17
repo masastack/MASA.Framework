@@ -16,7 +16,7 @@ public class MasaDbConnectionOptions
 
     public void TryAddConnectionString(string name, string connectionString)
     {
-        if (ConnectionStrings.All(item => item.Key != name))
+        if (ConnectionStrings.All(item => !item.Key.Equals(name, StringComparison.OrdinalIgnoreCase)))
             ConnectionStrings.Add(name, connectionString);
     }
 }

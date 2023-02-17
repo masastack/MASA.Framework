@@ -23,7 +23,7 @@ public class IsolationTest : TestBase
         {
             eventBuilder.Object.UseIsolationUoW<CustomDbContext>(_ =>
             {
-            }, dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            }, dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
         }, "Tenant isolation and environment isolation use at least one");
     }
 
@@ -35,7 +35,7 @@ public class IsolationTest : TestBase
         Assert.ThrowsException<ArgumentNullException>(() =>
         {
             eventBuilder.Object.UseIsolationUoW<CustomDbContext>(null!,
-                dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+                dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
         });
     }
 
@@ -48,7 +48,7 @@ public class IsolationTest : TestBase
         {
             dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(_ =>
             {
-            }, dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            }, dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
         }, "Tenant isolation and environment isolation use at least one");
     }
 
@@ -69,7 +69,7 @@ public class IsolationTest : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiEnvironment(),
-            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiEnvironmentContext>());
@@ -83,7 +83,7 @@ public class IsolationTest : TestBase
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(
             isolationBuilder => isolationBuilder.UseMultiEnvironment().UseMultiEnvironment(),
-            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IMultiEnvironmentContext>().Count() == 1);
@@ -96,7 +96,7 @@ public class IsolationTest : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant(),
-            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<IMultiTenantContext>());
@@ -109,7 +109,7 @@ public class IsolationTest : TestBase
         Mock<IDispatcherOptions> dispatcherOption = new();
         dispatcherOption.Setup(builder => builder.Services).Returns(_services).Verifiable();
         dispatcherOption.Object.UseIsolationUoW<CustomDbContext>(isolationBuilder => isolationBuilder.UseMultiTenant().UseMultiTenant(),
-            dbOptionBuilder => dbOptionBuilder.UseTestSqlite(_connectionString));
+            dbOptionBuilder => dbOptionBuilder.UseSqlite(_connectionString));
 
         var serviceProvider = dispatcherOption.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IMultiTenantContext>().Count() == 1);

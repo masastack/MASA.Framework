@@ -4,6 +4,5 @@
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.Service.Caller.Serialization.Xml;
 global using Microsoft.Extensions.DependencyInjection;
-global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using System.Reflection;

@@ -25,7 +25,7 @@ public class TestBase
                 .UseEventBus(eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(RecordEventMiddleware<>)).UseMiddleware(typeof(ValidatorEventMiddleware<>)))
                 .UseUoW<CustomDbContext>(optionBuilder =>
                 {
-                    optionBuilder.UseTestSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+                    optionBuilder.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
                 })
                 .UseRepository<CustomDbContext>();
         });

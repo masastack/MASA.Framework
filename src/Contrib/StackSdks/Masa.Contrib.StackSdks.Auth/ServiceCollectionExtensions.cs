@@ -42,8 +42,6 @@ public static class ServiceCollectionExtensions
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddAuthClientMultilevelCache(redisOptions);
-        services.AddSingleton<IThirdPartyIdpCacheService, ThirdPartyIdpCacheService>();
-        services.AddSingleton<ISsoClient, SsoClient>();
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
@@ -52,8 +50,34 @@ public static class ServiceCollectionExtensions
             var authClient = new AuthClient(callProvider, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
         });
+        services.AddSingleton<IThirdPartyIdpService>(serviceProvider =>
+        {
+            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+            var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
+            var thirdPartyIdpService = new ThirdPartyIdpService(callProvider, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
+            return thirdPartyIdpService;
+        });
 
         MasaApp.TrySetServiceCollection(services);
+
+        return services;
+    }
+
+    public static IServiceCollection AddSsoClient(this IServiceCollection services, IConfiguration configuration)
+    {
+        var ssoServiceBaseAddressFunc = () => configuration.GetValue<string>("$public.AppSettings:SsoClient:Url");
+        services.AddSsoClient(ssoServiceBaseAddressFunc);
+
+        return services;
+    }
+
+    public static IServiceCollection AddSsoClient(this IServiceCollection services, Func<string> ssoServiceBaseAddressFunc)
+    {
+        services.AddHttpClient(DEFAULT_SSO_CLIENT_NAME, httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(ssoServiceBaseAddressFunc());
+        });
+        services.AddSingleton<ISsoClient, SsoClient>();
 
         return services;
     }

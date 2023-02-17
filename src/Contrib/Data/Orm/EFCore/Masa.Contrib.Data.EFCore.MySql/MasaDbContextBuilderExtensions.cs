@@ -26,44 +26,42 @@ public static class MasaDbContextBuilderExtensions
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySQLCore(connectionString, false, mySqlOptionsAction);
+        => builder.UseMySQLCore(connectionString, mySqlOptionsAction);
 
     public static MasaDbContextBuilder UseMySQL(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySQLCore(connection, false, mySqlOptionsAction);
+        => builder.UseMySQLCore(connection, mySqlOptionsAction);
 
     public static MasaDbContextBuilder UseTestMySQL(
         this MasaDbContextBuilder builder,
         DbConnection connection,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySQLCore(connection, true, mySqlOptionsAction);
+        => builder.UseMySQLCore(connection, mySqlOptionsAction);
 
     public static MasaDbContextBuilder UseTestMySQL(
         this MasaDbContextBuilder builder,
         string connectionString,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
-        => builder.UseMySQLCore(connectionString, true, mySqlOptionsAction);
+        => builder.UseMySQLCore(connectionString, mySqlOptionsAction);
 
     private static MasaDbContextBuilder UseMySQLCore(
         this MasaDbContextBuilder builder,
         string connectionString,
-        bool isTest,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction)
     {
         builder.Builder = (_, dbContextOptionsBuilder)
             => dbContextOptionsBuilder.UseMySQL(connectionString, mySqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connectionString);
     }
 
     private static MasaDbContextBuilder UseMySQLCore(
         this MasaDbContextBuilder builder,
         DbConnection connection,
-        bool isTest,
         Action<MySQLDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.Builder = (_, dbContextOptionsBuilder) => dbContextOptionsBuilder.UseMySQL(connection, mySqlOptionsAction);
-        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString, isTest);
+        return builder.ConfigMasaDbContextAndConnectionStringRelations(connection.ConnectionString);
     }
 }
