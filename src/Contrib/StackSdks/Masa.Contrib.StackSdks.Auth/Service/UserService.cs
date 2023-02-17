@@ -184,13 +184,18 @@ public class UserService : IUserService
         return await _caller.PostAsync<Guid[], List<UserModel>>(requestUri, userIds) ?? new();
     }
 
-    public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
+    public async Task SaveUserSystemDataAsync<T>(Guid userId, string systemId, T data)
     {
-        var userId = _userContext.GetUserId<Guid>();
-        var requestUri = $"api/user/systemData";
+        var requestUri = "api/user/systemData";
         await _caller.PostAsync<object>(requestUri,
             new { UserId = userId, SystemId = systemId, Data = JsonSerializer.Serialize(data) },
             true);
+    }
+
+    public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
+    {
+        var userId = _userContext.GetUserId<Guid>();
+        await SaveUserSystemDataAsync(userId, systemId, data);
     }
 
     public async Task<T?> GetUserSystemDataAsync<T>(string systemId)
