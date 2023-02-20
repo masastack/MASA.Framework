@@ -42,4 +42,6 @@ public class MessageTaskModel : AuditEntityModel<Guid, Guid>
     public MessageTaskSources Source { get; set; }
 
     public string ModifierName { get; set; } = string.Empty;
+
+    public ExtraPropertyDictionary ExtraProperties { get; set; } = new();
 }
