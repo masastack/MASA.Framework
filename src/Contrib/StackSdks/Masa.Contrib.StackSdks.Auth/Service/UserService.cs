@@ -343,5 +343,10 @@ public class UserService : IUserService
         var requestUri = $"api/user/reset_password_by_phone";
         return await _caller.PostAsync<ResetPasswordByPhoneModel, bool>(requestUri, resetPasswordByPhoneModel);
     }
+
+    public async Task RemoveAsync(Guid id)
+    {
+        await _caller.DeleteAsync("api/user", new RemoveUserModel(id));
+    }
 }
 
