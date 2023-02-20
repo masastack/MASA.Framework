@@ -24,4 +24,6 @@ public class SendTemplateMessageByExternalModel
     public Guid OperatorId { get; set; } = Guid.Empty;
 
     public string SystemId { get; set; } = string.Empty;
+
+    public ExtraPropertyDictionary ExtraProperties { get; set; } = new();
 }
