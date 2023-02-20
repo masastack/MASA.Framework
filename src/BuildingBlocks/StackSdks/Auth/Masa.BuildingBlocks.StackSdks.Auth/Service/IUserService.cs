@@ -96,5 +96,7 @@ public interface IUserService
     Task<bool> ResetPasswordByEmailAsync(ResetPasswordByEmailModel resetPasswordByEmailModel);
 
     Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
+
+    Task RemoveAsync(Guid id);
 }
 

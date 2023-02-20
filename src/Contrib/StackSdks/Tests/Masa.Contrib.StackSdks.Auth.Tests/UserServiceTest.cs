@@ -689,6 +689,17 @@ public class UserServiceTest
         Assert.IsTrue(result);
     }
 
+    [TestMethod]
+    public async Task TestRemoveAsync()
+    {
+        var model = new RemoveUserModel(default);
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.DeleteAsync("api/user", It.IsAny<object>(), true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.RemoveAsync(default);
+        caller.Verify(provider => provider.DeleteAsync("api/user", It.IsAny<object>(), true, default), Times.Once);
+    }
+
     static UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)
     {
         userContext ??= new Mock<IUserContext>();
