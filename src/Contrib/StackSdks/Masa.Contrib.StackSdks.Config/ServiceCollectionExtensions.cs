@@ -78,6 +78,24 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, DccOptions dccOptions, bool init = false)
+    {
+        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
+
+        if (init)
+        {
+            InitializeMasaStackConfiguration(services).ConfigureAwait(false);
+        }
+
+        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
+        {
+            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            return new MasaStackConfig(client);
+        });
+
+        return services;
+    }
+
     public static IMasaStackConfig GetMasaStackConfig(this IServiceCollection services)
     {
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
