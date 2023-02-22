@@ -28,4 +28,6 @@ public class WebsiteMessageModel : AuditEntityModel<Guid, Guid>
     public Guid PrevId { get; set; }
 
     public Guid NextId { get; set; }
+
+    public ExtraPropertyDictionary ExtraProperties { get; set; } = new();
 }
