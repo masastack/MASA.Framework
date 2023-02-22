@@ -36,4 +36,6 @@ public class MessageTaskUpsertModel
     private MessageTaskSources Source { get;} = MessageTaskSources.Sdk;
 
     public Guid OperatorId { get; set; } = Guid.Empty;
+
+    public ExtraPropertyDictionary ExtraProperties { get; set; } = new();
 }
