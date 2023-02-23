@@ -48,6 +48,12 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddAutoCompleteBySpecifyDocument<TDocument>(
         this IServiceCollection services,
+        Action<AutoCompleteOptionsBuilder> configure)
+        where TDocument : AutoCompleteDocument
+        => services.AddAutoCompleteBySpecifyDocument<TDocument>(Options.Options.DefaultName, configure);
+
+    public static IServiceCollection AddAutoCompleteBySpecifyDocument<TDocument>(
+        this IServiceCollection services,
         string name,
         Action<AutoCompleteOptionsBuilder> configure)
         where TDocument : AutoCompleteDocument
