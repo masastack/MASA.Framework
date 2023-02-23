@@ -62,11 +62,11 @@ public static class ServiceCollectionExtensions
         }
     }
 
-    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, bool init = false)
+    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false)
     {
         if (init)
         {
-            InitializeMasaStackConfiguration(services).ConfigureAwait(false);
+            await InitializeMasaStackConfiguration(services).ConfigureAwait(false);
         }
 
         services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
@@ -78,13 +78,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddMasaStackConfig(this IServiceCollection services, DccOptions dccOptions, bool init = false)
+    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, DccOptions dccOptions, bool init = false)
     {
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
         if (init)
         {
-            InitializeMasaStackConfiguration(services).ConfigureAwait(false);
+            await InitializeMasaStackConfiguration(services).ConfigureAwait(false);
         }
 
         services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
