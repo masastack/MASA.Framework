@@ -82,6 +82,12 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, UserModel>(requestUri, new { account });
     }
 
+    public async Task<List<UserModel>> FindListByAccountsAsync(IEnumerable<string> accounts)
+    {
+        var requestUri = $"api/user/byAccounts";
+        return await _caller.GetAsync<List<UserModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
+    }
+
     public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
     {
         var requestUri = $"api/user/byPhoneNumber";
@@ -202,15 +208,22 @@ public class UserService : IUserService
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
 
     public async Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId)
     {
         var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
+    }
+
+    public async Task<List<T>> GetUserSystemDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
+    {
+        var requestUri = $"api/user/systemData/byIds";
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userIds = string.Join(',', userIds), systemId });
+        return data is null ? new() : JsonSerializer.Deserialize<List<T>>(data) ?? new();
     }
 
     public async Task<bool> DisableUserAsync(DisableUserModel user)
@@ -346,7 +359,8 @@ public class UserService : IUserService
 
     public async Task RemoveAsync(Guid id)
     {
-        await _caller.DeleteAsync("api/user", new RemoveUserModel(id));
+        var requestUri = "api/user";
+        await _caller.DeleteAsync(requestUri, new RemoveUserModel(id));
     }
 }
 
