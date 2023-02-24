@@ -667,6 +667,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FCA667B6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Service.Caller.Serialization.Xml.Tests", "src\Contrib\Service\Caller\Serialization\Masa.Contrib.Service.Caller.Serialization.Xml.Tests\Masa.Contrib.Service.Caller.Serialization.Xml.Tests.csproj", "{259A999E-123A-4A06-BEA2-691162D4C179}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{69BD70CA-62D8-4900-B781-4368C738B3EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.BuildingBlocks.Extensions.BackgroundJobs", "src\BuildingBlocks\Extensions\Masa.BuildingBlocks.Extensions.BackgroundJobs\Masa.BuildingBlocks.Extensions.BackgroundJobs.csproj", "{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{0FB9A049-E04C-40C7-9727-FD8B1265DF87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Extensions.BackgroundJobs.Memory", "src\Contrib\Extensions\Masa.Contrib.Extensions.BackgroundJobs.Memory\Masa.Contrib.Extensions.BackgroundJobs.Memory.csproj", "{F2EBF42F-595F-4B7D-B375-505924D2973C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Extensions.BackgroundJobs", "src\Contrib\Extensions\Masa.Contrib.Extensions.BackgroundJobs\Masa.Contrib.Extensions.BackgroundJobs.csproj", "{8C05C511-EE88-459B-B106-93BBC873968C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2387,6 +2397,30 @@ Global
 		{D54C1134-1805-4DD7-84A6-BF680784443C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D54C1134-1805-4DD7-84A6-BF680784443C}.Release|x64.ActiveCfg = Release|Any CPU
 		{D54C1134-1805-4DD7-84A6-BF680784443C}.Release|x64.Build.0 = Release|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73}.Release|x64.Build.0 = Release|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Debug|x64.Build.0 = Debug|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Release|x64.ActiveCfg = Release|Any CPU
+		{F2EBF42F-595F-4B7D-B375-505924D2973C}.Release|x64.Build.0 = Release|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Debug|x64.Build.0 = Debug|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|x64.ActiveCfg = Release|Any CPU
+		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2716,6 +2750,11 @@ Global
 		{32E0798A-5FBB-4EF3-9D25-2E7FFC64149C} = {383995FF-B661-4E15-A830-640FC5BA8A1F}
 		{89A12439-90DF-428D-8AB0-3E91540676C4} = {8A9DBB76-6618-4982-87D7-6CBD8375EB15}
 		{D54C1134-1805-4DD7-84A6-BF680784443C} = {EC7A08E9-3355-486B-BA30-41A1F8CAC5F5}
+		{69BD70CA-62D8-4900-B781-4368C738B3EB} = {DC578D74-98F0-4F19-A230-CFA8DAEE0AF1}
+		{5E014EDA-AFA1-4585-B4D5-F4B165C22A73} = {69BD70CA-62D8-4900-B781-4368C738B3EB}
+		{0FB9A049-E04C-40C7-9727-FD8B1265DF87} = {950DA7D0-48C1-42BA-8E8F-F72C0DCE41C4}
+		{F2EBF42F-595F-4B7D-B375-505924D2973C} = {0FB9A049-E04C-40C7-9727-FD8B1265DF87}
+		{8C05C511-EE88-459B-B106-93BBC873968C} = {0FB9A049-E04C-40C7-9727-FD8B1265DF87}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
