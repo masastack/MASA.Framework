@@ -91,6 +91,31 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
+    public async Task TestSubscribeChannelsAsync()
+    {
+        var subscribeChannelsField = _multilevelCacheClient.GetType().GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        var key = "test200";
+        string? value = await _multilevelCacheClient.GetAsync<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        var subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(subscribeChannelCount, 1);
+
+        await _multilevelCacheClient.RemoveAsync<string>(key);
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(subscribeChannelCount, 0);
+
+        await _multilevelCacheClient.GetAsync<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(subscribeChannelCount, 1);
+    }
+
+    [TestMethod]
     public void TestGetList()
     {
         var list = _multilevelCacheClient.GetList<string>("test_multilevel_cache", "test10").ToList();
