@@ -101,18 +101,20 @@ public class MultilevelCacheClientTest : TestBase
             value = newVal;
         });
         var subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
-        Assert.AreEqual(subscribeChannelCount, 1);
+        Assert.AreEqual(1, subscribeChannelCount);
 
         await _multilevelCacheClient.RemoveAsync<string>(key);
         subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
-        Assert.AreEqual(subscribeChannelCount, 0);
+        Assert.AreEqual(0, subscribeChannelCount);
 
         await _multilevelCacheClient.GetAsync<string>(key, newVal =>
         {
             value = newVal;
         });
         subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
-        Assert.AreEqual(subscribeChannelCount, 1);
+        Assert.AreEqual(1, subscribeChannelCount);
+
+        await _multilevelCacheClient.RemoveAsync<string>(key);
     }
 
     [TestMethod]
