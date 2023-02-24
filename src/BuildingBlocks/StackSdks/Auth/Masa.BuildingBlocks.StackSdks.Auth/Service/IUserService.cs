@@ -31,6 +31,8 @@ public interface IUserService
 
     Task<UserModel?> FindByAccountAsync(string account);
 
+    Task<List<UserModel>> FindListByAccountsAsync(IEnumerable<string> account);
+
     Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber);
 
     Task<UserModel?> FindByEmailAsync(string email);
@@ -70,6 +72,8 @@ public interface IUserService
     Task<T?> GetUserSystemDataAsync<T>(string systemId);
 
     Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId);
+
+    Task<List<T>> GetUserSystemDataAsync<T>(IEnumerable<Guid> userIds, string systemId);
 
     Task<bool> DisableUserAsync(DisableUserModel user);
 

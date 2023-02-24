@@ -199,6 +199,20 @@ public class UserServiceTest
     }
 
     [TestMethod]
+    public async Task TestFindListByAccountsAsync()
+    {
+        var accounts = new List<string> { "account" };
+        var data = new List<UserModel>();
+        var requestUri = $"api/user/byAccounts";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<List<UserModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        var userService = GetUserService(caller);
+        var result = await userService.FindListByAccountsAsync(accounts);
+        caller.Verify(provider => provider.GetAsync<List<UserModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
     [DataRow("15168440403")]
     public async Task TestFindByPhoneNumberAsync(string phoneNumber)
     {
@@ -507,6 +521,26 @@ public class UserServiceTest
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
         var result = await userService.GetUserSystemDataAsync<SystemData>(systemId);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestGetUserSystemDataAsync(string systemId)
+    {
+        var userIds = new List<Guid> { Guid.NewGuid() };
+        var data = new SystemData
+        {
+            Name = "name",
+            Value = "value"
+        };
+        var requestUri = $"api/user/systemData/byIds";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, new { userIds = string.Join(',', userIds), systemId }, default))
+            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = GetUserService(caller, userContext);
+        var result = await userService.GetUserSystemDataAsync<SystemData>(userIds, systemId);
         Assert.IsTrue(result is not null);
     }
 
