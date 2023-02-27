@@ -29,13 +29,13 @@ public interface IUserService
 
     Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
 
-    Task<UserModel?> FindByAccountAsync(string account);
+    Task<UserModel?> GetByAccountAsync(string account);
 
-    Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber);
+    Task<UserModel?> GetByPhoneNumberAsync(string phoneNumber);
 
-    Task<UserModel?> FindByEmailAsync(string email);
+    Task<UserModel?> GetByEmailAsync(string email);
 
-    Task<UserModel?> FindByIdAsync(Guid userId);
+    Task<UserModel?> GetByIdAsync(Guid userId);
 
     Task<UserModel?> GetCurrentUserAsync();
 
@@ -61,17 +61,19 @@ public interface IUserService
 
     Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
 
-    Task<List<UserModel>> GetUsersAsync(params Guid[] userIds);
+    Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds);
 
-    Task SaveUserSystemDataAsync<T>(Guid userId, string systemId, T data);
+    Task UpsertSystemDataAsync<T>(Guid userId, string systemId, T data);
 
-    Task SaveUserSystemDataAsync<T>(string systemId, T data);
+    Task UpsertSystemDataAsync<T>(string systemId, T data);
 
-    Task<T?> GetUserSystemDataAsync<T>(string systemId);
+    Task<T?> GetSystemDataAsync<T>(string systemId);
 
-    Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId);
+    Task<T?> GetSystemDataAsync<T>(Guid userId, string systemId);
 
-    Task<bool> DisableUserAsync(DisableUserModel user);
+    Task<List<T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId);
+
+    Task<bool> DisableAsync(DisableUserModel user);
 
     Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts);
 
