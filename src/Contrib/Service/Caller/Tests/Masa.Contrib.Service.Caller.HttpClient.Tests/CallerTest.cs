@@ -181,34 +181,34 @@ public class CallerTest
         var callerBase = serviceProvider.GetService<CustomHttpCaller>();
         Assert.IsNotNull(callerBase);
 
-        var httpClient = GetHttpClient(callerBase.GetCaller());
+        var httpClient = GetHttpClient(callerBase.GetBaseCaller());
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());
 
         Assert.AreEqual(TimeSpan.FromHours(1), httpClient.Timeout);
 
-        var requestMessage = GetRequestMessage(callerBase.GetCaller());
+        var requestMessage = GetRequestMessage(callerBase.GetBaseCaller());
         Assert.AreEqual(typeof(JsonRequestMessage), requestMessage.GetType());
 
-        var responseMessage = GetResponseMessage(callerBase.GetCaller());
+        var responseMessage = GetResponseMessage(callerBase.GetBaseCaller());
         Assert.AreEqual(typeof(JsonResponseMessage), responseMessage.GetType());
 
-        Assert.AreEqual("custom", GetPrefix(callerBase.GetCaller()));
+        Assert.AreEqual("custom", GetPrefix(callerBase.GetBaseCaller()));
 
         var xmlCallerBase = serviceProvider.GetService<CustomXmlHttpCaller>();
         Assert.IsNotNull(xmlCallerBase);
 
-        httpClient = GetHttpClient(xmlCallerBase.GetCaller());
+        httpClient = GetHttpClient(xmlCallerBase.GetBaseCaller());
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());
 
         Assert.AreEqual(TimeSpan.FromHours(2), httpClient.Timeout);
 
-        requestMessage = GetRequestMessage(xmlCallerBase.GetCaller());
+        requestMessage = GetRequestMessage(xmlCallerBase.GetBaseCaller());
         Assert.AreEqual(typeof(XmlRequestMessage), requestMessage.GetType());
 
-        responseMessage = GetResponseMessage(xmlCallerBase.GetCaller());
+        responseMessage = GetResponseMessage(xmlCallerBase.GetBaseCaller());
         Assert.AreEqual(typeof(XmlResponseMessage), responseMessage.GetType());
 
-        Assert.AreEqual("custom_xml", GetPrefix(xmlCallerBase.GetCaller()));
+        Assert.AreEqual("custom_xml", GetPrefix(xmlCallerBase.GetBaseCaller()));
     }
 
     private static FieldInfo GetCustomFieldInfo(Type type, string name)

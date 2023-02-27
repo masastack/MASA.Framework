@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public abstract class DaprCallerBase : CallerBase
+public abstract class DaprCallerBase : CallerExpandBase
 {
     protected abstract string AppId { get; set; }
 

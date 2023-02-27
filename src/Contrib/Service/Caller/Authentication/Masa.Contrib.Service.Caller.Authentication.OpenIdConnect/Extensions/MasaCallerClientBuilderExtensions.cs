@@ -52,17 +52,15 @@ public static class MasaCallerClientBuilderExtensions
         masaCallerClientBuilder.Services.TryAddScoped<TokenProvider>(serviceProvider =>
         {
             var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
-            if (httpContextAccessor != null)
+            if (httpContextAccessor != null &&
+                AuthenticationHeaderValue.TryParse(
+                    httpContextAccessor.HttpContext?.Request.Headers.Authorization,
+                    out var authenticationHeaderValue))
             {
-                if (AuthenticationHeaderValue.TryParse(
-                        httpContextAccessor.HttpContext?.Request.Headers.Authorization,
-                        out var authenticationHeaderValue))
+                return new TokenProvider()
                 {
-                    return new TokenProvider()
-                    {
-                        AccessToken = authenticationHeaderValue.Parameter
-                    };
-                }
+                    AccessToken = authenticationHeaderValue.Parameter
+                };
             }
             return new TokenProvider();
         });

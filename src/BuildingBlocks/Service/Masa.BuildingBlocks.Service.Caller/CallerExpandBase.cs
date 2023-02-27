@@ -8,6 +8,13 @@ public abstract class CallerExpandBase : CallerBase
     private ICaller? _caller;
     public ILogger<CallerExpandBase>? Logger => ServiceProvider!.GetService<ILogger<CallerExpandBase>>();
 
+    protected CallerExpandBase() : base() { }
+
+    protected CallerExpandBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+
+    }
+
     protected override ICaller GetCaller()
     {
         if (_caller == null)
