@@ -60,7 +60,7 @@ public static class MasaStackConfigExtensions
                 domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.Namespace}";
             }
         }
-        return domain;
+        return domain.TrimEnd('.');
     }
 
     public static string GetUIDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
@@ -75,7 +75,7 @@ public static class MasaStackConfigExtensions
                 domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.DomainName.TrimStart('.')}";
             }
         }
-        return domain;
+        return domain.TrimEnd('.');
     }
 
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
@@ -168,8 +168,8 @@ public static class MasaStackConfigExtensions
                 DefaultDatabase = redis.RedisDb,
                 Password = redis.RedisPassword
             },
-            Secret = masaStackConfig.DccSecret,
-            PublicSecret = masaStackConfig.DccSecret
+            PublicSecret = masaStackConfig.DccSecret,
+            ConfigObjectSecret = masaStackConfig.DccSecret
         };
 
         return options;

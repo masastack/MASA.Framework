@@ -54,8 +54,8 @@ namespace Masa.Contrib.StackSdks.Config
                     DefaultDatabase = redis.RedisDb,
                     Password = redis.RedisPassword
                 },
-                Secret = secret,
-                PublicSecret = secret
+                PublicSecret = secret,
+                ConfigObjectSecret = secret
             };
 
             return options;
