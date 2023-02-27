@@ -11,26 +11,6 @@ public static class MasaCallerClientBuilderExtensions
     /// Caller uses Authentication
     /// </summary>
     /// <param name="masaCallerClientBuilder"></param>
-    /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
-    /// <returns></returns>
-    public static IMasaCallerClientBuilder UseAuthentication(
-        this IMasaCallerClientBuilder masaCallerClientBuilder,
-        string defaultScheme = Constant.DEFAULT_SCHEME)
-    {
-        masaCallerClientBuilder.Services.AddHttpContextAccessor();
-        masaCallerClientBuilder.Services.AddScoped<TokenProvider>();
-        masaCallerClientBuilder.AddMiddleware(serviceProvider =>
-            new AuthenticationMiddleware(
-                serviceProvider.GetRequiredService<IHttpContextAccessor>(),
-                defaultScheme
-            ));
-        return masaCallerClientBuilder;
-    }
-
-    /// <summary>
-    /// Caller uses Authentication
-    /// </summary>
-    /// <param name="masaCallerClientBuilder"></param>
     /// <param name="action">Extended Check Token</param>
     /// <returns></returns>
     public static IMasaCallerClientBuilder UseAuthentication(
@@ -55,6 +35,26 @@ public static class MasaCallerClientBuilderExtensions
         masaCallerClientBuilder.UseAuthentication(defaultScheme);
         var authenticationOptions = new AuthenticationOptions(masaCallerClientBuilder.Services);
         action(authenticationOptions);
+        return masaCallerClientBuilder;
+    }
+
+    /// <summary>
+    /// Caller uses Authentication
+    /// </summary>
+    /// <param name="masaCallerClientBuilder"></param>
+    /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
+    /// <returns></returns>
+    public static IMasaCallerClientBuilder UseAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        string defaultScheme = Constant.DEFAULT_SCHEME)
+    {
+        masaCallerClientBuilder.Services.AddScoped<TokenProvider>();
+        masaCallerClientBuilder.Services.TryAddScoped<IAuthenticationService>(serviceProvider =>
+            new AuthenticationService(
+                serviceProvider.GetRequiredService<TokenProvider>(),
+                serviceProvider.GetService<ITokenValidatorHandler>(),
+                defaultScheme
+            ));
         return masaCallerClientBuilder;
     }
 }

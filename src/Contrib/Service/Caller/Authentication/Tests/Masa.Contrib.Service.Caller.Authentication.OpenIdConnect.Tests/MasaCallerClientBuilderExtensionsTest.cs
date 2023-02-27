@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests;
@@ -19,12 +19,12 @@ public class MasaCallerClientBuilderExtensionsTest
         var options = serviceProvider.GetService<IOptions<CallerMiddlewareFactoryOptions>>();
         Assert.IsNotNull(options);
 
-        Assert.AreEqual(1, options.Value.Options.Count);
+        Assert.AreEqual(0, options.Value.Options.Count);
 
         var middlewares = options.Value.Options.Where(o => o.Name.Equals(string.Empty)).Select(o => o.Middlewares).FirstOrDefault();
         Assert.IsNotNull(middlewares);
 
-        Assert.AreEqual(1, middlewares.Count);
+        Assert.AreEqual(0, middlewares.Count);
 
         Assert.IsNull(serviceProvider.GetService<ITokenValidatorHandler>());
     }
