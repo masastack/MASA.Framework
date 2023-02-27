@@ -10,13 +10,14 @@ namespace Masa.Contrib.StackSdks.Config.Tests;
 public class MasaStackConfigTest
 {
     private MasaStackConfig _stackConfig;
+    private Dictionary<string, string> _config;
 
     [TestInitialize]
     public void Initialize()
     {
         var builder = WebApplication.CreateBuilder();
         var configuration = builder.Configuration.AddJsonFile("appsettings.json", true, true).Build();
-        var configs = new Dictionary<string, string>()
+        _config = new Dictionary<string, string>()
         {
             { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
             { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
@@ -42,7 +43,7 @@ public class MasaStackConfigTest
             It.IsAny<string>(),
             It.IsAny<string>(), It.IsAny<string>(),
             It.IsAny<Action<Dictionary<string, string>>>()!))
-            .ReturnsAsync(configs);
+            .ReturnsAsync(_config);
 
         _stackConfig = new MasaStackConfig(dccClient.Object);
 
@@ -52,16 +53,20 @@ public class MasaStackConfigTest
     public void TestGetAllServers()
     {
         var allServer = _stackConfig.GetAllServer();
+        var allServer1 = MasaStackConfigUtils.GetAllServer(_config);
 
         Assert.IsNotNull(allServer);
+        Assert.IsNotNull(allServer1);
     }
 
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
         var dccOptions = _stackConfig.GetDefaultDccOptions();
+        var dccOptions1 = MasaStackConfigUtils.GetDefaultDccOptions(_config);
 
         Assert.IsNotNull(dccOptions?.RedisOptions);
+        Assert.IsNotNull(dccOptions1?.RedisOptions);
     }
 
     [TestMethod]
