@@ -91,6 +91,60 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
+    public async Task TestSubscribeChannelsAsync()
+    {
+        var subscribeChannelsField = _multilevelCacheClient.GetType().GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        var key = "test200";
+        string? value = await _multilevelCacheClient.GetAsync<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        var subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(1, subscribeChannelCount);
+
+        await _multilevelCacheClient.RemoveAsync<string>(key);
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(0, subscribeChannelCount);
+
+        await _multilevelCacheClient.GetAsync<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(1, subscribeChannelCount);
+
+        await _multilevelCacheClient.RemoveAsync<string>(key);
+    }
+
+    [TestMethod]
+    public void TestSubscribeChannels()
+    {
+        var subscribeChannelsField = _multilevelCacheClient.GetType().GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
+
+        var key = "test200";
+        string? value = _multilevelCacheClient.Get<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        var subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(1, subscribeChannelCount);
+
+        _multilevelCacheClient.Remove<string>(key);
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(0, subscribeChannelCount);
+
+        _multilevelCacheClient.Get<string>(key, newVal =>
+        {
+            value = newVal;
+        });
+        subscribeChannelCount = ((List<string>)subscribeChannelsField!.GetValue(_multilevelCacheClient)!).Count;
+        Assert.AreEqual(1, subscribeChannelCount);
+
+        _multilevelCacheClient.Remove<string>(key);
+    }
+
+    [TestMethod]
     public void TestGetList()
     {
         var list = _multilevelCacheClient.GetList<string>("test_multilevel_cache", "test10").ToList();

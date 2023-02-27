@@ -193,7 +193,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
-        var result = await userService.FindByAccountAsync(account);
+        var result = await userService.GetByAccountAsync(account);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null);
     }
@@ -210,7 +210,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
-        var result = await userService.FindByPhoneNumberAsync(phoneNumber);
+        var result = await userService.GetByPhoneNumberAsync(phoneNumber);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null && result.PhoneNumber == data.PhoneNumber);
     }
@@ -224,7 +224,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
-        var result = await userService.FindByEmailAsync(email);
+        var result = await userService.GetByEmailAsync(email);
         caller.Verify(provider => provider.GetAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result is not null && result.Email == data.Email);
     }
@@ -409,7 +409,7 @@ public class UserServiceTest
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.PutAsync<bool>(requestUri, user, default)).Verifiable();
         var userService = GetUserService(caller);
-        await userService.DisableUserAsync(user);
+        await userService.DisableAsync(user);
         caller.Verify(provider => provider.PutAsync<bool>(requestUri, user, default), Times.Once);
     }
 
@@ -467,7 +467,7 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<Guid[], List<UserModel>>(requestUri, new Guid[] { userId }, default))
             .ReturnsAsync(userPortraits).Verifiable();
         var userService = GetUserService(caller);
-        var data = await userService.GetUsersAsync(userId);
+        var data = await userService.GetListByIdsAsync(userId);
         caller.Verify(provider => provider.PostAsync<Guid[], List<UserModel>>(requestUri, new Guid[] { userId }, default), Times.Once);
         Assert.IsTrue(data.Count == 1);
     }
@@ -485,7 +485,7 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
-        var result = await userService.GetUserSystemDataAsync<int>(systemId);
+        var result = await userService.GetSystemDataAsync<int>(systemId);
         Assert.IsTrue(result == 1);
     }
 
@@ -506,13 +506,33 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
-        var result = await userService.GetUserSystemDataAsync<SystemData>(systemId);
+        var result = await userService.GetSystemDataAsync<SystemData>(systemId);
         Assert.IsTrue(result is not null);
     }
 
     [TestMethod]
     [DataRow("masa-auth")]
-    public async Task TestIntSaveUserSystemDataAsync(string systemId)
+    public async Task TestGetUserSystemDataAsync(string systemId)
+    {
+        var userIds = new List<Guid> { Guid.NewGuid() };
+        var data = new SystemData
+        {
+            Name = "name",
+            Value = "value"
+        };
+        var requestUri = $"api/user/systemData/byIds";
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.GetAsync<object, string>(requestUri, new { userIds = string.Join(',', userIds), systemId }, default))
+            .ReturnsAsync(JsonSerializer.Serialize(data)).Verifiable();
+        var userContext = new Mock<IUserContext>();
+        var userService = GetUserService(caller, userContext);
+        var result = await userService.GetSystemListDataAsync<SystemData>(userIds, systemId);
+        Assert.IsTrue(result is not null);
+    }
+
+    [TestMethod]
+    [DataRow("masa-auth")]
+    public async Task TestIntUpsertSystemDataAsync(string systemId)
     {
         var userId = Guid.Parse("A9C8E0DD-1E9C-474D-8FE7-8BA9672D53D1");
         var requestUri = $"api/user/systemData";
@@ -523,7 +543,7 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
-        await userService.SaveUserSystemDataAsync(systemId, value);
+        await userService.UpsertSystemDataAsync(systemId, value);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
 
@@ -544,7 +564,7 @@ public class UserServiceTest
         var userContext = new Mock<IUserContext>();
         userContext.Setup(user => user.GetUserId<Guid>()).Returns(userId).Verifiable();
         var userService = GetUserService(caller, userContext);
-        await userService.SaveUserSystemDataAsync(systemId, value);
+        await userService.UpsertSystemDataAsync(systemId, value);
         caller.Verify(provider => provider.PostAsync<object>(requestUri, It.IsAny<object>(), true, default), Times.Once);
     }
 

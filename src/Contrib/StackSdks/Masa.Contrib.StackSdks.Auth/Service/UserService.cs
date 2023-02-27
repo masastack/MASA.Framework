@@ -76,28 +76,40 @@ public class UserService : IUserService
         return await _caller.PostAsync<object, UserModel>(requestUri, new { account, password, isLdap });
     }
 
-    public async Task<UserModel?> FindByAccountAsync(string account)
+    public async Task<UserModel?> GetByAccountAsync(string account)
     {
         var requestUri = $"api/user/byAccount";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { account });
     }
 
-    public async Task<UserModel?> FindByPhoneNumberAsync(string phoneNumber)
+    public async Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts)
+    {
+        var requestUri = $"api/user/listByAccount";
+        return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
+    }
+
+    public async Task<UserModel?> GetByPhoneNumberAsync(string phoneNumber)
     {
         var requestUri = $"api/user/byPhoneNumber";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { phoneNumber });
     }
 
-    public async Task<UserModel?> FindByEmailAsync(string email)
+    public async Task<UserModel?> GetByEmailAsync(string email)
     {
         var requestUri = $"api/user/byEmail";
         return await _caller.GetAsync<object, UserModel>(requestUri, new { email });
     }
 
-    public async Task<UserModel?> FindByIdAsync(Guid userId)
+    public async Task<UserModel?> GetByIdAsync(Guid userId)
     {
         var user = await _multilevelCacheClient.GetAsync<UserModel>(CacheKeyConsts.UserKey(userId));
         return user;
+    }
+
+    public async Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds)
+    {
+        var requestUri = $"api/user/byIds";
+        return await _caller.PostAsync<Guid[], List<UserModel>>(requestUri, userIds) ?? new();
     }
 
     public async Task<UserModel?> GetCurrentUserAsync()
@@ -178,13 +190,7 @@ public class UserService : IUserService
         await _caller.PutAsync(requestUri, staff);
     }
 
-    public async Task<List<UserModel>> GetUsersAsync(params Guid[] userIds)
-    {
-        var requestUri = $"api/user/byIds";
-        return await _caller.PostAsync<Guid[], List<UserModel>>(requestUri, userIds) ?? new();
-    }
-
-    public async Task SaveUserSystemDataAsync<T>(Guid userId, string systemId, T data)
+    public async Task UpsertSystemDataAsync<T>(Guid userId, string systemId, T data)
     {
         var requestUri = "api/user/systemData";
         await _caller.PostAsync<object>(requestUri,
@@ -192,37 +198,38 @@ public class UserService : IUserService
             true);
     }
 
-    public async Task SaveUserSystemDataAsync<T>(string systemId, T data)
+    public async Task UpsertSystemDataAsync<T>(string systemId, T data)
     {
         var userId = _userContext.GetUserId<Guid>();
-        await SaveUserSystemDataAsync(userId, systemId, data);
+        await UpsertSystemDataAsync(userId, systemId, data);
     }
 
-    public async Task<T?> GetUserSystemDataAsync<T>(string systemId)
+    public async Task<T?> GetSystemDataAsync<T>(string systemId)
     {
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
 
-    public async Task<T?> GetUserSystemDataAsync<T>(Guid userId, string systemId)
+    public async Task<T?> GetSystemDataAsync<T>(Guid userId, string systemId)
     {
         var requestUri = $"api/user/systemData";
-        var data = await _caller.GetAsync<object, string>(requestUri, new { userId = userId, systemId = systemId });
+        var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
         return data is null ? default : JsonSerializer.Deserialize<T>(data);
     }
 
-    public async Task<bool> DisableUserAsync(DisableUserModel user)
+    public async Task<List<T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
+    {
+        var requestUri = $"api/user/systemData/byIds";
+        var data = await _caller.GetAsync<object, List<string>>(requestUri, new { userIds = string.Join(',', userIds), systemId }) ?? new();
+        return data.Select(item => JsonSerializer.Deserialize<T>(item)!).ToList();
+    }
+
+    public async Task<bool> DisableAsync(DisableUserModel user)
     {
         var requestUri = $"api/user/disable";
         return await _caller.PutAsync<bool>(requestUri, user);
-    }
-
-    public async Task<List<UserSimpleModel>> GetListByAccountAsync(IEnumerable<string> accounts)
-    {
-        var requestUri = $"api/user/listByAccount";
-        return await _caller.GetAsync<object, List<UserSimpleModel>>(requestUri, new { accounts = string.Join(',', accounts) }) ?? new();
     }
 
     public async Task<bool> UpdatePhoneNumberAsync(UpdateUserPhoneNumberModel user)
@@ -346,7 +353,8 @@ public class UserService : IUserService
 
     public async Task RemoveAsync(Guid id)
     {
-        await _caller.DeleteAsync("api/user", new RemoveUserModel(id));
+        var requestUri = "api/user";
+        await _caller.DeleteAsync(requestUri, new RemoveUserModel(id));
     }
 }
 
