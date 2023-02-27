@@ -168,7 +168,6 @@ public static class MasaStackConfigExtensions
                 DefaultDatabase = redis.RedisDb,
                 Password = redis.RedisPassword
             },
-            Secret = masaStackConfig.DccSecret,
             PublicSecret = masaStackConfig.DccSecret,
             ConfigObjectSecret = masaStackConfig.DccSecret
         };
