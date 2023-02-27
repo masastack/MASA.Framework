@@ -6,7 +6,7 @@ namespace Masa.BuildingBlocks.Service.Caller;
 public abstract class CallerExpandBase : CallerBase
 {
     private ICaller? _caller;
-    private ILogger<CallerExpandBase>? _logger => ServiceProvider.GetService<ILogger<CallerExpandBase>>();
+    public ILogger<CallerExpandBase>? Logger => ServiceProvider!.GetService<ILogger<CallerExpandBase>>();
 
     protected override ICaller GetCaller()
     {
@@ -19,7 +19,7 @@ public abstract class CallerExpandBase : CallerBase
             }
             else
             {
-                _logger?.LogDebug("----- caller does not implement ICallerExpand, callerName: {Name}", Name);
+                Logger?.LogDebug("----- caller does not implement ICallerExpand, callerName: {Name}", Name);
             }
         }
         return _caller;

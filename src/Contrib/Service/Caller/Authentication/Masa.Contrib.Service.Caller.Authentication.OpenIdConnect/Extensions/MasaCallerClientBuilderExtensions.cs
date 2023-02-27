@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -48,7 +48,24 @@ public static class MasaCallerClientBuilderExtensions
         this IMasaCallerClientBuilder masaCallerClientBuilder,
         string defaultScheme = Constant.DEFAULT_SCHEME)
     {
-        masaCallerClientBuilder.Services.AddScoped<TokenProvider>();
+        masaCallerClientBuilder.Services.AddHttpContextAccessor();
+        masaCallerClientBuilder.Services.TryAddScoped<TokenProvider>(serviceProvider =>
+        {
+            var httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+            if (httpContextAccessor != null)
+            {
+                if (AuthenticationHeaderValue.TryParse(
+                        httpContextAccessor.HttpContext?.Request.Headers.Authorization,
+                        out var authenticationHeaderValue))
+                {
+                    return new TokenProvider()
+                    {
+                        AccessToken = authenticationHeaderValue.Parameter
+                    };
+                }
+            }
+            return new TokenProvider();
+        });
         masaCallerClientBuilder.Services.TryAddScoped<IAuthenticationService>(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),

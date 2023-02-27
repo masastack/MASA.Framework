@@ -6,6 +6,7 @@ global using IdentityModel.Client;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Jwt;
+global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;

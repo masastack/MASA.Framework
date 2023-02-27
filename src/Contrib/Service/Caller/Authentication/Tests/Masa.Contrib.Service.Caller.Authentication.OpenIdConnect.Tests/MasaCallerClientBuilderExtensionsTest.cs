@@ -17,14 +17,7 @@ public class MasaCallerClientBuilderExtensionsTest
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptions<CallerMiddlewareFactoryOptions>>();
-        Assert.IsNotNull(options);
-
-        Assert.AreEqual(0, options.Value.Options.Count);
-
-        var middlewares = options.Value.Options.Where(o => o.Name.Equals(string.Empty)).Select(o => o.Middlewares).FirstOrDefault();
-        Assert.IsNotNull(middlewares);
-
-        Assert.AreEqual(0, middlewares.Count);
+        Assert.IsNull(options);
 
         Assert.IsNull(serviceProvider.GetService<ITokenValidatorHandler>());
     }
@@ -46,8 +39,30 @@ public class MasaCallerClientBuilderExtensionsTest
 
             });
         });
+        var accessToken = "token";
+        var httpContext = new DefaultHttpContext()
+        {
+            Request =
+            {
+                Headers =
+                {
+                    {
+                        "Authorization", $"Bearer {accessToken}"
+                    }
+                }
+            }
+        };
+        services.AddSingleton<IHttpContextAccessor>(_ => new HttpContextAccessor()
+        {
+            HttpContext = httpContext
+        });
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsNotNull(serviceProvider.GetService<ITokenValidatorHandler>());
+        var tokenValidatorHandler = serviceProvider.GetService<ITokenValidatorHandler>();
+        Assert.IsNotNull(tokenValidatorHandler);
+        Assert.IsNotNull(serviceProvider.GetService<IAuthenticationService>());
+        var tokenProvider = serviceProvider.GetService<TokenProvider>();
+        Assert.IsNotNull(tokenProvider);
+        Assert.AreEqual(accessToken, tokenProvider.AccessToken);
     }
 }
