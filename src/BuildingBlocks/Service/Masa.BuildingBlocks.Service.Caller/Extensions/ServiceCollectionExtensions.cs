@@ -70,7 +70,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
         services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage());
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.TryAddSingleton<ICaller>(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.TryAddSingleton<ICallerExpand>(serviceProvider => (ICallerExpand)serviceProvider.GetRequiredService<ICaller>());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
     }

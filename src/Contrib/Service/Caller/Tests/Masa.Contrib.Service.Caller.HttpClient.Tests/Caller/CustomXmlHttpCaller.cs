@@ -21,5 +21,5 @@ public class CustomXmlHttpCaller : HttpClientCallerBase
         callerClient.UseXml();
     }
 
-    public ICaller GetCaller() => Caller;
+    public ICaller GetBaseCaller() => Caller;
 }

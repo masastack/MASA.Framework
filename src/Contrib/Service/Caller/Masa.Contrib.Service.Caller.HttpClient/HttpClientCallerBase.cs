@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
-public abstract class HttpClientCallerBase : CallerBase
+public abstract class HttpClientCallerBase : CallerExpandBase
 {
     protected abstract string BaseAddress { get; set; }
 
@@ -29,7 +29,6 @@ public abstract class HttpClientCallerBase : CallerBase
             callerClient.Configure = ConfigureHttpClient;
             ConfigMasaCallerClient(callerClient);
         });
-        masaHttpClientBuilder.AddConfigHttpRequestMessage(ConfigHttpRequestMessageAsync);
         return masaHttpClientBuilder;
     }
 

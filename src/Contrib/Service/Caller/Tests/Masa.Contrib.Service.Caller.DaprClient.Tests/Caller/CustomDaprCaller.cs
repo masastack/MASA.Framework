@@ -10,5 +10,5 @@ public class CustomDaprCaller : DaprCallerBase
 {
     protected override string AppId { get; set; } = "masa";
 
-    public ICaller GetCaller() => Caller;
+    public ICaller GetBaseCaller() => Caller;
 }

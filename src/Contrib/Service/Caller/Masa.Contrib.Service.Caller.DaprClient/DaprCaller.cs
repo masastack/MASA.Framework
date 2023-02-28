@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public class DaprCaller : AbstractCaller
+public class DaprCaller : AbstractCallerExpand
 {
     private Dapr.Client.DaprClient? _daprClient;
     private Dapr.Client.DaprClient DaprClient => _daprClient ??= ServiceProvider.GetRequiredService<Dapr.Client.DaprClient>();

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            });
         });
     }
 
@@ -28,7 +29,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
-            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            });
         });
     }
 
@@ -40,13 +41,24 @@ public static class ServiceCollectionExtensions
             return services;
 
         services.AddHttpContextAccessor();
-        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddScoped<IMcClient>(serviceProvider =>
         {
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            var mcCaching = new McClient(callProvider);
+            var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+            if (caller is ICallerExpand callerExpand)
+            {
+                callerExpand.ConfigRequestMessage(httpRequestMessage =>
+                {
+                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
+                    if (tokenProvider != null)
+                    {
+                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                    }
+                    return Task.CompletedTask;
+                });
+            }
+            var mcCaching = new McClient(caller);
             return mcCaching;
         });
 

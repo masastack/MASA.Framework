@@ -10,5 +10,5 @@ public class DocDaprCaller : DaprCallerBase
 {
     protected override string AppId { get; set; } = "doc";
 
-    public ICaller GetCaller() => Caller;
+    public ICaller GetBaseCaller() => Caller;
 }
