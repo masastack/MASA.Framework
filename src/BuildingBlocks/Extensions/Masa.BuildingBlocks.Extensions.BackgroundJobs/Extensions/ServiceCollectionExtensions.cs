@@ -7,19 +7,17 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBackgroundJob(
         this IServiceCollection services,
-        Action<BackgroundJobOptionsBuilder> configure,
-        Action<BackgroundJobOptions>? backgroundJobOptions = null)
+        Action<BackgroundJobOptionsBuilder> configure)
     {
-        configure.Invoke(new(services));
-        if (backgroundJobOptions != null)
-        {
-            services.Configure(backgroundJobOptions);
-            services.Configure<BackgroundJobOptions>(options =>
-            {
-                options.DisableBackgroundJob = false;
-                options.Assemblies = MasaApp.GetAssemblies();
-            });
-        }
+        var backgroundJobOptionsBuilder = new BackgroundJobOptionsBuilder(services);
+        configure.Invoke(backgroundJobOptionsBuilder);
+
+        services.TryAddSingleton(
+            new BackgroundJobRelationNetwork(
+                services,
+                backgroundJobOptionsBuilder.Assemblies ?? MasaApp.GetAssemblies()).Build());
+        services.TryAddSingleton<IBackgroundJobExecutor, DefaultBackgroundJobExecutor>();
+
         return services;
     }
 }

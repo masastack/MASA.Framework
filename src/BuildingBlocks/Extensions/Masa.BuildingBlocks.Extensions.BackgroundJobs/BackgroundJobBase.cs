@@ -5,6 +5,8 @@ namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
 public abstract class BackgroundJobBase<TArgs> : IBackgroundJob<TArgs>
 {
+    public string? JobName => null;
+
     protected readonly ILogger<BackgroundJobBase<TArgs>>? Logger;
 
     protected BackgroundJobBase(ILogger<BackgroundJobBase<TArgs>>? logger)

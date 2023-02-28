@@ -19,16 +19,16 @@ public class DefaultBackgroundJobManager : IBackgroundJobManager
         _serializer = serializer;
     }
 
-    public async Task<string> EnqueueAsync<TArgs>(TArgs args, TimeSpan? delay = null, short maxRetryTimes = 10)
+    public async Task<string> EnqueueAsync<TArgs>(TArgs args, TimeSpan? delay = null)
     {
         var dateTimeNow = DateTime.UtcNow;
         var jobInfo = new BackgroundJobInfo()
         {
             Id = _idGenerator.NewId(),
-            JobArgs = _serializer.Serialize(args),
+            Name = BackgroundJobNameAttribute.GetName<TArgs>(),
+            Args = _serializer.Serialize(args),
             CreationTime = dateTimeNow,
-            NextTryTime = delay == null ? dateTimeNow : dateTimeNow.Add(delay.Value),
-            MaxRetryTimes = maxRetryTimes
+            NextTryTime = delay == null ? dateTimeNow : dateTimeNow.Add(delay.Value)
         };
         await _backgroundJobStorage.InsertAsync(jobInfo);
         return jobInfo.Id.ToString();

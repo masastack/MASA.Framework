@@ -29,4 +29,16 @@ public class BackgroundJobStorage : IBackgroundJobStorage
 
         return Task.FromResult(waitingJobs);
     }
+
+    public Task DeleteAsync(Guid id)
+    {
+        _jobs.TryRemove(id, out _);
+        return Task.CompletedTask;
+    }
+
+    public async Task UpdateAsync(BackgroundJobInfo jobInfo)
+    {
+        if (jobInfo.IsInvalid)
+            await DeleteAsync(jobInfo.Id);
+    }
 }

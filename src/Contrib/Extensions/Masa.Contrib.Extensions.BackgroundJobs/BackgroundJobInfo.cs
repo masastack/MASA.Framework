@@ -5,17 +5,32 @@ namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public class BackgroundJobInfo
 {
+    /// <summary>
+    /// Job Id
+    /// </summary>
     public Guid Id { get; set; }
 
-    public string JobArgs { get; set; }
+    /// <summary>
+    /// Job Name
+    /// </summary>
+    public string Name { get; set; }
 
-    public short Times { get; set; } = 0;
+    /// <summary>
+    /// Job Args
+    /// </summary>
+    public string Args { get; set; }
 
-    public short MaxRetryTimes { get; set; }
+    public int Times { get; set; } = 0;
 
     public DateTime CreationTime { get; set; }
 
     public DateTime NextTryTime { get; set; }
 
+    public DateTime LastTryTime { get; set; } = DateTime.MinValue;
+
+    /// <summary>
+    /// Is the task invalid?
+    /// Invalid after max retries exceeded
+    /// </summary>
     public bool IsInvalid { get; set; } = false;
 }

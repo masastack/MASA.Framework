@@ -8,4 +8,8 @@ public interface IBackgroundJobStorage
     Task InsertAsync(BackgroundJobInfo jobInfo);
 
     Task<List<BackgroundJobInfo>> RetrieveJobsAsync(int batchSize);
+
+    Task DeleteAsync(Guid id);
+
+    Task UpdateAsync(BackgroundJobInfo jobInfo);
 }

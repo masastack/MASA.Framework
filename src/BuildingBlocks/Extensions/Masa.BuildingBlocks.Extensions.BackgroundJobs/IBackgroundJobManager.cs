@@ -5,5 +5,12 @@ namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
 public interface IBackgroundJobManager
 {
-    Task<string> EnqueueAsync<TArgs>(TArgs args, TimeSpan? delay = null, short maxRetryTimes = 10);
+    /// <summary>
+    /// Execute only one time
+    /// </summary>
+    /// <param name="args"></param>
+    /// <param name="delay"></param>
+    /// <typeparam name="TArgs"></typeparam>
+    /// <returns></returns>
+    Task<string> EnqueueAsync<TArgs>(TArgs args, TimeSpan? delay = null);
 }

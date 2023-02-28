@@ -8,12 +8,19 @@ public class JobContext
     public IServiceProvider ServiceProvider { get; set; }
 
     /// <summary>
-    /// Job Class Type
+    /// Job type collection
     /// </summary>
-    public Type Type { get; set; }
+    public List<Type> Types { get; set; }
 
     /// <summary>
     /// Job parameters
     /// </summary>
-    public object Args { get; set; }
+    public object? Args { get; set; }
+
+    public JobContext(IServiceProvider serviceProvider, List<Type> types, object? args)
+    {
+        ServiceProvider = serviceProvider;
+        Types = types;
+        Args = args;
+    }
 }

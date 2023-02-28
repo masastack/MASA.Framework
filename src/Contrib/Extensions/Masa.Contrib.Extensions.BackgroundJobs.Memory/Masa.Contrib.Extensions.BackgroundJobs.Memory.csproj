@@ -7,7 +7,20 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Data\IdGenerator\NormalGuid\Masa.Contrib.Data.IdGenerator.NormalGuid\Masa.Contrib.Data.IdGenerator.NormalGuid.csproj" />
       <ProjectReference Include="..\Masa.Contrib.Extensions.BackgroundJobs\Masa.Contrib.Extensions.BackgroundJobs.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\Data\IdGenerator\NormalGuid\Masa.Contrib.Data.IdGenerator.NormalGuid\NormalGuidGenerator.cs">
+        <Link>NormalGuidGenerator.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Json\DefaultJsonDeserializer.cs">
+        <Link>DefaultJsonDeserializer.cs</Link>
+      </Compile>
+      <Compile Include="..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Json\DefaultJsonSerializer.cs">
+        <Link>DefaultJsonSerializer.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>
