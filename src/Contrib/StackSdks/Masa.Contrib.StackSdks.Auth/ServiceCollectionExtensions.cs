@@ -25,8 +25,7 @@ public static class ServiceCollectionExtensions
         return services.AddAuthClient(callerOptions =>
         {
             callerOptions
-                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
-                .AddMiddleware(serviceProvider => new AuthAuthenticationMiddleware(serviceProvider.GetRequiredService<IHttpContextAccessor>()));
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress);
         }, redisOptions);
     }
 
@@ -45,9 +44,27 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+            var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+
+            if (caller is ICallerExpand callerExpand)
+            {
+                callerExpand.ConfigRequestMessage(httpRequestMessage =>
+                {
+                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
+                    if (tokenProvider != null)
+                    {
+                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                    }
+                    var environment = serviceProvider.GetService<IEnvironmentProvider>();
+                    if (environment != null)
+                    {
+                        httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
+                    }
+                    return Task.CompletedTask;
+                });
+            }
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
-            var authClient = new AuthClient(callProvider, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
+            var authClient = new AuthClient(caller, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
         });
         services.AddSingleton<IThirdPartyIdpService>(serviceProvider =>

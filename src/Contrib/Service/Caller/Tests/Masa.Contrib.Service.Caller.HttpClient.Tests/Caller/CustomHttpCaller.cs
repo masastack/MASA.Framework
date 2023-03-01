@@ -16,5 +16,5 @@ public class CustomHttpCaller : HttpClientCallerBase
         httpClient.Timeout = TimeSpan.FromHours(1);
     }
 
-    public ICaller GetCaller() => Caller;
+    public ICaller GetBaseCaller() => Caller;
 }

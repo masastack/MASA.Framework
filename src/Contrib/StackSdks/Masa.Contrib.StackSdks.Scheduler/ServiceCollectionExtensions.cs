@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
-            }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+            });
         });
     }
 
@@ -31,14 +31,25 @@ public static class ServiceCollectionExtensions
             return services;
 
         services.AddSingleton<SchedulerProvider>();
-        services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
         services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {
-            var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            var schedulerClient = new SchedulerClient(callProvider);
+            var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
+            if (caller is ICallerExpand callerExpand)
+            {
+                callerExpand.ConfigRequestMessage(httpRequestMessage =>
+                {
+                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
+                    if (tokenProvider != null)
+                    {
+                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
+                    }
+                    return Task.CompletedTask;
+                });
+            }
+            var schedulerClient = new SchedulerClient(caller);
             return schedulerClient;
         });
 
