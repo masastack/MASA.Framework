@@ -26,7 +26,7 @@ public class RequestMiddlewareTest
 
         builder.Services.AddSingleton<IMasaStackConfig>(serviceProvider =>
         {
-            return new MasaStackConfig(dccClient.Object);
+            return new MasaStackConfig(dccClient.Object, configs);
         });
 
         builder.Services.AddStackMiddleware();

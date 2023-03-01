@@ -32,7 +32,7 @@ public class EventMiddlewareTest
 
         builder.Services.AddSingleton<IMasaStackConfig>(serviceProvider =>
         {
-            return new MasaStackConfig(dccClient.Object);
+            return new MasaStackConfig(dccClient.Object, configs);
         });
         builder.Services.AddTestEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
         builder.Services.AddStackMiddleware();
