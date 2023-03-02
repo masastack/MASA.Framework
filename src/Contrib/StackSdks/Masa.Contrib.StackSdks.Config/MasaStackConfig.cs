@@ -59,20 +59,8 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string GetValue(string key)
     {
-        try
-        {
-            var remoteConfigs = _configurationApiClient.GetAsync<Dictionary<string, string>>(
-               ConfigMap[MasaStackConfigConstant.ENVIRONMENT],
-               ConfigMap[MasaStackConfigConstant.CLUSTER],
-               DEFAULT_PUBLIC_ID,
-               DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
-
-            return remoteConfigs[key];
-        }
-        catch (ArgumentException)
-        {
-            return ConfigMap[key];
-        }
+        GetValues().TryGetValue(key, out var value);
+        return value ?? ConfigMap[key];
     }
 
     public Dictionary<string, string> GetValues()
