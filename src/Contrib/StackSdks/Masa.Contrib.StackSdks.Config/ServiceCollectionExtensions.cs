@@ -7,8 +7,7 @@ public static class ServiceCollectionExtensions
 {
     private static async Task InitializeMasaStackConfiguration(
         IServiceCollection services,
-        Dictionary<string, string> configs,
-        bool init)
+        Dictionary<string, string> configs)
     {
         var serviceProvider = services.BuildServiceProvider();
         var configurationApiManage = serviceProvider.GetRequiredService<IConfigurationApiManage>();
@@ -22,7 +21,7 @@ public static class ServiceCollectionExtensions
                 DEFAULT_PUBLIC_ID,
                 DEFAULT_CONFIG_NAME);
 
-            if (remoteConfigs != null && init)
+            if (remoteConfigs != null)
             {
                 await configurationApiManage.UpdateAsync(
                     configs[MasaStackConfigConstant.ENVIRONMENT],
@@ -34,17 +33,15 @@ public static class ServiceCollectionExtensions
         }
         catch (ArgumentException)
         {
-            if (init)
-            {
-                await configurationApiManage.AddAsync(
-                    configs[MasaStackConfigConstant.ENVIRONMENT],
-                    configs[MasaStackConfigConstant.CLUSTER],
-                    DEFAULT_PUBLIC_ID,
-                    new Dictionary<string, string>
-                    {
-                        { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
-                    });
-            }
+            // remoteConfigs is null
+            await configurationApiManage.AddAsync(
+                configs[MasaStackConfigConstant.ENVIRONMENT],
+                configs[MasaStackConfigConstant.CLUSTER],
+                DEFAULT_PUBLIC_ID,
+                new Dictionary<string, string>
+                {
+                    { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+                });
         }
     }
 
@@ -54,12 +51,15 @@ public static class ServiceCollectionExtensions
         var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(configs);
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
-        await InitializeMasaStackConfiguration(services, configs, init).ConfigureAwait(false);
+        if (init)
+        {
+            await InitializeMasaStackConfiguration(services, configs).ConfigureAwait(false);
+        }
 
         services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
         {
-            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-            return new MasaStackConfig(client);
+            var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            return new MasaStackConfig(configurationApiClient, configs);
         });
 
         return services;
@@ -68,14 +68,17 @@ public static class ServiceCollectionExtensions
     public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, DccOptions dccOptions, bool init = false)
     {
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
-
         var configs = GetConfigMap(services);
-        await InitializeMasaStackConfiguration(services, configs, init).ConfigureAwait(false);
+
+        if (init)
+        {
+            await InitializeMasaStackConfiguration(services, configs).ConfigureAwait(false);
+        }
 
         services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
         {
             var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-            return new MasaStackConfig(client);
+            return new MasaStackConfig(client, configs);
         });
 
         return services;

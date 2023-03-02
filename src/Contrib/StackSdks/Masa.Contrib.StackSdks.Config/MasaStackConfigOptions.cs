@@ -15,6 +15,8 @@ public static class MasaStackConfigOptions
         return defaultFunc.Invoke();
     }
 
+    public static Dictionary<string, string> GetValues() => new(ConfigMap);
+
     public static void SetValue(string key, string value) => ConfigMap[key] = value;
 
     public static void SetValues(Dictionary<string, string> configMap)

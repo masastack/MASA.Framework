@@ -144,12 +144,12 @@ public class CallerTest
         var customDaprCaller = serviceProvider.GetService<CustomDaprCaller>();
         Assert.IsNotNull(customDaprCaller);
 
-        Assert.AreEqual(DEFAULT_APP_ID, GetAppId(customDaprCaller.GetCaller()));
+        Assert.AreEqual(DEFAULT_APP_ID, GetAppId(customDaprCaller.GetBaseCaller()));
 
         var docDaprCaller = serviceProvider.GetService<DocDaprCaller>();
         Assert.IsNotNull(docDaprCaller);
 
-        Assert.AreEqual("doc", GetAppId(docDaprCaller.GetCaller()));
+        Assert.AreEqual("doc", GetAppId(docDaprCaller.GetBaseCaller()));
     }
 
     private static void AddJsonConfig(IServiceCollection services)

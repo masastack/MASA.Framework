@@ -38,14 +38,14 @@ public class MasaStackConfigTest
 
         Mock<IConfigurationApiClient> dccClient = new();
 
-        dccClient.Setup(aa => aa.GetAsync(
+        dccClient.Setup(client => client.GetAsync(
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.IsAny<string>(), It.IsAny<string>(),
             It.IsAny<Action<Dictionary<string, string>>>()!))
             .ReturnsAsync(_config);
 
-        _stackConfig = new MasaStackConfig(dccClient.Object);
+        _stackConfig = new MasaStackConfig(dccClient.Object, _config);
 
     }
 
@@ -53,19 +53,15 @@ public class MasaStackConfigTest
     public void TestGetAllServers()
     {
         var allServer = _stackConfig.GetAllServer();
-        var allServer1 = MasaStackConfigUtils.GetAllServer(_config);
 
         Assert.IsNotNull(allServer);
-        Assert.IsNotNull(allServer1);
     }
 
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
-        var dccOptions = _stackConfig.GetDefaultDccOptions();
         var dccOptions1 = MasaStackConfigUtils.GetDefaultDccOptions(_config);
 
-        Assert.IsNotNull(dccOptions?.RedisOptions);
         Assert.IsNotNull(dccOptions1?.RedisOptions);
     }
 

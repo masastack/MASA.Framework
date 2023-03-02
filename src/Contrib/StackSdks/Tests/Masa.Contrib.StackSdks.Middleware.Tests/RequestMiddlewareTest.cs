@@ -13,9 +13,24 @@ public class RequestMiddlewareTest
         var builder = WebApplication.CreateBuilder();
 
         Mock<IConfigurationApiClient> dccClient = new();
+        var configuration = builder.Configuration;
         var configs = new Dictionary<string, string>()
         {
-            { MasaStackConfigConstant.IS_DEMO, builder.Configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() }
+            { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
+            { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
+            { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
+            { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
+            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
+            { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
+            { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
+            { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
+            { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
+            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
+            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
+            { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
+            { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
+            { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
         };
         dccClient.Setup(aa => aa.GetAsync(
             It.IsAny<string>(),
@@ -26,7 +41,7 @@ public class RequestMiddlewareTest
 
         builder.Services.AddSingleton<IMasaStackConfig>(serviceProvider =>
         {
-            return new MasaStackConfig(dccClient.Object);
+            return new MasaStackConfig(dccClient.Object, configs);
         });
 
         builder.Services.AddStackMiddleware();
