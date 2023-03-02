@@ -25,4 +25,10 @@ public class ThirdPartyIdpService : IThirdPartyIdpService
         var thirdPartyIdps = await _memoryCacheClient.GetAsync<List<ThirdPartyIdpModel>>(CacheKeyConsts.ALL_THIRD_PARTY_IDP);
         return thirdPartyIdps ?? new();
     }
+
+    public async Task<LdapOptionsModel?> GetLdapOptionsAsync(string scheme)
+    {
+        var requestUri = $"api/thirdPartyIdp/ldapOptions";
+        return await _caller.GetAsync<LdapOptionsModel>(requestUri, new { scheme });
+    }
 }
