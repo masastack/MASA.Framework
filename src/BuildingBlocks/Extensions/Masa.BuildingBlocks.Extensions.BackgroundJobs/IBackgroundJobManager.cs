@@ -13,4 +13,11 @@ public interface IBackgroundJobManager
     /// <typeparam name="TArgs"></typeparam>
     /// <returns></returns>
     Task<string> EnqueueAsync<TArgs>(TArgs args, TimeSpan? delay = null);
+
+    /// <summary>
+    /// Add recurring job tasks
+    /// </summary>
+    /// <param name="backgroundScheduleJob"></param>
+    /// <returns></returns>
+    Task<string> AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob);
 }

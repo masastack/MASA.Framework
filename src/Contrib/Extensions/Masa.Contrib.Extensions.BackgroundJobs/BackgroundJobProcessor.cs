@@ -29,12 +29,35 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
             job.Times++;
             job.LastTryTime = DateTime.UtcNow;
 
-            var jobArgs = GetJobArgs(job.Args, GetJobArgsType(job.Name));
-            var jobContext = new JobContext(backgroundJobContext.ServiceProvider, GetJobTypeList(job.Name), jobArgs);
             try
             {
-                await jobExecutor.ExecuteAsync(jobContext, cancellationToken);
-                await backgroundJobStorage.DeleteAsync(job.Id);
+                var jobArgs = GetJobArgs(job.Args, GetJobArgsType(job.Name));
+                var jobContext = new JobContext(backgroundJobContext.ServiceProvider, GetJobTypeList(job.Name), jobArgs);
+                try
+                {
+                    await jobExecutor.ExecuteAsync(jobContext, cancellationToken);
+                    await backgroundJobStorage.DeleteAsync(job.Id);
+                }
+                catch (Exception ex)
+                {
+                    Logger?.LogError(ex, "----- A background job execution is failed. Job: {JobInfo}", job);
+
+                    var nextTryTime = NextTryTime(job);
+
+                    if (nextTryTime.HasValue)
+                    {
+                        job.NextTryTime = nextTryTime.Value;
+                    }
+                    else
+                    {
+                        job.IsInvalid = true;
+                    }
+                    await backgroundJobStorage.UpdateAsync(job);
+                }
+            }
+            catch (BackgroundJobException ex)
+            {
+                Logger?.LogError(ex, "----- Error getting background task parameter information. Job: {JobInfo}", job);
             }
             catch (Exception ex)
             {
@@ -50,6 +73,7 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
                 {
                     job.IsInvalid = true;
                 }
+
                 await backgroundJobStorage.UpdateAsync(job);
             }
         }
