@@ -33,6 +33,7 @@ internal static class BackgroundJobOptionsBuilderExtensions
                     serviceProvider => serviceProvider.GetRequiredService<IBackgroundJobProcessor>(),
                     ServiceLifetime.Singleton));
         }
+        backgroundJobOptionsBuilder.Services.TryAddScoped<IProcessingServer, DefaultHostedService>();
         backgroundJobOptionsBuilder.Services.AddHostedService<BackgroundJobService>();
     }
 }

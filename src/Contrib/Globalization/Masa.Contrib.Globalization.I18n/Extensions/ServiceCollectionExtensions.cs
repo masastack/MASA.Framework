@@ -102,6 +102,13 @@ public static class ServiceCollectionExtensions
                 resource.AddJson(ContribI18nConstant.DefaultFrameworkLanguageResourcePath,
                     languageSettings.SupportedCultures);
             });
+
+            options.Resources.TryAdd<MasaLanguageResource>(resource =>
+            {
+                resource.Assemblies = new[] { assembly };
+                resource.AddJson(ContribI18nConstant.DefaultFrameworkBackgroundJobResourcePath,
+                    languageSettings.SupportedCultures);
+            });
         });
         return services;
     }

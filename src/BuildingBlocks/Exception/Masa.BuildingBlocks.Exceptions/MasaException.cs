@@ -126,7 +126,7 @@ public class MasaException : Exception
             return string.Format(ErrorMessage, GetParameters());
         }
 
-        if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
+        if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
             return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;

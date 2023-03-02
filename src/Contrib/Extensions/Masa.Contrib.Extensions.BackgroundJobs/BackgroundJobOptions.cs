@@ -5,10 +5,21 @@ namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public class BackgroundJobOptions
 {
+    private int _batchSize = 30;
+
     /// <summary>
     /// Maximum number of retrieved messages per fetch
     /// </summary>
-    public int BatchSize { get; set; }
+    public int BatchSize
+    {
+        get => _batchSize;
+        set
+        {
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(BatchSize));
+
+            _batchSize = value;
+        }
+    }
 
     private int _maxRetryTimes = 30;
 

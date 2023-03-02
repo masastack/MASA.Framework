@@ -24,6 +24,8 @@ internal static class LoggerExtensions
             }
             if (masaException is UserFriendlyException)
                 defaultLogLevel = LogLevel.Information;
+            if (masaException is BackgroundJobException)
+                defaultLogLevel = LogLevel.Error;
         }
         var logLevel = logRelationOptions.GetLogLevel(exception, defaultLogLevel);
         logger.Log(logLevel, exception, "{Message}", message);

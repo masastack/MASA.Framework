@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Data.Constants;
+
 namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
 public class BackgroundJobRelationNetwork
@@ -70,16 +72,28 @@ public class BackgroundJobRelationNetwork
 
     internal TaskInvokeDelegate GetInvokeDelegate(Type type)
     {
-        if (_delegateData.TryGetValue(type, out TaskInvokeDelegate? taskInvokeDelegate))
-            return taskInvokeDelegate;
+        if (_delegateData.ContainsKey(type))
+            throw new BackgroundJobException(errorCode: ExceptionErrorCode.NOT_FIND_JOB,
+                type.FullName!);
 
-        throw new NotSupportedException(
-            $"Unsupported background task type, please specify the assembly containing {type.FullName} when registering the background task");
+        return _delegateData[type];
     }
 
     public List<Type> GetJobTypeList(string jobName)
-        => _jobNameAndJobTypeData[jobName];
+    {
+        if (!_jobNameAndJobTypeData.ContainsKey(jobName))
+            throw new BackgroundJobException(errorCode: ExceptionErrorCode.NOT_FIND_JOB_BY_JOB_NAME,
+                jobName);
+
+        return _jobNameAndJobTypeData[jobName];
+    }
 
     public Type GetJobArgsType(string jobName)
-        => _jobNameAndJobArgsTypeData[jobName];
+    {
+        if (!_jobNameAndJobArgsTypeData.ContainsKey(jobName))
+            throw new BackgroundJobException(errorCode: ExceptionErrorCode.NOT_FIND_JOB_ARGS_BY_JOB_NAME,
+                jobName);
+
+        return _jobNameAndJobArgsTypeData[jobName];
+    }
 }

@@ -1,0 +1,5 @@
+﻿{
+  "MFBGJ0001" : "No matching background task parameter type found, jobName: '{0}'",
+  "MFBGJ0002": "No matching background task found, jobName: '{0}'",
+  "MFBGJ0003": "No matching background task found, jobType: '{0}'"
+}

@@ -677,6 +677,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Extensions.Bac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Extensions.BackgroundJobs", "src\Contrib\Extensions\Masa.Contrib.Extensions.BackgroundJobs\Masa.Contrib.Extensions.BackgroundJobs.csproj", "{8C05C511-EE88-459B-B106-93BBC873968C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C591947F-B9DD-4B6E-921B-C175A009FFDC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Extensions.BackgroundJobs.Tests", "src\Contrib\Extensions\Tests\Masa.Contrib.Extensions.BackgroundJobs.Tests\Masa.Contrib.Extensions.BackgroundJobs.Tests.csproj", "{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2421,6 +2425,14 @@ Global
 		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|x64.ActiveCfg = Release|Any CPU
 		{8C05C511-EE88-459B-B106-93BBC873968C}.Release|x64.Build.0 = Release|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Debug|x64.Build.0 = Debug|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Release|x64.ActiveCfg = Release|Any CPU
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2755,6 +2767,8 @@ Global
 		{0FB9A049-E04C-40C7-9727-FD8B1265DF87} = {950DA7D0-48C1-42BA-8E8F-F72C0DCE41C4}
 		{F2EBF42F-595F-4B7D-B375-505924D2973C} = {0FB9A049-E04C-40C7-9727-FD8B1265DF87}
 		{8C05C511-EE88-459B-B106-93BBC873968C} = {0FB9A049-E04C-40C7-9727-FD8B1265DF87}
+		{C591947F-B9DD-4B6E-921B-C175A009FFDC} = {0FB9A049-E04C-40C7-9727-FD8B1265DF87}
+		{50DA319E-2A7D-4097-A1D8-0FFDD1CD2608} = {C591947F-B9DD-4B6E-921B-C175A009FFDC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {40383055-CC50-4600-AD9A-53C14F620D03}
