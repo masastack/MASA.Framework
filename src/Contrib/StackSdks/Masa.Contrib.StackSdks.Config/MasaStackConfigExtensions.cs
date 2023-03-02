@@ -7,12 +7,7 @@ public static class MasaStackConfigExtensions
 {
     public static Dictionary<string, JsonObject> GetAllServer(this IMasaStackConfig masaStackConfig)
     {
-        var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_SERVER);
-        if (string.IsNullOrEmpty(value))
-        {
-            return new();
-        }
-        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(value) ?? new();
+        return MasaStackConfigUtils.GetAllServer(masaStackConfig.GetValues());
     }
 
     public static Dictionary<string, JsonObject> GetAllUI(this IMasaStackConfig masaStackConfig)
@@ -50,17 +45,7 @@ public static class MasaStackConfigExtensions
 
     public static string GetServerDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
     {
-        var domain = "";
-        GetAllServer(masaStackConfig).TryGetValue(project, out JsonObject? jsonObject);
-        if (jsonObject != null)
-        {
-            var secondaryDomain = jsonObject[service]?.ToString();
-            if (secondaryDomain != null)
-            {
-                domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.Namespace}";
-            }
-        }
-        return domain.TrimEnd('.');
+        return MasaStackConfigUtils.GetServerDomain(masaStackConfig.GetValues(), protocol, project, service);
     }
 
     public static string GetUIDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
@@ -90,7 +75,7 @@ public static class MasaStackConfigExtensions
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.DCC, MasaStackConstant.SERVER);
+        return MasaStackConfigUtils.GetDccServiceDomain(masaStackConfig.GetValues());
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
@@ -149,30 +134,6 @@ public static class MasaStackConfigExtensions
     {
         masaStackConfig.GetAllUI().TryGetValue(project, out var obj);
         return obj?[service]?.ToString() ?? "";
-    }
-
-    public static DccOptions GetDefaultDccOptions(this IMasaStackConfig masaStackConfig)
-    {
-        var dccServerAddress = GetDccServiceDomain(masaStackConfig);
-        var redis = masaStackConfig.RedisModel ?? throw new Exception("redis options can not null");
-
-        var options = new DccOptions
-        {
-            ManageServiceAddress = dccServerAddress,
-            RedisOptions = new Caching.Distributed.StackExchangeRedis.RedisConfigurationOptions
-            {
-                Servers = new List<Caching.Distributed.StackExchangeRedis.RedisServerOptions>
-                {
-                    new Caching.Distributed.StackExchangeRedis.RedisServerOptions(redis.RedisHost,redis.RedisPort)
-                },
-                DefaultDatabase = redis.RedisDb,
-                Password = redis.RedisPassword
-            },
-            PublicSecret = masaStackConfig.DccSecret,
-            ConfigObjectSecret = masaStackConfig.DccSecret
-        };
-
-        return options;
     }
 
     public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)
