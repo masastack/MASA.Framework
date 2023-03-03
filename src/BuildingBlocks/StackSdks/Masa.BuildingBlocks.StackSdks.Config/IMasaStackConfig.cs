@@ -33,9 +33,7 @@ public interface IMasaStackConfig
 
     string GetValue(string key);
 
-    void SetValue(string key, string value);
-
-    void SetValues(Dictionary<string, string> configMap);
+    Dictionary<string, string> GetValues();
 
     List<string> GetProjectList();
 }

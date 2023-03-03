@@ -576,7 +576,11 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Value = new MultilevelCachePublish<T>(value, cacheEntryOptions);
         });
 
-        if (operation == SubscribeOperation.Remove) _distributedCacheClient.UnSubscribe<T>(channel);
+        if (operation == SubscribeOperation.Remove)
+        {
+            _distributedCacheClient.UnSubscribe<T>(channel);
+            _subscribeChannels.Remove(channel);
+        }
     }
 
     private async Task PubSubAsync<T>(string key,
@@ -594,7 +598,11 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             subscribeOptions.Value = new MultilevelCachePublish<T>(value, cacheEntryOptions);
         }).ConfigureAwait(false);
 
-        if (operation == SubscribeOperation.Remove) await _distributedCacheClient.UnSubscribeAsync<T>(channel).ConfigureAwait(false);
+        if (operation == SubscribeOperation.Remove)
+        {
+            await _distributedCacheClient.UnSubscribeAsync<T>(channel).ConfigureAwait(false);
+            _subscribeChannels.Remove(channel);
+        }
     }
 
     private string FormatSubscribeChannel<T>(string key) =>
@@ -629,6 +637,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                     case SubscribeOperation.Remove:
                         _memoryCache.Remove(subscribeOptions.Key);
                         _distributedCacheClient.UnSubscribe<T>(channel);
+                        _subscribeChannels.Remove(channel);
                         break;
                     default:
                         throw new NotImplementedException();

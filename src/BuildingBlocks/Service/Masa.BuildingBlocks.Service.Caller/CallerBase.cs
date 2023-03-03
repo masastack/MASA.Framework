@@ -11,7 +11,7 @@ public abstract class CallerBase
 
     private ICaller? _caller;
 
-    protected ICaller Caller => _caller ??= ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
+    protected ICaller Caller => GetCaller();
 
     [Obsolete("CallerProvider has expired, please use Caller")]
     protected ICaller CallerProvider => Caller;
@@ -21,6 +21,9 @@ public abstract class CallerBase
     protected CallerBase() => ServiceProvider = null;
 
     protected CallerBase(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+
+    protected virtual ICaller GetCaller()
+        => _caller ??= ServiceProvider!.GetRequiredService<ICallerFactory>().Create(Name!);
 
     public abstract void UseCallerExtension();
 
@@ -37,6 +40,8 @@ public abstract class CallerBase
 
     protected virtual Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
     {
+        var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
+        authenticationService?.ExecuteAsync(requestMessage);
         return Task.CompletedTask;
     }
 }

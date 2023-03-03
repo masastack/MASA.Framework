@@ -5,15 +5,14 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    public MasaStackConfig(IConfigurationApiClient client)
-    {
-        var configs = client.GetAsync<Dictionary<string, string>>(
-            Environment,
-            Cluster,
-            DEFAULT_PUBLIC_ID,
-            DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
+    private IConfigurationApiClient _configurationApiClient;
 
-        MasaStackConfigOptions.SetValues(configs);
+    private static ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public MasaStackConfig(IConfigurationApiClient client, Dictionary<string, string> configs)
+    {
+        _configurationApiClient = client;
+        ConfigMap = new(configs);
     }
 
     public RedisModel RedisModel
@@ -58,9 +57,27 @@ public class MasaStackConfig : IMasaStackConfig
 
     public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
 
-    public string GetValue(string key) => MasaStackConfigOptions.GetValue(key);
+    public string GetValue(string key)
+    {
+        GetValues().TryGetValue(key, out var value);
+        return value ?? ConfigMap[key];
+    }
 
-    public void SetValue(string key, string value) => MasaStackConfigOptions.SetValue(key, value);
+    public Dictionary<string, string> GetValues()
+    {
+        try
+        {
+            var remoteConfigs = _configurationApiClient.GetAsync<Dictionary<string, string>>(
+               ConfigMap[MasaStackConfigConstant.ENVIRONMENT],
+               ConfigMap[MasaStackConfigConstant.CLUSTER],
+               DEFAULT_PUBLIC_ID,
+               DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
 
-    public void SetValues(Dictionary<string, string> configMap) => MasaStackConfigOptions.SetValues(configMap);
+            return remoteConfigs;
+        }
+        catch (ArgumentException)
+        {
+            return new(ConfigMap);
+        }
+    }
 }

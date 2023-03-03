@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
-public class HttpClientCaller : AbstractCaller
+public class HttpClientCaller : AbstractCallerExpand
 {
     private readonly System.Net.Http.HttpClient _httpClient;
     private readonly string _prefix;
