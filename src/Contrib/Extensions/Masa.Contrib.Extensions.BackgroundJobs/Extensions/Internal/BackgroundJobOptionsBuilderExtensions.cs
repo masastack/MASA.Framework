@@ -13,8 +13,6 @@ internal static class BackgroundJobOptionsBuilderExtensions
     public static void UseBackgroundJobCore(
         this BackgroundJobOptionsBuilder backgroundJobOptionsBuilder,
         Action<BackgroundJobOptions> configure,
-        Func<IServiceProvider, IIdGenerator<Guid>> idGeneratorFunc,
-        Func<IServiceProvider, ISerializer> serializerFunc,
         Func<IServiceProvider, IDeserializer> deserializerFunc)
     {
         if (backgroundJobOptionsBuilder.Services.Any(s => s.ServiceType == typeof(BackgroundJobProvider)))
@@ -23,12 +21,6 @@ internal static class BackgroundJobOptionsBuilderExtensions
         backgroundJobOptionsBuilder.Services.AddSingleton<BackgroundJobProvider>();
 
         backgroundJobOptionsBuilder.Services.Configure(configure);
-        backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobManager>(serviceProvider =>
-            new DefaultBackgroundJobManager(
-                serviceProvider.GetRequiredService<IBackgroundJobStorage>(),
-                idGeneratorFunc.Invoke(serviceProvider),
-                serializerFunc.Invoke(serviceProvider)
-            ));
         if (!backgroundJobOptionsBuilder.DisableBackgroundJob)
         {
             backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobProcessor>(serviceProvider =>
@@ -39,8 +31,7 @@ internal static class BackgroundJobOptionsBuilderExtensions
                     serviceProvider => serviceProvider.GetRequiredService<IBackgroundJobProcessor>(),
                     ServiceLifetime.Singleton));
         }
-        backgroundJobOptionsBuilder.Services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
-        backgroundJobOptionsBuilder.Services.AddHostedService<BackgroundJobService>();
+        backgroundJobOptionsBuilder.Services.AddBackgroundJobServer();
     }
 
     private sealed class BackgroundJobProvider

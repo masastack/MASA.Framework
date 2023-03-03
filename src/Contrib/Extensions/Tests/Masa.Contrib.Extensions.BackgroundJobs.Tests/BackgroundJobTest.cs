@@ -10,8 +10,6 @@ public class BackgroundJobTest
     public void TestUseBackgroundJob()
     {
         var services = new ServiceCollection();
-        Mock<IIdGenerator<Guid>> idGenerator = new();
-        Mock<ISerializer> serializer = new();
         Mock<IDeserializer> deserializer = new();
 
         services.AddBackgroundJob(jobBuilder =>
@@ -19,12 +17,10 @@ public class BackgroundJobTest
             jobBuilder.UseBackgroundJobCore(_ =>
                 {
 
-                }, _ => idGenerator.Object,
-                _ => serializer.Object,
+                },
                 _ => deserializer.Object);
         });
 
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
@@ -39,8 +35,6 @@ public class BackgroundJobTest
     public void TestUseBackgroundJobByDisableBackgroundJob()
     {
         var services = new ServiceCollection();
-        Mock<IIdGenerator<Guid>> idGenerator = new();
-        Mock<ISerializer> serializer = new();
         Mock<IDeserializer> deserializer = new();
 
         services.AddBackgroundJob(jobBuilder =>
@@ -49,12 +43,10 @@ public class BackgroundJobTest
             jobBuilder.UseBackgroundJobCore(_ =>
                 {
 
-                }, _ => idGenerator.Object,
-                _ => serializer.Object,
+                },
                 _ => deserializer.Object);
         });
 
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor)));
         Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IProcessor)));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
@@ -65,8 +57,6 @@ public class BackgroundJobTest
     public void TestUseBackgroundJobByMulti()
     {
         var services = new ServiceCollection();
-        Mock<IIdGenerator<Guid>> idGenerator = new();
-        Mock<ISerializer> serializer = new();
         Mock<IDeserializer> deserializer = new();
         Mock<IBackgroundJobStorage> backgroundJobStorage = new();
 
@@ -76,18 +66,15 @@ public class BackgroundJobTest
             jobBuilder.UseBackgroundJobCore(_ =>
                 {
 
-                }, _ => idGenerator.Object,
-                _ => serializer.Object,
+                },
                 _ => deserializer.Object);
             jobBuilder.UseBackgroundJobCore(_ =>
                 {
 
-                }, _ => idGenerator.Object,
-                _ => serializer.Object,
+                },
                 _ => deserializer.Object);
         });
 
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
@@ -96,8 +83,6 @@ public class BackgroundJobTest
         var serviceProvider = services.BuildServiceProvider();
         var processors = serviceProvider.GetServices<IProcessor>();
         Assert.AreEqual(1, processors.Count());
-
-        Assert.IsNotNull(serviceProvider.GetService<IBackgroundJobManager>());
 
         Assert.IsNotNull(serviceProvider.GetService<RegisterAccountBackgroundJob>());
     }

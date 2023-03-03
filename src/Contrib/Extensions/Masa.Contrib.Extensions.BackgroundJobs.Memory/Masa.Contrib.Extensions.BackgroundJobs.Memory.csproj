@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Data\IdGenerator\NormalGuid\Masa.Contrib.Data.IdGenerator.NormalGuid\Masa.Contrib.Data.IdGenerator.NormalGuid.csproj" />
       <ProjectReference Include="..\Masa.Contrib.Extensions.BackgroundJobs\Masa.Contrib.Extensions.BackgroundJobs.csproj" />
     </ItemGroup>
 

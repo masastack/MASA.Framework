@@ -4,7 +4,6 @@
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.Constants;
 global using Masa.BuildingBlocks.Extensions.BackgroundJobs;
-global using Masa.Contrib.Extensions.BackgroundJobs.BackgroundServices;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Hosting;

@@ -224,28 +224,34 @@ public static class ExceptionErrorCode
     #region BackgroundJob
 
     /// <summary>
-    /// '{PropertyName}' is not a valid email address.
+    /// No matching background task parameter type found, jobName: '{JobName}'.
     /// </summary>
-    [Description("No matching background task parameter type found, jobName: '{0}'")]
+    [Description("No matching background task parameter type found, jobName: '{0}'.")]
     public const string NOT_FIND_JOB_ARGS_BY_JOB_NAME = $"{BACKGROUND_JOB}0001";
 
     /// <summary>
-    /// '{PropertyName}' is not a valid email address.
+    /// No matching background task found, jobName: '{JobName}'.
     /// </summary>
-    [Description("No matching background task found, jobName: '{0}'")]
+    [Description("No matching background task found, jobName: '{0}'.")]
     public const string NOT_FIND_JOB_BY_JOB_NAME = $"{BACKGROUND_JOB}0002";
 
     /// <summary>
-    /// '{PropertyName}' is not a valid email address.
+    /// No matching background task found, jobType: '{JobType}'.
     /// </summary>
-    [Description("No matching background task found, jobType: '{0}'")]
+    [Description("No matching background task found, jobType: '{0}'.")]
     public const string NOT_FIND_JOB = $"{BACKGROUND_JOB}0003";
 
     /// <summary>
     /// Periodic tasks are not supported yet.
     /// </summary>
-    [Description("Periodic tasks are not supported yet")]
+    [Description("Periodic tasks are not supported yet.")]
     public const string NOT_SUPPORT_PERIODICALLY_JOB = $"{BACKGROUND_JOB}0004";
+
+    /// <summary>
+    /// Periodic tasks are not supported yet.
+    /// </summary>
+    [Description("Unsupported background periodic task types.")]
+    public const string NOT_SUPPORT_PERIODICALLY_TASK_TYPE_JOB = $"{BACKGROUND_JOB}0005";
 
     #endregion
 

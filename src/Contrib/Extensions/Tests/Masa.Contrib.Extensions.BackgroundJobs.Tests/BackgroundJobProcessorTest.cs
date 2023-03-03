@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Reflection;
-using Masa.BuildingBlocks.Data;
-
 namespace Masa.Contrib.Extensions.BackgroundJobs.Tests;
 
 [TestClass]
@@ -63,7 +60,7 @@ public class BackgroundJobProcessorTest
         var methodInfo = typeof(BackgroundJobProcessor).GetMethod("ExecuteJobAsync", BindingFlags.Instance | BindingFlags.NonPublic)!;
         var result = methodInfo.Invoke(backgroundJobProcessor, new object[]
         {
-            new BackgroundJobContext(serviceProvider), CancellationToken.None
+            CancellationToken.None
         }) as Task;
         await result!;
         backgroundJobStorage.Verify(s => s.RetrieveJobsAsync(It.IsAny<int>()), Times.Once);
@@ -108,7 +105,7 @@ public class BackgroundJobProcessorTest
 
         var result = methodInfo.Invoke(backgroundJobProcessor, new object[]
         {
-            new BackgroundJobContext(serviceProvider), CancellationToken.None
+            CancellationToken.None
         }) as Task;
         await result!;
 
@@ -151,7 +148,7 @@ public class BackgroundJobProcessorTest
 
         var result = methodInfo.Invoke(backgroundJobProcessor, new object[]
         {
-            new BackgroundJobContext(serviceProvider), CancellationToken.None
+            CancellationToken.None
         }) as Task;
         await result!;
 
