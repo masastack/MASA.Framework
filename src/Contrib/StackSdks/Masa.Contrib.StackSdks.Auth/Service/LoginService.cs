@@ -75,6 +75,25 @@ public class LoginService : ILoginService
         };
     }
 
+    public async Task<TokenModel> LoginByLdapAsync(LoginByLdapModel login)
+    {
+        var client = CreateHttpClient();
+
+        var paramter = new Dictionary<string, string>
+        {
+            ["client_Id"] = login.ClientId,
+            ["client_secret"] = login.ClientSecret,
+            ["grant_type"] = GrantType.LDAP,
+            ["scope"] = string.Join(' ', login.Scope),
+            ["userName"] = login.UserName,
+            ["scheme"] = login.Scheme
+        };
+
+        var tokenResponse = await RequestTokenRawAsync(client, paramter);
+
+        return ToModel(tokenResponse);
+    }
+
     HttpClient CreateHttpClient()
     {
         return _httpClientFactory.CreateClient(DEFAULT_SSO_CLIENT_NAME);
