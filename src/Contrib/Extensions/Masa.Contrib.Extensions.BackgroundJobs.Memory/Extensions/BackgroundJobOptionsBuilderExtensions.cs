@@ -1,7 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Extensions.BackgroundJobs.Memory.Extensions;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
 public static class BackgroundJobOptionsBuilderExtensions
 {
@@ -25,8 +27,10 @@ public static class BackgroundJobOptionsBuilderExtensions
         backgroundJobOptionsBuilder.UseInMemoryDatabase(
             configure,
             idGeneratorFunc,
-            serviceProvider => serviceProvider.GetService<IJsonSerializer>() ?? new DefaultJsonSerializer(MasaApp.GetJsonSerializerOptions()),
-            serviceProvider => serviceProvider.GetService<IJsonDeserializer>() ?? new DefaultJsonDeserializer(MasaApp.GetJsonSerializerOptions()));
+            serviceProvider => serviceProvider.GetService<IJsonSerializer>() ??
+                new DefaultJsonSerializer(MasaApp.GetJsonSerializerOptions()),
+            serviceProvider => serviceProvider.GetService<IJsonDeserializer>() ??
+                new DefaultJsonDeserializer(MasaApp.GetJsonSerializerOptions()));
     }
 
     public static void UseInMemoryDatabase(
@@ -36,7 +40,13 @@ public static class BackgroundJobOptionsBuilderExtensions
         Func<IServiceProvider, ISerializer> serializerFunc,
         Func<IServiceProvider, IDeserializer> deserializerFunc)
     {
-        backgroundJobOptionsBuilder.UseBackgroundJobCore(configure, idGeneratorFunc, serializerFunc, deserializerFunc);
+        backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobManager>(serviceProvider =>
+            new DefaultBackgroundJobManager(
+                serviceProvider.GetRequiredService<IBackgroundJobStorage>(),
+                idGeneratorFunc.Invoke(serviceProvider),
+                serializerFunc.Invoke(serviceProvider)
+            ));
+        backgroundJobOptionsBuilder.UseBackgroundJobCore(configure, deserializerFunc);
         backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobStorage, BackgroundJobStorage>();
     }
 }

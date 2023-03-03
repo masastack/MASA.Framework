@@ -9,6 +9,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<BackgroundJobOptionsBuilder> configure)
     {
+        MasaApp.TrySetServiceCollection(services);
         var backgroundJobOptionsBuilder = new BackgroundJobOptionsBuilder(services);
         configure.Invoke(backgroundJobOptionsBuilder);
 
@@ -18,6 +19,8 @@ public static class ServiceCollectionExtensions
                 backgroundJobOptionsBuilder.Assemblies ?? MasaApp.GetAssemblies()).Build());
         services.TryAddSingleton<IBackgroundJobExecutor, DefaultBackgroundJobExecutor>();
 
+        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
+        services.AddHostedService<BackgroundJobService>();
         return services;
     }
 }

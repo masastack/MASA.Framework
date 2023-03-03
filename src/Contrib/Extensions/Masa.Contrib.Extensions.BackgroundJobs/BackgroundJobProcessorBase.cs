@@ -1,11 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
+namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
 {
-    private readonly IServiceProvider _serviceProvider;
+    protected readonly IServiceProvider ServiceProvider;
     private readonly Timer _timer;
     private volatile bool _isRunning;
     private readonly BackgroundJobRelationNetwork _relationNetwork;
@@ -23,10 +23,10 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
 
     public BackgroundJobProcessorBase(IServiceProvider serviceProvider, IDeserializer deserializer)
     {
-        _serviceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
         _timer = new Timer(TimerCallback, null, Timeout.Infinite, Timeout.Infinite);
-        _relationNetwork = _serviceProvider.GetRequiredService<BackgroundJobRelationNetwork>();
-        Logger = _serviceProvider.GetService<ILogger<BackgroundJobProcessorBase>>();
+        _relationNetwork = ServiceProvider.GetRequiredService<BackgroundJobRelationNetwork>();
+        Logger = ServiceProvider.GetService<ILogger<BackgroundJobProcessorBase>>();
         Deserializer = deserializer;
     }
 
@@ -78,16 +78,14 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
             return;
         }
 
-        _ = ExecuteJobAsync(_cancellationToken);
+        _ = ExecuteJobAsync();
     }
 
-    private async Task ExecuteJobAsync(CancellationToken cancellationToken)
+    private async Task ExecuteJobAsync()
     {
         try
         {
-            await using var scope = _serviceProvider.CreateAsyncScope();
-            var backgroundJobContext = new BackgroundJobContext(scope.ServiceProvider);
-            await ExecuteJobAsync(backgroundJobContext, cancellationToken);
+            await ExecuteJobAsync(_cancellationToken);
         }
         catch (Exception ex)
         {
@@ -103,7 +101,7 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
         }
     }
 
-    protected abstract Task ExecuteJobAsync(BackgroundJobContext backgroundJobContext, CancellationToken cancellationToken);
+    protected abstract Task ExecuteJobAsync(CancellationToken cancellationToken);
 
     protected List<Type> GetJobTypeList(string jobName)
         => _relationNetwork.GetJobTypeList(jobName);

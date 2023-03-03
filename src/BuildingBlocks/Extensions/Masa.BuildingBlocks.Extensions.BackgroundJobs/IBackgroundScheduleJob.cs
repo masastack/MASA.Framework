@@ -8,4 +8,6 @@ public interface IBackgroundScheduleJob
     public string Id { get; set; }
 
     public string CronExpression { get; set; }
+
+    Task ExecuteAsync(IServiceProvider serviceProvider);
 }

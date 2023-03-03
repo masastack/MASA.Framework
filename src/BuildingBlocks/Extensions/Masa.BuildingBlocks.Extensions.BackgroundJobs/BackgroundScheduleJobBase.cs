@@ -8,4 +8,6 @@ public abstract class BackgroundScheduleJobBase : IBackgroundScheduleJob
     public string Id { get; set; }
 
     public string CronExpression { get; set; }
+
+    public abstract Task ExecuteAsync(IServiceProvider serviceProvider);
 }

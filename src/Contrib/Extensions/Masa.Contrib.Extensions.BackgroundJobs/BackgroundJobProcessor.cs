@@ -5,6 +5,7 @@ namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public class BackgroundJobProcessor : BackgroundJobProcessorBase
 {
+    private readonly IBackgroundJobExecutor _backgroundJobExecutor;
     public override int Period => _backgroundJobOptions.Value.PollInterval;
 
     private readonly IOptions<BackgroundJobOptions> _backgroundJobOptions;
@@ -14,17 +15,18 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
         IDeserializer deserializer)
         : base(serviceProvider, deserializer)
     {
+        _backgroundJobExecutor = serviceProvider.GetRequiredService<IBackgroundJobExecutor>();
         _backgroundJobOptions = serviceProvider.GetRequiredService<IOptions<BackgroundJobOptions>>();
     }
 
-    protected override async Task ExecuteJobAsync(BackgroundJobContext backgroundJobContext, CancellationToken cancellationToken)
+    protected override async Task ExecuteJobAsync(CancellationToken cancellationToken)
     {
-        var backgroundJobStorage = backgroundJobContext.ServiceProvider.GetRequiredService<IBackgroundJobStorage>();
+        await using var scope = ServiceProvider.CreateAsyncScope();
+        // The memory queue declaration cycle is a singleton
+        var backgroundJobStorage = scope.ServiceProvider.GetRequiredService<IBackgroundJobStorage>();
         var jobs = await backgroundJobStorage.RetrieveJobsAsync(_backgroundJobOptions.Value.BatchSize);
         if (!jobs.Any())
             return;
-
-        var jobExecutor = backgroundJobContext.ServiceProvider.GetRequiredService<IBackgroundJobExecutor>();
 
         foreach (var job in jobs)
         {
@@ -34,10 +36,10 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
             try
             {
                 var jobArgs = GetJobArgs(job.Args, GetJobArgsType(job.Name));
-                var jobContext = new JobContext(backgroundJobContext.ServiceProvider, GetJobTypeList(job.Name), jobArgs);
+                var jobContext = new JobContext(scope.ServiceProvider, GetJobTypeList(job.Name), jobArgs);
                 try
                 {
-                    await jobExecutor.ExecuteAsync(jobContext, cancellationToken);
+                    await _backgroundJobExecutor.ExecuteAsync(jobContext, cancellationToken);
                     await backgroundJobStorage.DeleteAsync(job.Id);
                 }
                 catch (Exception ex)
