@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.Extensions.BackgroundJobs.Memory")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Extensions.BackgroundJobs.Tests")]
 
 // ReSharper disable once CheckNamespace
 
@@ -16,6 +17,11 @@ internal static class BackgroundJobOptionsBuilderExtensions
         Func<IServiceProvider, ISerializer> serializerFunc,
         Func<IServiceProvider, IDeserializer> deserializerFunc)
     {
+        if (backgroundJobOptionsBuilder.Services.Any(s => s.ServiceType == typeof(BackgroundJobProvider)))
+            return;
+
+        backgroundJobOptionsBuilder.Services.AddSingleton<BackgroundJobProvider>();
+
         backgroundJobOptionsBuilder.Services.Configure(configure);
         backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobManager>(serviceProvider =>
             new DefaultBackgroundJobManager(
@@ -27,7 +33,7 @@ internal static class BackgroundJobOptionsBuilderExtensions
         {
             backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobProcessor>(serviceProvider =>
                 new BackgroundJobProcessor(serviceProvider, deserializerFunc.Invoke(serviceProvider)));
-            backgroundJobOptionsBuilder.Services.TryAddEnumerable(
+            backgroundJobOptionsBuilder.Services.Add(
                 new ServiceDescriptor(
                     typeof(IProcessor),
                     serviceProvider => serviceProvider.GetRequiredService<IBackgroundJobProcessor>(),
@@ -35,5 +41,9 @@ internal static class BackgroundJobOptionsBuilderExtensions
         }
         backgroundJobOptionsBuilder.Services.TryAddScoped<IProcessingServer, DefaultHostedService>();
         backgroundJobOptionsBuilder.Services.AddHostedService<BackgroundJobService>();
+    }
+
+    private sealed class BackgroundJobProvider
+    {
     }
 }

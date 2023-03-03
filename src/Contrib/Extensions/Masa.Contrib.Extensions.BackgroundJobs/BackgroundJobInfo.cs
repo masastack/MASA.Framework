@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Extensions.BackgroundJobs;
 
-[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+[ExcludeFromCodeCoverage]
 public class BackgroundJobInfo
 {
     /// <summary>

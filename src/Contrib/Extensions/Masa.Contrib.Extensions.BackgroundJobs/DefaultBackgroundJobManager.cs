@@ -34,6 +34,6 @@ public class DefaultBackgroundJobManager : IBackgroundJobManager
         return jobInfo.Id.ToString();
     }
 
-    public virtual Task<string> AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob)
+    public virtual Task AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob)
         => throw new BackgroundJobException(errorCode: ExceptionErrorCode.NOT_SUPPORT_PERIODICALLY_JOB);
 }

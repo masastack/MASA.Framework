@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Extensions.BackgroundJobs;
 
+[ExcludeFromCodeCoverage]
 public class DefaultHostedService : IProcessingServer
 {
     private readonly IEnumerable<IProcessor> _processors;

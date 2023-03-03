@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Extensions.BackgroundJobs.BackgroundServices;
 
+[ExcludeFromCodeCoverage]
 public class BackgroundJobService : IHostedService
 {
     private readonly IProcessingServer _processingServer;

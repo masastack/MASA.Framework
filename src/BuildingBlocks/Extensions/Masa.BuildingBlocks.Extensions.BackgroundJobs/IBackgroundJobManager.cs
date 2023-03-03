@@ -19,5 +19,5 @@ public interface IBackgroundJobManager
     /// </summary>
     /// <param name="backgroundScheduleJob"></param>
     /// <returns></returns>
-    Task<string> AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob);
+    Task AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob);
 }
