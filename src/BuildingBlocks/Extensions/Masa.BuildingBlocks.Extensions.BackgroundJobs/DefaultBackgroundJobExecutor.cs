@@ -45,7 +45,7 @@ public class DefaultBackgroundJobExecutor : IBackgroundJobExecutor
             _logger?.LogError(ex,
                 "----- A background job execution is failed. JobType: {Type}, JobArgs: {Args}.",
                 jobType.FullName ?? jobType.Name,
-                jobArgs);
+                jobArgs.ToJson());
             throw;
         }
     }

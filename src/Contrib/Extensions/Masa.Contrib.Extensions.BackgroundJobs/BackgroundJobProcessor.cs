@@ -5,6 +5,8 @@ namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public class BackgroundJobProcessor : BackgroundJobProcessorBase
 {
+    public override int Period => _backgroundJobOptions.Value.PollInterval;
+
     private readonly IOptions<BackgroundJobOptions> _backgroundJobOptions;
 
     public BackgroundJobProcessor(

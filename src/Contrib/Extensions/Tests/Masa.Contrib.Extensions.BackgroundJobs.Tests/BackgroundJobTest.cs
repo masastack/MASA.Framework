@@ -27,7 +27,7 @@ public class BackgroundJobTest
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessor) && s.Lifetime == ServiceLifetime.Singleton));
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IHostedService) && s.Lifetime == ServiceLifetime.Singleton));
 
         var serviceProvider = services.BuildServiceProvider();
@@ -57,7 +57,7 @@ public class BackgroundJobTest
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor)));
         Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IProcessor)));
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IHostedService) && s.Lifetime == ServiceLifetime.Singleton));
     }
 
@@ -90,7 +90,7 @@ public class BackgroundJobTest
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobManager) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessor) && s.Lifetime == ServiceLifetime.Singleton));
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Scoped));
+        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
         Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IHostedService) && s.Lifetime == ServiceLifetime.Singleton));
 
         var serviceProvider = services.BuildServiceProvider();
@@ -98,5 +98,7 @@ public class BackgroundJobTest
         Assert.AreEqual(1, processors.Count());
 
         Assert.IsNotNull(serviceProvider.GetService<IBackgroundJobManager>());
+
+        Assert.IsNotNull(serviceProvider.GetService<RegisterAccountBackgroundJob>());
     }
 }

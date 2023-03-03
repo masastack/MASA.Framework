@@ -13,12 +13,18 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
     protected readonly ILogger<BackgroundJobProcessorBase>? Logger;
     protected readonly IDeserializer Deserializer;
 
+    /// <summary>
+    /// Background task status
+    /// default task: terminated
+    /// </summary>
+    private bool _isTerminated = true;
+
     public virtual int Period => 5000;
 
     public BackgroundJobProcessorBase(IServiceProvider serviceProvider, IDeserializer deserializer)
     {
         _serviceProvider = serviceProvider;
-        _timer = new Timer(TimerCallback, null, -1, -1);
+        _timer = new Timer(TimerCallback, null, Timeout.Infinite, Timeout.Infinite);
         _relationNetwork = _serviceProvider.GetRequiredService<BackgroundJobRelationNetwork>();
         Logger = _serviceProvider.GetService<ILogger<BackgroundJobProcessorBase>>();
         Deserializer = deserializer;
@@ -30,11 +36,13 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
     /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
     public virtual Task StartAsync(CancellationToken cancellationToken = default)
     {
+        MasaArgumentException.ThrowIfLessThanOrEqual(Period, 0);
+
         lock (_timer)
         {
             _cancellationToken = cancellationToken;
             _isRunning = true;
-            _timer.Change(Period, Timeout.Infinite);
+            ChangeTimer(Period, Timeout.Infinite);
         }
         return Task.CompletedTask;
     }
@@ -49,7 +57,7 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
         {
             _cancellationToken = cancellationToken;
             _isRunning = false;
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            ChangeTimer(Timeout.Infinite, Timeout.Infinite);
         }
         return Task.CompletedTask;
     }
@@ -58,9 +66,10 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
     {
         lock (_timer)
         {
-            if (!_isRunning) return;
+            if (!_isRunning || !_isTerminated) return;
 
-            _timer.Change(Timeout.Infinite, Timeout.Infinite);
+            ChangeTimer(Timeout.Infinite, Timeout.Infinite);
+            _isTerminated = false;
         }
 
         if (_cancellationToken.IsCancellationRequested)
@@ -74,9 +83,24 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
 
     private async Task ExecuteJobAsync(CancellationToken cancellationToken)
     {
-        await using var scope = _serviceProvider.CreateAsyncScope();
-        var backgroundJobContext = new BackgroundJobContext(scope.ServiceProvider);
-        await ExecuteJobAsync(backgroundJobContext, cancellationToken);
+        try
+        {
+            await using var scope = _serviceProvider.CreateAsyncScope();
+            var backgroundJobContext = new BackgroundJobContext(scope.ServiceProvider);
+            await ExecuteJobAsync(backgroundJobContext, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "----- Error executing background task");
+        }
+        finally
+        {
+            lock (_timer)
+            {
+                _isTerminated = true;
+                ChangeTimer(Period, Timeout.Infinite);
+            }
+        }
     }
 
     protected abstract Task ExecuteJobAsync(BackgroundJobContext backgroundJobContext, CancellationToken cancellationToken);
@@ -89,4 +113,7 @@ public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
 
     protected object? GetJobArgs(string jobArgs, Type jobArgsType)
         => Deserializer.Deserialize(jobArgs, jobArgsType);
+
+    private void ChangeTimer(int dueTime, int period)
+        => _timer.Change(dueTime != Timeout.Infinite ? dueTime * 1000 : dueTime, period);
 }

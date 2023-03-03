@@ -5,11 +5,11 @@
 
 namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
-internal delegate Task TaskInvokeDelegate(object target, params object?[] parameters);
+public delegate Task BackgroundJobTaskInvokeDelegate(object target, params object?[] parameters);
 
-internal static class InvokeBuilder
+public static class BackgroundJobInvokeBuilder
 {
-    public static TaskInvokeDelegate Build(MethodInfo methodInfo, Type targetType)
+    public static BackgroundJobTaskInvokeDelegate Build(MethodInfo methodInfo, Type targetType)
     {
         // Parameters to executor
         var targetParameter = Expression.Parameter(typeof(object), "target");
@@ -38,7 +38,7 @@ internal static class InvokeBuilder
         {
             // must coerce methodCall to match ActionExecutor signature
             var castMethodCall = Expression.Convert(methodCall, typeof(Task));
-            var lambda = Expression.Lambda<TaskInvokeDelegate>(castMethodCall, targetParameter, parametersParameter);
+            var lambda = Expression.Lambda<BackgroundJobTaskInvokeDelegate>(castMethodCall, targetParameter, parametersParameter);
             return lambda.Compile();
         }
 

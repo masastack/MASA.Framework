@@ -16,7 +16,7 @@ public abstract class BackgroundJobBase<TArgs> : IBackgroundJob<TArgs>
 
     protected virtual Task PreExecuteAsync(TArgs args)
     {
-        Logger?.LogDebug("----- background task running and jobArgs: {JobArgs}", args);
+        Logger?.LogDebug("----- background task running and jobArgs: {JobArgs}", args.ToJson());
         return Task.CompletedTask;
     }
 
@@ -31,7 +31,7 @@ public abstract class BackgroundJobBase<TArgs> : IBackgroundJob<TArgs>
 
     protected virtual Task PostExecuteAsync(TArgs args)
     {
-        Logger?.LogDebug("-----The end of the background task and jobArgs: {JobArgs}", args);
+        Logger?.LogDebug("-----The end of the background task, jobArgs: {JobArgs}", args.ToJson());
         return Task.CompletedTask;
     }
 }

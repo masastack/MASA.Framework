@@ -5,6 +5,23 @@ namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 public class BackgroundJobOptions
 {
+    private int _pollInterval = 5;
+
+    /// <summary>
+    /// Background task rotation interval period
+    /// default: 5s
+    /// </summary>
+    public int PollInterval
+    {
+        get => _pollInterval;
+        set
+        {
+            MasaArgumentException.ThrowIfLessThanOrEqual(value, 0, nameof(PollInterval));
+
+            _pollInterval = value;
+        }
+    }
+
     private int _batchSize = 30;
 
     /// <summary>

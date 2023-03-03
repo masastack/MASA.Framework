@@ -8,7 +8,7 @@ namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 public class BackgroundJobRelationNetwork
 {
     private readonly IServiceCollection _services;
-    private readonly Dictionary<Type, TaskInvokeDelegate> _delegateData;
+    private readonly Dictionary<Type, BackgroundJobTaskInvokeDelegate> _delegateData;
     private readonly Dictionary<string, Type> _jobNameAndJobArgsTypeData; //Key: jobName, Value: JobArgsType
     private readonly Dictionary<string, List<Type>> _jobNameAndJobTypeData; //Key: JobName, Value: JobType List
 
@@ -28,7 +28,7 @@ public class BackgroundJobRelationNetwork
         {
             var methodInfo = jobType.GetMethod(nameof(IBackgroundJob<object>.ExecuteAsync));
             MasaArgumentException.ThrowIfNull(methodInfo);
-            var taskInvokeDelegate = InvokeBuilder.Build(methodInfo, jobType);
+            var taskInvokeDelegate = BackgroundJobInvokeBuilder.Build(methodInfo, jobType);
 
             _delegateData.TryAdd(jobType, taskInvokeDelegate);
 
@@ -70,9 +70,9 @@ public class BackgroundJobRelationNetwork
         return this;
     }
 
-    internal TaskInvokeDelegate GetInvokeDelegate(Type type)
+    public BackgroundJobTaskInvokeDelegate GetInvokeDelegate(Type type)
     {
-        if (_delegateData.ContainsKey(type))
+        if (!_delegateData.ContainsKey(type))
             throw new BackgroundJobException(errorCode: ExceptionErrorCode.NOT_FIND_JOB,
                 type.FullName!);
 
