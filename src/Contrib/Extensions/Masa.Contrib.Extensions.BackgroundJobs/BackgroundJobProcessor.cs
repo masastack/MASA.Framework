@@ -58,6 +58,19 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
             catch (BackgroundJobException ex)
             {
                 Logger?.LogError(ex, "----- Error getting background task parameter information. Job: {JobInfo}", job);
+
+                var nextTryTime = NextTryTime(job);
+
+                if (nextTryTime.HasValue)
+                {
+                    job.NextTryTime = nextTryTime.Value;
+                }
+                else
+                {
+                    job.IsInvalid = true;
+                }
+
+                await backgroundJobStorage.UpdateAsync(job);
             }
             catch (Exception ex)
             {

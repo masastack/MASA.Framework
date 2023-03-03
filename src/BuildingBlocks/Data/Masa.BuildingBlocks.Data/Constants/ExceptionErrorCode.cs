@@ -241,6 +241,12 @@ public static class ExceptionErrorCode
     [Description("No matching background task found, jobType: '{0}'")]
     public const string NOT_FIND_JOB = $"{BACKGROUND_JOB}0003";
 
+    /// <summary>
+    /// Periodic tasks are not supported yet.
+    /// </summary>
+    [Description("Periodic tasks are not supported yet")]
+    public const string NOT_SUPPORT_PERIODICALLY_JOB = $"{BACKGROUND_JOB}0004";
+
     #endregion
 
     #region Other
