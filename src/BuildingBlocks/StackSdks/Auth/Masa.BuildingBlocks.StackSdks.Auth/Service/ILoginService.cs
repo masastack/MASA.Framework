@@ -10,4 +10,6 @@ public interface ILoginService
     Task<TokenModel> LoginByPhoneNumberAsync(LoginByPhoneNumberFromSsoModel login);
 
     Task<LoginByThirdPartyIdpResultModel> LoginByThirdPartyIdpAsync(LoginByThirdPartyIdpModel login);
+
+    Task<TokenModel> LoginByLdapAsync(LoginByLdapModel login);
 }
