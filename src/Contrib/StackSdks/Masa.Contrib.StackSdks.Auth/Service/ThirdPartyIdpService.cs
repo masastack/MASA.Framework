@@ -26,9 +26,9 @@ public class ThirdPartyIdpService : IThirdPartyIdpService
         return thirdPartyIdps ?? new();
     }
 
-    public async Task<LdapOptionsModel?> GetLdapOptionsAsync(string scheme)
+    public Task<LdapOptionsModel?> GetLdapOptionsAsync(string scheme)
     {
         var requestUri = $"api/thirdPartyIdp/ldapOptions";
-        return await _caller.GetAsync<LdapOptionsModel>(requestUri, new { scheme });
+        return _caller.GetAsync<LdapOptionsModel>(requestUri, new { scheme });
     }
 }
