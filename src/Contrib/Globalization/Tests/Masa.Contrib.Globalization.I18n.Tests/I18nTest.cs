@@ -176,8 +176,10 @@ public class I18nTest
         var defaultFileName = "supportedCultures.json";
         Assert.AreEqual(defaultFileName, setting.GetSupportCultureFileName());
 
+#pragma warning disable CS0618
         setting.SupportCultureName = "customSupportedCultures.json";
         Assert.AreEqual(setting.SupportCultureName, setting.GetSupportCultureFileName());
+#pragma warning restore CS0618
 
         setting.SupportCultureFileName = "customSupportedCultures2.json";
         Assert.AreEqual(setting.SupportCultureFileName, setting.GetSupportCultureFileName());

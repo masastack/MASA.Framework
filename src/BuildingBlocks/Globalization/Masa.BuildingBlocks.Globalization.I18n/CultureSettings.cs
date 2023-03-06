@@ -7,8 +7,10 @@ public class CultureSettings
 {
     public string? ResourcesDirectory { get; set; }
 
+#pragma warning disable S1133
     [Obsolete($"${nameof(SupportCultureName)} has expired, please use ${nameof(SupportCultureFileName)} instead")]
     public string? SupportCultureName { get; set; }
+#pragma warning restore S1133
 
     public string? SupportCultureFileName { get; set; }
 
