@@ -72,13 +72,13 @@ public interface IMultilevelCacheClient : ICacheClient
     /// </summary>
     /// <param name="key">Cache key, the actual cache key will decide whether to format the cache key according to the global configuration and Action</param>
     /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
-    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <param name="memoryCacheEntryOptionsAction">When the memory cache expiration time is not set, the memory cache expiration time is consistent with the configuration when registering the multi-level cache</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     T? GetOrSet<T>(string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null);
 
     /// <summary>
@@ -96,14 +96,14 @@ public interface IMultilevelCacheClient : ICacheClient
     /// </summary>
     /// <param name="key">Cache key</param>
     /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
-    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <param name="memoryCacheEntryOptionsAction">When the memory cache expiration time is not set, the memory cache expiration time is consistent with the configuration when registering the multi-level cache</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     Task<T?> GetOrSetAsync<T>(
         string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null);
 
     /// <summary>
@@ -111,14 +111,14 @@ public interface IMultilevelCacheClient : ICacheClient
     /// </summary>
     /// <param name="key">Cache key</param>
     /// <param name="distributedCacheEntryFunc">Distributed cache information returned when the memory cache does not exist</param>
-    /// <param name="memoryCacheEntryOptions">Memory cache lifetime configuration，which is consistent with the default configuration when it is empty</param>
+    /// <param name="memoryCacheEntryOptionsAction">When the memory cache expiration time is not set, the memory cache expiration time is consistent with the configuration when registering the multi-level cache</param>
     /// <param name="action">Cache configuration, used to change the global cache configuration information</param>
     /// <typeparam name="T"></typeparam>
     /// <returns></returns>
     Task<T?> GetOrSetAsync<T>(
         string key,
         Func<Task<CacheEntry<T>>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null);
 
     Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry, Action<CacheOptions>? action = null);
