@@ -63,14 +63,14 @@ public class BackgroundJobTest
         services.AddSingleton(backgroundJobStorage.Object);
         services.AddBackgroundJob(jobBuilder =>
         {
-            jobBuilder.UseBackgroundJobCore(_ =>
+            jobBuilder.UseBackgroundJobCore(backgroundJobOptions =>
                 {
-
+                    backgroundJobOptions.PollInterval = 1;
                 },
                 _ => deserializer.Object);
-            jobBuilder.UseBackgroundJobCore(_ =>
+            jobBuilder.UseBackgroundJobCore(backgroundJobOptions =>
                 {
-
+                    backgroundJobOptions.PollInterval = 2;
                 },
                 _ => deserializer.Object);
         });
@@ -85,5 +85,10 @@ public class BackgroundJobTest
         Assert.AreEqual(1, processors.Count());
 
         Assert.IsNotNull(serviceProvider.GetService<RegisterAccountBackgroundJob>());
+
+        var backgroundJobProcessor = serviceProvider.GetRequiredService<IBackgroundJobProcessor>();
+        var jobProcessor = backgroundJobProcessor as BackgroundJobProcessor;
+        Assert.IsNotNull(jobProcessor);
+        Assert.AreEqual(1, jobProcessor.Period);
     }
 }

@@ -83,7 +83,7 @@ public class BackgroundJobTest
         var serviceProvider = services.BuildServiceProvider();
         var backgroundJobExecutorAdapter = new BackgroundJobExecutorAdapter<RegisterAccountParameter>(serviceProvider);
         var jobTypeList = backgroundJobExecutorAdapter.GetJobTypeList();
-        Assert.AreEqual(1, jobTypeList.Count());
+        Assert.AreEqual(1, jobTypeList.Count);
         Assert.AreEqual(typeof(RegisterAccountBackgroundJob), jobTypeList[0]);
     }
 }

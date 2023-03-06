@@ -54,7 +54,7 @@ public class BackgroundJobRelationNetwork
         }
     }
 
-    private IEnumerable<Type> GetJobTypeList(IEnumerable<Assembly> assemblies)
+    private static IEnumerable<Type> GetJobTypeList(IEnumerable<Assembly> assemblies)
         => assemblies
             .SelectMany(assembly => assembly.DefinedTypes)
             .Where(type =>

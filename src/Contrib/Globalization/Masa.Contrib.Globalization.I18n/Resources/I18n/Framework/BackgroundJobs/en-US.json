@@ -3,5 +3,5 @@
   "MFBGJ0002": "No matching background task found, jobName: '{0}'.",
   "MFBGJ0003": "No matching background task found, jobType: '{0}'.",
   "MFBGJ0004": "Periodic tasks are not supported yet.",
-  "MFBGJ005": "Unsupported background periodic task types."
+  "MFBGJ0005": "Unsupported background periodic task types."
 }

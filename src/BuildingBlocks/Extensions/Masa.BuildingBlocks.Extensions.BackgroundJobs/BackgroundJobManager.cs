@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Extensions.BackgroundJobs.Hangfire.Tests")]
 namespace Masa.BuildingBlocks.Extensions.BackgroundJobs;
 
 public class BackgroundJobManager
@@ -27,9 +28,7 @@ public class BackgroundJobManager
     public static Task AddOrUpdateScheduleAsync(IBackgroundScheduleJob backgroundScheduleJob)
         => JobManager.AddOrUpdateScheduleAsync(backgroundScheduleJob);
 
-
-    [assembly: InternalsVisibleTo("Masa.Contrib.Extensions.BackgroundJobs.Hangfire.Tests")]
-    public static void ResetBackgroundJobManager()
+    internal static void ResetBackgroundJobManager()
     {
         _backgroundJobManager = null;
     }

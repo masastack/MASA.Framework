@@ -142,4 +142,44 @@ public class I18nTest
         var actualResult = BuildingBlocks.Globalization.I18n.I18n.T(key);
         Assert.AreEqual(expectedResult, actualResult);
     }
+
+    [DataTestMethod]
+    [DataRow(ExceptionErrorCode.NOT_FIND_JOB_ARGS_BY_JOB_NAME, "testJob")]
+    [DataRow(ExceptionErrorCode.NOT_FIND_JOB_BY_JOB_NAME, "testJob")]
+    [DataRow(ExceptionErrorCode.NOT_FIND_JOB, "testJob")]
+    [DataRow(ExceptionErrorCode.NOT_SUPPORT_PERIODICALLY_JOB)]
+    [DataRow(ExceptionErrorCode.NOT_SUPPORT_PERIODICALLY_TASK_TYPE_JOB)]
+    public void TestI18nByBackgroundJobExceptionAndUseEn(string errorCode, params object[] parameters)
+    {
+        var services = new ServiceCollection();
+        services.AddI18n(setting => setting.SupportedCultures = new List<CultureModel>()
+        {
+            new("zh-CN"),
+            new("en-US")
+        });
+
+        CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+        var backgroundException = new BackgroundJobException(errorCode: errorCode, parameters: parameters);
+        var expected = parameters.Any() ?
+            string.Format(ExceptionErrorCode.GetErrorMessage(errorCode)!, parameters) :
+            ExceptionErrorCode.GetErrorMessage(errorCode);
+
+        Assert.AreEqual(
+            expected,
+            backgroundException.GetLocalizedMessage());
+    }
+
+    [TestMethod]
+    public void TestCultureSetting()
+    {
+        var setting = new CultureSettings();
+        var defaultFileName = "supportedCultures.json";
+        Assert.AreEqual(defaultFileName, setting.GetSupportCultureFileName());
+
+        setting.SupportCultureName = "customSupportedCultures.json";
+        Assert.AreEqual(setting.SupportCultureName, setting.GetSupportCultureFileName());
+
+        setting.SupportCultureFileName = "customSupportedCultures2.json";
+        Assert.AreEqual(setting.SupportCultureFileName, setting.GetSupportCultureFileName());
+    }
 }

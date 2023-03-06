@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Extensions.BackgroundJobs;
 
+[ExcludeFromCodeCoverage]
 public abstract class BackgroundJobProcessorBase : IBackgroundJobProcessor
 {
     protected readonly IServiceProvider ServiceProvider;

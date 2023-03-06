@@ -7,7 +7,10 @@ public class CultureSettings
 {
     public string? ResourcesDirectory { get; set; }
 
+    [Obsolete($"${nameof(SupportCultureName)} has expired, please use ${nameof(SupportCultureFileName)} instead")]
     public string? SupportCultureName { get; set; }
+
+    public string? SupportCultureFileName { get; set; }
 
     public List<CultureModel> SupportedCultures { get; set; } = new();
 

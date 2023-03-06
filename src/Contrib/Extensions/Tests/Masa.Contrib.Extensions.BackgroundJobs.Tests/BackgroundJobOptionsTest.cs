@@ -20,6 +20,12 @@ public class BackgroundJobOptionsTest
         Assert.ThrowsException<MasaArgumentException>(() => backgroundJobOptions.BatchSize = 0);
         Assert.ThrowsException<MasaArgumentException>(() => backgroundJobOptions.BatchSize = -1);
 
+        Assert.AreEqual(5, backgroundJobOptions.PollInterval);
+        Assert.ThrowsException<MasaArgumentException>(() => backgroundJobOptions.PollInterval = 0);
+        Assert.ThrowsException<MasaArgumentException>(() => backgroundJobOptions.PollInterval = -1);
+        backgroundJobOptions.PollInterval = 1;
+        Assert.AreEqual(1, backgroundJobOptions.PollInterval);
+
         backgroundJobOptions.MaxRetryTimes = 0;
         Assert.AreEqual(0, backgroundJobOptions.MaxRetryTimes);
         Assert.ThrowsException<MasaArgumentException>(() => backgroundJobOptions.MaxRetryTimes = -1);
