@@ -3,7 +3,6 @@
 
 namespace Masa.Contrib.Authentication.OpenIdConnect.Cache.Caches;
 
-[ExcludeFromCodeCoverage]
 public class ApiScopeCache : IApiScopeCache
 {
     private readonly IMultilevelCacheClient _memoryCacheClient;

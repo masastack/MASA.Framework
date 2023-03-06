@@ -8,4 +8,6 @@ public interface IThirdPartyIdpService
     Task<List<ThirdPartyIdpModel>> GetAllAsync();
 
     Task<List<ThirdPartyIdpModel>> GetAllFromCacheAsync();
+
+    Task<LdapOptionsModel?> GetLdapOptionsAsync(string scheme);
 }
