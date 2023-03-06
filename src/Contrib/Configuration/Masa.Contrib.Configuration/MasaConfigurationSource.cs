@@ -9,10 +9,20 @@ public class MasaConfigurationSource : IConfigurationSource
 
     internal readonly IConfigurationProvider? ConfigurationProvider;
 
-    public MasaConfigurationSource(MasaConfigurationBuilder builder) => Builder = builder;
+    private readonly List<MigrateConfigurationRelationsInfo> _relations;
 
-    public MasaConfigurationSource(IConfigurationProvider configurationProvider) => ConfigurationProvider = configurationProvider;
+    public MasaConfigurationSource(MasaConfigurationBuilder builder, List<MigrateConfigurationRelationsInfo> relations)
+    {
+        Builder = builder;
+        _relations = relations;
+    }
+
+    public MasaConfigurationSource(IConfigurationProvider configurationProvider, List<MigrateConfigurationRelationsInfo> relations)
+    {
+        ConfigurationProvider = configurationProvider;
+        _relations = relations;
+    }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
-        => Builder != null ? new MasaConfigurationProvider(this) : ConfigurationProvider!;
+        => Builder != null ? new MasaConfigurationProvider(this, _relations) : ConfigurationProvider!;
 }
