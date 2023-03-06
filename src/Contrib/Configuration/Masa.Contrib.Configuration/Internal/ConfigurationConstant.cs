@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Configuration;
 
-internal class ConfigurationConstant
+internal static class ConfigurationConstant
 {
     public const string LOGGING_SECTION = "Logging";
 }
