@@ -5,7 +5,7 @@ namespace Masa.Contrib.StackSdks.Middleware;
 
 public static class ApplicationBuilderExtensions
 {
-    public static WebApplication UseAddStackMiddleware(this WebApplication app)
+    public static WebApplication UseStackMiddleware(this WebApplication app)
     {
         app.UseMiddleware<DisabledRequestMiddleware>();
 

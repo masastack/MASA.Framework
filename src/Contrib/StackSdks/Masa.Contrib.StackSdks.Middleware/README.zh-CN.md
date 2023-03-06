@@ -13,7 +13,7 @@ builder.Services.AddStackMiddleware();
 
 ...
 
-app.UseAddStackMiddleware();
+app.UseStackMiddleware();
 ```
 
 `Masa.Contrib.StackSdks.Middleware`提供了`IDisabledEventDeterminer`和`IDisabledRequestDeterminer`的默认实现，依赖`Masa.Contrib.Authentication.Identity`,`Masa.Contrib.StackSdks.Config`。`AddStackMiddleware`前应完成相应代码的初始化。

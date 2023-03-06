@@ -13,7 +13,7 @@ builder.Services.AddStackMiddleware();
 
 ...
 
-app.UseAddStackMiddleware();
+app.UseStackMiddleware();
 ```
 
 `Masa.Contrib.StackSdks.Middleware` provides default implementations of `IDisabledEventDeterminer` and `IDisabledRequestDeterminer`, relying on `Masa.Contrib.Authentication.Identity`, `Masa.Contrib.StackSdks.Config`. The initialization of the corresponding code should be completed before `AddStackMiddleware`.
