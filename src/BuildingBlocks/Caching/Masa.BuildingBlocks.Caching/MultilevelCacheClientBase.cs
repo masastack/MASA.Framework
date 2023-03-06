@@ -41,27 +41,27 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
 
     public virtual T? GetOrSet<T>(string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null)
         => GetOrSet(key, new CombinedCacheEntry<T>()
         {
             DistributedCacheEntryFunc = distributedCacheEntryFunc,
-            MemoryCacheEntryOptions = memoryCacheEntryOptions
+            MemoryCacheEntryOptionsAction = memoryCacheEntryOptionsAction
         }, action);
 
     public abstract T? GetOrSet<T>(string key, CombinedCacheEntry<T> combinedCacheEntry, Action<CacheOptions>? action = null);
 
     public virtual Task<T?> GetOrSetAsync<T>(string key,
         Func<CacheEntry<T>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null)
-        => GetOrSetAsync(key, new CombinedCacheEntry<T>(distributedCacheEntryFunc, memoryCacheEntryOptions), action);
+        => GetOrSetAsync(key, new CombinedCacheEntry<T>(distributedCacheEntryFunc, memoryCacheEntryOptionsAction), action);
 
     public virtual Task<T?> GetOrSetAsync<T>(string key,
         Func<Task<CacheEntry<T>>> distributedCacheEntryFunc,
-        CacheEntryOptions? memoryCacheEntryOptions = null,
+        Action<CacheEntryOptions>? memoryCacheEntryOptionsAction = null,
         Action<CacheOptions>? action = null)
-        => GetOrSetAsync(key, new CombinedCacheEntry<T>(distributedCacheEntryFunc, memoryCacheEntryOptions), action);
+        => GetOrSetAsync(key, new CombinedCacheEntry<T>(distributedCacheEntryFunc, memoryCacheEntryOptionsAction), action);
 
     public abstract Task<T?> GetOrSetAsync<T>(string key, CombinedCacheEntry<T> combinedCacheEntry, Action<CacheOptions>? action = null);
 

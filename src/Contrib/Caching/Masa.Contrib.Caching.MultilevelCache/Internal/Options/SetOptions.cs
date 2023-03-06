@@ -3,14 +3,13 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Caching.MultilevelCache
+namespace Masa.Contrib.Caching.MultilevelCache;
+
+internal class SetOptions<T>
 {
-    internal class SetOptions<T>
-    {
-        public string? FormattedKey { get; set; }
+    public string? FormattedKey { get; set; }
 
-        public T? Value { get; set; }
+    public T? Value { get; set; }
 
-        public CacheEntryOptions? MemoryCacheEntryOptions { get; set; }
-    }
+    public CacheEntryOptions? MemoryCacheEntryOptions { get; set; }
 }
