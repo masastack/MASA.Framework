@@ -144,7 +144,8 @@ public static class ServiceCollectionExtensions
             .GetMigrated(
                 originalConfigurationSources,
                 configurationOptions.ExcludeConfigurationSourceTypes,
-                configurationOptions.ExcludeConfigurationProviderTypes);
+                configurationOptions.ExcludeConfigurationProviderTypes,
+                configurationOptions.MigrateRelations);
 
         MasaConfigurationBuilder masaConfigurationBuilder = new MasaConfigurationBuilder(services,
             new ConfigurationBuilder().AddRange(configurationSourceResult.MigrateConfigurationSources));
@@ -158,7 +159,7 @@ public static class ServiceCollectionExtensions
             services.BuildServiceProvider().GetService<ILoggerFactory>());
         builder.AddRepository(localConfigurationRepository);
 
-        var source = new MasaConfigurationSource(builder);
+        var source = new MasaConfigurationSource(builder, configurationOptions.MigrateRelations);
         var configuration = builder
             .Add(source)
             .AddRange(configurationSourceResult.ConfigurationSources)

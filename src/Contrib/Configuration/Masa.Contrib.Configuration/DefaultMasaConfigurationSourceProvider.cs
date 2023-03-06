@@ -8,13 +8,18 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
     public virtual (List<IConfigurationSource> MigrateConfigurationSources, List<IConfigurationSource> ConfigurationSources) GetMigrated(
         IEnumerable<IConfigurationSource> originalConfigurationSources,
         List<Type> excludeConfigurationSourceTypes,
-        List<Type> excludeConfigurationProviderTypes)
+        List<Type> excludeConfigurationProviderTypes,
+        List<MigrateConfigurationRelationsInfo> migrateRelations)
     {
         List<IConfigurationSource> migrateConfigurationSources = new();
         List<IConfigurationSource> configurationSources = new();
         foreach (var originalConfigurationSource in originalConfigurationSources)
         {
-            var result = GetMigrated(originalConfigurationSource, excludeConfigurationSourceTypes, excludeConfigurationProviderTypes);
+            var result = GetMigrated(
+                originalConfigurationSource,
+                excludeConfigurationSourceTypes,
+                excludeConfigurationProviderTypes,
+                migrateRelations);
             migrateConfigurationSources.AddRange(result.MigrateConfigurationSources);
             configurationSources.AddRange(result.ConfigurationSources);
         }
@@ -25,7 +30,8 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
         GetMigrated(
             IConfiguration configuration,
             List<Type> excludeConfigurationSourceTypes,
-            List<Type> excludeConfigurationProviderTypes)
+            List<Type> excludeConfigurationProviderTypes,
+            List<MigrateConfigurationRelationsInfo> migrateRelations)
     {
         List<IConfigurationSource> migrateConfigurationSources = new();
         List<IConfigurationSource> configurationSources = new();
@@ -36,7 +42,8 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
                 var result = GetMigrated(
                     configurationSource,
                     excludeConfigurationSourceTypes,
-                    excludeConfigurationProviderTypes);
+                    excludeConfigurationProviderTypes,
+                    migrateRelations);
                 migrateConfigurationSources.AddRange(result.MigrateConfigurationSources);
                 configurationSources.AddRange(result.ConfigurationSources);
             }
@@ -45,7 +52,7 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
         {
             foreach (var configurationProvider in configurationRoot.Providers)
             {
-                var masaConfigurationSource = new MasaConfigurationSource(configurationProvider);
+                var masaConfigurationSource = new MasaConfigurationSource(configurationProvider, migrateRelations);
                 if (excludeConfigurationProviderTypes.Contains(configurationProvider.GetType()))
                     configurationSources.Add(masaConfigurationSource);
                 else migrateConfigurationSources.Add(masaConfigurationSource);
@@ -58,7 +65,8 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
         GetMigrated(
             IConfigurationSource configurationSource,
             List<Type> excludeConfigurationSourceTypes,
-            List<Type> excludeConfigurationProviderTypes)
+            List<Type> excludeConfigurationProviderTypes,
+            List<MigrateConfigurationRelationsInfo> migrateRelations)
     {
         List<IConfigurationSource> migrateConfigurationSources = new();
         List<IConfigurationSource> configurationSources = new();
@@ -71,7 +79,8 @@ public class DefaultMasaConfigurationSourceProvider : IMasaConfigurationSourcePr
             return GetMigrated(
                 chainedConfigurationSource.Configuration,
                 excludeConfigurationSourceTypes,
-                excludeConfigurationProviderTypes);
+                excludeConfigurationProviderTypes,
+                migrateRelations);
 
         migrateConfigurationSources.Add(configurationSource);
         return (migrateConfigurationSources, configurationSources);
