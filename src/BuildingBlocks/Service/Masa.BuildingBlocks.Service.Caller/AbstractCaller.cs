@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICaller
+public abstract class AbstractCaller : ICallerSingleton, ICallerScoped, ICallerTransient
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;

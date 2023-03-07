@@ -25,7 +25,7 @@ public static class CallerOptionsExtensions
 
         callerOptionsBuilder.Services.AddCaller(callerOptionsBuilder.Name, serviceProvider =>
         {
-            var masaHttpClient = new MasaHttpClient();
+            var masaHttpClient = new MasaHttpClient(serviceProvider);
             clientConfigure?.Invoke(masaHttpClient);
             var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(callerOptionsBuilder.Name);
             masaHttpClient.ConfigureHttpClient(httpClient);

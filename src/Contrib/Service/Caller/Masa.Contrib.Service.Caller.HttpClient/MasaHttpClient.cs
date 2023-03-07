@@ -15,6 +15,10 @@ public class MasaHttpClient: MasaCallerClient
 
     public Action<System.Net.Http.HttpClient>? Configure { get; set; }
 
+    public MasaHttpClient(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+    }
+
     internal void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)
     {
         if (!string.IsNullOrEmpty(BaseAddress))

@@ -70,7 +70,28 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
         services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage());
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
-        services.TryAddSingleton<ICaller>(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
+
+        services.TryAddSingleton<ICallerSingleton>(serviceProvider
+            => (ICallerSingleton)serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.TryAddScoped<ICallerScoped>(serviceProvider
+            => (ICallerScoped)serviceProvider.GetRequiredService<ICallerFactory>().Create());
+        services.TryAddTransient<ICallerTransient>(serviceProvider
+            => (ICallerTransient)serviceProvider.GetRequiredService<ICallerFactory>().Create());
+
+        services.TryAddTransient<ICaller>(serviceProvider =>
+        {
+            var callerServiceLifetimeOptions = serviceProvider.GetService<IOptions<CallerServiceLifetimeOptions>>();
+            var lifetime = callerServiceLifetimeOptions?.Value.Lifetime ?? CallerConstant.DEFAULT_LIFETIME;
+            switch (lifetime)
+            {
+                case ServiceLifetime.Scoped:
+                    return serviceProvider.GetRequiredService<ICallerScoped>();
+                case ServiceLifetime.Transient:
+                    return serviceProvider.GetRequiredService<ICallerTransient>();
+                default:
+                    return serviceProvider.GetRequiredService<ICallerSingleton>();
+            }
+        });
         services.TryAddSingleton<ICallerExpand>(serviceProvider => (ICallerExpand)serviceProvider.GetRequiredService<ICaller>());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
