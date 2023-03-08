@@ -2,11 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
-
-using System;
-using System.Linq.Expressions;
-using static System.Collections.Specialized.BitVector32;
-
 namespace FluentValidation.Validators;
 
 public abstract class MasaAbstractValidator<T> : AbstractValidator<T>
@@ -15,10 +10,12 @@ public abstract class MasaAbstractValidator<T> : AbstractValidator<T>
     {
         return WhenNotEmpty(selector, selector, action);
     }
+
     protected virtual IConditionBuilder WhenNotEmpty<TProperty, TValidProperty>(Expression<Func<T, TProperty?>> selector, Expression<Func<T, TValidProperty?>> validSelector, Action<IRuleBuilderInitial<T, TValidProperty?>> action) where TProperty : class
     {
         return When(GetPredicate(selector), () => action.Invoke(RuleFor(validSelector)));
     }
+
     protected virtual IConditionBuilder WhenNotEmpty<TProperty>(Expression<Func<T, TProperty?>> selector, IPropertyValidator<T, TProperty?> validator) where TProperty : class
     {
         return WhenNotEmpty(selector, selector, validator);
