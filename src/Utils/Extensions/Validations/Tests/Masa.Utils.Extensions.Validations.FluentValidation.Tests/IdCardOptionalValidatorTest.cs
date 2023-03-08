@@ -38,12 +38,10 @@ public class IdCardOptionalValidatorTest : ValidatorBaseTest
         {
             case null:
             case "":
-#pragma warning disable CS8601 // 引用类型赋值可能为 null。
                 var result = validator.Validate(new RegisterUserEvent()
                 {
                     IdCard = idCard
                 });
-#pragma warning restore CS8601 // 引用类型赋值可能为 null。
                 Assert.IsTrue(result.IsValid);
                 break;
             default:
