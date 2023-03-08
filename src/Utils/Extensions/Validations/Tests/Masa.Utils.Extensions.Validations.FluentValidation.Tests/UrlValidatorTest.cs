@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
@@ -15,6 +15,8 @@ public class UrlValidatorTest : ValidatorBaseTest
     [DataRow("masastack123", false)]
     [DataRow("masa", false)]
     [DataRow("MASA", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataRow("Masa", false)]
     [DataRow("https://github.com/masastack", true)]
     [DataRow("http://github.com/masastack", true)]
@@ -34,7 +36,7 @@ public class UrlValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

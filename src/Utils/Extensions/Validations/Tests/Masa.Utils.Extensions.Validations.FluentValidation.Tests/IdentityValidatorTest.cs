@@ -26,7 +26,7 @@ public class IdentityValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class IdentityValidator : AbstractValidator<string>
+    public class IdentityValidator : MasaAbstractValidator<string>
     {
         public IdentityValidator()
         {

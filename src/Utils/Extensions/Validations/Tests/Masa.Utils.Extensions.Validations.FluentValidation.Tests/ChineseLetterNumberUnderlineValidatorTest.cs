@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
@@ -16,6 +16,8 @@ public class ChineseLetterNumberUnderlineValidatorTest : ValidatorBaseTest
     [DataRow(".", false)]
     [DataRow("123.", false)]
     [DataRow("123_", true)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
     public void TestChineseLetterNumberUnderline(string name, bool expectedResult)
     {
@@ -31,7 +33,7 @@ public class ChineseLetterNumberUnderlineValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

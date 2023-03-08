@@ -15,6 +15,8 @@ public class ChineseLetterNumberValidatorTest : ValidatorBaseTest
     [DataRow("masastack123", true)]
     [DataRow(".", false)]
     [DataRow("123.", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
     public void TestChineseLetterNumber(string name, bool expectedResult)
     {
@@ -30,7 +32,7 @@ public class ChineseLetterNumberValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

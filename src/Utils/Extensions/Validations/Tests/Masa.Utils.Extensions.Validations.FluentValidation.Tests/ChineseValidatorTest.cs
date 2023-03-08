@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
@@ -14,6 +14,8 @@ public class ChineseValidatorTest: ValidatorBaseTest
     [DataRow("123", false)]
     [DataRow("masastack123", false)]
     [DataRow("团队123", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
     public void TestChinese(string name, bool expectedResult)
     {
@@ -29,7 +31,7 @@ public class ChineseValidatorTest: ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {
