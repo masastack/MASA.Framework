@@ -67,7 +67,7 @@ public class PhoneOptionalValidatorTest : ValidatorBaseTest
         {
             //_ = WhenNotEmpty(r => r.Phone, r => r.Phone, new PhoneValidator<RegisterUserEvent>(culture));
             //_ = WhenNotEmpty(r => r.Phone, new PhoneValidator<RegisterUserEvent>(culture));
-            _ = WhenNotEmpty(r => r.Phone, rule => rule!.Phone(culture));
+            _ = WhenNotEmpty(r => r.Phone, rule => rule.Phone(culture));
         }
     }
 }

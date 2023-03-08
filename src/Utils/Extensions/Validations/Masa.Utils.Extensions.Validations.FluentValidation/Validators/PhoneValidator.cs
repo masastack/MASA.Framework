@@ -5,7 +5,7 @@
 
 namespace FluentValidation.Validators;
 
-public class PhoneValidator<T> : PropertyValidator<T, string>
+public class PhoneValidator<T> : PropertyValidator<T, string?>
 {
     private readonly string? _culture;
 

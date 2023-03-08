@@ -19,17 +19,17 @@ public abstract class MasaAbstractValidator<T> : AbstractValidator<T>
     {
         return When(GetPredicate(selector), () => action.Invoke(RuleFor(validSelector)));
     }
-    protected virtual IConditionBuilder WhenNotEmpty<TProperty>(Expression<Func<T, TProperty>> selector, IPropertyValidator<T, TProperty> validator) where TProperty : class
+    protected virtual IConditionBuilder WhenNotEmpty<TProperty>(Expression<Func<T, TProperty?>> selector, IPropertyValidator<T, TProperty?> validator) where TProperty : class
     {
         return WhenNotEmpty(selector, selector, validator);
     }
 
-    protected virtual IConditionBuilder WhenNotEmpty<TProperty, TValidProperty>(Expression<Func<T, TProperty>> selector, Expression<Func<T, TValidProperty>> validSelector, IPropertyValidator<T, TValidProperty> validator) where TProperty : class
+    protected virtual IConditionBuilder WhenNotEmpty<TProperty, TValidProperty>(Expression<Func<T, TProperty?>> selector, Expression<Func<T, TValidProperty?>> validSelector, IPropertyValidator<T, TValidProperty?> validator) where TProperty : class
     {
         return When(GetPredicate(selector), () => RuleFor(validSelector).SetValidator(validator));
     }
 
-    protected virtual Func<T, bool> GetPredicate<TProperty>(Expression<Func<T, TProperty>> selector)
+    protected virtual Func<T, bool> GetPredicate<TProperty>(Expression<Func<T, TProperty?>> selector)
     {
         var selectorFunc = selector.Compile();
         return value =>

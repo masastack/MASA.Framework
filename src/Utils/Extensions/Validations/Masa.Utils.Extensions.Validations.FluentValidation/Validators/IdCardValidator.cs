@@ -5,7 +5,7 @@
 
 namespace FluentValidation.Validators;
 
-public class IdCardValidator<T> : PropertyValidator<T, string>
+public class IdCardValidator<T> : PropertyValidator<T, string?>
 {
     public override string Name => nameof(IdCardValidator<T>);
 
@@ -13,7 +13,7 @@ public class IdCardValidator<T> : PropertyValidator<T, string>
 
     public IdCardValidator(string? culture) => _culture = culture;
 
-    public override bool IsValid(ValidationContext<T> context, string value)
+    public override bool IsValid(ValidationContext<T> context, string? value)
     {
         var provider = GetIIdCardProvider();
         if (value == null) return true;
