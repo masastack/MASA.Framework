@@ -21,7 +21,7 @@ public class NumberValidatorTest : ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestNumber(string idCard, bool expectedResult)
+    public void TestNumber(string? idCard, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

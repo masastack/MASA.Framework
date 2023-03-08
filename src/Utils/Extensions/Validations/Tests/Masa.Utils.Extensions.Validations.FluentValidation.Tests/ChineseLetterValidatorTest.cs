@@ -14,8 +14,10 @@ public class ChineseLetterValidatorTest : ValidatorBaseTest
     [DataRow("123", false)]
     [DataRow("masastack123", false)]
     [DataRow("团队123", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestChineseLetter(string name, bool expectedResult)
+    public void TestChineseLetter(string? name, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

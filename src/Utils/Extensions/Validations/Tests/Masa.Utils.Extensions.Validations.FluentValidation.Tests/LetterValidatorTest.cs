@@ -17,7 +17,7 @@ public class LetterValidatorTest : ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestLetterNumber(string name, bool expectedResult)
+    public void TestLetterNumber(string? name, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

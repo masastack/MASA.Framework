@@ -13,7 +13,7 @@ public class PortValidatorTest: ValidatorBaseTest
     [DataRow("65535", true)]
     [DataRow("65536", false)]
     [DataTestMethod]
-    public void TestPhone(string port, bool expectedResult)
+    public void TestPhone(string? port, bool expectedResult)
     {
         var validator = new RegisterPortEventValidator();
         var result = validator.Validate(new RegisterPortEvent()

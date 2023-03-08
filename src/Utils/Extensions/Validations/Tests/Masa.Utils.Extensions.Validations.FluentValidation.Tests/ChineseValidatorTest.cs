@@ -17,7 +17,7 @@ public class ChineseValidatorTest: ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestChinese(string name, bool expectedResult)
+    public void TestChinese(string? name, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

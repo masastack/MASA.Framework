@@ -14,7 +14,7 @@ public class EmailValidatorTest : ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestEmail(string email, bool expectedResult)
+    public void TestEmail(string? email, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

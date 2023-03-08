@@ -9,6 +9,8 @@ public class RegisterUserEvent
 {
     public string? Name { get; set; }
 
+    public string? Identity { get; set; }
+
     public string? IdCard { get; set; }
 
     public string? Phone { get; set; }

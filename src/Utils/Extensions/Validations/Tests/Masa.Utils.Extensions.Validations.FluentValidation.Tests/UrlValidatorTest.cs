@@ -22,7 +22,7 @@ public class UrlValidatorTest : ValidatorBaseTest
     [DataRow("http://github.com/masastack", true)]
     [DataRow("github.com", false)]
     [DataTestMethod]
-    public void TestLowerLetter(string url, bool expectedResult)
+    public void TestLowerLetter(string? url, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

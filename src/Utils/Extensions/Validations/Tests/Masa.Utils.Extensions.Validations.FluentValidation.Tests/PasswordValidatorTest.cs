@@ -18,7 +18,7 @@ public class PasswordValidatorTest : ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestPassword(string pwd, bool expectedResult)
+    public void TestPassword(string? pwd, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()

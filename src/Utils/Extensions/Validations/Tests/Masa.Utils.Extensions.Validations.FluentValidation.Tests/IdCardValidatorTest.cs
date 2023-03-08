@@ -13,7 +13,7 @@ public class IdCardValidatorTest : ValidatorBaseTest
     [DataRow(null, true)]
     [DataRow("", false)]
     [DataTestMethod]
-    public void TestIdCard(string idCard, bool expectedResult)
+    public void TestIdCard(string? idCard, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator("zh-CN");
         var result = validator.Validate(new RegisterUserEvent()
@@ -30,7 +30,7 @@ public class IdCardValidatorTest : ValidatorBaseTest
     [DataRow("110101192803011819")]
     [DataRow("")]
     [TestMethod]
-    public void TestIdCardByUs(string idCard)
+    public void TestIdCardByUs(string? idCard)
     {
         var validator = new RegisterUserEventValidator("en-US");
         Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()

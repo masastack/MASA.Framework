@@ -19,7 +19,7 @@ public class PhoneOptionalValidatorTest : ValidatorBaseTest
     [DataRow("8613677777777", "en-US", false)]
     [DataRow("+11021021521", "en-US", false)]
     [DataTestMethod]
-    public void TestPhone(string phone, string? culture, bool expectedResult)
+    public void TestPhone(string? phone, string? culture, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator(culture);
         var result = validator.Validate(new RegisterUserEvent()
@@ -37,7 +37,7 @@ public class PhoneOptionalValidatorTest : ValidatorBaseTest
     [DataRow("133333")]
     [DataRow("")]
     [TestMethod]
-    public void TestPhoneByJapan(string phone)
+    public void TestPhoneByJapan(string? phone)
     {
         string culture = "ja-jp";
         var validator = new RegisterUserEventValidator(culture);

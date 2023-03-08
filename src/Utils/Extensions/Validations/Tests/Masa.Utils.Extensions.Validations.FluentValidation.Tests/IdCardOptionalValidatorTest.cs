@@ -13,7 +13,7 @@ public class IdCardOptionalValidatorTest : ValidatorBaseTest
     [DataRow("", true)]
     [DataRow(null, true)]
     [DataTestMethod]
-    public void TestIdCard(string idCard, bool expectedResult)
+    public void TestIdCard(string? idCard, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator("zh-CN");
         var result = validator.Validate(new RegisterUserEvent()
@@ -31,7 +31,7 @@ public class IdCardOptionalValidatorTest : ValidatorBaseTest
     [DataRow("110101192803011819")]
     [DataRow("")]
     [TestMethod]
-    public void TestIdCardByUs(string idCard)
+    public void TestIdCardByUs(string? idCard)
     {
         var validator = new RegisterUserEventValidator("en-US");
         switch (idCard)
