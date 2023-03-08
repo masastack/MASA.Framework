@@ -5,7 +5,7 @@
 
 namespace FluentValidation.Validators;
 
-public class PhoneValidator<T> : PropertyValidator<T, string>
+public class PhoneValidator<T> : PropertyValidator<T, string?>
 {
     private readonly string? _culture;
 
@@ -17,14 +17,15 @@ public class PhoneValidator<T> : PropertyValidator<T, string>
     {
         var regex = CreateRegex(GetExpression(_culture));
 
-        if (value != null && !regex.IsMatch(value))
+        if (value == null)
+        {
+            return true;
+        }
+        if (!regex.IsMatch(value))
         {
             context.MessageFormatter.AppendArgument("RegularExpression", regex.ToString());
             return false;
         }
-
-        if (value == null) return false;
-
         var result = regex.Match(value);
         return result.Value == value;
     }

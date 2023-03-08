@@ -1,11 +1,11 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
 
 namespace FluentValidation.Validators;
 
-public class IdCardValidator<T> : PropertyValidator<T, string>
+public class IdCardValidator<T> : PropertyValidator<T, string?>
 {
     public override string Name => nameof(IdCardValidator<T>);
 
@@ -13,8 +13,12 @@ public class IdCardValidator<T> : PropertyValidator<T, string>
 
     public IdCardValidator(string? culture) => _culture = culture;
 
-    public override bool IsValid(ValidationContext<T> context, string value)
-        => GetIIdCardProvider().IsValid(value);
+    public override bool IsValid(ValidationContext<T> context, string? value)
+    {
+        var provider = GetIIdCardProvider();
+        if (value == null) return true;
+        return provider.IsValid(value);
+    }
 
     private IIdCardProvider GetIIdCardProvider()
     {

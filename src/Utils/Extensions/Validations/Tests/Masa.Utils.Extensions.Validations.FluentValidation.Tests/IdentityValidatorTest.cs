@@ -1,12 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Xml.Linq;
+
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
 public class IdentityValidatorTest : ValidatorBaseTest
 {
-    public override string Message => "'' must be numbers, letters or . and - .";
+    public override string Message => "'Identity' must be numbers, letters or . and - .";
 
     [DataRow("Masa团队", false)]
     [DataRow("masastack", true)]
@@ -14,11 +16,16 @@ public class IdentityValidatorTest : ValidatorBaseTest
     [DataRow("Masa", true)]
     [DataRow("123#", false)]
     [DataRow("123.", true)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestIdentity(string identity, bool expectedResult)
+    public void TestIdentity(string? identity, bool expectedResult)
     {
         var validator = new IdentityValidator();
-        var result = validator.Validate(identity);
+        var result = validator.Validate(new RegisterUserEvent()
+        {
+            Identity = identity,
+        });
         Assert.AreEqual(expectedResult, result.IsValid);
         if (!expectedResult)
         {
@@ -26,11 +33,11 @@ public class IdentityValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class IdentityValidator : AbstractValidator<string>
+    public class IdentityValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public IdentityValidator()
         {
-            RuleFor(r => r).Identity();
+            RuleFor(r => r.Identity).Identity();
         }
     }
 }
