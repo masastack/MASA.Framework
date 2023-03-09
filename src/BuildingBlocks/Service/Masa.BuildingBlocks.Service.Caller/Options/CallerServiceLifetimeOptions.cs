@@ -5,7 +5,6 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public class CallerServiceLifetimeOptions
+public class CallerServiceLifetimeOptions : GlobalClientLifetimeOptions
 {
-    public ServiceLifetime? Lifetime { get; set; }
 }

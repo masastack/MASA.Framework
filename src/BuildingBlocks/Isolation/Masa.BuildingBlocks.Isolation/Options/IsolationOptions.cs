@@ -9,9 +9,15 @@ public class IsolationOptions
 
     public string Environment { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    // #region 数据库链接字符串相关信息
+    //
+    // public string Name { get; set; } = string.Empty;
+    //
+    // public string ConnectionString { get; set; }
+    //
+    // #endregion
 
-    public string ConnectionString { get; set; }
+    public object Module { get; set; }
 
     /// <summary>
     /// Used to control the configuration with the highest score when multiple configurations are satisfied. The default score is 100

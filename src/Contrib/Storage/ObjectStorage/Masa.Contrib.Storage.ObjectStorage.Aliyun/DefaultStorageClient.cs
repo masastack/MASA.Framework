@@ -3,7 +3,9 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClient
+public class DefaultStorageClient :
+    ObjectStorageClientBase,
+    IObjectStorageClient
 {
     private readonly ILogger<DefaultStorageClient>? _logger;
 
@@ -16,7 +18,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
     /// Obtain temporary authorization credentials through STS service
     /// </summary>
     /// <returns></returns>
-    public TemporaryCredentialsResponse GetSecurityToken()
+    public override TemporaryCredentialsResponse GetSecurityToken()
     {
         if (OptionProvider.IncompleteStsOptions)
             throw new ArgumentException(
@@ -30,9 +32,9 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
     /// Alibaba Cloud Oss does not support obtaining a temporary authorization token
     /// </summary>
     /// <returns></returns>
-    public string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
+    public override string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
 
-    public Task GetObjectAsync(
+    public override Task GetObjectAsync(
         string bucketName,
         string objectName,
         Action<Stream> callback,
@@ -44,7 +46,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.CompletedTask;
     }
 
-    public Task GetObjectAsync(
+    public override Task GetObjectAsync(
         string bucketName,
         string objectName,
         long offset,
@@ -63,7 +65,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.CompletedTask;
     }
 
-    public Task PutObjectAsync(
+    public override Task PutObjectAsync(
         string bucketName,
         string objectName,
         Stream data,
@@ -93,7 +95,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return metadata;
     }
 
-    public Task<bool> ObjectExistsAsync(
+    public override Task<bool> ObjectExistsAsync(
         string bucketName,
         string objectName,
         CancellationToken cancellationToken = default)
@@ -103,7 +105,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.FromResult(exist);
     }
 
-    public async Task DeleteObjectAsync(
+    public override async Task DeleteObjectAsync(
         string bucketName,
         string objectName,
         CancellationToken cancellationToken = default)
@@ -119,7 +121,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
             result);
     }
 
-    public Task DeleteObjectAsync(
+    public override Task DeleteObjectAsync(
         string bucketName,
         IEnumerable<string> objectNames,
         CancellationToken cancellationToken = default)

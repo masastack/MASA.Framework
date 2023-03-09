@@ -11,31 +11,37 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
 
     public bool IncompleteStsOptions { get; private set; }
 
-    private DefaultAliyunStorageOptionProvider(AliyunStorageOptions aliyunStorageOptions)
+    internal DefaultAliyunStorageOptionProvider(AliyunStorageOptions aliyunStorageOptions)
     {
         _aliyunStorageOptions = aliyunStorageOptions;
         Refresh();
     }
 
-    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageOptions> options)
-        : this(options.CurrentValue)
+    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options, string name)
+        : this(options.Get(name))
     {
         options.OnChange(aliyunStorageOptions =>
         {
-            _aliyunStorageOptions = aliyunStorageOptions;
+            _aliyunStorageOptions = GetAliyunStorageOptions(aliyunStorageOptions);
             Refresh();
         });
     }
 
-    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options)
-        : this(GetAliyunStorageOptions(options.CurrentValue))
+    public DefaultAliyunStorageOptionProvider(AliyunStorageConfigureOptions options)
+        : this(GetAliyunStorageOptions(options))
     {
-        options.OnChange(aliyunStorageConfigureOptions =>
-        {
-            _aliyunStorageOptions = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
-            Refresh();
-        });
+        Refresh();
     }
+
+    // public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options)
+    //     : this(GetAliyunStorageOptions(options.CurrentValue))
+    // {
+    //     options.OnChange(aliyunStorageConfigureOptions =>
+    //     {
+    //         _aliyunStorageOptions = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
+    //         Refresh();
+    //     });
+    // }
 
     public AliyunStorageOptions GetOptions() => _aliyunStorageOptions;
 

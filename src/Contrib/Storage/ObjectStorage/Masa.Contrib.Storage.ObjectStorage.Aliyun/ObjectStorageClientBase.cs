@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public abstract class ObjectStorageClientBase
+public abstract class ObjectStorageClientBase : AbstractStorageClient
 {
     protected readonly ICredentialProvider CredentialProvider;
     protected IAliyunStorageOptionProvider OptionProvider { get; }

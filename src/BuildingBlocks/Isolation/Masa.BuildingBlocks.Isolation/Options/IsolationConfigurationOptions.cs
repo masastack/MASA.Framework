@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
+namespace Masa.BuildingBlocks.Isolation;
 
-public class AutoCompleteFactoryOptions : MasaFactoryOptions<AutoCompleteRelationsOptions>
+public class IsolationConfigurationOptions
 {
-
+    public List<IsolationOptions> Isolation { get; set; } = new();
 }

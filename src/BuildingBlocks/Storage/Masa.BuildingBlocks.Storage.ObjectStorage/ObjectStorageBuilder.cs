@@ -5,12 +5,15 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class ObjectStorageOptions
+public class ObjectStorageBuilder
 {
+    public string Name { get; }
+
     public IServiceCollection Services { get; }
 
-    public ObjectStorageOptions(IServiceCollection services)
+    public ObjectStorageBuilder(IServiceCollection services, string name)
     {
         Services = services;
+        Name = name;
     }
 }

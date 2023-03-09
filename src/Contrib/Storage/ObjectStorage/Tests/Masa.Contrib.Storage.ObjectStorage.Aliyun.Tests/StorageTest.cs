@@ -21,13 +21,6 @@ public class StorageTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddAliyunStorageByEmptySectionReturnThrowArgumentException()
-    {
-        var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddObjectStorage(options => options.UseAliyunStorage(string.Empty)));
-    }
-
-    [TestMethod]
     public void TestAddAliyunStorageReturnClientIsNotNull()
     {
         var services = new ServiceCollection();
@@ -302,13 +295,13 @@ public class StorageTest : TestBase
         services.AddObjectStorage(options => options.UseAliyunStorage(_aLiYunStorageOptions));
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IObjectStorageClientFactory>();
-        Assert.IsNotNull(clientFactory);
+        var clientContainerFactory = serviceProvider.GetService<IObjectStorageClientContainerFactory>();
+        Assert.IsNotNull(clientContainerFactory);
 
-        var clientContainer = clientFactory.Create("test-bucket2");
+        var clientContainer = clientContainerFactory.Create();
         var bucketName = GetBucketName(clientContainer);
         Assert.IsNotNull(bucketName);
-        Assert.IsTrue(bucketName == "test-bucket2");
+        Assert.AreEqual(BucketNames.DEFAULT_BUCKET_NAME, bucketName);
     }
 
     private static string? GetBucketName(IObjectStorageClientContainer objectStorageClientContainer)

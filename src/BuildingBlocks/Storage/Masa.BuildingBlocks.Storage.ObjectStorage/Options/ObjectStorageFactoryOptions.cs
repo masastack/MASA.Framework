@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
+namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class AutoCompleteFactoryOptions : MasaFactoryOptions<AutoCompleteRelationsOptions>
+public class ObjectStorageFactoryOptions : MasaFactoryOptions<ObjectStorageRelationOptions>
 {
 
 }

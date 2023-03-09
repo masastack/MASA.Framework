@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCaller(this IServiceCollection services, string name, Action<CallerOptionsBuilder> configure)
     {
         MasaArgumentException.ThrowIfNull(services);
+        MasaArgumentException.ThrowIfNull(name);
 
         services.AddCallerCore();
 
@@ -80,8 +81,8 @@ public static class ServiceCollectionExtensions
 
         services.TryAddTransient<ICaller>(serviceProvider =>
         {
-            var callerServiceLifetimeOptions = serviceProvider.GetService<IOptions<CallerServiceLifetimeOptions>>();
-            var lifetime = callerServiceLifetimeOptions?.Value.Lifetime ?? CallerConstant.DEFAULT_LIFETIME;
+            var lifetime = serviceProvider.GetService<IOptions<CallerServiceLifetimeOptions>>()?.Value.Lifetime ??
+                serviceProvider.GetService<IOptions<GlobalClientLifetimeOptions>>()?.Value.Lifetime;
             switch (lifetime)
             {
                 case ServiceLifetime.Scoped:

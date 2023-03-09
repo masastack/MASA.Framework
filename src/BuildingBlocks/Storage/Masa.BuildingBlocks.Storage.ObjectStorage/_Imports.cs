@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Storage.ObjectStorage;
+global using Masa.BuildingBlocks.Storage.ObjectStorage.Internal;
 global using Masa.BuildingBlocks.Storage.ObjectStorage.Response;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

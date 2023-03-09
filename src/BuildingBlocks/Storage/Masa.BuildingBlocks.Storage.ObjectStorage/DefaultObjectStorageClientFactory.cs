@@ -3,29 +3,41 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class DefaultObjectStorageClientFactory : IObjectStorageClientFactory
+public class DefaultObjectStorageClientFactory : MasaFactoryBase<IObjectStorageClient, ObjectStorageRelationOptions>, IObjectStorageClientFactory
 {
-    private readonly IObjectStorageClient _objectStorageClient;
-    private readonly IBucketNameProvider _bucketNameProvider;
-    private readonly IOptionsMonitor<StorageOptions> _storageOptions;
+    // private readonly IObjectStorageClient _objectStorageClient;
+    // private readonly IBucketNameProvider _bucketNameProvider;
+    // private readonly IOptionsMonitor<StorageOptions> _storageOptions;
+    //
+    // public DefaultObjectStorageClientFactory(
+    //     IObjectStorageClient objectStorageClient,
+    //     IBucketNameProvider bucketNameProvider,
+    //     IOptionsMonitor<StorageOptions> storageOptions)
+    // {
+    //     _objectStorageClient = objectStorageClient;
+    //     _bucketNameProvider = bucketNameProvider;
+    //     _storageOptions = storageOptions;
+    // }
 
-    public DefaultObjectStorageClientFactory(
-        IObjectStorageClient objectStorageClient,
-        IBucketNameProvider bucketNameProvider,
-        IOptionsMonitor<StorageOptions> storageOptions)
+    protected override string DefaultServiceNotFoundMessage => "No default ObjectStorage found";
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] ObjectStorage, it was not found";
+
+    protected override MasaFactoryOptions<ObjectStorageRelationOptions> FactoryOptions => _options.CurrentValue;
+
+    private readonly IOptionsMonitor<ObjectStorageFactoryOptions> _options;
+
+    public DefaultObjectStorageClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _objectStorageClient = objectStorageClient;
-        _bucketNameProvider = bucketNameProvider;
-        _storageOptions = storageOptions;
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<ObjectStorageFactoryOptions>>();
     }
 
-    public IObjectStorageClientContainer Create()
-        => new DefaultObjectStorageClientContainer(
-            _objectStorageClient,
-            _bucketNameProvider.GetBucketName());
-
-    public IObjectStorageClientContainer Create(string name)
-        => new DefaultObjectStorageClientContainer(
-            _objectStorageClient,
-            _storageOptions.CurrentValue.BucketNames.GetBucketName(name));
+    // public IObjectStorageClientContainer Create()
+    //     => new DefaultObjectStorageClientContainer(
+    //         _objectStorageClient,
+    //         _bucketNameProvider.GetBucketName());
+    //
+    // public IObjectStorageClientContainer Create(string name)
+    //     => new DefaultObjectStorageClientContainer(
+    //         _objectStorageClient,
+    //         _storageOptions.CurrentValue.BucketNames.GetBucketName(name));
 }

@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
+namespace Masa.BuildingBlocks.Data;
 
-public class AutoCompleteFactoryOptions : MasaFactoryOptions<AutoCompleteRelationsOptions>
+public class GlobalClientLifetimeOptions
 {
-
+    public ServiceLifetime? Lifetime { get; set; }
 }
