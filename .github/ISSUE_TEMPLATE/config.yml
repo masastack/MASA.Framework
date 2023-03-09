@@ -2,4 +2,7 @@ blank_issues_enabled: true
 contact_links:
   - name: Issue with MASA Stack Documentation
     url:  https://github.com/masastack/MASA.Docs/issues/new/choose
-    about: Please open issues relating to MASA Stack in masastack/MASA.Docs.
+    about: Please open related issues in masastack/MASA.Docs.
+  - name: Issue with MASA Template Documentation
+    url:  https://github.com/masastack/MASA.Templates/issues/new/choose
+    about: Please file related issues in masastack/MASA.Templates.
