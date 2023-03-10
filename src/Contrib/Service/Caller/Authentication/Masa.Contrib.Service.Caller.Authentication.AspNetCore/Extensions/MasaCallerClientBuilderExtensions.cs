@@ -18,7 +18,7 @@ public static class MasaCallerClientBuilderExtensions
         string defaultScheme = AuthenticationConstant.DEFAULT_SCHEME)
     {
         masaCallerClientBuilder.Services.AddHttpContextAccessor();
-        masaCallerClientBuilder.AddAuthentication(serviceProvider =>
+        masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<IHttpContextAccessor>(),
                 defaultScheme

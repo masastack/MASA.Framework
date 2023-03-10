@@ -18,7 +18,7 @@ public static class MasaCallerClientBuilderExtensions
         string defaultScheme = AuthenticationConstant.DEFAULT_SCHEME)
     {
         masaCallerClientBuilder.Services.TryAddScoped<TokenProvider>();
-        masaCallerClientBuilder.AddAuthentication(serviceProvider =>
+        masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),
                 defaultScheme

@@ -7,8 +7,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCaller(this IServiceCollection services, Action<CallerOptionsBuilder> configure)
-        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure);
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(ServiceLifetime.Singleton, configure);
+
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        ServiceLifetime factoryLifetime,
+        Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, factoryLifetime, configure);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,

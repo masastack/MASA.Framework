@@ -30,7 +30,7 @@ public static class MasaCallerClientBuilderExtensions
         return masaCallerClientBuilder;
     }
 
-    public static void AddAuthentication(
+    public static void UseAuthentication(
         this IMasaCallerClientBuilder masaCallerClientBuilder,
         Func<IServiceProvider, IAuthenticationService> implementationFactory)
     {

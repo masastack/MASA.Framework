@@ -44,13 +44,13 @@ public abstract class AbstractCaller : ICaller
             bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
 
             _logger?.LogDebug(
-                "----- The current Caller support authentication, caller Name: {Name}, enable Authentication: {EnableAuthentication}",
+                "----- The current Caller support authentication, caller Name: [{Name}], enable Authentication: [{EnableAuthentication}]",
                 name,
                 enableAuthentication);
         }
         else
         {
-            _logger?.LogDebug("----- The current Caller does not support authentication, caller Name: {Name}", name);
+            _logger?.LogDebug("----- The current Caller does not support authentication, caller Name: [{Name}]", name);
         }
 
         _requestMessageFactory = currentRequestMessageFactory;
