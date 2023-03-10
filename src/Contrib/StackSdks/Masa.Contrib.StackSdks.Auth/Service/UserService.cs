@@ -209,14 +209,14 @@ public class UserService : IUserService
         var userId = _userContext.GetUserId<Guid>();
         var requestUri = $"api/user/systemData";
         var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
-        return data is null ? default : JsonSerializer.Deserialize<T>(data);
+        return string.IsNullOrEmpty(data) ? default : JsonSerializer.Deserialize<T>(data);
     }
 
     public async Task<T?> GetSystemDataAsync<T>(Guid userId, string systemId)
     {
         var requestUri = $"api/user/systemData";
         var data = await _caller.GetAsync<object, string>(requestUri, new { userId, systemId });
-        return data is null ? default : JsonSerializer.Deserialize<T>(data);
+        return string.IsNullOrEmpty(data) ? default : JsonSerializer.Deserialize<T>(data);
     }
 
     public async Task<List<T>> GetSystemListDataAsync<T>(IEnumerable<Guid> userIds, string systemId)
