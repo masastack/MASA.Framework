@@ -29,4 +29,30 @@ public static class MasaCallerClientBuilderExtensions
         });
         return masaCallerClientBuilder;
     }
+
+    public static void AddAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        Func<IServiceProvider, IAuthenticationService> implementationFactory)
+    {
+        MasaArgumentException.ThrowIfNull(masaCallerClientBuilder);
+
+        AddAuthenticationCore(masaCallerClientBuilder.Services);
+
+        masaCallerClientBuilder.Services.Configure<AuthenticationServiceFactoryOptions>(callerOptions =>
+        {
+            if (callerOptions.Options.Any(relation => relation.Name.Equals(masaCallerClientBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException(
+                    $"The caller name already exists, please change the name, the repeat name is [{masaCallerClientBuilder.Name}]");
+
+            callerOptions.Lifetime = ServiceLifetime.Transient;
+            callerOptions.Options.Add(new AuthenticationServiceRelationOptions(masaCallerClientBuilder.Name, implementationFactory));
+        });
+    }
+
+    private static void AddAuthenticationCore(IServiceCollection services)
+    {
+        services.TryAddTransient<IAuthenticationService>(serviceProvider
+            => serviceProvider.GetRequiredService<IAuthenticationServiceFactory>().Create());
+        services.TryAddTransient<IAuthenticationServiceFactory, DefaultAuthenticationServiceFactory>();
+    }
 }

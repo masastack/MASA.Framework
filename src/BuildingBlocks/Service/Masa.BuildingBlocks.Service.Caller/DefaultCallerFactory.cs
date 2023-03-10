@@ -9,12 +9,12 @@ internal class DefaultCallerFactory : MasaFactoryBase<ICaller, CallerRelationOpt
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] Caller, it was not found";
 
-    protected override MasaFactoryOptions<CallerRelationOptions> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<CallerRelationOptions> FactoryOptions => _options.Value;
 
-    private readonly IOptionsMonitor<CallerFactoryOptions> _options;
+    private readonly IOptions<CallerFactoryOptions> _options;
 
     public DefaultCallerFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsMonitor<CallerFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>();
     }
 }

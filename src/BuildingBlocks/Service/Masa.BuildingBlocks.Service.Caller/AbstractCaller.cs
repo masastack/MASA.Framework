@@ -22,13 +22,37 @@ public abstract class AbstractCaller : ICaller
 
     protected readonly List<Func<IServiceProvider, ICallerMiddleware>> Middlewares;
 
-    protected AbstractCaller(IServiceProvider serviceProvider) => ServiceProvider = serviceProvider;
+    private readonly IAuthenticationService? _authenticationService;
+
+    private readonly ILogger<AbstractCaller>? _logger;
+
+    protected AbstractCaller(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+        _logger = serviceProvider.GetService<ILogger<AbstractCaller>>();
+    }
 
     protected AbstractCaller(IServiceProvider serviceProvider,
         string name,
+        bool supportAuthentication,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory) : this(serviceProvider)
     {
+        if (supportAuthentication)
+        {
+            var authenticationServiceFactory = serviceProvider.GetService<IAuthenticationServiceFactory>();
+            bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
+
+            _logger?.LogDebug(
+                "----- The current Caller support authentication, caller Name: {Name}, enable Authentication: {EnableAuthentication}",
+                name,
+                enableAuthentication);
+        }
+        else
+        {
+            _logger?.LogDebug("----- The current Caller does not support authentication, caller Name: {Name}", name);
+        }
+
         _requestMessageFactory = currentRequestMessageFactory;
         _responseMessageFactory = currentResponseMessageFactory;
 
@@ -89,6 +113,8 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
     {
         var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
+        await ExecuteAuthenticationAsync(masaHttpContext);
+
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -107,6 +133,8 @@ public abstract class AbstractCaller : ICaller
     {
         TResponse? response = default;
         var masaHttpContext = new MasaHttpContext(ResponseMessage, requestMessageFunc);
+        await ExecuteAuthenticationAsync(masaHttpContext);
+
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -155,6 +183,8 @@ public abstract class AbstractCaller : ICaller
     {
         string content = default!;
         var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        await ExecuteAuthenticationAsync(masaHttpContext);
+
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -193,6 +223,8 @@ public abstract class AbstractCaller : ICaller
     {
         byte[] content = default!;
         var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        await ExecuteAuthenticationAsync(masaHttpContext);
+
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -230,6 +262,8 @@ public abstract class AbstractCaller : ICaller
     {
         Stream content = default!;
         var masaHttpContext = new MasaHttpContext(ResponseMessage, () => CreateRequest(HttpMethod.Get, methodName));
+        await ExecuteAuthenticationAsync(masaHttpContext);
+
         CallerHandlerDelegate callerHandlerDelegate = async () =>
         {
             masaHttpContext.ResponseMessage = await SendAsync(masaHttpContext.RequestMessage, cancellationToken);
@@ -419,4 +453,12 @@ public abstract class AbstractCaller : ICaller
         CancellationToken cancellationToken = default)
         => DeleteAsync<object, TResponse>(methodName, data, cancellationToken);
 
+    private Task ExecuteAuthenticationAsync(MasaHttpContext masaHttpContext)
+    {
+        if (_authenticationService != null)
+        {
+            return _authenticationService.ExecuteAsync(masaHttpContext.RequestMessage);
+        }
+        return Task.CompletedTask;
+    }
 }

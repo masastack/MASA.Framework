@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public interface ICallerExpand : ICaller
+public interface IAuthenticationServiceFactory : IMasaFactory<IAuthenticationService>
 {
-    void ConfigRequestMessage(Func<HttpRequestMessage, Task> func);
+
 }

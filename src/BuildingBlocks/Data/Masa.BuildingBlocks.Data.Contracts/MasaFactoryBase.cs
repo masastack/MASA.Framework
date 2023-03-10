@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Data;
 
 public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory<TService>
@@ -11,11 +13,26 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
     protected abstract string SpecifyServiceNotFoundMessage { get; }
     protected abstract MasaFactoryOptions<TRelationOptions> FactoryOptions { get; }
 
-    protected readonly IServiceProvider ServiceProvider;
+    private readonly IServiceProvider _transientServiceProvider;
 
-    protected MasaFactoryBase(IServiceProvider serviceProvider)
+    private IServiceProvider? _currentServiceProvider;
+
+    protected IServiceProvider ServiceProvider => _currentServiceProvider ??= GetServiceProvider();
+
+    protected MasaFactoryBase(IServiceProvider serviceProvider) => _transientServiceProvider = serviceProvider;
+
+    protected virtual IServiceProvider GetServiceProvider()
     {
-        ServiceProvider = serviceProvider;
+        switch (FactoryOptions.Lifetime)
+        {
+            case ServiceLifetime.Singleton:
+            default:
+                return _transientServiceProvider.GetRequiredService<ServiceSingleton>().ServiceProvider;
+            case ServiceLifetime.Scoped:
+                return _transientServiceProvider.GetRequiredService<ServiceScoped>().ServiceProvider;
+            case ServiceLifetime.Transient:
+                return _transientServiceProvider;
+        }
     }
 
     private static MasaRelationOptions<TService>? GetDefaultOptions(List<TRelationOptions> optionsList)
@@ -35,10 +52,22 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
 
     public virtual TService Create(string name)
     {
-        var options = FactoryOptions.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-        if (options == null)
-            throw new NotSupportedException(string.Format(SpecifyServiceNotFoundMessage, name));
+        if (TryCreate(name, out TService? services))
+            return services;
 
-        return options.Func.Invoke(ServiceProvider);
+        throw new NotSupportedException(string.Format(SpecifyServiceNotFoundMessage, name));
+    }
+
+    public bool TryCreate(string name, [NotNullWhen(true)] out TService? service)
+    {
+        var options = FactoryOptions.Options.SingleOrDefault(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+        if (options != null)
+        {
+            service = options.Func.Invoke(ServiceProvider);
+            return true;
+        }
+        service = null;
+        return false;
     }
 }

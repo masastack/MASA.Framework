@@ -1,28 +1,26 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.Tests;
+namespace Masa.Contrib.Service.Caller.Authentication.BlazorServer.Tests;
 
 [TestClass]
 public class AuthenticationServiceTest
 {
-    private const string DEFAULT_SCHEME = "Bearer";
-
     [TestMethod]
     public async Task TestExecuteAsync()
     {
         var tokenProvider = new TokenProvider()
         {
-            AccessToken = "accessToken"
+            Authorization = "accessToken"
         };
-        var authenticationService = new AuthenticationService(tokenProvider, null, DEFAULT_SCHEME);
+        var authenticationService = new AuthenticationService(tokenProvider, AuthenticationConstant.DEFAULT_SCHEME);
         var httpRequestMessage = new HttpRequestMessage()
         {
             Headers = { }
         };
         await authenticationService.ExecuteAsync(httpRequestMessage);
         Assert.IsNotNull(httpRequestMessage.Headers.Authorization);
-        Assert.AreEqual(httpRequestMessage.Headers.Authorization.ToString(), $"{DEFAULT_SCHEME} {tokenProvider.AccessToken}");
+        Assert.AreEqual($"{AuthenticationConstant.DEFAULT_SCHEME} {tokenProvider.Authorization}",httpRequestMessage.Headers.Authorization.ToString());
     }
 
     [TestMethod]
@@ -30,9 +28,9 @@ public class AuthenticationServiceTest
     {
         var tokenProvider = new TokenProvider()
         {
-            AccessToken = ""
+            Authorization = ""
         };
-        var authenticationService = new AuthenticationService(tokenProvider, null, DEFAULT_SCHEME);
+        var authenticationService = new AuthenticationService(tokenProvider, AuthenticationConstant.DEFAULT_SCHEME);
         var httpRequestMessage = new HttpRequestMessage()
         {
             Headers = { }

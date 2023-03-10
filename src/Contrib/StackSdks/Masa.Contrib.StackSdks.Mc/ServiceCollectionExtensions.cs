@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            });
+            });//Need to use the AuthenticationService provided by MasaStack
         });
     }
 
@@ -24,40 +24,29 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(mcServiceBaseAddressFunc);
 
-        return services.AddMcClient(callerOptions =>
+        return services.AddMcClient(callerOptionsBuilder =>
         {
-            callerOptions.UseHttpClient(builder =>
-            {
-                builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
-            });
+            callerOptionsBuilder
+                .UseHttpClient(builder =>
+                {
+                    builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
+                });//Need to use the AuthenticationService provided by MasaStack
         });
     }
 
-    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
     {
-        MasaArgumentException.ThrowIfNull(callerOptions);
+        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
 
         if (services.Any(service => service.ServiceType == typeof(IMcClient)))
             return services;
 
         services.AddHttpContextAccessor();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, ServiceLifetime.Scoped, callerOptionsBuilder);
 
         services.AddScoped<IMcClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            if (caller is ICallerExpand callerExpand)
-            {
-                callerExpand.ConfigRequestMessage(httpRequestMessage =>
-                {
-                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
-                    if (tokenProvider != null)
-                    {
-                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-                    }
-                    return Task.CompletedTask;
-                });
-            }
             var mcCaching = new McClient(caller);
             return mcCaching;
         });

@@ -11,9 +11,12 @@ public class CallerOptionsBuilder
 
     public string Name { get; }
 
-    public CallerOptionsBuilder(IServiceCollection services, string name)
+    public ServiceLifetime Lifetime { get; set; }
+
+    public CallerOptionsBuilder(IServiceCollection services, string name, ServiceLifetime factoryLifetime = ServiceLifetime.Singleton)
     {
         Services = services;
         Name = name;
+        Lifetime = factoryLifetime;
     }
 }

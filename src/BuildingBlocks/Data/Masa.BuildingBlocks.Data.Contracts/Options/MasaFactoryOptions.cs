@@ -7,5 +7,7 @@ namespace Masa.BuildingBlocks.Data;
 
 public class MasaFactoryOptions<TRelationOptions> where TRelationOptions : MasaRelationOptions
 {
+    public ServiceLifetime Lifetime { get; set; } = ServiceLifetime.Singleton;
+
     public List<TRelationOptions> Options { get; set; } = new();
 }

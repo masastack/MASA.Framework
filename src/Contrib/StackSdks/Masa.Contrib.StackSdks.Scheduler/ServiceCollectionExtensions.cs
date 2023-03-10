@@ -16,39 +16,28 @@ public static class ServiceCollectionExtensions
 
         return services.AddSchedulerClient(callerOptions =>
         {
-            callerOptions.UseHttpClient(builder =>
-            {
-                builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
-            });
+            callerOptions
+                .UseHttpClient(builder =>
+                {
+                    builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
+                }); //Need to use the AuthenticationService provided by MasaStack
         });
     }
 
-    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
+    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
     {
-        ArgumentNullException.ThrowIfNull(callerOptions, nameof(callerOptions));
+        ArgumentNullException.ThrowIfNull(callerOptionsBuilder, nameof(callerOptionsBuilder));
 
         if (services.Any(service => service.ImplementationType == typeof(SchedulerProvider)))
             return services;
 
         services.AddSingleton<SchedulerProvider>();
         services.AddHttpContextAccessor();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, ServiceLifetime.Scoped, callerOptionsBuilder);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-            if (caller is ICallerExpand callerExpand)
-            {
-                callerExpand.ConfigRequestMessage(httpRequestMessage =>
-                {
-                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
-                    if (tokenProvider != null)
-                    {
-                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-                    }
-                    return Task.CompletedTask;
-                });
-            }
             var schedulerClient = new SchedulerClient(caller);
             return schedulerClient;
         });

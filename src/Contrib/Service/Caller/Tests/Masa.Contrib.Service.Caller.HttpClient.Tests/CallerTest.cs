@@ -74,7 +74,6 @@ public class CallerTest
         Assert.IsNotNull(callerFactory);
         var caller = callerFactory.Create();
         Assert.IsNotNull(caller);
-        Assert.IsTrue(caller is ICallerExpand);
 
         var httpClient = GetHttpClient(caller);
         Assert.AreEqual(new Uri(FRAMEWORK_BASE_ADDRESS).ToString(), httpClient.BaseAddress!.ToString());

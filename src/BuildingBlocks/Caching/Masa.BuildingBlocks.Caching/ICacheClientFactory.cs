@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public interface ICacheClientFactory<out TService> : IMasaFactory<TService> where TService : class
+public interface ICacheClientFactory<TService> : IMasaFactory<TService> where TService : class
 {
 
 }

@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
-            });
+            });//Need to use the AuthenticationService provided by MasaStack
         });
     }
 
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions.Invoke);
+        services.AddCaller(DEFAULT_CLIENT_NAME, ServiceLifetime.Scoped, callerOptions.Invoke);
 
         services.AddScoped<IPmClient>(serviceProvider =>
         {
