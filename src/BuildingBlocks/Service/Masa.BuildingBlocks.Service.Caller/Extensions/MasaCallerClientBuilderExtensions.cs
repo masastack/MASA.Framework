@@ -44,7 +44,6 @@ public static class MasaCallerClientBuilderExtensions
                 throw new ArgumentException(
                     $"The caller name already exists, please change the name, the repeat name is [{masaCallerClientBuilder.Name}]");
 
-            callerOptions.Lifetime = ServiceLifetime.Transient;
             callerOptions.Options.Add(new AuthenticationServiceRelationOptions(masaCallerClientBuilder.Name, implementationFactory));
         });
     }

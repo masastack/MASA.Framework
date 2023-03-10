@@ -17,7 +17,7 @@ public static class ServiceExtensions
         if (services.Any(service => service.ServiceType == typeof(ITscClient)))
             return services;
 
-        services.AddCaller(DEFAULT_CLIENT_NAME, ServiceLifetime.Scoped, builder =>
+        services.AddCaller(DEFAULT_CLIENT_NAME, builder =>
         {
             builder.UseHttpClient(options =>
             {

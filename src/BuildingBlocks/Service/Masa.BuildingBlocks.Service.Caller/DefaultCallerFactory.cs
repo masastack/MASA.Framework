@@ -17,4 +17,20 @@ internal class DefaultCallerFactory : MasaFactoryBase<ICaller, CallerRelationOpt
     {
         _options = serviceProvider.GetRequiredService<IOptions<CallerFactoryOptions>>();
     }
+
+    protected override IServiceProvider GetServiceProvider(string name)
+    {
+        var lifetime = FactoryOptions.Options.Where(opt => opt.Name == name).Select(opt => opt.Lifetime).FirstOrDefault();
+        switch (lifetime)
+        {
+            case ServiceLifetime.Scoped:
+            case null when TransientServiceProvider.GetService<IAuthenticationServiceFactory>()?.TryCreate(name, out _) ?? false:
+                return TransientServiceProvider.GetRequiredService<ServiceScoped>().ServiceProvider;
+            case ServiceLifetime.Transient:
+                return TransientServiceProvider;
+            case ServiceLifetime.Singleton:
+            default:
+                return TransientServiceProvider.GetRequiredService<ServiceSingleton>().ServiceProvider;
+        }
+    }
 }

@@ -10,25 +10,25 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
         Action<CallerOptionsBuilder> configure)
-        => services.AddCaller(ServiceLifetime.Singleton, configure);
+        => services.AddCaller(configure, null);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
-        ServiceLifetime factoryLifetime,
-        Action<CallerOptionsBuilder> configure)
-        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, factoryLifetime, configure);
-
-    public static IServiceCollection AddCaller(
-        this IServiceCollection services,
-        string name,
-        Action<CallerOptionsBuilder> configure)
-        => services.AddCaller(name, ServiceLifetime.Singleton, configure);
+        Action<CallerOptionsBuilder> configure,
+        ServiceLifetime? factoryLifetime)
+        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure, factoryLifetime);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
         string name,
-        ServiceLifetime factoryLifetime,
         Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(name, configure, null);
+
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        string name,
+        Action<CallerOptionsBuilder> configure,
+        ServiceLifetime? factoryLifetime)
     {
         MasaArgumentException.ThrowIfNull(services);
 
@@ -43,14 +43,14 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAutoRegistrationCaller(
         this IServiceCollection services,
         ServiceLifetime callerLifetime = ServiceLifetime.Scoped,
-        ServiceLifetime factoryLifetime = ServiceLifetime.Scoped)
+        ServiceLifetime? factoryLifetime = null)
         => services.AddAutoRegistrationCaller(MasaApp.GetAssemblies(), callerLifetime, factoryLifetime);
 
     public static IServiceCollection AddAutoRegistrationCaller(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
         ServiceLifetime callerLifetime = ServiceLifetime.Scoped,
-        ServiceLifetime factoryLifetime = ServiceLifetime.Scoped)
+        ServiceLifetime? factoryLifetime = null)
     {
         MasaArgumentException.ThrowIfNull(services);
 
@@ -78,7 +78,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
         ServiceLifetime callerLifetime,
-        ServiceLifetime factoryLifetime)
+        ServiceLifetime? factoryLifetime)
     {
         var callerTypes = assemblies.SelectMany(x => x.GetTypes())
             .Where(type => typeof(CallerBase).IsAssignableFrom(type) && !type.IsAbstract).ToList();

@@ -17,7 +17,6 @@ public class MasaCallerClientBuilderExtensionsTest
         var serviceProvider = services.BuildServiceProvider();
         var factoryOptions = serviceProvider.GetService<IOptions<AuthenticationServiceFactoryOptions>>();
         Assert.IsNotNull(factoryOptions);
-        Assert.AreEqual(ServiceLifetime.Transient, factoryOptions.Value.Lifetime);
         Assert.AreEqual(1, factoryOptions.Value.Options.Count);
         Assert.AreEqual(string.Empty, factoryOptions.Value.Options[0].Name);
         var authenticationService = serviceProvider.GetService<IAuthenticationService>();

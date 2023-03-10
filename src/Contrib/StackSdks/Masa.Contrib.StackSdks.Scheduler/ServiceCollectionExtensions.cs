@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<SchedulerProvider>();
         services.AddHttpContextAccessor();
-        services.AddCaller(DEFAULT_CLIENT_NAME, ServiceLifetime.Scoped, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {

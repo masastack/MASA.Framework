@@ -2,13 +2,16 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Service.Caller;
 
 public class CallerRelationOptions : MasaRelationOptions<ICaller>
 {
-    public CallerRelationOptions(string name, Func<IServiceProvider, ICaller> func)
-        : base(name)
+    public ServiceLifetime? Lifetime { get; set; }
+
+    public CallerRelationOptions(string name, Func<IServiceProvider, ICaller> func, ServiceLifetime? lifetime)
+        : base(name, func)
     {
-        Func = func;
+        Lifetime = lifetime;
     }
 }

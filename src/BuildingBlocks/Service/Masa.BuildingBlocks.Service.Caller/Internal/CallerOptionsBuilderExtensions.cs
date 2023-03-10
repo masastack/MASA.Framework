@@ -19,8 +19,10 @@ internal static class CallerOptionsBuilderExtensions
                 throw new ArgumentException(
                     $"The caller name already exists, please change the name, the repeat name is [{callerOptionsBuilder.Name}]");
 
-            callerOptions.Options.Add(new CallerRelationOptions(callerOptionsBuilder.Name, implementationFactory));
-            callerOptions.Lifetime = callerOptionsBuilder.Lifetime;
+            callerOptions.Options.Add(new CallerRelationOptions(
+                callerOptionsBuilder.Name,
+                implementationFactory,
+                callerOptionsBuilder.Lifetime));
         });
     }
 }
