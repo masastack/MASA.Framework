@@ -356,7 +356,7 @@ public class MultilevelCacheClientTest : TestBase
     public void TestSetByCacheEntryOptionsIsNull()
     {
         string key = "test20";
-        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         Assert.AreEqual(null, multilevelCacheClient.Get<string>(key));
         CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
         multilevelCacheClient.Set(key, "success", combinedCacheEntryOptions);
@@ -381,7 +381,7 @@ public class MultilevelCacheClientTest : TestBase
     public async Task TestSetByCacheEntryOptionsIsNullAsync()
     {
         string key = "test20";
-        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         Assert.AreEqual(null, await multilevelCacheClient.GetAsync<string>(key));
         await multilevelCacheClient.SetAsync(key, "success", TimeSpan.FromSeconds(2));
         Assert.AreEqual("success", await multilevelCacheClient.GetAsync<string>(key));
@@ -434,7 +434,7 @@ public class MultilevelCacheClientTest : TestBase
         string key = "test20";
         string key2 = "test30";
         string key3 = "test40";
-        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         var list = multilevelCacheClient.GetList<string>(key, key2, key3).ToList();
         Assert.AreEqual(3, list.Count);
         Assert.AreEqual(null, list[0]);
@@ -508,7 +508,7 @@ public class MultilevelCacheClientTest : TestBase
         string key = "test20";
         string key2 = "test30";
         string key3 = "test40";
-        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         var list = (await multilevelCacheClient.GetListAsync<string>(key, key2, key3)).ToList();
         Assert.AreEqual(3, list.Count);
         Assert.AreEqual(null, list[0]);
@@ -704,7 +704,7 @@ public class MultilevelCacheClientTest : TestBase
     public async Task TestSetBySpecifiedTimeAsync()
     {
         string key = Guid.NewGuid().ToString();
-        var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull();
         var value = await multilevelCacheClient.GetAsync<string>(key);
         Assert.AreEqual(null, value);
         await multilevelCacheClient.SetAsync(key, "success", TimeSpan.FromMilliseconds(500));
