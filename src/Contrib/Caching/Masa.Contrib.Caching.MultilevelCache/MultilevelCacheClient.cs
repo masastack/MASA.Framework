@@ -665,4 +665,10 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
     #endregion
 
+    public override void Dispose()
+    {
+        _distributedCacheClient?.Dispose();
+        _memoryCache?.Dispose();
+    }
+
 }
