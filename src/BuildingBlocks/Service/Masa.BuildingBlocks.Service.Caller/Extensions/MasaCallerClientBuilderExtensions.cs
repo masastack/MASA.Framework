@@ -12,10 +12,11 @@ public static class MasaCallerClientBuilderExtensions
         => masaCallerClientBuilder.AddMiddleware(_ => new CultureMiddleware());
 
     public static IMasaCallerClientBuilder AddMiddleware<TMiddleware>(
-        this IMasaCallerClientBuilder masaCallerClientBuilder)
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        ServiceLifetime middlewareLifetime = ServiceLifetime.Singleton)
         where TMiddleware : class, ICallerMiddleware
     {
-        masaCallerClientBuilder.Services.TryAddSingleton<TMiddleware>();
+        masaCallerClientBuilder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TMiddleware), typeof(TMiddleware), middlewareLifetime));
         return masaCallerClientBuilder.AddMiddleware(serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
     }
 
@@ -40,7 +41,8 @@ public static class MasaCallerClientBuilderExtensions
 
         masaCallerClientBuilder.Services.Configure<AuthenticationServiceFactoryOptions>(callerOptions =>
         {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(masaCallerClientBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+            if (callerOptions.Options.Any(relation
+                    => relation.Name.Equals(masaCallerClientBuilder.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException(
                     $"The caller name already exists, please change the name, the repeat name is [{masaCallerClientBuilder.Name}]");
 

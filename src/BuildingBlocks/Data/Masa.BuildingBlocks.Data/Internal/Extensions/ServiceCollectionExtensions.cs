@@ -3,6 +3,7 @@
 
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.Caching")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.RulesEngine")]
+[assembly: InternalsVisibleTo("Masa.BuildingBlocks.SearchEngine.AutoComplete")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.Service.Caller")]
 
 // ReSharper disable once CheckNamespace
