@@ -45,7 +45,13 @@ public class I18n<TResourceSource> : II18n<TResourceSource>
         var value = Core(name, returnKey, out bool isExist);
 
         if (isExist)
-            return string.Format(GetCultureInfo(), value!, arguments);
+        {
+            if (arguments != null! && arguments.Any())
+                return string.Format(GetCultureInfo(), value!, arguments);
+
+            return value;
+        }
+
 
         return returnKey ? name : null;
     }

@@ -18,4 +18,7 @@ public static class Constant
 
     internal static readonly string DefaultFrameworkLanguageResourcePath
         = Path.Combine(DefaultFrameworkResourcePath, "Languages");
+
+    internal static readonly string DefaultFrameworkBackgroundJobResourcePath
+        = Path.Combine(DefaultFrameworkResourcePath, "BackgroundJobs");
 }

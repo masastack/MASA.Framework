@@ -1,9 +1,9 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Data.Constants;
 
-public static class ErrorCode
+public static class ExceptionErrorCode
 {
     public const string FRAMEWORK_PREFIX = "MF";
 
@@ -18,6 +18,11 @@ public static class ErrorCode
     /// parameter validation error
     /// </summary>
     private const string ARGUMENT = $"{FRAMEWORK_PREFIX}ARG";
+
+    /// <summary>
+    /// parameter validation error
+    /// </summary>
+    private const string BACKGROUND_JOB = $"{FRAMEWORK_PREFIX}BGJ";
 
     #endregion
 
@@ -140,20 +145,19 @@ public static class ErrorCode
     /// <summary>
     /// '{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals. {Digits} digits and {ActualScale} decimals were found.
     /// </summary>
-    [Description("'{0}' must not be more than {1} digits in total, with allowance for {2} decimals. {3} digits and {4} decimals were found.")]
+    [Description(
+        "'{0}' must not be more than {1} digits in total, with allowance for {2} decimals. {3} digits and {4} decimals were found.")]
     public const string SCALE_PRECISION_VALIDATOR = $"{ARGUMENT}0020";
 
     /// <summary>
     /// '{PropertyName}' must be empty.
     /// </summary>
-    [Description("'{0}' must be empty.")]
-    public const string EMPTY_VALIDATOR = $"{ARGUMENT}0021";
+    [Description("'{0}' must be empty.")] public const string EMPTY_VALIDATOR = $"{ARGUMENT}0021";
 
     /// <summary>
     /// '{PropertyName}' must be empty.
     /// </summary>
-    [Description("'{0}' must be empty.")]
-    public const string NULL_VALIDATOR = $"{ARGUMENT}0022";
+    [Description("'{0}' must be empty.")] public const string NULL_VALIDATOR = $"{ARGUMENT}0022";
 
     /// <summary>
     /// '{0}' has a range of values which does not include '{1}'.
@@ -217,6 +221,40 @@ public static class ErrorCode
 
     #endregion
 
+    #region BackgroundJob
+
+    /// <summary>
+    /// No matching background task parameter type found, jobName: '{JobName}'.
+    /// </summary>
+    [Description("No matching background task parameter type found, jobName: '{0}'.")]
+    public const string NOT_FIND_JOB_ARGS_BY_JOB_NAME = $"{BACKGROUND_JOB}0001";
+
+    /// <summary>
+    /// No matching background task found, jobName: '{JobName}'.
+    /// </summary>
+    [Description("No matching background task found, jobName: '{0}'.")]
+    public const string NOT_FIND_JOB_BY_JOB_NAME = $"{BACKGROUND_JOB}0002";
+
+    /// <summary>
+    /// No matching background task found, jobType: '{JobType}'.
+    /// </summary>
+    [Description("No matching background task found, jobType: '{0}'.")]
+    public const string NOT_FIND_JOB = $"{BACKGROUND_JOB}0003";
+
+    /// <summary>
+    /// Periodic tasks are not supported yet.
+    /// </summary>
+    [Description("Periodic tasks are not supported yet.")]
+    public const string NOT_SUPPORT_PERIODICALLY_JOB = $"{BACKGROUND_JOB}0004";
+
+    /// <summary>
+    /// Periodic tasks are not supported yet.
+    /// </summary>
+    [Description("Unsupported background periodic task types.")]
+    public const string NOT_SUPPORT_PERIODICALLY_TASK_TYPE_JOB = $"{BACKGROUND_JOB}0005";
+
+    #endregion
+
     #region Other
 
     /// <summary>
@@ -229,9 +267,9 @@ public static class ErrorCode
 
     private static readonly Dictionary<string, string?> _errorCodeMessageDictionary = new();
 
-    static ErrorCode()
+    static ExceptionErrorCode()
     {
-        var classType = typeof(ErrorCode);
+        var classType = typeof(ExceptionErrorCode);
         var fields = classType.GetFields(BindingFlags.Static | BindingFlags.Public);
         foreach (var field in fields)
         {

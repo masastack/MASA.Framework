@@ -22,7 +22,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
     /// <summary>
     /// Get messages to retry
     /// </summary>
-    /// <param name="retryBatchSize">maximum number of retries per retry</param>
+    /// <param name="retryBatchSize">Maximum number of retries per retry</param>
     /// <param name="maxRetryTimes"></param>
     /// <param name="minimumRetryInterval">Minimum retry interval (unit: s)</param>
     /// <param name="cancellationToken"></param>
