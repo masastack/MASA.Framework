@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.StackSdks.Mc.Service;
-
 namespace Masa.Contrib.StackSdks.Mc;
 
 public class McClient: IMcClient

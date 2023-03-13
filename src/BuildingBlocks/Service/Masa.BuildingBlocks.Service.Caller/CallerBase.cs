@@ -7,7 +7,21 @@ public abstract class CallerBase
 {
     public virtual string? Name { get; private set; } = null;
 
+    /// <summary>
+    /// Custom the current Caller request message handler
+    /// default: null (Use the global request handler when no request handler is specified)
+    /// </summary>
+    protected virtual Func<IServiceProvider, IRequestMessage>? RequestMessageFactory => null;
+
+    /// <summary>
+    /// Custom the current Caller response message handler
+    /// default: null (Use the global response handler when no response handler is specified)
+    /// </summary>
+    protected virtual Func<IServiceProvider, IResponseMessage>? ResponseMessageFactory => null;
+
     protected CallerOptionsBuilder CallerOptions { get; private set; } = default!;
+
+    public ILogger? Logger { get; private set; }
 
     private ICaller? _caller;
 
@@ -33,15 +47,15 @@ public abstract class CallerBase
         Name = name;
     }
 
-    public void SetServiceProvider(IServiceProvider serviceProvider)
+    internal void Initialize(IServiceProvider serviceProvider, Type type)
     {
-        ServiceProvider = serviceProvider;
+        ServiceProvider ??= serviceProvider;
+        Logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger(type);
     }
 
-    protected virtual Task ConfigHttpRequestMessageAsync(HttpRequestMessage requestMessage)
+    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
     {
-        var authenticationService = ServiceProvider!.GetService<IAuthenticationService>();
-        authenticationService?.ExecuteAsync(requestMessage);
-        return Task.CompletedTask;
+        callerClient.RequestMessageFactory = RequestMessageFactory;
+        callerClient.ResponseMessageFactory = ResponseMessageFactory;
     }
 }

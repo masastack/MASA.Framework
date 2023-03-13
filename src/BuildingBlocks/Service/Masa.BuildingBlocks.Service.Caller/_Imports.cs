@@ -13,6 +13,7 @@ global using System.Globalization;
 global using System.Net;
 global using System.Net.Http.Json;
 global using System.Reflection;
+global using System.Runtime.CompilerServices;
 global using System.Runtime.ExceptionServices;
 global using System.Text.Json;
 global using System.Text.Json.Serialization;

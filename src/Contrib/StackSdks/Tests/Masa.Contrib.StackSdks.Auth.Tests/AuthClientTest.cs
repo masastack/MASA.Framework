@@ -36,7 +36,7 @@ public class AuthClientTest
     public void TestAddAuthClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(callerOptions: null!, new()));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(callerOptionsBuilder: null!, new()));
     }
 }
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public class DaprCaller : AbstractCallerExpand
+public class DaprCaller : AbstractCaller
 {
     private Dapr.Client.DaprClient? _daprClient;
     private Dapr.Client.DaprClient DaprClient => _daprClient ??= ServiceProvider.GetRequiredService<Dapr.Client.DaprClient>();
@@ -12,10 +12,11 @@ public class DaprCaller : AbstractCallerExpand
     public DaprCaller(
         IServiceProvider serviceProvider,
         string name,
+        bool supportAuthentication,
         string appId,
         Func<IServiceProvider, IRequestMessage>? requestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? responseMessageFactory)
-        : base(serviceProvider, name, requestMessageFactory, responseMessageFactory)
+        : base(serviceProvider, name, supportAuthentication, requestMessageFactory, responseMessageFactory)
     {
         AppId = appId;
         var logger = serviceProvider.GetService<ILogger<DaprCaller>>();

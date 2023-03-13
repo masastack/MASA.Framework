@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect\Masa.Contrib.Service.Caller.Authentication.OpenIdConnect.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.Authentication.AspNetCore\Masa.Contrib.Service.Caller.Authentication.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

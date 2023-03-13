@@ -28,4 +28,10 @@ public class DefaultObjectStorageClientFactory : IObjectStorageClientFactory
         => new DefaultObjectStorageClientContainer(
             _objectStorageClient,
             _storageOptions.CurrentValue.BucketNames.GetBucketName(name));
+
+    public bool TryCreate(string name, [NotNullWhen(true)] out IObjectStorageClientContainer? service)
+    {
+        service = Create(name);
+        return true;
+    }
 }

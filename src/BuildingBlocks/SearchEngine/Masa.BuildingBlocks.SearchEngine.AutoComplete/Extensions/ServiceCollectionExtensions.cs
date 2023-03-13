@@ -73,6 +73,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
         services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create());
 
+        services.AddServiceFactory();
         MasaApp.TrySetServiceCollection(services);
         return services;
     }

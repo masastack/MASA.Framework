@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
-public abstract class HttpClientCallerBase : CallerExpandBase
+public abstract class HttpClientCallerBase : CallerBase
 {
     protected abstract string BaseAddress { get; set; }
 
@@ -20,8 +20,14 @@ public abstract class HttpClientCallerBase : CallerExpandBase
 
     public override void UseCallerExtension() => UseHttpClient();
 
-    protected virtual MasaHttpClientBuilder UseHttpClient()
+    protected virtual void UseHttpClientPre()
     {
+    }
+
+    private MasaHttpClientBuilder UseHttpClient()
+    {
+        UseHttpClientPre();
+
         var masaHttpClientBuilder = CallerOptions.UseHttpClient(callerClient =>
         {
             callerClient.Prefix = Prefix;
@@ -29,11 +35,15 @@ public abstract class HttpClientCallerBase : CallerExpandBase
             callerClient.Configure = ConfigureHttpClient;
             ConfigMasaCallerClient(callerClient);
         });
+
+        UseHttpClientPost(masaHttpClientBuilder);
+
         return masaHttpClientBuilder;
     }
 
-    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
+    protected virtual void UseHttpClientPost(MasaHttpClientBuilder masaHttpClientBuilder)
     {
+
     }
 
     protected virtual void ConfigureHttpClient(System.Net.Http.HttpClient httpClient)

@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient(serviceProvider => serviceProvider.GetRequiredService<IRulesEngineFactory>().Create());
         RulesEngineOptions rulesEngineOptions = new RulesEngineOptions(services, name);
         action.Invoke(rulesEngineOptions);
+        services.AddServiceFactory();
         return services;
     }
 }
