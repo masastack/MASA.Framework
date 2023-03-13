@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
-            });
+            }); //Need to use the AuthenticationService provided by MasaStack
         });
     }
 

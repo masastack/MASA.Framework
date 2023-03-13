@@ -3,11 +3,11 @@
 
 namespace Masa.Contrib.Service.Caller.DaprClient;
 
-public abstract class DaprCallerBase : CallerExpandBase
+public abstract class DaprCallerBase : CallerBase
 {
     protected abstract string AppId { get; set; }
 
-    public virtual Action<DaprClientBuilder>? Configure { get; set; } = null;
+    protected virtual Action<DaprClientBuilder>? Configure { get; set; } = null;
 
     protected DaprCallerBase()
     {
@@ -19,17 +19,26 @@ public abstract class DaprCallerBase : CallerExpandBase
 
     public override void UseCallerExtension() => UseDapr();
 
-    protected virtual MasaDaprClientBuilder UseDapr()
+    protected virtual void UseDaprPre()
     {
+    }
+
+    MasaDaprClientBuilder UseDapr()
+    {
+        UseDaprPre();
+
         var daprClientBuilder = CallerOptions.UseDapr(callerClient =>
         {
             callerClient.AppId = AppId;
             ConfigMasaCallerClient(callerClient);
         }, Configure);
+
+        UseDaprPost(daprClientBuilder);
         return daprClientBuilder;
     }
 
-    protected virtual void ConfigMasaCallerClient(MasaCallerClient callerClient)
+    protected virtual void UseDaprPost(MasaDaprClientBuilder masaHttpClientBuilder)
     {
+
     }
 }

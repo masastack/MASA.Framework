@@ -7,56 +7,55 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCaller(this IServiceCollection services, Action<CallerOptionsBuilder> configure)
-        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure);
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(configure, null);
 
-    public static IServiceCollection AddCaller(this IServiceCollection services, string name, Action<CallerOptionsBuilder> configure)
-    {
-        MasaArgumentException.ThrowIfNull(services);
-
-        services.AddCallerCore();
-
-        var callerOption = new CallerOptionsBuilder(services, name);
-        configure.Invoke(callerOption);
-
-        return services;
-    }
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        Action<CallerOptionsBuilder> configure,
+        ServiceLifetime? factoryLifetime)
+        => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure, factoryLifetime);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
         string name,
-        Func<IServiceProvider, ICaller> implementationFactory)
+        Action<CallerOptionsBuilder> configure)
+        => services.AddCaller(name, configure, null);
+
+    public static IServiceCollection AddCaller(
+        this IServiceCollection services,
+        string name,
+        Action<CallerOptionsBuilder> configure,
+        ServiceLifetime? factoryLifetime)
     {
         MasaArgumentException.ThrowIfNull(services);
-        MasaArgumentException.ThrowIfNull(name);
 
-        services.Configure<CallerFactoryOptions>(callerOptions =>
-        {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
-                throw new ArgumentException(
-                    $"The caller name already exists, please change the name, the repeat name is [{name}]");
+        services.AddCallerCore();
 
-            callerOptions.Options.Add(new CallerRelationOptions(name, implementationFactory));
-        });
+        var optionsBuilder = new CallerOptionsBuilder(services, name, factoryLifetime);
+        configure.Invoke(optionsBuilder);
 
-        MasaApp.TrySetServiceCollection(services);
         return services;
     }
 
     public static IServiceCollection AddAutoRegistrationCaller(
         this IServiceCollection services,
-        ServiceLifetime callerLifetime = ServiceLifetime.Scoped)
-        => services.AddAutoRegistrationCaller(MasaApp.GetAssemblies(), callerLifetime);
+        ServiceLifetime callerLifetime = ServiceLifetime.Scoped,
+        ServiceLifetime? factoryLifetime = null)
+        => services.AddAutoRegistrationCaller(MasaApp.GetAssemblies(), callerLifetime, factoryLifetime);
 
     public static IServiceCollection AddAutoRegistrationCaller(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        ServiceLifetime callerLifetime = ServiceLifetime.Scoped)
+        ServiceLifetime callerLifetime = ServiceLifetime.Scoped,
+        ServiceLifetime? factoryLifetime = null)
     {
         MasaArgumentException.ThrowIfNull(services);
 
         services.AddCallerCore();
-        services.AddAutomaticCaller(assemblies, callerLifetime);
+        services.AddAutomaticCaller(assemblies, callerLifetime, factoryLifetime);
         return services;
     }
 
@@ -67,19 +66,19 @@ public static class ServiceCollectionExtensions
 
     private static void AddCallerCore(this IServiceCollection services)
     {
-        services.TryAddSingleton<ICallerFactory, DefaultCallerFactory>();
+        services.TryAddTransient<ICallerFactory, DefaultCallerFactory>();
+        services.TryAddTransient<ICaller>(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
         services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage());
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
-        services.TryAddSingleton<ICaller>(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
-        services.TryAddSingleton<ICallerExpand>(serviceProvider => (ICallerExpand)serviceProvider.GetRequiredService<ICaller>());
-
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
+        services.AddServiceFactory();
     }
 
     private static void AddAutomaticCaller(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
-        ServiceLifetime callerLifetime)
+        ServiceLifetime callerLifetime,
+        ServiceLifetime? factoryLifetime)
     {
         var callerTypes = assemblies.SelectMany(x => x.GetTypes())
             .Where(type => typeof(CallerBase).IsAssignableFrom(type) && !type.IsAbstract).ToList();
@@ -104,8 +103,8 @@ public static class ServiceCollectionExtensions
                 var callerBase = (constructorInfo.Invoke(parameters.ToArray()) as CallerBase)!;
 
                 var name = callerBase.Name ?? type.FullName ?? type.Name;
-                callerBase.SetCallerOptions(new CallerOptionsBuilder(services, name), name);
-                if (callerBase.ServiceProvider == null) callerBase.SetServiceProvider(serviceProvider);
+                callerBase.SetCallerOptions(new CallerOptionsBuilder(services, name, factoryLifetime), name);
+                callerBase.Initialize(serviceProvider, type);
 
                 return callerBase;
             }, callerLifetime);

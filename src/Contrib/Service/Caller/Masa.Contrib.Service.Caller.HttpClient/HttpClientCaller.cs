@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Service.Caller.HttpClient;
 
-public class HttpClientCaller : AbstractCallerExpand
+public class HttpClientCaller : AbstractCaller
 {
     private readonly System.Net.Http.HttpClient _httpClient;
     private readonly string _prefix;
@@ -12,10 +12,11 @@ public class HttpClientCaller : AbstractCallerExpand
     public HttpClientCaller(System.Net.Http.HttpClient httpClient,
         IServiceProvider serviceProvider,
         string name,
+        bool supportAuthentication,
         string prefix,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory)
-        : base(serviceProvider, name, currentRequestMessageFactory, currentResponseMessageFactory)
+        : base(serviceProvider, name, supportAuthentication, currentRequestMessageFactory, currentResponseMessageFactory)
     {
         _httpClient = httpClient;
         _prefix = prefix;
