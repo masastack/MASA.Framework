@@ -5,7 +5,9 @@
 
 namespace Masa.BuildingBlocks.Globalization.I18n;
 
+#pragma warning disable S2094
 public class MasaBackgroundJobResource
 {
 
 }
+#pragma warning restore S2094
