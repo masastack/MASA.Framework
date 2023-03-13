@@ -70,7 +70,7 @@ dotnet run
 3. Commit with commit message, like `feat(Isolation): Support physical isolation, logical isolation`
 4. Create Pull Request
 
-If you wish to contribute, please [Pull Request](https://github.com/masastack/MASA.Framework/pulls), or send us a [Report Bug](https://github.com/masastack/MASA.Framework /issues/new) .
+If you wish to contribute, please [Pull Request](https://github.com/masastack/MASA.Framework/pulls), or send us a [Report Bug](https://github.com/masastack/MASA.Framework/issues/new) .
 
 
 
