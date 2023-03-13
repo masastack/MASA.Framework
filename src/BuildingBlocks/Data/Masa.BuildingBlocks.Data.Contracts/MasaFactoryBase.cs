@@ -18,12 +18,12 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
     private IServiceProvider? _scopedServiceProvider;
 
     protected IServiceProvider ScopedServiceProvider
-        => _scopedServiceProvider ??= TransientServiceProvider.GetRequiredService<ServiceScoped>().ServiceProvider;
+        => _scopedServiceProvider ??= TransientServiceProvider.GetRequiredService<ScopedService>().ServiceProvider;
 
     private IServiceProvider? _singletonServiceProvider;
 
     protected IServiceProvider SingletonServiceProvider
-        => _singletonServiceProvider ??= TransientServiceProvider.GetRequiredService<ServiceSingleton>().ServiceProvider;
+        => _singletonServiceProvider ??= TransientServiceProvider.GetRequiredService<SingletonService>().ServiceProvider;
 
     protected MasaFactoryBase(IServiceProvider serviceProvider)
     {

@@ -14,7 +14,7 @@ internal static class ServiceCollectionExtensions
 {
     public static void AddServiceFactory(this IServiceCollection services)
     {
-        services.TryAddSingleton<ServiceSingleton>();
-        services.TryAddScoped<ServiceScoped>();
+        services.TryAddSingleton<SingletonService>();
+        services.TryAddScoped<ScopedService>();
     }
 }

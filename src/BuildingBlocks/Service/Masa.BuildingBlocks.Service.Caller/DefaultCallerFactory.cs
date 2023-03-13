@@ -25,12 +25,12 @@ internal class DefaultCallerFactory : MasaFactoryBase<ICaller, CallerRelationOpt
         {
             case ServiceLifetime.Scoped:
             case null when TransientServiceProvider.GetService<IAuthenticationServiceFactory>()?.TryCreate(name, out _) ?? false:
-                return TransientServiceProvider.GetRequiredService<ServiceScoped>().ServiceProvider;
+                return TransientServiceProvider.GetRequiredService<ScopedService>().ServiceProvider;
             case ServiceLifetime.Transient:
                 return TransientServiceProvider;
             case ServiceLifetime.Singleton:
             default:
-                return TransientServiceProvider.GetRequiredService<ServiceSingleton>().ServiceProvider;
+                return TransientServiceProvider.GetRequiredService<SingletonService>().ServiceProvider;
         }
     }
 }
