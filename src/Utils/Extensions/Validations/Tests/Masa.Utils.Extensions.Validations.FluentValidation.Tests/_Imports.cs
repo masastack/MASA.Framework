@@ -3,5 +3,6 @@
 
 global using FluentValidation;
 global using FluentValidation.Resources;
+global using FluentValidation.Validators;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using System.Globalization;

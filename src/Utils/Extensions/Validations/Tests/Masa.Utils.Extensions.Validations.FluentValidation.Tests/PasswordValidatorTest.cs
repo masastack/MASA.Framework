@@ -15,8 +15,10 @@ public class PasswordValidatorTest : ValidatorBaseTest
     [DataRow("Masa@123", true)]
     [DataRow("123", false)]
     [DataRow("123.", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestPassword(string pwd, bool expectedResult)
+    public void TestPassword(string? pwd, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
@@ -30,7 +32,7 @@ public class PasswordValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

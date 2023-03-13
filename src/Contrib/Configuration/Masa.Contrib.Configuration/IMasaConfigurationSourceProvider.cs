@@ -8,5 +8,6 @@ public interface IMasaConfigurationSourceProvider
     (List<IConfigurationSource> MigrateConfigurationSources, List<IConfigurationSource> ConfigurationSources) GetMigrated(
         IEnumerable<IConfigurationSource> originalConfigurationSources,
         List<Type> excludeConfigurationSourceTypes,
-        List<Type> excludeConfigurationProviderTypes);
+        List<Type> excludeConfigurationProviderTypes,
+        List<MigrateConfigurationRelationsInfo> migrateRelations);
 }

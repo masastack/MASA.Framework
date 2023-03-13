@@ -4,14 +4,14 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class IdCardValidatorTest : ValidatorBaseTest
+public class IdCardOptionalValidatorTest : ValidatorBaseTest
 {
     public override string Message => "'Id Card' is not a valid ID.";
 
     [DataRow("410785195212123541", false)]
     [DataRow("110101192803011819", true)]
+    [DataRow("", true)]
     [DataRow(null, true)]
-    [DataRow("", false)]
     [DataTestMethod]
     public void TestIdCard(string? idCard, bool expectedResult)
     {
@@ -26,6 +26,7 @@ public class IdCardValidatorTest : ValidatorBaseTest
             Assert.AreEqual(Message, result.Errors[0].ErrorMessage);
         }
     }
+
     [DataRow(null)]
     [DataRow("110101192803011819")]
     [DataRow("")]
@@ -33,17 +34,30 @@ public class IdCardValidatorTest : ValidatorBaseTest
     public void TestIdCardByUs(string? idCard)
     {
         var validator = new RegisterUserEventValidator("en-US");
-        Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
+        switch (idCard)
         {
-            IdCard = idCard
-        }));
+            case null:
+            case "":
+                var result = validator.Validate(new RegisterUserEvent()
+                {
+                    IdCard = idCard
+                });
+                Assert.IsTrue(result.IsValid);
+                break;
+            default:
+                Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
+                {
+                    IdCard = idCard
+                }));
+                break;
+        }
     }
 
     public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
-        public RegisterUserEventValidator(string culture)
+        public RegisterUserEventValidator(string? culture = null)
         {
-            RuleFor(r => r.IdCard).IdCard(culture);
+            _ = WhenNotEmpty(r => r.IdCard, new IdCardValidator<RegisterUserEvent>(culture));
         }
     }
 }

@@ -11,8 +11,10 @@ public class EmailValidatorTest : ValidatorBaseTest
     [DataRow("masastack123@", false)]
     [DataRow("123", false)]
     [DataRow("123@qq.com", true)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestEmail(string email, bool expectedResult)
+    public void TestEmail(string? email, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
@@ -26,7 +28,7 @@ public class EmailValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

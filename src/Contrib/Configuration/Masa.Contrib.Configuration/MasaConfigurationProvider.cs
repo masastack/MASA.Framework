@@ -7,11 +7,13 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
 {
     private readonly ConcurrentDictionary<SectionTypes, Properties> _data;
     private readonly IEnumerable<IConfigurationRepository> _configurationRepositories;
+    private readonly List<MigrateConfigurationRelationsInfo> _relations;
 
-    public MasaConfigurationProvider(MasaConfigurationSource source)
+    public MasaConfigurationProvider(MasaConfigurationSource source, List<MigrateConfigurationRelationsInfo> relations)
     {
         _data = new();
         _configurationRepositories = source.Builder!.Repositories;
+        _relations = relations;
 
         foreach (var configurationRepository in _configurationRepositories)
         {
@@ -54,7 +56,21 @@ public class MasaConfigurationProvider : ConfigurationProvider, IRepositoryChang
             }
         }
 
-        Data = data;
+        Data = MigrateConfiguration(data);
+    }
+
+    Dictionary<string, string> MigrateConfiguration(Dictionary<string, string> data)
+    {
+        Dictionary<string, string> optData = new(data, StringComparer.OrdinalIgnoreCase);
+        foreach (var item in _relations)
+        {
+            var list = data.Where(kvp
+                    => kvp.Key.Equals(item.OptSectionName, StringComparison.OrdinalIgnoreCase) ||
+                    kvp.Key.StartsWith($"{item.OptSectionName}{ConfigurationPath.KeyDelimiter}"))
+                .Select(kvp => new KeyValuePair<string, string>(kvp.Key.Replace(item.OptSectionName, item.SectionName), kvp.Value));
+            optData.TryAddRange(list);
+        }
+        return optData;
     }
 
     public void Dispose()

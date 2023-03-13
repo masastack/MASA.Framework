@@ -93,7 +93,8 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public async Task TestSubscribeChannelsAsync()
     {
-        var subscribeChannelsField = _multilevelCacheClient.GetType().GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
+        var subscribeChannelsField = _multilevelCacheClient.GetType()
+            .GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
 
         var key = "test200";
         string? value = await _multilevelCacheClient.GetAsync<string>(key, newVal =>
@@ -120,7 +121,8 @@ public class MultilevelCacheClientTest : TestBase
     [TestMethod]
     public void TestSubscribeChannels()
     {
-        var subscribeChannelsField = _multilevelCacheClient.GetType().GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
+        var subscribeChannelsField = _multilevelCacheClient.GetType()
+            .GetField("_subscribeChannels", BindingFlags.NonPublic | BindingFlags.Instance);
 
         var key = "test200";
         string? value = _multilevelCacheClient.Get<string>(key, newVal =>
@@ -220,6 +222,41 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
+    public void TestGetOrSet3()
+    {
+        var id = Guid.NewGuid().ToString();
+        var result = GetValueByCaching(true);
+        Assert.IsNull(result);
+
+        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        result = GetValueByCaching(false);
+        Assert.AreEqual(GetValue(false), result);
+
+        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        result = _multilevelCacheClient.Get<int?>(id);
+        Assert.AreEqual(GetValue(false), result);
+
+        _distributedCacheClient.Remove(id);
+
+        int? GetValueByCaching(bool isReturnNull)
+        {
+            TimeSpan? timeSpan = null;
+            return _multilevelCacheClient.GetOrSet(id, () =>
+                {
+                    var value = GetValue(isReturnNull);
+                    if (value.HasValue)
+                    {
+                        timeSpan = TimeSpan.FromSeconds(5);
+                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(10));
+                    }
+                    timeSpan = TimeSpan.FromSeconds(1);
+                    return new CacheEntry<int?>(null, TimeSpan.FromSeconds(1));
+                },
+                options => options.AbsoluteExpirationRelativeToNow = timeSpan);
+        }
+    }
+
+    [TestMethod]
     public async Task TestGetOrSetAsync()
     {
         Assert.AreEqual("success", await _multilevelCacheClient.GetOrSetAsync("test100", new CombinedCacheEntry<string>()
@@ -264,6 +301,43 @@ public class MultilevelCacheClientTest : TestBase
 
         await _multilevelCacheClient.RemoveAsync<string>("test100");
     }
+
+    [TestMethod]
+    public async Task TestGetOrSet3Async()
+    {
+        var id = Guid.NewGuid().ToString();
+        var result = await GetValueByCachingAsync(true);
+        Assert.IsNull(result);
+
+        await Task.Delay(2000);
+        result = await GetValueByCachingAsync(false);
+        Assert.AreEqual(GetValue(false), result);
+
+        await Task.Delay(2000);
+        result = _multilevelCacheClient.Get<int?>(id);
+        Assert.AreEqual(GetValue(false), result);
+
+        await _distributedCacheClient.RemoveAsync(id);
+
+        Task<int?> GetValueByCachingAsync(bool isReturnNull)
+        {
+            TimeSpan? timeSpan = null;
+            return _multilevelCacheClient.GetOrSetAsync(id, () =>
+                {
+                    var value = GetValue(isReturnNull);
+                    if (value.HasValue)
+                    {
+                        timeSpan = TimeSpan.FromSeconds(5);
+                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(10));
+                    }
+                    timeSpan = TimeSpan.FromSeconds(1);
+                    return new CacheEntry<int?>(null, TimeSpan.FromSeconds(1));
+                },
+                options => options.AbsoluteExpirationRelativeToNow = timeSpan);
+        }
+    }
+
+    private static int? GetValue(bool isReturnNull) => isReturnNull ? null : 1;
 
     [TestMethod]
     public void TestSet()
@@ -328,8 +402,12 @@ public class MultilevelCacheClientTest : TestBase
 
         _multilevelCacheClient.SetList(new Dictionary<string, string?>()
         {
-            { key, "success" },
-            { key3, "success3" }
+            {
+                key, "success"
+            },
+            {
+                key3, "success3"
+            }
         }, TimeSpan.FromSeconds(2));
 
         list = _multilevelCacheClient.GetList<string>(key, key2, key3).ToList();
@@ -365,8 +443,12 @@ public class MultilevelCacheClientTest : TestBase
 
         multilevelCacheClient.SetList(new Dictionary<string, string?>()
         {
-            { key, "success" },
-            { key3, "success3" }
+            {
+                key, "success"
+            },
+            {
+                key3, "success3"
+            }
         });
 
         list = multilevelCacheClient.GetList<string>(key, key2, key3).ToList();
@@ -394,8 +476,12 @@ public class MultilevelCacheClientTest : TestBase
 
         await _multilevelCacheClient.SetListAsync(new Dictionary<string, string?>()
         {
-            { key, "success" },
-            { key3, "success3" }
+            {
+                key, "success"
+            },
+            {
+                key3, "success3"
+            }
         }, TimeSpan.FromMinutes(2));
 
         list = (await _multilevelCacheClient.GetListAsync<string>(key, key2, key3)).ToList();
@@ -431,8 +517,12 @@ public class MultilevelCacheClientTest : TestBase
 
         await multilevelCacheClient.SetListAsync(new Dictionary<string, string?>()
         {
-            { key, "success" },
-            { key3, "success3" }
+            {
+                key, "success"
+            },
+            {
+                key3, "success3"
+            }
         });
 
         list = (await multilevelCacheClient.GetListAsync<string>(key, key2, key3)).ToList();

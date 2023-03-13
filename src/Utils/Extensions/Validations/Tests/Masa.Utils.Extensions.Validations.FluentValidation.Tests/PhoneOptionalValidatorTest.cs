@@ -4,7 +4,7 @@
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
 
 [TestClass]
-public class PhoneValidatorTest: ValidatorBaseTest
+public class PhoneOptionalValidatorTest : ValidatorBaseTest
 {
     public override string Message => "'Phone' must be a valid mobile phone number.";
 
@@ -14,7 +14,7 @@ public class PhoneValidatorTest: ValidatorBaseTest
     [DataRow("8613677777777", "zh-CN", true)]
     [DataRow("18613677777777", "zh-CN", false)]
     [DataRow(null, "zh-CN", true)]
-    [DataRow("", "zh-CN", false)]
+    [DataRow("", "zh-CN", true)]
     [DataRow("+19104521452", "en-US", true)]
     [DataRow("8613677777777", "en-US", false)]
     [DataRow("+11021021521", "en-US", false)]
@@ -33,26 +33,41 @@ public class PhoneValidatorTest: ValidatorBaseTest
         }
     }
 
+    [DataRow(null)]
+    [DataRow("133333")]
+    [DataRow("")]
     [TestMethod]
-    public void TestPhoneByJapan()
+    public void TestPhoneByJapan(string? phone)
     {
-        string phone="";
-        string culture="ja-jp";
+        string culture = "ja-jp";
         var validator = new RegisterUserEventValidator(culture);
-        Assert.ThrowsException<NotSupportedException>(() =>
+
+        switch (phone)
         {
-            validator.Validate(new RegisterUserEvent()
-            {
-                Phone = phone
-            });
-        });
+            case null:
+            case "":
+                var result = validator.Validate(new RegisterUserEvent()
+                {
+                    Phone = phone
+                });
+                Assert.IsTrue(result.IsValid);
+                break;
+            default:
+                Assert.ThrowsException<NotSupportedException>(() => validator.Validate(new RegisterUserEvent()
+                {
+                    Phone = phone
+                }));
+                break;
+        }
     }
 
     public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator(string? culture)
         {
-            RuleFor(r => r.Phone).Phone(culture);
+            //_ = WhenNotEmpty(r => r.Phone, r => r.Phone, new PhoneValidator<RegisterUserEvent>(culture));
+            //_ = WhenNotEmpty(r => r.Phone, new PhoneValidator<RegisterUserEvent>(culture));
+            _ = WhenNotEmpty(r => r.Phone, rule => rule.Phone(culture));
         }
     }
 }

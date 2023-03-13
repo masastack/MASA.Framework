@@ -189,11 +189,17 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             }
             else throw new NotSupportedException();
 
+            CacheEntryOptions? memoryCacheEntryOptions = null;
+            if (combinedCacheEntry.MemoryCacheEntryOptionsAction != null)
+            {
+                memoryCacheEntryOptions = new();
+                combinedCacheEntry.MemoryCacheEntryOptionsAction.Invoke(memoryCacheEntryOptions);
+            }
             SetCore(new SetOptions<T>()
             {
                 Value = value,
                 FormattedKey = formattedKey,
-                MemoryCacheEntryOptions = combinedCacheEntry.MemoryCacheEntryOptions
+                MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
             PubSub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
@@ -217,18 +223,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
             CacheEntry<T> cacheEntry = default!;
-            if (combinedCacheEntry.DistributedCacheEntryAsyncFunc != null)
-            {
-                value = await _distributedCacheClient.GetOrSetAsync(
-                    formattedKey,
-                    async () =>
-                    {
-                        cacheEntry = await combinedCacheEntry.DistributedCacheEntryAsyncFunc.Invoke();
-                        return cacheEntry;
-                    },
-                    CacheOptionsAction).ConfigureAwait(false);
-            }
-            else if (combinedCacheEntry.DistributedCacheEntryFunc != null)
+            if (combinedCacheEntry.DistributedCacheEntryFunc != null)
             {
                 value = await _distributedCacheClient.GetOrSetAsync(
                     formattedKey,
@@ -239,13 +234,31 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                     },
                     CacheOptionsAction).ConfigureAwait(false);
             }
+            else if (combinedCacheEntry.DistributedCacheEntryAsyncFunc != null)
+            {
+                value = await _distributedCacheClient.GetOrSetAsync(
+                    formattedKey,
+                    async () =>
+                    {
+                        cacheEntry = await combinedCacheEntry.DistributedCacheEntryAsyncFunc.Invoke();
+                        return cacheEntry;
+                    },
+                    CacheOptionsAction).ConfigureAwait(false);
+            }
             else throw new NotSupportedException();
+
+            CacheEntryOptions? memoryCacheEntryOptions = null;
+            if (combinedCacheEntry.MemoryCacheEntryOptionsAction != null)
+            {
+                memoryCacheEntryOptions = new();
+                combinedCacheEntry.MemoryCacheEntryOptionsAction.Invoke(memoryCacheEntryOptions);
+            }
 
             SetCore(new SetOptions<T>()
             {
                 Value = value,
                 FormattedKey = formattedKey,
-                MemoryCacheEntryOptions = combinedCacheEntry.MemoryCacheEntryOptions
+                MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
             await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
