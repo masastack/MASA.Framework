@@ -5,21 +5,21 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public static class MasaCallerOptionsExtensions
+public static class MasaCallerClientExtensions
 {
     /// <summary>
     /// Set the request handler and response handler for the specified Caller
     /// </summary>
-    /// <param name="masaCallerOptions"></param>
+    /// <param name="masaCallerClient"></param>
     /// <returns></returns>
-    public static MasaCallerClient UseXml(this MasaCallerClient masaCallerOptions)
+    public static MasaCallerClient UseXml(this MasaCallerClient masaCallerClient)
     {
-        masaCallerOptions.RequestMessageFactory = _ => new XmlRequestMessage();
-        masaCallerOptions.ResponseMessageFactory = serviceProvider =>
+        masaCallerClient.RequestMessageFactory = _ => new XmlRequestMessage();
+        masaCallerClient.ResponseMessageFactory = serviceProvider =>
         {
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
             return new XmlResponseMessage(loggerFactory);
         };
-        return masaCallerOptions;
+        return masaCallerClient;
     }
 }
