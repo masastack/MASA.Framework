@@ -14,7 +14,7 @@ public class DccTest
     private Mock<IMultilevelCacheClientFactory> _memoryCacheClientFactory;
     private Mock<IDistributedCacheClientFactory> _distributedCacheClientFactory;
     private Mock<IMemoryCache> _memoryCache;
-    private Mock<IDistributedCacheClient> _distributedCacheClient;
+    private Mock<IDistributedCacheClientDisposeWrapper> _distributedCacheClient;
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
     private Masa.BuildingBlocks.Data.ISerializer _serializer;
     private Masa.BuildingBlocks.Data.IDeserializer _deserializer;

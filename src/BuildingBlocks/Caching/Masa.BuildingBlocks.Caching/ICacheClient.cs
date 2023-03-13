@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public interface ICacheClient : IDisposable
+public interface ICacheClient
 {
     IEnumerable<T?> GetList<T>(params string[] keys);
 

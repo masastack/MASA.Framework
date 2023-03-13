@@ -1,13 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+
 namespace Masa.Contrib.Caching.MultilevelCache;
 
 public class MultilevelCacheClient : MultilevelCacheClientBase
 {
     private readonly ITypeAliasProvider? _typeAliasProvider;
     private IMemoryCache _memoryCache;
-    private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly IDistributedCacheClientDisposeWrapper _distributedCacheClient;
     private SubscribeKeyType _subscribeKeyType;
     private string _subscribeKeyPrefix;
     private readonly object _locker = new();
@@ -26,7 +28,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         string name,
         bool isReset,
         IOptionsMonitor<MultilevelCacheGlobalOptions> multilevelCacheGlobalOptions,
-        IDistributedCacheClient distributedCacheClient,
+        IDistributedCacheClientDisposeWrapper distributedCacheClient,
         ITypeAliasProvider? typeAliasProvider = null) : this(typeAliasProvider)
     {
         _distributedCacheClient = distributedCacheClient;
@@ -61,7 +63,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     public MultilevelCacheClient(IMemoryCache memoryCache,
-        IDistributedCacheClient distributedCacheClient,
+        IDistributedCacheClientDisposeWrapper distributedCacheClient,
         MultilevelCacheOptions multilevelCacheOptions,
         SubscribeKeyType subscribeKeyType,
         string subscribeKeyPrefix = "",

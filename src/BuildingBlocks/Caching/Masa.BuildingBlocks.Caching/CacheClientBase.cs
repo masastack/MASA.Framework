@@ -67,6 +67,4 @@ public abstract class CacheClientBase : ICacheClient
     public abstract Task RefreshAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null);
 
     protected static IEnumerable<string> GetKeys(params string[] keys) => keys;
-
-    public abstract void Dispose();
 }

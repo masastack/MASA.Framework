@@ -1,9 +1,9 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClient
+public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClientDisposeWrapper
 {
     /// <summary>
     /// Get cache
@@ -173,4 +173,6 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         Dictionary<string, T?> keyValues,
         CombinedCacheEntryOptions? options,
         Action<CacheOptions>? action = null);
+
+    public abstract void Dispose();
 }

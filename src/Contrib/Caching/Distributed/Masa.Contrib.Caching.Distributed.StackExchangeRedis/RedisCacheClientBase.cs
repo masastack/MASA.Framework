@@ -244,4 +244,9 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         }
         return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
     }
+
+    public override void Dispose()
+    {
+        Connection?.Dispose();
+    }
 }

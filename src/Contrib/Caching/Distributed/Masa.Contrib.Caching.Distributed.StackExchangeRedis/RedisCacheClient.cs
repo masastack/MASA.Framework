@@ -682,10 +682,4 @@ end";
     }
 
     #endregion
-
-
-    public override void Dispose()
-    {
-        Connection?.Dispose();
-    }
 }
