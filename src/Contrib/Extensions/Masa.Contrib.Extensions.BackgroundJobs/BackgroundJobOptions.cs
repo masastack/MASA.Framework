@@ -9,7 +9,7 @@ public class BackgroundJobOptions
 
     /// <summary>
     /// Background task rotation interval period
-    /// default: 5s
+    /// Default: 5s
     /// </summary>
     public int PollInterval
     {
@@ -41,7 +41,7 @@ public class BackgroundJobOptions
     private int _maxRetryTimes = 30;
 
     /// <summary>
-    /// maximum number of retries
+    /// Maximum number of retries
     /// Default is 10
     /// </summary>
     public int MaxRetryTimes
@@ -57,6 +57,9 @@ public class BackgroundJobOptions
 
     private int _firstWaitDuration = 60;
 
+    /// <summary>
+    /// Default: 60s
+    /// </summary>
     public int FirstWaitDuration
     {
         get => _firstWaitDuration;
@@ -70,6 +73,9 @@ public class BackgroundJobOptions
 
     private int _waitDuration = 2;
 
+    /// <summary>
+    /// Default: 2s
+    /// </summary>
     public int WaitDuration
     {
         get => _waitDuration;

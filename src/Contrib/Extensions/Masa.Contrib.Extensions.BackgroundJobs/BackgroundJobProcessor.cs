@@ -46,52 +46,20 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
                 {
                     Logger?.LogError(ex, "----- A background job execution is failed. Job: {JobInfo}", job);
 
-                    var nextTryTime = NextTryTime(job);
-
-                    if (nextTryTime.HasValue)
-                    {
-                        job.NextTryTime = nextTryTime.Value;
-                    }
-                    else
-                    {
-                        job.IsInvalid = true;
-                    }
-                    await backgroundJobStorage.UpdateAsync(job);
+                    await ExecuteFailedAsync(backgroundJobStorage, job);
                 }
             }
             catch (BackgroundJobException ex)
             {
                 Logger?.LogError(ex, "----- Error getting background task parameter information. Job: {JobInfo}", job);
 
-                var nextTryTime = NextTryTime(job);
-
-                if (nextTryTime.HasValue)
-                {
-                    job.NextTryTime = nextTryTime.Value;
-                }
-                else
-                {
-                    job.IsInvalid = true;
-                }
-
-                await backgroundJobStorage.UpdateAsync(job);
+                await ExecuteFailedAsync(backgroundJobStorage, job, false);
             }
             catch (Exception ex)
             {
                 Logger?.LogError(ex, "----- A background job execution is failed. Job: {JobInfo}", job);
 
-                var nextTryTime = NextTryTime(job);
-
-                if (nextTryTime.HasValue)
-                {
-                    job.NextTryTime = nextTryTime.Value;
-                }
-                else
-                {
-                    job.IsInvalid = true;
-                }
-
-                await backgroundJobStorage.UpdateAsync(job);
+                await ExecuteFailedAsync(backgroundJobStorage, job);
             }
         }
     }
@@ -104,5 +72,28 @@ public class BackgroundJobProcessor : BackgroundJobProcessorBase
         var nextDuration = _backgroundJobOptions.Value.FirstWaitDuration *
             Math.Pow(_backgroundJobOptions.Value.WaitDuration, jobInfo.Times - 1);
         return jobInfo.LastTryTime.AddSeconds(nextDuration);
+    }
+
+    private Task ExecuteFailedAsync(IBackgroundJobStorage backgroundJobStorage, BackgroundJobInfo jobInfo, bool isRetry = true)
+    {
+        if (isRetry)
+        {
+            var nextTryTime = NextTryTime(jobInfo);
+
+            if (nextTryTime.HasValue)
+            {
+                jobInfo.NextTryTime = nextTryTime.Value;
+            }
+            else
+            {
+                jobInfo.IsInvalid = true;
+            }
+        }
+        else
+        {
+            jobInfo.IsInvalid = true;
+        }
+
+        return backgroundJobStorage.UpdateAsync(jobInfo);
     }
 }
