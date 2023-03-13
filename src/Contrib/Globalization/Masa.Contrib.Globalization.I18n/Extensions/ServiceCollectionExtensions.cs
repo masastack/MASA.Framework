@@ -31,8 +31,8 @@ public static class ServiceCollectionExtensions
             settings =>
             {
                 settings.ResourcesDirectory = languageDirectory;
-                settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
-                    supportCultureName;
+                settings.SupportCultureFileName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
+                    settings.GetSupportCultureFileName();
             }, action);
     }
 
@@ -59,9 +59,9 @@ public static class ServiceCollectionExtensions
         return services.TestAddI18n(settings =>
         {
             settings.ResourcesDirectory = languageDirectory;
-            settings.SupportCultureName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
+            settings.SupportCultureFileName = supportCultureName.IsNullOrWhiteSpace() ? ContribI18nConstant.SUPPORTED_CULTURES_NAME :
                 supportCultureName;
-            settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName!);
+            settings.SupportedCultures = CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureFileName!);
         }, action);
     }
 
@@ -84,22 +84,41 @@ public static class ServiceCollectionExtensions
             var assembly = typeof(EmbeddedResourceUtils).Assembly;
             options.Resources.TryAdd<MasaFrameworkResource>(resource =>
             {
-                resource.Assemblies = new[] { assembly };
+                resource.Assemblies = new[]
+                {
+                    assembly
+                };
                 resource.AddJson(ContribI18nConstant.DefaultFrameworkResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaParameterValidationResource>(resource =>
             {
-                resource.Assemblies = new[] { assembly };
+                resource.Assemblies = new[]
+                {
+                    assembly
+                };
                 resource.AddJson(ContribI18nConstant.DefaultFrameworkParameterValidationResourcePath,
                     languageSettings.SupportedCultures);
             });
 
             options.Resources.TryAdd<MasaLanguageResource>(resource =>
             {
-                resource.Assemblies = new[] { assembly };
+                resource.Assemblies = new[]
+                {
+                    assembly
+                };
                 resource.AddJson(ContribI18nConstant.DefaultFrameworkLanguageResourcePath,
+                    languageSettings.SupportedCultures);
+            });
+
+            options.Resources.TryAdd<MasaBackgroundJobResource>(resource =>
+            {
+                resource.Assemblies = new[]
+                {
+                    assembly
+                };
+                resource.AddJson(ContribI18nConstant.DefaultFrameworkBackgroundJobResourcePath,
                     languageSettings.SupportedCultures);
             });
         });
@@ -117,12 +136,11 @@ public static class ServiceCollectionExtensions
             if (string.IsNullOrWhiteSpace(settings.ResourcesDirectory))
                 settings.ResourcesDirectory = ContribI18nConstant.DefaultResourcePath;
 
-            if (string.IsNullOrWhiteSpace(settings.SupportCultureName))
-                settings.SupportCultureName = ContribI18nConstant.SUPPORTED_CULTURES_NAME;
+            settings.SupportCultureFileName =  settings.GetSupportCultureFileName();
 
             if (!settings.SupportedCultures.Any())
                 settings.SupportedCultures =
-                    CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureName);
+                    CultureUtils.GetSupportedCultures(settings.ResourcesDirectory, settings.SupportCultureFileName);
         });
         var serviceProvider = services.BuildServiceProvider();
         var settings = serviceProvider.GetRequiredService<IOptions<CultureSettings>>().Value;

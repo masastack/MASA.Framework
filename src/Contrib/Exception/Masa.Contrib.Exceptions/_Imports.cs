@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data.Constants;
+global using Masa.BuildingBlocks.Extensions.BackgroundJobs;
 global using Masa.BuildingBlocks.Globalization.I18n;
 global using Masa.Contrib.Exceptions.Internal;
 global using Microsoft.AspNetCore.Http;

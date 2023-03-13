@@ -67,8 +67,8 @@ public class ExceptionHandlerMiddleware
             }
             else if (_options.CatchAllException)
             {
-                string message = frameworkI18n == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
-                    frameworkI18n[ErrorCode.INTERNAL_SERVER_ERROR];
+                string message = frameworkI18n == null ? ExceptionErrorCode.GetErrorMessage(ExceptionErrorCode.INTERNAL_SERVER_ERROR)! :
+                    frameworkI18n[ExceptionErrorCode.INTERNAL_SERVER_ERROR];
                 await httpContext.Response.WriteTextAsync(httpStatusCode, message);
             }
             else
