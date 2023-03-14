@@ -54,8 +54,28 @@ public static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
 
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
-        services.TryAddScoped<IConnectionStringProvider, DefaultConnectionStringProvider>();
-        services.TryAddScoped<IDbConnectionStringProvider, DbConnectionStringProvider>();
+
+        services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
+        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
+        services.TryAddScoped<IConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                return serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
+        });
+
+        services.TryAddScoped<IDbConnectionStringProviderWrapper, DbConnectionStringProvider>();
+        services.TryAddScoped<IIsolationDbConnectionStringProviderWrapper, IsolationDbConnectionStringProvider>();
+        services.TryAddScoped<IDbConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                return serviceProvider.GetRequiredService<IIsolationDbConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<IDbConnectionStringProviderWrapper>();
+        });
 
         services.TryAdd(
             new ServiceDescriptor(

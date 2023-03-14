@@ -3,8 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Service.Caller;
+namespace Masa.Contrib.Data.EFCore;
 
-public class CallerServiceLifetimeOptions : GlobalClientLifetimeOptions
+public interface IIsolationConnectionStringProviderWrapper : IConnectionStringProvider
 {
+
 }

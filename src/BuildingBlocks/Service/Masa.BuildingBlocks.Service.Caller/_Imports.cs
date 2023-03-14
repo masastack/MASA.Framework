@@ -3,6 +3,7 @@
 
 global using Google.Protobuf;
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Isolation;
 global using Masa.BuildingBlocks.Service.Caller;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -3,10 +3,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class BucketNameProvider :
-    IBucketNameProviderSingleton,
-    IBucketNameProviderScoped,
-    IBucketNameProviderTransient
+public class BucketNameProvider : IBucketNameProvider
 {
     public BucketNames BucketNames { get; set; }
 

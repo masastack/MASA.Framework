@@ -11,7 +11,6 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<CallerOptionsBuilder> configure)
         => services.AddCaller(configure, null);
-        MasaArgumentException.ThrowIfNull(name);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
@@ -71,7 +70,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<ICaller>(serviceProvider => serviceProvider.GetRequiredService<ICallerFactory>().Create());
         services.TryAddSingleton<IRequestMessage>(_ => new JsonRequestMessage());
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
-        
+
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
         services.AddServiceFactory();
     }

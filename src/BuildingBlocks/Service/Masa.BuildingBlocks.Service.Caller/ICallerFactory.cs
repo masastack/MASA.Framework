@@ -3,6 +3,6 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public interface ICallerFactory: IMasaFactory<ICaller>
+public interface ICallerFactory: IMasaFactory<ICallerDisposeWrapper>
 {
 }

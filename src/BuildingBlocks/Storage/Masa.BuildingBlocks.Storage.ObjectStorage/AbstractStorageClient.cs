@@ -4,10 +4,7 @@
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
 public abstract class AbstractStorageClient :
-    IObjectStorageClient,
-    IObjectStorageClientSingleton,
-    IObjectStorageClientScoped,
-    IObjectStorageClientTransient
+    IObjectStorageClient
 {
     public abstract TemporaryCredentialsResponse GetSecurityToken();
 

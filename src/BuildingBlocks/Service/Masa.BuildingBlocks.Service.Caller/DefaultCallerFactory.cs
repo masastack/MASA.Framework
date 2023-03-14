@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-internal class DefaultCallerFactory : MasaFactoryBase<ICaller, CallerRelationOptions>, ICallerFactory
+internal class DefaultCallerFactory : MasaFactoryBase<ICallerDisposeWrapper, CallerRelationOptions>, ICallerFactory
 {
     protected override string DefaultServiceNotFoundMessage => "No default Caller found, you may need service.AddCaller()";
 
@@ -25,6 +25,7 @@ internal class DefaultCallerFactory : MasaFactoryBase<ICaller, CallerRelationOpt
         {
             case ServiceLifetime.Scoped:
             case null when TransientServiceProvider.GetService<IAuthenticationServiceFactory>()?.TryCreate(name, out _) ?? false:
+            case null when TransientServiceProvider.GetService<IOptions<IsolationOptions>>()?.Value.Enable ?? false:
                 return TransientServiceProvider.GetRequiredService<ScopedService>().ServiceProvider;
             case ServiceLifetime.Transient:
                 return TransientServiceProvider;

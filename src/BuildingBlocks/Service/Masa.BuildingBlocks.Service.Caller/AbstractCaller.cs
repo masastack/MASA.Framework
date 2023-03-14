@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICallerSingleton, ICallerScoped, ICallerTransient
+public abstract class AbstractCaller : ICallerDisposeWrapper
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;
@@ -460,5 +460,15 @@ public abstract class AbstractCaller : ICallerSingleton, ICallerScoped, ICallerT
             return _authenticationService.ExecuteAsync(masaHttpContext.RequestMessage);
         }
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Isolation;
+namespace Masa.Contrib.Isolation;
 
 public interface IIsolationMiddleware
 {

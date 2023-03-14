@@ -256,60 +256,6 @@ public class CallerTest
         Assert.AreEqual(caller3, caller4);
     }
 
-    [TestMethod]
-    public void TestCallerLifetimeEqualScoped()
-    {
-        var services = new ServiceCollection();
-        services.AddCaller(callerBuilder =>
-        {
-            callerBuilder.UseHttpClient(httpClient =>
-            {
-                httpClient.BaseAddress = "https://github.com";
-            });
-        });
-        services.Configure<CallerServiceLifetimeOptions>(options =>
-        {
-            options.Lifetime = ServiceLifetime.Scoped;
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var caller = serviceProvider.GetService<ICaller>();
-        var caller2 = serviceProvider.GetService<ICaller>();
-        Assert.AreEqual(caller, caller2);
-
-        var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
-        var caller3 = serviceProvider2.GetService<ICaller>();
-        var caller4 = serviceProvider2.GetService<ICaller>();
-        Assert.AreNotEqual(caller, caller3);
-        Assert.AreEqual(caller3, caller4);
-    }
-
-    [TestMethod]
-    public void TestCallerLifetimeEqualTransient()
-    {
-        var services = new ServiceCollection();
-        services.AddCaller(callerBuilder =>
-        {
-            callerBuilder.UseHttpClient(httpClient =>
-            {
-                httpClient.BaseAddress = "https://github.com";
-            });
-        });
-        services.Configure<CallerServiceLifetimeOptions>(options =>
-        {
-            options.Lifetime = ServiceLifetime.Transient;
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var caller = serviceProvider.GetService<ICaller>();
-        var caller2 = serviceProvider.GetService<ICaller>();
-        Assert.AreNotEqual(caller, caller2);
-
-        var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
-        var caller3 = serviceProvider2.GetService<ICaller>();
-        var caller4 = serviceProvider2.GetService<ICaller>();
-        Assert.AreNotEqual(caller, caller3);
-        Assert.AreNotEqual(caller3, caller4);
-    }
-
     private static FieldInfo GetCustomFieldInfo(Type type, string name)
         => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
 

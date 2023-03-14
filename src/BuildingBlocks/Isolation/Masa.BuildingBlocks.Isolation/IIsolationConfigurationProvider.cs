@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.Isolation;
 
 public interface IIsolationConfigurationProvider
 {
-    bool TryGetModule<TModule>(string propertyName, [NotNullWhen(true)] out TModule? module) where TModule : class;
+    bool TryGetModule<TConfig>(string propertyName, [NotNullWhen(true)] out TConfig? module) where TConfig : class;
 }

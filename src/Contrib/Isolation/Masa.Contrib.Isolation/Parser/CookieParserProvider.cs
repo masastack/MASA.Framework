@@ -1,17 +1,17 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Isolation.Parser;
+namespace Masa.Contrib.Isolation.Parser;
 
-public class HttpContextItemParserProvider : IParserProvider
+public class CookieParserProvider : IParserProvider
 {
-    public string Name => "Items";
+    public string Name => "Cookie";
 
     public Task<bool> ResolveAsync(HttpContext? httpContext, string key, Action<string> action)
     {
-        if (httpContext?.Items.ContainsKey(key) ?? false)
+        if (httpContext?.Request.Cookies.ContainsKey(key) ?? false)
         {
-            var value = httpContext.Items[key]?.ToString() ?? string.Empty;
+            var value = httpContext.Request.Cookies[key];
             if (!string.IsNullOrEmpty(value))
             {
                 action.Invoke(value);

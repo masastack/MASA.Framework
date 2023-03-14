@@ -8,8 +8,6 @@ namespace Masa.BuildingBlocks.Isolation;
 /// </summary>
 public static class IsolationConfiguration
 {
-    public static bool IsEnable;
-
     internal static readonly JsonSerializerOptions DynamicJsonSerializerOptions;
 
     static IsolationConfiguration()

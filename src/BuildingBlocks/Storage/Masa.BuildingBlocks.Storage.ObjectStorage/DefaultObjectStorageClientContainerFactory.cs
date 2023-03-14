@@ -28,4 +28,16 @@ public class DefaultObjectStorageClientContainerFactory : IObjectStorageClientCo
 
     public IObjectStorageClientContainer<TContainer> Create<TContainer>(string name) where TContainer : class
         => new DefaultObjectStorageClientContainer<TContainer>(_objectStorageClientFactory.Create(name), _bucketNameFactory.Create(name));
+
+    public bool TryCreate(string name, [NotNullWhen(true)] out IObjectStorageClientContainer? service)
+    {
+        if (_objectStorageClientFactory.TryCreate(name, out var objectStorageClient) &&
+            _bucketNameFactory.TryCreate(name, out var bucketNameProvider))
+        {
+            service = new DefaultObjectStorageClientContainer<IObjectStorageClientContainer>(objectStorageClient, bucketNameProvider);
+            return true;
+        }
+        service = null;
+        return false;
+    }
 }

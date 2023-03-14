@@ -17,10 +17,10 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
         Refresh();
     }
 
-    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options, string name)
-        : this(options.Get(name))
+    public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> defaultStorageConfigureOptionsMonitor, string name)
+        : this(defaultStorageConfigureOptionsMonitor.Get(name))
     {
-        options.OnChange(aliyunStorageOptions =>
+        defaultStorageConfigureOptionsMonitor.OnChange(aliyunStorageOptions =>
         {
             _aliyunStorageOptions = GetAliyunStorageOptions(aliyunStorageOptions);
             Refresh();

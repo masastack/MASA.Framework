@@ -7,7 +7,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 internal static class ServiceCollectionExtensions
 {
-    public static void AddIsolation(this IServiceCollection services, Action<IsolationBuilder> isolationBuilder)
+    public static void AddIsolation(
+        this IServiceCollection services,
+        Action<IsolationBuilder> isolationBuilder,
+        string sectionName = IsolationConstant.DEFAULT_SECTION_NAME)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(isolationBuilder);
@@ -28,40 +31,10 @@ internal static class ServiceCollectionExtensions
         services.AddHttpContextAccessor();
 
         services
-            .TryAddConfigure<IsolationDbConnectionOptions>()
-            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
-            .TryAddScoped<IDbConnectionStringProvider, IsolationDbContextProvider>();
-
-        if (services.Any(service => service.ServiceType == typeof(IConnectionStringProvider)))
-            services.Replace(new ServiceDescriptor(typeof(IConnectionStringProvider), typeof(DefaultDbIsolationConnectionStringProvider),
-                ServiceLifetime.Scoped));
-        else
-            services.TryAddScoped<IConnectionStringProvider, DefaultDbIsolationConnectionStringProvider>();
+            .AddConfigure<IsolationOptions>(sectionName)
+            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>));
 
         MasaApp.TrySetServiceCollection(services);
-    }
-
-    public static IServiceCollection TryAddConfigure<TOptions>(
-        this IServiceCollection services)
-        where TOptions : class
-    {
-        services.AddOptions();
-        var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
-            serviceProvider.GetService<IConfiguration>();
-
-        if (configuration == null)
-            return services;
-
-        string name = Microsoft.Extensions.Options.Options.DefaultName;
-        services.TryAddSingleton<IOptionsChangeTokenSource<TOptions>>(
-            new ConfigurationChangeTokenSource<TOptions>(name, configuration));
-        services.TryAddSingleton<IConfigureOptions<TOptions>>(new NamedConfigureFromConfigurationOptions<TOptions>(
-            name,
-            configuration, _ =>
-            {
-            }));
-        return services;
     }
 
     private sealed class IsolationProvider

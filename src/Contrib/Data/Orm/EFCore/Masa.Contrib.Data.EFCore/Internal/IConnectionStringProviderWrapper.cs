@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Data;
+namespace Masa.Contrib.Data.EFCore;
 
-public class GlobalClientLifetimeOptions
+public interface IConnectionStringProviderWrapper : IConnectionStringProvider
 {
-    public ServiceLifetime? Lifetime { get; set; }
+
 }
