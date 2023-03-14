@@ -31,7 +31,7 @@ public class WebsiteMessageService : IWebsiteMessageService
     public async Task<List<WebsiteMessageChannelModel>> GetChannelListAsync()
     {
         var requestUri = $"{_party}/GetChannelList";
-        return await _caller.GetAsync<List<WebsiteMessageChannelModel>>(requestUri)??new();
+        return await _caller.GetAsync<List<WebsiteMessageChannelModel>>(requestUri) ?? new();
     }
 
     public async Task<PaginatedListModel<WebsiteMessageModel>> GetListAsync(GetWebsiteMessageModel options)
@@ -68,5 +68,12 @@ public class WebsiteMessageService : IWebsiteMessageService
     {
         var requestUri = $"{_party}/SendGetNotification";
         await _caller.PostAsync(requestUri, userIds);
+    }
+
+    public async Task<List<WebsiteMessageModel>> GetListByTagAsync(List<string> tags)
+    {
+        var requestUri = $"{_party}/ListByTag";
+        var options = new { tags = string.Join(",", tags) };
+        return await _caller.GetAsync<List<WebsiteMessageModel>>(requestUri, options) ?? new();
     }
 }
