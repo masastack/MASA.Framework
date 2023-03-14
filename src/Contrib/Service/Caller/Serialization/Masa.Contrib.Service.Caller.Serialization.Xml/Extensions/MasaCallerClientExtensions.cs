@@ -5,21 +5,20 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public static class MasaCallerOptionsExtensions
+public static class MasaCallerClientExtensions
 {
     /// <summary>
     /// Set the request handler and response handler for the specified Caller
     /// </summary>
     /// <param name="masaCallerClient"></param>
-    /// <param name="jsonSerializerOptions"></param>
     /// <returns></returns>
-    public static MasaCallerClient UseJson(this MasaCallerClient masaCallerClient, JsonSerializerOptions? jsonSerializerOptions)
+    public static MasaCallerClient UseXml(this MasaCallerClient masaCallerClient)
     {
-        masaCallerClient.RequestMessageFactory = _ => new JsonRequestMessage(jsonSerializerOptions);
+        masaCallerClient.RequestMessageFactory = _ => new XmlRequestMessage();
         masaCallerClient.ResponseMessageFactory = serviceProvider =>
         {
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            return new JsonResponseMessage(jsonSerializerOptions, loggerFactory);
+            return new XmlResponseMessage(loggerFactory);
         };
         return masaCallerClient;
     }
