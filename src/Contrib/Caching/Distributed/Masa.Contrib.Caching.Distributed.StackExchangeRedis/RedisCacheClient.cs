@@ -17,7 +17,7 @@ public class RedisCacheClient : RedisCacheClientBase
         {
             if (optionName == name)
             {
-                InitRedisConfigurationOptions(option);
+                InitializeRedisConfigurationOptions(option);
                 GlobalCacheOptions = option.GlobalCacheOptions;
             }
         });

@@ -6,7 +6,7 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
 public class CustomDistributedCacheClient : MultilevelCacheClient
 {
     public CustomDistributedCacheClient(IMemoryCache memoryCache,
-        IDistributedCacheClientDisposeWrapper distributedCacheClient,
+        IManualDistributedCacheClient distributedCacheClient,
         MultilevelCacheOptions multilevelCacheOptions,
         SubscribeKeyType subscribeKeyType,
         string subscribeKeyPrefix = "",

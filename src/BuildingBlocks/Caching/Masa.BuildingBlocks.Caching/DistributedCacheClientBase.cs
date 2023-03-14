@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class DistributedCacheClientBase : CacheClientBase, IDistributedCacheClientDisposeWrapper
+public abstract class DistributedCacheClientBase : CacheClientBase, IManualDistributedCacheClient
 {
     public abstract T? Get<T>(string key, Action<CacheOptions>? action = null);
 
@@ -130,5 +130,13 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
         CacheEntryOptions? options = null,
         Action<CacheOptions>? action = null);
 
-    public abstract void Dispose();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 }

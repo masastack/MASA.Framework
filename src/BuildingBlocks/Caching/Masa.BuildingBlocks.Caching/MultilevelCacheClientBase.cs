@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCacheClientDisposeWrapper
+public abstract class MultilevelCacheClientBase : CacheClientBase, IManualMultilevelCacheClient
 {
     /// <summary>
     /// Get cache
@@ -174,5 +174,13 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IMultilevelCa
         CombinedCacheEntryOptions? options,
         Action<CacheOptions>? action = null);
 
-    public abstract void Dispose();
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 }

@@ -8,7 +8,7 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 public class MultilevelCacheClientTest : TestBase
 {
     private IMemoryCache _memoryCache;
-    private IDistributedCacheClientDisposeWrapper _distributedCacheClient;
+    private IManualDistributedCacheClient _distributedCacheClient;
     private IMultilevelCacheClient _multilevelCacheClient;
 
     [TestInitialize]
@@ -19,7 +19,7 @@ public class MultilevelCacheClientTest : TestBase
         services.AddMemoryCache();
         var serviceProvider = services.BuildServiceProvider();
         _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        _distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientDisposeWrapper>();
+        _distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
         _multilevelCacheClient = new MultilevelCacheClient(_memoryCache,
             _distributedCacheClient,
             new MultilevelCacheOptions()
@@ -544,7 +544,7 @@ public class MultilevelCacheClientTest : TestBase
             "test20"
         };
         Mock<IMemoryCache> memoryCache = new();
-        Mock<IDistributedCacheClientDisposeWrapper> distributedCacheClient = new();
+        Mock<IManualDistributedCacheClient> distributedCacheClient = new();
         distributedCacheClient.Setup(client => client.Refresh<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
             .Verifiable();
         memoryCache.Setup(cache => cache.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny)).Verifiable();
@@ -574,7 +574,7 @@ public class MultilevelCacheClientTest : TestBase
             "test20"
         };
         Mock<IMemoryCache> memoryCache = new();
-        Mock<IDistributedCacheClientDisposeWrapper> distributedCacheClient = new();
+        Mock<IManualDistributedCacheClient> distributedCacheClient = new();
         distributedCacheClient.Setup(client
                 => client.RefreshAsync<string>(It.IsAny<IEnumerable<string>>(), It.IsAny<Action<CacheOptions>?>()))
             .Verifiable();
@@ -601,7 +601,7 @@ public class MultilevelCacheClientTest : TestBase
     public void TestGetMemoryCacheEntryOptions()
     {
         var customDistributedCacheClient = new CustomDistributedCacheClient(new Mock<IMemoryCache>().Object,
-            new Mock<IDistributedCacheClientDisposeWrapper>().Object,
+            new Mock<IManualDistributedCacheClient>().Object,
             new MultilevelCacheOptions()
             {
                 MemoryCacheEntryOptions = null,
@@ -629,7 +629,7 @@ public class MultilevelCacheClientTest : TestBase
             SlidingExpiration = TimeSpan.FromHours(3)
         };
         customDistributedCacheClient = new CustomDistributedCacheClient(new Mock<IMemoryCache>().Object,
-            new Mock<IDistributedCacheClientDisposeWrapper>().Object,
+            new Mock<IManualDistributedCacheClient>().Object,
             new MultilevelCacheOptions()
             {
                 MemoryCacheEntryOptions = cacheEntryOptions,
@@ -649,7 +649,7 @@ public class MultilevelCacheClientTest : TestBase
         _distributedCacheClient.Set("test_multilevel_cache_2", 99.99m);
     }
 
-    private static IMultilevelCacheClientDisposeWrapper InitializeByCacheEntryOptionsIsNull()
+    private static IManualMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
         services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(_ =>

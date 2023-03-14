@@ -18,12 +18,12 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     {
         GlobalCacheOptions = redisConfigurationOptions.GlobalCacheOptions;
         var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);
-        InitRedisConfigurationOptions(redisConfiguration);
+        InitializeRedisConfigurationOptions(redisConfiguration);
 
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
     }
 
-    protected void InitRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    protected void InitializeRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
     {
         Dispose();
 
@@ -245,8 +245,9 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
     }
 
-    public override void Dispose()
+    protected override void Dispose(bool disposing)
     {
         Connection?.Dispose();
+        base.Dispose(disposing);
     }
 }

@@ -7,7 +7,6 @@ public abstract class CacheClientBase : ICacheClient
 {
     public abstract IEnumerable<T?> GetList<T>(params string[] keys);
 
-
     public abstract Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
 
     public virtual void Set<T>(string key, T value, DateTimeOffset? absoluteExpiration, Action<CacheOptions>? action = null)

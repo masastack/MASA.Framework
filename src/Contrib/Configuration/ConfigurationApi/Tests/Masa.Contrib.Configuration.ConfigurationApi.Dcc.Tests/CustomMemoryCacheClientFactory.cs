@@ -9,17 +9,22 @@ public class CustomMemoryCacheClientFactory : IMultilevelCacheClientFactory
 
     public CustomMemoryCacheClientFactory(IMemoryCache memoryCache) => _memoryCache = memoryCache;
 
-    public IMultilevelCacheClientDisposeWrapper Create()
+    public IManualMultilevelCacheClient Create()
     {
         throw new NotImplementedException();
     }
 
-    public IMultilevelCacheClientDisposeWrapper Create(string name)
+    public IManualMultilevelCacheClient Create(string name)
     {
         throw new NotImplementedException();
     }
 
     public bool TryCreate(string name, [NotNullWhen(true)] out IMultilevelCacheClient? service)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool TryCreate(string name, [NotNullWhen(true)] out IManualMultilevelCacheClient? service)
     {
         throw new NotImplementedException();
     }

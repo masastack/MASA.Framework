@@ -118,7 +118,7 @@ public static class ServiceCollectionExtensions
             if (options.Options.Any(opt => opt.Name == name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClientDisposeWrapper>(name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, serviceProvider =>
             {
                 var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
                 var multilevelCacheClient = new MultilevelCacheClient(
@@ -177,7 +177,7 @@ public static class ServiceCollectionExtensions
             if (options.Options.Any(opt => opt.Name == name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClientDisposeWrapper>(name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, serviceProvider =>
             {
                 var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
                 var multilevelCacheClient = new MultilevelCacheClient(

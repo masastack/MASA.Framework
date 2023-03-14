@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public interface IMultilevelCacheClientFactory: ICacheClientFactory<IMultilevelCacheClientDisposeWrapper>
+public interface IMultilevelCacheClientFactory: ICacheClientFactory<IManualMultilevelCacheClient>
 {
 
 }

@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Configuration;
-
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 #pragma warning disable CS0618
@@ -99,7 +97,7 @@ public class StackExchangeRedisCacheTest : TestBase
         services.AddStackExchangeRedisCache("test");
 
         var serviceProvider = services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientDisposeWrapper>();
+        var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
         string key = "test_1";
         distributedCacheClient.Set(key, "test_content");
         Assert.IsTrue(distributedCacheClient.Exists(key));

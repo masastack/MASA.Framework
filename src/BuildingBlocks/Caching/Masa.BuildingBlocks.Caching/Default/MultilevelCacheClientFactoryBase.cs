@@ -3,14 +3,14 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class MultilevelCacheClientFactoryBase : CacheClientFactoryBase<IMultilevelCacheClientDisposeWrapper>, IMultilevelCacheClientFactory
+public class MultilevelCacheClientFactoryBase : CacheClientFactoryBase<IManualMultilevelCacheClient>, IMultilevelCacheClientFactory
 {
     protected override string DefaultServiceNotFoundMessage
         => "Default MultilevelCache not found, you need to add it, like services.AddMultilevelCache()";
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] MultilevelCache, it was not found";
 
-    protected override MasaFactoryOptions<CacheRelationOptions<IMultilevelCacheClientDisposeWrapper>> FactoryOptions => _optionsMonitor.CurrentValue;
+    protected override MasaFactoryOptions<CacheRelationOptions<IManualMultilevelCacheClient>> FactoryOptions => _optionsMonitor.CurrentValue;
 
     private readonly IOptionsMonitor<MultilevelCacheFactoryOptions> _optionsMonitor;
 

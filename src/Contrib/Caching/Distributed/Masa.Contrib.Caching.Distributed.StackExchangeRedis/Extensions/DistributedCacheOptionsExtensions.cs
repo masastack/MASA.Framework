@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
-using Masa.BuildingBlocks.Configuration;
-
 namespace Masa.BuildingBlocks.Caching;
 
 public static class DistributedCacheOptionsExtensions
@@ -80,7 +78,7 @@ public static class DistributedCacheOptionsExtensions
             if (options.Options.Any(opt => opt.Name == distributedOptions.Name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClientDisposeWrapper>(distributedOptions.Name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualDistributedCacheClient>(distributedOptions.Name, serviceProvider =>
             {
                 var distributedCacheClient = new RedisCacheClient(
                     serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>(),
@@ -125,7 +123,7 @@ public static class DistributedCacheOptionsExtensions
             if (options.Options.Any(opt => opt.Name == name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IDistributedCacheClientDisposeWrapper>(name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualDistributedCacheClient>(name, serviceProvider =>
             {
                 var distributedCacheClient = new RedisCacheClient(
                     redisConfigurationOptions,
