@@ -22,47 +22,28 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
-        return services.AddAuthClient(callerOptions =>
+        return services.AddAuthClient(callerOptionsBuilder =>
         {
-            callerOptions
-                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress);
+            callerOptionsBuilder
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress);//Need to use the AuthenticationService provided by MasaStack
         }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions,
+    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder,
         RedisConfigurationOptions redisOptions)
     {
-        MasaArgumentException.ThrowIfNull(callerOptions);
+        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
-        services.AddHttpContextAccessor();
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddAuthClientMultilevelCache(redisOptions);
         services.AddScoped<IAuthClient>(serviceProvider =>
         {
             var userContext = serviceProvider.GetRequiredService<IMultiEnvironmentUserContext>();
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
-
-            if (caller is ICallerExpand callerExpand)
-            {
-                callerExpand.ConfigRequestMessage(httpRequestMessage =>
-                {
-                    var tokenProvider = serviceProvider.GetService<TokenProvider>();
-                    if (tokenProvider != null)
-                    {
-                        httpRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenProvider.AccessToken);
-                    }
-                    var environment = serviceProvider.GetService<IEnvironmentProvider>();
-                    if (environment != null)
-                    {
-                        httpRequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, environment.GetEnvironment());
-                    }
-                    return Task.CompletedTask;
-                });
-            }
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();
             var authClient = new AuthClient(caller, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;

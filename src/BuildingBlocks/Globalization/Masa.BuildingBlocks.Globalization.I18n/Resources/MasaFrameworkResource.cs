@@ -8,7 +8,10 @@ namespace Masa.BuildingBlocks.Globalization.I18n;
 /// <summary>
 /// Framework Multilingual Resources
 /// </summary>
-[InheritResource(typeof(MasaParameterValidationResource), typeof(MasaLanguageResource))]
+[InheritResource(
+    typeof(MasaParameterValidationResource),
+    typeof(MasaLanguageResource),
+    typeof(MasaBackgroundJobResource))]
 public class MasaFrameworkResource
 {
 

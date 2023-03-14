@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
@@ -14,8 +14,10 @@ public class LetterNumberValidatorTest : ValidatorBaseTest
     [DataRow("123", true)]
     [DataRow("masastack123", true)]
     [DataRow("团队123", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestLetterNumber(string name, bool expectedResult)
+    public void TestLetterNumber(string? name, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
@@ -29,7 +31,7 @@ public class LetterNumberValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

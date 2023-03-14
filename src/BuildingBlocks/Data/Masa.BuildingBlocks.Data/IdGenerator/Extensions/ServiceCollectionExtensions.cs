@@ -8,6 +8,7 @@ public static partial class ServiceCollectionExtensions
 {
     public static IServiceCollection AddIdGeneratorCore(this IServiceCollection services)
     {
+        services.AddServiceFactory();
         services.AddSingleton<IIdGeneratorFactory, DefaultIdGeneratorFactory>();
         return services;
     }

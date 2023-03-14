@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<DisabledRequestMiddleware>();
         services.AddTransient(typeof(IEventMiddleware<>), typeof(DisabledEventMiddleware<>));
         services.AddTransient(typeof(IEventMiddleware<>), typeof(ValidatorEventMiddleware<>));
+        services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."));
         return services;
     }
 

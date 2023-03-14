@@ -73,8 +73,8 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
         {
             context.ExceptionHandled = true;
 
-            string message = _frameworkI18n == null ? ErrorCode.GetErrorMessage(ErrorCode.INTERNAL_SERVER_ERROR)! :
-                _frameworkI18n[ErrorCode.INTERNAL_SERVER_ERROR];
+            string message = _frameworkI18n == null ? ExceptionErrorCode.GetErrorMessage(ExceptionErrorCode.INTERNAL_SERVER_ERROR)! :
+                _frameworkI18n[ExceptionErrorCode.INTERNAL_SERVER_ERROR];
             context.Result = new DefaultExceptionResult(message,
                 httpStatusCode,
                 masaExceptionContext.ContentType);

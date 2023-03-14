@@ -66,7 +66,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(arguments is null || !arguments.Any(),
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR);
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.NOT_NULL_AND_EMPTY_COLLECTION_VALIDATOR);
     }
 
     public new static void ThrowIfNull(
@@ -75,7 +75,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument is null,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_VALIDATOR);
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.NOT_NULL_VALIDATOR);
     }
 
     public new static void ThrowIfNullOrEmpty(
@@ -84,7 +84,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(string.IsNullOrEmpty(argument?.ToString()),
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR);
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.NOT_NULL_AND_EMPTY_VALIDATOR);
     }
 
     public new static void ThrowIfNullOrWhiteSpace(
@@ -93,7 +93,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(string.IsNullOrWhiteSpace(argument?.ToString()),
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR);
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.NOT_NULL_AND_WHITESPACE_VALIDATOR);
     }
 
     public new static void ThrowIfGreaterThan<T>(T argument,
@@ -102,7 +102,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument.CompareTo(maxValue) > 0,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_OR_EQUAL_VALIDATOR,
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.LESS_THAN_OR_EQUAL_VALIDATOR,
             null,
             maxValue);
     }
@@ -113,7 +113,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument.CompareTo(maxValue) >= 0,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.LESS_THAN_VALIDATOR,
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.LESS_THAN_VALIDATOR,
             null,
             maxValue);
     }
@@ -124,7 +124,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument.CompareTo(minValue) < 0,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_OR_EQUAL_VALIDATOR,
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.GREATER_THAN_OR_EQUAL_VALIDATOR,
             null,
             minValue);
     }
@@ -135,7 +135,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument.CompareTo(minValue) <= 0,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.GREATER_THAN_VALIDATOR,
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.GREATER_THAN_VALIDATOR,
             null,
             minValue);
     }
@@ -147,7 +147,7 @@ public class MasaValidatorException : MasaArgumentException
     {
         ThrowIf(argument.CompareTo(minValue) < 0 || argument.CompareTo(maxValue) > 0,
             paramName,
-            Masa.BuildingBlocks.Data.Constants.ErrorCode.OUT_OF_RANGE_VALIDATOR,
+            Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.OUT_OF_RANGE_VALIDATOR,
             null,
             minValue,
             maxValue);
@@ -166,7 +166,7 @@ public class MasaValidatorException : MasaArgumentException
         if (argument != null)
             ThrowIf(argument.Contains(parameter, stringComparison),
                 paramName,
-                Masa.BuildingBlocks.Data.Constants.ErrorCode.NOT_CONTAIN_VALIDATOR
+                Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.NOT_CONTAIN_VALIDATOR
             );
     }
 
@@ -178,7 +178,7 @@ public class MasaValidatorException : MasaArgumentException
         params object[] parameters)
     {
         if (condition)
-            Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ErrorCode.GetErrorMessage(errorCode), logLevel, parameters);
+            Throw(paramName, errorCode, Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.GetErrorMessage(errorCode), logLevel, parameters);
     }
 
     public new static void ThrowIf(
@@ -212,7 +212,7 @@ public class MasaValidatorException : MasaArgumentException
             message = string.IsNullOrWhiteSpace(ErrorMessage) ? Message : string.Format(ErrorMessage, GetParameters());
         }
 
-        else if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
+        else if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
             message = FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;

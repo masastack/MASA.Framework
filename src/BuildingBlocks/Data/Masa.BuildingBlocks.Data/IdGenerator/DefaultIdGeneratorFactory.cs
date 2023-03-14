@@ -11,13 +11,13 @@ public class DefaultIdGeneratorFactory : MasaFactoryBase<IIdGenerator, IdGenerat
     private ISnowflakeGenerator? _snowflakeGenerator;
 
     public IGuidGenerator GuidGenerator => _guidGenerator ??=
-        ServiceProvider.GetService<IGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(GuidGenerator)}");
+        SingletonServiceProvider.GetService<IGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(GuidGenerator)}");
 
     public ISequentialGuidGenerator SequentialGuidGenerator => _sequentialGuidGenerator ??=
-        ServiceProvider.GetService<ISequentialGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(SequentialGuidGenerator)}");
+        SingletonServiceProvider.GetService<ISequentialGuidGenerator>() ?? throw new Exception($"Unsupported {nameof(SequentialGuidGenerator)}");
 
     public ISnowflakeGenerator SnowflakeGenerator => _snowflakeGenerator ??=
-        ServiceProvider.GetService<ISnowflakeGenerator>() ?? throw new Exception($"Unsupported {nameof(SnowflakeGenerator)}");
+        SingletonServiceProvider.GetService<ISnowflakeGenerator>() ?? throw new Exception($"Unsupported {nameof(SnowflakeGenerator)}");
 
     protected override string DefaultServiceNotFoundMessage { get; } =
         "No default IdGenerator found, you may need service.AddSimpleGuidGenerator()";

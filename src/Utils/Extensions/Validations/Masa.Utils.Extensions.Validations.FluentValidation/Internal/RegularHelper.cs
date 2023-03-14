@@ -7,26 +7,26 @@ namespace Masa.Utils.Extensions.Validations.FluentValidation;
 
 internal static class RegularHelper
 {
-    internal const string CHINESE = "^\\s{0}$|^[\u4e00-\u9fa5]+$";
-    internal const string NUMBER = "^\\s{0}$|^[0-9]+$";
-    internal const string LETTER = "^\\s{0}$|^[a-zA-Z]+$";
-    internal const string IDENTIFY = "^\\s{0}$|^[a-zA-Z0-9\\.-]+$";
-    internal const string LOWER_LETTER = "^\\s{0}$|^[a-z]+$";
-    internal const string UPPER_LETTER = "^\\s{0}$|^[A-Z]+$";
-    internal const string LETTER_NUMBER = "^\\s{0}$|^[a-zA-Z0-9]+$";
-    internal const string CHINESE_LETTER_NUMBER = "^\\s{0}$|^[\u4e00-\u9fa5a-zA-Z0-9]+$";
-    internal const string CHINESE_LETTER = "^\\s{0}$|^[\u4e00-\u9fa5a-zA-Z]+$";
-    internal const string CHINESE_LETTER_NUMBER_UNDERLINE = "^\\s{0}$|^[\u4e00-\u9fa5_a-zA-Z0-9]+$";
-    internal const string CHINESE_LETTER_UNDERLINE = "^\\s{0}$|^[\u4e00-\u9fa5_a-zA-Z]+$";
-    internal const string IDCARD = "^\\s{0}$|(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)";
-    internal const string URL = "^\\s{0}$|[a-zA-z]+://[^s]*";
-    internal const string EMAIL = @"^\s{0}$|^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+    internal const string CHINESE = "^[\u4e00-\u9fa5]+$";
+    internal const string NUMBER = "^[0-9]+$";
+    internal const string LETTER = "^[a-zA-Z]+$";
+    internal const string IDENTIFY = "^[a-zA-Z0-9\\.-]+$";
+    internal const string LOWER_LETTER = "^[a-z]+$";
+    internal const string UPPER_LETTER = "^[A-Z]+$";
+    internal const string LETTER_NUMBER = "^[a-zA-Z0-9]+$";
+    internal const string CHINESE_LETTER_NUMBER = "^[\u4e00-\u9fa5a-zA-Z0-9]+$";
+    internal const string CHINESE_LETTER = "^[\u4e00-\u9fa5a-zA-Z]+$";
+    internal const string CHINESE_LETTER_NUMBER_UNDERLINE = "^[\u4e00-\u9fa5_a-zA-Z0-9]+$";
+    internal const string CHINESE_LETTER_UNDERLINE = "^[\u4e00-\u9fa5_a-zA-Z]+$";
+    internal const string IDCARD = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)";
+    internal const string URL = "[a-zA-z]+://[^s]*";
+    internal const string EMAIL = @"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
 #pragma warning disable S2068
-    internal const string PASSWORD_REGULAR = @"^\s{0}$|^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Za-z])\S*$";
+    internal const string PASSWORD_REGULAR = @"^\S*(?=\S{6,})(?=\S*\d)(?=\S*[A-Za-z])\S*$";
 #pragma warning restore S2068
 
     internal const string PORT =
-        "^\\s{0}$|^([1-9]|[1-9]\\d|[1-9]\\d{2}|[1-9]\\d{3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$";
+        "^([1-9]|[1-9]\\d|[1-9]\\d{2}|[1-9]\\d{3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$";
 
     #region Phone
 

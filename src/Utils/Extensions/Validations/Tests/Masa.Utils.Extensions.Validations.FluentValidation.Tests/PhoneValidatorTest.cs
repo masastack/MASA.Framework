@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Utils.Extensions.Validations.FluentValidation.Tests;
@@ -13,12 +13,13 @@ public class PhoneValidatorTest: ValidatorBaseTest
     [DataRow("+8613677777777", "zh-CN", true)]
     [DataRow("8613677777777", "zh-CN", true)]
     [DataRow("18613677777777", "zh-CN", false)]
-    [DataRow(null, "zh-CN", false)]
+    [DataRow(null, "zh-CN", true)]
+    [DataRow("", "zh-CN", false)]
     [DataRow("+19104521452", "en-US", true)]
     [DataRow("8613677777777", "en-US", false)]
     [DataRow("+11021021521", "en-US", false)]
     [DataTestMethod]
-    public void TestPhone(string phone, string? culture, bool expectedResult)
+    public void TestPhone(string? phone, string? culture, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator(culture);
         var result = validator.Validate(new RegisterUserEvent()
@@ -47,7 +48,7 @@ public class PhoneValidatorTest: ValidatorBaseTest
         });
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator(string? culture)
         {

@@ -3,7 +3,7 @@
 
 namespace FluentValidation.Validators;
 
-public class PasswordValidator<T> : RegularExpressionValidator<T>
+public class PasswordValidator<T> : MasaRegularExpressionValidator<T>
 {
     public override string Name => nameof(PasswordValidator<T>);
 

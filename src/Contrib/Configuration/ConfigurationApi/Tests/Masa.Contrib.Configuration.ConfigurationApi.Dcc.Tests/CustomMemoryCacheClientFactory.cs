@@ -18,4 +18,9 @@ public class CustomMemoryCacheClientFactory : IMultilevelCacheClientFactory
     {
         throw new NotImplementedException();
     }
+
+    public bool TryCreate(string name, [NotNullWhen(true)] out IMultilevelCacheClient? service)
+    {
+        throw new NotImplementedException();
+    }
 }

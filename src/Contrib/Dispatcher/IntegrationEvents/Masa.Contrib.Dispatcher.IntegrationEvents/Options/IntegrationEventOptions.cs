@@ -28,7 +28,7 @@ public class IntegrationEventOptions : IIntegrationEventOptions
     private int _maxRetryTimes = 10;
 
     /// <summary>
-    /// maximum number of retries
+    /// Maximum number of retries
     /// Default is 10
     /// </summary>
     public int MaxRetryTimes
@@ -47,7 +47,7 @@ public class IntegrationEventOptions : IIntegrationEventOptions
     /// <summary>
     /// The interval at which db polls for failure messages.
     /// Default is 60 seconds.
-    /// unit: seconds
+    /// Unit: seconds
     /// </summary>
     public int FailedRetryInterval
     {
@@ -83,7 +83,7 @@ public class IntegrationEventOptions : IIntegrationEventOptions
     /// The interval at which the local queue is polled for failed messages.
     /// Local queue does not rebuild after service crash
     /// Default is 3 seconds.
-    /// unit: seconds
+    /// Unit: seconds
     /// </summary>
     public int LocalFailedRetryInterval
     {
@@ -133,7 +133,7 @@ public class IntegrationEventOptions : IIntegrationEventOptions
     /// <summary>
     /// Delete local queue expired event interval
     /// Default is 60 seconds
-    /// unit: seconds
+    /// Unit: seconds
     /// </summary>
     public int CleaningLocalQueueExpireInterval
     {
@@ -151,7 +151,7 @@ public class IntegrationEventOptions : IIntegrationEventOptions
     /// <summary>
     /// Delete expired event interval
     /// Default is 300 seconds.
-    /// unit: seconds
+    /// Unit: seconds
     /// </summary>
     public int CleaningExpireInterval
     {

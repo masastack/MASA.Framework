@@ -12,10 +12,11 @@ public static class MasaCallerClientBuilderExtensions
         => masaCallerClientBuilder.AddMiddleware(_ => new CultureMiddleware());
 
     public static IMasaCallerClientBuilder AddMiddleware<TMiddleware>(
-        this IMasaCallerClientBuilder masaCallerClientBuilder)
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        ServiceLifetime middlewareLifetime = ServiceLifetime.Singleton)
         where TMiddleware : class, ICallerMiddleware
     {
-        masaCallerClientBuilder.Services.TryAddSingleton<TMiddleware>();
+        masaCallerClientBuilder.Services.TryAdd(ServiceDescriptor.Describe(typeof(TMiddleware), typeof(TMiddleware), middlewareLifetime));
         return masaCallerClientBuilder.AddMiddleware(serviceProvider => serviceProvider.GetRequiredService<TMiddleware>());
     }
 
@@ -28,5 +29,31 @@ public static class MasaCallerClientBuilderExtensions
             middlewareOptions.AddMiddleware(masaCallerClientBuilder.Name, implementationFactory);
         });
         return masaCallerClientBuilder;
+    }
+
+    public static void UseAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder,
+        Func<IServiceProvider, IAuthenticationService> implementationFactory)
+    {
+        MasaArgumentException.ThrowIfNull(masaCallerClientBuilder);
+
+        AddAuthenticationCore(masaCallerClientBuilder.Services);
+
+        masaCallerClientBuilder.Services.Configure<AuthenticationServiceFactoryOptions>(callerOptions =>
+        {
+            if (callerOptions.Options.Any(relation
+                    => relation.Name.Equals(masaCallerClientBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+                throw new ArgumentException(
+                    $"The caller name already exists, please change the name, the repeat name is [{masaCallerClientBuilder.Name}]");
+
+            callerOptions.Options.Add(new AuthenticationServiceRelationOptions(masaCallerClientBuilder.Name, implementationFactory));
+        });
+    }
+
+    private static void AddAuthenticationCore(IServiceCollection services)
+    {
+        services.TryAddTransient<IAuthenticationService>(serviceProvider
+            => serviceProvider.GetRequiredService<IAuthenticationServiceFactory>().Create());
+        services.TryAddTransient<IAuthenticationServiceFactory, DefaultAuthenticationServiceFactory>();
     }
 }

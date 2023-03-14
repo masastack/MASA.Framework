@@ -120,13 +120,17 @@ public class MasaException : Exception
     {
         if (!SupportI18n)
         {
-            if (string.IsNullOrWhiteSpace(ErrorMessage))
+            if (ErrorMessage.IsNullOrWhiteSpace())
                 return Message;
 
-            return string.Format(ErrorMessage, GetParameters());
+            var parameters = GetParameters();
+            if (parameters != null! && parameters.Any())
+                return string.Format(ErrorMessage, GetParameters());
+
+            return ErrorMessage;
         }
 
-        if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ErrorCode.FRAMEWORK_PREFIX))
+        if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
             return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;

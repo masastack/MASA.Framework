@@ -17,7 +17,7 @@ public static class CallerOptionsExtensions
 
         return callerOptionsBuilder.UseDaprCore(() =>
         {
-            callerOptionsBuilder.Services.AddCaller(callerOptionsBuilder.Name, serviceProvider =>
+            callerOptionsBuilder.AddCallerRelation(serviceProvider =>
             {
                 var masaDaprClient = new MasaDaprClient(serviceProvider);
                 masDaprClientConfigure.Invoke(masaDaprClient);
@@ -26,6 +26,7 @@ public static class CallerOptionsExtensions
                 return new DaprCaller(
                     serviceProvider,
                     callerOptionsBuilder.Name,
+                    callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                     appid,
                     masaDaprClient.RequestMessageFactory,
                     masaDaprClient.ResponseMessageFactory);

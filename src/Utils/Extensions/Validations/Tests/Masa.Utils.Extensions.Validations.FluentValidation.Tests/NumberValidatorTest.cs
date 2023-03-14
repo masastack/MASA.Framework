@@ -18,8 +18,10 @@ public class NumberValidatorTest : ValidatorBaseTest
     [DataRow("Masa123", false)]
     [DataRow("123", true)]
     [DataRow("123.", false)]
+    [DataRow(null, true)]
+    [DataRow("", false)]
     [DataTestMethod]
-    public void TestNumber(string idCard, bool expectedResult)
+    public void TestNumber(string? idCard, bool expectedResult)
     {
         var validator = new RegisterUserEventValidator();
         var result = validator.Validate(new RegisterUserEvent()
@@ -33,7 +35,7 @@ public class NumberValidatorTest : ValidatorBaseTest
         }
     }
 
-    public class RegisterUserEventValidator : AbstractValidator<RegisterUserEvent>
+    public class RegisterUserEventValidator : MasaAbstractValidator<RegisterUserEvent>
     {
         public RegisterUserEventValidator()
         {

@@ -23,7 +23,7 @@ public static class CallerOptionsExtensions
     {
         callerOptionsBuilder.Services.AddHttpClient(callerOptionsBuilder.Name);
 
-        callerOptionsBuilder.Services.AddCaller(callerOptionsBuilder.Name, serviceProvider =>
+        callerOptionsBuilder.AddCallerRelation(serviceProvider =>
         {
             var masaHttpClient = new MasaHttpClient(serviceProvider);
             clientConfigure?.Invoke(masaHttpClient);
@@ -33,6 +33,7 @@ public static class CallerOptionsExtensions
                 httpClient,
                 serviceProvider,
                 callerOptionsBuilder.Name,
+                callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                 masaHttpClient.Prefix,
                 masaHttpClient.RequestMessageFactory,
                 masaHttpClient.ResponseMessageFactory);
