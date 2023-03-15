@@ -14,9 +14,9 @@ internal sealed class JsonConfigurationParser
     private readonly Stack<string> _paths = new();
 
     public static IDictionary<string, string?> Parse(string input)
-        => new JsonConfigurationParser().ParseStream(input);
+        => new JsonConfigurationParser().ParseJson(input);
 
-    private Dictionary<string, string?> ParseStream(string input)
+    private Dictionary<string, string?> ParseJson(string input)
     {
         var jsonDocumentOptions = new JsonDocumentOptions
         {
