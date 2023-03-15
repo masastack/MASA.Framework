@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests")]
+
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 
 /// <summary>
@@ -8,17 +10,15 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 /// </summary>
 internal sealed class JsonConfigurationParser
 {
-    private JsonConfigurationParser()
-    {
-    }
+    private JsonConfigurationParser() { }
 
-    private readonly Dictionary<string, string> _data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-    private readonly Stack<string> _paths = new Stack<string>();
+    private readonly Dictionary<string, string?> _data = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Stack<string> _paths = new();
 
-    public static IDictionary<string, string> Parse(string json)
-        => new JsonConfigurationParser().ParseJson(json);
+    public static IDictionary<string, string?> Parse(string input)
+        => new JsonConfigurationParser().ParseJson(input);
 
-    private IDictionary<string, string> ParseJson(string json)
+    private Dictionary<string, string?> ParseJson(string input)
     {
         var jsonDocumentOptions = new JsonDocumentOptions
         {
@@ -26,19 +26,24 @@ internal sealed class JsonConfigurationParser
             AllowTrailingCommas = true,
         };
 
-        var doc = JsonDocument.Parse(json, jsonDocumentOptions);
-
-        if (doc.RootElement.ValueKind != JsonValueKind.Object)
+        using (JsonDocument doc = JsonDocument.Parse(input, jsonDocumentOptions))
         {
-            throw new FormatException($"[{doc.RootElement.ValueKind}]Invalid top level JsonElement.");
+            if (doc.RootElement.ValueKind == JsonValueKind.Object) {
+                VisitObjectElement(doc.RootElement);
+            }
+            else if (doc.RootElement.ValueKind == JsonValueKind.Array) {
+                VisitArrayElement(doc.RootElement);
+            }
+            else
+            {
+                throw new FormatException($"Top-level JSON element must be an object or array. Instead, '{doc.RootElement.ValueKind}' was found.");
+            }
         }
-
-        VisitElement(doc.RootElement);
 
         return _data;
     }
 
-    private void VisitElement(JsonElement element)
+    private void VisitObjectElement(JsonElement element)
     {
         var isEmpty = true;
 
@@ -50,9 +55,29 @@ internal sealed class JsonConfigurationParser
             ExitContext();
         }
 
+        SetNullIfElementIsEmpty(isEmpty);
+    }
+
+    private void VisitArrayElement(JsonElement element)
+    {
+        int index = 0;
+
+        foreach (JsonElement arrayElement in element.EnumerateArray())
+        {
+            EnterContext(index.ToString());
+            VisitValue(arrayElement);
+            ExitContext();
+            index++;
+        }
+
+        SetNullIfElementIsEmpty(isEmpty: index == 0);
+    }
+
+    private void SetNullIfElementIsEmpty(bool isEmpty)
+    {
         if (isEmpty && _paths.Count > 0)
         {
-            _data[_paths.Peek()] = "";
+            _data[_paths.Peek()] = null;
         }
     }
 
@@ -63,19 +88,11 @@ internal sealed class JsonConfigurationParser
         switch (value.ValueKind)
         {
             case JsonValueKind.Object:
-                VisitElement(value);
+                VisitObjectElement(value);
                 break;
 
             case JsonValueKind.Array:
-                int index = 0;
-                foreach (JsonElement arrayElement in value.EnumerateArray())
-                {
-                    EnterContext(index.ToString());
-                    VisitValue(arrayElement);
-                    ExitContext();
-                    index++;
-                }
-
+                VisitArrayElement(value);
                 break;
 
             case JsonValueKind.Number:
@@ -86,19 +103,20 @@ internal sealed class JsonConfigurationParser
                 string key = _paths.Peek();
                 if (_data.ContainsKey(key))
                 {
-                    throw new FormatException($"[{key}]key is duplicated.");
+                    throw new FormatException($"A duplicate key '{key}' was found.");
                 }
-
                 _data[key] = value.ToString();
                 break;
 
             default:
-                throw new FormatException($"[{value.ValueKind}]Unsupported json token.");
+                throw new FormatException($"Unsupported JSON token '{value.ValueKind}' was found.");
         }
     }
 
     private void EnterContext(string context) =>
-        _paths.Push(_paths.Count > 0 ? _paths.Peek() + ConfigurationPath.KeyDelimiter + context : context);
+        _paths.Push(_paths.Count > 0 ?
+            _paths.Peek() + ConfigurationPath.KeyDelimiter + context :
+            context);
 
     private void ExitContext() => _paths.Pop();
 }

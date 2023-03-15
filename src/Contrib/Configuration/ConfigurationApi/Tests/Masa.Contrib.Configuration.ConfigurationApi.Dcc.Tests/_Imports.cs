@@ -11,6 +11,7 @@ global using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Model;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Caching.MultilevelCache;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
+global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal;
 global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests.Internal.Common;

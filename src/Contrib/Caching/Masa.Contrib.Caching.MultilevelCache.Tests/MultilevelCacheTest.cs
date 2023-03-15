@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 #pragma warning disable CS0618
@@ -42,7 +42,8 @@ public class MultilevelCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
-        Assert.IsNotNull(multilevelCacheClientFactory.Create("test"));
+        using var multilevelCacheClient = multilevelCacheClientFactory.Create("test");
+        Assert.IsNotNull(multilevelCacheClient);
     }
 
     [TestMethod]
@@ -58,7 +59,8 @@ public class MultilevelCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
-        Assert.IsNotNull(multilevelCacheClientFactory.Create());
+        using var multilevelCacheClient = multilevelCacheClientFactory.Create();
+        Assert.IsNotNull(multilevelCacheClient);
     }
 
     [TestMethod]
@@ -121,7 +123,7 @@ public class MultilevelCacheTest : TestBase
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
         var multilevelCacheClient = serviceProvider.GetService<IMultilevelCacheClient>();
-        var multilevelCacheClient2 = multilevelCacheClientFactory.Create("test");
+        using var multilevelCacheClient2 = multilevelCacheClientFactory.Create("test");
         Assert.IsNotNull(multilevelCacheClient);
         Assert.IsNotNull(multilevelCacheClient2);
         Assert.AreNotEqual(multilevelCacheClient, multilevelCacheClient2);
@@ -167,7 +169,7 @@ public class MultilevelCacheTest : TestBase
         var serviceProvider = builder.Services.BuildServiceProvider();
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
-        var multilevelCacheClient = multilevelCacheClientFactory.Create("test");
+        using var multilevelCacheClient = multilevelCacheClientFactory.Create("test");
 
         var client = (MultilevelCacheClient)multilevelCacheClient;
         Assert.IsNotNull(client);
@@ -189,7 +191,7 @@ public class MultilevelCacheTest : TestBase
 
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
-        var multilevelCacheClient = multilevelCacheClientFactory.Create();
+        using var multilevelCacheClient = multilevelCacheClientFactory.Create();
 
         var client = (MultilevelCacheClient)multilevelCacheClient;
         Assert.IsNotNull(client);
@@ -280,7 +282,7 @@ public class MultilevelCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var factory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(factory);
-        var multilevelCacheClient = factory.Create();
+        using var multilevelCacheClient = factory.Create();
         var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json"));
         Assert.AreEqual("configuration json", value);
         multilevelCacheClient.Remove<string>("configuration");

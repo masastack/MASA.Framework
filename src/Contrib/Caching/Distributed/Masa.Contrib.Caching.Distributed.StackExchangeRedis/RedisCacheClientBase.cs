@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
@@ -8,6 +8,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
     protected IDatabase Db;
+    protected IConnectionMultiplexer? Connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     protected CacheEntryOptions GlobalCacheEntryOptions;
     protected CacheOptions GlobalCacheOptions;
@@ -17,17 +18,24 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     {
         GlobalCacheOptions = redisConfigurationOptions.GlobalCacheOptions;
         var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);
-        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfiguration);
-        Db = connection.GetDatabase();
-        Subscriber = connection.GetSubscriber();
+        InitializeRedisConfigurationOptions(redisConfiguration);
 
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
+    }
+
+    protected void InitializeRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    {
+        Dispose();
+
+        Connection = ConnectionMultiplexer.Connect(redisConfigurationOptions);
+        Db = Connection.GetDatabase();
+        Subscriber = Connection.GetSubscriber();
 
         GlobalCacheEntryOptions = new CacheEntryOptions
         {
-            AbsoluteExpiration = redisConfiguration.AbsoluteExpiration,
-            AbsoluteExpirationRelativeToNow = redisConfiguration.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = redisConfiguration.SlidingExpiration
+            AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = redisConfigurationOptions.SlidingExpiration
         };
     }
 
@@ -235,5 +243,11 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             }
         }
         return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        Connection?.Dispose();
+        base.Dispose(disposing);
     }
 }

@@ -14,7 +14,7 @@ public class DccTest
     private Mock<IMultilevelCacheClientFactory> _memoryCacheClientFactory;
     private Mock<IDistributedCacheClientFactory> _distributedCacheClientFactory;
     private Mock<IMemoryCache> _memoryCache;
-    private Mock<IDistributedCacheClient> _distributedCacheClient;
+    private Mock<IManualDistributedCacheClient> _distributedCacheClient;
     private const string DEFAULT_PUBLIC_ID = "public-$Config";
     private Masa.BuildingBlocks.Data.ISerializer _serializer;
     private Masa.BuildingBlocks.Data.IDeserializer _deserializer;
@@ -144,7 +144,7 @@ public class DccTest
             Content = string.Empty,
             ConfigFormat = ConfigFormats.Raw
         };
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
@@ -205,7 +205,7 @@ public class DccTest
             Content = JsonSerializer.Serialize(brand),
             ConfigFormat = ConfigFormats.Json
         };
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);

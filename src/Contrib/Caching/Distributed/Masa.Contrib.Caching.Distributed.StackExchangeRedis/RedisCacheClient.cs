@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
@@ -17,7 +17,7 @@ public class RedisCacheClient : RedisCacheClientBase
         {
             if (optionName == name)
             {
-                RefreshRedisConfigurationOptions(option);
+                InitializeRedisConfigurationOptions(option);
                 GlobalCacheOptions = option.GlobalCacheOptions;
             }
         });
@@ -576,20 +576,6 @@ end";
 
     #region Private methods
 
-    private void RefreshRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
-    {
-        IConnectionMultiplexer? connection = ConnectionMultiplexer.Connect(redisConfigurationOptions);
-        Db = connection.GetDatabase();
-        Subscriber = connection.GetSubscriber();
-
-        GlobalCacheEntryOptions = new CacheEntryOptions
-        {
-            AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration,
-            AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = redisConfigurationOptions.SlidingExpiration
-        };
-    }
-
     private RedisValue[] GetRedisValues(CacheEntryOptions? options, Func<RedisValue[]>? func = null)
     {
         var creationTime = DateTimeOffset.UtcNow;
@@ -696,5 +682,4 @@ end";
     }
 
     #endregion
-
 }

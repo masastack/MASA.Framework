@@ -3,7 +3,6 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class DistributedCacheFactoryOptions : MasaFactoryOptions<CacheRelationOptions<IManualDistributedCacheClient>>
+public interface IManualMultilevelCacheClient : IMultilevelCacheClient, IDisposable
 {
-
 }

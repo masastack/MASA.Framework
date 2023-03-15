@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,14 +27,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Authentication\Identity\Masa.Contrib.Authentication.Identity\Masa.Contrib.Authentication.Identity.csproj" />
     <ProjectReference Include="..\..\..\Dispatcher\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Config\Masa.Contrib.StackSdks.Config.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.StackSdks.Middleware\Masa.Contrib.StackSdks.Middleware.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

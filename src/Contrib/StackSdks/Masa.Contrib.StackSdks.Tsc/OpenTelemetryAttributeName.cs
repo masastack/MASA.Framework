@@ -142,6 +142,8 @@ internal static class OpenTelemetryAttributeName
         /// custom attr
         /// </summary>
         public const string PROJECT_NAME = "service.project.name";
+
+        public const string LAYER = "service.layer";
     }
 
     internal static class Exception

@@ -14,4 +14,6 @@ public class MasaObservableOptions
     public string ServiceInstanceId { get; set; }
 
     public string ServiceVersion { get; set; }
+
+    public string Layer { get; set; }
 }

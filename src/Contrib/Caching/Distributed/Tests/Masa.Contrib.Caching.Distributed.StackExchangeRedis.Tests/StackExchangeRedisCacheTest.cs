@@ -72,13 +72,13 @@ public class StackExchangeRedisCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
 
         var factory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
-        var distributedCacheClient = factory.Create("test");
+        using var distributedCacheClient = factory.Create("test");
         Assert.IsNotNull(distributedCacheClient);
         string key = "test_key";
         distributedCacheClient.Set(key, "content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
 
-        var distributedCacheClient2 = factory.Create("test2");
+        using var distributedCacheClient2 = factory.Create("test2");
         Assert.IsFalse(distributedCacheClient2.Exists(key));
         distributedCacheClient2.Set(key + "2", "content_2");
 
@@ -97,7 +97,7 @@ public class StackExchangeRedisCacheTest : TestBase
         services.AddStackExchangeRedisCache("test");
 
         var serviceProvider = services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClient>();
+        var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
         string key = "test_1";
         distributedCacheClient.Set(key, "test_content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
@@ -117,17 +117,18 @@ public class StackExchangeRedisCacheTest : TestBase
             }));
 
         Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
-        distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
+        using (distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
+        {
+            var exist = distributedCacheClient.Exists(key);
 
-        var exist = distributedCacheClient.Exists(key);
+            Assert.IsFalse(exist);
 
-        Assert.IsFalse(exist);
+            File.WriteAllText(Path.Combine(Path.Combine(rootPath, "appsettings.json")), oldContent);
 
-        File.WriteAllText(Path.Combine(Path.Combine(rootPath, "appsettings.json")), oldContent);
+            Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        distributedCacheClient.Remove(key);
+            distributedCacheClient.Remove(key);
+        }
     }
 
     [TestMethod]
@@ -248,14 +249,14 @@ public class StackExchangeRedisCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
         var key = "redisConfig";
-        var distributedCacheClient = distributedCacheClientFactory.Create("test");
+        using var distributedCacheClient = distributedCacheClientFactory.Create("test");
         Assert.IsNotNull(distributedCacheClient);
         distributedCacheClient.Remove<string>(key);
         distributedCacheClient.Set(key, "redis configuration json");
         var value = distributedCacheClient.Get<string>(key);
         Assert.AreEqual("redis configuration json", value);
 
-        var distributedCacheClient2 = distributedCacheClientFactory.Create("test2");
+        using var distributedCacheClient2 = distributedCacheClientFactory.Create("test2");
         Assert.IsNotNull(distributedCacheClient2);
 
         Assert.IsFalse(distributedCacheClient2.Exists(key));
@@ -278,7 +279,7 @@ public class StackExchangeRedisCacheTest : TestBase
             distributedCacheOptions.UseStackExchangeRedisCache("RedisConfig4");
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("test");
+        using var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("test");
         Assert.IsNotNull(distributedCacheClient);
 
         Assert.ThrowsException<NotImplementedException>(() =>
@@ -303,7 +304,7 @@ public class StackExchangeRedisCacheTest : TestBase
             };
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("test");
+        using var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("test");
         Assert.IsNotNull(distributedCacheClient);
 
         var value = distributedCacheClient.GetOrSet("redisConfiguration", () => new CacheEntry<string>("redis configuration2 json"));
@@ -335,7 +336,7 @@ public class StackExchangeRedisCacheTest : TestBase
             };
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
+        using var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
         Assert.IsNotNull(distributedCacheClient);
 
         var value = distributedCacheClient.GetOrSet("redisConfiguration", () => new CacheEntry<string>("redis configuration2 json"));
@@ -367,7 +368,7 @@ public class StackExchangeRedisCacheTest : TestBase
             };
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
-        var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
+        using var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create();
         Assert.IsNotNull(distributedCacheClient);
 
         var value = distributedCacheClient.GetOrSet("redisConfiguration", () => new CacheEntry<string>("redis configuration2 json"));

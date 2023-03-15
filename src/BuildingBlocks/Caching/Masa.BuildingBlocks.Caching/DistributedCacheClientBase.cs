@@ -1,9 +1,9 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Caching;
 
-public abstract class DistributedCacheClientBase : CacheClientBase, IDistributedCacheClient
+public abstract class DistributedCacheClientBase : CacheClientBase, IManualDistributedCacheClient
 {
     public abstract T? Get<T>(string key, Action<CacheOptions>? action = null);
 
@@ -129,4 +129,14 @@ public abstract class DistributedCacheClientBase : CacheClientBase, IDistributed
         IEnumerable<string> keys,
         CacheEntryOptions? options = null,
         Action<CacheOptions>? action = null);
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 }

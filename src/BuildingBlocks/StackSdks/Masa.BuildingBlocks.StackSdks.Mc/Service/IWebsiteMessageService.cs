@@ -24,4 +24,6 @@ public interface IWebsiteMessageService
     Task SendCheckNotificationAsync();
 
     Task SendGetNotificationAsync(List<string> userIds);
+
+    Task<List<WebsiteMessageModel>> GetListByTagAsync(List<string> tags);
 }

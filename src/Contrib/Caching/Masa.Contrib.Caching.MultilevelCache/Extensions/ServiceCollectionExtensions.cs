@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -118,7 +118,7 @@ public static class ServiceCollectionExtensions
             if (options.Options.Any(opt => opt.Name == name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClient>(name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, serviceProvider =>
             {
                 var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
                 var multilevelCacheClient = new MultilevelCacheClient(
@@ -177,7 +177,7 @@ public static class ServiceCollectionExtensions
             if (options.Options.Any(opt => opt.Name == name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IMultilevelCacheClient>(name, serviceProvider =>
+            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, serviceProvider =>
             {
                 var distributedCacheClientFactory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
                 var multilevelCacheClient = new MultilevelCacheClient(

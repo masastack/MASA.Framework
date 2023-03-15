@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Utils\Extensions\Tests\Masa.Utils.Extensions.DotNet.Tests\Masa.Utils.Extensions.DotNet.Tests.csproj" />
+      <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DotNet\Masa.Utils.Extensions.DotNet.csproj" />
       <ProjectReference Include="..\..\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     </ItemGroup>
 

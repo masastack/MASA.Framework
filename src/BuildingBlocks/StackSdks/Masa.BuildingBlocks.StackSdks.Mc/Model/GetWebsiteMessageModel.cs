@@ -13,6 +13,8 @@ public class GetWebsiteMessageModel : PaginatedOptions
 
     public bool? IsRead { get; set; }
 
+    public string Tag { get; set; } = string.Empty;
+
     public GetWebsiteMessageModel(int page, int pageSize, Dictionary<string, bool>? sorting = null) : base(page, pageSize, sorting)
     {
 
