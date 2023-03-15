@@ -71,9 +71,6 @@ public static class ServiceExtensions
         ArgumentNullException.ThrowIfNull(option);
         var resources = ResourceBuilder.CreateDefault().AddMasaService(option);
 
-        if (string.IsNullOrEmpty(option.ServiceInstanceId))
-            option.ServiceInstanceId = services.BuildServiceProvider().GetRequiredService<IConfiguration>().GetValue<string>("HOSTNAME");
-
         Uri? uri = null;
         if (!string.IsNullOrEmpty(otlpUrl) && !Uri.TryCreate(otlpUrl, UriKind.Absolute, out uri))
             throw new UriFormatException($"{nameof(otlpUrl)}:{otlpUrl} is invalid url");
