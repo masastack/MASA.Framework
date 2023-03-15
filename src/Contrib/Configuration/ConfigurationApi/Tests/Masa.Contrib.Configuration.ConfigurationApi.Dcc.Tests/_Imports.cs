@@ -29,3 +29,4 @@ global using System.Net;
 global using System.Reflection;
 global using System.Text.Json;
 global using YamlDotNet.Serialization;
+global using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
