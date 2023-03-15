@@ -13,7 +13,7 @@ public static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
         services.AddServiceFactory();
 
-        services.TryAddSingleton<IDistributedCacheClientFactory, DistributedCacheClientFactory>();
+        services.TryAddSingleton<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
         services.TryAddSingleton(typeof(IDistributedCacheClient), serviceProvider
@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection TryAddMultilevelCacheCore(IServiceCollection services, string name)
     {
-        services.TryAddSingleton<IMultilevelCacheClientFactory, MultilevelCacheClientFactory>();
+        services.TryAddSingleton<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
         services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
         services.TryAddSingleton(typeof(IMultilevelCacheClient), serviceProvider
