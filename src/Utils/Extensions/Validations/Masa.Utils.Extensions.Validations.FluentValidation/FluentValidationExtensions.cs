@@ -59,8 +59,8 @@ public static class FluentValidationExtensions
     public static IRuleBuilderOptions<T, string?> Port<T>(this IRuleBuilder<T, string?> ruleBuilder)
         => ruleBuilder.SetValidator(new PortValidator<T>());
 
-    public static IRuleBuilderOptions<T, TProperty> Required<T, TProperty>(this IRuleBuilder<T, TProperty> ruleBuilder)
-        => ruleBuilder.SetValidator(new RequiredValidator<T, TProperty>());
+    public static IRuleBuilderOptions<T, TProperty?> Required<T, TProperty>(this IRuleBuilder<T, TProperty?> ruleBuilder)
+        => ruleBuilder.SetValidator(new RequiredValidator<T, TProperty?>());
 
     public static IRuleBuilderOptions<T, string?> Identity<T>(this IRuleBuilder<T, string?> ruleBuilder)
         => ruleBuilder.SetValidator(new IdentityValidator<T>());
