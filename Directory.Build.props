@@ -16,6 +16,7 @@
     <StackExchangeRedisPackageVersion>2.2.4</StackExchangeRedisPackageVersion>
     <NESTPackageVersion>7.17.4</NESTPackageVersion>
     <IdentityPackageVersion>6.15.0</IdentityPackageVersion>
+    <IdentityModelPackageVersion>6.0.0</IdentityModelPackageVersion>
 
     <OpenTelemetryVersion>1.4.0-rc.1</OpenTelemetryVersion>
     <OpenTelemetryContribVersion>1.0.0-beta2</OpenTelemetryContribVersion>
