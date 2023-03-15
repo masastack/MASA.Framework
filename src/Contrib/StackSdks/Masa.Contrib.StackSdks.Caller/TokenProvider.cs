@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Caller;
 
-public class TokenProvider : ITokenProvider
+public class TokenProvider
 {
     public string? AccessToken { get; set; }
 
