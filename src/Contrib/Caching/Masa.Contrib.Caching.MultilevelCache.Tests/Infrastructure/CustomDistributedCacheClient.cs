@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
@@ -6,7 +6,7 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests.Infrastructure;
 public class CustomDistributedCacheClient : MultilevelCacheClient
 {
     public CustomDistributedCacheClient(IMemoryCache memoryCache,
-        IDistributedCacheClient distributedCacheClient,
+        IManualDistributedCacheClient distributedCacheClient,
         MultilevelCacheOptions multilevelCacheOptions,
         SubscribeKeyType subscribeKeyType,
         string subscribeKeyPrefix = "",

@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.BuildingBlocks.Caching;
@@ -6,7 +6,6 @@ namespace Masa.BuildingBlocks.Caching;
 public abstract class CacheClientBase : ICacheClient
 {
     public abstract IEnumerable<T?> GetList<T>(params string[] keys);
-
 
     public abstract Task<IEnumerable<T?>> GetListAsync<T>(params string[] keys);
 

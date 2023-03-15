@@ -7,7 +7,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 public class DccClientTest
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
-    private Mock<IMultilevelCacheClient> _client;
+    private Mock<IManualMultilevelCacheClient> _client;
     private IServiceCollection _services;
     private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
@@ -21,7 +21,7 @@ public class DccClientTest
     public void Initialize()
     {
         Mock<IMultilevelCacheClientFactory> multilevelCacheClientFactory = new();
-        _client = new Mock<IMultilevelCacheClient>();
+        _client = new Mock<IManualMultilevelCacheClient>();
         _services = new ServiceCollection();
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
@@ -472,7 +472,7 @@ addresses:
             Content = brand.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.Raw
         };
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
@@ -503,7 +503,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         Dictionary<string, string> masaDic = new Dictionary<string, string>()
         {
             { "Id", Guid.NewGuid().ToString() },
@@ -545,7 +545,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
 
         var response = new PublishReleaseModel()
         {
@@ -581,7 +581,7 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
 
         var response = new PublishReleaseModel()
         {

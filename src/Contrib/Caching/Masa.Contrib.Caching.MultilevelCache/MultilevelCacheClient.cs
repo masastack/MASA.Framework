@@ -7,7 +7,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 {
     private readonly ITypeAliasProvider? _typeAliasProvider;
     private IMemoryCache _memoryCache;
-    private readonly IDistributedCacheClient _distributedCacheClient;
+    private readonly IManualDistributedCacheClient _distributedCacheClient;
     private SubscribeKeyType _subscribeKeyType;
     private string _subscribeKeyPrefix;
     private readonly object _locker = new();
@@ -26,7 +26,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         string name,
         bool isReset,
         IOptionsMonitor<MultilevelCacheGlobalOptions> multilevelCacheGlobalOptions,
-        IDistributedCacheClient distributedCacheClient,
+        IManualDistributedCacheClient distributedCacheClient,
         ITypeAliasProvider? typeAliasProvider = null) : this(typeAliasProvider)
     {
         _distributedCacheClient = distributedCacheClient;
@@ -61,7 +61,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     public MultilevelCacheClient(IMemoryCache memoryCache,
-        IDistributedCacheClient distributedCacheClient,
+        IManualDistributedCacheClient distributedCacheClient,
         MultilevelCacheOptions multilevelCacheOptions,
         SubscribeKeyType subscribeKeyType,
         string subscribeKeyPrefix = "",
@@ -665,4 +665,10 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
     #endregion
 
+    protected override void Dispose(bool disposing)
+    {
+        _distributedCacheClient?.Dispose();
+        _memoryCache?.Dispose();
+        base.Dispose(disposing);
+    }
 }
