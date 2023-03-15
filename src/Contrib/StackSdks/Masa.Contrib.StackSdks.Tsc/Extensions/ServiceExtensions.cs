@@ -70,6 +70,7 @@ public static class ServiceExtensions
     {
         ArgumentNullException.ThrowIfNull(option);
         var resources = ResourceBuilder.CreateDefault().AddMasaService(option);
+
         Uri? uri = null;
         if (!string.IsNullOrEmpty(otlpUrl) && !Uri.TryCreate(otlpUrl, UriKind.Absolute, out uri))
             throw new UriFormatException($"{nameof(otlpUrl)}:{otlpUrl} is invalid url");
