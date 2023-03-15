@@ -25,7 +25,7 @@ internal class DefaultCallerFactory : MasaFactoryBase<ICallerDisposeWrapper, Cal
         {
             case ServiceLifetime.Scoped:
             case null when TransientServiceProvider.GetService<IAuthenticationServiceFactory>()?.TryCreate(name, out _) ?? false:
-            case null when TransientServiceProvider.GetService<IOptions<IsolationOptions>>()?.Value.Enable ?? false:
+            case null when TransientServiceProvider.GetService<IOptions<IsolationOptions>>()?.Value.Enable == true:
                 return TransientServiceProvider.GetRequiredService<ScopedService>().ServiceProvider;
             case ServiceLifetime.Transient:
                 return TransientServiceProvider;

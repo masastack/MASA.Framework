@@ -3,4 +3,4 @@
 
 global using Microsoft.Extensions.DependencyInjection;
 global using System.Diagnostics.CodeAnalysis;
-global using System.Text.Json;
+global using System.Runtime.CompilerServices;

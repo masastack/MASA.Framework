@@ -28,11 +28,13 @@ internal static class ServiceCollectionExtensions
                 service.ServiceType == typeof(IMultiEnvironmentContext)))
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
-        services.AddHttpContextAccessor();
-
         services
-            .AddConfigure<IsolationOptions>(sectionName)
-            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>));
+            .AddHttpContextAccessor()
+            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
+            .Configure<IsolationOptions>(options =>
+            {
+                options.SectionName = sectionName;
+            });
 
         services.AddConnectionStringProvider();
         services.AddLocalMessageDbConnectionStringProvider();
@@ -42,7 +44,8 @@ internal static class ServiceCollectionExtensions
 
     private static void AddConnectionStringProvider(this IServiceCollection services)
     {
-        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();;
+        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
+        ;
         var connectionStringProvider = ServiceDescriptor.Describe(typeof(IConnectionStringProvider), serviceProvider =>
         {
             var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
@@ -59,15 +62,18 @@ internal static class ServiceCollectionExtensions
 
     private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
     {
-        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper,DefaultIsolationLocalMessageDbConnectionStringProvider>();
-        var localMessageDbConnectionStringProvider = ServiceDescriptor.Describe(typeof(ILocalMessageDbConnectionStringProvider), serviceProvider =>
-        {
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-                serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
+        services
+            .TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper,
+                DefaultIsolationLocalMessageDbConnectionStringProvider>();
+        var localMessageDbConnectionStringProvider = ServiceDescriptor.Describe(typeof(ILocalMessageDbConnectionStringProvider),
+            serviceProvider =>
+            {
+                var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+                if (isolationOptions.Value.Enable)
+                    serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
 
-            return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
-        }, ServiceLifetime.Scoped);
+                return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
+            }, ServiceLifetime.Scoped);
         if (services.Any(d => d.ServiceType == typeof(ILocalMessageDbConnectionStringProvider)))
             services.Replace(localMessageDbConnectionStringProvider);
         else

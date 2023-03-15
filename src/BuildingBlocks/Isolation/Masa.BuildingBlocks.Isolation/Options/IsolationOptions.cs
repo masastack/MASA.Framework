@@ -7,16 +7,7 @@ namespace Masa.BuildingBlocks.Isolation;
 
 public class IsolationOptions
 {
-    public string SectionName { get; set; }
+    public string? SectionName { get; set; }
 
-    /// <summary>
-    /// isolation status
-    /// default: false
-    /// </summary>
-    public bool Enable { get; set; }
-}
-
-public class IsolationOptions<TModule>
-{
-    public List<IsolationConfigurationOptions<TModule>> Data { get; set; } = new();
+    public bool Enable => string.IsNullOrWhiteSpace(SectionName);
 }

@@ -17,4 +17,8 @@
     <ProjectReference Include="..\..\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Internal" />
+  </ItemGroup>
+
 </Project>
