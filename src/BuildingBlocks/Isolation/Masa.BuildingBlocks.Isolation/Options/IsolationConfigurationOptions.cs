@@ -15,6 +15,9 @@ public class IsolationConfigurationOptions
     /// Used to control the configuration with the highest score when multiple configurations are satisfied. The default score is 100
     /// </summary>
     public int Score { get; set; } = 100;
+}
 
-    public object Module { get; set; }
+public class IsolationConfigurationOptions<TModule>: IsolationConfigurationOptions
+{
+    public TModule Module { get; set; }
 }

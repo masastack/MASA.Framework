@@ -1,9 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
-public abstract class MasaDbContext : DbContext, IMasaDbContext
+public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
+    where TDbContext : IMasaDbContext
 {
     private bool _initialized;
     private IDataFilter? _dataFilter;
@@ -41,9 +44,8 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         }
     }
 
-    protected MasaDbContext(MasaDbContextOptions options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
-        Options = options;
     }
 
     protected virtual void TryInitialize()
@@ -90,7 +92,10 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[] { modelBuilder, entityType });
+            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[]
+            {
+                modelBuilder, entityType
+            });
         }
     }
 
@@ -217,13 +222,5 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     {
         await OnBeforeSaveChangesAsync();
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-}
-
-public abstract class MasaDbContext<TDbContext> : MasaDbContext
-    where TDbContext : MasaDbContext, IMasaDbContext
-{
-    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
-    {
     }
 }

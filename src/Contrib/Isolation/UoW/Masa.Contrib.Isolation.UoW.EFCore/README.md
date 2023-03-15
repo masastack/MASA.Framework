@@ -54,7 +54,7 @@ builder.Services.AddEventBus(eventBusBuilder =>
 3. DbContext needs to inherit IsolationDbContext
 
 ``` C#
-public class CustomDbContext : IsolationDbContext
+public class CustomDbContext : IsolationDbContext<CustomDbContext>
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {

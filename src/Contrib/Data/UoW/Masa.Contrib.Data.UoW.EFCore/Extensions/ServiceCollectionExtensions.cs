@@ -13,7 +13,7 @@ internal static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>,IMasaDbContext
         where TUserId : IComparable
     {
         MasaArgumentException.ThrowIfNull(services, paramName);

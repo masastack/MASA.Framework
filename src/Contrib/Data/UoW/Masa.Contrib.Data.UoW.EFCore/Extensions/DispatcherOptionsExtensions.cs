@@ -12,7 +12,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => options.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IDispatcherOptions UseUoW<TDbContext, TUserId>(
@@ -20,7 +20,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TUserId : IComparable
         => options.UseUoW<IDispatcherOptions, TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 
@@ -30,7 +30,7 @@ public static class DispatcherOptionsExtensions
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
         where TDispatcherOptions : IDispatcherOptions
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TUserId : IComparable
     {
         options.Services.UseUoW<TDbContext, TUserId>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);

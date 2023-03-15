@@ -89,6 +89,9 @@ public static class ServiceCollectionExtensions
         if (services.All(d => d.ServiceType != typeof(IPublisher)))
             throw new NotSupportedException($"{nameof(IPublisher)} has no implementing");
 
+        services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider => serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>());
+
         MasaApp.TrySetServiceCollection(services);
         return services;
     }

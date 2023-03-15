@@ -17,7 +17,7 @@ public static class IntegrationEventOptionsExtensions
     /// <returns></returns>
     public static IIntegrationEventOptions UseEventLog<TDbContext>(
         this IIntegrationEventOptions options,
-        bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext, IMasaDbContext
+        bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
     {
         MasaArgumentException.ThrowIfNull(options.Services);
 
@@ -25,9 +25,9 @@ public static class IntegrationEventOptionsExtensions
 
         options.Services.AddSingleton<EventLogProvider>();
 
-        options.Services.Configure<LocalMessageTableOptions>(options =>
+        options.Services.Configure<LocalMessageTableOptions>(option =>
         {
-            options.DbContextType = typeof(TDbContext);
+            option.DbContextType = typeof(TDbContext);
         });
 
         var integrationEventTypes = options.Assemblies.SelectMany(assembly => assembly.GetTypes()).Where(type => type.IsClass &&typeof(IIntegrationEvent).IsAssignableFrom(type)).Distinct();

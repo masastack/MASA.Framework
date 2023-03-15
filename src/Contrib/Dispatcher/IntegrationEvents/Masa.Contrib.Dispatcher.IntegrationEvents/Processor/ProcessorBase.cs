@@ -19,7 +19,7 @@ public abstract class ProcessorBase : IProcessor
         if (ServiceProvider != null)
         {
             var unitOfWorkManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
-            var dataConnectionStringProvider = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<IDbConnectionStringProvider>();
+            var dataConnectionStringProvider = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILocalMessageDbConnectionStringProvider>();
             var optionsList = dataConnectionStringProvider.DbContextOptionsList;
             foreach (var option in optionsList)
             {

@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
-    where TDbContext : MasaDbContext, IMasaDbContext
+    where TDbContext : IMasaDbContext
 {
     private readonly DbContextOptions _originOptions;
 

@@ -15,8 +15,4 @@
     <ProjectReference Include="..\Masa.BuildingBlocks.Data.Contracts\Masa.BuildingBlocks.Data.Contracts.csproj" />
   </ItemGroup>
   
-  <ItemGroup>
-    <Folder Include="Internal" />
-  </ItemGroup>
-  
 </Project>

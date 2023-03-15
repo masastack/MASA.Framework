@@ -5,7 +5,6 @@ global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
-global using Masa.BuildingBlocks.Isolation.Options;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.Data.Sqlite;
 global using Microsoft.EntityFrameworkCore;

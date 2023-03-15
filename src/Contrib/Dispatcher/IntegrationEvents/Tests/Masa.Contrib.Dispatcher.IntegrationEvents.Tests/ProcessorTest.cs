@@ -88,7 +88,7 @@ public class ProcessorTest
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
@@ -178,7 +178,7 @@ public class ProcessorTest
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
         {
             new(string.Empty)
@@ -232,7 +232,7 @@ public class ProcessorTest
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
+        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
         dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
         {
             new(string.Empty)

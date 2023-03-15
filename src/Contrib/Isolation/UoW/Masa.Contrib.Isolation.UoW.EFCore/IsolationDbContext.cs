@@ -6,11 +6,9 @@ namespace Masa.Contrib.Isolation.UoW.EFCore;
 /// <summary>
 /// DbContext providing isolation
 /// </summary>
-/// <typeparam name="TKey">tenant id type</typeparam>
 /// <typeparam name="TDbContext"></typeparam>
-public abstract class IsolationDbContext<TDbContext, TKey> : IsolationDbContext<TKey>
-    where TKey : IComparable
-    where TDbContext : MasaDbContext, IMasaDbContext
+public abstract class IsolationDbContext<TDbContext> : IsolationDbContext<TDbContext, Guid>
+    where TDbContext : IMasaDbContext
 {
     protected IsolationDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
@@ -20,24 +18,16 @@ public abstract class IsolationDbContext<TDbContext, TKey> : IsolationDbContext<
 /// <summary>
 /// DbContext providing isolation
 /// </summary>
-public abstract class IsolationDbContext : IsolationDbContext<Guid>
-{
-    protected IsolationDbContext(MasaDbContextOptions options) : base(options)
-    {
-    }
-}
-
-/// <summary>
-/// DbContext providing isolation
-/// </summary>
+/// <typeparam name="TDbContext"></typeparam>
 /// <typeparam name="TKey">tenant id type</typeparam>
-public abstract class IsolationDbContext<TKey> : MasaDbContext
+public abstract class IsolationDbContext<TDbContext, TKey> : MasaDbContext<TDbContext>
     where TKey : IComparable
+    where TDbContext : IMasaDbContext
 {
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
 
-    protected IsolationDbContext(MasaDbContextOptions options) : base(options)
+    protected IsolationDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
         _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
         _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
@@ -76,4 +66,10 @@ public abstract class IsolationDbContext<TKey> : MasaDbContext
     protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
 
     protected virtual bool IsTenantFilterEnabled => DataFilter?.IsEnabled<IMultiTenant<TKey>>() ?? false;
+
+    protected override void OnBeforeSaveChangesByFilters()
+    {
+        base.OnBeforeSaveChangesByFilters();
+
+    }
 }

@@ -13,7 +13,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => options.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IDispatcherOptions UseIsolationUoW<TDbContext, TTenantId>(
@@ -22,7 +22,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         => options.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(isolationBuilder, optionsBuilder, disableRollbackOnFailure,
             useTransaction);
@@ -33,7 +33,7 @@ public static class DispatcherOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         where TUserId : IComparable
         => options.UseIsolationUoW<IDispatcherOptions, TDbContext, TTenantId, TUserId>(
@@ -50,7 +50,7 @@ public static class DispatcherOptionsExtensions
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
         where TDispatcherOptions : IDispatcherOptions
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         where TUserId : IComparable
     {

@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         => services.AddMasaDbContext<TDbContextImplementation, Guid>(optionsBuilder, contextLifetime, optionsLifetime);
 
     public static IServiceCollection AddMasaDbContext<TDbContextImplementation, TUserId>(
@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
         => services
             .AddDbContext<TDbContextImplementation>(contextLifetime, optionsLifetime)
@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<MasaDbContextBuilder>? optionsBuilder,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
     {
         services.TryAddConfigure<MasaDbConnectionOptions>();
@@ -48,7 +48,7 @@ public static class ServiceCollectionExtensions
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
     {
         MasaApp.TrySetServiceCollection(services);
@@ -56,26 +56,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
 
         services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
-        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
-        services.TryAddScoped<IConnectionStringProvider>(serviceProvider =>
-        {
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-                return serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
-
-            return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
-        });
-
-        services.TryAddScoped<IDbConnectionStringProviderWrapper, DbConnectionStringProvider>();
-        services.TryAddScoped<IIsolationDbConnectionStringProviderWrapper, IsolationDbConnectionStringProvider>();
-        services.TryAddScoped<IDbConnectionStringProvider>(serviceProvider =>
-        {
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-                return serviceProvider.GetRequiredService<IIsolationDbConnectionStringProviderWrapper>();
-
-            return serviceProvider.GetRequiredService<IDbConnectionStringProviderWrapper>();
-        });
+        services.TryAddScoped<IConnectionStringProvider>(serviceProvider => serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>());
 
         services.TryAdd(
             new ServiceDescriptor(
@@ -100,7 +81,7 @@ public static class ServiceCollectionExtensions
         IServiceProvider serviceProvider,
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete)
-        where TDbContextImplementation : MasaDbContext, IMasaDbContext
+        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
     {
         var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete);
         optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);

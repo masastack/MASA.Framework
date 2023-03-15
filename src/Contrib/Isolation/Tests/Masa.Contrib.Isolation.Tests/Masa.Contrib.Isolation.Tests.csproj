@@ -28,4 +28,10 @@
     <ProjectReference Include="..\..\Masa.Contrib.Isolation\Masa.Contrib.Isolation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

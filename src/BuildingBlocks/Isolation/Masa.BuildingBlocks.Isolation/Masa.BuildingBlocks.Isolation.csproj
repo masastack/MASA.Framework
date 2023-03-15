@@ -17,9 +17,4 @@
     <ProjectReference Include="..\..\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions" />
-    <Folder Include="Middleware" />
-  </ItemGroup>
-
 </Project>

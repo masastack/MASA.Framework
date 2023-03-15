@@ -9,7 +9,7 @@ internal static class ServiceCollectionExtensions
 {
     public static void UseIsolationUoW<TDbContext, TTenantId>(this IServiceCollection services)
         where TTenantId : IComparable
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContext>),
             typeof(IsolationSaveChangesFilter<TDbContext, TTenantId>),
             ServiceLifetime.Scoped));

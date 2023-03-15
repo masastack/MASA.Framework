@@ -21,7 +21,7 @@ public class SendByDataProcessorTest
     public async Task TestPublishEventByPublishIsFailedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<IDbConnectionStringProvider> dbConnectionStringProvider = new();
+        Mock<ILocalMessageDbConnectionStringProvider> dbConnectionStringProvider = new();
         dbConnectionStringProvider
             .Setup(p => p.DbContextOptionsList)
             .Returns(() => new List<MasaDbContextConfigurationOptions>()
@@ -67,7 +67,7 @@ public class SendByDataProcessorTest
     public async Task TestPublishEventByPublishIsSuccessedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<IDbConnectionStringProvider> dbConnectionStringProvider = new();
+        Mock<ILocalMessageDbConnectionStringProvider> dbConnectionStringProvider = new();
         dbConnectionStringProvider
             .Setup(p => p.DbContextOptionsList)
             .Returns(() => new List<MasaDbContextConfigurationOptions>()

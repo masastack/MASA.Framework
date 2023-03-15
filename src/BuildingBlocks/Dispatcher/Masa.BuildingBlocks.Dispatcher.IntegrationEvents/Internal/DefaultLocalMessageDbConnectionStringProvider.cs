@@ -1,16 +1,21 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Isolation")]
+
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.EntityFrameworkCore;
+namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
-internal class DbConnectionStringProvider : DbConnectionStringProviderBase, IDbConnectionStringProviderWrapper
+internal class DefaultLocalMessageDbConnectionStringProvider :
+    LocalMessageDbConnectionStringProviderBase,
+    ILocalMessageDbConnectionStringProviderWrapper
 {
     private readonly IOptionsSnapshot<MasaDbConnectionOptions> _options;
     private readonly IOptionsSnapshot<LocalMessageTableOptions> _localMessageTableOptions;
 
-    public DbConnectionStringProvider(
+    public DefaultLocalMessageDbConnectionStringProvider(
         IOptionsSnapshot<MasaDbConnectionOptions> options,
         IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions)
     {

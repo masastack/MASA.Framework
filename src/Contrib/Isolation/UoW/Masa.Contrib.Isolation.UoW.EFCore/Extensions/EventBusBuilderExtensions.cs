@@ -13,7 +13,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : IsolationDbContext<TDbContext>, IMasaDbContext
         => eventBusBuilder.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IEventBusBuilder UseIsolationUoW<TDbContext, TTenantId>(
@@ -22,7 +22,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : IsolationDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         => eventBusBuilder.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(
             isolationBuilder,
@@ -36,7 +36,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : IsolationDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         where TUserId : IComparable
     {

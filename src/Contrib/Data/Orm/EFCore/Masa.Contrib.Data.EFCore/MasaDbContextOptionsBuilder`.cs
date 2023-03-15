@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuilder
-    where TDbContext : MasaDbContext, IMasaDbContext
+    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
 {
     public MasaDbContextOptions<TDbContext> MasaOptions
         => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete);

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EFCore;
 
-public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext, IMasaDbContext
+public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
 {
     private readonly IServiceProvider _serviceProvider;
 

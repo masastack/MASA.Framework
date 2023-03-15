@@ -13,7 +13,7 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => options.UseIsolationUoW<TDbContext, Guid>(isolationBuilder, optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IDomainEventOptions UseIsolationUoW<TDbContext, TTenantId>(
@@ -22,7 +22,7 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         => options.UseIsolationUoW<TDbContext, TTenantId, TTenantId>(isolationBuilder, optionsBuilder, disableRollbackOnFailure,
             useTransaction);
@@ -33,7 +33,7 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool useTransaction = true)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TTenantId : IComparable
         where TUserId : IComparable
         => options.UseIsolationUoW<IDomainEventOptions, TDbContext, TTenantId, TUserId>(

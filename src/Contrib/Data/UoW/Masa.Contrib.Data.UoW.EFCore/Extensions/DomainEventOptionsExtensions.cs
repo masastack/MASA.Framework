@@ -12,7 +12,7 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => options.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IDomainEventOptions UseUoW<TDbContext, TUserId>(
@@ -20,7 +20,7 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TUserId : IComparable
         => options.UseUoW<IDomainEventOptions, TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 }

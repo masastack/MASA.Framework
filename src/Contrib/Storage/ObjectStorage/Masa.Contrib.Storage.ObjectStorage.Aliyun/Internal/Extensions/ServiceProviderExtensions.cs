@@ -34,10 +34,9 @@ internal static class ServiceProviderExtensions
         var isEnable = options.Value.Enable;
         if (isEnable)
         {
-            var isolationConfigurationProvider = serviceProvider.GetRequiredService<IIsolationConfigurationProvider>();
+            var isolationConfigurationProvider = serviceProvider.GetRequiredService<IIsolationConfigurationProvider<AliyunStorageConfigureOptions>>();
             if (!isolationConfigurationProvider.TryGetModule(sectionName, out aliyunStorageConfigureOptions))
             {
-                //使用默认配置,增加日志
                 aliyunStorageConfigureOptions = serviceProvider.GetDefaultAliyunStorageConfigureOptions(name);
             }
             defaultStorageConfigureOptionsMonitor = null;
