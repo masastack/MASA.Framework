@@ -3,15 +3,8 @@
 
 namespace Masa.Contrib.StackSdks.Caller;
 
-public class StackHttpClientCaller : HttpClientCallerBase
+public abstract class StackHttpClientCaller : HttpClientCallerBase
 {
-    protected override string BaseAddress { get; set; }
-
-    public StackHttpClientCaller(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-    }
-
-
     protected override void UseHttpClientPost(MasaHttpClientBuilder masaHttpClientBuilder)
     {
         masaHttpClientBuilder.UseAuthentication(serviceProvider => new AuthenticationService(

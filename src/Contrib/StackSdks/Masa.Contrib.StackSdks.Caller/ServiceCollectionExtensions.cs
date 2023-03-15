@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace Masa.Contrib.StackSdks.Caller;
 
 public static class ServiceCollectionExtensions
@@ -15,7 +17,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure(jwtTokenValidatorOptions);
         services.Configure(clientRefreshTokenOptions);
-        services.AddScoped<TokenProvider>();
+        services.TryAddScoped<ITokenProvider, TokenProvider>();
         services.AddSingleton<JwtTokenValidator>();
         services.AddAutoRegistrationCaller(assembly);
         return services;

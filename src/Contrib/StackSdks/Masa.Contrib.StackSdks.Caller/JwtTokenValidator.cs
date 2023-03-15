@@ -8,18 +8,18 @@ public class JwtTokenValidator
     readonly JwtTokenValidatorOptions _jwtTokenValidatorOptions;
     readonly ClientRefreshTokenOptions _clientRefreshTokenOptions;
     readonly HttpClient _httpClient;
-    readonly ILogger<JwtTokenValidator> _logger;
+    readonly ILogger<JwtTokenValidator>? _logger;
 
     public JwtTokenValidator(
         IOptions<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
         HttpClient httpClient,
-        ILogger<JwtTokenValidator> logger,
-        IOptions<ClientRefreshTokenOptions> clientRefreshTokenOptions)
+        IOptions<ClientRefreshTokenOptions> clientRefreshTokenOptions,
+        ILogger<JwtTokenValidator>? logger)
     {
         _jwtTokenValidatorOptions = jwtTokenValidatorOptions.Value;
         _httpClient = httpClient;
-        _logger = logger;
         _clientRefreshTokenOptions = clientRefreshTokenOptions.Value;
+        _logger = logger;
     }
 
     public async Task ValidateTokenAsync(TokenProvider tokenProvider)
