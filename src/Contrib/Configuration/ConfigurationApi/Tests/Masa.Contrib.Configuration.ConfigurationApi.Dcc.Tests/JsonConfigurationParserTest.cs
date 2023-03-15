@@ -12,7 +12,7 @@ public class JsonConfigurationParserTest
     {
         var raw = "{\"Id\": 1, \"Name\": \"Jack\"}";
         var result = JsonConfigurationParser.Parse(raw);
-        Assert.IsTrue(result.Count > 0);
+        Assert.IsTrue(result["Id"] == "1" && result["Name"] == "Jack");
     }
 
     [TestMethod]
@@ -20,6 +20,8 @@ public class JsonConfigurationParserTest
     {
         var raw = "[{\"Id\": 1, \"Name\": \"Jack\"},{\"Id\": 2, \"Name\": \"Green\"}]";
         var result = JsonConfigurationParser.Parse(raw);
-        Assert.IsTrue(result.Count > 0);
+        Assert.AreEqual(4, result.Count);
+        Assert.AreEqual("1", result["0:Id"]);
+        Assert.AreEqual("Green", result["1:Name"]);
     }
 }
