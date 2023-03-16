@@ -21,6 +21,8 @@ public class AddSchedulerJobRequest
 
     public string Description { get; set; } = string.Empty;
 
+    public string NotifyUrl { get; set; } = string.Empty;
+
     /// <summary>
     /// Default Ignore
     /// </summary>
