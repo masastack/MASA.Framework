@@ -3,19 +3,18 @@
 
 namespace Masa.Contrib.Isolation;
 
-public class DefaultIsolationConfigurationProvider<TModuleConfig> : IIsolationConfigurationProvider<TModuleConfig>
-    where TModuleConfig : class
+public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProvider
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
-    private readonly ILogger<DefaultIsolationConfigurationProvider<TModuleConfig>>? _logger;
+    private readonly ILogger<DefaultIsolationConfigurationProvider>? _logger;
 
     public DefaultIsolationConfigurationProvider(
         IServiceProvider serviceProvider,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
-        ILogger<DefaultIsolationConfigurationProvider<TModuleConfig>>? logger = null)
+        ILogger<DefaultIsolationConfigurationProvider>? logger = null)
     {
         _serviceProvider = serviceProvider;
         _environmentContext = environmentContext;
@@ -23,7 +22,7 @@ public class DefaultIsolationConfigurationProvider<TModuleConfig> : IIsolationCo
         _logger = logger;
     }
 
-    public bool TryGetModule(string sectionName, [NotNullWhen(true)] out TModuleConfig? module)
+    public TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class
     {
         Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => option.Module != null!;
 
@@ -60,12 +59,9 @@ public class DefaultIsolationConfigurationProvider<TModuleConfig> : IIsolationCo
             _logger?.LogDebug("{Message}, The number of matching available configurations: {Num}",
                 GetMessage(),
                 modules.Count);
-
-            module = modules.First();
-            return true;
+            return modules.First();
         }
-        module = null;
-        return false;
+        return null;
     }
 
     private string GetMessage()

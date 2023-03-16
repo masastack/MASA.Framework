@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-public interface IIsolationConfigurationProvider<TModuleConfig> where TModuleConfig : class
+public interface IIsolationConfigurationProvider
 {
-    bool TryGetModule(string sectionName, [NotNullWhen(true)] out TModuleConfig? module);
+    TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class;
 }

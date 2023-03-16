@@ -12,12 +12,12 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
     private readonly IMultiTenantContext? _tenantContext;
     private readonly IConnectionStringProviderWrapper _connectionStringProviderWrapper;
     private readonly ILogger<DefaultIsolationConnectionStringProvider>? _logger;
-    private readonly IIsolationConfigurationProvider<MasaDbConnectionOptions> _configurationProvider;
+    private readonly IIsolationConfigurationProvider _configurationProvider;
 
     public DefaultIsolationConnectionStringProvider(
         IUnitOfWorkAccessor unitOfWorkAccessor,
         IConnectionStringProviderWrapper connectionStringProviderWrapper,
-        IIsolationConfigurationProvider<MasaDbConnectionOptions> configurationProvider,
+        IIsolationConfigurationProvider configurationProvider,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
         ILogger<DefaultIsolationConnectionStringProvider>? logger = null)
@@ -36,9 +36,11 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
     public string GetConnectionString(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
     {
         if (_unitOfWorkAccessor.CurrentDbContextOptions != null)
-            return _unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString; //todo: UnitOfWork does not currently support multi-context versions
+            return _unitOfWorkAccessor.CurrentDbContextOptions
+                .ConnectionString; //todo: UnitOfWork does not currently support multi-context versions
 
-        if (_configurationProvider.TryGetModule(name, out var masaDbConnectionOptions))
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<MasaDbConnectionOptions>(name);
+        if (masaDbConnectionOptions != null)
             return SetConnectionString(masaDbConnectionOptions.ConnectionStrings.GetConnectionString(name));
 
         var connectionString = _connectionStringProviderWrapper.GetConnectionString(name);

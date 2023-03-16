@@ -10,12 +10,12 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     IIsolationLocalMessageDbConnectionStringProviderWrapper
 {
     private readonly ILocalMessageDbConnectionStringProviderWrapper _localMessageDbConnectionStringProviderWrapper;
-    private readonly IIsolationConfigurationProvider<MasaDbConnectionOptions> _configurationProvider;
+    private readonly IIsolationConfigurationProvider _configurationProvider;
     private readonly IOptionsSnapshot<LocalMessageTableOptions> _localMessageTableOptions;
 
     public DefaultIsolationLocalMessageDbConnectionStringProvider(
         ILocalMessageDbConnectionStringProviderWrapper localMessageDbConnectionStringProviderWrapper,
-        IIsolationConfigurationProvider<MasaDbConnectionOptions> configurationProvider,
+        IIsolationConfigurationProvider configurationProvider,
         IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions)
     {
         _localMessageDbConnectionStringProviderWrapper = localMessageDbConnectionStringProviderWrapper;
@@ -28,7 +28,8 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
         if (_localMessageTableOptions.Value.SectionName.IsNullOrWhiteSpace())
             return new();
 
-        var masaDbContextConfigurationOptions = new List<MasaDbContextConfigurationOptions>(_localMessageDbConnectionStringProviderWrapper.DbContextOptionsList);
+        var masaDbContextConfigurationOptions =
+            new List<MasaDbContextConfigurationOptions>(_localMessageDbConnectionStringProviderWrapper.DbContextOptionsList);
         var connectionString = GetDbConnectionStringByIsolation();
         if (connectionString != null && masaDbContextConfigurationOptions.All(option => option.ConnectionString != connectionString))
         {
@@ -39,7 +40,8 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
 
     private string? GetDbConnectionStringByIsolation()
     {
-        if (_configurationProvider.TryGetModule(ConnectionStrings.DEFAULT_SECTION, out var masaDbConnectionOptions))
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<MasaDbConnectionOptions>(ConnectionStrings.DEFAULT_SECTION);
+        if (masaDbConnectionOptions != null)
         {
             return masaDbConnectionOptions.ConnectionStrings.GetConnectionString(_localMessageTableOptions.Value.SectionName);
         }

@@ -34,11 +34,9 @@ internal static class ServiceProviderExtensions
         var isEnable = options.Value.Enable;
         if (isEnable)
         {
-            var isolationConfigurationProvider = serviceProvider.GetRequiredService<IIsolationConfigurationProvider<AliyunStorageConfigureOptions>>();
-            if (!isolationConfigurationProvider.TryGetModule(sectionName, out aliyunStorageConfigureOptions))
-            {
-                aliyunStorageConfigureOptions = serviceProvider.GetDefaultAliyunStorageConfigureOptions(name);
-            }
+            var isolationConfigurationProvider = serviceProvider.GetRequiredService<IIsolationConfigurationProvider>();
+            aliyunStorageConfigureOptions = isolationConfigurationProvider.GetModuleConfig<AliyunStorageConfigureOptions>(sectionName) ??
+                serviceProvider.GetDefaultAliyunStorageConfigureOptions(name);
             defaultStorageConfigureOptionsMonitor = null;
         }
         else
