@@ -10,15 +10,12 @@ public class DefaultConnectionStringProviderTest
     public async Task TestGetConnectionStringAsyncReturnTest1()
     {
         IServiceCollection services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = "Test1"
-            };
+            options.DefaultConnection = "Test1";
         });
         var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
         var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
         var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("Test1", connectionString);
@@ -28,15 +25,12 @@ public class DefaultConnectionStringProviderTest
     public async Task TestGetConnectionStringAsyncAndNameIsEmptyReturnTest1()
     {
         IServiceCollection services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = "Test1"
-            };
+            options.DefaultConnection = "Test1";
         });
         var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
         var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
         var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
         Assert.AreEqual("Test1", connectionString);

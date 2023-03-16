@@ -9,5 +9,5 @@ public class IsolationOptions
 {
     public string? SectionName { get; set; }
 
-    public bool Enable => string.IsNullOrWhiteSpace(SectionName);
+    public bool Enable => !string.IsNullOrWhiteSpace(SectionName);
 }

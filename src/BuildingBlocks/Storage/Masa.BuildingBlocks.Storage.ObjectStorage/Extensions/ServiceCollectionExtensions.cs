@@ -28,7 +28,6 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(services);
         MasaArgumentException.ThrowIfNull(name);
 
-        services.TryAddSingleton<IObjectStorageClientFactory, DefaultObjectStorageClientFactory>();
         services.TryAddObjectStorageClient();
         services.TryAddBucketNameProvider();
         services.TryAddObjectStorageClientContainer();

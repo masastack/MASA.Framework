@@ -46,6 +46,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
 
     protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
+        Options = options;
     }
 
     protected virtual void TryInitialize()

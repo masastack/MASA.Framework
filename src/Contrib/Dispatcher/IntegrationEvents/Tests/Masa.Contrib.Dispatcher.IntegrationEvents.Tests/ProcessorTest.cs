@@ -87,13 +87,7 @@ public class ProcessorTest
         unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
-
-        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         Mock<IOptions<IntegrationEventOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
@@ -178,12 +172,7 @@ public class ProcessorTest
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         Mock<IOptions<IntegrationEventOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
@@ -232,12 +221,7 @@ public class ProcessorTest
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
-        {
-            new(string.Empty)
-        }).Verifiable();
-        _options.Value.Services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        _options.Value.Services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         var processor = new DeletePublishedExpireEventProcessor(_options.Value.Services.BuildServiceProvider(), _options);
         await processor.ExecuteAsync(default);

@@ -9,11 +9,11 @@ internal class DefaultLocalMessageDbConnectionStringProvider :
     LocalMessageDbConnectionStringProviderBase,
     ILocalMessageDbConnectionStringProviderWrapper
 {
-    private readonly IOptionsSnapshot<MasaDbConnectionOptions> _options;
+    private readonly IOptionsSnapshot<ConnectionStrings> _options;
     private readonly IOptionsSnapshot<LocalMessageTableOptions> _localMessageTableOptions;
 
     public DefaultLocalMessageDbConnectionStringProvider(
-        IOptionsSnapshot<MasaDbConnectionOptions> options,
+        IOptionsSnapshot<ConnectionStrings> options,
         IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions)
     {
         _options = options;
@@ -24,7 +24,6 @@ internal class DefaultLocalMessageDbConnectionStringProvider :
     {
         var list = _options
             .Value
-            .ConnectionStrings
             .Where(option => option.Key.Equals(_localMessageTableOptions.Value.SectionName, StringComparison.OrdinalIgnoreCase))
             .Select(item => new MasaDbContextConfigurationOptions(item.Value))
             .Distinct()

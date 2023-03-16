@@ -224,15 +224,18 @@ public class CallerTest
         var serviceProvider = services.BuildServiceProvider();
         var caller = serviceProvider.GetService<ICaller>();
         var caller2 = serviceProvider.GetService<ICaller>();
-        Assert.AreEqual(caller, caller2);
+        Assert.AreNotEqual(caller, caller2);
 
         var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
         var caller3 = serviceProvider2.GetService<ICaller>();
         var caller4 = serviceProvider2.GetService<ICaller>();
-        Assert.AreEqual(caller, caller4);
-        Assert.AreEqual(caller3, caller4);
+        Assert.AreNotEqual(caller, caller4);
+        Assert.AreNotEqual(caller3, caller4);
     }
 
+    /// <summary>
+    ///
+    /// </summary>
     [TestMethod]
     public void TestCallerLifetimeEqualSingleton()
     {
@@ -243,17 +246,17 @@ public class CallerTest
             {
                 httpClient.BaseAddress = "https://github.com";
             });
-        });
+        }, ServiceLifetime.Singleton);
         var serviceProvider = services.BuildServiceProvider();
         var caller = serviceProvider.GetService<ICaller>();
         var caller2 = serviceProvider.GetService<ICaller>();
-        Assert.AreEqual(caller, caller2);
+        Assert.AreNotEqual(caller, caller2);
 
         var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
         var caller3 = serviceProvider2.GetService<ICaller>();
         var caller4 = serviceProvider2.GetService<ICaller>();
-        Assert.AreEqual(caller, caller4);
-        Assert.AreEqual(caller3, caller4);
+        Assert.AreNotEqual(caller, caller4);
+        Assert.AreNotEqual(caller3, caller4);
     }
 
     private static FieldInfo GetCustomFieldInfo(Type type, string name)

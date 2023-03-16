@@ -33,16 +33,6 @@ internal class DefaultAliyunStorageOptionProvider : IAliyunStorageOptionProvider
         Refresh();
     }
 
-    // public DefaultAliyunStorageOptionProvider(IOptionsMonitor<AliyunStorageConfigureOptions> options)
-    //     : this(GetAliyunStorageOptions(options.CurrentValue))
-    // {
-    //     options.OnChange(aliyunStorageConfigureOptions =>
-    //     {
-    //         _aliyunStorageOptions = GetAliyunStorageOptions(aliyunStorageConfigureOptions);
-    //         Refresh();
-    //     });
-    // }
-
     public AliyunStorageOptions GetOptions() => _aliyunStorageOptions;
 
     private static AliyunStorageOptions GetAliyunStorageOptions(AliyunStorageConfigureOptions options)

@@ -13,6 +13,9 @@ public class BucketNameProvider : IBucketNameProvider
     public string GetBucketName()
         => BucketNames.DefaultBucketName;
 
+    public string GetBucketName(string aliasName)
+        => BucketNames.GetBucketName(aliasName);
+
     public string GetBucketName<TContainer>() where TContainer : class
         => BucketNames.GetBucketName(BucketNameAttribute.GetName<TContainer>());
 }

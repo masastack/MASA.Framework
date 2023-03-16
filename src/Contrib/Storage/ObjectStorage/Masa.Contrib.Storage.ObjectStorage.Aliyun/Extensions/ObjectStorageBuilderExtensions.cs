@@ -25,7 +25,7 @@ public static class ObjectStorageBuilderExtensions
                 var credentialProvider = new DefaultCredentialProvider(
                     ossClientFactory,
                     aliyunStorageOptionProvider,
-                    new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions())),
+                    serviceProvider.GetRequiredService<MemoryCacheProvider>().GetMemoryCache(objectStorageBuilder.Name),
                     serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
                 );
                 return new DefaultStorageClient(
@@ -100,7 +100,7 @@ public static class ObjectStorageBuilderExtensions
                 var credentialProvider = new DefaultCredentialProvider(
                     serviceProvider.GetRequiredService<IOssClientFactory>(),
                     defaultAliyunStorageOptionProvider,
-                    new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions())),
+                    serviceProvider.GetRequiredService<MemoryCacheProvider>().GetMemoryCache(objectStorageBuilder.Name),
                     serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
                 );
                 return new DefaultStorageClient(credentialProvider,
@@ -117,6 +117,7 @@ public static class ObjectStorageBuilderExtensions
 
     private static void AddAliyunStorageCore(this IServiceCollection services)
     {
+        services.TryAddSingleton<MemoryCacheProvider>();
         services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
     }
 }

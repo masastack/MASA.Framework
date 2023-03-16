@@ -175,12 +175,9 @@ public class UnitOfWorkTest : TestBase
     public void TestUnitOfWorkByEventBusBuilder()
     {
         var services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = _connectionString
-            };
+            options.DefaultConnection = _connectionString;
         });
         Mock<IEventBusBuilder> eventBuilder = new();
         eventBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();

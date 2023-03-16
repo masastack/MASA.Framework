@@ -41,12 +41,9 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestSoftDeleteAsync()
     {
-        Services.Configure<MasaDbConnectionOptions>(options =>
+        Services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"
-            };
+            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
         });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var student = new Student()
@@ -238,12 +235,9 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestGetPaginatedListAsyncReturnCountEqualResultCount()
     {
-        Services.Configure<MasaDbConnectionOptions>(options =>
+        Services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"
-            };
+            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
         });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var students = new List<Student>()
@@ -299,6 +293,7 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => optionsBuilder.UseSqlite());
 
         var serviceProvider = services.BuildServiceProvider();
+
         var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
 

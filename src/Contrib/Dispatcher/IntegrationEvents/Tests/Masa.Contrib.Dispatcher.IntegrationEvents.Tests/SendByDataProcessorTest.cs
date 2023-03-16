@@ -21,14 +21,6 @@ public class SendByDataProcessorTest
     public async Task TestPublishEventByPublishIsFailedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<ILocalMessageDbConnectionStringProvider> dbConnectionStringProvider = new();
-        dbConnectionStringProvider
-            .Setup(p => p.DbContextOptionsList)
-            .Returns(() => new List<MasaDbContextConfigurationOptions>()
-            {
-                new("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity")
-            });
-
         var eventLogs = new List<IntegrationEventLog>()
         {
             new(new RegisterUserEvent(), Guid.NewGuid())
@@ -67,14 +59,6 @@ public class SendByDataProcessorTest
     public async Task TestPublishEventByPublishIsSuccessedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<ILocalMessageDbConnectionStringProvider> dbConnectionStringProvider = new();
-        dbConnectionStringProvider
-            .Setup(p => p.DbContextOptionsList)
-            .Returns(() => new List<MasaDbContextConfigurationOptions>()
-            {
-                new("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity")
-            });
-
         var eventLogs = new List<IntegrationEventLog>()
         {
             new(new RegisterUserEvent(), Guid.NewGuid())

@@ -16,7 +16,8 @@ public class ProcessorTest
         var services = new ServiceCollection();
         services.AddDaprEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
-        _options = Microsoft.Extensions.Options.Options.Create(new DaprIntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        _options = Microsoft.Extensions.Options.Options.Create(new DaprIntegrationEventOptions(services,
+            AppDomain.CurrentDomain.GetAssemblies()));
     }
 
     [TestMethod]
@@ -35,12 +36,7 @@ public class ProcessorTest
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<ILocalMessageDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
-        {
-            new(string.Empty)
-        }).Verifiable();
-        _options.Value.Services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        _options.Value.Services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         var processor = new DeletePublishedExpireEventProcessor(_options.Value.Services.BuildServiceProvider(), _options);
         await processor.ExecuteAsync(default);

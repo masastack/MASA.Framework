@@ -19,12 +19,9 @@ public class UnitOfWorkAccessorTest : TestBase
     public async Task TestUnitOfWorkAccessorAsync()
     {
         var services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = _connectionString
-            };
+            options.DefaultConnection = _connectionString;
         });
 
         _options.Setup(option => option.Services).Returns(services).Verifiable();

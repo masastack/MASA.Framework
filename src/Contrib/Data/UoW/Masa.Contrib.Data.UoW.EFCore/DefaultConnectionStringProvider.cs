@@ -6,12 +6,12 @@ namespace Masa.Contrib.Data.UoW.EFCore;
 public class DefaultConnectionStringProvider : IConnectionStringProvider
 {
     private readonly IUnitOfWorkAccessor _unitOfWorkAccessor;
-    private readonly IOptionsSnapshot<MasaDbConnectionOptions> _options;
+    private readonly IOptionsSnapshot<ConnectionStrings> _options;
     private readonly ILogger<DefaultConnectionStringProvider>? _logger;
 
     public DefaultConnectionStringProvider(
         IUnitOfWorkAccessor unitOfWorkAccessor,
-        IOptionsSnapshot<MasaDbConnectionOptions> options,
+        IOptionsSnapshot<ConnectionStrings> options,
         ILogger<DefaultConnectionStringProvider>? logger = null)
     {
         _unitOfWorkAccessor = unitOfWorkAccessor;
@@ -26,7 +26,7 @@ public class DefaultConnectionStringProvider : IConnectionStringProvider
         if (_unitOfWorkAccessor.CurrentDbContextOptions != null)
             return _unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString;
 
-        var connectionStrings = _options.Value.ConnectionStrings;
+        var connectionStrings = _options.Value;
         var connectionString = string.IsNullOrEmpty(name) ? connectionStrings.DefaultConnection : connectionStrings.GetConnectionString(name);
         if (string.IsNullOrEmpty(connectionString))
             _logger?.LogError("Failed to get database connection string, please check whether the configuration of IOptionsSnapshot<MasaDbConnectionOptions> is abnormal");

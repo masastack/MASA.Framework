@@ -9,22 +9,28 @@ public class ModuleConfigUtilsTest
     [TestMethod]
     public void TestTryGetConfig()
     {
+        var services = new ServiceCollection();
+        services.Configure<IsolationOptions>(options =>
+        {
+            options.SectionName = "Isolation";
+        });
         var configurationBuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
-        var configuration = configurationBuilder.Build();
-        var isolationOptions = configuration.GetSection("Isolation").Get<List<IsolationConfigurationOptions<MasaDbConnectionOptions>>>();
-        Assert.IsNotNull(isolationOptions);
+        services.AddSingleton<IConfiguration>(configurationBuilder.Build());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbConnectionOptions = ModuleConfigUtils.GetModules<ConnectionStrings>(serviceProvider, ConnectionStrings.DEFAULT_SECTION);
+        Assert.IsNotNull(dbConnectionOptions);
+        Assert.AreEqual(1, dbConnectionOptions.Count);
+        Assert.AreEqual("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
+            dbConnectionOptions[0].Data.DefaultConnection);
 
-        // Assert.AreEqual(1, isolationOptions.Data.Count);
-        //
-        // var module = isolationOptions.Data[0].Module;
-        //
-        // var result = ModuleConfigUtils.TryGetConfig<MasaDbConnectionOptions>(
-        //     module,
-        //     ConnectionStrings.DEFAULT_SECTION,
-        //     out var dbConnectionOptions);
-        // Assert.IsTrue(result);
-        // Assert.IsNotNull(dbConnectionOptions);
-        // var connectionString = dbConnectionOptions.ConnectionStrings.GetConnectionString(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME);
-        // Assert.AreEqual("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;", connectionString);
+        var appConfig = ModuleConfigUtils.GetModules<AppConfig>(serviceProvider, nameof(AppConfig));
+        Assert.IsNotNull(appConfig);
+        Assert.AreEqual(1, appConfig.Count);
+        Assert.AreEqual("masa", appConfig[0].Data.Name);
+
+        appConfig = ModuleConfigUtils.GetModules<AppConfig>(serviceProvider, $"{nameof(AppConfig)}2");
+        Assert.IsNotNull(appConfig);
+        Assert.AreEqual(1, appConfig.Count);
+        Assert.AreEqual("masa2", appConfig[0].Data.Name);
     }
 }

@@ -5,11 +5,11 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public class CallerRelationOptions : MasaRelationOptions<ICallerDisposeWrapper>
+public class CallerRelationOptions : MasaRelationOptions<ICallerDisposeManual>
 {
     public ServiceLifetime? Lifetime { get; set; }
 
-    public CallerRelationOptions(string name, Func<IServiceProvider, ICallerDisposeWrapper> func, ServiceLifetime? lifetime)
+    public CallerRelationOptions(string name, Func<IServiceProvider, ICallerDisposeManual> func, ServiceLifetime? lifetime)
         : base(name, func)
     {
         Lifetime = lifetime;

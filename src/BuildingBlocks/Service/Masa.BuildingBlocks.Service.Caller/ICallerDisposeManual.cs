@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public interface ICallerDisposeWrapper : ICaller, IDisposable
+public interface ICallerDisposeManual : ICaller, IDisposable
 {
 
 }

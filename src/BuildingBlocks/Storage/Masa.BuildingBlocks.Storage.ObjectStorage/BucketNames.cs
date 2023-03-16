@@ -22,6 +22,6 @@ public class BucketNames : Dictionary<string, string>
         if (base.TryGetValue(name, out var bucketName))
             return bucketName;
 
-        return name;
+        return DEFAULT_BUCKET_NAME;
     }
 }

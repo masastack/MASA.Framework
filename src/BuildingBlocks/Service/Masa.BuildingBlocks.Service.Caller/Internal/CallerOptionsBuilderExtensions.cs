@@ -11,7 +11,7 @@ internal static class CallerOptionsBuilderExtensions
 {
     public static void AddCallerRelation(
         this CallerOptionsBuilder callerOptionsBuilder,
-        Func<IServiceProvider, ICallerDisposeWrapper> implementationFactory)
+        Func<IServiceProvider, ICallerDisposeManual> implementationFactory)
     {
         callerOptionsBuilder.Services.Configure<CallerFactoryOptions>(callerOptions =>
         {

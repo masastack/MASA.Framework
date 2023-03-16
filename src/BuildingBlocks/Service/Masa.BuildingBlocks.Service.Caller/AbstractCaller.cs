@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICallerDisposeWrapper
+public abstract class AbstractCaller : ICallerDisposeManual
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;
@@ -26,7 +26,7 @@ public abstract class AbstractCaller : ICallerDisposeWrapper
 
     private readonly ILogger<AbstractCaller>? _logger;
 
-    protected AbstractCaller(IServiceProvider serviceProvider)
+    private AbstractCaller(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         _logger = serviceProvider.GetService<ILogger<AbstractCaller>>();

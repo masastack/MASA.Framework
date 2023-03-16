@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests.Isolation")]
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -34,7 +35,8 @@ internal static class ServiceCollectionExtensions
             .Configure<IsolationOptions>(options =>
             {
                 options.SectionName = sectionName;
-            });
+            })
+            .TryAddScoped<IIsolationConfigurationProvider, DefaultIsolationConfigurationProvider>();
 
         MasaApp.TrySetServiceCollection(services);
     }

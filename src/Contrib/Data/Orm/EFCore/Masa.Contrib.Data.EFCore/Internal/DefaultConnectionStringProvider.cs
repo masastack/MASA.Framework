@@ -9,9 +9,9 @@ namespace Masa.Contrib.Data.EFCore;
 
 internal class DefaultConnectionStringProvider : IConnectionStringProviderWrapper
 {
-    private readonly IOptionsSnapshot<MasaDbConnectionOptions> _options;
+    private readonly IOptionsSnapshot<ConnectionStrings> _options;
 
-    public DefaultConnectionStringProvider(IOptionsSnapshot<MasaDbConnectionOptions> options) => _options = options;
+    public DefaultConnectionStringProvider(IOptionsSnapshot<ConnectionStrings> options) => _options = options;
 
     public Task<string> GetConnectionStringAsync(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
         => Task.FromResult(GetConnectionString(name));
@@ -19,9 +19,9 @@ internal class DefaultConnectionStringProvider : IConnectionStringProviderWrappe
     public string GetConnectionString(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
     {
         if (string.IsNullOrEmpty(name))
-            return _options.Value.ConnectionStrings.DefaultConnection;
+            return _options.Value.DefaultConnection;
 
-        return _options.Value.ConnectionStrings.GetConnectionString(name);
+        return _options.Value.GetConnectionString(name);
     }
 }
 

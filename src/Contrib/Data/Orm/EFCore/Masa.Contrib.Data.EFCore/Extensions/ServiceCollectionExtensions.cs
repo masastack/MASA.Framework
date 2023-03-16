@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
     {
-        services.TryAddConfigure<MasaDbConnectionOptions>();
+        services.TryAddConfigure<ConnectionStrings>();
 
         MasaDbContextBuilder masaBuilder = new(services, typeof(TDbContextImplementation), typeof(TUserId));
         optionsBuilder?.Invoke(masaBuilder);
@@ -104,5 +104,5 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection TryAddConfigure<TOptions>(
         this IServiceCollection services)
         where TOptions : class
-        => services.AddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION, isRoot: true);
+        => services.AddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION, isRoot: false);
 }

@@ -12,6 +12,7 @@ global using Masa.BuildingBlocks.Storage.ObjectStorage.Response;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Internal;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Internal.Response;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun.Options;
+global using Masa.Utils.Caching.Memory;
 global using Microsoft.Extensions.Caching.Memory;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;

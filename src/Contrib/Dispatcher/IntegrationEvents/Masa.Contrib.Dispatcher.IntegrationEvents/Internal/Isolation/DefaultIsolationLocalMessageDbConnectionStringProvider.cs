@@ -40,10 +40,10 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
 
     private string? GetDbConnectionStringByIsolation()
     {
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<MasaDbConnectionOptions>(ConnectionStrings.DEFAULT_SECTION);
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION);
         if (masaDbConnectionOptions != null)
         {
-            return masaDbConnectionOptions.ConnectionStrings.GetConnectionString(_localMessageTableOptions.Value.SectionName);
+            return masaDbConnectionOptions.GetConnectionString(_localMessageTableOptions.Value.SectionName);
         }
         return null;
     }

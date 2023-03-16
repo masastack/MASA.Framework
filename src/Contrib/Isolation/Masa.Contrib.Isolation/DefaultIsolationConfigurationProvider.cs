@@ -9,6 +9,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
     private readonly ILogger<DefaultIsolationConfigurationProvider>? _logger;
+    private readonly List<ModuleConfigRelationInfo> _data;
 
     public DefaultIsolationConfigurationProvider(
         IServiceProvider serviceProvider,
@@ -20,17 +21,21 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         _environmentContext = environmentContext;
         _tenantContext = tenantContext;
         _logger = logger;
+        _data = new();
     }
 
     public TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class
     {
-        Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => option.Module != null!;
+        var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
+        if (item != null)
+            return item.ModuleConfig as TModuleConfig;
+
+        Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => option.Data != null!;
 
         if (_tenantContext != null)
         {
             if (_tenantContext.CurrentTenant == null)
-                _logger?.LogDebug(
-                    $"Tenant resolution failed");
+                _logger?.LogDebug($"Tenant resolution failed");
 
             condition = condition.And(option => option.TenantId == "*" || (_tenantContext.CurrentTenant != null &&
                 _tenantContext.CurrentTenant.Id.Equals(option.TenantId, StringComparison.CurrentCultureIgnoreCase)));
@@ -49,19 +54,30 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         }
 
         var data = ModuleConfigUtils.GetModules<TModuleConfig>(_serviceProvider, sectionName);
+        TModuleConfig? moduleInfo = null;
         var modules = data
             .Where(condition.Compile())
             .OrderByDescending(option => option.Score)
-            .Select(option => option.Module)
+            .Select(option => option.Data)
             .ToList();
         if (modules.Count >= 1)
         {
             _logger?.LogDebug("{Message}, The number of matching available configurations: {Num}",
                 GetMessage(),
                 modules.Count);
-            return modules.First();
+            moduleInfo = modules.First();
         }
-        return null;
+        else
+        {
+            moduleInfo = null;
+        }
+        _data.Add(new ModuleConfigRelationInfo()
+        {
+            ModuleConfig = moduleInfo,
+            ModuleType = typeof(TModuleConfig),
+            SectionName = sectionName
+        });
+        return moduleInfo;
     }
 
     private string GetMessage()

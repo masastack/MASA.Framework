@@ -23,10 +23,9 @@ internal static class ModuleConfigUtils
 
         var configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ?? serviceProvider.GetService<IConfiguration>();
         MasaArgumentException.ThrowIfNull(configuration);
-        return (List<IsolationConfigurationOptions<TModuleConfig>>)configuration
+        return configuration
             .GetSection(rootSectionName)
-            .GetSection(nameof(IsolationOptions<TModuleConfig>.Data))
             .GetSection(sectionName)
-            .Get(typeof(List<IsolationConfigurationOptions<TModuleConfig>>));
+            .Get<List<IsolationConfigurationOptions<TModuleConfig>>>() ?? new();
     }
 }

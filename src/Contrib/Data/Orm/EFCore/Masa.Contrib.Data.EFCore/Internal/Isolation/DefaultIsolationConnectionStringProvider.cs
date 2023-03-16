@@ -39,9 +39,9 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
             return _unitOfWorkAccessor.CurrentDbContextOptions
                 .ConnectionString; //todo: UnitOfWork does not currently support multi-context versions
 
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<MasaDbConnectionOptions>(name);
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(name);
         if (masaDbConnectionOptions != null)
-            return SetConnectionString(masaDbConnectionOptions.ConnectionStrings.GetConnectionString(name));
+            return SetConnectionString(masaDbConnectionOptions.GetConnectionString(name));
 
         var connectionString = _connectionStringProviderWrapper.GetConnectionString(name);
         _logger?.LogDebug(
