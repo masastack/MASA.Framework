@@ -89,11 +89,24 @@ public static class ServiceCollectionExtensions
         if (services.All(d => d.ServiceType != typeof(IPublisher)))
             throw new NotSupportedException($"{nameof(IPublisher)} has no implementing");
 
-        services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
-        services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider => serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>());
+        services.AddLocalMessageDbConnectionStringProvider();
 
         MasaApp.TrySetServiceCollection(services);
         return services;
+    }
+
+    private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
+    {
+        services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper, DefaultIsolationLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                return serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
+        });
     }
 
     private sealed class IntegrationEventBusProvider

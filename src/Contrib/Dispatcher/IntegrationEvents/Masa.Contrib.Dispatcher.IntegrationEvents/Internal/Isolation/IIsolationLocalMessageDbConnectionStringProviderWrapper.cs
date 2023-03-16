@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Isolation;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
-public interface IIsolationConnectionStringProviderWrapper : IConnectionStringProvider
+internal interface IIsolationLocalMessageDbConnectionStringProviderWrapper : ILocalMessageDbConnectionStringProvider
 {
 
 }

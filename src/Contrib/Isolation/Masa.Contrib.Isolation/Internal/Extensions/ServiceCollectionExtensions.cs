@@ -36,50 +36,8 @@ internal static class ServiceCollectionExtensions
                 options.SectionName = sectionName;
             });
 
-        services.AddConnectionStringProvider();
-        services.AddLocalMessageDbConnectionStringProvider();
-
         MasaApp.TrySetServiceCollection(services);
     }
-
-    private static void AddConnectionStringProvider(this IServiceCollection services)
-    {
-        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
-        ;
-        var connectionStringProvider = ServiceDescriptor.Describe(typeof(IConnectionStringProvider), serviceProvider =>
-        {
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-                serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
-
-            return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
-        }, ServiceLifetime.Scoped);
-        if (services.Any(d => d.ServiceType == typeof(IConnectionStringProvider)))
-            services.Replace(connectionStringProvider);
-        else
-            services.Add(connectionStringProvider);
-    }
-
-    private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
-    {
-        services
-            .TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper,
-                DefaultIsolationLocalMessageDbConnectionStringProvider>();
-        var localMessageDbConnectionStringProvider = ServiceDescriptor.Describe(typeof(ILocalMessageDbConnectionStringProvider),
-            serviceProvider =>
-            {
-                var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-                if (isolationOptions.Value.Enable)
-                    serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
-
-                return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
-            }, ServiceLifetime.Scoped);
-        if (services.Any(d => d.ServiceType == typeof(ILocalMessageDbConnectionStringProvider)))
-            services.Replace(localMessageDbConnectionStringProvider);
-        else
-            services.Add(localMessageDbConnectionStringProvider);
-    }
-
 
     private sealed class IsolationProvider
     {

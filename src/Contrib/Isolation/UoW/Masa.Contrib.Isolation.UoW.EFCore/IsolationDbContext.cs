@@ -70,6 +70,5 @@ public abstract class IsolationDbContext<TDbContext, TKey> : MasaDbContext<TDbCo
     protected override void OnBeforeSaveChangesByFilters()
     {
         base.OnBeforeSaveChangesByFilters();
-
     }
 }

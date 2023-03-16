@@ -54,9 +54,7 @@ public static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
 
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
-
-        services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
-        services.TryAddScoped<IConnectionStringProvider>(serviceProvider => serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>());
+        services.AddConnectionStringProvider();
 
         services.TryAdd(
             new ServiceDescriptor(
@@ -75,6 +73,20 @@ public static class ServiceCollectionExtensions
         services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
             typeof(SoftDeleteSaveChangesFilter<TDbContextImplementation, TUserId>), optionsLifetime));
         return services;
+    }
+
+    private static void AddConnectionStringProvider(this IServiceCollection services)
+    {
+        services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
+        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
+        services.TryAddScoped<IConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
+        });
     }
 
     private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(

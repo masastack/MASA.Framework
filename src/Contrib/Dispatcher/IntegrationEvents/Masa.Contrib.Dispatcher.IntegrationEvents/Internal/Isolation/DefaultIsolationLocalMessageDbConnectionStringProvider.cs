@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Isolation;
+namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     LocalMessageDbConnectionStringProviderBase,

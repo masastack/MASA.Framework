@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Isolation;
+namespace Masa.Contrib.Data.EFCore;
 
 internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionStringProviderWrapper
 {
