@@ -5,13 +5,13 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public class AutoCompleteRelationsOptions : MasaRelationOptions<IAutoCompleteClient>
+public class AutoCompleteRelationsOptions : MasaRelationOptions<IManualAutoCompleteClient>
 {
     public AutoCompleteRelationsOptions(string name) : base(name)
     {
     }
 
-    public AutoCompleteRelationsOptions(string name, Func<IServiceProvider, IAutoCompleteClient> func) : this(name)
+    public AutoCompleteRelationsOptions(string name, Func<IServiceProvider, IManualAutoCompleteClient> func) : this(name)
     {
         Func = func;
     }

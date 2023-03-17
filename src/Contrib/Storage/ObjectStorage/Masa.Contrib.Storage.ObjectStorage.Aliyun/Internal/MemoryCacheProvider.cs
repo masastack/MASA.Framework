@@ -5,10 +5,17 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-internal class MemoryCacheProvider
+internal class MemoryCacheProvider : IAliyunMemoryCacheProvider
 {
-    private readonly MemoryCache<string, IMemoryCache> _data = new MemoryCache<string, IMemoryCache>();
+    private readonly MemoryCache<string, IMemoryCache> _data = new();
 
-    public IMemoryCache GetMemoryCache(string name)
-        => _data.GetOrAdd(name, _ => new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions())));
+    public IMemoryCache GetMemoryCache(AliyunStorageOptions aliyunStorageOptions)
+        => _data.GetOrAdd(ConvertToKey(aliyunStorageOptions),
+            _ => new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions())));
+
+    public void TryRemove(AliyunStorageOptions aliyunStorageOptions)
+        => _data.Remove(ConvertToKey(aliyunStorageOptions));
+
+    private static string ConvertToKey(AliyunStorageOptions aliyunStorageOptions)
+        => System.Text.Json.JsonSerializer.Serialize(aliyunStorageOptions);
 }

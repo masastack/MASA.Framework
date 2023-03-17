@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public abstract class AutoCompleteClientBase : IAutoCompleteClient
+public abstract class AutoCompleteClientBase : IManualAutoCompleteClient
 {
     public abstract Task<bool> BuildAsync(CancellationToken cancellationToken = default);
 
@@ -96,5 +96,15 @@ public abstract class AutoCompleteClientBase : IAutoCompleteClient
 
         return DeleteAsync(ids.Select(id => id.ToString() ?? throw new ArgumentNullException(nameof(id), $"{id} is not null")),
             cancellationToken);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

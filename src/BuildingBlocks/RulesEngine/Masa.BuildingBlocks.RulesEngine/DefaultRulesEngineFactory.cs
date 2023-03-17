@@ -20,4 +20,13 @@ public class DefaultRulesEngineFactory : MasaFactoryBase<IRulesEngineClient, Rul
     {
         _options = serviceProvider.GetRequiredService<IOptionsMonitor<RulesEngineFactoryOptions>>();
     }
+
+    protected override IServiceProvider GetServiceProvider(string name)
+    {
+        var options = TransientServiceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+        if (options.Value is { Enable: true })
+            return ScopedServiceProvider;
+
+        return SingletonServiceProvider;
+    }
 }

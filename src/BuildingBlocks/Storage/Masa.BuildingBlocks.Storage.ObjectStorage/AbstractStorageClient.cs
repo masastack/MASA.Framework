@@ -4,7 +4,7 @@
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
 public abstract class AbstractStorageClient :
-    IObjectStorageClient
+    IManualObjectStorageClient
 {
     public abstract TemporaryCredentialsResponse GetSecurityToken();
 
@@ -44,4 +44,14 @@ public abstract class AbstractStorageClient :
         string bucketName,
         IEnumerable<string> objectNames,
         CancellationToken cancellationToken = default);
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+    }
 }

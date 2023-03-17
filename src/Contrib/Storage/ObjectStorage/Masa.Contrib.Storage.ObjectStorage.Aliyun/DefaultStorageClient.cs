@@ -8,11 +8,20 @@ public class DefaultStorageClient :
     IObjectStorageClient
 {
     private readonly ILogger<DefaultStorageClient>? _logger;
+    private readonly IAliyunMemoryCacheProvider? _aliyunMemoryCacheProvider;
 
     public DefaultStorageClient(ICredentialProvider credentialProvider,
         IAliyunStorageOptionProvider optionProvider,
         ILogger<DefaultStorageClient>? logger = null)
         : base(credentialProvider, optionProvider) => _logger = logger;
+
+    public DefaultStorageClient(ICredentialProvider credentialProvider,
+        IAliyunStorageOptionProvider optionProvider,
+        IAliyunMemoryCacheProvider? aliyunMemoryCacheProvider,
+        ILogger<DefaultStorageClient>? logger = null) : this(credentialProvider, optionProvider, logger)
+    {
+        _aliyunMemoryCacheProvider = aliyunMemoryCacheProvider;
+    }
 
     /// <summary>
     /// Obtain temporary authorization credentials through STS service
@@ -133,5 +142,10 @@ public class DefaultStorageClient :
             bucketName,
             result);
         return Task.CompletedTask;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _aliyunMemoryCacheProvider?.TryRemove(Options);
     }
 }

@@ -5,13 +5,13 @@
 
 namespace Masa.BuildingBlocks.RulesEngine;
 
-public class RulesEngineOptions
+public class RulesEngineOptionsBuilder
 {
     public IServiceCollection Services { get; }
 
     public string Name { get; }
 
-    public RulesEngineOptions(IServiceCollection services, string name)
+    public RulesEngineOptionsBuilder(IServiceCollection services, string name)
     {
         Services = services;
         Name = name;

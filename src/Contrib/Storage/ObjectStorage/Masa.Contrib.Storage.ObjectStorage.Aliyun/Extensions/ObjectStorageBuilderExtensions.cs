@@ -16,21 +16,22 @@ public static class ObjectStorageBuilderExtensions
         objectStorageBuilder.Services.AddConfigure<AliyunStorageConfigureOptions>(sectionName, objectStorageBuilder.Name);
 
         objectStorageBuilder.AddObjectStorage(
-            objectStorageBuilder.Name,
             serviceProvider =>
             {
                 var ossClientFactory = serviceProvider.GetRequiredService<IOssClientFactory>();
                 var aliyunStorageOptionProvider = serviceProvider.GetAliyunStorageOptionProvider(sectionName, objectStorageBuilder.Name);
+                var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
 
                 var credentialProvider = new DefaultCredentialProvider(
                     ossClientFactory,
                     aliyunStorageOptionProvider,
-                    serviceProvider.GetRequiredService<MemoryCacheProvider>().GetMemoryCache(objectStorageBuilder.Name),
+                    memoryCacheProvider.GetMemoryCache(aliyunStorageOptionProvider.GetOptions()),
                     serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
                 );
                 return new DefaultStorageClient(
                     credentialProvider,
                     aliyunStorageOptionProvider,
+                    memoryCacheProvider,
                     serviceProvider.GetService<ILogger<DefaultStorageClient>>());
             },
             serviceProvider =>
@@ -93,18 +94,20 @@ public static class ObjectStorageBuilderExtensions
         objectStorageBuilder.Services.AddAliyunStorageCore();
 
         objectStorageBuilder.AddObjectStorage(
-            objectStorageBuilder.Name,
             serviceProvider =>
             {
                 var defaultAliyunStorageOptionProvider = serviceProvider.GetRequiredService<IAliyunStorageOptionProvider>();
+
+                var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
                 var credentialProvider = new DefaultCredentialProvider(
                     serviceProvider.GetRequiredService<IOssClientFactory>(),
                     defaultAliyunStorageOptionProvider,
-                    serviceProvider.GetRequiredService<MemoryCacheProvider>().GetMemoryCache(objectStorageBuilder.Name),
+                    memoryCacheProvider.GetMemoryCache(defaultAliyunStorageOptionProvider.GetOptions()),
                     serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
                 );
                 return new DefaultStorageClient(credentialProvider,
                     defaultAliyunStorageOptionProvider,
+                    memoryCacheProvider,
                     serviceProvider.GetService<ILogger<DefaultStorageClient>>());
             }, serviceProvider =>
             {

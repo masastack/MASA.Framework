@@ -7,16 +7,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddRulesEngine(this IServiceCollection services, Action<RulesEngineOptions> action)
+    public static IServiceCollection AddRulesEngine(this IServiceCollection services, Action<RulesEngineOptionsBuilder> action)
         => services.AddRulesEngine(Microsoft.Extensions.Options.Options.DefaultName, action);
 
-    public static IServiceCollection AddRulesEngine(this IServiceCollection services, string name, Action<RulesEngineOptions> action)
+    public static IServiceCollection AddRulesEngine(this IServiceCollection services, string name, Action<RulesEngineOptionsBuilder> action)
     {
         MasaApp.TrySetServiceCollection(services);
-        services.TryAddSingleton<IRulesEngineFactory, DefaultRulesEngineFactory>();
+        services.TryAddTransient<IRulesEngineFactory, DefaultRulesEngineFactory>();
         services.TryAddTransient(serviceProvider => serviceProvider.GetRequiredService<IRulesEngineFactory>().Create());
-        RulesEngineOptions rulesEngineOptions = new RulesEngineOptions(services, name);
-        action.Invoke(rulesEngineOptions);
+        var rulesEngineOptionsBuilder = new RulesEngineOptionsBuilder(services, name);
+        action.Invoke(rulesEngineOptionsBuilder);
         services.AddServiceFactory();
         return services;
     }

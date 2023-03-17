@@ -19,6 +19,8 @@ public class AutoCompleteClient : AutoCompleteClientBase
     private readonly Action<IIndexSettings>? _indexSettingAction;
     private readonly Action<ITypeMapping>? _action;
     private readonly Type _documentType;
+    private readonly ElasticsearchOptions _elasticsearchOptions;
+    private readonly IElasticClientProvider? _elasticClientProvider;
 
 #pragma warning disable S3011
     private static readonly MethodInfo AutoMapMethodInfo = typeof(AutoCompleteClient).GetMethod(nameof(AutoMap),
@@ -46,6 +48,18 @@ public class AutoCompleteClient : AutoCompleteClientBase
         _indexSettingAction = options.IndexSettingAction;
         _action = options.Action;
         _documentType = documentType;
+        _elasticsearchOptions = options.ElasticsearchOptions;
+    }
+
+    public AutoCompleteClient(
+        IElasticClient elasticClient,
+        IMasaElasticClient client,
+        ILogger<AutoCompleteClient>? logger,
+        ElasticSearchAutoCompleteOptions options,
+        Type documentType,
+        IElasticClientProvider elasticClientProvider) : this(elasticClient, client, logger, options, documentType)
+    {
+        _elasticClientProvider = elasticClientProvider;
     }
 
     public override async Task<bool> BuildAsync(CancellationToken cancellationToken = default)
@@ -74,7 +88,10 @@ public class AutoCompleteClient : AutoCompleteClientBase
             string pinyinFilter = "pinyin";
             indexSettings.Analysis.Analyzers.Add(analyzer, new CustomAnalyzer()
             {
-                Filter = new[] { pinyinFilter, "lowercase" },
+                Filter = new[]
+                {
+                    pinyinFilter, "lowercase"
+                },
                 Tokenizer = "ik_max_word"
             });
             indexSettings.Analysis.TokenFilters.Add(pinyinFilter, new PinYinTokenFilterDescriptor());
@@ -86,7 +103,10 @@ public class AutoCompleteClient : AutoCompleteClientBase
         if (_action != null) _action.Invoke(mapping);
         else
         {
-            mapping = (ITypeMapping)AutoMapMethodInfo.MakeGenericMethod(_documentType).Invoke(this, new object?[] { mapping, analyzer })!;
+            mapping = (ITypeMapping)AutoMapMethodInfo.MakeGenericMethod(_documentType).Invoke(this, new object?[]
+            {
+                mapping, analyzer
+            })!;
         }
 
         IAliases? aliases = null;
@@ -212,7 +232,10 @@ public class AutoCompleteClient : AutoCompleteClientBase
         var queryContainer = _defaultOperator == Operator.And ?
             queryContainerDescriptor.Bool(boolQueryDescriptor => GetBoolQueryDescriptor(boolQueryDescriptor, field, keyword)) :
             queryContainerDescriptor.Terms(descriptor
-                => descriptor.Field(field).Terms(_enableMultipleCondition ? keyword.Split(' ') : new[] { keyword }));
+                => descriptor.Field(field).Terms(_enableMultipleCondition ? keyword.Split(' ') : new[]
+                {
+                    keyword
+                }));
         return queryContainer;
     }
 
@@ -301,5 +324,10 @@ public class AutoCompleteClient : AutoCompleteClientBase
         var response = await _client.DeleteMultiDocumentAsync(new DeleteMultiDocumentRequest(_indexName, ids.ToArray()), cancellationToken);
         return new DeleteMultiResponse(response.IsValid, response.Message,
             response.Data.Select(item => new DeleteRangeResponseItems(item.Id, item.IsValid, item.Message)));
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _elasticClientProvider?.TryRemove(_elasticsearchOptions);
     }
 }
