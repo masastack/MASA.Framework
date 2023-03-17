@@ -3,8 +3,8 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum SilenceCycleTypes
+public enum AlarmRuleType
 {
-    Time = 1,
-    Cycle
+    Log = 1,
+    Metric,
 }

@@ -9,9 +9,9 @@ public class MetricAggregationModel
 
     public string Tag { get; set; } = string.Empty;
 
-    public MetricComparisonOperators ComparisonOperator { get; set; } = MetricComparisonOperators.Equal;
+    public MetricComparisonOperator ComparisonOperator { get; set; } = MetricComparisonOperator.Equal;
 
     public string Value { get; set; } = string.Empty;
 
-    public MetricAggregationTypes AggregationType { get; set; } = MetricAggregationTypes.Count;
+    public MetricAggregationType AggregationType { get; set; } = MetricAggregationType.Count;
 }

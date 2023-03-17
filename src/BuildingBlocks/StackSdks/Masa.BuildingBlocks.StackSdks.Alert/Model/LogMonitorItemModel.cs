@@ -7,7 +7,7 @@ public class LogMonitorItemModel
 {
     public string Field { get; set; } = string.Empty;
 
-    public LogAggregationTypes AggregationType { get; set; }
+    public LogAggregationType AggregationType { get; set; }
 
     public string Alias { get; set; } = string.Empty;
 

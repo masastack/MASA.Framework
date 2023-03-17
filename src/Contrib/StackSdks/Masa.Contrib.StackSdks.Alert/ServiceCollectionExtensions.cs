@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(alertServiceBaseAddress);
-            }); //Need to use the AuthenticationService provided by MasaStack
+            });
         });
     }
 
@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = alertServiceBaseAddressFunc.Invoke();
-                }); //Need to use the AuthenticationService provided by MasaStack
+                }); 
         });
     }
 
@@ -39,7 +39,6 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IAlertClient)))
             return services;
 
-        services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddScoped<IAlertClient>(serviceProvider =>

@@ -7,7 +7,7 @@ public class AlarmRuleUpsertModel
 {
     public string DisplayName { get; set; } = string.Empty;
 
-    public AlarmRuleTypes Type { get; set; }
+    public AlarmRuleType Type { get; set; }
 
     public string ProjectIdentity { get; set; } = string.Empty;
 

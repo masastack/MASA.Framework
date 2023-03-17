@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum AlarmCheckFrequencyTypes
+public enum AlarmCheckFrequencyType
 {
     FixedInterval = 1,
     Cron,

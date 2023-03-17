@@ -3,8 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum AlarmRuleTypes
+public enum LogAggregationType
 {
-    Log = 1,
-    Metric,
+    Count = 1,
+    Sum,
+    Avg
 }

@@ -3,9 +3,12 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum TimeTypes
+public enum MetricComparisonOperator
 {
-    Minute = 1,
-    Hour,
-    Day
+    GreaterThan = 1,
+    GreaterOrEqual,
+    LessThan,
+    LessOrEqual,
+    Equal,
+    NotEqual
 }

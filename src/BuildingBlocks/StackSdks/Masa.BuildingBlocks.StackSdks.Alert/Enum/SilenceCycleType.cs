@@ -3,12 +3,8 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum MetricComparisonOperators
+public enum SilenceCycleType
 {
-    GreaterThan = 1,
-    GreaterOrEqual,
-    LessThan,
-    LessOrEqual,
-    Equal,
-    NotEqual
+    Time = 1,
+    Cycle
 }

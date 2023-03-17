@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Alert.Model;
 
 public class SilenceCycleModel
 {
-    public SilenceCycleTypes Type { get; set; }
+    public SilenceCycleType Type { get; set; }
 
     public TimeIntervalModel TimeInterval { get; set; } = new();
 

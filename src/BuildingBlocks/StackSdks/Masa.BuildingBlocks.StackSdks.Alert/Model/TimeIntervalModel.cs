@@ -7,5 +7,5 @@ public class TimeIntervalModel
 {
     public int IntervalTime { get; set; }
 
-    public TimeTypes IntervalTimeType { get; set; }
+    public TimeType IntervalTimeType { get; set; }
 }

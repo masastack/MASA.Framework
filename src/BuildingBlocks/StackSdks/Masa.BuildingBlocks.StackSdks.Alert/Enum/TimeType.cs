@@ -3,9 +3,9 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum MetricAggregationTypes
+public enum TimeType
 {
-    Count = 1,
-    Sum,
-    Avg
+    Minute = 1,
+    Hour,
+    Day
 }

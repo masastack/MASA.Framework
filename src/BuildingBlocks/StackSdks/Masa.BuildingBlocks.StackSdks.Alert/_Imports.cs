@@ -3,3 +3,4 @@
 
 global using Masa.BuildingBlocks.StackSdks.Alert.Enum;
 global using Masa.BuildingBlocks.StackSdks.Alert.Model;
+global using Masa.BuildingBlocks.StackSdks.Alert.Service;

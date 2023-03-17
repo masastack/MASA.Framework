@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Alert.Enum;
 
-public enum LogAggregationTypes
+public enum MetricAggregationType
 {
     Count = 1,
     Sum,

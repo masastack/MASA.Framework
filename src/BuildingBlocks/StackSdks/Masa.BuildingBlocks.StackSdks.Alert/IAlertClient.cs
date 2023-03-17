@@ -5,5 +5,5 @@ namespace Masa.BuildingBlocks.StackSdks.Alert;
 
 public interface IAlertClient
 {
-    
+    IAlarmRuleService AlarmRuleService { get; }
 }

@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Alert.Model;
 
 public class CheckFrequencyModel
 {
-    public AlarmCheckFrequencyTypes Type { get; set; }
+    public AlarmCheckFrequencyType Type { get; set; }
 
     public TimeIntervalModel FixedInterval { get; set; } = new();
 
