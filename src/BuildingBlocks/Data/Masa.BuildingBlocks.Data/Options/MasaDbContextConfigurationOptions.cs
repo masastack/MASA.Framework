@@ -7,7 +7,11 @@ namespace Masa.BuildingBlocks.Data;
 
 public class MasaDbContextConfigurationOptions
 {
-    public string ConnectionString { get; }
+    private readonly MemoryCache<string, string> _data = new();
 
-    public MasaDbContextConfigurationOptions(string connectionString) => ConnectionString = connectionString;
+    public bool TryGetConnectionString(string name, [NotNullWhen(true)] out string? connectionString)
+        => _data.TryGet(name, out connectionString);
+
+    public void AddConnectionString(string name, string connectionString)
+        => _data.TryAdd(name, _ => connectionString);
 }

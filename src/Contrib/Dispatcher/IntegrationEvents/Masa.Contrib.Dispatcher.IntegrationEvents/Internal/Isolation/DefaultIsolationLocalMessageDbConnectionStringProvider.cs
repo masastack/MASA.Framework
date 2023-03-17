@@ -23,28 +23,30 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
         _localMessageTableOptions = localMessageTableOptions;
     }
 
-    protected override List<MasaDbContextConfigurationOptions> GetDbContextOptionsList()
+    protected override List<string> GetConnectionStrings()
     {
         if (_localMessageTableOptions.Value.SectionName.IsNullOrWhiteSpace())
             return new();
 
-        var masaDbContextConfigurationOptions =
-            new List<MasaDbContextConfigurationOptions>(_localMessageDbConnectionStringProviderWrapper.DbContextOptionsList);
-        var connectionString = GetDbConnectionStringByIsolation();
-        if (connectionString != null && masaDbContextConfigurationOptions.All(option => option.ConnectionString != connectionString))
+        var localConnectionStrings = _localMessageDbConnectionStringProviderWrapper.ConnectionStrings;
+        var connectionStrings = new List<string>(GetDbConnectionStringByIsolation());
+        foreach (var connectionString in localConnectionStrings)
         {
-            masaDbContextConfigurationOptions.Add(new MasaDbContextConfigurationOptions(connectionString));
+            if (!connectionStrings.Contains(connectionString))
+            {
+                connectionStrings.Add(connectionString);
+            }
         }
-        return masaDbContextConfigurationOptions;
+
+        return connectionStrings;
     }
 
-    private string? GetDbConnectionStringByIsolation()
+    private List<string> GetDbConnectionStringByIsolation()
     {
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION);
-        if (masaDbConnectionOptions != null)
-        {
-            return masaDbConnectionOptions.GetConnectionString(_localMessageTableOptions.Value.SectionName);
-        }
-        return null;
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfigs<ConnectionStrings>(Masa.BuildingBlocks.Data.ConnectionStrings.DEFAULT_SECTION);
+        return masaDbConnectionOptions
+            .Select(connectionString => connectionString.GetConnectionString(_localMessageTableOptions.Value.SectionName))
+            .Distinct()
+            .ToList();
     }
 }

@@ -7,9 +7,9 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 internal abstract class LocalMessageDbConnectionStringProviderBase : ILocalMessageDbConnectionStringProvider
 {
-    private List<MasaDbContextConfigurationOptions>? _dbContextOptionsList = null;
+    private List<string>? _connectionStrings = null;
 
-    public virtual List<MasaDbContextConfigurationOptions> DbContextOptionsList => _dbContextOptionsList ??= GetDbContextOptionsList();
+    public virtual List<string> ConnectionStrings => _connectionStrings ??= GetConnectionStrings();
 
-    protected abstract List<MasaDbContextConfigurationOptions> GetDbContextOptionsList();
+    protected abstract List<string> GetConnectionStrings();
 }

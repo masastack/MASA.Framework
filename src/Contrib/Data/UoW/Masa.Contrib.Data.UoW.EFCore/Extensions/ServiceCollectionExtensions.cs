@@ -24,7 +24,6 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<UoWProvider>();
         services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
         services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager<TDbContext>>();
-        services.TryAddScoped<IConnectionStringProvider, Masa.Contrib.Data.UoW.EFCore.DefaultConnectionStringProvider>();
 
         services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {

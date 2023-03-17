@@ -16,19 +16,25 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServ
 
 ``` appsettings.json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
-  },
-  "IsolationConnectionStrings": [
-    {
-      "TenantId": "00000000-0000-0000-0000-000000000002",
-      "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "ConnectionStrings":{
+        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
     },
-    {
-      "TenantId": "00000000-0000-0000-0000-000000000003",
-      "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "Isolation":{
+        "ConnectionStrings":[
+            {
+                "TenantId":"00000000-0000-0000-0000-000000000002",
+                "Data":{
+                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            },
+            {
+                "TenantId":"00000000-0000-0000-0000-000000000003",
+                "Data":{
+                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -36,21 +42,19 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //Based on EFCore and SqlServ
 * 1.2 When the current tenant is 00000000-0000-0000-0000-000000000003: database address: server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.3 Other tenants or hosts: database address: server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
-2. Using Isolation.UoW.EF
+2. Using Isolation
 
-``` C#
-builder.Services.AddEventBus(eventBusBuilder =>
+```csharp
+builder.Services.AddIsolation(isolationBuilder =>
 {
-    eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiTenant(),// Use tenant isolation
-        dbOptions => dbOptions.UseSqlServer());
+    isolationBuilder.UseMultiTenant();//Use Tenant Isolation
 });
 ```
 
-3. DbContext needs to inherit IsolationDbContext
+3. DbContext needs to inherit `MasaDbContext<>`
 
-``` C#
-public class CustomDbContext : IsolationDbContext
+```csharp
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -58,14 +62,37 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. The class corresponding to the isolated table needs to implement IMultiTenant
+4. Add data context
 
-You can also choose not to implement IMultiTenant when using physical isolation
+```csharp
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+     optionsBuilder.UseSqlServer();//Use the SqlServer database, or choose other implementations by yourself
+});
+```
 
-> The tenant id type can be specified by yourself, the default Guid type
-> * For example: Implement IMultiTenant to implement IMultiTenant<int>, UseIsolationUoW<CustomDbContext>() to UseIsolationUoW<CustomDbContext, int>()
+5. The class corresponding to the isolated table needs to implement IMultiTenant
 
-##### Summarize
+### Advanced
+
+The default type of tenant id is Guid, we can change the type of tenant id in the following ways
+
+* plan 1
+
+```csharp
+builder.Services.AddIsolation(isolationBuilder =>
+{
+     isolationBuilder.UseMultiTenant(); //Use multi-tenant isolation
+}, options => options. MultiTenantType = typeof(int));
+```
+
+* plan 2
+
+```csharp
+builder.Services.Configure<IsolationOptions>(options => options.MultiTenantType = typeof(int));
+```
+
+### Summarize
 
 * How to resolve the tenant in the controller or MinimalAPI?
   * The tenant provides 7 parsers by default, the execution order is: HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (tenant parameter default: __tenant)

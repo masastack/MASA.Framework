@@ -19,11 +19,11 @@ public abstract class ProcessorBase : IProcessor
         if (ServiceProvider != null)
         {
             var unitOfWorkManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
-            var dataConnectionStringProvider = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILocalMessageDbConnectionStringProvider>();
-            var optionsList = dataConnectionStringProvider.DbContextOptionsList;
-            foreach (var option in optionsList)
+            var localMessageDbConnectionString = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILocalMessageDbConnectionStringProvider>();
+            var connectionStrings = localMessageDbConnectionString.ConnectionStrings;
+            foreach (var connectionString in connectionStrings)
             {
-                await using var unitOfWork = unitOfWorkManager.CreateDbContext(option);
+                await using var unitOfWork = unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions(connectionString));
                 await ExecuteAsync(unitOfWork.ServiceProvider, stoppingToken);
             }
         }

@@ -214,7 +214,7 @@ public class DbContextTest : TestBase
             .AddMasaDbContext<CustomDbContext>();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 2);
+        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 3);
     }
 
     [TestMethod]
@@ -229,7 +229,7 @@ public class DbContextTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
 
         var filters = serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>();
-        Assert.IsTrue(filters.Count() == 2);
+        Assert.IsTrue(filters.Count() == 3);
     }
 
     [TestMethod]

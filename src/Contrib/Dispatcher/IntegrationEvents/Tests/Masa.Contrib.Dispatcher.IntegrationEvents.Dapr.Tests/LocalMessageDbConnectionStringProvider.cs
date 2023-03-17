@@ -5,8 +5,8 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 
 public class LocalMessageDbConnectionStringProvider : ILocalMessageDbConnectionStringProvider
 {
-    public List<MasaDbContextConfigurationOptions> DbContextOptionsList => new List<MasaDbContextConfigurationOptions>()
+    public List<string> ConnectionStrings => new()
     {
-        new(string.Empty)
+        ""
     };
 }

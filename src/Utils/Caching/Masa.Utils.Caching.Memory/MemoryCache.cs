@@ -31,7 +31,7 @@ public class MemoryCache<TKey, TValue> : IDisposable where TKey : notnull
         return result;
     }
 
-    public bool TryGet(TKey key, out TValue? value)
+    public bool TryGet(TKey key, [NotNullWhen(true)]out TValue? value)
     {
         var result = _dicCache.TryGetValue(key, out var lazyValue);
 

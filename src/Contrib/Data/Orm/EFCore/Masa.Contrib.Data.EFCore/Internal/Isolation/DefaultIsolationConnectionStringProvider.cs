@@ -35,28 +35,27 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
 
     public string GetConnectionString(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
     {
-        if (_unitOfWorkAccessor.CurrentDbContextOptions != null)
-            return _unitOfWorkAccessor.CurrentDbContextOptions
-                .ConnectionString; //todo: UnitOfWork does not currently support multi-context versions
+        if (_unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
+            return connectionString;
 
         var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(name);
         if (masaDbConnectionOptions != null)
-            return SetConnectionString(masaDbConnectionOptions.GetConnectionString(name));
+            return SetConnectionString(name, masaDbConnectionOptions.GetConnectionString(name));
 
-        var connectionString = _connectionStringProviderWrapper.GetConnectionString(name);
+        connectionString = _connectionStringProviderWrapper.GetConnectionString(name);
         _logger?.LogDebug(
             "{Message}, the currently used ConnectionString is [{ConnectionString}]",
             GetMessage(),
             connectionString);
 
-        return SetConnectionString(connectionString);
+        return SetConnectionString(name, connectionString);
     }
 
-    private string SetConnectionString(string connectionString)
+    private string SetConnectionString(string name, string connectionString)
     {
-        _unitOfWorkAccessor.CurrentDbContextOptions = new MasaDbContextConfigurationOptions(connectionString);
+        _unitOfWorkAccessor.CurrentDbContextOptions.AddConnectionString(name, connectionString);
 
-        return _unitOfWorkAccessor.CurrentDbContextOptions.ConnectionString;
+        return connectionString;
     }
 
     private string GetMessage()

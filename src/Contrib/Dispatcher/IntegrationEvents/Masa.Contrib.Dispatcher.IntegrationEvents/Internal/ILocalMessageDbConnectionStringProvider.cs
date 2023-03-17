@@ -9,5 +9,5 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 internal interface ILocalMessageDbConnectionStringProvider
 {
-    List<MasaDbContextConfigurationOptions> DbContextOptionsList { get; }
+    List<string> ConnectionStrings { get; }
 }

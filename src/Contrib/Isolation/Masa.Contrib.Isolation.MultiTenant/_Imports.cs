@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Authentication.Identity;
+global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.Contrib.Isolation;
 global using Masa.Contrib.Isolation.Parser;
+global using Masa.Contrib.Isolation.Middleware;
 global using Masa.Contrib.Isolation.MultiTenant;
 global using Masa.Contrib.Isolation.MultiTenant.Middleware;
 global using Microsoft.AspNetCore.Http;

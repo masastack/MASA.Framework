@@ -33,6 +33,11 @@ public static class ServiceCollectionExtensions
         where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
     {
+        if (services.Any(service => service.ImplementationType == typeof(MasaDbContextProvider<TDbContextImplementation>)))
+            return services;
+
+        services.AddSingleton<MasaDbContextProvider<TDbContextImplementation>>();
+
         services.TryAddConfigure<ConnectionStrings>();
 
         MasaDbContextBuilder masaBuilder = new(services, typeof(TDbContextImplementation), typeof(TUserId));
@@ -68,10 +73,26 @@ public static class ServiceCollectionExtensions
                 serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
                 optionsLifetime));
 
+        services.TryAddSingleton<MultiTenantProvider>();
         services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
             typeof(SaveChangeFilter<TDbContextImplementation, TUserId>), optionsLifetime));
         services.TryAddEnumerable(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
             typeof(SoftDeleteSaveChangesFilter<TDbContextImplementation, TUserId>), optionsLifetime));
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetService<IOptions<IsolationOptions>>();
+            if (isolationOptions == null || !isolationOptions.Value.Enable)
+            {
+                return new EmptySaveFilter<TDbContextImplementation>();
+            }
+            var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation), serviceProvider.GetService<MultiTenantProvider>()?.MultiTenantIdType!);
+            var isolationSaveChangesFilter = Activator.CreateInstance(genericType,
+                new object?[]
+                {
+                    serviceProvider
+                });
+            return (isolationSaveChangesFilter as ISaveChangesFilter<TDbContextImplementation>)!;
+        }, optionsLifetime));
         return services;
     }
 
@@ -105,4 +126,9 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
         where TOptions : class
         => services.AddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION, isRoot: false);
+
+    private class MasaDbContextProvider<TDbContext>
+    {
+
+    }
 }

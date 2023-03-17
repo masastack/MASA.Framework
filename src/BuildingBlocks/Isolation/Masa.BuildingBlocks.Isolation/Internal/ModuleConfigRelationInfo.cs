@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Isolation;
+namespace Masa.BuildingBlocks.Isolation;
 
 public class ModuleConfigRelationInfo
 {
@@ -11,5 +11,5 @@ public class ModuleConfigRelationInfo
 
     public string SectionName { get; set; }
 
-    public object? ModuleConfig { get; set; }
+    public object? Data { get; set; }
 }

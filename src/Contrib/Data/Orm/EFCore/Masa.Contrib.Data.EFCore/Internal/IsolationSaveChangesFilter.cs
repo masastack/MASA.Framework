@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Isolation.UoW.EFCore;
+// ReSharper disable once CheckNamespace
 
-public class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesFilter<TDbContext>
+namespace Masa.Contrib.Data.EFCore;
+
+internal class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesFilter<TDbContext>
     where TDbContext : IMasaDbContext
     where TTenantId : IComparable
 {

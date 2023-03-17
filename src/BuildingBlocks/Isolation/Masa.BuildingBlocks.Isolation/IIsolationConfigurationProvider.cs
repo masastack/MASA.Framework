@@ -6,4 +6,6 @@ namespace Masa.BuildingBlocks.Isolation;
 public interface IIsolationConfigurationProvider
 {
     TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class;
+
+    List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName) where TModuleConfig : class;
 }

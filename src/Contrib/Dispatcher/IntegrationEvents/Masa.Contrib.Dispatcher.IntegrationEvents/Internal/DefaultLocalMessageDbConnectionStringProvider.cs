@@ -20,13 +20,15 @@ internal class DefaultLocalMessageDbConnectionStringProvider :
         _localMessageTableOptions = localMessageTableOptions;
     }
 
-    protected override List<MasaDbContextConfigurationOptions> GetDbContextOptionsList()
+    protected override List<string> GetConnectionStrings()
     {
+        if (_localMessageTableOptions.Value.DbContextType == null)
+            return new();
+
         var list = _options
             .Value
             .Where(option => option.Key.Equals(_localMessageTableOptions.Value.SectionName, StringComparison.OrdinalIgnoreCase))
-            .Select(item => new MasaDbContextConfigurationOptions(item.Value))
-            .Distinct()
+            .Select(item => item.Value)
             .ToList();
         return list;
     }

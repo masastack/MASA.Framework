@@ -16,19 +16,25 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 
 ``` appsettings.json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
-  },
-  "IsolationConnectionStrings": [
-    {
-      "TenantId": "00000000-0000-0000-0000-000000000002",
-      "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "ConnectionStrings":{
+        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
     },
-    {
-      "TenantId": "00000000-0000-0000-0000-000000000003",
-      "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "Isolation":{
+        "ConnectionStrings":[
+            {
+                "TenantId":"00000000-0000-0000-0000-000000000002",
+                "Data":{
+                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            },
+            {
+                "TenantId":"00000000-0000-0000-0000-000000000003",
+                "Data":{
+                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -36,21 +42,19 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 * 1.2 当前租户为00000000-0000-0000-0000-000000000003时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.3 其他租户或宿主：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
-2. 使用Isolation.UoW.EF
+2. 使用Isolation
 
-``` C#
-builder.Services.AddEventBus(eventBusBuilder =>
+```csharp
+builder.Services.AddIsolation(isolationBuilder =>
 {
-    eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiTenant(),// 使用租户隔离
-        dbOptions => dbOptions.UseSqlServer());
+    isolationBuilder.UseMultiTenant();//使用多租户隔离
 });
 ```
 
-3. DbContext需要继承IsolationDbContext
+3. DbContext需要继承`MasaDbContext<>`
 
-``` C#
-public class CustomDbContext : IsolationDbContext
+```csharp
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -58,14 +62,41 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. 隔离的表对应的类需要实现IMultiTenant
+4. Add data context
+
+```csharp
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+     optionsBuilder.UseSqlServer();//使用SqlServer数据库，或者自己选择其他实现
+});
+```
+
+5. 隔离的表对应的类需要实现IMultiTenant
 
 采用物理隔离时也可以选择不实现IMultiTenant
 
-> 租户id类型支持自行指定，默认Guid类型
-> * 如：实现IMultiTenant改为实现IMultiTenant<int>，UseIsolationUoW<CustomDbContext>()改为UseIsolationUoW<CustomDbContext, int>()
+### 高级
 
-##### 总结
+#### 自定义租户id类型
+
+租户id默认Guid类型，我们可通过以下方式来更改租户id类型
+
+* 方案1
+
+```csharp
+builder.Services.AddIsolation(isolationBuilder =>
+{
+    isolationBuilder.UseMultiTenant(); //使用多租户隔离
+}, options => options.MultiTenantType = typeof(int));
+```
+
+* 方案2
+
+```csharp
+builder.Services.Configure<IsolationOptions>(options => options.MultiTenantType = typeof(int));
+```
+
+### 总结
 
 * 控制器或MinimalAPI中租户如何解析？
   * 租户默认提供了7个解析器，执行顺序分别为：HttpContextItemParserProvider、QueryStringParserProvider、FormParserProvider、RouteParserProvider、HeaderParserProvider、CookieParserProvider (租户参数默认：__tenant)

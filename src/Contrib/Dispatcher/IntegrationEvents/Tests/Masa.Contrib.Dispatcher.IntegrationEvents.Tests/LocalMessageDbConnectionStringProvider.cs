@@ -5,8 +5,8 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 public class LocalMessageDbConnectionStringProvider : ILocalMessageDbConnectionStringProvider
 {
-    public List<MasaDbContextConfigurationOptions> DbContextOptionsList => new()
+    public List<string> ConnectionStrings => new()
     {
-        new ("")
+        ""
     };
 }

@@ -20,6 +20,17 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         }
     }
 
+    private MultiTenantProvider? _multiTenantProvider;
+
+    internal MultiTenantProvider? MultiTenantProvider
+    {
+        get
+        {
+            TryInitialize();
+            return _multiTenantProvider;
+        }
+    }
+
     protected readonly MasaDbContextOptions Options;
 
     private IDomainEventBus? _domainEventBus;
@@ -44,9 +55,28 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         }
     }
 
+    private readonly IMultiEnvironmentContext? _environmentContext;
+    private readonly IMultiTenantContext? _tenantContext;
+
+    protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
+
+    protected virtual bool IsTenantFilterEnabled
+    {
+        get
+        {
+            if (DataFilter == null)
+                return false;
+
+            return MultiTenantProvider?.IsTenantFilterEnabled(DataFilter) ?? false;
+        }
+    }
+
     protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
         Options = options;
+
+        _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
+        _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
     }
 
     protected virtual void TryInitialize()
@@ -59,6 +89,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
         _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
         _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
+        _multiTenantProvider = Options.ServiceProvider?.GetRequiredService<MultiTenantProvider>();
         _initialized = true;
     }
 
@@ -121,8 +152,28 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
             expression = entity => !IsSoftDeleteFilterEnabled || !EF.Property<bool>(entity, nameof(ISoftDelete.IsDeleted));
         }
 
+        if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
+        {
+            var multiTenantProvider = Options.ServiceProvider!.GetRequiredService<MultiTenantProvider>();
+            string defaultTenantId = multiTenantProvider.MultiTenantIdDefaultValue;
+            Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
+                multiTenantProvider.GetMultiTenantId(entity)
+                    .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
+
+            expression = tenantFilter.And(expression != null, expression);
+        }
+
+        if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
+        {
+            Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
+                EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
+                    .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
+            expression = envFilter.And(expression != null, expression);
+        }
+
         return expression;
     }
+
 
     protected virtual bool IsSoftDeleteFilterEnabled
         => Options is { EnableSoftDelete: true } && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);

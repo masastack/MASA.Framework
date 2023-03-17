@@ -5,7 +5,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Isolation;
+namespace Masa.BuildingBlocks.Isolation;
 
 internal static class ModuleConfigUtils
 {

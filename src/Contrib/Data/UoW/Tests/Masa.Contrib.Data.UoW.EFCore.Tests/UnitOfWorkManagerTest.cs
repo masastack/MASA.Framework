@@ -31,13 +31,11 @@ public class UnitOfWorkManagerTest : TestBase
         Assert.IsTrue(dbContext.Equals(dbContext2));
 
         var newUnitOfWork =
-            unitOfWorkManager.CreateDbContext(
-                new MasaDbContextConfigurationOptions(_connectionString));
+            unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions(_connectionString));
         Assert.IsFalse(newUnitOfWork.Equals(unitOfWork));
         var newDbContext = newUnitOfWork.ServiceProvider.GetRequiredService<CustomDbContext>();
         Assert.IsFalse(dbContext.Equals(newDbContext));
 
-        Assert.ThrowsException<ArgumentException>(()
-            => unitOfWorkManager.CreateDbContext(new MasaDbContextConfigurationOptions("")));
+        Assert.ThrowsException<ArgumentException>(() => unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions("")));
     }
 }

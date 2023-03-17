@@ -34,6 +34,21 @@ public class TypeTest
         Assert.IsTrue(res);
     }
 
+    [TestMethod]
+    public void TestGetDefaultValue()
+    {
+        var res = default(string[]);
+        Assert.AreEqual(0, typeof(int).GetDefaultValue());
+        Assert.AreEqual(null, typeof(string).GetDefaultValue());
+        Assert.AreEqual(0, (float)typeof(float).GetDefaultValue());
+        Assert.AreEqual(0, (decimal)typeof(decimal).GetDefaultValue());
+        Assert.AreEqual(0, (double)typeof(double).GetDefaultValue());
+        Assert.AreEqual(Guid.Empty, (Guid)typeof(Guid).GetDefaultValue());
+        Assert.AreEqual(null, typeof(List<string>).GetDefaultValue());
+        Assert.AreEqual(null, typeof(string[]).GetDefaultValue());
+        Assert.AreEqual(null, (Dictionary<string,string>[])typeof(Dictionary<string,string>).GetDefaultValue());
+    }
+
     public class Demo : List<int>
     {
 

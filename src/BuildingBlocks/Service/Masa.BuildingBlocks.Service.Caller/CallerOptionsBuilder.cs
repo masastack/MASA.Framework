@@ -11,6 +11,9 @@ public class CallerOptionsBuilder
 
     public string Name { get; }
 
+    /// <summary>
+    /// Used to control the life cycle of services in Client
+    /// </summary>
     public ServiceLifetime? Lifetime { get; set; }
 
     public CallerOptionsBuilder(IServiceCollection services, string name, ServiceLifetime? lifetime = ServiceLifetime.Singleton)

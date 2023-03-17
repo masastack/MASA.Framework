@@ -1,7 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Isolation;
+
+namespace Masa.BuildingBlocks.Isolation;
 
 public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProvider
 {
@@ -10,6 +11,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
     private readonly IMultiTenantContext? _tenantContext;
     private readonly ILogger<DefaultIsolationConfigurationProvider>? _logger;
     private readonly List<ModuleConfigRelationInfo> _data;
+    private readonly List<ModuleConfigRelationInfo> _moduleConfigs;
 
     public DefaultIsolationConfigurationProvider(
         IServiceProvider serviceProvider,
@@ -22,15 +24,16 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         _tenantContext = tenantContext;
         _logger = logger;
         _data = new();
+        _moduleConfigs = new();
     }
 
-    public TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class
+    public virtual TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class
     {
         var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
         if (item != null)
-            return item.ModuleConfig as TModuleConfig;
+            return item.Data as TModuleConfig;
 
-        Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => option.Data != null!;
+        Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => true;
 
         if (_tenantContext != null)
         {
@@ -53,7 +56,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
                 option.Environment.Equals(_environmentContext.CurrentEnvironment, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        var data = ModuleConfigUtils.GetModules<TModuleConfig>(_serviceProvider, sectionName);
+        var data = GetIsolationConfigurationOptions<TModuleConfig>(sectionName);
         TModuleConfig? moduleInfo = null;
         var modules = data
             .Where(condition.Compile())
@@ -73,11 +76,41 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         }
         _data.Add(new ModuleConfigRelationInfo()
         {
-            ModuleConfig = moduleInfo,
+            Data = moduleInfo,
             ModuleType = typeof(TModuleConfig),
             SectionName = sectionName
         });
         return moduleInfo;
+    }
+
+    public virtual List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName) where TModuleConfig : class
+    {
+        var data = GetIsolationConfigurationOptions<TModuleConfig>(sectionName);
+        var moduleConfigs = data
+            .OrderByDescending(option => option.Score)
+            .Select(option => option.Data)
+            .ToList();
+        return moduleConfigs;
+    }
+
+    private List<IsolationConfigurationOptions<TModuleConfig>> GetIsolationConfigurationOptions<TModuleConfig>(string sectionName)
+        where TModuleConfig : class
+    {
+        var item = _moduleConfigs.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
+        if (item != null)
+        {
+            return (item.Data as List<IsolationConfigurationOptions<TModuleConfig>>)!;
+        }
+        var data = ModuleConfigUtils.GetModules<TModuleConfig>(_serviceProvider, sectionName)
+            .Where(option => option.Data != null!)
+            .ToList();
+        _moduleConfigs.Add(new ModuleConfigRelationInfo()
+        {
+            Data = data,
+            ModuleType = typeof(TModuleConfig),
+            SectionName = sectionName
+        });
+        return data;
     }
 
     private string GetMessage()

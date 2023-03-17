@@ -84,7 +84,7 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
         services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
@@ -168,7 +168,7 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
@@ -217,7 +217,7 @@ public class ProcessorTest
         uoW.Setup(uow => uow.ServiceProvider).Returns(_options.Value.Services.BuildServiceProvider()).Verifiable();
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 

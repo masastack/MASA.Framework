@@ -2,16 +2,17 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 [assembly: InternalsVisibleTo("Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests.Isolation")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-internal static class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     public static void AddIsolation(
         this IServiceCollection services,
         Action<IsolationBuilder> isolationBuilder,
-        string sectionName = IsolationConstant.DEFAULT_SECTION_NAME)
+        Action<IsolationOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(isolationBuilder);
@@ -21,7 +22,7 @@ internal static class ServiceCollectionExtensions
 
         services.AddSingleton<IsolationProvider>();
 
-        IsolationBuilder builder = new IsolationBuilder(services);
+        var builder = new IsolationBuilder(services);
         isolationBuilder.Invoke(builder);
 
         if (!services.Any(service =>
@@ -30,11 +31,12 @@ internal static class ServiceCollectionExtensions
             throw new NotSupportedException("Tenant isolation and environment isolation use at least one");
 
         services
-            .AddHttpContextAccessor()
-            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
             .Configure<IsolationOptions>(options =>
             {
-                options.SectionName = sectionName;
+                configure?.Invoke(options);
+
+                if (options.SectionName.IsNullOrWhiteSpace())
+                    options.SectionName = IsolationConstant.DEFAULT_SECTION_NAME;
             })
             .TryAddScoped<IIsolationConfigurationProvider, DefaultIsolationConfigurationProvider>();
 
