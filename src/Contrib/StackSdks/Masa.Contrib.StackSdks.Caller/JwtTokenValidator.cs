@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Security.Claims;
-
 namespace Masa.Contrib.StackSdks.Caller;
 
 public class JwtTokenValidator

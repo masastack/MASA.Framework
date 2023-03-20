@@ -15,11 +15,11 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddStackCaller(
-    this IServiceCollection services,
-    Assembly assembly,
-    Func<IServiceProvider, TokenProvider> tokenProvider,
-    Action<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
-    Action<ClientRefreshTokenOptions>? clientRefreshTokenOptions = null)
+        this IServiceCollection services,
+        Assembly assembly,
+        Func<IServiceProvider, TokenProvider> tokenProvider,
+        Action<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
+        Action<ClientRefreshTokenOptions>? clientRefreshTokenOptions = null)
     {
         MasaArgumentException.ThrowIfNull(jwtTokenValidatorOptions);
 
