@@ -30,21 +30,25 @@ public static class DistributedCacheBuilderExtensions
                 redisConfigurationOptions =
                     serviceProvider
                         .GetRequiredService<IIsolationConfigProvider>()
-                        .GetModuleConfig<RedisConfigurationOptions>(distributedCacheBuilder.Name, redisSectionName)?? GetDefaultRedisConfigurationOptions(serviceProvider);
+                        .GetModuleConfig<RedisConfigurationOptions>(distributedCacheBuilder.Name, redisSectionName) ?? GetDefaultRedisConfigurationOptions(serviceProvider);
             }
             else
             {
                 redisConfigurationOptions = GetDefaultRedisConfigurationOptions(serviceProvider);
             }
             return new RedisCacheClient(
+                distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name));
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>());
         });
+        distributedCacheBuilder.Services.UseStackExchangeRedisCacheCore();
 
         RedisConfigurationOptions GetDefaultRedisConfigurationOptions(IServiceProvider serviceProvider)
         {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
+            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>();
             return optionsMonitor.Get(distributedCacheBuilder.Name);
         }
     }
@@ -59,12 +63,16 @@ public static class DistributedCacheBuilderExtensions
             var redisConfigurationOptions = new RedisConfigurationOptions();
             action.Invoke(redisConfigurationOptions);
             var distributedCacheClient = new RedisCacheClient(
+                distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>()
             );
             return distributedCacheClient;
         });
+        distributedCacheBuilder.Services.UseStackExchangeRedisCacheCore();
     }
 
     public static void UseStackExchangeRedisCache(
@@ -75,11 +83,20 @@ public static class DistributedCacheBuilderExtensions
         distributedCacheBuilder.AddDistributedCache(serviceProvider =>
         {
             var distributedCacheClient = new RedisCacheClient(
+                distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>()
             );
             return distributedCacheClient;
         });
+        distributedCacheBuilder.Services.UseStackExchangeRedisCacheCore();
+    }
+
+    private static void UseStackExchangeRedisCacheCore(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IRedisMultiplexerProvider, DefaultRedisMultiplexerProvider>();
     }
 }

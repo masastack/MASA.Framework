@@ -45,7 +45,7 @@ public class StackExchangeRedisCacheTest : TestBase
     public void TestAddMultiStackExchangeRedisCache()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache("test", option =>
+        services.AddDistributedCache("test", builder => builder.UseStackExchangeRedisCache(option =>
         {
             option.DefaultDatabase = 1;
             option.Servers = new List<RedisServerOptions>()
@@ -56,8 +56,8 @@ public class StackExchangeRedisCacheTest : TestBase
             {
                 CacheKeyType = CacheKeyType.None
             };
-        });
-        services.AddStackExchangeRedisCache("test2", new RedisConfigurationOptions()
+        }));
+        services.AddDistributedCache("test2", builder => builder.UseStackExchangeRedisCache(new RedisConfigurationOptions()
         {
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()
@@ -68,7 +68,7 @@ public class StackExchangeRedisCacheTest : TestBase
             {
                 CacheKeyType = CacheKeyType.None
             }
-        });
+        }));
         var serviceProvider = services.BuildServiceProvider();
 
         var factory = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>();
@@ -94,7 +94,7 @@ public class StackExchangeRedisCacheTest : TestBase
         var builder = WebApplication.CreateBuilder();
         var rootPath = builder.Environment.ContentRootPath;
         var services = builder.Services;
-        services.AddStackExchangeRedisCache("test");
+        services.AddDistributedCache(distributeCacheBuilder => distributeCacheBuilder.UseStackExchangeRedisCache("test"));
 
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
@@ -135,7 +135,7 @@ public class StackExchangeRedisCacheTest : TestBase
     public void TestAddStackExchangeRedisCacheRepeat()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(options =>
+        services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(options =>
         {
             options.DefaultDatabase = 1;
             options.Servers = new List<RedisServerOptions>()
@@ -146,8 +146,8 @@ public class StackExchangeRedisCacheTest : TestBase
             {
                 CacheKeyType = CacheKeyType.None
             };
-        });
-        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+        }));
+        services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(new RedisConfigurationOptions()
         {
             DefaultDatabase = 2,
             Servers = new List<RedisServerOptions>()
@@ -158,7 +158,7 @@ public class StackExchangeRedisCacheTest : TestBase
             {
                 CacheKeyType = CacheKeyType.None
             }
-        });
+        }));
         var serviceProvider = services.BuildServiceProvider();
 
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
@@ -177,9 +177,10 @@ public class StackExchangeRedisCacheTest : TestBase
     public void TestAddStackExchangeRedisCacheRepeatByConfiguration()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache();
-        builder.Services.AddStackExchangeRedisCache(Options.DefaultName, "RedisConfig2");
-        builder.Services.AddStackExchangeRedisCache(Options.DefaultName, "RedisConfig3");
+        builder.Services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache());
+        builder.Services.AddDistributedCache(Options.DefaultName,distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig2"));
+        builder.Services.AddDistributedCache(Options.DefaultName,distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig3"));
+
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
@@ -192,30 +193,6 @@ public class StackExchangeRedisCacheTest : TestBase
         var value = fieldInfo.GetValue((RedisCacheClient)distributedCacheClient);
         Assert.IsNotNull(value);
         Assert.AreEqual(6, ((IDatabase)value).Database);
-    }
-
-    [TestMethod]
-    public void TestCachingBuilder()
-    {
-        var services = new ServiceCollection();
-        var cachingBuilder = services.AddStackExchangeRedisCache(options =>
-        {
-            options.Servers = new List<RedisServerOptions>()
-            {
-                new()
-            };
-        });
-        Assert.AreEqual(Options.DefaultName, cachingBuilder.Name);
-        Assert.AreEqual(services, cachingBuilder.Services);
-
-        cachingBuilder = services.AddStackExchangeRedisCache("test", options =>
-        {
-            options.Servers = new List<RedisServerOptions>()
-            {
-                new()
-            };
-        });
-        Assert.AreEqual("test", cachingBuilder.Name);
     }
 
     [TestMethod]
