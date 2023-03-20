@@ -7,6 +7,8 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class RedisConfigurationOptions : CacheEntryOptions
 {
+    public string? InstanceId { get; set; }
+
     /// <summary>
     /// Gets the servers.
     /// </summary>
@@ -71,6 +73,8 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// Specifies the time in milliseconds that the system should allow for synchronous operations (defaults to 5 seconds)
     /// </summary>
     public int SyncTimeout { get; set; } = 1000;
+
+
 
     public CacheOptions GlobalCacheOptions { get; set; } = new()
     {

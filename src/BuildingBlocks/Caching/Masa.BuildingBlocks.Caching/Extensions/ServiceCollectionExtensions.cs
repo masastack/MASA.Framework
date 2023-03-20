@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         if (typeAliasOptionsAction != null)
             services.Configure(name, typeAliasOptionsAction);
 
+        services.TryAddSingleton<IFormatCacheKeyProvider, DefaultFormatCacheKeyProvider>();
         return services;
     }
 }

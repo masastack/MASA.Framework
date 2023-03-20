@@ -3,8 +3,17 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public static class CacheKeyHelper
+public class DefaultFormatCacheKeyProvider : IFormatCacheKeyProvider
 {
+    public string FormatCacheKey<T>(string? instanceId, string key, CacheKeyType cacheKeyType, Func<string, string>? typeAliasFunc = null)
+    {
+        var cacheKey = FormatCacheKey<T>(key, cacheKeyType, typeAliasFunc);
+        if (!instanceId.IsNullOrWhiteSpace())
+            return $"{instanceId}:{cacheKey}";
+
+        return cacheKey;
+    }
+
     public static string FormatCacheKey<T>(string key, CacheKeyType cacheKeyType, Func<string, string>? typeAliasFunc = null)
     {
         switch (cacheKeyType)

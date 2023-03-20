@@ -51,15 +51,19 @@ public class IdGeneratorTest
     public void TestErrorHeartbeatIntervalReturnThrowArgumentOutOfRangeException()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(new RedisConfigurationOptions()
+        services.AddDistributedCache(distributedCacheBuilder =>
         {
-            Password = "",
-            DefaultDatabase = 2,
-            Servers = new List<RedisServerOptions>()
+            distributedCacheBuilder.UseStackExchangeRedisCache(new RedisConfigurationOptions()
             {
-                new(REDIS_HOST)
-            }
+                Password = "",
+                DefaultDatabase = 2,
+                Servers = new List<RedisServerOptions>()
+                {
+                    new(REDIS_HOST)
+                }
+            });
         });
+
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
             services.AddSnowflake(options =>
@@ -106,7 +110,7 @@ public class IdGeneratorTest
                 new(REDIS_HOST)
             }
         };
-        services.AddStackExchangeRedisCache(redisConfigurationOptions);
+        services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(redisConfigurationOptions));
         var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
         snowflakeGeneratorOptions.HeartbeatInterval = 30 * 1000;
         Assert.ThrowsException<ArgumentOutOfRangeException>(() => snowflakeGeneratorOptions.UseRedis(distributedIdGeneratorOptions =>
@@ -128,7 +132,7 @@ public class IdGeneratorTest
                 new(REDIS_HOST)
             }
         };
-        services.AddStackExchangeRedisCache(redisConfigurationOptions);
+        services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(redisConfigurationOptions));
         var snowflakeGeneratorOptions = Substitute.For<SnowflakeGeneratorOptions>(services);
         snowflakeGeneratorOptions.EnableMachineClock = true;
         snowflakeGeneratorOptions.UseRedis(null, redisConfigurationOptions);
@@ -145,7 +149,7 @@ public class IdGeneratorTest
     public void TestDistributedSnowflake()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(opt =>
+        services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
@@ -153,7 +157,7 @@ public class IdGeneratorTest
             {
                 new(REDIS_HOST)
             };
-        });
+        }));
 
         services.AddSnowflake(option => option.UseRedis());
         var serviceProvider = services.BuildServiceProvider();
@@ -174,7 +178,7 @@ public class IdGeneratorTest
     public async Task TestDistributedWorkerAsync()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(opt =>
+        services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
@@ -182,7 +186,7 @@ public class IdGeneratorTest
             {
                 new(REDIS_HOST)
             };
-        });
+        }));
 
         services.AddSnowflake(distributedIdGeneratorOptions =>
         {
@@ -207,7 +211,7 @@ public class IdGeneratorTest
     public void TestDistributedWorkerAndEnableMachineClock()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(opt =>
+        services.AddDistributedCache(builder => builder.UseStackExchangeRedisCache(opt =>
         {
             opt.Password = "";
             opt.DefaultDatabase = 2;
@@ -215,7 +219,7 @@ public class IdGeneratorTest
             {
                 new(REDIS_HOST)
             };
-        });
+        }));
 
         services.AddSnowflake(distributedIdGeneratorOptions =>
         {

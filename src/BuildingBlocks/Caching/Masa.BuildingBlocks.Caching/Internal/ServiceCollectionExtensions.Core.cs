@@ -26,8 +26,20 @@ internal static class ServiceCollectionExtensions
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
     }
 
-    public static void TryAddMultilevelCache(this IServiceCollection services, string name)
+    public static void TryAddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        Func<IServiceProvider, IManualMultilevelCacheClient> func)
     {
+        services.Configure<MultilevelCacheFactoryOptions>(options =>
+        {
+            if (options.Options.Any(opt => opt.Name == name))
+                return;
+
+            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, func.Invoke);
+            options.Options.Add(cacheRelationOptions);
+        });
+
         services.TryAddTransient<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
         services.TryAddTransient(serviceProvider
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
@@ -37,6 +49,6 @@ internal static class ServiceCollectionExtensions
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
 
-        TryAddDistributedCache(services);
+        services.TryAddDistributedCache();
     }
 }

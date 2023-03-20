@@ -5,42 +5,70 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public abstract class RedisCacheClientBase : DistributedCacheClientBase
 {
+    protected readonly string? InstanceId;
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
     protected ISubscriber Subscriber;
-    protected IDatabase Db;
-    protected IConnectionMultiplexer? Connection;
+
+    protected IDatabase Db
+    {
+        get
+        {
+            if (Connection.IsConnected || Connection.IsConnecting)
+                return Connection.GetDatabase();
+
+            throw new NotSupportedException("Redis service has been disconnected, please wait for reconnection and try again");
+        }
+    }
+
+    protected IConnectionMultiplexer Connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
     protected CacheEntryOptions GlobalCacheEntryOptions;
-    protected CacheOptions GlobalCacheOptions;
+    private readonly CacheOptions _globalCacheOptions;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
+        : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
-        GlobalCacheOptions = redisConfigurationOptions.GlobalCacheOptions;
-        var redisConfiguration = GetRedisConfigurationOptions(redisConfigurationOptions);
-        InitializeRedisConfigurationOptions(redisConfiguration);
+        var redisConfiguration = GetAvailableRedisOptions(redisConfigurationOptions);
+        Connection = ConnectionMultiplexer.Connect(redisConfiguration);
+        Subscriber = Connection.GetSubscriber();
+        InstanceId = redisConfiguration.InstanceId;
+    }
 
+    private RedisCacheClientBase(
+        CacheOptions globalCacheOptions,
+        CacheEntryOptions expiredEntryOptions,
+        JsonSerializerOptions? jsonSerializerOptions)
+    {
+        _globalCacheOptions = globalCacheOptions;
+        GlobalCacheEntryOptions = new CacheEntryOptions
+        {
+            AbsoluteExpiration = expiredEntryOptions.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = expiredEntryOptions.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = expiredEntryOptions.SlidingExpiration
+        };
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
     }
 
-    protected void InitializeRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    protected RedisCacheClientBase(
+        string name,
+        RedisConfigurationOptions redisConfigurationOptions,
+        JsonSerializerOptions? jsonSerializerOptions,
+        IRedisMultiplexerProvider redisMultiplexerProvider)
+        : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
-        Dispose();
-
-        Connection = ConnectionMultiplexer.Connect(redisConfigurationOptions);
-        Db = Connection.GetDatabase();
-        Subscriber = Connection.GetSubscriber();
-
-        GlobalCacheEntryOptions = new CacheEntryOptions
-        {
-            AbsoluteExpiration = redisConfigurationOptions.AbsoluteExpiration,
-            AbsoluteExpirationRelativeToNow = redisConfigurationOptions.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = redisConfigurationOptions.SlidingExpiration
-        };
+        var redisConfiguration = GetAvailableRedisOptions(redisConfigurationOptions);
+        Connection = redisMultiplexerProvider.GetConnectionMultiplexer(name, redisConfiguration);
+        InstanceId = redisConfiguration.InstanceId;
     }
 
-    private static RedisConfigurationOptions GetRedisConfigurationOptions(RedisConfigurationOptions redisConfigurationOptions)
+    /// <summary>
+    /// Get the available redis configuration
+    /// </summary>
+    /// <param name="redisConfigurationOptions"></param>
+    /// <returns></returns>
+    private static RedisConfigurationOptions GetAvailableRedisOptions(RedisConfigurationOptions redisConfigurationOptions)
     {
         if (redisConfigurationOptions.Servers.Any())
             return redisConfigurationOptions;
@@ -56,7 +84,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     protected T? ConvertToValue<T>(RedisValue value, out bool isExist)
     {
-        if (value.HasValue && !value.IsNullOrEmpty)
+        if (value is { HasValue: true, IsNullOrEmpty: false })
         {
             isExist = true;
             return value.ConvertToValue<T>(GlobalJsonSerializerOptions);
@@ -77,7 +105,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             action.Invoke(cacheOptions);
             return cacheOptions;
         }
-        return GlobalCacheOptions;
+        return _globalCacheOptions;
     }
 
     protected static PublishOptions GetAndCheckPublishOptions(string channel, Action<PublishOptions> setup)

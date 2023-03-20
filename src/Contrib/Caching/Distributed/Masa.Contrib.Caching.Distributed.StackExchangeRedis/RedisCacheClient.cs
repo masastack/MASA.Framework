@@ -5,29 +5,30 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class RedisCacheClient : RedisCacheClientBase
 {
+    private readonly IFormatCacheKeyProvider _formatCacheKeyProvider;
     private readonly ITypeAliasProvider? _typeAliasProvider;
 
-    public RedisCacheClient(IOptionsMonitor<RedisConfigurationOptions> redisConfigurationOptions,
-        string name,
-        JsonSerializerOptions? jsonSerializerOptions = null,
-        ITypeAliasProvider? typeAliasProvider = null)
-        : this(redisConfigurationOptions.Get(name), jsonSerializerOptions, typeAliasProvider)
-    {
-        redisConfigurationOptions.OnChange((option, optionName) =>
-        {
-            if (optionName == name)
-            {
-                InitializeRedisConfigurationOptions(option);
-                GlobalCacheOptions = option.GlobalCacheOptions;
-            }
-        });
-    }
-
-    public RedisCacheClient(RedisConfigurationOptions redisConfigurationOptions,
+    public RedisCacheClient(
+        RedisConfigurationOptions redisConfigurationOptions,
+        IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         JsonSerializerOptions? jsonSerializerOptions = null,
         ITypeAliasProvider? typeAliasProvider = null)
         : base(redisConfigurationOptions, jsonSerializerOptions)
     {
+        _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
+        _typeAliasProvider = typeAliasProvider;
+    }
+
+    public RedisCacheClient(
+        string name,
+        RedisConfigurationOptions redisConfigurationOptions,
+        JsonSerializerOptions? jsonSerializerOptions,
+        IFormatCacheKeyProvider? formatCacheKeyProvider = null,
+        ITypeAliasProvider? typeAliasProvider,
+        IRedisMultiplexerProvider redisMultiplexerProvider)
+        : base(name, redisConfigurationOptions, jsonSerializerOptions, redisMultiplexerProvider)
+    {
+        _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
         _typeAliasProvider = typeAliasProvider;
     }
 
@@ -129,7 +130,10 @@ public class RedisCacheClient : RedisCacheClientBase
     public override IEnumerable<string> GetKeys(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
-        var cacheResult = Db.ScriptEvaluate(prepared, new { pattern = keyPattern });
+        var cacheResult = Db.ScriptEvaluate(prepared, new
+        {
+            pattern = keyPattern
+        });
         return (string[])cacheResult;
     }
 
@@ -149,7 +153,10 @@ public class RedisCacheClient : RedisCacheClientBase
     public override async Task<IEnumerable<string>> GetKeysAsync(string keyPattern)
     {
         var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
-        var cacheResult = await Db.ScriptEvaluateAsync(prepared, new { pattern = keyPattern }).ConfigureAwait(false);
+        var cacheResult = await Db.ScriptEvaluateAsync(prepared, new
+        {
+            pattern = keyPattern
+        }).ConfigureAwait(false);
         return (string[])cacheResult;
     }
 
@@ -212,8 +219,14 @@ public class RedisCacheClient : RedisCacheClientBase
 
         Db.ScriptEvaluate(
             Const.SET_SCRIPT,
-            new RedisKey[] { key },
-            GetRedisValues(options, () => new[] { bytesValue }));
+            new RedisKey[]
+            {
+                key
+            },
+            GetRedisValues(options, () => new[]
+            {
+                bytesValue
+            }));
     }
 
     public override Task SetAsync<T>(
@@ -235,8 +248,14 @@ public class RedisCacheClient : RedisCacheClientBase
 
         return Db.ScriptEvaluateAsync(
             Const.SET_SCRIPT,
-            new RedisKey[] { key },
-            GetRedisValues(options, () => new[] { bytesValue })
+            new RedisKey[]
+            {
+                key
+            },
+            GetRedisValues(options, () => new[]
+            {
+                bytesValue
+            })
         );
     }
 
@@ -427,7 +446,9 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         var formattedKey = FormatCacheKey<long>(key, action);
         var result = (long)await Db.ScriptEvaluateAsync(script,
             new RedisKey[]
-                { formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
+            {
+                formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY
+            },
             GetRedisValues(options)).ConfigureAwait(false);
 
         await RefreshAsync(formattedKey).ConfigureAwait(false);
@@ -476,7 +497,10 @@ end";
         var formattedKey = FormatCacheKey<long>(key, action);
         var result = await Db.ScriptEvaluateAsync(
             script,
-            new RedisKey[] { formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY },
+            new RedisKey[]
+            {
+                formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY
+            },
             GetRedisValues(options)).ConfigureAwait(false);
         await RefreshAsync(formattedKey).ConfigureAwait(false);
 
@@ -496,7 +520,10 @@ end";
 
         var result = Db.ScriptEvaluate(
             Const.SET_EXPIRATION_SCRIPT,
-            new RedisKey[] { key },
+            new RedisKey[]
+            {
+                key
+            },
             GetRedisValues(options)
         );
 
@@ -538,7 +565,10 @@ end";
 
         var result = await Db.ScriptEvaluateAsync(
             Const.SET_EXPIRATION_SCRIPT,
-            new RedisKey[] { key },
+            new RedisKey[]
+            {
+                key
+            },
             GetRedisValues(options)
         ).ConfigureAwait(false);
 
@@ -660,14 +690,17 @@ end";
     #endregion
 
     private string FormatCacheKey<T>(string key, Action<CacheOptions>? action)
-        => CacheKeyHelper.FormatCacheKey<T>(key,
+        => _formatCacheKeyProvider.FormatCacheKey<T>(
+            InstanceId,
+            key,
             GetCacheOptions(action).CacheKeyType!.Value,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName));
 
     private IEnumerable<string> FormatCacheKeys<T>(IEnumerable<string> keys, Action<CacheOptions>? action)
     {
         var cacheKeyType = GetCacheOptions(action).CacheKeyType!.Value;
-        return keys.Select(key => CacheKeyHelper.FormatCacheKey<T>(
+        return keys.Select(key => _formatCacheKeyProvider.FormatCacheKey<T>(
+            InstanceId,
             key,
             cacheKeyType,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)
@@ -682,4 +715,5 @@ end";
     }
 
     #endregion
+
 }
