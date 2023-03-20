@@ -10,4 +10,6 @@ public interface IAlarmRuleService
     Task UpdateAsync(Guid id, AlarmRuleUpsertModel options);
 
     Task DeleteAsync(Guid id);
+
+    Task<AlarmRuleModel?> GetAsync(Guid id);
 }
