@@ -16,7 +16,6 @@ global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.StackSdks.Auth;
 global using Masa.Contrib.StackSdks.Auth.Model;
 global using Masa.Contrib.StackSdks.Auth.Service;
-global using Masa.Contrib.StackSdks.Caller;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Text.Json;

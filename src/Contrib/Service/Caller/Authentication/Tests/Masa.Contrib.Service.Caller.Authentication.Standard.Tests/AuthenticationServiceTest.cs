@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Service.Caller.Authentication.BlazorServer.Tests;
+namespace Masa.Contrib.Service.Caller.Authentication.Standard.Tests;
 
 [TestClass]
 public class AuthenticationServiceTest
@@ -20,7 +20,7 @@ public class AuthenticationServiceTest
         };
         await authenticationService.ExecuteAsync(httpRequestMessage);
         Assert.IsNotNull(httpRequestMessage.Headers.Authorization);
-        Assert.AreEqual($"{AuthenticationConstant.DEFAULT_SCHEME} {tokenProvider.Authorization}",httpRequestMessage.Headers.Authorization.ToString());
+        Assert.AreEqual($"{AuthenticationConstant.DEFAULT_SCHEME} {tokenProvider.Authorization}", httpRequestMessage.Headers.Authorization.ToString());
     }
 
     [TestMethod]
