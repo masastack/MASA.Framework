@@ -30,4 +30,10 @@ public class AlarmRuleService : IAlarmRuleService
         var requestUri = $"{_party}/{id}";
         await _caller.DeleteAsync(requestUri, null);
     }
+
+    public async Task<AlarmRuleModel?> GetAsync(Guid id)
+    {
+        var requestUri = $"{_party}/{id}";
+        return await _caller.GetAsync<AlarmRuleModel>(requestUri);
+    }
 }
