@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Tsc.Contracts\Masa.BuildingBlocks.StackSdks.Tsc.Contracts.csproj" />
     <ProjectReference Include="..\..\..\Utils\Data\Masa.Utils.Data.Elasticsearch\Masa.Utils.Data.Elasticsearch.csproj" />
-    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.BlazorServer\Masa.Contrib.Service.Caller.Authentication.BlazorServer.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Universal\Masa.Contrib.Service.Caller.Authentication.Universal.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 

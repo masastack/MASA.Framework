@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\Caching\Masa.Contrib.Caching.MultilevelCache\Masa.Contrib.Caching.MultilevelCache.csproj" />
-    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.BlazorServer\Masa.Contrib.Service.Caller.Authentication.BlazorServer.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Universal\Masa.Contrib.Service.Caller.Authentication.Universal.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 
