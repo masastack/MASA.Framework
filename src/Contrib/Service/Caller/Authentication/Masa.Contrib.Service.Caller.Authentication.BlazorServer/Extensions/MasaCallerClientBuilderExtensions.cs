@@ -7,6 +7,12 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class MasaCallerClientBuilderExtensions
 {
+    public static IMasaCallerClientBuilder UseAuthentication(
+        this IMasaCallerClientBuilder masaCallerClientBuilder)
+    {
+        return UseAuthentication(masaCallerClientBuilder, (serviceProvider) => { return new TokenProvider(); });
+    }
+
     /// <summary>
     /// Caller adds default authentication
     /// </summary>
@@ -15,9 +21,10 @@ public static class MasaCallerClientBuilderExtensions
     /// <returns></returns>
     public static IMasaCallerClientBuilder UseAuthentication(
         this IMasaCallerClientBuilder masaCallerClientBuilder,
+        Func<IServiceProvider, TokenProvider> tokenProvider,
         string defaultScheme = AuthenticationConstant.DEFAULT_SCHEME)
     {
-        masaCallerClientBuilder.Services.TryAddScoped<TokenProvider>();
+        masaCallerClientBuilder.Services.TryAddScoped((serviceProvider) => { return tokenProvider.Invoke(serviceProvider); });
         masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),

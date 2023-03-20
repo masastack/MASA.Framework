@@ -22,7 +22,7 @@ public static class ServiceExtensions
             builder.UseHttpClient(options =>
             {
                 options.BaseAddress = tscServiceBaseUrl;
-            });//Need to use the AuthenticationService provided by MasaStack
+            }).UseAuthentication();
         });
 
         services.AddSingleton<ITscClient>(serviceProvider =>
