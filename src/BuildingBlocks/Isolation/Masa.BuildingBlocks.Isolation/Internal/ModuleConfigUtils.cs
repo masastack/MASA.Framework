@@ -11,12 +11,13 @@ internal static class ModuleConfigUtils
 {
     public static List<IsolationConfigurationOptions<TModuleConfig>> GetModules<TModuleConfig>(
         IServiceProvider serviceProvider,
+        string name,
         string sectionName)
         where TModuleConfig : class
     {
-        var options = serviceProvider.GetRequiredService<IOptions<IsolationOptions<TModuleConfig>>>();
-        if (options.Value.Data.Count > 0)
-            return options.Value.Data;
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IsolationOptions<TModuleConfig>>>().Get(name);
+        if (optionsMonitor.Data.Count > 0)
+            return optionsMonitor.Data;
 
         var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
         var rootSectionName = isolationOptions.Value.SectionName;

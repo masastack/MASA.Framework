@@ -24,29 +24,34 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         foreach (var entity in changeTracker.Entries()
                      .Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
         {
-            if (entity.Entity is IAuditEntity<TUserId>)
-            {
-                var userId = GetUserId(_userContext?.UserId);
-                if (userId != null)
-                {
-                    if (entity.State == EntityState.Added)
-                    {
-                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
-                    }
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
-                }
-            }
+            AuditEntityHandler(entity);
+        }
+    }
 
-            if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
+    private void AuditEntityHandler(EntityEntry entity)
+    {
+        if (entity.Entity is IAuditEntity<TUserId>)
+        {
+            var userId = GetUserId(_userContext?.UserId);
+            if (userId != null)
             {
                 if (entity.State == EntityState.Added)
                 {
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
-                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
                 }
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
+            }
+        }
+
+        if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
+        {
+            if (entity.State == EntityState.Added)
+            {
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
                     DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
+            entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
+                DateTime.UtcNow; //The current time to change to localization after waiting for localization
         }
     }
 

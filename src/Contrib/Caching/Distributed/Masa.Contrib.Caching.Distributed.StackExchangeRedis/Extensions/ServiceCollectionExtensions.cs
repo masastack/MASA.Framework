@@ -56,8 +56,8 @@ public static class ServiceCollectionExtensions
         string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddDistributedCacheCore(services, name);
-        new DistributedCacheOptions(services, name).UseStackExchangeRedisCache(redisSectionName, jsonSerializerOptions);
+        services.TryAddDistributedCache();
+        new DistributedCacheBuilder(services, name).UseStackExchangeRedisCache(redisSectionName, jsonSerializerOptions);
         return new CachingBuilder(services, name);
     }
 
@@ -85,9 +85,9 @@ public static class ServiceCollectionExtensions
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddDistributedCacheCore(services, name);
+        services.TryAddDistributedCache();
 
-        services.UseStackExchangeRedisCache(name, redisConfigurationOptions, jsonSerializerOptions);
+        new DistributedCacheBuilder(services, name).UseStackExchangeRedisCache(redisConfigurationOptions, jsonSerializerOptions);
 
         return new CachingBuilder(services, name);
     }

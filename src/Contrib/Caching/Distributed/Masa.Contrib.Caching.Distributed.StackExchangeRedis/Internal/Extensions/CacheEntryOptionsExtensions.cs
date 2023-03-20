@@ -1,10 +1,13 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests")]
+
 // ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Caching;
 
-public static class CacheEntryOptionsExtensions
+internal static class CacheEntryOptionsExtensions
 {
     public static DateTimeOffset? GetAbsoluteExpiration(this CacheEntryOptions options, DateTimeOffset creationTime)
     {

@@ -28,26 +28,27 @@ public class UnitOfWorkAccessorTest : TestBase
         _options.Object.UseUoW<CustomDbContext>(options => options.UseSqlite());
         var serviceProvider = _options.Object.Services.BuildServiceProvider();
         var unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
+        Assert.IsNotNull(unitOfWorkAccessor);
         Assert.IsNotNull(unitOfWorkAccessor.CurrentDbContextOptions);
         var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
         Assert.IsNotNull(unitOfWork);
         Assert.IsTrue(!unitOfWork.TransactionHasBegun);
-        unitOfWorkAccessor = serviceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessor!.CurrentDbContextOptions != null &&
+        unitOfWorkAccessor = serviceProvider.GetRequiredService<IUnitOfWorkAccessor>();
+        Assert.IsTrue(unitOfWorkAccessor.CurrentDbContextOptions != null! &&
             unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, out string? connectionString)
             && connectionString == _connectionString);
 
         var unitOfWorkManager = serviceProvider.GetRequiredService<IUnitOfWorkManager>();
         var unitOfWorkNew = unitOfWorkManager.CreateDbContext(false);
         var unitOfWorkAccessorNew = unitOfWorkNew.ServiceProvider.GetService<IUnitOfWorkAccessor>();
-        Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null &&
+        Assert.IsTrue(unitOfWorkAccessorNew!.CurrentDbContextOptions != null! &&
             unitOfWorkAccessorNew.CurrentDbContextOptions.TryGetConnectionString(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, out connectionString) &&
             connectionString == _connectionString);
 
         var unitOfWorkNew2 = unitOfWorkManager.CreateDbContext(new DbContextConnectionStringOptions("test"));
         var unitOfWorkAccessorNew2 = unitOfWorkNew2.ServiceProvider.GetService<IUnitOfWorkAccessor>();
         Assert.IsTrue(
-            unitOfWorkAccessorNew2!.CurrentDbContextOptions != null &&
+            unitOfWorkAccessorNew2!.CurrentDbContextOptions != null! &&
             unitOfWorkAccessorNew2.CurrentDbContextOptions.TryGetConnectionString(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, out connectionString) &&
             connectionString == "test");
 

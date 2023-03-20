@@ -3,9 +3,9 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.BuildingBlocks.Isolation;
+namespace Masa.BuildingBlocks.Data;
 
-public class ModuleConfigRelationInfo
+internal class ModuleConfigRelationInfo
 {
     public Type ModuleType { get; set; }
 

@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
@@ -29,7 +29,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         string sectionName,
         Action<TypeAliasOptions>? typeAliasOptionsAction)
         => services.AddMultilevelCache(
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         string sectionName,
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
@@ -54,13 +54,13 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         string name,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         string sectionName,
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         services.AddMultilevelCache(name, sectionName, isReset, typeAliasOptionsAction);
-        var distributedCacheOptions = new DistributedCacheOptions(services, name);
+        var distributedCacheOptions = new DistributedCacheBuilder(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
         return services;
     }
@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         string name,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
@@ -83,7 +83,7 @@ public static class ServiceCollectionExtensions
         MultilevelCacheGlobalOptions multilevelCacheGlobalOptions = new();
         multilevelCacheOptionsAction(multilevelCacheGlobalOptions);
         services.AddMultilevelCache(name, multilevelCacheGlobalOptions, typeAliasOptionsAction);
-        var distributedCacheOptions = new DistributedCacheOptions(services, name);
+        var distributedCacheOptions = new DistributedCacheBuilder(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
 
         return services;
@@ -92,13 +92,13 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddMultilevelCache(
         this IServiceCollection services,
         string name,
-        Action<DistributedCacheOptions> distributedCacheAction,
+        Action<DistributedCacheBuilder> distributedCacheAction,
         IConfiguration configuration,
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         services.AddMultilevelCache(name, configuration, isReset, typeAliasOptionsAction);
-        var distributedCacheOptions = new DistributedCacheOptions(services, name);
+        var distributedCacheOptions = new DistributedCacheBuilder(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
         return services;
     }
@@ -111,7 +111,7 @@ public static class ServiceCollectionExtensions
         MultilevelCacheGlobalOptions multilevelCacheGlobalOptions,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
+        services.TryAddMultilevelCache(name);
 
         services.Configure<MultilevelCacheFactoryOptions>(options =>
         {
@@ -170,7 +170,7 @@ public static class ServiceCollectionExtensions
         bool isReset = false,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        Masa.BuildingBlocks.Caching.Extensions.ServiceCollectionExtensions.TryAddMultilevelCacheCore(services, name);
+        services.TryAddMultilevelCache(name);
 
         services.Configure<MultilevelCacheFactoryOptions>(options =>
         {

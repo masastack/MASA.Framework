@@ -10,6 +10,6 @@ public class EmptySaveFilter<TDbContext> : ISaveChangesFilter<TDbContext>
 {
     public void OnExecuting(ChangeTracker changeTracker)
     {
-
+        //Empty implementation, no processing required
     }
 }

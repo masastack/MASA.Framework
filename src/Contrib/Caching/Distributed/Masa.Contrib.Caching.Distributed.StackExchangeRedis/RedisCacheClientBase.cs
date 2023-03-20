@@ -13,7 +13,8 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     protected CacheEntryOptions GlobalCacheEntryOptions;
     protected CacheOptions GlobalCacheOptions;
 
-    protected RedisCacheClientBase(RedisConfigurationOptions redisConfigurationOptions,
+    protected RedisCacheClientBase(
+        RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)
     {
         GlobalCacheOptions = redisConfigurationOptions.GlobalCacheOptions;

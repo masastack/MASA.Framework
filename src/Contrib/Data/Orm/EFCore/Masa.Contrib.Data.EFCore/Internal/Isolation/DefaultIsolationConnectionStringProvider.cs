@@ -12,12 +12,12 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
     private readonly IMultiTenantContext? _tenantContext;
     private readonly IConnectionStringProviderWrapper _connectionStringProviderWrapper;
     private readonly ILogger<DefaultIsolationConnectionStringProvider>? _logger;
-    private readonly IIsolationConfigurationProvider _configurationProvider;
+    private readonly IIsolationConfigProvider _configurationProvider;
 
     public DefaultIsolationConnectionStringProvider(
         IUnitOfWorkAccessor unitOfWorkAccessor,
         IConnectionStringProviderWrapper connectionStringProviderWrapper,
-        IIsolationConfigurationProvider configurationProvider,
+        IIsolationConfigProvider configurationProvider,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
         ILogger<DefaultIsolationConnectionStringProvider>? logger = null)
@@ -38,7 +38,7 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
         if (_unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(name);
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(string.Empty, name);
         if (masaDbConnectionOptions != null)
             return SetConnectionString(name, masaDbConnectionOptions.GetConnectionString(name));
 

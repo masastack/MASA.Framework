@@ -4,20 +4,20 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProvider
+public class DefaultIsolationConfigProvider : IIsolationConfigProvider
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
-    private readonly ILogger<DefaultIsolationConfigurationProvider>? _logger;
+    private readonly ILogger<DefaultIsolationConfigProvider>? _logger;
     private readonly List<ModuleConfigRelationInfo> _data;
     private readonly List<ModuleConfigRelationInfo> _moduleConfigs;
 
-    public DefaultIsolationConfigurationProvider(
+    public DefaultIsolationConfigProvider(
         IServiceProvider serviceProvider,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
-        ILogger<DefaultIsolationConfigurationProvider>? logger = null)
+        ILogger<DefaultIsolationConfigProvider>? logger = null)
     {
         _serviceProvider = serviceProvider;
         _environmentContext = environmentContext;
@@ -27,7 +27,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         _moduleConfigs = new();
     }
 
-    public virtual TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName) where TModuleConfig : class
+    public virtual TModuleConfig? GetModuleConfig<TModuleConfig>(string name, string sectionName) where TModuleConfig : class
     {
         var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
         if (item != null)
@@ -56,7 +56,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
                 option.Environment.Equals(_environmentContext.CurrentEnvironment, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        var data = GetIsolationConfigurationOptions<TModuleConfig>(sectionName);
+        var data = GetIsolationConfigurationOptions<TModuleConfig>(name, sectionName);
         TModuleConfig? moduleInfo = null;
         var modules = data
             .Where(condition.Compile())
@@ -83,9 +83,9 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         return moduleInfo;
     }
 
-    public virtual List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName) where TModuleConfig : class
+    public virtual List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string name, string sectionName) where TModuleConfig : class
     {
-        var data = GetIsolationConfigurationOptions<TModuleConfig>(sectionName);
+        var data = GetIsolationConfigurationOptions<TModuleConfig>(name, sectionName);
         var moduleConfigs = data
             .OrderByDescending(option => option.Score)
             .Select(option => option.Data)
@@ -93,7 +93,9 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         return moduleConfigs;
     }
 
-    private List<IsolationConfigurationOptions<TModuleConfig>> GetIsolationConfigurationOptions<TModuleConfig>(string sectionName)
+    private List<IsolationConfigurationOptions<TModuleConfig>> GetIsolationConfigurationOptions<TModuleConfig>(
+        string name,
+        string sectionName)
         where TModuleConfig : class
     {
         var item = _moduleConfigs.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
@@ -101,7 +103,7 @@ public class DefaultIsolationConfigurationProvider : IIsolationConfigurationProv
         {
             return (item.Data as List<IsolationConfigurationOptions<TModuleConfig>>)!;
         }
-        var data = ModuleConfigUtils.GetModules<TModuleConfig>(_serviceProvider, sectionName)
+        var data = ModuleConfigUtils.GetModules<TModuleConfig>(_serviceProvider, name, sectionName)
             .Where(option => option.Data != null!)
             .ToList();
         _moduleConfigs.Add(new ModuleConfigRelationInfo()

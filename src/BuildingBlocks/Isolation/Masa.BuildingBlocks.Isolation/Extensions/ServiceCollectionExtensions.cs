@@ -38,12 +38,14 @@ public static class ServiceCollectionExtensions
                 if (options.SectionName.IsNullOrWhiteSpace())
                     options.SectionName = IsolationConstant.DEFAULT_SECTION_NAME;
             })
-            .TryAddScoped<IIsolationConfigurationProvider, DefaultIsolationConfigurationProvider>();
+            .TryAddScoped<IIsolationConfigProvider, DefaultIsolationConfigProvider>();
 
         MasaApp.TrySetServiceCollection(services);
     }
 
+#pragma warning disable S2094
     private sealed class IsolationProvider
     {
     }
+#pragma warning restore S2094
 }
