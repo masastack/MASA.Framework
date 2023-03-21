@@ -23,9 +23,9 @@ public class RedisCacheClient : RedisCacheClientBase
         string name,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions,
-        IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         ITypeAliasProvider? typeAliasProvider,
-        IRedisMultiplexerProvider redisMultiplexerProvider)
+        IRedisMultiplexerProvider redisMultiplexerProvider,
+        IFormatCacheKeyProvider? formatCacheKeyProvider = null)
         : base(name, redisConfigurationOptions, jsonSerializerOptions, redisMultiplexerProvider)
     {
         _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();

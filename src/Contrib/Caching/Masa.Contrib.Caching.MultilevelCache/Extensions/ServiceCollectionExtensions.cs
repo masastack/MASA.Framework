@@ -124,7 +124,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         string name,
         Action<DistributedCacheBuilder> distributedCacheAction,
-        Action<MultilevelCacheGlobalOptions> multilevelCacheOptionsAction,
+        Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
         MasaArgumentException.ThrowIfNull(distributedCacheAction);

@@ -40,9 +40,9 @@ public static class DistributedCacheBuilderExtensions
                 distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>(),
                 serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
-                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>());
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>());
         });
         distributedCacheBuilder.Services.UseStackExchangeRedisCacheCore();
 
@@ -66,9 +66,9 @@ public static class DistributedCacheBuilderExtensions
                 distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>(),
                 serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
-                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>()
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>()
             );
             return distributedCacheClient;
         });
@@ -86,9 +86,9 @@ public static class DistributedCacheBuilderExtensions
                 distributedCacheBuilder.Name,
                 redisConfigurationOptions,
                 jsonSerializerOptions,
-                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>(),
                 serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name),
-                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>()
+                serviceProvider.GetRequiredService<IRedisMultiplexerProvider>(),
+                serviceProvider.GetRequiredService<IFormatCacheKeyProvider>()
             );
             return distributedCacheClient;
         });

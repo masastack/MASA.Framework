@@ -11,16 +11,13 @@ public class MultilevelCacheTest : TestBase
     public void TestAddMultilevelCache()
     {
         var services = new ServiceCollection();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(services);
-
-        cachingBuilder.AddMultilevelCache(_ =>
+        services.AddMultilevelCache(_ =>
         {
+
         });
 
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());
+        Assert.IsTrue(services.Any<IMultilevelCacheClient>());
+        Assert.IsTrue(services.Any<IMultilevelCacheClientFactory>());
     }
 
     [TestMethod]
@@ -38,7 +35,7 @@ public class MultilevelCacheTest : TestBase
     public void TestAddMultilevelCache3()
     {
         var services = new ServiceCollection();
-        services.AddMultilevelCache("test", distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        services.AddMultilevelCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache());
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
@@ -50,8 +47,7 @@ public class MultilevelCacheTest : TestBase
     public void TestAddMultilevelCache4()
     {
         var services = new ServiceCollection();
-        services.AddMultilevelCache(distributedCacheOptions =>
-                distributedCacheOptions.UseStackExchangeRedisCache(),
+        services.AddMultilevelCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(),
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
@@ -64,50 +60,22 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultilevelCacheBySpecialMultilevelCacheOptions()
-    {
-        var services = new ServiceCollection();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(services);
-
-        cachingBuilder.AddMultilevelCache(new MultilevelCacheGlobalOptions());
-
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());
-    }
-
-    [TestMethod]
-    public void TestMultilevelCacheOptions()
-    {
-        var builder = WebApplication.CreateBuilder();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(builder.Services);
-        cachingBuilder.AddMultilevelCache();
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheOptions = serviceProvider.GetService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
-        Assert.IsNotNull(multilevelCacheOptions);
-        Assert.IsNotNull(multilevelCacheOptions.Value);
-
-        var option = multilevelCacheOptions.Get("test");
-        Assert.IsNotNull(option);
-        Assert.AreEqual("masa", option.SubscribeKeyPrefix);
-        Assert.AreEqual(SubscribeKeyType.SpecificPrefix, option.SubscribeKeyType);
-    }
-
-    [TestMethod]
     public void TestAddMultilevelCacheReturnIMultilevelCacheNotNull()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache().AddMultilevelCache();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheGlobalOptions()
+        builder.Services.AddMultilevelCache(distributedCacheBuilder =>
         {
-            CacheEntryOptions = new CacheEntryOptions()
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
+        });
+        builder.Services.AddMultilevelCache("test", distributedCacheBuilder =>
+        {
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
+        }, globalOptions =>
+        {
+            globalOptions.CacheEntryOptions = new CacheEntryOptions()
             {
                 SlidingExpiration = TimeSpan.FromSeconds(10)
-            }
+            };
         });
 
         var serviceProvider = builder.Services.BuildServiceProvider();
@@ -148,45 +116,11 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultilevelCacheRepeat()
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
-            .AddMultilevelCache(multilevelCacheOptions =>
-            {
-                multilevelCacheOptions.CacheEntryOptions = new CacheEntryOptions()
-                {
-                    SlidingExpiration = TimeSpan.FromSeconds(10)
-                };
-            }).AddMultilevelCache(new MultilevelCacheGlobalOptions()
-            {
-                CacheEntryOptions = new CacheEntryOptions()
-                {
-                    SlidingExpiration = TimeSpan.FromSeconds(20)
-                }
-            });
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
-        Assert.IsNotNull(multilevelCacheClientFactory);
-        using var multilevelCacheClient = multilevelCacheClientFactory.Create("test");
-
-        var client = (MultilevelCacheClient)multilevelCacheClient;
-        Assert.IsNotNull(client);
-        Assert.IsNotNull(client.GlobalCacheOptions);
-        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
-
-        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(10), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
-    }
-
-    [TestMethod]
     public async Task TestModifyMultilevelCacheOptions()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
-            .AddMultilevelCache();
+        builder.Services.AddMultilevelCache("test",distributedCacheBuilder
+            => distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions));
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
@@ -275,7 +209,9 @@ public class MultilevelCacheTest : TestBase
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
                 {
-                    { "String", "s" }
+                    {
+                        "String", "s"
+                    }
                 };
             }
         );
@@ -300,7 +236,9 @@ public class MultilevelCacheTest : TestBase
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
                 {
-                    { "String", "s" }
+                    {
+                        "String", "s"
+                    }
                 };
             }
         );
