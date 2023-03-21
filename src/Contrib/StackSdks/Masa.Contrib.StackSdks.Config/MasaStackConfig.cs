@@ -53,6 +53,8 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string DccSecret => GetValue(MasaStackConfigConstant.DCC_SECRET);
 
+    public string TscLayer => GetValue(MasaStackConfigConstant.TSC_LAYER);
+
     public bool SingleSsoClient { get; }
 
     public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
