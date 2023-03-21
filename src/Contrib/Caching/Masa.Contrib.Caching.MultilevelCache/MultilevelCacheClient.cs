@@ -32,8 +32,8 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     public MultilevelCacheClient(
         IMemoryCache memoryCache,
         IManualDistributedCacheClient distributedCacheClient,
-        MultilevelCacheOptions multilevelCacheOptions,
-        SubscribeKeyType subscribeKeyType,
+        MultilevelCacheOptions? multilevelCacheOptions = null,
+        SubscribeKeyType subscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey,
         string subscribeKeyPrefix = "",
         ITypeAliasProvider? typeAliasProvider = null,
         IFormatCacheKeyProvider? formatCacheKeyProvider = null,
@@ -42,7 +42,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;
         _subscribeKeyType = subscribeKeyType;
-        GlobalCacheOptions = multilevelCacheOptions;
+        GlobalCacheOptions = multilevelCacheOptions ?? new MultilevelCacheOptions();
         _subscribeKeyPrefix = subscribeKeyPrefix;
     }
 
@@ -427,7 +427,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     private static CacheKeyType GetCacheKeyType(MultilevelCacheOptions multilevelCacheOptions)
-        => multilevelCacheOptions.CacheKeyType ?? Constant.DEFAULT_CACHE_KEY_TYPE;
+        => multilevelCacheOptions.CacheKeyType ?? MultilevelCacheConstant.DEFAULT_CACHE_KEY_TYPE;
 
     private CacheEntryOptions? GetMemoryCacheEntryOptions(MultilevelCacheOptions multilevelCacheOptions)
         => multilevelCacheOptions.MemoryCacheEntryOptions ?? GlobalCacheOptions.MemoryCacheEntryOptions;

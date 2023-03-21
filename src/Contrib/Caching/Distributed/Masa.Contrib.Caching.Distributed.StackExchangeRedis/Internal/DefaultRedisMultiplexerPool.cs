@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal class DefaultRedisMultiplexerProvider : IRedisMultiplexerProvider
+internal class DefaultRedisMultiplexerPool : IRedisMultiplexerPool
 {
     private readonly MemoryCache<string, IConnectionMultiplexer> _data = new();
 
@@ -23,5 +23,13 @@ internal class DefaultRedisMultiplexerProvider : IRedisMultiplexerProvider
     }
 
     private static string ConvertToKey(string name, RedisConfigurationOptions redisConfigurationOptions)
-        => $"{name}{JsonSerializer.Serialize(redisConfigurationOptions)}";
+        => $"{name}{redisConfigurationOptions.InstanceId ?? string.Empty}";
+
+    public void Dispose()
+    {
+        foreach (var connectionMultiplexer in _data.Values)
+            connectionMultiplexer.Dispose();
+
+        _data.Dispose();
+    }
 }

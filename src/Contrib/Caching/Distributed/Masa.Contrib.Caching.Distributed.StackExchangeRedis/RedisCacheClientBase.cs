@@ -7,23 +7,27 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 {
     protected readonly string? InstanceId;
     protected static readonly Guid UniquelyIdentifies = Guid.NewGuid();
-    protected ISubscriber Subscriber;
+    protected readonly ISubscriber Subscriber;
 
     protected IDatabase Db
     {
         get
         {
-            if (Connection.IsConnected || Connection.IsConnecting)
-                return Connection.GetDatabase();
+            if (_connection.IsConnected || _connection.IsConnecting)
+                return _connection.GetDatabase();
 
             throw new NotSupportedException("Redis service has been disconnected, please wait for reconnection and try again");
         }
     }
 
-    protected IConnectionMultiplexer Connection;
+    private readonly IConnectionMultiplexer _connection;
     protected readonly JsonSerializerOptions GlobalJsonSerializerOptions;
-    protected CacheEntryOptions GlobalCacheEntryOptions;
+    private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
+
+    private readonly string _name;
+    private readonly RedisConfigurationOptions? _redisConfigurationOptions;
+    private readonly IRedisMultiplexerPool? _redisMultiplexerPool;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
@@ -31,8 +35,8 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
         var redisConfiguration = GetAvailableRedisOptions(redisConfigurationOptions);
-        Connection = ConnectionMultiplexer.Connect(redisConfiguration);
-        Subscriber = Connection.GetSubscriber();
+        _connection = ConnectionMultiplexer.Connect(redisConfiguration);
+        Subscriber = _connection.GetSubscriber();
         InstanceId = redisConfiguration.InstanceId;
     }
 
@@ -42,7 +46,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         JsonSerializerOptions? jsonSerializerOptions)
     {
         _globalCacheOptions = globalCacheOptions;
-        GlobalCacheEntryOptions = new CacheEntryOptions
+        _globalCacheEntryOptions = new CacheEntryOptions
         {
             AbsoluteExpiration = expiredEntryOptions.AbsoluteExpiration,
             AbsoluteExpirationRelativeToNow = expiredEntryOptions.AbsoluteExpirationRelativeToNow,
@@ -55,12 +59,15 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         string name,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions,
-        IRedisMultiplexerProvider redisMultiplexerProvider)
+        IRedisMultiplexerPool redisMultiplexerProvider)
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
-        var redisConfiguration = GetAvailableRedisOptions(redisConfigurationOptions);
-        Connection = redisMultiplexerProvider.GetConnectionMultiplexer(name, redisConfiguration);
-        InstanceId = redisConfiguration.InstanceId;
+        _name = name;
+        _redisConfigurationOptions = GetAvailableRedisOptions(redisConfigurationOptions);
+        _redisMultiplexerPool = redisMultiplexerProvider;
+        _connection = _redisMultiplexerPool.GetConnectionMultiplexer(name, _redisConfigurationOptions);
+        Subscriber = _connection.GetSubscriber();
+        InstanceId = _redisConfigurationOptions.InstanceId;
     }
 
     /// <summary>
@@ -95,7 +102,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     }
 
     protected CacheEntryOptions GetCacheEntryOptions(CacheEntryOptions? options = null)
-        => options ?? GlobalCacheEntryOptions;
+        => options ?? _globalCacheEntryOptions;
 
     protected CacheOptions GetCacheOptions(Action<CacheOptions>? action)
     {
@@ -276,7 +283,8 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     protected override void Dispose(bool disposing)
     {
-        Connection?.Dispose();
+        _redisMultiplexerPool?.TryRemove(_name, _redisConfigurationOptions!);
+        _connection?.Dispose();
         base.Dispose(disposing);
     }
 }

@@ -7,6 +7,9 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 [TestClass]
 public class StackExchangeRedisCacheTest : TestBase
 {
+    private static readonly PropertyInfo DataBasePropertyInfo =
+        typeof(RedisCacheClient).GetProperty("Db", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
     [TestMethod]
     public void TestAddStackExchangeRedisCache()
     {
@@ -26,19 +29,23 @@ public class StackExchangeRedisCacheTest : TestBase
 
         var serviceProvider = services.BuildServiceProvider();
 
-        var options = serviceProvider.GetService<IOptions<RedisConfigurationOptions>>();
-        Assert.IsNotNull(options);
-        Assert.AreEqual(1, options.Value.DefaultDatabase);
-        Assert.AreEqual(1, options.Value.Servers.Count);
-        Assert.AreEqual(REDIS_HOST, options.Value.Servers[0].Host);
-        Assert.AreEqual(6379, options.Value.Servers[0].Port);
-
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
         string key = "test_key";
         distributedCacheClient.Set(key, "content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
         distributedCacheClient.Remove(key);
+
+        var database = GetDatabase(distributedCacheClient as RedisCacheClient);
+        Assert.AreEqual(1, database.Database);
+    }
+
+    private static IDatabase GetDatabase(RedisCacheClient? redisCacheClient)
+    {
+        Assert.IsNotNull(redisCacheClient);
+        var database = DataBasePropertyInfo.GetValue(redisCacheClient) as IDatabase;
+        Assert.IsNotNull(database);
+        return database;
     }
 
     [TestMethod]
@@ -94,7 +101,7 @@ public class StackExchangeRedisCacheTest : TestBase
         var builder = WebApplication.CreateBuilder();
         var rootPath = builder.Environment.ContentRootPath;
         var services = builder.Services;
-        services.AddDistributedCache(distributeCacheBuilder => distributeCacheBuilder.UseStackExchangeRedisCache("test"));
+        services.AddDistributedCache("test", distributeCacheBuilder => distributeCacheBuilder.UseStackExchangeRedisCache());
 
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
@@ -118,6 +125,13 @@ public class StackExchangeRedisCacheTest : TestBase
 
         Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
         using (distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
+        {
+            var exist = distributedCacheClient.Exists(key);
+
+            Assert.IsTrue(exist);
+        }
+
+        using (distributedCacheClient = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
         {
             var exist = distributedCacheClient.Exists(key);
 
@@ -147,28 +161,25 @@ public class StackExchangeRedisCacheTest : TestBase
                 CacheKeyType = CacheKeyType.None
             };
         }));
-        services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(new RedisConfigurationOptions()
-        {
-            DefaultDatabase = 2,
-            Servers = new List<RedisServerOptions>()
+        services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(
+            new RedisConfigurationOptions()
             {
-                new(REDIS_HOST)
-            },
-            GlobalCacheOptions = new CacheOptions()
-            {
-                CacheKeyType = CacheKeyType.None
-            }
-        }));
+                DefaultDatabase = 2,
+                Servers = new List<RedisServerOptions>()
+                {
+                    new(REDIS_HOST)
+                },
+                GlobalCacheOptions = new CacheOptions()
+                {
+                    CacheKeyType = CacheKeyType.None
+                }
+            }));
         var serviceProvider = services.BuildServiceProvider();
 
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
 
-        Assert.IsTrue(distributedCacheClient is RedisCacheClient redisClient);
-        var fieldInfo = typeof(RedisCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        var value = fieldInfo.GetValue((RedisCacheClient)distributedCacheClient);
+        var value = GetDatabase(distributedCacheClient as RedisCacheClient);
         Assert.IsNotNull(value);
         Assert.AreEqual(1, ((IDatabase)value).Database);
     }
@@ -178,19 +189,17 @@ public class StackExchangeRedisCacheTest : TestBase
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddDistributedCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache());
-        builder.Services.AddDistributedCache(Options.DefaultName,distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig2"));
-        builder.Services.AddDistributedCache(Options.DefaultName,distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig3"));
+        builder.Services.AddDistributedCache(Options.DefaultName,
+            distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig2"));
+        builder.Services.AddDistributedCache(Options.DefaultName,
+            distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache("RedisConfig3"));
 
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var distributedCacheClient = serviceProvider.GetService<IDistributedCacheClient>();
         Assert.IsNotNull(distributedCacheClient);
 
-        Assert.IsTrue(distributedCacheClient is RedisCacheClient redisClient);
-        var fieldInfo = typeof(RedisCacheClient).GetField("Db", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        Assert.IsNotNull(fieldInfo);
-
-        var value = fieldInfo.GetValue((RedisCacheClient)distributedCacheClient);
+        var value = GetDatabase(distributedCacheClient as RedisCacheClient);
         Assert.IsNotNull(value);
         Assert.AreEqual(6, ((IDatabase)value).Database);
     }
@@ -277,7 +286,9 @@ public class StackExchangeRedisCacheTest : TestBase
         {
             options.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
             {
-                { "String", "s" }
+                {
+                    "String", "s"
+                }
             };
         });
         var serviceProvider = builder.Services.BuildServiceProvider();
@@ -302,14 +313,18 @@ public class StackExchangeRedisCacheTest : TestBase
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
                 {
-                    { "String", "s" }
+                    {
+                        "String", "s"
+                    }
                 };
             });
         builder.Services.Configure((TypeAliasOptions options) =>
         {
             options.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
             {
-                { "String", "s" }
+                {
+                    "String", "s"
+                }
             };
         });
         var serviceProvider = builder.Services.BuildServiceProvider();

@@ -27,7 +27,7 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         _moduleConfigs = new();
     }
 
-    public virtual TModuleConfig? GetModuleConfig<TModuleConfig>(string name, string sectionName) where TModuleConfig : class
+    public virtual TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName, string name) where TModuleConfig : class
     {
         var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
         if (item != null)
@@ -83,7 +83,7 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         return moduleInfo;
     }
 
-    public virtual List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string name, string sectionName) where TModuleConfig : class
+    public virtual List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName, string name) where TModuleConfig : class
     {
         var data = GetIsolationConfigurationOptions<TModuleConfig>(name, sectionName);
         var moduleConfigs = data

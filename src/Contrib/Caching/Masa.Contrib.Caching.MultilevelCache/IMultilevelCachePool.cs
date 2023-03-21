@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache;
 
-public interface IMultilevelCacheProvider
+public interface IMultilevelCachePool : IDisposable
 {
     (IMemoryCache MemoryCache, IManualDistributedCacheClient ManualDistributedCacheClient) GetCache(
         IServiceProvider serviceProvider,

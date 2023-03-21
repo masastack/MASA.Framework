@@ -21,7 +21,8 @@ public class MultilevelCacheClientTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         _distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
-        _multilevelCacheClient = new MultilevelCacheClient(_memoryCache,
+        _multilevelCacheClient = new MultilevelCacheClient(
+            _memoryCache,
             _distributedCacheClient,
             new MultilevelCacheOptions()
             {
@@ -654,8 +655,10 @@ public class MultilevelCacheClientTest : TestBase
     private static IManualMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
-        services.AddDistributedCache("test",
-            distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions));
+        services.AddMultilevelCache("test", distributedCacheBuilder =>
+        {
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
+        });
         var serviceProvider = services.BuildServiceProvider();
         var cacheClientFactory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         var multilevelCacheClient = cacheClientFactory.Create("test");

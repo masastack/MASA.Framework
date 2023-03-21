@@ -6,7 +6,7 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 /// <summary>
 /// Provide Redis reuse Connection
 /// </summary>
-public interface IRedisMultiplexerProvider
+public interface IRedisMultiplexerPool : IDisposable
 {
     IConnectionMultiplexer GetConnectionMultiplexer(string name, RedisConfigurationOptions redisConfigurationOptions);
 

@@ -18,4 +18,6 @@ public class DefaultDistributedCacheClientFactory : CacheClientFactoryBase<IManu
     {
         _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<DistributedCacheFactoryOptions>>();
     }
+
+    protected override IServiceProvider GetServiceProvider(string name) => TransientServiceProvider;
 }

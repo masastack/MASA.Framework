@@ -38,7 +38,7 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
         if (_unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(string.Empty, name);
+        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(name);
         if (masaDbConnectionOptions != null)
             return SetConnectionString(name, masaDbConnectionOptions.GetConnectionString(name));
 

@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Caching.MultilevelCache;
 
-internal class DefaultMultilevelCacheProvider : IMultilevelCacheProvider
+internal class DefaultMultilevelCachePool : IMultilevelCachePool
 {
     private readonly MemoryCache<string, (IMemoryCache MemoryCache, IManualDistributedCacheClient DistributedCacheClient)> _data = new();
 
@@ -32,5 +32,16 @@ internal class DefaultMultilevelCacheProvider : IMultilevelCacheProvider
     }
 
     private static string ConvertToKey(string name, MultilevelCacheGlobalOptions multilevelCacheGlobalOptions)
-        => $"{name}{JsonSerializer.Serialize(multilevelCacheGlobalOptions)}";
+        => $"{name}{multilevelCacheGlobalOptions.InstanceId ?? string.Empty}";
+
+    public void Dispose()
+    {
+        foreach (var item in _data.Values)
+        {
+            item.MemoryCache.Dispose();
+            item.DistributedCacheClient.Dispose();
+        }
+
+        _data.Dispose();
+    }
 }
