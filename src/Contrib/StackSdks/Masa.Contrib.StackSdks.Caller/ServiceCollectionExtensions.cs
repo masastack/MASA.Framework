@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
        Action<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
        Action<ClientRefreshTokenOptions>? clientRefreshTokenOptions = null)
     {
-        return AddStackCaller(services, assembly, (serviceProvider) => { return serviceProvider.GetRequiredService<TokenProvider>(); }, jwtTokenValidatorOptions, clientRefreshTokenOptions);
+        return AddStackCaller(services, assembly, (serviceProvider) => new TokenProvider(), jwtTokenValidatorOptions, clientRefreshTokenOptions);
     }
 
     public static IServiceCollection AddStackCaller(
@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
 
         services.Configure(jwtTokenValidatorOptions);
         services.Configure(clientRefreshTokenOptions);
-        services.AddScoped((serviceProvider) => { return tokenProvider.Invoke(serviceProvider); });
+        services.TryAddScoped((serviceProvider) => { return tokenProvider.Invoke(serviceProvider); });
         services.AddSingleton<JwtTokenValidator>();
         services.AddAutoRegistrationCaller(assembly);
         return services;
