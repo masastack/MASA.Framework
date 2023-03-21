@@ -6,22 +6,22 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 public class DefaultCredentialProvider : ICredentialProvider
 {
     private readonly IOssClientFactory _ossClientFactory;
-    private readonly IAliyunStorageOptionProvider _optionProvider;
     private readonly IMemoryCache _cache;
-    protected readonly ILogger<DefaultCredentialProvider>? _logger;
+    protected readonly ILogger<DefaultCredentialProvider>? _logger = null;
 
-    private AliyunStorageOptions Options => _optionProvider.GetOptions();
+    private AliyunStorageOptions _aliyunStorageOptions;
 
     public DefaultCredentialProvider(
-        IOssClientFactory ossClientFactory,
-        IAliyunStorageOptionProvider optionProvider,
+        AliyunStorageOptions aliyunStorageOptions,
         IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger = null)
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null)
     {
-        _ossClientFactory = ossClientFactory;
-        _optionProvider = optionProvider;
+        _aliyunStorageOptions = aliyunStorageOptions;
         _cache = cache;
-        _logger = logger;
+        _ossClientFactory = ossClientFactory ?? new DefaultOssClientFactory();
+        _cache = cache;
+        _logger = loggerFactory?.CreateLogger<DefaultCredentialProvider>();
     }
 
     /// <summary>
@@ -30,16 +30,16 @@ public class DefaultCredentialProvider : ICredentialProvider
     /// <returns></returns>
     public virtual TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (!_cache.TryGetValue(Options.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
+        if (!_cache.TryGetValue(_aliyunStorageOptions.TemporaryCredentialsCacheKey, out TemporaryCredentialsResponse? temporaryCredentials))
         {
             temporaryCredentials = GetTemporaryCredentials(
-                Options.Sts!.RegionId!,
-                Options.AccessKeyId,
-                Options.AccessKeySecret,
-                Options.RoleArn,
-                Options.RoleSessionName,
-                Options.Policy,
-                Options.Sts.GetDurationSeconds());
+                _aliyunStorageOptions.Sts!.RegionId!,
+                _aliyunStorageOptions.AccessKeyId,
+                _aliyunStorageOptions.AccessKeySecret,
+                _aliyunStorageOptions.RoleArn,
+                _aliyunStorageOptions.RoleSessionName,
+                _aliyunStorageOptions.Policy,
+                _aliyunStorageOptions.Sts.GetDurationSeconds());
             SetTemporaryCredentials(temporaryCredentials);
         }
         return temporaryCredentials!;
@@ -86,7 +86,7 @@ public class DefaultCredentialProvider : ICredentialProvider
 
     protected virtual void SetTemporaryCredentials(TemporaryCredentialsResponse credentials)
     {
-        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - Options.Sts!.GetEarlyExpires();
-        if (timespan >= 0) _cache.Set(Options.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
+        var timespan = (DateTime.UtcNow - credentials.Expiration!.Value).TotalSeconds - _aliyunStorageOptions.Sts!.GetEarlyExpires();
+        if (timespan >= 0) _cache.Set(_aliyunStorageOptions.TemporaryCredentialsCacheKey, credentials, TimeSpan.FromSeconds(timespan));
     }
 }

@@ -1,16 +1,20 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-public class CustomClient : DefaultStorageClient
+internal class CustomStorageClientClient : DefaultStorageClient
 {
     public Mock<IOss>? Oss;
 
-    public CustomClient(ICredentialProvider credentialProvider,
-        IAliyunStorageOptionProvider optionProvider,
-        ILogger<DefaultStorageClient>? logger)
-        : base(credentialProvider, optionProvider, logger)
+    public CustomStorageClientClient(
+        AliyunStorageOptions aliyunStorageOptions,
+        IMemoryCache memoryCache,
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null)
+        : base(aliyunStorageOptions, memoryCache, null, ossClientFactory, loggerFactory)
     {
     }
 
@@ -36,8 +40,14 @@ public class CustomClient : DefaultStorageClient
     private OssObject GetOssObject()
     {
         string objectName = string.Empty;
-        var constructor = typeof(OssObject).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new[] { typeof(string) })!;
-        OssObject ossObject = (constructor.Invoke(new object[] { objectName }) as OssObject)!;
+        var constructor = typeof(OssObject).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new[]
+        {
+            typeof(string)
+        })!;
+        OssObject ossObject = (constructor.Invoke(new object[]
+        {
+            objectName
+        }) as OssObject)!;
         ossObject.ResponseStream = null;
         return ossObject;
     }

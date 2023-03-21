@@ -61,20 +61,16 @@ public static class ServiceCollectionExtensions
 
         services.TryAddMultilevelCache(name, serviceProvider =>
         {
-            MultilevelCacheGlobalOptions? multilevelCacheGlobalOptions;
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-            {
-                multilevelCacheGlobalOptions =
-                    serviceProvider
-                        .GetRequiredService<IIsolationConfigProvider>()
-                        .GetModuleConfig<MultilevelCacheGlobalOptions>(sectionName, name) ??
-                    GetDefaultMultilevelCacheGlobalOptions(serviceProvider);
-            }
-            else
-            {
-                multilevelCacheGlobalOptions = GetDefaultMultilevelCacheGlobalOptions(serviceProvider);
-            }
+            var multilevelCacheGlobalOptions = ModuleConfigUtils.GetModuleConfigByExecute(
+                serviceProvider,
+                name,
+                sectionName,
+                () =>
+                {
+                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
+                    return optionsMonitor.Get(name);
+                });
+
             var multilevelCacheProvider = serviceProvider.GetRequiredService<IMultilevelCachePool>();
             var item = multilevelCacheProvider.GetCache(serviceProvider, name, multilevelCacheGlobalOptions);
 
@@ -97,12 +93,6 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton<IMultilevelCachePool, DefaultMultilevelCachePool>();
         services.AddTypeAlias(name, typeAliasOptionsAction);
-
-        MultilevelCacheGlobalOptions GetDefaultMultilevelCacheGlobalOptions(IServiceProvider serviceProvider)
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
-            return optionsMonitor.Get(name);
-        }
     }
 
     public static IServiceCollection AddMultilevelCache(

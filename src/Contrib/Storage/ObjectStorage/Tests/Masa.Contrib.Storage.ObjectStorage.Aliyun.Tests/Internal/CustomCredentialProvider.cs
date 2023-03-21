@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-public class CustomCredentialProvider : DefaultCredentialProvider
+internal class CustomCredentialProvider : DefaultCredentialProvider
 {
     public readonly TemporaryCredentialsResponse TemporaryCredentials = new(
         "accessKeyId",
@@ -11,11 +13,12 @@ public class CustomCredentialProvider : DefaultCredentialProvider
         "sessionToken",
         DateTime.UtcNow.AddHours(-1));
 
-    public CustomCredentialProvider(IOssClientFactory ossClientFactory,
-        IAliyunStorageOptionProvider optionProvider,
+    public CustomCredentialProvider(
+        AliyunStorageOptions aliyunStorageOptions,
         IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger)
-        : base(ossClientFactory, optionProvider, cache, logger)
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null)
+        : base(aliyunStorageOptions, cache, ossClientFactory, loggerFactory)
     {
     }
 
@@ -37,7 +40,7 @@ public class CustomCredentialProvider : DefaultCredentialProvider
         long durationSeconds)
         => base.GetTemporaryCredentials(regionId, accessKeyId, accessKeySecret, roleArn, roleSessionName, policy, durationSeconds);
 
-    public void TestExpirationTimeLessThan10Second(int durationSeconds)
+    public void TestExpirationTimeLessThan(int durationSeconds)
     {
         var expirationTime = DateTime.UtcNow.AddSeconds(-durationSeconds);
         base.SetTemporaryCredentials(new TemporaryCredentialsResponse("accessKeyId", "secretAccessKey", "sessionToken", expirationTime));

@@ -5,7 +5,7 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
 public interface IAliyunMemoryCacheProvider
 {
-    IMemoryCache GetMemoryCache(AliyunStorageOptions aliyunStorageOptions);
+    IMemoryCache GetMemoryCache(string name, AliyunStorageOptions aliyunStorageOptions);
 
-    void TryRemove(AliyunStorageOptions aliyunStorageOptions);
+    void TryRemove(string name, AliyunStorageOptions aliyunStorageOptions);
 }

@@ -5,17 +5,17 @@ namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
 public class BucketNameProvider : IBucketNameProvider
 {
-    public BucketNames BucketNames { get; set; }
+    private BucketNames _bucketNames;
 
     public BucketNameProvider(BucketNames bucketNames)
-        => BucketNames = bucketNames;
+        => _bucketNames = bucketNames;
 
     public string GetBucketName()
-        => BucketNames.DefaultBucketName;
+        => _bucketNames.DefaultBucketName;
 
     public string GetBucketName(string aliasName)
-        => BucketNames.GetBucketName(aliasName);
+        => _bucketNames.GetBucketName(aliasName);
 
     public string GetBucketName<TContainer>() where TContainer : class
-        => BucketNames.GetBucketName(BucketNameAttribute.GetName<TContainer>());
+        => _bucketNames.GetBucketName(BucketNameAttribute.GetName<TContainer>());
 }

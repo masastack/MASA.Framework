@@ -7,50 +7,17 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
 internal static class ServiceProviderExtensions
 {
-    public static IAliyunStorageOptionProvider GetAliyunStorageOptionProvider(
+    public static AliyunStorageOptions GetAliyunStorageOptions(
         this IServiceProvider serviceProvider,
         string sectionName,
         string name)
     {
-        if (serviceProvider.IsEnabledIsolation(
-                sectionName,
-                name,
-                out AliyunStorageConfigureOptions? aliyunStorageConfigureOptions,
-                out IOptionsMonitor<AliyunStorageConfigureOptions>? defaultStorageConfigureOptionsMonitor))
-        {
-            return new DefaultAliyunStorageOptionProvider(aliyunStorageConfigureOptions);
-        }
-        return new DefaultAliyunStorageOptionProvider(defaultStorageConfigureOptionsMonitor, name);
-    }
-
-    public static bool IsEnabledIsolation(
-        this IServiceProvider serviceProvider,
-        string sectionName,
-        string name,
-        [NotNullWhen(true)] out AliyunStorageConfigureOptions? aliyunStorageConfigureOptions,
-        [NotNullWhen(false)] out IOptionsMonitor<AliyunStorageConfigureOptions>? defaultStorageConfigureOptionsMonitor)
-    {
-        var options = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-        var isEnable = options.Value.Enable;
-        if (isEnable)
-        {
-            var isolationConfigurationProvider = serviceProvider.GetRequiredService<IIsolationConfigProvider>();
-            aliyunStorageConfigureOptions =
-                isolationConfigurationProvider.GetModuleConfig<AliyunStorageConfigureOptions>(sectionName, name) ??
-                serviceProvider.GetDefaultAliyunStorageConfigureOptions(name);
-            defaultStorageConfigureOptionsMonitor = null;
-        }
-        else
-        {
-            aliyunStorageConfigureOptions = null;
-            defaultStorageConfigureOptionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
-        }
-        return isEnable;
-    }
-
-    public static AliyunStorageConfigureOptions GetDefaultAliyunStorageConfigureOptions(this IServiceProvider serviceProvider, string name)
-    {
-        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
-        return optionsMonitor.Get(name);
+        return ModuleConfigUtils.GetModuleConfigByExecute(serviceProvider, name,
+            sectionName,
+            () =>
+            {
+                var optionsSnapshot = serviceProvider.GetRequiredService<IOptionsSnapshot<AliyunStorageConfigureOptions>>();
+                return optionsSnapshot.Get(name);
+            });
     }
 }

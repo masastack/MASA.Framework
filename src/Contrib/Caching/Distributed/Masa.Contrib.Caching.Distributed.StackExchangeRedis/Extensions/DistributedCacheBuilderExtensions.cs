@@ -23,19 +23,15 @@ public static class DistributedCacheBuilderExtensions
 
         distributedCacheBuilder.AddDistributedCache(serviceProvider =>
         {
-            RedisConfigurationOptions? redisConfigurationOptions;
-            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-            if (isolationOptions.Value.Enable)
-            {
-                redisConfigurationOptions =
-                    serviceProvider
-                        .GetRequiredService<IIsolationConfigProvider>()
-                        .GetModuleConfig<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name) ?? GetDefaultRedisConfigurationOptions(serviceProvider);
-            }
-            else
-            {
-                redisConfigurationOptions = GetDefaultRedisConfigurationOptions(serviceProvider);
-            }
+            var redisConfigurationOptions = ModuleConfigUtils.GetModuleConfigByExecute(
+                serviceProvider,
+                distributedCacheBuilder.Name,
+                redisSectionName,
+                () =>
+                {
+                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>();
+                    return optionsMonitor.Get(distributedCacheBuilder.Name);
+                });
 
             return new RedisCacheClient(
                 distributedCacheBuilder.Name,
@@ -46,12 +42,6 @@ public static class DistributedCacheBuilderExtensions
                 serviceProvider.GetService<IFormatCacheKeyProvider>());
         });
         distributedCacheBuilder.Services.UseStackExchangeRedisCacheCore();
-
-        RedisConfigurationOptions GetDefaultRedisConfigurationOptions(IServiceProvider serviceProvider)
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>();
-            return optionsMonitor.Get(distributedCacheBuilder.Name);
-        }
     }
 
     public static void UseStackExchangeRedisCache(

@@ -1,9 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 
-public class CustomNullClient : DefaultCredentialProvider
+internal class CustomExceptionCredentialProvider : DefaultCredentialProvider
 {
     public string Message = "You are not authorized to do this action. You should be authorized by RAM.";
 
@@ -17,11 +19,12 @@ public class CustomNullClient : DefaultCredentialProvider
         long durationSeconds) => throw new Exception(Message);
 
 
-    public CustomNullClient(IOssClientFactory ossClientFactory,
-        IAliyunStorageOptionProvider optionProvider,
+    public CustomExceptionCredentialProvider(
+        AliyunStorageOptions aliyunStorageOptions,
         IMemoryCache cache,
-        ILogger<DefaultCredentialProvider>? logger = null)
-        : base(ossClientFactory, optionProvider, cache, logger)
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null)
+        : base(aliyunStorageOptions, cache, ossClientFactory, loggerFactory)
     {
     }
 }

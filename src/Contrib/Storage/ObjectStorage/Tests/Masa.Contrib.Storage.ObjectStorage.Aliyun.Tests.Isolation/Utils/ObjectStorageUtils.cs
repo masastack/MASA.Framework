@@ -7,12 +7,12 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests.Isolation;
 
 public static class ObjectStorageUtils
 {
-    private static PropertyInfo _aliyunStorageOptionsPropertyInfo =
-        typeof(ObjectStorageClientBase).GetProperty("Options", BindingFlags.Instance | BindingFlags.NonPublic)!;
+    private static FieldInfo _aliyunStorageOptionsFieldInfo =
+        typeof(DefaultStorageClient).GetField("AliyunStorageOptions", BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     public static AliyunStorageOptions GetAliyunStorageOptions(object storageClient)
     {
-        var options = _aliyunStorageOptionsPropertyInfo.GetValue(storageClient) as AliyunStorageOptions;
+        var options = _aliyunStorageOptionsFieldInfo.GetValue(storageClient) as AliyunStorageOptions;
         Assert.IsNotNull(options);
         return options;
     }

@@ -9,13 +9,13 @@ internal class MemoryCacheProvider : IAliyunMemoryCacheProvider
 {
     private readonly MemoryCache<string, IMemoryCache> _data = new();
 
-    public IMemoryCache GetMemoryCache(AliyunStorageOptions aliyunStorageOptions)
-        => _data.GetOrAdd(ConvertToKey(aliyunStorageOptions),
+    public IMemoryCache GetMemoryCache(string name, AliyunStorageOptions aliyunStorageOptions)
+        => _data.GetOrAdd(ConvertToKey(name, aliyunStorageOptions),
             _ => new MemoryCache(Microsoft.Extensions.Options.Options.Create(new MemoryCacheOptions())));
 
-    public void TryRemove(AliyunStorageOptions aliyunStorageOptions)
-        => _data.Remove(ConvertToKey(aliyunStorageOptions));
+    public void TryRemove(string name, AliyunStorageOptions aliyunStorageOptions)
+        => _data.Remove(ConvertToKey(name, aliyunStorageOptions));
 
-    private static string ConvertToKey(AliyunStorageOptions aliyunStorageOptions)
-        => System.Text.Json.JsonSerializer.Serialize(aliyunStorageOptions);
+    private static string ConvertToKey(string name, AliyunStorageOptions aliyunStorageOptions)
+        => name + System.Text.Json.JsonSerializer.Serialize(aliyunStorageOptions);
 }

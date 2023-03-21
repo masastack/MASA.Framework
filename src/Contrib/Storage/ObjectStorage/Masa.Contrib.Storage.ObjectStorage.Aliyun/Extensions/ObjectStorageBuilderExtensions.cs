@@ -13,48 +13,33 @@ public static class ObjectStorageBuilderExtensions
     {
         objectStorageBuilder.Services.AddAliyunStorageCore();
 
-        objectStorageBuilder.Services.AddConfigure<AliyunStorageConfigureOptions>(sectionName, objectStorageBuilder.Name);
+        var name = objectStorageBuilder.Name;
+        objectStorageBuilder.Services.AddConfigure<AliyunStorageConfigureOptions>(sectionName, name);
 
         objectStorageBuilder.AddObjectStorage(
             serviceProvider =>
             {
-                var ossClientFactory = serviceProvider.GetRequiredService<IOssClientFactory>();
-                var aliyunStorageOptionProvider = serviceProvider.GetAliyunStorageOptionProvider(sectionName, objectStorageBuilder.Name);
+                var aliyunStorageOptions = serviceProvider.GetAliyunStorageOptions(sectionName, name);
                 var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
-
-                var credentialProvider = new DefaultCredentialProvider(
-                    ossClientFactory,
-                    aliyunStorageOptionProvider,
-                    memoryCacheProvider.GetMemoryCache(aliyunStorageOptionProvider.GetOptions()),
-                    serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
-                );
+                var memoryCache = memoryCacheProvider.GetMemoryCache(name, aliyunStorageOptions);
                 return new DefaultStorageClient(
-                    credentialProvider,
-                    aliyunStorageOptionProvider,
+                    aliyunStorageOptions,
+                    memoryCache,
                     memoryCacheProvider,
-                    serviceProvider.GetService<ILogger<DefaultStorageClient>>());
+                    null,
+                    serviceProvider.GetService<IOssClientFactory>(),
+                    serviceProvider.GetService<ILoggerFactory>(),
+                    name
+                );
             },
             serviceProvider =>
             {
-                if (serviceProvider.IsEnabledIsolation(
-                        sectionName,
-                        objectStorageBuilder.Name,
-                        out AliyunStorageConfigureOptions? aliyunStorageConfigureOptions,
-                        out IOptionsMonitor<AliyunStorageConfigureOptions>? defaultStorageConfigureOptionsMonitor))
-                {
-                    return new BucketNameProvider(aliyunStorageConfigureOptions.Storage.BucketNames);
-                }
-
-                var bucketNameProvider =
-                    new BucketNameProvider(defaultStorageConfigureOptionsMonitor.Get(objectStorageBuilder.Name).Storage.BucketNames);
-                defaultStorageConfigureOptionsMonitor.OnChange(options =>
-                {
-                    bucketNameProvider.BucketNames = options.Storage.BucketNames;
-                });
-                return bucketNameProvider;
+                var aliyunStorageOptions = serviceProvider.GetAliyunStorageOptions(sectionName, name);
+                return new BucketNameProvider(aliyunStorageOptions.BucketNames);
             });
     }
 
+    [ExcludeFromCodeCoverage]
     public static void UseAliyunStorage(
         this ObjectStorageBuilder objectStorageBuilder,
         Action<AliyunStorageOptions> configure)
@@ -93,29 +78,27 @@ public static class ObjectStorageBuilderExtensions
         MasaArgumentException.ThrowIfNull(func);
         objectStorageBuilder.Services.AddAliyunStorageCore();
 
+        var name = objectStorageBuilder.Name;
         objectStorageBuilder.AddObjectStorage(
             serviceProvider =>
             {
-                var defaultAliyunStorageOptionProvider = serviceProvider.GetRequiredService<IAliyunStorageOptionProvider>();
-
+                var aliyunStorageOptions = func.Invoke(serviceProvider);
                 var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
-                var credentialProvider = new DefaultCredentialProvider(
-                    serviceProvider.GetRequiredService<IOssClientFactory>(),
-                    defaultAliyunStorageOptionProvider,
-                    memoryCacheProvider.GetMemoryCache(defaultAliyunStorageOptionProvider.GetOptions()),
-                    serviceProvider.GetService<ILogger<DefaultCredentialProvider>>()
-                );
-                return new DefaultStorageClient(credentialProvider,
-                    defaultAliyunStorageOptionProvider,
+                var memoryCache = memoryCacheProvider.GetMemoryCache(name, aliyunStorageOptions);
+                return new DefaultStorageClient(
+                    aliyunStorageOptions,
+                    memoryCache,
                     memoryCacheProvider,
-                    serviceProvider.GetService<ILogger<DefaultStorageClient>>());
+                    null,
+                    serviceProvider.GetService<IOssClientFactory>(),
+                    serviceProvider.GetService<ILoggerFactory>(),
+                    name);
+
             }, serviceProvider =>
             {
                 var aliyunStorageOptions = func.Invoke(serviceProvider);
                 return new BucketNameProvider(aliyunStorageOptions.BucketNames);
             });
-        objectStorageBuilder.Services.TryAddTransient<IAliyunStorageOptionProvider>(serviceProvider
-            => new DefaultAliyunStorageOptionProvider(func.Invoke(serviceProvider)));
     }
 
     private static void AddAliyunStorageCore(this IServiceCollection services)
