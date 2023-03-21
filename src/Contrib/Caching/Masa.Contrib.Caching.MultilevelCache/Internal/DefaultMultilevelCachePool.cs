@@ -36,6 +36,12 @@ internal class DefaultMultilevelCachePool : IMultilevelCachePool
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         foreach (var item in _data.Values)
         {
             item.MemoryCache.Dispose();

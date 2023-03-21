@@ -9,7 +9,7 @@ public class DefaultCredentialProvider : ICredentialProvider
     private readonly IMemoryCache _cache;
     protected readonly ILogger<DefaultCredentialProvider>? _logger = null;
 
-    private AliyunStorageOptions _aliyunStorageOptions;
+    private readonly AliyunStorageOptions _aliyunStorageOptions;
 
     public DefaultCredentialProvider(
         AliyunStorageOptions aliyunStorageOptions,

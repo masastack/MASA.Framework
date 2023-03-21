@@ -37,7 +37,7 @@ internal class CustomStorageClientClient : DefaultStorageClient
         return Oss.Object;
     }
 
-    private OssObject GetOssObject()
+    private static OssObject GetOssObject()
     {
         string objectName = string.Empty;
         var constructor = typeof(OssObject).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, new[]
@@ -52,7 +52,7 @@ internal class CustomStorageClientClient : DefaultStorageClient
         return ossObject;
     }
 
-    private PutObjectResult GetPutObjectResult()
+    private static PutObjectResult GetPutObjectResult()
     {
         var constructor = typeof(PutObjectResult).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, Type.EmptyTypes)!;
         var result = (constructor.Invoke(Array.Empty<object>()) as PutObjectResult)!;
@@ -60,7 +60,7 @@ internal class CustomStorageClientClient : DefaultStorageClient
         return result;
     }
 
-    private DeleteObjectResult GetDeleteFail()
+    private static DeleteObjectResult GetDeleteFail()
     {
         var constructor = typeof(DeleteObjectResult).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, Type.EmptyTypes)!;
         var result = (constructor.Invoke(Array.Empty<object>()) as DeleteObjectResult)!;
@@ -68,7 +68,7 @@ internal class CustomStorageClientClient : DefaultStorageClient
         return result;
     }
 
-    private DeleteObjectResult GetDeleteSuccess()
+    private static DeleteObjectResult GetDeleteSuccess()
     {
         var constructor = typeof(DeleteObjectResult).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, Type.EmptyTypes)!;
         var result = (constructor.Invoke(Array.Empty<object>()) as DeleteObjectResult)!;
@@ -76,7 +76,7 @@ internal class CustomStorageClientClient : DefaultStorageClient
         return result;
     }
 
-    private DeleteObjectsResult GetDeleteObjectsResult()
+    private static DeleteObjectsResult GetDeleteObjectsResult()
     {
         var constructor = typeof(DeleteObjectsResult).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, Type.EmptyTypes)!;
         var result = (constructor.Invoke(Array.Empty<object>()) as DeleteObjectsResult)!;

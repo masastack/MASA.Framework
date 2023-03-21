@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
 public class BucketNameProvider : IBucketNameProvider
 {
-    private BucketNames _bucketNames;
+    private readonly BucketNames _bucketNames;
 
     public BucketNameProvider(BucketNames bucketNames)
         => _bucketNames = bucketNames;

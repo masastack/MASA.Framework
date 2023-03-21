@@ -127,10 +127,12 @@ public static class ServiceCollectionExtensions
         where TOptions : class
         => services.AddConfigure<TOptions>(ConnectionStrings.DEFAULT_SECTION, isRoot: false);
 
+#pragma warning disable S2326
 #pragma warning disable S2094
-    private class MasaDbContextProvider<TDbContext>
+    private sealed class MasaDbContextProvider<TDbContext>
     {
 
     }
 #pragma warning restore S2094
+#pragma warning restore S2326
 }

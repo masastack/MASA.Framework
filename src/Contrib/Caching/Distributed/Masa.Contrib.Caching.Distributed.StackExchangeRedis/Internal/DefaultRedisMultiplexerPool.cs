@@ -27,6 +27,12 @@ internal class DefaultRedisMultiplexerPool : IRedisMultiplexerPool
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         foreach (var connectionMultiplexer in _data.Values)
             connectionMultiplexer.Dispose();
 

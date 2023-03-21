@@ -184,6 +184,12 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         if (Connection.IsConnected || Connection.IsConnecting)
             base.Connection.Dispose();
     }
