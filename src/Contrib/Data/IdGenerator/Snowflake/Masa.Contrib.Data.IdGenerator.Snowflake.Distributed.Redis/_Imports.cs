@@ -9,6 +9,6 @@ global using Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Internal;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
-global using Microsoft.Extensions.Options;
 global using StackExchange.Redis;
+global using System.Diagnostics.CodeAnalysis;
 global using System.Globalization;

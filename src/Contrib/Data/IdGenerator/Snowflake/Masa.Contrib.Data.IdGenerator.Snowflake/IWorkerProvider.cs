@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
-public interface IWorkerProvider
+public interface IWorkerProvider : IDisposable
 {
     /// <summary>
     /// Working machine id

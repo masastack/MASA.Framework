@@ -23,10 +23,9 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
     private readonly string? _uniquelyIdentifies;
 
     public DistributedWorkerProvider(
-        IDistributedCacheClient distributedCacheClient,
         DistributedIdGeneratorOptions? distributedIdGeneratorOptions,
         RedisConfigurationOptions redisOptions,
-        ILogger<DistributedWorkerProvider>? logger) : base(distributedCacheClient, redisOptions)
+        ILogger<DistributedWorkerProvider>? logger) : base(redisOptions)
     {
         _uniquelyIdentifies ??= Guid.NewGuid().ToString();
         ArgumentNullException.ThrowIfNull(distributedIdGeneratorOptions);
@@ -116,7 +115,7 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
         var workerId = await DistributedCacheClient.HashIncrementAsync(_currentWorkerKey, 1) - 1;
         if (workerId > _maxWorkerId)
         {
-            var lockdb = Connection.GetDatabase();
+            var lockdb = Database;
             if (await lockdb.LockTakeAsync(_getWorkerIdKey, _token, _timeSpan))
             {
                 try
@@ -182,4 +181,10 @@ public class DistributedWorkerProvider : BaseRedis, IWorkerProvider
 
     private long GetCurrentTimestamp(DateTime? dateTime = null)
         => new DateTimeOffset(dateTime ?? DateTime.UtcNow).GetTimestamp(_timestampType);
+
+    public void Dispose()
+    {
+        if (Connection.IsConnected || Connection.IsConnecting)
+            base.Connection.Dispose();
+    }
 }

@@ -17,4 +17,8 @@ public sealed class DefaultWorkerProvider : IWorkerProvider
     public Task RefreshAsync() => Task.CompletedTask;
 
     public Task LogOutAsync() => Task.CompletedTask;
+
+    public void Dispose()
+    {
+    }
 }
