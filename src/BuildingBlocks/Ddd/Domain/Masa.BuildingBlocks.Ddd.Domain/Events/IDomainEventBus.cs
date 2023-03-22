@@ -5,7 +5,11 @@ namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 
 public interface IDomainEventBus : IEventBus
 {
+    [Obsolete("Enqueue has expired, please use EnqueueAsync instead, it will be removed in 1.0")]
     Task Enqueue<TDomainEvent>(TDomainEvent @event)
+        where TDomainEvent : IDomainEvent;
+
+    Task EnqueueAsync<TDomainEvent>(TDomainEvent @event)
         where TDomainEvent : IDomainEvent;
 
     Task PublishQueueAsync();

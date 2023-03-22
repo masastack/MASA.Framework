@@ -29,7 +29,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>), ServiceLifetime.Transient));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>),
+            ServiceLifetime.Transient));
 
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
@@ -45,7 +46,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
-        services.AddScoped(typeof(IEventBus), typeof(EventBus));
+
+        services.AddScoped<ILocalEventBus, LocalEventBus>();
+        services.AddScoped<IEventBus, EventBus>();
         MasaApp.TrySetServiceCollection(services);
         return services;
     }
@@ -75,7 +78,7 @@ public static class ServiceCollectionExtensions
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
         services.AddTransient(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>));
-        services.AddScoped(typeof(IEventBus), typeof(EventBus));
+        services.AddScoped(typeof(IEventBus), typeof(LocalEventBus));
 
         return services;
     }

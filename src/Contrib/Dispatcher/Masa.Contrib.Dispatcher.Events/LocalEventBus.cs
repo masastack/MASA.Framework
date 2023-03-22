@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public class EventBus : IEventBus
+public class LocalEventBus : ILocalEventBus
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -19,7 +19,7 @@ public class EventBus : IEventBus
 
     private readonly IInitializeServiceProvider _initializeServiceProvider;
 
-    public EventBus(IServiceProvider serviceProvider,
+    public LocalEventBus(IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
         IInitializeServiceProvider initializeServiceProvider,
         IUnitOfWork? unitOfWork = null)
