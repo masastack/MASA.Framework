@@ -20,19 +20,6 @@ internal static class RedisConstant
 
     public const int DEADLINE_LASTING = -1;
 
-    // Reference from https://github.com/dotnet/aspnetcore/blob/3c793666742cfc4c389292f3378d15e32f860dc9/src/Caching/StackExchangeRedis/src/RedisCache.cs#L372
-    // KEYS[1] = key
-    // ARGV[1] = absolute-expiration - ticks as long (-1 for none)
-    // ARGV[2] = sliding-expiration - ticks as long (-1 for none)
-    // ARGV[3] = relative-expiration (long, in seconds, -1 for none) - Min(absolute-expiration - Now, sliding-expiration)
-    // ARGV[4] = data - byte[]
-    // this order should not change LUA script depends on it
-    public const string SET_SCRIPT = @"redis.call('HSET', KEYS[1], '" + ABSOLUTE_EXPIRATION_KEY + "', ARGV[1], '" + SLIDING_EXPIRATION_KEY + @"', ARGV[2], '" + DATA_KEY + @"', ARGV[4])
-                if ARGV[3] ~= '-1' then
-                  redis.call('EXPIRE', KEYS[1], ARGV[3])
-                end
-                return 1";
-
     public const string SET_MULTIPLE_SCRIPT = @"
                 local count = 0
                 for i, key in ipairs(KEYS) do
@@ -49,21 +36,11 @@ internal static class RedisConstant
         for index,key in ipairs(KEYS) do redis.call('expire', key, ARGV[index]) end;
         return 1";
 
-    public const string GET_LIST_SCRIPT = @"local result = {}
-        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
-        return result";
-
     public const string GET_KEYS_SCRIPT = @"return redis.call('keys', @pattern)";
 
     public const string GET_KEY_AND_VALUE_SCRIPT = @"local ks = redis.call('KEYS', @keypattern)
         local result = {}
         for index,val in pairs(ks) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hgetall', val) end;
-        return result";
-
-    public const string GET_EXPIRATION_VALUE_SCRIPT = @"
-        local result = {}
-        for index,val in ipairs(KEYS) do result[(2 * index - 1)] = val; result[(2 * index)] = redis.call('hmget', val,'" +
-        ABSOLUTE_EXPIRATION_KEY + "', '" + SLIDING_EXPIRATION_KEY + @"') end
         return result";
 
     // KEYS[1] = key

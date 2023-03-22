@@ -159,6 +159,6 @@ public class DefaultStorageClient :
     protected override void Dispose(bool disposing)
     {
         _aliyunMemoryCacheProvider?.TryRemove(_name, AliyunStorageOptions);
-        base.Dispose();
+        base.Dispose(disposing);
     }
 }

@@ -71,7 +71,7 @@ public class HttpClientCaller : AbstractCaller
     protected override void Dispose(bool disposing)
     {
         _httpClient.Dispose();
-        base.Dispose();
+        base.Dispose(disposing);
     }
 
     protected virtual string GetRequestUri(string? methodName)
