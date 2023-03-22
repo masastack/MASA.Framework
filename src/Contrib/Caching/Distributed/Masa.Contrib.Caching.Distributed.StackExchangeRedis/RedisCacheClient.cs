@@ -50,7 +50,8 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        return GetAndRefreshAsync<T>(FormatCacheKey<T>(key, action));
+        var formatCacheKey = FormatCacheKey<T>(key, action);
+        return GetAndRefreshAsync<T>(formatCacheKey);
     }
 
     public override IEnumerable<T?> GetList<T>(
@@ -59,11 +60,25 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        var list = GetList(FormatCacheKeys<T>(keys, action), true);
+        var formatCacheKeys = FormatCacheKeys<T>(keys, action).ToList();
+        var list = GetListAsync<T>(formatCacheKeys).ConfigureAwait(false).GetAwaiter().GetResult();
+        RefreshListAsync(list).ConfigureAwait(false).GetAwaiter().GetResult();
+        return list.Select(item => item.Value);
+    }
 
-        RefreshCore(list);
-
-        return list.Select(option => ConvertToValue<T>(option.RedisValue, out _)).ToList();
+    private async Task<List<DataCacheModel<T>>> GetListAsync<T>(List<string> keys)
+    {
+        var batch = Db.CreateBatch();
+        var tasks = keys.Select(key => batch.HashGetAllAsync(key)).ToArray();
+        batch.Execute();
+        var hashEntries = await Task.WhenAll<HashEntry[]>(tasks).ConfigureAwait(false);
+        var list = new List<DataCacheModel<T>>();
+        for (int index = 0; index < keys.Count; index++)
+        {
+            var cacheModel = RedisHelper.ConvertToCacheModel<T>(keys[index], hashEntries[index], GlobalJsonSerializerOptions);
+            list.Add(cacheModel);
+        }
+        return list;
     }
 
     public override async Task<IEnumerable<T?>> GetListAsync<T>(
@@ -73,11 +88,10 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         ArgumentNullException.ThrowIfNull(keys);
 
-        var list = await GetListAsync(FormatCacheKeys<T>(keys, action), true).ConfigureAwait(false);
-
-        await RefreshCoreAsync(list).ConfigureAwait(false);
-
-        return list.Select(option => ConvertToValue<T>(option.RedisValue, out _)).ToList();
+        var formatCacheKeys = FormatCacheKeys<T>(keys, action).ToList();
+        var list = await GetListAsync<T>(formatCacheKeys).ConfigureAwait(false);
+        await RefreshListAsync(list).ConfigureAwait(false);
+        return list.Select(item => item.Value);
     }
 
     public override T? GetOrSet<T>(
@@ -280,9 +294,25 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override void Refresh(params string[] keys)
     {
-        var list = GetList(keys, false);
+        var list = GetKeyAndExpiredList(keys.ToList()).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        RefreshCore(list);
+        RefreshListAsync(list).ConfigureAwait(false).GetAwaiter().GetResult();
+    }
+
+    private async Task<List<DataCacheBaseModel>> GetKeyAndExpiredList(List<string> keys)
+    {
+        var batch = Db.CreateBatch();
+        var tasks = keys.Select(key => batch.HashGetAsync(key, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY))
+            .ToArray();
+        batch.Execute();
+        var redisValues = await Task.WhenAll(tasks).ConfigureAwait(false);
+        var list = new List<DataCacheBaseModel>();
+        for (int index = 0; index < keys.Count; index++)
+        {
+            var cacheModel = RedisHelper.ConvertToCacheBaseModel(keys[index], redisValues[index]);
+            list.Add(cacheModel);
+        }
+        return list;
     }
 
     public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
@@ -290,9 +320,9 @@ public class RedisCacheClient : RedisCacheClientBase
 
     public override async Task RefreshAsync(params string[] keys)
     {
-        var list = await GetListAsync(keys, false).ConfigureAwait(false);
+        var list = await GetKeyAndExpiredList(keys.ToList()).ConfigureAwait(false);
 
-        await RefreshCoreAsync(list).ConfigureAwait(false);
+        await RefreshListAsync(list).ConfigureAwait(false);
     }
 
     public override Task RefreshAsync<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
@@ -609,7 +639,10 @@ end";
 
     private T? GetAndRefresh<T>(string key, Func<T>? notExistFunc = null, CommandFlags flags = CommandFlags.None)
     {
-        var redisValues = Db.HashGet(key, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY,
+        var redisValues = Db.HashGet(
+            key,
+            RedisConstant.ABSOLUTE_EXPIRATION_KEY,
+            RedisConstant.SLIDING_EXPIRATION_KEY,
             RedisConstant.DATA_KEY);
 
         var dataCacheInfo = RedisHelper.ConvertToCacheModel<T>(key, redisValues, GlobalJsonSerializerOptions);
@@ -626,24 +659,24 @@ end";
         return dataCacheInfo.Value;
     }
 
-    #region Refresh
-
     private void Refresh(DataCacheModel model, CommandFlags flags)
     {
         var result = model.GetExpiration();
         if (result.State) Db.KeyExpire(model.Key, result.Expire, flags);
     }
 
-    private async Task RefreshAsync(
-        DataCacheModel model,
-        CommandFlags flags,
-        CancellationToken token = default)
+    private Task RefreshListAsync(IEnumerable<DataCacheBaseModel> models)
     {
-        var result = model.GetExpiration(null, token);
-        if (result.State) await Db.KeyExpireAsync(model.Key, result.Expire, flags).ConfigureAwait(false);
+        var awaitRefreshList = GetKeyAndExpireList(models, default);
+        if (awaitRefreshList.Count > 0)
+        {
+            var batch = Db.CreateBatch();
+            var expireTasks = awaitRefreshList.Select(item => batch.KeyExpireAsync(item.Key, item.Value)).ToArray();
+            batch.Execute();
+            return Task.WhenAll(expireTasks);
+        }
+        return Task.CompletedTask;
     }
-
-    #endregion
 
     private string FormatCacheKey<T>(string key, Action<CacheOptions>? action)
         => _formatCacheKeyProvider.FormatCacheKey<T>(

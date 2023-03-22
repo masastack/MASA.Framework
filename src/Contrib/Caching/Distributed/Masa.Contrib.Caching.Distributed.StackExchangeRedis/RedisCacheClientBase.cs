@@ -75,7 +75,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         if (value is { HasValue: true, IsNullOrEmpty: false })
         {
             isExist = true;
-            return value.ConvertToValue<T>(GlobalJsonSerializerOptions);
+            return value.DecompressToValue<T>(GlobalJsonSerializerOptions);
         }
 
         isExist = false;
@@ -168,37 +168,8 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         return list;
     }
 
-    internal List<DataCacheModel> GetList(IEnumerable<string> keys, bool getData)
-    {
-        string script = getData ? RedisConstant.GET_LIST_SCRIPT : RedisConstant.GET_EXPIRATION_VALUE_SCRIPT;
-        var arrayRedisResult = Db
-            .ScriptEvaluate(script, keys.Select(key => (RedisKey)key).ToArray())
-            .ToDictionary();
-        return GetListByArrayRedisResult(arrayRedisResult, getData);
-    }
-
-    internal async Task<List<DataCacheModel>> GetListAsync(IEnumerable<string> keys, bool getData)
-    {
-        string script = getData ? RedisConstant.GET_LIST_SCRIPT : RedisConstant.GET_EXPIRATION_VALUE_SCRIPT;
-        var arrayRedisResult = (await Db
-                .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()).ConfigureAwait(false))
-            .ToDictionary();
-        return GetListByArrayRedisResult(arrayRedisResult, getData);
-    }
-
-    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
-    {
-        List<DataCacheModel> list = new List<DataCacheModel>();
-        foreach (var redisResult in arrayRedisResult)
-        {
-            var byteArray = (RedisValue[])redisResult.Value;
-            list.Add(getData ? MapMetadataByAutomatic(redisResult.Key, byteArray) : MapMetadata(redisResult.Key, byteArray));
-        }
-        return list;
-    }
-
-    private static List<KeyValuePair<string, TimeSpan?>> GetKeyAndExpireList(
-        List<DataCacheModel> models,
+    internal static List<KeyValuePair<string, TimeSpan?>> GetKeyAndExpireList(
+        IEnumerable<DataCacheBaseModel> models,
         CancellationToken token)
     {
         List<KeyValuePair<string, TimeSpan?>> list = new();
@@ -213,21 +184,6 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             }
         }
         return list;
-    }
-
-    private DataCacheModel MapMetadata(
-        string key,
-        RedisValue[] results)
-    {
-        RedisValue data = results.Length > 2 ? results[2] : RedisValue.Null;
-        var absoluteExpirationTicks = (long?)results[0];
-        if (absoluteExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
-            absoluteExpirationTicks = null;
-
-        var slidingExpirationTicks = (long?)results[1];
-        if (slidingExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
-            slidingExpirationTicks = null;
-        return new DataCacheModel(key, absoluteExpirationTicks, slidingExpirationTicks, data, GlobalJsonSerializerOptions);
     }
 
     private DataCacheModel MapMetadataByAutomatic(string key, RedisValue[] results)

@@ -7,7 +7,7 @@ namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 internal static class RedisHelper
 {
-    public static T? ConvertToValue<T>(this RedisValue redisValue, JsonSerializerOptions jsonSerializerOptions)
+    public static T? DecompressToValue<T>(this RedisValue redisValue, JsonSerializerOptions jsonSerializerOptions)
     {
         var type = typeof(T);
         var compressMode = GetCompressMode(type, out Type actualType);
@@ -52,47 +52,6 @@ internal static class RedisHelper
         }
     }
 
-    // public static RedisValue ConvertFromValue<T>(this T value, JsonSerializerOptions jsonSerializerOptions)
-    // {
-    //     var type = value?.GetType() ?? typeof(T);
-    //     dynamic redisValue;
-    //     switch (GetCompressMode(type, out Type actualType))
-    //     {
-    //         case CompressMode.None:
-    //             redisValue = value!;
-    //             break;
-    //         case CompressMode.Compress:
-    //             redisValue = Compress(Encoding.UTF8.GetBytes(value?.ToString() ?? string.Empty));
-    //             break;
-    //         default:
-    //             var jsonString = JsonSerializer.Serialize(value, jsonSerializerOptions);
-    //             redisValue = Compress(Encoding.UTF8.GetBytes(jsonString));
-    //             break;
-    //     }
-    //     return ConvertToRedisValue(actualType, redisValue);
-    // }
-
-    // private static byte[] Compress(byte[] data)
-    // {
-    //     using MemoryStream msGZip = new MemoryStream();
-    //     using GZipStream stream = new GZipStream(msGZip, CompressionMode.Compress, true);
-    //     stream.Write(data, 0, data.Length);
-    //     stream.Close();
-    //     return msGZip.ToArray();
-    //
-    // }
-    //
-    // private static RedisValue ConvertToRedisValue(Type type, dynamic value)
-    // {
-    //     if (type == typeof(byte) || type == typeof(ushort))
-    //         return (long)value;
-    //
-    //     if (type == typeof(decimal))
-    //         return new RedisValue(value.ToString());
-    //
-    //     return value;
-    // }
-
     private static CompressMode GetCompressMode(this Type type, out Type actualType)
     {
         actualType = Nullable.GetUnderlyingType(type) ?? type;
@@ -118,6 +77,18 @@ internal static class RedisHelper
         }
     }
 
+    public static DataCacheBaseModel ConvertToCacheBaseModel(string key, RedisValue[] values)
+    {
+        var absoluteExpirationTicks = (long?)values[0];
+        if (absoluteExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
+            absoluteExpirationTicks = null;
+
+        var slidingExpirationTicks = (long?)values[1];
+        if (slidingExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
+            slidingExpirationTicks = null;
+        return new DataCacheBaseModel(key, absoluteExpirationTicks, slidingExpirationTicks);
+    }
+
     public static DataCacheModel<T> ConvertToCacheModel<T>(
         string key,
         RedisValue[] values,
@@ -132,5 +103,49 @@ internal static class RedisHelper
         if (slidingExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
             slidingExpirationTicks = null;
         return new DataCacheModel<T>(key, absoluteExpirationTicks, slidingExpirationTicks, data, jsonSerializerOptions);
+    }
+
+    public static DataCacheModel<T> ConvertToCacheModel<T>(
+        string key,
+        HashEntry[] hashEntries,
+        JsonSerializerOptions jsonSerializerOptions)
+    {
+        var item = FormatHashEntries(hashEntries);
+        return new DataCacheModel<T>(
+            key,
+            item.AbsoluteExpirationTicks,
+            item.SlidingExpirationTicks,
+            item.RedisValue,
+            jsonSerializerOptions);
+    }
+
+    private static (long? AbsoluteExpirationTicks, long? SlidingExpirationTicks, RedisValue RedisValue) FormatHashEntries(
+        HashEntry[] hashEntries)
+    {
+        long? absoluteExpiration = null;
+        long? slidingExpiration = null;
+        RedisValue data = RedisValue.Null;
+        foreach (var hashEntry in hashEntries)
+        {
+            if (hashEntry.Name == RedisConstant.ABSOLUTE_EXPIRATION_KEY)
+            {
+                if (hashEntry.Value.HasValue && hashEntry.Value != RedisConstant.DEADLINE_LASTING)
+                {
+                    absoluteExpiration = (long?)hashEntry.Value;
+                }
+            }
+            else if (hashEntry.Name == RedisConstant.ABSOLUTE_EXPIRATION_KEY)
+            {
+                if (hashEntry.Value.HasValue && hashEntry.Value != RedisConstant.DEADLINE_LASTING)
+                {
+                    slidingExpiration = (long?)hashEntry.Value;
+                }
+            }
+            else if (hashEntry.Name == RedisConstant.DATA_KEY)
+            {
+                data = hashEntry.Value;
+            }
+        }
+        return new(absoluteExpiration, slidingExpiration, data);
     }
 }
