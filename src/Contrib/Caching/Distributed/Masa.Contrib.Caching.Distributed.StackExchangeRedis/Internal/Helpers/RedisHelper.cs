@@ -134,7 +134,7 @@ internal static class RedisHelper
                     absoluteExpiration = (long?)hashEntry.Value;
                 }
             }
-            else if (hashEntry.Name == RedisConstant.ABSOLUTE_EXPIRATION_KEY)
+            else if (hashEntry.Name == RedisConstant.SLIDING_EXPIRATION_KEY)
             {
                 if (hashEntry.Value.HasValue && hashEntry.Value != RedisConstant.DEADLINE_LASTING)
                 {

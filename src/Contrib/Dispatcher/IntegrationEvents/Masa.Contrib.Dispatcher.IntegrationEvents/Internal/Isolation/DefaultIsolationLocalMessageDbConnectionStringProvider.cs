@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
+[ExcludeFromCodeCoverage]
 internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     LocalMessageDbConnectionStringProviderBase,
     IIsolationLocalMessageDbConnectionStringProviderWrapper

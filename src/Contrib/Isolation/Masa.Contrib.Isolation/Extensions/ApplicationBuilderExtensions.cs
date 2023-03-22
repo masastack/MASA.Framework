@@ -5,6 +5,7 @@
 
 namespace Microsoft.AspNetCore.Builder;
 
+[ExcludeFromDescription]
 public static class ApplicationBuilderExtensions
 {
     public static TApplicationBuilder UseIsolation<TApplicationBuilder>(this TApplicationBuilder app) where TApplicationBuilder : IApplicationBuilder

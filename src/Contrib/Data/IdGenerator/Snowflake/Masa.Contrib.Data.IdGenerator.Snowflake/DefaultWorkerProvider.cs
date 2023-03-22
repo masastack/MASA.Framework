@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
+[ExcludeFromCodeCoverage]
 public sealed class DefaultWorkerProvider : IWorkerProvider
 {
     private readonly long _workerId;

@@ -68,6 +68,7 @@ public class HttpClientCaller : AbstractCaller
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
     protected override void Dispose(bool disposing)
     {
         _httpClient.Dispose();

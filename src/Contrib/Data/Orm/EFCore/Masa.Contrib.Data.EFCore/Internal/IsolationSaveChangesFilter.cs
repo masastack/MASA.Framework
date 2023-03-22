@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Data.EFCore;
 
+[ExcludeFromCodeCoverage]
 internal class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesFilter<TDbContext>
     where TDbContext : IMasaDbContext
     where TTenantId : IComparable

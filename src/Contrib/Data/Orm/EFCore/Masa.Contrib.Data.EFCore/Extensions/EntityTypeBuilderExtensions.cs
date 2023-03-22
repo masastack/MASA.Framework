@@ -5,6 +5,7 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
+[ExcludeFromCodeCoverage]
 public static class EntityTypeBuilderExtensions
 {
     private const int MAX_LENGTH = 36;

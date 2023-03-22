@@ -299,6 +299,9 @@ public class RedisCacheClient : RedisCacheClientBase
         RefreshListAsync(list).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
+        => Refresh(FormatCacheKeys<T>(keys, action).ToArray());
+
     private async Task<List<DataCacheBaseModel>> GetKeyAndExpiredList(List<string> keys)
     {
         var batch = Db.CreateBatch();
@@ -314,9 +317,6 @@ public class RedisCacheClient : RedisCacheClientBase
         }
         return list;
     }
-
-    public override void Refresh<T>(IEnumerable<string> keys, Action<CacheOptions>? action = null)
-        => Refresh(FormatCacheKeys<T>(keys, action).ToArray());
 
     public override async Task RefreshAsync(params string[] keys)
     {

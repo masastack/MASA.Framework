@@ -12,24 +12,25 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
     private readonly IMultiTenantContext? _tenantContext;
     private readonly IConnectionStringProviderWrapper _connectionStringProviderWrapper;
     private readonly ILogger<DefaultIsolationConnectionStringProvider>? _logger;
-    private readonly IIsolationConfigProvider _configurationProvider;
+    private readonly IIsolationConfigProvider _isolationConfigProvider;
 
     public DefaultIsolationConnectionStringProvider(
         IUnitOfWorkAccessor unitOfWorkAccessor,
         IConnectionStringProviderWrapper connectionStringProviderWrapper,
-        IIsolationConfigProvider configurationProvider,
+        IIsolationConfigProvider isolationConfigProvider,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
         ILogger<DefaultIsolationConnectionStringProvider>? logger = null)
     {
         _unitOfWorkAccessor = unitOfWorkAccessor;
-        _configurationProvider = configurationProvider;
+        _isolationConfigProvider = isolationConfigProvider;
         _connectionStringProviderWrapper = connectionStringProviderWrapper;
         _environmentContext = environmentContext;
         _tenantContext = tenantContext;
         _logger = logger;
     }
 
+    [ExcludeFromCodeCoverage]
     public Task<string> GetConnectionStringAsync(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
         => Task.FromResult(GetConnectionString(name));
 
@@ -38,9 +39,9 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
         if (_unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var masaDbConnectionOptions = _configurationProvider.GetModuleConfig<ConnectionStrings>(name);
-        if (masaDbConnectionOptions != null)
-            return SetConnectionString(name, masaDbConnectionOptions.GetConnectionString(name));
+        var connectionStrings = _isolationConfigProvider.GetModuleConfig<ConnectionStrings>(name);
+        if (connectionStrings != null)
+            return SetConnectionString(name, connectionStrings.GetConnectionString(name));
 
         connectionString = _connectionStringProviderWrapper.GetConnectionString(name);
         _logger?.LogDebug(
