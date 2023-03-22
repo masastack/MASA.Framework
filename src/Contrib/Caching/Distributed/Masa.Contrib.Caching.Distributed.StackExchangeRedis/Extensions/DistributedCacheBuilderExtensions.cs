@@ -16,7 +16,7 @@ public static class DistributedCacheBuilderExtensions
     /// <returns></returns>
     public static void UseStackExchangeRedisCache(
         this DistributedCacheBuilder distributedCacheBuilder,
-        string redisSectionName = Const.DEFAULT_REDIS_SECTION_NAME,
+        string redisSectionName = RedisConstant.DEFAULT_REDIS_SECTION_NAME,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
         distributedCacheBuilder.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name);

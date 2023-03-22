@@ -20,8 +20,8 @@ public class RedisServerOptions
     /// </summary>
     public RedisServerOptions()
     {
-        Host = Const.DEFAULT_REDIS_HOST;
-        Port = Const.DEFAULT_REDIS_PORT;
+        Host = RedisConstant.DEFAULT_REDIS_HOST;
+        Port = RedisConstant.DEFAULT_REDIS_PORT;
     }
 
     /// <summary>
@@ -42,7 +42,7 @@ public class RedisServerOptions
         if (string.IsNullOrEmpty(Host))
         {
             Host = host;
-            Port = Const.DEFAULT_REDIS_PORT;
+            Port = RedisConstant.DEFAULT_REDIS_PORT;
         }
     }
 

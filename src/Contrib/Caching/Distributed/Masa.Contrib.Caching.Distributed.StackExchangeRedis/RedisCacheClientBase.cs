@@ -34,7 +34,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         JsonSerializerOptions? jsonSerializerOptions)
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
-        var redisConfiguration = GetAvailableRedisOptions(redisConfigurationOptions);
+        var redisConfiguration = redisConfigurationOptions.GetAvailableRedisOptions();
         _connection = ConnectionMultiplexer.Connect(redisConfiguration);
         Subscriber = _connection.GetSubscriber();
         InstanceId = redisConfiguration.InstanceId;
@@ -63,30 +63,11 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
     {
         _name = name;
-        _redisConfigurationOptions = GetAvailableRedisOptions(redisConfigurationOptions);
+        _redisConfigurationOptions = redisConfigurationOptions.GetAvailableRedisOptions();
         _redisMultiplexerPool = redisMultiplexerProvider;
         _connection = _redisMultiplexerPool.GetConnectionMultiplexer(name, _redisConfigurationOptions);
         Subscriber = _connection.GetSubscriber();
         InstanceId = _redisConfigurationOptions.InstanceId;
-    }
-
-    /// <summary>
-    /// Get the available redis configuration
-    /// </summary>
-    /// <param name="redisConfigurationOptions"></param>
-    /// <returns></returns>
-    private static RedisConfigurationOptions GetAvailableRedisOptions(RedisConfigurationOptions redisConfigurationOptions)
-    {
-        if (redisConfigurationOptions.Servers.Any())
-            return redisConfigurationOptions;
-
-        return new RedisConfigurationOptions()
-        {
-            Servers = new List<RedisServerOptions>()
-            {
-                new()
-            }
-        };
     }
 
     protected T? ConvertToValue<T>(RedisValue value, out bool isExist)
@@ -134,7 +115,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
-            Db.ScriptEvaluate(Const.SET_EXPIRE_SCRIPT,
+            Db.ScriptEvaluate(RedisConstant.SET_EXPIRE_SCRIPT,
                 awaitRefreshOptions.Select(item => item.Key).GetRedisKeys(),
                 awaitRefreshOptions.Select(item => (RedisValue)(item.Value?.TotalSeconds ?? -1)).ToArray()
             );
@@ -148,7 +129,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         var awaitRefreshOptions = GetKeyAndExpireList(models, token);
         if (awaitRefreshOptions.Count > 0)
         {
-            await Db.ScriptEvaluateAsync(Const.SET_EXPIRE_SCRIPT,
+            await Db.ScriptEvaluateAsync(RedisConstant.SET_EXPIRE_SCRIPT,
                 awaitRefreshOptions.Select(item => item.Key).GetRedisKeys(),
                 awaitRefreshOptions.Select(item => (RedisValue)(item.Value?.TotalSeconds ?? -1)).ToArray()
             ).ConfigureAwait(false);
@@ -167,12 +148,12 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             .GetResult()
             .ToDictionary()));
 
-    private static List<DataCacheModel> GetListCoreByKeyPattern(
+    private List<DataCacheModel> GetListCoreByKeyPattern(
         string keyPattern,
         Func<string, object, Dictionary<string, RedisResult>> func)
     {
         var arrayRedisResult = func.Invoke(
-            Const.GET_KEY_AND_VALUE_SCRIPT,
+            RedisConstant.GET_KEY_AND_VALUE_SCRIPT,
             new
             {
                 keypattern = keyPattern
@@ -189,7 +170,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     internal List<DataCacheModel> GetList(IEnumerable<string> keys, bool getData)
     {
-        string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
+        string script = getData ? RedisConstant.GET_LIST_SCRIPT : RedisConstant.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = Db
             .ScriptEvaluate(script, keys.Select(key => (RedisKey)key).ToArray())
             .ToDictionary();
@@ -198,14 +179,14 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     internal async Task<List<DataCacheModel>> GetListAsync(IEnumerable<string> keys, bool getData)
     {
-        string script = getData ? Const.GET_LIST_SCRIPT : Const.GET_EXPIRATION_VALUE_SCRIPT;
+        string script = getData ? RedisConstant.GET_LIST_SCRIPT : RedisConstant.GET_EXPIRATION_VALUE_SCRIPT;
         var arrayRedisResult = (await Db
                 .ScriptEvaluateAsync(script, keys.Select(key => (RedisKey)key).ToArray()).ConfigureAwait(false))
             .ToDictionary();
         return GetListByArrayRedisResult(arrayRedisResult, getData);
     }
 
-    private static List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
+    private List<DataCacheModel> GetListByArrayRedisResult(Dictionary<string, RedisResult> arrayRedisResult, bool getData)
     {
         List<DataCacheModel> list = new List<DataCacheModel>();
         foreach (var redisResult in arrayRedisResult)
@@ -234,22 +215,22 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         return list;
     }
 
-    internal static DataCacheModel MapMetadata(
+    private DataCacheModel MapMetadata(
         string key,
         RedisValue[] results)
     {
         RedisValue data = results.Length > 2 ? results[2] : RedisValue.Null;
         var absoluteExpirationTicks = (long?)results[0];
-        if (absoluteExpirationTicks is null or Const.DEADLINE_LASTING)
+        if (absoluteExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
             absoluteExpirationTicks = null;
 
         var slidingExpirationTicks = (long?)results[1];
-        if (slidingExpirationTicks is null or Const.DEADLINE_LASTING)
+        if (slidingExpirationTicks is null or RedisConstant.DEADLINE_LASTING)
             slidingExpirationTicks = null;
-        return new DataCacheModel(key, absoluteExpirationTicks, slidingExpirationTicks, data);
+        return new DataCacheModel(key, absoluteExpirationTicks, slidingExpirationTicks, data, GlobalJsonSerializerOptions);
     }
 
-    private static DataCacheModel MapMetadataByAutomatic(string key, RedisValue[] results)
+    private DataCacheModel MapMetadataByAutomatic(string key, RedisValue[] results)
     {
         long? absoluteExpiration = null;
         long? slidingExpiration = null;
@@ -257,28 +238,28 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
         for (int index = 0; index < results.Length; index += 2)
         {
-            if (results[index] == Const.ABSOLUTE_EXPIRATION_KEY)
+            if (results[index] == RedisConstant.ABSOLUTE_EXPIRATION_KEY)
             {
                 var absoluteExpirationTicks = (long?)results[index + 1];
-                if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != Const.DEADLINE_LASTING)
+                if (absoluteExpirationTicks.HasValue && absoluteExpirationTicks.Value != RedisConstant.DEADLINE_LASTING)
                 {
                     absoluteExpiration = absoluteExpirationTicks.Value;
                 }
             }
-            else if (results[index] == Const.SLIDING_EXPIRATION_KEY)
+            else if (results[index] == RedisConstant.SLIDING_EXPIRATION_KEY)
             {
                 var slidingExpirationTicks = (long?)results[index + 1];
-                if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != Const.DEADLINE_LASTING)
+                if (slidingExpirationTicks.HasValue && slidingExpirationTicks.Value != RedisConstant.DEADLINE_LASTING)
                 {
                     slidingExpiration = slidingExpirationTicks;
                 }
             }
-            else if (results[index] == Const.DATA_KEY)
+            else if (results[index] == RedisConstant.DATA_KEY)
             {
                 data = results[index + 1];
             }
         }
-        return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data);
+        return new DataCacheModel(key, absoluteExpiration, slidingExpiration, data, GlobalJsonSerializerOptions);
     }
 
     protected override void Dispose(bool disposing)
@@ -286,5 +267,16 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
         _redisMultiplexerPool?.TryRemove(_name, _redisConfigurationOptions!);
         _connection?.Dispose();
         base.Dispose(disposing);
+    }
+
+    internal CacheExpiredModel GetExpiredInfo(CacheEntryOptions? currentOptions)
+    {
+        var creationTime = DateTimeOffset.UtcNow;
+        var cacheEntryOptions = currentOptions ?? _globalCacheEntryOptions;
+        var absoluteExpiration = cacheEntryOptions.GetAbsoluteExpiration(creationTime);
+        return new(absoluteExpiration?.Ticks ?? RedisConstant.DEADLINE_LASTING,
+            cacheEntryOptions.SlidingExpiration?.Ticks ?? RedisConstant.DEADLINE_LASTING,
+            DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions.SlidingExpiration) ??
+            RedisConstant.DEADLINE_LASTING);
     }
 }

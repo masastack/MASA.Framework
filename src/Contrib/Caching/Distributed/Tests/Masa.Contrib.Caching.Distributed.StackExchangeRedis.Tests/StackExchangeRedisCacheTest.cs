@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using System.Net;
+
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 #pragma warning disable CS0618
@@ -131,7 +133,8 @@ public class StackExchangeRedisCacheTest : TestBase
             Assert.IsTrue(exist);
         }
 
-        using (distributedCacheClient = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
+        using (distributedCacheClient =
+                   serviceProvider.CreateScope().ServiceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
         {
             var exist = distributedCacheClient.Exists(key);
 
@@ -335,5 +338,27 @@ public class StackExchangeRedisCacheTest : TestBase
         Assert.AreEqual("redis configuration2 json", value);
         distributedCacheClient.Remove<string>("redisConfiguration");
     }
+
+    [TestMethod]
+    public async Task TestAsync()
+    {
+        var redis = new ConfigurationOptions();
+        redis.EndPoints.Add(new DnsEndPoint("localhost", 6379));
+
+        var connectionMultiplexer = ConnectionMultiplexer.Connect(redis);
+        var database = connectionMultiplexer.GetDatabase();
+        await GetPipeliningAsync(database);
+    }
+
+    public static async Task GetPipeliningAsync(IDatabase database)
+    {
+        var batch = database.CreateBatch();
+        var redisValue = batch.HashGetAsync("test", "absexp");
+        var redisValue2 = batch.HashGetAsync("test", "absexp");
+        batch.Execute();
+        var list = await redisValue;
+        var list2 = await redisValue2;
+    }
+
 }
 #pragma warning restore CS0618

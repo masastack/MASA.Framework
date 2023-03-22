@@ -4,7 +4,7 @@
 // ReSharper disable once CheckNamespace
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
-internal static class Const
+internal static class RedisConstant
 {
     public const string DEFAULT_REDIS_SECTION_NAME = "RedisConfig";
 

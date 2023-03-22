@@ -40,7 +40,8 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        return GetAndRefresh<T>(FormatCacheKey<T>(key, action));
+        var formatCacheKey = FormatCacheKey<T>(key, action);
+        return GetAndRefresh<T>(formatCacheKey);
     }
 
     public override Task<T?> GetAsync<T>(
@@ -62,7 +63,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
         RefreshCore(list);
 
-        return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
+        return list.Select(option => ConvertToValue<T>(option.RedisValue, out _)).ToList();
     }
 
     public override async Task<IEnumerable<T?>> GetListAsync<T>(
@@ -76,7 +77,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
         await RefreshCoreAsync(list).ConfigureAwait(false);
 
-        return list.Select(option => ConvertToValue<T>(option.Value, out _)).ToList();
+        return list.Select(option => ConvertToValue<T>(option.RedisValue, out _)).ToList();
     }
 
     public override T? GetOrSet<T>(
@@ -88,14 +89,15 @@ public class RedisCacheClient : RedisCacheClientBase
 
         ArgumentNullException.ThrowIfNull(setter);
 
-        key = FormatCacheKey<T>(key, action);
-        return GetAndRefresh(key, () =>
+        var formatCacheKey = FormatCacheKey<T>(key, action);
+
+        return GetAndRefresh(formatCacheKey, () =>
         {
             var cacheEntry = setter();
             if (cacheEntry.Value == null)
                 return default;
 
-            SetCore(key, cacheEntry.Value, cacheEntry);
+            SetCoreAsync(key, cacheEntry.Value, cacheEntry).ConfigureAwait(false).GetAwaiter().GetResult();
             return cacheEntry.Value;
         });
     }
@@ -129,7 +131,7 @@ public class RedisCacheClient : RedisCacheClientBase
     /// <returns></returns>
     public override IEnumerable<string> GetKeys(string keyPattern)
     {
-        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
+        var prepared = LuaScript.Prepare(RedisConstant.GET_KEYS_SCRIPT);
         var cacheResult = Db.ScriptEvaluate(prepared, new
         {
             pattern = keyPattern
@@ -152,7 +154,7 @@ public class RedisCacheClient : RedisCacheClientBase
     /// <returns></returns>
     public override async Task<IEnumerable<string>> GetKeysAsync(string keyPattern)
     {
-        var prepared = LuaScript.Prepare(Const.GET_KEYS_SCRIPT);
+        var prepared = LuaScript.Prepare(RedisConstant.GET_KEYS_SCRIPT);
         var cacheResult = await Db.ScriptEvaluateAsync(prepared, new
         {
             pattern = keyPattern
@@ -180,7 +182,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
         RefreshCore(list);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _)));
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.RedisValue, out _)));
     }
 
     public override async Task<IEnumerable<KeyValuePair<string, T?>>> GetByKeyPatternAsync<T>(
@@ -193,7 +195,7 @@ public class RedisCacheClient : RedisCacheClientBase
 
         await RefreshCoreAsync(list).ConfigureAwait(false);
 
-        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.Value, out _)));
+        return list.Select(option => new KeyValuePair<string, T?>(option.Key, ConvertToValue<T>(option.RedisValue, out _)));
     }
 
     #endregion
@@ -208,25 +210,24 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        SetCore(FormatCacheKey<T>(key, action), value, options);
+        var formatCacheKey = FormatCacheKey<T>(key, action);
+        SetCoreAsync(formatCacheKey, value, options).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
-    private void SetCore<T>(string key, T value, CacheEntryOptions? options = null)
+    private Task SetCoreAsync<T>(string key, T value, CacheEntryOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        var bytesValue = value.ConvertFromValue(GlobalJsonSerializerOptions);
+        var redisValue = value.CompressToRedisValue(GlobalJsonSerializerOptions);
 
-        Db.ScriptEvaluate(
-            Const.SET_SCRIPT,
-            new RedisKey[]
-            {
-                key
-            },
-            GetRedisValues(options, () => new[]
-            {
-                bytesValue
-            }));
+        var batch = Db.CreateBatch();
+        var cacheExpiredModel = GetExpiredInfo(options);
+        var setTask = batch.HashSetAsync(key, redisValue.ConvertToHashEntries(cacheExpiredModel));
+        var expireTask = cacheExpiredModel.Expired != -1 ?
+            batch.KeyExpireAsync(key, TimeSpan.FromSeconds(cacheExpiredModel.Expired)) :
+            Task.CompletedTask;
+        batch.Execute();
+        return Task.WhenAll(setTask, expireTask);
     }
 
     public override Task SetAsync<T>(
@@ -237,26 +238,8 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
-        return SetCoreAsync(FormatCacheKey<T>(key, action), value, options);
-    }
-
-    private Task SetCoreAsync<T>(string key, T value, CacheEntryOptions? options = null)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-
-        var bytesValue = value.ConvertFromValue(GlobalJsonSerializerOptions);
-
-        return Db.ScriptEvaluateAsync(
-            Const.SET_SCRIPT,
-            new RedisKey[]
-            {
-                key
-            },
-            GetRedisValues(options, () => new[]
-            {
-                bytesValue
-            })
-        );
+        var formatCacheKey = FormatCacheKey<T>(key, action);
+        return SetCoreAsync<T>(formatCacheKey, value, options);
     }
 
     public override void SetList<T>(
@@ -266,10 +249,10 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         ArgumentNullException.ThrowIfNull(keyValues);
 
-        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(GlobalJsonSerializerOptions)).ToArray();
+        var redisValues = keyValues.Select(item => item.Value.CompressToRedisValue(GlobalJsonSerializerOptions)).ToArray();
 
         Db.ScriptEvaluate(
-            Const.SET_MULTIPLE_SCRIPT,
+            RedisConstant.SET_MULTIPLE_SCRIPT,
             FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         );
@@ -282,10 +265,10 @@ public class RedisCacheClient : RedisCacheClientBase
     {
         ArgumentNullException.ThrowIfNull(keyValues);
 
-        var redisValues = keyValues.Select(item => item.Value.ConvertFromValue(GlobalJsonSerializerOptions)).ToArray();
+        var redisValues = keyValues.Select(item => item.Value.CompressToRedisValue(GlobalJsonSerializerOptions)).ToArray();
 
         await Db.ScriptEvaluateAsync(
-            Const.SET_MULTIPLE_SCRIPT,
+            RedisConstant.SET_MULTIPLE_SCRIPT,
             FormatCacheKeys<T>(keyValues.Select(item => item.Key), action).GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options), () => redisValues)
         ).ConfigureAwait(false);
@@ -447,7 +430,7 @@ return redis.call('HINCRBY', KEYS[1], KEYS[2], {value})";
         var result = (long)await Db.ScriptEvaluateAsync(script,
             new RedisKey[]
             {
-                formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY
+                formattedKey, RedisConstant.DATA_KEY, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY
             },
             GetRedisValues(options)).ConfigureAwait(false);
 
@@ -499,7 +482,7 @@ end";
             script,
             new RedisKey[]
             {
-                formattedKey, Const.DATA_KEY, Const.ABSOLUTE_EXPIRATION_KEY, Const.SLIDING_EXPIRATION_KEY
+                formattedKey, RedisConstant.DATA_KEY, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY
             },
             GetRedisValues(options)).ConfigureAwait(false);
         await RefreshAsync(formattedKey).ConfigureAwait(false);
@@ -519,7 +502,7 @@ end";
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         var result = Db.ScriptEvaluate(
-            Const.SET_EXPIRATION_SCRIPT,
+            RedisConstant.SET_EXPIRATION_SCRIPT,
             new RedisKey[]
             {
                 key
@@ -543,7 +526,7 @@ end";
         ArgumentNullException.ThrowIfNull(keys);
 
         var result = Db.ScriptEvaluate(
-            Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
+            RedisConstant.SET_MULTIPLE_EXPIRATION_SCRIPT,
             keys.GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options))
         );
@@ -564,7 +547,7 @@ end";
         MasaArgumentException.ThrowIfNullOrWhiteSpace(key);
 
         var result = await Db.ScriptEvaluateAsync(
-            Const.SET_EXPIRATION_SCRIPT,
+            RedisConstant.SET_EXPIRATION_SCRIPT,
             new RedisKey[]
             {
                 key
@@ -588,7 +571,7 @@ end";
         ArgumentNullException.ThrowIfNull(keys);
 
         var result = await Db.ScriptEvaluateAsync(
-            Const.SET_MULTIPLE_EXPIRATION_SCRIPT,
+            RedisConstant.SET_MULTIPLE_EXPIRATION_SCRIPT,
             keys.GetRedisKeys(),
             GetRedisValues(GetCacheEntryOptions(options))
         ).ConfigureAwait(false);
@@ -613,10 +596,10 @@ end";
         var absoluteExpiration = cacheEntryOptions.GetAbsoluteExpiration(creationTime);
         List<RedisValue> redisValues = new()
         {
-            absoluteExpiration?.Ticks ?? Const.DEADLINE_LASTING,
-            cacheEntryOptions.SlidingExpiration?.Ticks ?? Const.DEADLINE_LASTING,
+            absoluteExpiration?.Ticks ?? RedisConstant.DEADLINE_LASTING,
+            cacheEntryOptions.SlidingExpiration?.Ticks ?? RedisConstant.DEADLINE_LASTING,
             DateTimeOffsetExtensions.GetExpirationInSeconds(creationTime, absoluteExpiration, cacheEntryOptions.SlidingExpiration) ??
-            Const.DEADLINE_LASTING,
+            RedisConstant.DEADLINE_LASTING,
         };
         if (func != null)
             redisValues.AddRange(func.Invoke());
@@ -624,50 +607,23 @@ end";
         return redisValues.ToArray();
     }
 
-    private T? GetAndRefresh<T>(string key, Func<T>? func = null, CommandFlags flags = CommandFlags.None)
+    private T? GetAndRefresh<T>(string key, Func<T>? notExistFunc = null, CommandFlags flags = CommandFlags.None)
     {
-        var results = Db.HashMemberGet(
-            key,
-            Const.ABSOLUTE_EXPIRATION_KEY,
-            Const.SLIDING_EXPIRATION_KEY,
-            Const.DATA_KEY);
+        var redisValues = Db.HashGet(key, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY,
+            RedisConstant.DATA_KEY);
 
-        var result = GetByArrayRedisValue<T>(results, key, out bool isExist);
-
-        if (isExist)
-            Refresh(result.model, flags);
-        else if (func != null)
-            result.Value = func.Invoke();
-
-        return result.Value;
+        var dataCacheInfo = RedisHelper.ConvertToCacheModel<T>(key, redisValues, GlobalJsonSerializerOptions);
+        dataCacheInfo.TrySetValue(() => Refresh(dataCacheInfo, flags), notExistFunc);
+        return dataCacheInfo.Value;
     }
 
-    private async Task<T?> GetAndRefreshAsync<T>(string key, Func<Task<T>>? func = null, CommandFlags flags = CommandFlags.None)
+    private async Task<T?> GetAndRefreshAsync<T>(string key, Func<Task<T>>? notExistFunc = null, CommandFlags flags = CommandFlags.None)
     {
-        var results = await Db.HashMemberGetAsync(
-            key,
-            Const.ABSOLUTE_EXPIRATION_KEY,
-            Const.SLIDING_EXPIRATION_KEY,
-            Const.DATA_KEY).ConfigureAwait(false);
-
-        var result = GetByArrayRedisValue<T>(results, key, out bool isExist);
-
-        if (isExist)
-            await RefreshAsync(result.model, flags).ConfigureAwait(false);
-        else if (func != null)
-            result.Value = await func.Invoke().ConfigureAwait(false);
-
-        return result.Value;
-    }
-
-    private (T? Value, DataCacheModel model) GetByArrayRedisValue<T>(
-        RedisValue[] redisValue,
-        string key,
-        out bool isExist)
-    {
-        var model = MapMetadata(key, redisValue);
-        var value = ConvertToValue<T>(model.Value, out isExist);
-        return (value, model);
+        var redisValues = await Db.HashGetAsync(key, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY,
+            RedisConstant.DATA_KEY);
+        var dataCacheInfo = RedisHelper.ConvertToCacheModel<T>(key, redisValues, GlobalJsonSerializerOptions);
+        await dataCacheInfo.TrySetValueAsync(() => Refresh(dataCacheInfo, flags), notExistFunc);
+        return dataCacheInfo.Value;
     }
 
     #region Refresh
