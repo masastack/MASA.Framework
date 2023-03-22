@@ -25,7 +25,8 @@ public static class ServiceCollectionExtensions
         return services.AddAuthClient(callerOptionsBuilder =>
         {
             callerOptionsBuilder
-                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress);//Need to use the AuthenticationService provided by MasaStack
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .UseAuthentication();
         }, redisOptions);
     }
 
@@ -48,7 +49,7 @@ public static class ServiceCollectionExtensions
             var authClient = new AuthClient(caller, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
         });
-        services.AddSingleton<IThirdPartyIdpService>(serviceProvider =>
+        services.AddScoped<IThirdPartyIdpService>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();

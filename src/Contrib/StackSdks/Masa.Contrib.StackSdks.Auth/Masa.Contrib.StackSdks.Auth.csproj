@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityModel" Version="6.1.0-preview.1" />
+    <PackageReference Include="IdentityModel" Version="$(IdentityModelPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftPackageVersion)" />
   </ItemGroup>
 
@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\Caching\Masa.Contrib.Caching.MultilevelCache\Masa.Contrib.Caching.MultilevelCache.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Standard\Masa.Contrib.Service.Caller.Authentication.Standard.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 

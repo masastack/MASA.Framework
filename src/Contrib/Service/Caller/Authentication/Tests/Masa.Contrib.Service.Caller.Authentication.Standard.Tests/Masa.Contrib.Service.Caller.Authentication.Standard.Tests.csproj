@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.Authentication.BlazorServer\Masa.Contrib.Service.Caller.Authentication.BlazorServer.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Service.Caller.Authentication.Standard\Masa.Contrib.Service.Caller.Authentication.Standard.csproj" />
   </ItemGroup>
 
 </Project>

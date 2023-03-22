@@ -16,11 +16,12 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.1.0-beta.2" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.7" />    
+    <PackageReference Include="OpenTelemetry.Instrumentation.StackExchangeRedis" Version="1.0.0-rc9.7" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdk.Tsc\Masa.BuildingBlocks.StackSdks.Tsc.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Standard\Masa.Contrib.Service.Caller.Authentication.Standard.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 

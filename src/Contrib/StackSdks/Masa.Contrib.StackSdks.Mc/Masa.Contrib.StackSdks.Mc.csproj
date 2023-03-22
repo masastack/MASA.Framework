@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Mc\Masa.BuildingBlocks.StackSdks.Mc.csproj" />
+    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Standard\Masa.Contrib.Service.Caller.Authentication.Standard.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 
