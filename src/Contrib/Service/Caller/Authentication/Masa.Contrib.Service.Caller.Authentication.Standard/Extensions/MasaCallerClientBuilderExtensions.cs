@@ -10,7 +10,7 @@ public static class MasaCallerClientBuilderExtensions
     public static IMasaCallerClientBuilder UseAuthentication(
         this IMasaCallerClientBuilder masaCallerClientBuilder)
     {
-        return UseAuthentication(masaCallerClientBuilder, (serviceProvider) => { return serviceProvider.GetRequiredService<TokenProvider>(); });
+        return UseAuthentication(masaCallerClientBuilder, (serviceProvider) => { return new TokenProvider(); });
     }
 
     /// <summary>
