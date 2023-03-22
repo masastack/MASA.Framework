@@ -329,5 +329,6 @@ public class AutoCompleteClient : AutoCompleteClientBase
     protected override void Dispose(bool disposing)
     {
         _elasticClientProvider?.TryRemove(_elasticsearchOptions);
+        base.Dispose();
     }
 }

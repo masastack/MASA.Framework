@@ -5,6 +5,7 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
+[ExcludeFromCodeCoverage]
 public static class DomainEventOptionsExtensions
 {
     public static IDomainEventOptions UseIntegrationEventBus(

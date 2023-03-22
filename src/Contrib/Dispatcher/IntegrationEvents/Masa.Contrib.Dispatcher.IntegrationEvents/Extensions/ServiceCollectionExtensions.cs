@@ -7,11 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         Action<IntegrationEventOptions>? options = null)
         => services.AddIntegrationEventBus(MasaApp.GetAssemblies(), options);
 
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
