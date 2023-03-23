@@ -61,11 +61,13 @@ public class LocalEventBus : ILocalEventBus
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
+#pragma warning disable S3928
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_unitOfWork is null)
-            throw new ArgumentNullException("You need to UseUoW when adding services");
+            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
+#pragma warning restore S3928
 }
