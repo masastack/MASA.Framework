@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
         }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder,
+    private static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder,
         RedisConfigurationOptions redisOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptionsBuilder);

@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Scheduler\Masa.BuildingBlocks.StackSdks.Scheduler.csproj" />
-    <ProjectReference Include="..\..\Service\Caller\Authentication\Masa.Contrib.Service.Caller.Authentication.Standard\Masa.Contrib.Service.Caller.Authentication.Standard.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.StackSdks.Caller\Masa.Contrib.StackSdks.Caller.csproj" />
     <ProjectReference Include="..\..\Service\Caller\Masa.Contrib.Service.Caller.HttpClient\Masa.Contrib.Service.Caller.HttpClient.csproj" />
   </ItemGroup>
 
