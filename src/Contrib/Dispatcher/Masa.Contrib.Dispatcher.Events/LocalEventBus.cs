@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public class EventBus : IEventBus
+public class LocalEventBus : ILocalEventBus
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -19,7 +19,7 @@ public class EventBus : IEventBus
 
     private readonly IInitializeServiceProvider _initializeServiceProvider;
 
-    public EventBus(IServiceProvider serviceProvider,
+    public LocalEventBus(IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
         IInitializeServiceProvider initializeServiceProvider,
         IUnitOfWork? unitOfWork = null)
@@ -61,11 +61,13 @@ public class EventBus : IEventBus
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
+#pragma warning disable S3928
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_unitOfWork is null)
-            throw new ArgumentNullException("You need to UseUoW when adding services");
+            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
+#pragma warning restore S3928
 }
