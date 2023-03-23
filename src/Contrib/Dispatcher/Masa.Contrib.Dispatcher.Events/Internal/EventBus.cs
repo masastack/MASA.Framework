@@ -11,13 +11,13 @@ internal class EventBus : IEventBus
 {
     private readonly ILocalEventBus _localEventBus;
 
-    private readonly Lazy<IIntegrationEventBus?> _integrationEventBusLazy;
-    private IIntegrationEventBus? IntegrationEventBus => _integrationEventBusLazy.Value;
+    private readonly Lazy<IIntegrationEventBus?> _lazyIntegrationEventBus;
+    private IIntegrationEventBus? IntegrationEventBus => _lazyIntegrationEventBus.Value;
 
     public EventBus(ILocalEventBus localEventBus, Lazy<IIntegrationEventBus?> integrationEventBusLazy)
     {
         _localEventBus = localEventBus;
-        _integrationEventBusLazy = integrationEventBusLazy;
+        _lazyIntegrationEventBus = integrationEventBusLazy;
     }
 
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
