@@ -22,9 +22,9 @@ public class JwtTokenValidator
         _logger = logger;
     }
 
-    public async Task<ClaimsPrincipal?> ValidateTokenAsync(TokenProvider tokenProvider)
+    public async Task ValidateTokenAsync(TokenProvider tokenProvider)
     {
-        var discoveryDocument = await GetDiscoveryDocument();
+        var discoveryDocument = await _httpClient.GetDiscoveryDocumentAsync(_jwtTokenValidatorOptions.AuthorityEndpoint);
         var validationParameters = new TokenValidationParameters
         {
             ValidateLifetime = _jwtTokenValidatorOptions.ValidateLifetime,
@@ -37,25 +37,37 @@ public class JwtTokenValidator
         };
         JwtSecurityTokenHandler handler = new();
         handler.InboundClaimTypeMap.Clear();
-        ClaimsPrincipal? claimsPrincipal = null;
         try
         {
-            claimsPrincipal = handler.ValidateToken(tokenProvider.AccessToken, validationParameters, out SecurityToken _);
+            handler.ValidateToken(tokenProvider.AccessToken, validationParameters, out SecurityToken _);
         }
         catch (SecurityTokenExpiredException)
         {
-            var tokenResult = await RefreshTokenAsync(tokenProvider.RefreshToken);
-            if (tokenResult != null)
+            if (!string.IsNullOrEmpty(tokenProvider.RefreshToken))
             {
+                var tokenClient = new TokenClient(_httpClient, new TokenClientOptions
+                {
+                    Address = discoveryDocument.TokenEndpoint,
+                    ClientId = _clientRefreshTokenOptions.ClientId,
+                    ClientSecret = _clientRefreshTokenOptions.ClientSecret
+                });
+                var tokenResult = await tokenClient.RequestRefreshTokenAsync(tokenProvider.RefreshToken).ConfigureAwait(false);
                 if (tokenResult.IsError)
                 {
                     _logger?.LogError("JwtTokenValidator failed, RefreshToken failed, Error Message: {Message}", tokenResult.Error);
+                    throw new UserFriendlyException($"JwtTokenValidator failed, RefreshToken failed, Error Message: {tokenResult.Error}");
                 }
                 else
                 {
                     tokenProvider.AccessToken = tokenResult.AccessToken;
-                    return handler.ValidateToken(tokenProvider.AccessToken, validationParameters, out SecurityToken _);
+                    handler.ValidateToken(tokenProvider.AccessToken, validationParameters, out SecurityToken _);
                 }
+            }
+            else
+            {
+                _logger?.LogWarning(
+                    "RefreshToken is null,please AllowOfflineAccess value(true) and RequestedScopes should contains offline_access");
+                throw new UserFriendlyException("JwtTokenValidator failed, RefreshToken is null");
             }
         }
         catch (Exception e)
@@ -63,35 +75,6 @@ public class JwtTokenValidator
             _logger?.LogError(e, "JwtTokenValidator failed");
             throw new UserFriendlyException("JwtTokenValidator failed");
         }
-        return claimsPrincipal;
-    }
-
-    public async Task<TokenResponse?> RefreshTokenAsync(string? refreshToken)
-    {
-        if (string.IsNullOrEmpty(refreshToken))
-        {
-            _logger?.LogWarning("RefreshToken is null,please AllowOfflineAccess value(true) and RequestedScopes should contains offline_access");
-            throw new ArgumentNullException(nameof(refreshToken));
-        }
-        if (string.IsNullOrEmpty(_clientRefreshTokenOptions.ClientId))
-        {
-            _logger?.LogWarning("ClientRefreshTokenOptions.ClientId is empty,refresh token no work");
-            return null;
-        }
-        var tokenEndpoint = (await GetDiscoveryDocument()).TokenEndpoint;
-        var tokenClient = new TokenClient(_httpClient, new TokenClientOptions
-        {
-            Address = tokenEndpoint,
-            ClientId = _clientRefreshTokenOptions.ClientId,
-            ClientSecret = _clientRefreshTokenOptions.ClientSecret
-        });
-        var tokenResult = await tokenClient.RequestRefreshTokenAsync(refreshToken).ConfigureAwait(false);
-        return tokenResult;
-    }
-
-    private async Task<DiscoveryDocumentResponse> GetDiscoveryDocument()
-    {
-        return await _httpClient.GetDiscoveryDocumentAsync(_jwtTokenValidatorOptions.AuthorityEndpoint);
     }
 
     private static List<SecurityKey> GetIssuerSigningKeys(DiscoveryDocumentResponse discoveryDocument)
