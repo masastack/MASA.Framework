@@ -9,12 +9,12 @@ public class IsolationOptions
 {
     public string? SectionName { get; set; }
 
-    public Type MultiTenantType { get; set; }
+    public Type MultiTenantIdType { get; set; }
 
     public bool Enable => !string.IsNullOrWhiteSpace(SectionName);
 
     public IsolationOptions()
     {
-        MultiTenantType = typeof(Guid);
+        MultiTenantIdType = typeof(Guid);
     }
 }

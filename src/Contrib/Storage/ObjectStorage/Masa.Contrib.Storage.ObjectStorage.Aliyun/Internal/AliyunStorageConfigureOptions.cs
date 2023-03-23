@@ -11,7 +11,6 @@ internal class AliyunStorageConfigureOptions : AliyunOptions
 
     /// <summary>
     /// Aliyun STS configuration, it is not necessarily a storage configuration
-    ///
     /// </summary>
     public AliyunStsOptions? Sts { get; set; }
 

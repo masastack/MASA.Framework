@@ -16,7 +16,7 @@ internal class MultiTenantProvider
 
     public MultiTenantProvider(IServiceProvider serviceProvider)
     {
-        MultiTenantIdType = serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value.MultiTenantType;
+        MultiTenantIdType = serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value.MultiTenantIdType;
         MultiTenantIdDefaultValue = MultiTenantIdType?.GetDefaultValue()?.ToString() ?? string.Empty;
         if (MultiTenantIdType != null)
             _isEnabledMethodInfo = typeof(IDataFilter)

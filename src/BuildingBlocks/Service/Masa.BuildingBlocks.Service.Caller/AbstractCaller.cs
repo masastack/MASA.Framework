@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICallerDisposeManual
+public abstract class AbstractCaller : IManualCaller
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;

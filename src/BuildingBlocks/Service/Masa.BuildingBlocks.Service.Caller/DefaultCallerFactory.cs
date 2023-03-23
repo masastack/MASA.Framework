@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-internal class DefaultCallerFactory : MasaFactoryBase<ICallerDisposeManual, CallerRelationOptions>, ICallerFactory
+internal class DefaultCallerFactory : MasaFactoryBase<IManualCaller, CallerRelationOptions>, ICallerFactory
 {
     protected override string DefaultServiceNotFoundMessage => "No default Caller found, you may need service.AddCaller()";
 
