@@ -1,9 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-// ReSharper disable once CheckNamespace
-
-namespace Masa.BuildingBlocks.Service.Caller;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MasaCallerClientBuilderExtensions
 {
@@ -14,14 +12,14 @@ public static class MasaCallerClientBuilderExtensions
     /// <param name="defaultScheme">The default scheme used as a fallback for all other schemes.</param>
     /// <returns></returns>
     public static IMasaCallerClientBuilder UseAuthentication(
-        this IMasaCallerClientBuilder masaCallerClientBuilder,
-        string defaultScheme = AuthenticationConstant.DEFAULT_SCHEME)
+        this IMasaCallerClientBuilder masaCallerClientBuilder)
     {
-        masaCallerClientBuilder.Services.TryAddScoped<TokenProvider>();
+        masaCallerClientBuilder.Services.TryAddScoped<ITokenGenerater, DefaultTokenGenerater>();
+        masaCallerClientBuilder.Services.TryAddScoped(s => s.GetRequiredService<ITokenGenerater>().Generater());
         masaCallerClientBuilder.UseAuthentication(serviceProvider =>
             new AuthenticationService(
                 serviceProvider.GetRequiredService<TokenProvider>(),
-                defaultScheme
+                null
             ));
         return masaCallerClientBuilder;
     }

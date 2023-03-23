@@ -48,9 +48,15 @@ public class IntegrationEventBusTest
     public void TestDispatcherOption()
     {
         var services = new ServiceCollection();
-        var options = new IntegrationEventOptions(services, new[] { typeof(IntegrationEventBusTest).Assembly });
+        var options = new IntegrationEventOptions(services, new[]
+        {
+            typeof(IntegrationEventBusTest).Assembly
+        });
         Assert.IsTrue(options.Services.Equals(services));
-        var allEventTypes = new[] { typeof(IntegrationEventBusTest).Assembly }.SelectMany(assembly => assembly.GetTypes())
+        var allEventTypes = new[]
+            {
+                typeof(IntegrationEventBusTest).Assembly
+            }.SelectMany(assembly => assembly.GetTypes())
             .Where(type => type.IsClass && type != typeof(IntegrationEvent) && typeof(IEvent).IsAssignableFrom(type)).ToList();
         Assert.IsTrue(options.AllEventTypes.Count == allEventTypes.Count());
     }
@@ -61,11 +67,11 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
-            _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
@@ -90,11 +96,11 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAndNotUoWAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
-            useLogger ? _logger.Object : null,
-            _eventBus.Object);
+            useLogger ? _logger.Object : null);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
             Account = "masa",
@@ -119,11 +125,11 @@ public class IntegrationEventBusTest
     {
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
-            _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
@@ -150,11 +156,11 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
-            _eventBus.Object,
             _uoW.Object);
         RegisterUserIntegrationEvent @event = new RegisterUserIntegrationEvent()
         {
@@ -169,11 +175,11 @@ public class IntegrationEventBusTest
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
-            _eventBus.Object,
             _uoW.Object);
         CreateUserEvent @event = new CreateUserEvent()
         {
@@ -188,31 +194,29 @@ public class IntegrationEventBusTest
     public async Task TestPublishEventAndNotEventBusAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
-            null,
             _uoW.Object);
-        CreateUserEvent @event = new CreateUserEvent()
+        var @event = new CreateUserEvent()
         {
             Name = "Tom"
         };
-        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
-        {
-            await integrationEventBus.PublishAsync(@event);
-        });
+        await integrationEventBus.PublishAsync(@event);
+        _eventBus.Verify(bus=>bus.PublishAsync(It.IsAny<CreateUserEvent>(),It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]
     public async Task TestCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
-            _eventBus.Object,
             _uoW.Object);
 
         await integrationEventBus.CommitAsync(default);
@@ -223,11 +227,11 @@ public class IntegrationEventBusTest
     public async Task TestNotUseUowCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            new Lazy<IEventBus?>(_eventBus.Object),
             _publisher.Object,
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
-            _eventBus.Object,
             null);
 
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());

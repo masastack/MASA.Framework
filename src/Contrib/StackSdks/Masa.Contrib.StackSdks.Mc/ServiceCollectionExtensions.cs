@@ -16,7 +16,7 @@ public static class ServiceCollectionExtensions
             callerOptions.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
-            }); //Need to use the AuthenticationService provided by MasaStack
+            }).UseAuthentication();
         });
     }
 
@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
-                }); //Need to use the AuthenticationService provided by MasaStack
+                }).UseAuthentication();
         });
     }
 

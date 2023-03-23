@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
                 .UseHttpClient(builder =>
                 {
                     builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
-                }); //Need to use the AuthenticationService provided by MasaStack
+                }).UseAuthentication();
         });
     }
 

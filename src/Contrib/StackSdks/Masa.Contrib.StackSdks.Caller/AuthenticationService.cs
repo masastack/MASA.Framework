@@ -6,10 +6,10 @@ namespace Masa.Contrib.StackSdks.Caller;
 public class AuthenticationService : IAuthenticationService
 {
     private readonly TokenProvider _tokenProvider;
-    private readonly JwtTokenValidator _jwtTokenValidator;
+    private readonly JwtTokenValidator? _jwtTokenValidator;
 
     public AuthenticationService(TokenProvider tokenProvider,
-        JwtTokenValidator jwtTokenValidator)
+        JwtTokenValidator? jwtTokenValidator)
     {
         _tokenProvider = tokenProvider;
         _jwtTokenValidator = jwtTokenValidator;
@@ -17,7 +17,10 @@ public class AuthenticationService : IAuthenticationService
 
     public async Task ExecuteAsync(HttpRequestMessage requestMessage)
     {
-        await _jwtTokenValidator.ValidateTokenAsync(_tokenProvider);
+        if (_jwtTokenValidator != null)
+        {
+            await _jwtTokenValidator.ValidateTokenAsync(_tokenProvider);
+        }
 
         if (!_tokenProvider.AccessToken.IsNullOrWhiteSpace())
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _tokenProvider.AccessToken);

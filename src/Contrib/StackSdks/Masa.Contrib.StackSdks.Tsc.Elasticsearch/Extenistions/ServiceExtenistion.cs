@@ -82,7 +82,7 @@ public static class ServiceExtenistion
                 callerOptionsBuilder.UseHttpClient(builder =>
                 {
                     builder.BaseAddress = nodes[0];
-                }); //Need to use the AuthenticationService provided by MasaStack
+                }).UseAuthentication();
             });
     }
 
@@ -93,7 +93,7 @@ public static class ServiceExtenistion
         ArgumentNullException.ThrowIfNull(callerAction);
 
         return services.AddElasticsearch(name, elasticsearchConnectionAction)
-            .AddCaller(name, option => option.UseHttpClient(callerAction)); //Need to use the AuthenticationService provided by MasaStack
+            .AddCaller(name, option => option.UseHttpClient(callerAction).UseAuthentication());
     }
 
     internal static IElasticClient CreateElasticClient(this IElasticClientFactory elasticsearchFactory, bool isLog)
