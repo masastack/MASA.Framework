@@ -18,7 +18,6 @@ public abstract class ProcessorBase : IProcessor
     {
         if (ServiceProvider != null)
         {
-            return;
             var unitOfWorkManager = ServiceProvider.GetRequiredService<IUnitOfWorkManager>();
             var localMessageDbConnectionString = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ILocalMessageDbConnectionStringProvider>();
             var connectionStrings = localMessageDbConnectionString.ConnectionStrings;
