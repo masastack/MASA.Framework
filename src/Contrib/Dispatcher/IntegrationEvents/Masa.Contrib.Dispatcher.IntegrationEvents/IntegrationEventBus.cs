@@ -5,25 +5,29 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
+    private readonly Lazy<IEventBus?> _lazyEventBus;
+
+    private IEventBus? EventBus => _lazyEventBus.Value;
+
     private readonly IPublisher _publisher;
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
-    private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
 
-    public IntegrationEventBus(IPublisher publisher,
+    public IntegrationEventBus(
+        Lazy<IEventBus?> eventBusLazy,
+        IPublisher publisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
-        IEventBus? eventBus = null,
         IUnitOfWork? unitOfWork = null)
     {
+        _lazyEventBus = eventBusLazy;
         _publisher = publisher;
         _eventLogService = eventLogService;
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;
-        _eventBus = eventBus;
         _unitOfWork = unitOfWork;
     }
 
@@ -34,9 +38,9 @@ public class IntegrationEventBus : IIntegrationEventBus
         {
             await PublishIntegrationAsync(integrationEvent, cancellationToken);
         }
-        else if (_eventBus != null)
+        else if (EventBus != null)
         {
-            await _eventBus.PublishAsync(@event, cancellationToken);
+            await EventBus.PublishAsync(@event, cancellationToken);
         }
         else
         {
