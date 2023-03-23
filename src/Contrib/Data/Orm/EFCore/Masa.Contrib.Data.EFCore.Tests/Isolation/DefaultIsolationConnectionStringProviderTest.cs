@@ -21,9 +21,9 @@ public class DefaultIsolationConnectionStringProviderTest
         Mock<IConnectionStringProviderWrapper> connectionStringProviderWrapper = new();
         Mock<IIsolationConfigProvider> isolationConfigProvider = new();
         var isolationConnectionStringProvider = new DefaultIsolationConnectionStringProvider(
-            unitOfWorkAccessor.Object,
             connectionStringProviderWrapper.Object,
-            isolationConfigProvider.Object);
+            isolationConfigProvider.Object,
+            unitOfWorkAccessor.Object);
         Assert.AreEqual(connectionString, isolationConnectionStringProvider.GetConnectionString(name));
 
         unitOfWorkAccessor.Setup(accessor => accessor.CurrentDbContextOptions).Returns(() => new MasaDbContextConfigurationOptions());
@@ -34,9 +34,9 @@ public class DefaultIsolationConnectionStringProviderTest
         isolationConfigProvider.Setup(provider => provider.GetModuleConfig<ConnectionStrings>(name, "")).Returns(connectionStrings);
 
         var isolationConnectionStringProvider2 = new DefaultIsolationConnectionStringProvider(
-            unitOfWorkAccessor.Object,
             connectionStringProviderWrapper.Object,
-            isolationConfigProvider.Object);
+            isolationConfigProvider.Object,
+            unitOfWorkAccessor.Object);
         Assert.AreEqual($"{connectionString}2", isolationConnectionStringProvider2.GetConnectionString(name));
     }
 }

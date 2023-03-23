@@ -85,7 +85,8 @@ public static class ServiceCollectionExtensions
             {
                 return new EmptySaveFilter<TDbContextImplementation>();
             }
-            var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation), serviceProvider.GetService<MultiTenantProvider>()?.MultiTenantIdType!);
+            var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation),
+                serviceProvider.GetService<MultiTenantProvider>()?.MultiTenantIdType!);
             var isolationSaveChangesFilter = Activator.CreateInstance(genericType,
                 new object?[]
                 {
@@ -99,12 +100,19 @@ public static class ServiceCollectionExtensions
     private static void AddConnectionStringProvider(this IServiceCollection services)
     {
         services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
-        services.TryAddScoped<IIsolationConnectionStringProviderWrapper, DefaultIsolationConnectionStringProvider>();
+        services.TryAddScoped<IIsolationConnectionStringProviderWrapper>(serviceProvider =>
+            new DefaultIsolationConnectionStringProvider(
+                serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>(),
+                serviceProvider.GetRequiredService<IIsolationConfigProvider>(),
+                serviceProvider.GetService<IUnitOfWorkAccessor>(),
+                serviceProvider.GetService<IMultiEnvironmentContext>(),
+                serviceProvider.GetService<IMultiTenantContext>(),
+                serviceProvider.GetService<ILogger<DefaultIsolationConnectionStringProvider>>()));
         services.TryAddScoped<IConnectionStringProvider>(serviceProvider =>
         {
             var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
             if (isolationOptions.Value.Enable)
-                serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
+                return serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
 
             return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
         });

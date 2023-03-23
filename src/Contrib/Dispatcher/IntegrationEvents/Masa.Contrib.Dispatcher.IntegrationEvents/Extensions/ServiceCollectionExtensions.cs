@@ -100,7 +100,11 @@ public static class ServiceCollectionExtensions
     private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
     {
         services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
-        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper, DefaultIsolationLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper>(serviceProvider
+            => new DefaultIsolationLocalMessageDbConnectionStringProvider(
+                serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>(),
+                serviceProvider.GetRequiredService<IIsolationConfigProvider>(),
+                serviceProvider.GetRequiredService<IOptionsSnapshot<LocalMessageTableOptions>>()));
         services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider =>
         {
             var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();

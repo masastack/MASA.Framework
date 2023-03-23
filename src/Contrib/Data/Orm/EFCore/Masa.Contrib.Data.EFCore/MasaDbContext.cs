@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
-    where TDbContext : IMasaDbContext
+    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
 {
     private bool _initialized;
     private IDataFilter? _dataFilter;
@@ -91,6 +91,11 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
         _multiTenantProvider = Options.ServiceProvider?.GetRequiredService<MultiTenantProvider>();
         _initialized = true;
+    }
+
+    protected virtual void OnConfiguringExecuting(MasaDbContextOptionsBuilder<TDbContext> modelBuilder)
+    {
+
     }
 
     /// <summary>

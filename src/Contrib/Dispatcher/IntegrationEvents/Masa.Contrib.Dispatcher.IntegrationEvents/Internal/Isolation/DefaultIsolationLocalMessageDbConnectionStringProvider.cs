@@ -11,16 +11,16 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     IIsolationLocalMessageDbConnectionStringProviderWrapper
 {
     private readonly ILocalMessageDbConnectionStringProviderWrapper _localMessageDbConnectionStringProviderWrapper;
-    private readonly IIsolationConfigProvider _configurationProvider;
+    private readonly IIsolationConfigProvider _isolationConfigProvider;
     private readonly IOptionsSnapshot<LocalMessageTableOptions> _localMessageTableOptions;
 
     public DefaultIsolationLocalMessageDbConnectionStringProvider(
         ILocalMessageDbConnectionStringProviderWrapper localMessageDbConnectionStringProviderWrapper,
-        IIsolationConfigProvider configurationProvider,
+        IIsolationConfigProvider isolationConfigProvider,
         IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions)
     {
         _localMessageDbConnectionStringProviderWrapper = localMessageDbConnectionStringProviderWrapper;
-        _configurationProvider = configurationProvider;
+        _isolationConfigProvider = isolationConfigProvider;
         _localMessageTableOptions = localMessageTableOptions;
     }
 
@@ -45,7 +45,7 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     private List<string> GetDbConnectionStringByIsolation()
     {
         var masaDbConnectionOptions =
-            _configurationProvider.GetModuleConfigs<ConnectionStrings>(Masa.BuildingBlocks.Data.ConnectionStrings.DEFAULT_SECTION);
+            _isolationConfigProvider.GetModuleConfigs<ConnectionStrings>(Masa.BuildingBlocks.Data.ConnectionStrings.DEFAULT_SECTION);
 
         return masaDbConnectionOptions
             .Select(connectionString => connectionString.GetConnectionString(_localMessageTableOptions.Value.SectionName))

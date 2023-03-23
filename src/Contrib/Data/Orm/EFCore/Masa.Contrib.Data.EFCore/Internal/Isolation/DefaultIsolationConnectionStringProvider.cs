@@ -7,7 +7,7 @@ namespace Masa.Contrib.Data.EFCore;
 
 internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionStringProviderWrapper
 {
-    private readonly IUnitOfWorkAccessor _unitOfWorkAccessor;
+    private readonly IUnitOfWorkAccessor? _unitOfWorkAccessor;
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
     private readonly IConnectionStringProviderWrapper _connectionStringProviderWrapper;
@@ -15,16 +15,16 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
     private readonly IIsolationConfigProvider _isolationConfigProvider;
 
     public DefaultIsolationConnectionStringProvider(
-        IUnitOfWorkAccessor unitOfWorkAccessor,
         IConnectionStringProviderWrapper connectionStringProviderWrapper,
         IIsolationConfigProvider isolationConfigProvider,
+        IUnitOfWorkAccessor? unitOfWorkAccessor = null,
         IMultiEnvironmentContext? environmentContext = null,
         IMultiTenantContext? tenantContext = null,
         ILogger<DefaultIsolationConnectionStringProvider>? logger = null)
     {
-        _unitOfWorkAccessor = unitOfWorkAccessor;
-        _isolationConfigProvider = isolationConfigProvider;
         _connectionStringProviderWrapper = connectionStringProviderWrapper;
+        _isolationConfigProvider = isolationConfigProvider;
+        _unitOfWorkAccessor = unitOfWorkAccessor;
         _environmentContext = environmentContext;
         _tenantContext = tenantContext;
         _logger = logger;
@@ -36,10 +36,11 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
 
     public string GetConnectionString(string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
     {
-        if (_unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
+        if (_unitOfWorkAccessor != null &&
+            _unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var connectionStrings = _isolationConfigProvider.GetModuleConfig<ConnectionStrings>(name);
+        var connectionStrings = _isolationConfigProvider.GetModuleConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION, name);
         if (connectionStrings != null)
             return SetConnectionString(name, connectionStrings.GetConnectionString(name));
 
@@ -54,7 +55,8 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
 
     private string SetConnectionString(string name, string connectionString)
     {
-        _unitOfWorkAccessor.CurrentDbContextOptions.AddConnectionString(name, connectionString);
+        if (_unitOfWorkAccessor != null)
+            _unitOfWorkAccessor.CurrentDbContextOptions.AddConnectionString(name, connectionString);
 
         return connectionString;
     }
