@@ -60,7 +60,14 @@ public static class ServiceCollectionExtensions
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         LocalQueueProcessor.SetLogger(services);
-        services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
+        services.AddScoped<IIntegrationEventBus>(serviceProvider => new IntegrationEventBus(
+            new Lazy<IEventBus?>(serviceProvider.GetService<IEventBus>),
+            serviceProvider.GetRequiredService<IPublisher>(),
+            serviceProvider.GetService<IIntegrationEventLogService>(),
+            serviceProvider.GetService<IOptionsMonitor<MasaAppConfigureOptions>>(),
+            serviceProvider.GetService<ILogger<IntegrationEventBus>>(),
+            serviceProvider.GetService<IUnitOfWork>()
+        ));
         action?.Invoke();
 
         if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))

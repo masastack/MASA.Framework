@@ -48,7 +48,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
 
         services.AddScoped<ILocalEventBus, LocalEventBus>();
-        services.AddScoped<IEventBus, EventBus>();
+        services.AddScoped<IEventBus>(serviceProvider => new EventBus(
+            serviceProvider.GetRequiredService<ILocalEventBus>(),
+            new Lazy<IIntegrationEventBus?>(serviceProvider.GetService<IIntegrationEventBus>())));
         MasaApp.TrySetServiceCollection(services);
         return services;
     }
