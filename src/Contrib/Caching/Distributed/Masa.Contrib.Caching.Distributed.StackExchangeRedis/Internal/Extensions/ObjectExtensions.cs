@@ -18,7 +18,7 @@ internal static class ObjectExtensions
     {
         var type = value?.GetType() ?? typeof(T);
         dynamic redisValue;
-        switch (GetCompressMode(type, out Type actualType))
+        switch (RedisHelper.GetCompressMode(type, out Type actualType))
         {
             case CompressMode.None:
                 redisValue = value!;
@@ -32,31 +32,6 @@ internal static class ObjectExtensions
                 break;
         }
         return ConvertToRedisValue(actualType, redisValue);
-    }
-
-    private static CompressMode GetCompressMode(this Type type, out Type actualType)
-    {
-        actualType = Nullable.GetUnderlyingType(type) ?? type;
-
-        switch (Type.GetTypeCode(actualType))
-        {
-            case TypeCode.Byte:
-            case TypeCode.SByte:
-            case TypeCode.UInt16:
-            case TypeCode.UInt32:
-            case TypeCode.UInt64:
-            case TypeCode.Int16:
-            case TypeCode.Int32:
-            case TypeCode.Int64:
-            case TypeCode.Double:
-            case TypeCode.Single:
-            case TypeCode.Decimal:
-                return CompressMode.None;
-            case TypeCode.String:
-                return CompressMode.Compress;
-            default:
-                return CompressMode.SerializeAndCompress;
-        }
     }
 
     private static byte[] Compress(byte[] data)
