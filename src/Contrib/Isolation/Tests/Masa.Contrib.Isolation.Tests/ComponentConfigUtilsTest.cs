@@ -4,7 +4,7 @@
 namespace Masa.Contrib.Isolation.Tests;
 
 [TestClass]
-public class ModuleConfigUtilsTest
+public class ComponentConfigUtilsTest
 {
     [TestMethod]
     public void TestTryGetConfig()
@@ -18,18 +18,18 @@ public class ModuleConfigUtilsTest
         services.AddSingleton<IConfiguration>(configurationBuilder.Build());
         var serviceProvider = services.BuildServiceProvider();
         var dbConnectionOptions =
-            ModuleConfigUtils.GetModuleConfigs<ConnectionStrings>(serviceProvider, string.Empty, ConnectionStrings.DEFAULT_SECTION);
+            ComponentConfigUtils.GetComponentConfigs<ConnectionStrings>(serviceProvider, string.Empty, ConnectionStrings.DEFAULT_SECTION);
         Assert.IsNotNull(dbConnectionOptions);
         Assert.AreEqual(1, dbConnectionOptions.Count);
         Assert.AreEqual("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;",
             dbConnectionOptions[0].Data.DefaultConnection);
 
-        var appConfig = ModuleConfigUtils.GetModuleConfigs<AppConfig>(serviceProvider, string.Empty, nameof(AppConfig));
+        var appConfig = ComponentConfigUtils.GetComponentConfigs<AppConfig>(serviceProvider, string.Empty, nameof(AppConfig));
         Assert.IsNotNull(appConfig);
         Assert.AreEqual(1, appConfig.Count);
         Assert.AreEqual("masa", appConfig[0].Data.Name);
 
-        appConfig = ModuleConfigUtils.GetModuleConfigs<AppConfig>(serviceProvider, string.Empty, $"{nameof(AppConfig)}2");
+        appConfig = ComponentConfigUtils.GetComponentConfigs<AppConfig>(serviceProvider, string.Empty, $"{nameof(AppConfig)}2");
         Assert.IsNotNull(appConfig);
         Assert.AreEqual(1, appConfig.Count);
         Assert.AreEqual("masa2", appConfig[0].Data.Name);

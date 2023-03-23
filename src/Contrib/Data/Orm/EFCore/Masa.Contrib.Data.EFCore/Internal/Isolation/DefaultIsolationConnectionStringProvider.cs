@@ -40,7 +40,7 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
             _unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var connectionStrings = _isolationConfigProvider.GetModuleConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION, ConnectionStrings.DEFAULT_SECTION);
+        var connectionStrings = _isolationConfigProvider.GetComponentConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION, ConnectionStrings.DEFAULT_SECTION);
         if (connectionStrings != null)
             return SetConnectionString(name, connectionStrings.GetConnectionString(name));
 

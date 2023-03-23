@@ -10,15 +10,15 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-internal static class ModuleConfigUtils
+internal static class ComponentConfigUtils
 {
-    public static List<IsolationConfigurationOptions<TModuleConfig>> GetModuleConfigs<TModuleConfig>(
+    public static List<IsolationConfigurationOptions<TComponentConfig>> GetComponentConfigs<TComponentConfig>(
         IServiceProvider serviceProvider,
         string name,
         string sectionName)
-        where TModuleConfig : class
+        where TComponentConfig : class
     {
-        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IsolationOptions<TModuleConfig>>>().Get(name);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IsolationOptions<TComponentConfig>>>().Get(name);
         if (optionsMonitor.Data.Count > 0)
             return optionsMonitor.Data;
 
@@ -30,7 +30,7 @@ internal static class ModuleConfigUtils
         return configuration
             .GetSection(rootSectionName)
             .GetSection(sectionName)
-            .Get<List<IsolationConfigurationOptions<TModuleConfig>>>() ?? new();
+            .Get<List<IsolationConfigurationOptions<TComponentConfig>>>() ?? new();
     }
 
     /// <summary>
@@ -40,19 +40,19 @@ internal static class ModuleConfigUtils
     /// <param name="name"></param>
     /// <param name="sectionName"></param>
     /// <param name="defaultFunc"></param>
-    /// <typeparam name="TModuleConfig"></typeparam>
+    /// <typeparam name="TComponentConfig"></typeparam>
     /// <returns></returns>
-    public static TModuleConfig GetModuleConfigByExecute<TModuleConfig>(IServiceProvider serviceProvider,
+    public static TComponentConfig GetComponentConfigByExecute<TComponentConfig>(IServiceProvider serviceProvider,
         string name,
         string sectionName,
-        Func<TModuleConfig> defaultFunc) where TModuleConfig : class
+        Func<TComponentConfig> defaultFunc) where TComponentConfig : class
     {
         var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
         if (isolationOptions.Value.Enable)
         {
             return serviceProvider
                 .GetRequiredService<IIsolationConfigProvider>()
-                .GetModuleConfig<TModuleConfig>(sectionName, name) ?? defaultFunc.Invoke();
+                .GetComponentConfig<TComponentConfig>(sectionName, name) ?? defaultFunc.Invoke();
         }
         return defaultFunc.Invoke();
     }

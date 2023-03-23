@@ -61,7 +61,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddMultilevelCache(name, serviceProvider =>
         {
-            var multilevelCacheGlobalOptions = ModuleConfigUtils.GetModuleConfigByExecute(
+            var multilevelCacheGlobalOptions = ComponentConfigUtils.GetComponentConfigByExecute(
                 serviceProvider,
                 name,
                 sectionName,

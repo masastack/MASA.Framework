@@ -45,7 +45,7 @@ internal class DefaultIsolationLocalMessageDbConnectionStringProvider :
     private List<string> GetDbConnectionStringByIsolation()
     {
         var masaDbConnectionOptions =
-            _isolationConfigProvider.GetModuleConfigs<ConnectionStrings>(Masa.BuildingBlocks.Data.ConnectionStrings.DEFAULT_SECTION);
+            _isolationConfigProvider.GetComponentConfigs<ConnectionStrings>(Masa.BuildingBlocks.Data.ConnectionStrings.DEFAULT_SECTION);
 
         return masaDbConnectionOptions
             .Select(connectionString => connectionString.GetConnectionString(_localMessageTableOptions.Value.SectionName))

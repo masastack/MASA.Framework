@@ -23,7 +23,7 @@ public static class DistributedCacheBuilderExtensions
 
         distributedCacheBuilder.AddDistributedCache(serviceProvider =>
         {
-            var redisConfigurationOptions = ModuleConfigUtils.GetModuleConfigByExecute(
+            var redisConfigurationOptions = ComponentConfigUtils.GetComponentConfigByExecute(
                 serviceProvider,
                 distributedCacheBuilder.Name,
                 redisSectionName,

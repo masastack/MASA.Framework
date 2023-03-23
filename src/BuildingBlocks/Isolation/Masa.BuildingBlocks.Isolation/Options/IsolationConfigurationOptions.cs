@@ -17,7 +17,7 @@ public class IsolationConfigurationOptions
     public int Score { get; set; } = 100;
 }
 
-public class IsolationConfigurationOptions<TModuleConfig>: IsolationConfigurationOptions
+public class IsolationConfigurationOptions<TComponentConfig>: IsolationConfigurationOptions
 {
-    public TModuleConfig Data { get; set; }
+    public TComponentConfig Data { get; set; }
 }

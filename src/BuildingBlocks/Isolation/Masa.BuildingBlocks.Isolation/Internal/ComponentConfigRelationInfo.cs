@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-internal class ModuleConfigRelationInfo
+internal class ComponentConfigRelationInfo
 {
     public Type ModuleType { get; set; }
 

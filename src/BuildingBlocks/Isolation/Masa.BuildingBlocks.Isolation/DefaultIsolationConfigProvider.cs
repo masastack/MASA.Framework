@@ -10,8 +10,8 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
     private readonly IMultiEnvironmentContext? _environmentContext;
     private readonly IMultiTenantContext? _tenantContext;
     private readonly ILogger<DefaultIsolationConfigProvider>? _logger;
-    private readonly List<ModuleConfigRelationInfo> _data;
-    private readonly List<ModuleConfigRelationInfo> _moduleConfigs;
+    private readonly List<ComponentConfigRelationInfo> _data;
+    private readonly List<ComponentConfigRelationInfo> _componentConfigs;
 
     public DefaultIsolationConfigProvider(
         IServiceProvider serviceProvider,
@@ -24,16 +24,16 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         _tenantContext = tenantContext;
         _logger = logger;
         _data = new();
-        _moduleConfigs = new();
+        _componentConfigs = new();
     }
 
-    public TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName, string name = "") where TModuleConfig : class
+    public TComponentConfig? GetComponentConfig<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class
     {
-        var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
+        var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TComponentConfig) && config.SectionName == sectionName);
         if (item != null)
-            return item.Data as TModuleConfig;
+            return item.Data as TComponentConfig;
 
-        Expression<Func<IsolationConfigurationOptions<TModuleConfig>, bool>> condition = option => true;
+        Expression<Func<IsolationConfigurationOptions<TComponentConfig>, bool>> condition = option => true;
 
         if (_tenantContext != null)
         {
@@ -56,8 +56,8 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
                 option.Environment.Equals(_environmentContext.CurrentEnvironment, StringComparison.CurrentCultureIgnoreCase));
         }
 
-        var data = GetIsolationConfigurationOptions<TModuleConfig>(name, sectionName);
-        TModuleConfig? moduleInfo = null;
+        var data = GetIsolationConfigurationOptions<TComponentConfig>(name, sectionName);
+        TComponentConfig? moduleInfo = null;
         var modules = data
             .Where(condition.Compile())
             .OrderByDescending(option => option.Score)
@@ -74,42 +74,42 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         {
             moduleInfo = null;
         }
-        _data.Add(new ModuleConfigRelationInfo()
+        _data.Add(new ComponentConfigRelationInfo()
         {
             Data = moduleInfo,
-            ModuleType = typeof(TModuleConfig),
+            ModuleType = typeof(TComponentConfig),
             SectionName = sectionName
         });
         return moduleInfo;
     }
 
-    public List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName, string name = "") where TModuleConfig : class
+    public List<TComponentConfig> GetComponentConfigs<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class
     {
-        var data = GetIsolationConfigurationOptions<TModuleConfig>(name, sectionName);
-        var moduleConfigs = data
+        var data = GetIsolationConfigurationOptions<TComponentConfig>(name, sectionName);
+        var componentConfigs = data
             .OrderByDescending(option => option.Score)
             .Select(option => option.Data)
             .ToList();
-        return moduleConfigs;
+        return componentConfigs;
     }
 
-    private List<IsolationConfigurationOptions<TModuleConfig>> GetIsolationConfigurationOptions<TModuleConfig>(
+    private List<IsolationConfigurationOptions<TComponentConfig>> GetIsolationConfigurationOptions<TComponentConfig>(
         string name,
         string sectionName)
-        where TModuleConfig : class
+        where TComponentConfig : class
     {
-        var item = _moduleConfigs.FirstOrDefault(config => config.ModuleType == typeof(TModuleConfig) && config.SectionName == sectionName);
+        var item = _componentConfigs.FirstOrDefault(config => config.ModuleType == typeof(TComponentConfig) && config.SectionName == sectionName);
         if (item != null)
         {
-            return (item.Data as List<IsolationConfigurationOptions<TModuleConfig>>)!;
+            return (item.Data as List<IsolationConfigurationOptions<TComponentConfig>>)!;
         }
-        var data = ModuleConfigUtils.GetModuleConfigs<TModuleConfig>(_serviceProvider, name, sectionName)
+        var data = ComponentConfigUtils.GetComponentConfigs<TComponentConfig>(_serviceProvider, name, sectionName)
             .Where(option => option.Data != null!)
             .ToList();
-        _moduleConfigs.Add(new ModuleConfigRelationInfo()
+        _componentConfigs.Add(new ComponentConfigRelationInfo()
         {
             Data = data,
-            ModuleType = typeof(TModuleConfig),
+            ModuleType = typeof(TComponentConfig),
             SectionName = sectionName
         });
         return data;

@@ -13,16 +13,16 @@ public interface IIsolationConfigProvider
     /// </summary>
     /// <param name="sectionName"></param>
     /// <param name="name"></param>
-    /// <typeparam name="TModuleConfig"></typeparam>
+    /// <typeparam name="TComponentConfig"></typeparam>
     /// <returns></returns>
-    TModuleConfig? GetModuleConfig<TModuleConfig>(string sectionName, string name = "") where TModuleConfig : class;
+    TComponentConfig? GetComponentConfig<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class;
 
     /// <summary>
     /// Get the configuration collection of the specified SectionName and the specified Name
     /// </summary>
     /// <param name="sectionName"></param>
     /// <param name="name"></param>
-    /// <typeparam name="TModuleConfig"></typeparam>
+    /// <typeparam name="TComponentConfig"></typeparam>
     /// <returns></returns>
-    List<TModuleConfig> GetModuleConfigs<TModuleConfig>(string sectionName, string name = "") where TModuleConfig : class;
+    List<TComponentConfig> GetComponentConfigs<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class;
 }

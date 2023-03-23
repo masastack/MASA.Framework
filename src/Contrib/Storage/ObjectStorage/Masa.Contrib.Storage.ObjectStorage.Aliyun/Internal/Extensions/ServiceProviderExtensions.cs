@@ -12,7 +12,7 @@ internal static class ServiceProviderExtensions
         string sectionName,
         string name)
     {
-        return ModuleConfigUtils.GetModuleConfigByExecute(serviceProvider, name,
+        return ComponentConfigUtils.GetComponentConfigByExecute(serviceProvider, name,
             sectionName,
             () =>
             {
