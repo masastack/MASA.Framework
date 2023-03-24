@@ -44,6 +44,7 @@ namespace Masa.Contrib.StackSdks.Config
 
             var options = new DccOptions
             {
+                Environment = configMap.GetValueOrDefault(MasaStackConfigConstant.ENVIRONMENT)!,
                 ManageServiceAddress = dccServerAddress,
                 RedisOptions = new Caching.Distributed.StackExchangeRedis.RedisConfigurationOptions
                 {
