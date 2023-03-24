@@ -145,4 +145,12 @@ public class MasaStackConfigTest
         var teamId2 = _stackConfig.GetDefaultTeamId();
         Assert.AreEqual(teamId, teamId2);
     }
+
+    [TestMethod]
+    public void TestGetEsModel()
+    {
+        var es = _stackConfig.ElasticModel;
+
+        Assert.IsTrue(es is not null && es.ElasticNodes.Any());
+    }
 }
