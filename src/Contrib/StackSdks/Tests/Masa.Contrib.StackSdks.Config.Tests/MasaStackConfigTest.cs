@@ -23,7 +23,6 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
             { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
             { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
-            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
             { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
             { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
@@ -145,5 +144,13 @@ public class MasaStackConfigTest
 
         var teamId2 = _stackConfig.GetDefaultTeamId();
         Assert.AreEqual(teamId, teamId2);
+    }
+
+    [TestMethod]
+    public void TestGetEsModel()
+    {
+        var es = _stackConfig.ElasticModel;
+
+        Assert.IsTrue(es is not null && es.ElasticNodes.Any());
     }
 }
