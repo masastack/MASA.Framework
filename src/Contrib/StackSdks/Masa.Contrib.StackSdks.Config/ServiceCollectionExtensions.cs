@@ -76,7 +76,9 @@ public static class ServiceCollectionExtensions
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
-        string environment = configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) ?? configuration["ASPNETCORE_ENVIRONMENT"];
+        string environment = configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT);
+        environment = string.IsNullOrWhiteSpace(environment) ? configuration["ASPNETCORE_ENVIRONMENT"] : environment;
+
         var configs = new Dictionary<string, string>()
         {
             { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION) },
