@@ -38,17 +38,18 @@ public static class ServiceCollectionExtensions
                 configs[MasaStackConfigConstant.ENVIRONMENT],
                 configs[MasaStackConfigConstant.CLUSTER],
                 DEFAULT_PUBLIC_ID,
-                new Dictionary<string, string>
+                new Dictionary<string, object>
                 {
-                    { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+                    { DEFAULT_CONFIG_NAME, configs }
                 });
         }
     }
 
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false)
+    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false, DccOptions? dccOptions = null)
     {
         var configs = GetConfigMap(services);
-        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(configs);
+
+        dccOptions ??= MasaStackConfigUtils.GetDefaultDccOptions(configs);
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
         if (init)
@@ -60,25 +61,6 @@ public static class ServiceCollectionExtensions
         {
             var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
             return new MasaStackConfig(configurationApiClient, configs);
-        });
-
-        return services;
-    }
-
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, DccOptions dccOptions, bool init = false)
-    {
-        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
-        var configs = GetConfigMap(services);
-
-        if (init)
-        {
-            await InitializeMasaStackConfiguration(services, configs).ConfigureAwait(false);
-        }
-
-        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
-        {
-            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-            return new MasaStackConfig(client, configs);
         });
 
         return services;

@@ -123,13 +123,15 @@ public class DccTest
             _services,
             Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
-            new List<DccSectionOptions>());
+            new List<DccSectionOptions>(),
+            _jsonSerializerOptions);
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,
             Microsoft.Extensions.Options.Options.DefaultName,
             new DccSectionOptions(),
-            new List<DccSectionOptions>());
+            new List<DccSectionOptions>(),
+            _jsonSerializerOptions);
         Assert.IsTrue(_services.Count(service
             => service.ServiceType == typeof(IConfigurationApiManage) && service.Lifetime == ServiceLifetime.Singleton) == 1);
         var serviceProvider = _services.BuildServiceProvider();
