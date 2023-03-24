@@ -11,8 +11,6 @@ public interface IMasaStackConfig
 
     public bool IsDemo { get; }
 
-    public string TlsName { get; }
-
     public string Version { get; }
 
     public string Environment { get; }

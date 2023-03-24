@@ -38,17 +38,18 @@ public static class ServiceCollectionExtensions
                 configs[MasaStackConfigConstant.ENVIRONMENT],
                 configs[MasaStackConfigConstant.CLUSTER],
                 DEFAULT_PUBLIC_ID,
-                new Dictionary<string, string>
+                new Dictionary<string, object>
                 {
-                    { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+                    { DEFAULT_CONFIG_NAME, configs }
                 });
         }
     }
 
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false)
+    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false, DccOptions? dccOptions = null)
     {
         var configs = GetConfigMap(services);
-        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(configs);
+
+        dccOptions ??= MasaStackConfigUtils.GetDefaultDccOptions(configs);
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
         if (init)
@@ -60,25 +61,6 @@ public static class ServiceCollectionExtensions
         {
             var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
             return new MasaStackConfig(configurationApiClient, configs);
-        });
-
-        return services;
-    }
-
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, DccOptions dccOptions, bool init = false)
-    {
-        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
-        var configs = GetConfigMap(services);
-
-        if (init)
-        {
-            await InitializeMasaStackConfiguration(services, configs).ConfigureAwait(false);
-        }
-
-        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
-        {
-            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-            return new MasaStackConfig(client, configs);
         });
 
         return services;
@@ -100,7 +82,6 @@ public static class ServiceCollectionExtensions
             { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
             { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
             { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
-            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
             { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
             { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
