@@ -13,6 +13,7 @@ public class HttpClientInstrumentHandler : ExceptionHandler
 
     public virtual void OnHttpResponseMessage(Activity activity, HttpResponseMessage httpResponseMessage)
     {
+        Console.WriteLine($"HttpClient's TraceId={activity?.TraceId}");
         activity.AddMasaSupplement(httpResponseMessage);
         HttpMetricProviders.AddHttpResponseMessageMetric(httpResponseMessage);
     }

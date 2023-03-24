@@ -105,8 +105,8 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         string connectionString = $"data source=test-{Guid.NewGuid()}";
         string connectionStringByQuery = connectionString;
-        services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite(connectionStringByQuery).UseFilter());
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        services.AddMasaDbContext<CustomQueryDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePularlizingTableName = false; });
+        services.AddMasaDbContext<CustomDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePularlizingTableName = false; });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
@@ -174,7 +174,8 @@ public class DbContextTest : TestBase
     public async Task TestDisabledSoftDelete()
     {
         Services.AddMasaDbContext<CustomDbContext>(options
-            => options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter());
+            =>
+        { options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter(); options.EnablePularlizingTableName = false; });
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -224,6 +225,7 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomDbContext>(opt =>
         {
             opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
+            opt.EnablePularlizingTableName = false;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -290,7 +292,7 @@ public class DbContextTest : TestBase
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => optionsBuilder.UseSqlite());
+        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); optionsBuilder.EnablePularlizingTableName = false; });
 
         var serviceProvider = services.BuildServiceProvider();
 

@@ -112,6 +112,14 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
 
         foreach (var provider in Options.ModelCreatingProviders)
             provider.Configure(modelBuilder);
+
+        if (Options.EnablePluralizingTableName)
+        {
+            foreach (var item in modelBuilder.Model.GetEntityTypes())
+            {
+                item.SetTableName(item.ClrType.Name);
+            }
+        }
     }
 
     /// <summary>
