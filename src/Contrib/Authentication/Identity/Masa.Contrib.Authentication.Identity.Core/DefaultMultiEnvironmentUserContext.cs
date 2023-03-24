@@ -3,11 +3,12 @@
 
 namespace Masa.Contrib.Authentication.Identity;
 
-public class DefaultMultiEnvironmentUserContext: BaseUserContext, IMultiEnvironmentUserContext
+public class DefaultMultiEnvironmentUserContext : BaseUserContext, IMultiEnvironmentUserContext
 {
     public string? Environment => GetUser<MultiEnvironmentIdentityUser>()?.Environment;
 
-    public DefaultMultiEnvironmentUserContext(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DefaultMultiEnvironmentUserContext(IUserContext userContext, ITypeConvertProvider typeConvertProvider)
+        : base(userContext, typeConvertProvider)
     {
     }
 }

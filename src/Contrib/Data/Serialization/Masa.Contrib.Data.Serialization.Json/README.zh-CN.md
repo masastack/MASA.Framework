@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.Serialization.Json
 1. 注册`Json`, 修改`Program.cs`
 
 ``` C#
-builder.Services.AddJson();
+builder.Services.AddSerialization(builder => builder.UseJson());
 ```
 
 2. 使用`IJsonSerializer`进行序列化

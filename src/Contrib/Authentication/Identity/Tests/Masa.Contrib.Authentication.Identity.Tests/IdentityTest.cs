@@ -376,8 +376,8 @@ public class IdentityTest
     public void TestIdentityByYaml()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentityModel(DataType.Yml.ToString());
-        services.AddYaml();
+        services.AddSerialization(nameof(DataType.Yml), builder => builder.UseYaml());
+        services.AddMasaIdentityModel(nameof(DataType.Yml));
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -414,11 +414,11 @@ public class IdentityTest
     public void TestIdentityByYamlAndCustomOptions()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentityModel(DataType.Yml.ToString(), option =>
+        services.AddSerialization(builder => builder.UseYaml());
+        services.AddMasaIdentityModel("", option =>
         {
             option.UserId = "sub";
         });
-        services.AddYaml();
 
         var serviceProvider = services.BuildServiceProvider();
 

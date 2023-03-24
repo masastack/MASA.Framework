@@ -7,7 +7,10 @@ public class DefaultMultiTenantUserContext : BaseUserContext, IMultiTenantUserCo
 {
     public string? TenantId => GetUser<MultiTenantIdentityUser>()?.TenantId;
 
-    public DefaultMultiTenantUserContext(IServiceProvider serviceProvider) : base(serviceProvider) { }
+    public DefaultMultiTenantUserContext(IUserContext userContext, ITypeConvertProvider typeConvertProvider)
+        : base(userContext, typeConvertProvider)
+    {
+    }
 
     public TTenantId? GetTenantId<TTenantId>()
     {

@@ -9,7 +9,8 @@ public class DefaultIsolatedUserContext : BaseUserContext, IIsolatedUserContext
 
     public string? Environment => GetUser<IsolatedIdentityUser>()?.Environment;
 
-    public DefaultIsolatedUserContext(IServiceProvider serviceProvider) : base(serviceProvider)
+    public DefaultIsolatedUserContext(IUserContext userContext, ITypeConvertProvider typeConvertProvider)
+        : base(userContext, typeConvertProvider)
     {
     }
 

@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.Serialization.Yaml
 1. 注册`Yaml`, 修改`Program.cs`
 
 ``` C#
-builder.Services.AddYaml();
+builder.Services.AddSerialization(builder => builder.UseYaml());
 ```
 
 2. 使用`IYamlSerializer`进行序列化

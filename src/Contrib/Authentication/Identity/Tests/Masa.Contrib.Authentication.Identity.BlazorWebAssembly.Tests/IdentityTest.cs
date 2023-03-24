@@ -66,15 +66,18 @@ public class IdentityTest
     public void TestIdentityByYaml()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(DataType.Yml.ToString());
-        services.AddYaml();
+        services.AddMasaIdentity(string.Empty);
+        services.AddSerialization(builder => builder.UseYaml());
 
         var serviceProvider = services.BuildServiceProvider();
 
         var yamlSerializer = serviceProvider.GetRequiredService<IYamlSerializer>();
         var roles = new List<int>()
         {
-            1, 3, 7, 12
+            1,
+            3,
+            7,
+            12
         };
         var claimsPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>()
         {
@@ -108,18 +111,21 @@ public class IdentityTest
     public void TestIdentityByYamlAndCustomOptions()
     {
         var services = new ServiceCollection();
-        services.AddMasaIdentity(DataType.Yml.ToString(), option =>
+        services.AddMasaIdentity(string.Empty, option =>
         {
             option.UserId = "sub";
         });
-        services.AddYaml();
+        services.AddSerialization(builder => builder.UseYaml());
 
         var serviceProvider = services.BuildServiceProvider();
 
         var yamlSerializer = serviceProvider.GetRequiredService<IYamlSerializer>();
         var roles = new List<int>()
         {
-            1, 3, 7, 12
+            1,
+            3,
+            7,
+            12
         };
         var claimsPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>()
         {
