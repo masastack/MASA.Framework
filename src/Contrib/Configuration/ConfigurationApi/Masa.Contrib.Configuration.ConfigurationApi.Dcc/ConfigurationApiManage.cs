@@ -27,7 +27,7 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
         var newConfigObjects = configObjects.ToDictionary(k => k.Key, v => JsonSerializer.Serialize(v.Value, _jsonSerializerOptions));
 
         var requestUri = $"open-api/releasing/{GetEnvironment(environment)}/{GetCluster(cluster)}/{GetAppId(appId)}/{isEncryption}";
-        var result = await _caller.PostAsync(requestUri, configObjects, default).ConfigureAwait(false);
+        var result = await _caller.PostAsync(requestUri, newConfigObjects, default).ConfigureAwait(false);
 
         // 299 is the status code when throwing a UserFriendlyException in masa.framework
         if ((int)result.StatusCode == 299 || !result.IsSuccessStatusCode)
