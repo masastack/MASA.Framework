@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IAlertClient)))
             return services;
 
+        services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddScoped<IAlertClient>(serviceProvider =>
