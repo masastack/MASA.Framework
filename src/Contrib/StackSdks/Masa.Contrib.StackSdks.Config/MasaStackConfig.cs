@@ -35,8 +35,6 @@ public class MasaStackConfig : IMasaStackConfig
 
     public bool IsDemo => bool.Parse(GetValue(MasaStackConfigConstant.IS_DEMO));
 
-    public string TlsName => GetValue(MasaStackConfigConstant.TLS_NAME);
-
     public string Version => GetValue(MasaStackConfigConstant.VERSION);
 
     public string Cluster => GetValue(MasaStackConfigConstant.CLUSTER);

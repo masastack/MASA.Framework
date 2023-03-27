@@ -42,7 +42,7 @@ public class DccManageTest
             Content = new StringContent(brand.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await manage.UpdateAsync(environment, cluster, appId, configObject, brand);
     }
 
@@ -58,7 +58,7 @@ public class DccManageTest
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -73,7 +73,7 @@ public class DccManageTest
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.UpdateAsync(environment, cluster, appId, configObject, brand));
     }
 
@@ -81,9 +81,9 @@ public class DccManageTest
     [DataRow("Test", "Default", "DccTest")]
     public async Task TestInitAsync(string environment, string cluster, string appId)
     {
-        var configObjects = new Dictionary<string, string>
+        var configObjects = new Dictionary<string, object>
         {
-            { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
+            { "Appsettings", new { ConnectionStrings = "xxxx" } }
         };
         _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
         {
@@ -91,7 +91,7 @@ public class DccManageTest
             Content = new StringContent(configObjects.Serialize(_jsonSerializerOptions))
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await manage.AddAsync(environment, cluster, appId, configObjects);
     }
 
@@ -99,9 +99,9 @@ public class DccManageTest
     [DataRow("Test", "Default", "DccTest")]
     public async Task TestInitAsyncAndError(string environment, string cluster, string appId)
     {
-        var configObjects = new Dictionary<string, string>
+        var configObjects = new Dictionary<string, object>
         {
-            { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
+            { "Appsettings", new { ConnectionStrings = "xxxx" } }
         };
 
         _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
@@ -110,7 +110,7 @@ public class DccManageTest
             Content = new StringContent("error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 
@@ -118,9 +118,9 @@ public class DccManageTest
     [DataRow("Test", "Default", "DccTest")]
     public async Task TestInitAsyncAndCustomError(string environment, string cluster, string appId)
     {
-        var configObjects = new Dictionary<string, string>
+        var configObjects = new Dictionary<string, object>
         {
-            { "Appsettings", "{\"ConnectionStrings\":\"xxxx\"}" }
+            { "Appsettings", new { ConnectionStrings = "xxxx" } }
         };
 
         _caller.Setup(factory => factory.PostAsync(It.IsAny<string>(), It.IsAny<object>(), false, default).Result).Returns(() => new HttpResponseMessage()
@@ -129,7 +129,7 @@ public class DccManageTest
             Content = new StringContent("custom error")
         }).Verifiable();
 
-        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, null);
+        var manage = new ConfigurationApiManage(_caller.Object, _dccSectionOptions, _jsonSerializerOptions, null);
         await Assert.ThrowsExceptionAsync<HttpRequestException>(async () => await manage.AddAsync(environment, cluster, appId, configObjects));
     }
 

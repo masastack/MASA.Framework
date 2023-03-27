@@ -14,7 +14,7 @@ public interface IConfigurationApiManage
     /// <param name="configObjects">Config objects,Key:config object name,Value:config object content</param>
     /// <param name="isEncryption">Config object content whether to encrypt</param>
     /// <returns></returns>
-    Task AddAsync(string environment, string cluster, string appId, Dictionary<string, string> configObjects, bool isEncryption = false);
+    Task AddAsync(string environment, string cluster, string appId, Dictionary<string, object> configObjects, bool isEncryption = false);
 
     Task UpdateAsync(string environment, string cluster, string appId, string configObject, object value);
 }
