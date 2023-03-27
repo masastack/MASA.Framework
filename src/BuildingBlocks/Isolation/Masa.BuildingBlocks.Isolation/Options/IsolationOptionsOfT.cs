@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-public class IsolationOptions<TModule>
+public class IsolationOptions<TComponentConfig>
 {
-    public List<IsolationConfigurationOptions<TModule>> Data { get; set; } = new();
+    public List<IsolationConfigurationOptions<TComponentConfig>> Data { get; set; } = new();
 }

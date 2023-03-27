@@ -7,7 +7,7 @@ namespace Masa.BuildingBlocks.Data;
 
 internal class ComponentConfigRelationInfo
 {
-    public Type ModuleType { get; set; }
+    public Type ComponentConfigType { get; set; }
 
     public string SectionName { get; set; }
 

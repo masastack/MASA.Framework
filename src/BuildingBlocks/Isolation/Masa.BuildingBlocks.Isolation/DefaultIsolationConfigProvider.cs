@@ -1,7 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-
 namespace Masa.BuildingBlocks.Isolation;
 
 public class DefaultIsolationConfigProvider : IIsolationConfigProvider
@@ -29,7 +28,7 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
 
     public TComponentConfig? GetComponentConfig<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class
     {
-        var item = _data.FirstOrDefault(config => config.ModuleType == typeof(TComponentConfig) && config.SectionName == sectionName);
+        var item = _data.FirstOrDefault(config => config.ComponentConfigType == typeof(TComponentConfig) && config.SectionName == sectionName);
         if (item != null)
             return item.Data as TComponentConfig;
 
@@ -57,30 +56,30 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         }
 
         var data = GetIsolationConfigurationOptions<TComponentConfig>(name, sectionName);
-        TComponentConfig? moduleInfo = null;
-        var modules = data
+        TComponentConfig? componentConfigInfo;
+        var componentConfigs = data
             .Where(condition.Compile())
             .OrderByDescending(option => option.Score)
             .Select(option => option.Data)
             .ToList();
-        if (modules.Count >= 1)
+        if (componentConfigs.Count >= 1)
         {
             _logger?.LogDebug("{Message}, The number of matching available configurations: {Num}",
                 GetMessage(),
-                modules.Count);
-            moduleInfo = modules.First();
+                componentConfigs.Count);
+            componentConfigInfo = componentConfigs.First();
         }
         else
         {
-            moduleInfo = null;
+            componentConfigInfo = null;
         }
         _data.Add(new ComponentConfigRelationInfo()
         {
-            Data = moduleInfo,
-            ModuleType = typeof(TComponentConfig),
+            Data = componentConfigInfo,
+            ComponentConfigType = typeof(TComponentConfig),
             SectionName = sectionName
         });
-        return moduleInfo;
+        return componentConfigInfo;
     }
 
     public List<TComponentConfig> GetComponentConfigs<TComponentConfig>(string sectionName, string name = "") where TComponentConfig : class
@@ -98,7 +97,7 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         string sectionName)
         where TComponentConfig : class
     {
-        var item = _componentConfigs.FirstOrDefault(config => config.ModuleType == typeof(TComponentConfig) && config.SectionName == sectionName);
+        var item = _componentConfigs.FirstOrDefault(config => config.ComponentConfigType == typeof(TComponentConfig) && config.SectionName == sectionName);
         if (item != null)
         {
             return (item.Data as List<IsolationConfigurationOptions<TComponentConfig>>)!;
@@ -109,7 +108,7 @@ public class DefaultIsolationConfigProvider : IIsolationConfigProvider
         _componentConfigs.Add(new ComponentConfigRelationInfo()
         {
             Data = data,
-            ModuleType = typeof(TComponentConfig),
+            ComponentConfigType = typeof(TComponentConfig),
             SectionName = sectionName
         });
         return data;
