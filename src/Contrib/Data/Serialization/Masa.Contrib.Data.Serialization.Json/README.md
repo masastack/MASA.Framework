@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.Serialization.Json
 1. Register `Json`, modify `Program.cs`
 
 ``` C#
-builder.Services.AddJson();
+builder.Services.AddSerialization(builder => builder.UseJson());
 ```
 
 2. Serialization using `IJsonSerializer`

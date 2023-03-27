@@ -32,8 +32,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
-        _yamlSerializer = serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME);
-        _yamlDeserializer = serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME);
+        _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
+        _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
         _dccOptions = dccOptions;
     }
 

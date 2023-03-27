@@ -1,24 +1,18 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Data;
 
-public class SerializerFactoryOptions : MasaFactoryOptions<SerializerRelationOptions>
+public class SerializerFactoryOptions : MasaFactoryOptions<MasaRelationOptions<ISerializer>>
 {
-    public SerializerFactoryOptions MappingSerializer(string name, Func<IServiceProvider, ISerializer> func)
+    public void TryAdd(string name, Func<IServiceProvider, ISerializer> func)
     {
-        var builder = Options.FirstOrDefault(b => b.Name == name.ToLower());
-        if (builder != null) builder.Func = func;
-        else Options.Add(new SerializerRelationOptions(name.ToLower(), func));
-        return this;
-    }
+        if (Options.Any(opt => opt.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
+            throw new ArgumentException(
+                $"The serializer name already exists, please change the name, the repeat name is [{name}]");
 
-    public Func<IServiceProvider, ISerializer>? GetSerializer()
-        => GetSerializer(Microsoft.Extensions.Options.Options.DefaultName);
-
-    public Func<IServiceProvider, ISerializer>? GetSerializer(string name)
-    {
-        var serializer = Options.FirstOrDefault(b => b.Name == name.ToLower());
-        return serializer?.Func;
+        Options.Add(new MasaRelationOptions<ISerializer>(name, func));
     }
 }

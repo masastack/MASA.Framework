@@ -12,10 +12,10 @@ public class BaseUserContext : IUserContext
     public string? UserId => _userContext.UserId;
     public string? UserName => _userContext.UserName;
 
-    public BaseUserContext(IServiceProvider serviceProvider)
+    public BaseUserContext(IUserContext userContext, ITypeConvertProvider typeConvertProvider)
     {
-        _userContext = serviceProvider.GetRequiredService<IUserContext>();
-        TypeConvertProvider = serviceProvider.GetRequiredService<ITypeConvertProvider>();
+        _userContext = userContext;
+        TypeConvertProvider = typeConvertProvider;
     }
 
     public TUserId? GetUserId<TUserId>() => _userContext.GetUserId<TUserId>();

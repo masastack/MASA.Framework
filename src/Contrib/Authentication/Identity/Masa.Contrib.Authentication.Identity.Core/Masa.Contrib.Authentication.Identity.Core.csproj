@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
     <ProjectReference Include="..\..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Exception\Masa.BuildingBlocks.Exceptions\Masa.BuildingBlocks.Exceptions.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Caching\Masa.Utils.Caching.Memory\Masa.Utils.Caching.Memory.csproj" />
     <ProjectReference Include="..\..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\Data\Serialization\Masa.Contrib.Data.Serialization.Json\Masa.Contrib.Data.Serialization.Json.csproj" />
