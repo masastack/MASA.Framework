@@ -74,7 +74,6 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
 
-        student = await dbContext.Set<Student>().Include(s => s.Address).Include(s => s.Hobbies).FirstAsync();
         dbContext.Set<Student>().Remove(student);
         await dbContext.SaveChangesAsync();
 
@@ -143,8 +142,7 @@ public class DbContextTest : TestBase
 
         Assert.IsTrue(await queryDbContext.Set<Student>().AnyAsync());
 
-        student = await dbContext.Set<Student>().Include(s => s.Address).Include(s => s.Hobbies).FirstAsync();
-        dbContext.Set<Student>().Remove(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
@@ -194,7 +192,7 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
 
-        dbContext.Set<Student>().Remove(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
@@ -211,8 +209,8 @@ public class DbContextTest : TestBase
     public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>()
-            .AddMasaDbContext<CustomDbContext>();
+        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()))
+            .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
 
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 3);
@@ -271,8 +269,9 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 2);
 
-        var student = await dbContext.Set<Student>().FirstAsync();
-        dbContext.Set<Student>().Remove(student);
+        var student = students.First();
+        dbContext.Attach(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         var result = await new Repository(dbContext).GetPaginatedListAsync(new PaginatedOptions()
