@@ -13,7 +13,7 @@ Install-Package Masa.Contrib.Data.Serialization.Yaml
 1. Register `Yaml`, modify `Program.cs`
 
 ``` C#
-builder.Services.AddYaml();
+builder.Services.AddSerialization(builder => builder.UseYaml());
 ```
 
 2. Serialization using `IYamlSerializer`

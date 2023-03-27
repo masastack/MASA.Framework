@@ -5,7 +5,7 @@ namespace Masa.Contrib.Data.Serialization.Yaml;
 
 public class YamlOptions
 {
-    public YamlDotNet.Serialization.ISerializer Serializer { get; set; }
+    public YamlDotNet.Serialization.ISerializer? Serializer { get; set; }
 
-    public YamlDotNet.Serialization.IDeserializer Deserializer { get; set; }
+    public YamlDotNet.Serialization.IDeserializer? Deserializer { get; set; }
 }

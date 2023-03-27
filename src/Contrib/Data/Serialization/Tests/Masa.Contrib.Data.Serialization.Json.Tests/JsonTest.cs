@@ -33,7 +33,7 @@ public class JsonTest
     public void TestAddJsonReturnNotNull()
     {
         var services = new ServiceCollection();
-        services.AddJson();
+        services.AddSerialization(builder => builder.UseJson());
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<ISerializer>());
         Assert.IsNotNull(serviceProvider.GetService<IDeserializer>());
@@ -52,7 +52,7 @@ public class JsonTest
     {
         var services = new ServiceCollection();
         MasaApp.SetServiceCollection(services);
-        services.AddJson();
+        services.AddSerialization(builder => builder.UseJson());
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());
         Assert.IsNotNull(MasaApp.GetService<IDeserializer>());
@@ -70,10 +70,13 @@ public class JsonTest
     public void TestAddMultiJsonReturnCountIs1()
     {
         var services = new ServiceCollection();
-        services.AddJson(option =>
+        services.AddSerialization(builder =>
         {
-            option.Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs);
-        }).AddJson();
+            builder.UseJson(option =>
+            {
+                option.Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.CjkUnifiedIdeographs);
+            });
+        });
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IJsonSerializer>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<IJsonDeserializer>().Count() == 1);
@@ -83,10 +86,14 @@ public class JsonTest
     public void TestAddMultiJson2()
     {
         var services = new ServiceCollection();
-        services.AddJson("test", options =>
+
+        services.AddSerialization("test", builder =>
         {
-            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-        }).AddJson("test");
+            builder.UseJson(options =>
+            {
+                options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            });
+        });
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IJsonSerializer>().Count() == 1);
 

@@ -97,12 +97,6 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
     {
-        services.AddYaml(DEFAULT_CLIENT_NAME, options =>
-        {
-            options.Serializer = new SerializerBuilder().JsonCompatible().Build();
-            options.Deserializer = new DeserializerBuilder().Build();
-        });
-
         services.TryAddSingleton(serviceProvider =>
         {
             return DccFactory.CreateClient(
