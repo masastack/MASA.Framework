@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="$(IdentityModelPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MicrosoftPackageVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
   </ItemGroup>
 
   <ItemGroup>
