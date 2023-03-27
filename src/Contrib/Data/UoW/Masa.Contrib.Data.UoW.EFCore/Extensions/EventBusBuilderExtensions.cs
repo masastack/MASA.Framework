@@ -12,7 +12,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         => eventBusBuilder.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 
     public static IEventBusBuilder UseUoW<TDbContext, TUserId>(
@@ -20,7 +20,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
         where TUserId : IComparable
     {
         eventBusBuilder.Services.UseUoW<TDbContext, TUserId>(

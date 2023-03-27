@@ -6,12 +6,12 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 public class BaseRedis
 {
     protected IDistributedCacheClient DistributedCacheClient { get; }
-    internal ConnectionMultiplexer Connection { get; }
+    protected ConnectionMultiplexer Connection { get; }
     internal IDatabase Database { get; }
 
-    public BaseRedis(IDistributedCacheClient distributedCacheClient, RedisConfigurationOptions redisOptions)
+    public BaseRedis(RedisConfigurationOptions redisOptions)
     {
-        DistributedCacheClient = distributedCacheClient;
+        DistributedCacheClient = new RedisCacheClient(redisOptions);
         var options = (ConfigurationOptions)redisOptions;
         Connection = ConnectionMultiplexer.Connect(options);
         Database = Connection.GetDatabase(options.DefaultDatabase ?? 0);

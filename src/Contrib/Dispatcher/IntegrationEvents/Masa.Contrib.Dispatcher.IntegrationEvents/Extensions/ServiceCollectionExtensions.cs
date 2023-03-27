@@ -7,11 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         Action<IntegrationEventOptions>? options = null)
         => services.AddIntegrationEventBus(MasaApp.GetAssemblies(), options);
 
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
@@ -96,8 +98,28 @@ public static class ServiceCollectionExtensions
         if (services.All(d => d.ServiceType != typeof(IPublisher)))
             throw new NotSupportedException($"{nameof(IPublisher)} has no implementing");
 
+        services.AddLocalMessageDbConnectionStringProvider();
+
         MasaApp.TrySetServiceCollection(services);
         return services;
+    }
+
+    private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
+    {
+        services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper>(serviceProvider
+            => new DefaultIsolationLocalMessageDbConnectionStringProvider(
+                serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>(),
+                serviceProvider.GetRequiredService<IIsolationConfigProvider>(),
+                serviceProvider.GetRequiredService<IOptionsSnapshot<LocalMessageTableOptions>>()));
+        services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                return serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
+        });
     }
 
     private sealed class IntegrationEventBusProvider

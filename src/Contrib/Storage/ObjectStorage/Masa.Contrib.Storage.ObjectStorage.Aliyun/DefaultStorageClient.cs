@@ -3,24 +3,46 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClient
+public class DefaultStorageClient :
+    ObjectStorageClientBase,
+    IObjectStorageClient
 {
     private readonly ILogger<DefaultStorageClient>? _logger;
+    private readonly IAliyunMemoryCacheProvider? _aliyunMemoryCacheProvider;
+    private readonly string _name;
 
-    public DefaultStorageClient(ICredentialProvider credentialProvider,
-        IAliyunStorageOptionProvider optionProvider,
-        ILogger<DefaultStorageClient>? logger = null)
-        : base(credentialProvider, optionProvider) => _logger = logger;
+    public DefaultStorageClient(
+        AliyunStorageOptions aliyunStorageOptions,
+        IMemoryCache memoryCache,
+        ICredentialProvider? credentialProvider = null,
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null) : base(aliyunStorageOptions, memoryCache, credentialProvider, ossClientFactory, loggerFactory)
+    {
+        _logger = loggerFactory?.CreateLogger<DefaultStorageClient>();
+    }
+
+    public DefaultStorageClient(
+        AliyunStorageOptions aliyunStorageOptions,
+        IMemoryCache memoryCache,
+        IAliyunMemoryCacheProvider aliyunMemoryCacheProvider,
+        ICredentialProvider? credentialProvider = null,
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null,
+        string name = "") : this(aliyunStorageOptions, memoryCache, credentialProvider, ossClientFactory, loggerFactory)
+    {
+        _aliyunMemoryCacheProvider = aliyunMemoryCacheProvider;
+        _name = name;
+    }
 
     /// <summary>
     /// Obtain temporary authorization credentials through STS service
     /// </summary>
     /// <returns></returns>
-    public TemporaryCredentialsResponse GetSecurityToken()
+    public override TemporaryCredentialsResponse GetSecurityToken()
     {
-        if (OptionProvider.IncompleteStsOptions)
+        if (AliyunStorageOptions.IsIncompleteStsOptions())
             throw new ArgumentException(
-                $"Sts options is incomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(Options.RoleArn)} or {nameof(Options.RoleSessionName)} cannot be empty or null");
+                $"Sts options is incomplete, {nameof(AliyunStsOptions.RegionId)} or {nameof(AliyunStorageOptions.RoleArn)} or {nameof(AliyunStorageOptions.RoleSessionName)} cannot be empty or null");
 
         return CredentialProvider.GetSecurityToken();
     }
@@ -30,9 +52,9 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
     /// Alibaba Cloud Oss does not support obtaining a temporary authorization token
     /// </summary>
     /// <returns></returns>
-    public string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
+    public override string GetToken() => throw new NotSupportedException("GetToken is not supported, please use GetSecurityToken");
 
-    public Task GetObjectAsync(
+    public override Task GetObjectAsync(
         string bucketName,
         string objectName,
         Action<Stream> callback,
@@ -44,7 +66,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.CompletedTask;
     }
 
-    public Task GetObjectAsync(
+    public override Task GetObjectAsync(
         string bucketName,
         string objectName,
         long offset,
@@ -63,19 +85,20 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.CompletedTask;
     }
 
-    public Task PutObjectAsync(
+    public override Task PutObjectAsync(
         string bucketName,
         string objectName,
         Stream data,
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        var objectMetadata = OptionProvider.SupportCallback ? BuildCallbackMetadata(Options.CallbackUrl, Options.CallbackBody) : null;
-        var result = !Options.EnableResumableUpload || Options.BigObjectContentLength > data.Length ?
+        var objectMetadata = AliyunStorageOptions.IsSupportCallback() ?
+            BuildCallbackMetadata(AliyunStorageOptions.CallbackUrl, AliyunStorageOptions.CallbackBody) : null;
+        var result = !AliyunStorageOptions.EnableResumableUpload || AliyunStorageOptions.BigObjectContentLength > data.Length ?
             client.PutObject(bucketName, objectName, data, objectMetadata) :
             client.ResumableUploadObject(new UploadObjectRequest(bucketName, objectName, data)
             {
-                PartSize = Options.PartSize,
+                PartSize = AliyunStorageOptions.PartSize,
                 Metadata = objectMetadata
             });
         _logger?.LogDebug("----- Upload {ObjectName} from {BucketName} - ({Result})",
@@ -93,7 +116,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return metadata;
     }
 
-    public Task<bool> ObjectExistsAsync(
+    public override Task<bool> ObjectExistsAsync(
         string bucketName,
         string objectName,
         CancellationToken cancellationToken = default)
@@ -103,7 +126,7 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
         return Task.FromResult(exist);
     }
 
-    public async Task DeleteObjectAsync(
+    public override async Task DeleteObjectAsync(
         string bucketName,
         string objectName,
         CancellationToken cancellationToken = default)
@@ -119,17 +142,23 @@ public class DefaultStorageClient : ObjectStorageClientBase, IObjectStorageClien
             result);
     }
 
-    public Task DeleteObjectAsync(
+    public override Task DeleteObjectAsync(
         string bucketName,
         IEnumerable<string> objectNames,
         CancellationToken cancellationToken = default)
     {
         var client = GetClient();
-        var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), Options.Quiet));
+        var result = client.DeleteObjects(new DeleteObjectsRequest(bucketName, objectNames.ToList(), AliyunStorageOptions.Quiet));
         _logger?.LogDebug("----- Delete {ObjectNames} from {BucketName} - ({Result})",
             objectNames,
             bucketName,
             result);
         return Task.CompletedTask;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _aliyunMemoryCacheProvider?.TryRemove(_name, AliyunStorageOptions);
+        base.Dispose(disposing);
     }
 }

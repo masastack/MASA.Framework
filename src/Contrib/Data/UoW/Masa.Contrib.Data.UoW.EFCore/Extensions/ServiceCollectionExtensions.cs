@@ -13,7 +13,7 @@ internal static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
+        where TDbContext : MasaDbContext<TDbContext>,IMasaDbContext
         where TUserId : IComparable
     {
         MasaArgumentException.ThrowIfNull(services, paramName);
@@ -24,7 +24,6 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<UoWProvider>();
         services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
         services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager<TDbContext>>();
-        services.TryAddScoped<IConnectionStringProvider, Masa.Contrib.Data.UoW.EFCore.DefaultConnectionStringProvider>();
 
         services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {

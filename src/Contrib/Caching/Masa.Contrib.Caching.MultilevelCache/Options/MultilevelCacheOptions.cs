@@ -25,6 +25,8 @@ public class MultilevelCacheGlobalOptions : MemoryCacheOptions
     /// </summary>
     public string SubscribeKeyPrefix { get; set; } = string.Empty;
 
+    public string? InstanceId { get; set; }
+
     /// <summary>
     /// Memory default valid time configuration
     /// </summary>

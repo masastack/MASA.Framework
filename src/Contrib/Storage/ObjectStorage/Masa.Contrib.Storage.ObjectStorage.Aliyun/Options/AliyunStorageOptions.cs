@@ -68,7 +68,7 @@ public class AliyunStorageOptions : AliyunOptions
     /// </summary>
     public bool Quiet { get; set; }
 
-    private readonly List<KeyValuePair<string, string>> _bucketNames = new();
+    private readonly Dictionary<string, string> _bucketNames = new(StringComparer.OrdinalIgnoreCase);
 
     public BucketNames BucketNames { get; set; }
 
@@ -141,9 +141,9 @@ public class AliyunStorageOptions : AliyunOptions
         return this;
     }
 
+    [ExcludeFromCodeCoverage]
     public void TryAddBucketName(string name, string bucketName)
     {
-        if (_bucketNames.All(item => item.Key != name))
-            _bucketNames.Add(new KeyValuePair<string, string>(name, bucketName));
+        _bucketNames.TryAdd(name, bucketName);
     }
 }

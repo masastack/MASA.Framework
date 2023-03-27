@@ -41,12 +41,9 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestSoftDeleteAsync()
     {
-        Services.Configure<MasaDbConnectionOptions>(options =>
+        Services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"
-            };
+            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
         });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var student = new Student()
@@ -217,7 +214,7 @@ public class DbContextTest : TestBase
             .AddMasaDbContext<CustomDbContext>();
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 2);
+        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 3);
     }
 
     [TestMethod]
@@ -232,18 +229,15 @@ public class DbContextTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
 
         var filters = serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>();
-        Assert.IsTrue(filters.Count() == 2);
+        Assert.IsTrue(filters.Count() == 3);
     }
 
     [TestMethod]
     public async Task TestGetPaginatedListAsyncReturnCountEqualResultCount()
     {
-        Services.Configure<MasaDbConnectionOptions>(options =>
+        Services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"
-            };
+            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
         });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var students = new List<Student>()
@@ -289,34 +283,6 @@ public class DbContextTest : TestBase
     }
 
     [TestMethod]
-    public void TestSpecifyConnectionStringsReturnDbConnectionStringProviderIsNotNull()
-    {
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite(connectionString).UseFilter());
-        var serviceProvider = Services.BuildServiceProvider();
-        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
-        Assert.IsNotNull(dbConnectionStringProvider);
-        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
-        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
-    }
-
-    [TestMethod]
-    public void TestUseJsonConfigurationReturnDbConnectionStringProviderIsNotNull()
-    {
-        var connectionString = "data source=test;";
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
-        Services.AddSingleton<IConfiguration>(configuration);
-        Services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite().UseFilter());
-        var serviceProvider = Services.BuildServiceProvider();
-        var dbConnectionStringProvider = serviceProvider.GetService<IDbConnectionStringProvider>();
-        Assert.IsNotNull(dbConnectionStringProvider);
-        Assert.AreEqual(1, dbConnectionStringProvider.DbContextOptionsList.Count);
-        Assert.AreEqual(connectionString, dbConnectionStringProvider.DbContextOptionsList[0].ConnectionString);
-    }
-
-    [TestMethod]
     public async Task TestModifyConnectionString()
     {
         var services = new ServiceCollection();
@@ -327,6 +293,7 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => optionsBuilder.UseSqlite());
 
         var serviceProvider = services.BuildServiceProvider();
+
         var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
 

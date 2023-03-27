@@ -33,6 +33,7 @@ public class ElasticsearchOptions
 
     public ConnectionSettingsOptions ConnectionSettingsOptions { get; }
 
+    [JsonIgnore]
     public Action<ConnectionSettings>? Action { get; set; }
 
     public ElasticsearchOptions()

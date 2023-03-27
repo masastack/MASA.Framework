@@ -19,9 +19,9 @@ public class CustomDbContext : MasaDbContext<CustomDbContext>
     }
 }
 
-public class CustomQueryDbContext : MasaDbContext
+public class CustomQueryDbContext : MasaDbContext<CustomQueryDbContext>
 {
-    public CustomQueryDbContext(MasaDbContextOptions options) : base(options)
+    public CustomQueryDbContext(MasaDbContextOptions<CustomQueryDbContext> options) : base(options)
     {
     }
 

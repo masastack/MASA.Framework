@@ -23,7 +23,7 @@ support:
   "Aliyun": {
     "AccessKeyId": "Replace-With-Your-AccessKeyId",
     "AccessKeySecret": "Replace-With-Your-AccessKeySecret",
-    "Sts": :{
+    "Sts": {
       "RegionId": "Replace-With-Your-RegionId",//https://www.alibabacloud.com/help/en/resource-access-management/latest/endpoints#reference-sdg-3pv-xdb
       "DurationSeconds": 3600,//Temporary certificate validity period, default: 3600s
       "EarlyExpires": 10//default: 10s

@@ -3,8 +3,11 @@
 
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Configuration.Options;
+global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;
-global using Masa.BuildingBlocks.Isolation.Parser;
+global using Masa.Contrib.Isolation;
+global using Masa.Contrib.Isolation.Parser;
+global using Masa.Contrib.Isolation.Middleware;
 global using Masa.Contrib.Isolation.MultiEnvironment;
 global using Masa.Contrib.Isolation.MultiEnvironment.Middleware;
 global using Microsoft.AspNetCore.Http;

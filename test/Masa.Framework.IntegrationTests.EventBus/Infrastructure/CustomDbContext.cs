@@ -3,11 +3,11 @@
 
 namespace Masa.Framework.IntegrationTests.EventBus.Infrastructure;
 
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public DbSet<User> User { get; set; }
 
-    public CustomDbContext(MasaDbContextOptions options) : base(options)
+    public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
     }
 }

@@ -65,7 +65,10 @@ public class DefaultMasaElasticClientTest
         indexResponse = await _builder.Client.CreateIndexAsync(personIndexName);
         Assert.IsTrue(indexResponse.IsValid);
 
-        var response = await _builder.Client.DeleteMultiIndexAsync(new[] { userIndexName, personIndexName });
+        var response = await _builder.Client.DeleteMultiIndexAsync(new[]
+        {
+            userIndexName, personIndexName
+        });
         Assert.IsTrue(response.IsValid);
 
         await Task.Delay(1000);
@@ -410,7 +413,10 @@ public class DefaultMasaElasticClientTest
     {
         string indexName = $"user_index_{Guid.NewGuid()}";
 
-        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { name = "jim" }, "1"));
+        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new
+        {
+            name = "jim"
+        }, "1"));
 
         await Task.Delay(1000);
         var response = await _builder.Client.GetListAsync(new QueryOptions<object>(indexName, "jim", "name", 0, 10));
@@ -424,15 +430,27 @@ public class DefaultMasaElasticClientTest
     {
         string indexName = $"user_index_{Guid.NewGuid()}";
 
-        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { id = "1", name = "jim" }, "1"));
-        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new { id = "2", name = "tom" }, "2"));
+        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new
+        {
+            id = "1",
+            name = "jim"
+        }, "1"));
+        await _builder.Client.CreateDocumentAsync(new CreateDocumentRequest<object>(indexName, new
+        {
+            id = "2",
+            name = "tom"
+        }, "2"));
 
         await Task.Delay(1000);
         var response =
             await _builder.Client.GetPaginatedListAsync(new PaginatedOptions<object>(indexName, "jim", "name", 1, 1));
         Assert.IsTrue(response.IsValid && response.Data.Count == 1);
         response = await _builder.Client.GetPaginatedListAsync(new PaginatedOptions<object>(indexName, "jim or 2",
-            new List<string> { "id", "name" }, 1, 2));
+            new List<string>
+            {
+                "id",
+                "name"
+            }, 1, 2));
         Assert.IsTrue(response.IsValid && response.Data.Count == 2);
 
         await _builder.Client.DeleteIndexAsync(indexName);
@@ -463,7 +481,10 @@ public class DefaultMasaElasticClientTest
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
 
-        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[] { indexName, indexName2 }));
+        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[]
+        {
+            indexName, indexName2
+        }));
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(alias));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 2);
 
@@ -496,7 +517,10 @@ public class DefaultMasaElasticClientTest
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
 
-        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[] { indexName, indexName2 }));
+        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[]
+        {
+            indexName, indexName2
+        }));
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(alias));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 2);
 
@@ -530,7 +554,10 @@ public class DefaultMasaElasticClientTest
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(indexName2));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 1);
 
-        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[] { indexName, indexName2 }));
+        await _builder.Client.BindAliasAsync(new BindAliasIndexOptions(alias, new[]
+        {
+            indexName, indexName2
+        }));
         countResponse = await _builder.Client.DocumentCountAsync(new CountDocumentRequest(alias));
         Assert.IsTrue(countResponse.IsValid && countResponse.Count == 2);
 

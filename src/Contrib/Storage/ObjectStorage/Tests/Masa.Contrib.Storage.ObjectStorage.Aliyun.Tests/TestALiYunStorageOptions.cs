@@ -137,4 +137,31 @@ public class TestALiYunStorageOptions
             EarlyExpires = -1
         });
     }
+
+    [TestMethod]
+    public void TestTryAddBucketName()
+    {
+        var options = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
+        var bucketNames = GetBucketNames(options);
+        Assert.AreEqual(0, bucketNames.Count);
+
+        options.TryAddBucketName("name", "masa");
+        bucketNames = GetBucketNames(options);
+        Assert.AreEqual(1, bucketNames.Count);
+        Assert.AreEqual("masa", bucketNames["name"]);
+
+        options.TryAddBucketName("Name", "masa");
+        bucketNames = GetBucketNames(options);
+        Assert.AreEqual(1, bucketNames.Count);
+        Assert.AreEqual("masa", bucketNames["name"]);
+    }
+
+    private static Dictionary<string, string> GetBucketNames(AliyunStorageOptions aliyunStorageOptions)
+    {
+        var fieldInfo = typeof(AliyunStorageOptions).GetField("_bucketNames", BindingFlags.Instance | BindingFlags.NonPublic);
+        Assert.IsNotNull(fieldInfo);
+        var bucketNames = fieldInfo.GetValue(aliyunStorageOptions) as Dictionary<string, string>;
+        Assert.IsNotNull(bucketNames);
+        return bucketNames;
+    }
 }

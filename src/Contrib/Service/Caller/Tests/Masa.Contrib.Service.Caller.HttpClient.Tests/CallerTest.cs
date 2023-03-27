@@ -210,6 +210,55 @@ public class CallerTest
         Assert.AreEqual("custom_xml", GetPrefix(xmlCallerBase.GetBaseCaller()));
     }
 
+    // [TestMethod]
+    // public void TestCallerLifetimeByDefault()
+    // {
+    //     var services = new ServiceCollection();
+    //     services.AddCaller(callerBuilder =>
+    //     {
+    //         callerBuilder.UseHttpClient(httpClient =>
+    //         {
+    //             httpClient.BaseAddress = "https://github.com";
+    //         });
+    //     });
+    //     var serviceProvider = services.BuildServiceProvider();
+    //     var caller = serviceProvider.GetService<ICaller>();
+    //     var caller2 = serviceProvider.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller2);
+    //
+    //     var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
+    //     var caller3 = serviceProvider2.GetService<ICaller>();
+    //     var caller4 = serviceProvider2.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller4);
+    //     Assert.AreNotEqual(caller3, caller4);
+    // }
+    //
+    // /// <summary>
+    // ///
+    // /// </summary>
+    // [TestMethod]
+    // public void TestCallerLifetimeEqualSingleton()
+    // {
+    //     var services = new ServiceCollection();
+    //     services.AddCaller(callerBuilder =>
+    //     {
+    //         callerBuilder.UseHttpClient(httpClient =>
+    //         {
+    //             httpClient.BaseAddress = "https://github.com";
+    //         });
+    //     }, ServiceLifetime.Singleton);
+    //     var serviceProvider = services.BuildServiceProvider();
+    //     var caller = serviceProvider.GetService<ICaller>();
+    //     var caller2 = serviceProvider.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller2);
+    //
+    //     var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
+    //     var caller3 = serviceProvider2.GetService<ICaller>();
+    //     var caller4 = serviceProvider2.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller4);
+    //     Assert.AreNotEqual(caller3, caller4);
+    // }
+
     private static FieldInfo GetCustomFieldInfo(Type type, string name)
         => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;
 

@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
+[ExcludeFromCodeCoverage]
 public class DefaultOssClientFactory : IOssClientFactory
 {
     public IOss GetClient(string accessKeyId, string accessKeySecret, string? securityToken, string endpoint)
@@ -10,7 +11,7 @@ public class DefaultOssClientFactory : IOssClientFactory
 
     public IAcsClient GetAcsClient(string accessKeyId, string accessKeySecret, string regionId)
     {
-        IClientProfile profile = DefaultProfile.GetProfile(regionId, accessKeyId, accessKeySecret);
+        var profile = DefaultProfile.GetProfile(regionId, accessKeyId, accessKeySecret);
         return new DefaultAcsClient(profile);
     }
 }

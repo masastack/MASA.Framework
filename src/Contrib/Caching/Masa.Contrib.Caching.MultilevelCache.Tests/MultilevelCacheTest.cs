@@ -7,20 +7,23 @@ namespace Masa.Contrib.Caching.MultilevelCache.Tests;
 [TestClass]
 public class MultilevelCacheTest : TestBase
 {
+    private static readonly FieldInfo SubscribeKeyTypeFieldInfo =
+        typeof(MultilevelCacheClient).GetField("_subscribeKeyType", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+    private static readonly FieldInfo SubscribeKeyPrefixFieldInfo =
+        typeof(MultilevelCacheClient).GetField("_subscribeKeyPrefix", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
     [TestMethod]
     public void TestAddMultilevelCache()
     {
         var services = new ServiceCollection();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(services);
-
-        cachingBuilder.AddMultilevelCache(_ =>
+        services.AddMultilevelCache(_ =>
         {
+
         });
 
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());
+        Assert.IsTrue(services.Any<IMultilevelCacheClient>());
+        Assert.IsTrue(services.Any<IMultilevelCacheClientFactory>());
     }
 
     [TestMethod]
@@ -38,7 +41,7 @@ public class MultilevelCacheTest : TestBase
     public void TestAddMultilevelCache3()
     {
         var services = new ServiceCollection();
-        services.AddMultilevelCache("test", distributedCacheOptions => distributedCacheOptions.UseStackExchangeRedisCache());
+        services.AddMultilevelCache("test", distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache());
         var serviceProvider = services.BuildServiceProvider();
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
@@ -50,8 +53,7 @@ public class MultilevelCacheTest : TestBase
     public void TestAddMultilevelCache4()
     {
         var services = new ServiceCollection();
-        services.AddMultilevelCache(distributedCacheOptions =>
-                distributedCacheOptions.UseStackExchangeRedisCache(),
+        services.AddMultilevelCache(distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(),
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
@@ -64,50 +66,22 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultilevelCacheBySpecialMultilevelCacheOptions()
-    {
-        var services = new ServiceCollection();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(services);
-
-        cachingBuilder.AddMultilevelCache(new MultilevelCacheGlobalOptions());
-
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClient>());
-        Assert.IsTrue(cachingBuilder.Services.Any<IMultilevelCacheClientFactory>());
-    }
-
-    [TestMethod]
-    public void TestMultilevelCacheOptions()
-    {
-        var builder = WebApplication.CreateBuilder();
-        var cachingBuilder = Substitute.For<ICachingBuilder>();
-        cachingBuilder.Name.Returns("test");
-        cachingBuilder.Services.Returns(builder.Services);
-        cachingBuilder.AddMultilevelCache();
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheOptions = serviceProvider.GetService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
-        Assert.IsNotNull(multilevelCacheOptions);
-        Assert.IsNotNull(multilevelCacheOptions.Value);
-
-        var option = multilevelCacheOptions.Get("test");
-        Assert.IsNotNull(option);
-        Assert.AreEqual("masa", option.SubscribeKeyPrefix);
-        Assert.AreEqual(SubscribeKeyType.SpecificPrefix, option.SubscribeKeyType);
-    }
-
-    [TestMethod]
     public void TestAddMultilevelCacheReturnIMultilevelCacheNotNull()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache(RedisConfigurationOptions).AddMultilevelCache().AddMultilevelCache();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(new MultilevelCacheGlobalOptions()
+        builder.Services.AddMultilevelCache(distributedCacheBuilder =>
         {
-            CacheEntryOptions = new CacheEntryOptions()
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
+        });
+        builder.Services.AddMultilevelCache("test", distributedCacheBuilder =>
+        {
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
+        }, globalOptions =>
+        {
+            globalOptions.CacheEntryOptions = new CacheEntryOptions()
             {
                 SlidingExpiration = TimeSpan.FromSeconds(10)
-            }
+            };
         });
 
         var serviceProvider = builder.Services.BuildServiceProvider();
@@ -148,74 +122,19 @@ public class MultilevelCacheTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultilevelCacheRepeat()
-    {
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
-            .AddMultilevelCache(multilevelCacheOptions =>
-            {
-                multilevelCacheOptions.CacheEntryOptions = new CacheEntryOptions()
-                {
-                    SlidingExpiration = TimeSpan.FromSeconds(10)
-                };
-            }).AddMultilevelCache(new MultilevelCacheGlobalOptions()
-            {
-                CacheEntryOptions = new CacheEntryOptions()
-                {
-                    SlidingExpiration = TimeSpan.FromSeconds(20)
-                }
-            });
-
-        var serviceProvider = builder.Services.BuildServiceProvider();
-        var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
-        Assert.IsNotNull(multilevelCacheClientFactory);
-        using var multilevelCacheClient = multilevelCacheClientFactory.Create("test");
-
-        var client = (MultilevelCacheClient)multilevelCacheClient;
-        Assert.IsNotNull(client);
-        Assert.IsNotNull(client.GlobalCacheOptions);
-        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
-
-        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(10), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
-    }
-
-    [TestMethod]
     public async Task TestModifyMultilevelCacheOptions()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.Services.AddStackExchangeRedisCache("test", RedisConfigurationOptions)
-            .AddMultilevelCache();
+        builder.Services.AddMultilevelCache("test", distributedCacheBuilder
+            => distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions));
         var serviceProvider = builder.Services.BuildServiceProvider();
 
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
         using var multilevelCacheClient = multilevelCacheClientFactory.Create();
 
-        var client = (MultilevelCacheClient)multilevelCacheClient;
-        Assert.IsNotNull(client);
-        Assert.IsNotNull(client.GlobalCacheOptions);
-        Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
+        VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
-        Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(TimeSpan.FromSeconds(30), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(50), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
-
-        var multilevelCacheClientType = typeof(MultilevelCacheClient);
-        string subscribeKeyPrefix =
-            (string)multilevelCacheClientType.GetField(
-                    "_subscribeKeyPrefix",
-                    BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(client)!;
-        Assert.AreEqual("masa", subscribeKeyPrefix);
-
-        SubscribeKeyType subscribeKeyType =
-            (SubscribeKeyType)multilevelCacheClientType.GetField(
-                    "_subscribeKeyType",
-                    BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(client)!;
-        Assert.AreEqual(SubscribeKeyType.SpecificPrefix, subscribeKeyType);
 
         var rootPath = builder.Environment.ContentRootPath;
         var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
@@ -237,25 +156,45 @@ public class MultilevelCacheTest : TestBase
                 }
             }));
         await Task.Delay(2000);
+        VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
-        subscribeKeyPrefix =
-            (string)multilevelCacheClientType.GetField(
-                    "_subscribeKeyPrefix",
-                    BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(client)!;
-        Assert.AreEqual("masa1", subscribeKeyPrefix);
+        VerifyOriginal(multilevelCacheClientFactory.Create() as MultilevelCacheClient);
 
-        subscribeKeyType =
-            (SubscribeKeyType)multilevelCacheClientType.GetField(
-                    "_subscribeKeyType",
-                    BindingFlags.Instance | BindingFlags.NonPublic)!
-                .GetValue(client)!;
-        Assert.AreEqual(SubscribeKeyType.ValueTypeFullNameAndKey, subscribeKeyType);
-        Assert.AreEqual(dateNow, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
-        Assert.AreEqual(TimeSpan.FromHours(1), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
-        Assert.AreEqual(TimeSpan.FromSeconds(60), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
+        VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as MultilevelCacheClient);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
+
+        void VerifyOriginal(MultilevelCacheClient? client)
+        {
+            Assert.IsNotNull(client);
+            Assert.IsNotNull(client.GlobalCacheOptions);
+            Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
+
+            Assert.AreEqual(null, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+            Assert.AreEqual(TimeSpan.FromSeconds(30), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+            Assert.AreEqual(TimeSpan.FromSeconds(50), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
+
+            string subscribeKeyPrefix = GetSubscribeKeyPrefix(client);
+            Assert.AreEqual("masa", subscribeKeyPrefix);
+
+            var subscribeKeyType = GetSubscribeKeyType(client);
+            Assert.AreEqual(SubscribeKeyType.SpecificPrefix, subscribeKeyType);
+        }
+
+        void VerifyTarget(MultilevelCacheClient? client)
+        {
+            Assert.IsNotNull(client);
+
+            var subscribeKeyPrefix = GetSubscribeKeyPrefix(client);
+            Assert.AreEqual("masa1", subscribeKeyPrefix);
+
+            var subscribeKeyType = GetSubscribeKeyType(client);
+            Assert.AreEqual(SubscribeKeyType.ValueTypeFullNameAndKey, subscribeKeyType);
+            Assert.IsNotNull(client.GlobalCacheOptions.MemoryCacheEntryOptions);
+            Assert.AreEqual(dateNow, client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpiration);
+            Assert.AreEqual(TimeSpan.FromHours(1), client.GlobalCacheOptions.MemoryCacheEntryOptions.AbsoluteExpirationRelativeToNow);
+            Assert.AreEqual(TimeSpan.FromSeconds(60), client.GlobalCacheOptions.MemoryCacheEntryOptions.SlidingExpiration);
+        }
     }
 
     [TestMethod]
@@ -275,7 +214,9 @@ public class MultilevelCacheTest : TestBase
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
                 {
-                    { "String", "s" }
+                    {
+                        "String", "s"
+                    }
                 };
             }
         );
@@ -300,7 +241,9 @@ public class MultilevelCacheTest : TestBase
             {
                 typeAliasOptions.GetAllTypeAliasFunc = () => new Dictionary<string, string>()
                 {
-                    { "String", "s" }
+                    {
+                        "String", "s"
+                    }
                 };
             }
         );
@@ -312,6 +255,20 @@ public class MultilevelCacheTest : TestBase
 
         Assert.AreEqual("configuration json", value);
         multilevelCacheClient.Remove<string>("configuration");
+    }
+
+    private static string GetSubscribeKeyPrefix(MultilevelCacheClient client)
+    {
+        var subscribeKeyPrefix = (string?)SubscribeKeyPrefixFieldInfo.GetValue(client);
+        Assert.IsNotNull(subscribeKeyPrefix);
+        return subscribeKeyPrefix;
+    }
+
+    private static SubscribeKeyType GetSubscribeKeyType(MultilevelCacheClient client)
+    {
+        var subscribeKeyType = (SubscribeKeyType?)SubscribeKeyTypeFieldInfo.GetValue(client);
+        Assert.IsNotNull(subscribeKeyType);
+        return subscribeKeyType.Value;
     }
 }
 #pragma warning restore CS0618

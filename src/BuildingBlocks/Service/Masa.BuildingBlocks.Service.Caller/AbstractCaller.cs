@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICaller
+public abstract class AbstractCaller : IManualCaller
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;
@@ -26,7 +26,7 @@ public abstract class AbstractCaller : ICaller
 
     private readonly ILogger<AbstractCaller>? _logger;
 
-    protected AbstractCaller(IServiceProvider serviceProvider)
+    private AbstractCaller(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         _logger = serviceProvider.GetService<ILogger<AbstractCaller>>();
@@ -460,5 +460,15 @@ public abstract class AbstractCaller : ICaller
             return _authenticationService.ExecuteAsync(masaHttpContext.RequestMessage);
         }
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

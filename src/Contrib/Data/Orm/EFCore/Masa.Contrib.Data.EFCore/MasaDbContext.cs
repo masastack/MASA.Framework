@@ -1,9 +1,12 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Microsoft.EntityFrameworkCore;
 
-public abstract class MasaDbContext : DbContext, IMasaDbContext
+public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
+    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
 {
     private bool _initialized;
     private IDataFilter? _dataFilter;
@@ -14,6 +17,17 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         {
             TryInitialize();
             return _dataFilter;
+        }
+    }
+
+    private MultiTenantProvider? _multiTenantProvider;
+
+    internal MultiTenantProvider? MultiTenantProvider
+    {
+        get
+        {
+            TryInitialize();
+            return _multiTenantProvider;
         }
     }
 
@@ -41,9 +55,28 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         }
     }
 
-    protected MasaDbContext(MasaDbContextOptions options) : base(options)
+    private readonly IMultiEnvironmentContext? _environmentContext;
+    private readonly IMultiTenantContext? _tenantContext;
+
+    protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
+
+    protected virtual bool IsTenantFilterEnabled
+    {
+        get
+        {
+            if (DataFilter == null)
+                return false;
+
+            return MultiTenantProvider?.IsTenantFilterEnabled(DataFilter) ?? false;
+        }
+    }
+
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
         Options = options;
+
+        _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
+        _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
     }
 
     protected virtual void TryInitialize()
@@ -56,7 +89,13 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
         _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
         _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
         _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
+        _multiTenantProvider = Options.ServiceProvider?.GetRequiredService<MultiTenantProvider>();
         _initialized = true;
+    }
+
+    protected virtual void OnConfiguringExecuting(MasaDbContextOptionsBuilder<TDbContext> modelBuilder)
+    {
+
     }
 
     /// <summary>
@@ -90,7 +129,10 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[] { modelBuilder, entityType });
+            methodInfo!.MakeGenericMethod(entityType.ClrType).Invoke(this, new object?[]
+            {
+                modelBuilder, entityType
+            });
         }
     }
 
@@ -115,8 +157,28 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
             expression = entity => !IsSoftDeleteFilterEnabled || !EF.Property<bool>(entity, nameof(ISoftDelete.IsDeleted));
         }
 
+        if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
+        {
+            var multiTenantProvider = Options.ServiceProvider!.GetRequiredService<MultiTenantProvider>();
+            string defaultTenantId = multiTenantProvider.MultiTenantIdDefaultValue;
+            Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
+                multiTenantProvider.GetMultiTenantId(entity)
+                    .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
+
+            expression = tenantFilter.And(expression != null, expression);
+        }
+
+        if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
+        {
+            Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
+                EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
+                    .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
+            expression = envFilter.And(expression != null, expression);
+        }
+
         return expression;
     }
+
 
     protected virtual bool IsSoftDeleteFilterEnabled
         => Options is { EnableSoftDelete: true } && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
@@ -217,13 +279,5 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     {
         await OnBeforeSaveChangesAsync();
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
-    }
-}
-
-public abstract class MasaDbContext<TDbContext> : MasaDbContext
-    where TDbContext : MasaDbContext, IMasaDbContext
-{
-    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
-    {
     }
 }

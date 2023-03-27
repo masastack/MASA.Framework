@@ -5,72 +5,44 @@ namespace Masa.Contrib.Caching.MultilevelCache;
 
 public class MultilevelCacheClient : MultilevelCacheClientBase
 {
+    private readonly IFormatCacheKeyProvider _formatCacheKeyProvider;
     private readonly ITypeAliasProvider? _typeAliasProvider;
-    private IMemoryCache _memoryCache;
+    private readonly IMemoryCache _memoryCache;
     private readonly IManualDistributedCacheClient _distributedCacheClient;
-    private SubscribeKeyType _subscribeKeyType;
-    private string _subscribeKeyPrefix;
+    private readonly SubscribeKeyType _subscribeKeyType;
+    private readonly string _subscribeKeyPrefix;
     private readonly object _locker = new();
     private readonly IList<string> _subscribeChannels = new List<string>();
+    private readonly string? _instanceId;
     public MultilevelCacheOptions GlobalCacheOptions { get; private set; }
 
     private static Action<CacheOptions> CacheOptionsAction
         => options => options.CacheKeyType = CacheKeyType.None;
 
-    protected MultilevelCacheClient(ITypeAliasProvider? typeAliasProvider = null)
+    private MultilevelCacheClient(
+        ITypeAliasProvider? typeAliasProvider = null,
+        IFormatCacheKeyProvider? formatCacheKeyProvider = null,
+        string? instanceId = null)
     {
+        _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
+        _instanceId = instanceId;
         _typeAliasProvider = typeAliasProvider;
     }
 
     public MultilevelCacheClient(
-        string name,
-        bool isReset,
-        IOptionsMonitor<MultilevelCacheGlobalOptions> multilevelCacheGlobalOptions,
+        IMemoryCache memoryCache,
         IManualDistributedCacheClient distributedCacheClient,
-        ITypeAliasProvider? typeAliasProvider = null) : this(typeAliasProvider)
-    {
-        _distributedCacheClient = distributedCacheClient;
-
-        multilevelCacheGlobalOptions.OnChange((option, optionName) =>
-        {
-            if (name == optionName)
-            {
-                if (isReset)
-                {
-                    _memoryCache = new MemoryCache(option);
-                }
-                _subscribeKeyType = option.SubscribeKeyType;
-                _subscribeKeyPrefix = option.SubscribeKeyPrefix;
-                GlobalCacheOptions = new MultilevelCacheOptions()
-                {
-                    CacheKeyType = option.GlobalCacheOptions.CacheKeyType,
-                    MemoryCacheEntryOptions = option.CacheEntryOptions
-                };
-            }
-        });
-
-        var options = multilevelCacheGlobalOptions.Get(name) ?? new MultilevelCacheGlobalOptions();
-        _memoryCache = new MemoryCache(options);
-        _subscribeKeyType = options.SubscribeKeyType;
-        _subscribeKeyPrefix = options.SubscribeKeyPrefix;
-        GlobalCacheOptions = new MultilevelCacheOptions()
-        {
-            CacheKeyType = options.GlobalCacheOptions.CacheKeyType,
-            MemoryCacheEntryOptions = options.CacheEntryOptions
-        };
-    }
-
-    public MultilevelCacheClient(IMemoryCache memoryCache,
-        IManualDistributedCacheClient distributedCacheClient,
-        MultilevelCacheOptions multilevelCacheOptions,
-        SubscribeKeyType subscribeKeyType,
+        MultilevelCacheOptions? multilevelCacheOptions = null,
+        SubscribeKeyType subscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey,
         string subscribeKeyPrefix = "",
-        ITypeAliasProvider? typeAliasProvider = null) : this(typeAliasProvider)
+        ITypeAliasProvider? typeAliasProvider = null,
+        IFormatCacheKeyProvider? formatCacheKeyProvider = null,
+        string? instanceId = null) : this(typeAliasProvider, formatCacheKeyProvider, instanceId)
     {
         _memoryCache = memoryCache;
         _distributedCacheClient = distributedCacheClient;
         _subscribeKeyType = subscribeKeyType;
-        GlobalCacheOptions = multilevelCacheOptions;
+        GlobalCacheOptions = multilevelCacheOptions ?? new MultilevelCacheOptions();
         _subscribeKeyPrefix = subscribeKeyPrefix;
     }
 
@@ -427,14 +399,17 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     #region Private methods
 
     private string FormatCacheKey<T>(string key, CacheKeyType cacheKeyType)
-        => CacheKeyHelper.FormatCacheKey<T>(
+        => _formatCacheKeyProvider.FormatCacheKey<T>(
+            _instanceId,
             key,
             cacheKeyType,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName));
 
-    public List<(string Key, string FormattedKey)> FormatCacheKeys<T>(IEnumerable<string> keys, CacheKeyType cacheKeyType)
+    public List<(string Key, string FormattedKey)> FormatCacheKeys<T>(IEnumerable<string> keys,
+        CacheKeyType cacheKeyType)
     {
-        return keys.Select(key => (key, CacheKeyHelper.FormatCacheKey<T>(
+        return keys.Select(key => (key, _formatCacheKeyProvider.FormatCacheKey<T>(
+            _instanceId,
             key,
             cacheKeyType,
             _typeAliasProvider == null ? null : typeName => _typeAliasProvider.GetAliasName(typeName)))).ToList();
@@ -452,7 +427,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     private static CacheKeyType GetCacheKeyType(MultilevelCacheOptions multilevelCacheOptions)
-        => multilevelCacheOptions.CacheKeyType ?? Constant.DEFAULT_CACHE_KEY_TYPE;
+        => multilevelCacheOptions.CacheKeyType ?? MultilevelCacheConstant.DEFAULT_CACHE_KEY_TYPE;
 
     private CacheEntryOptions? GetMemoryCacheEntryOptions(MultilevelCacheOptions multilevelCacheOptions)
         => multilevelCacheOptions.MemoryCacheEntryOptions ?? GlobalCacheOptions.MemoryCacheEntryOptions;

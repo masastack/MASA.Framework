@@ -19,7 +19,7 @@ public static class CallerOptionsExtensions
         {
             callerOptionsBuilder.AddCallerRelation(serviceProvider =>
             {
-                var masaDaprClient = new MasaDaprClient();
+                var masaDaprClient = new MasaDaprClient(serviceProvider);
                 masDaprClientConfigure.Invoke(masaDaprClient);
                 var appid = serviceProvider.GetRequiredService<ICallerProvider>().CompletionAppId(masaDaprClient.AppId);
 

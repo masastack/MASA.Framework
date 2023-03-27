@@ -9,12 +9,16 @@ public class MasaDaprClientTest
     [TestMethod]
     public void TestSetAppId()
     {
+        Mock<IServiceProvider> serviceProvider = new();
         string appId = "masa";
-        var daprClient = new MasaDaprClient(appId);
+        var daprClient = new MasaDaprClient(serviceProvider.Object)
+        {
+            AppId = appId
+        };
         Assert.AreEqual(appId, daprClient.AppId);
 
-        Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(null!));
-        Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(string.Empty));
-        Assert.ThrowsException<MasaArgumentException>(() => new MasaDaprClient(" "));
+        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = null!);
+        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = string.Empty);
+        Assert.ThrowsException<MasaArgumentException>(() => daprClient.AppId = " ");
     }
 }

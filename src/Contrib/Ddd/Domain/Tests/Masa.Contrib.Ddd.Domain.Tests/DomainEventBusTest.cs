@@ -10,6 +10,9 @@ public class DomainEventBusTest
     private Mock<IIntegrationEventBus> _integrationEventBus;
     private DomainEventBus _domainEventBus;
 
+    private static readonly FieldInfo EventQueueFileInfo =
+        typeof(DomainEventBus).GetField("_eventQueue", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
     [TestInitialize]
     public void Test()
     {
@@ -59,5 +62,40 @@ public class DomainEventBusTest
         var domainService = serviceProvider.GetService<UserDomainService>();
         Assert.IsNotNull(domainService);
         Assert.AreNotEqual(default, domainService.EventBus);
+    }
+
+    [TestMethod]
+    public async Task TestEnqueueAsync()
+    {
+        Mock<IEventBus> eventBus = new();
+        eventBus.Setup(bus => bus.PublishAsync(It.IsAny<IEvent>(), It.IsAny<CancellationToken>())).Verifiable();
+        Mock<IIntegrationEventBus> integrationEventBus = new();
+        Mock<IUnitOfWork> unitOfWork = new();
+        var domainEventBus = new DomainEventBus(
+            eventBus.Object,
+            integrationEventBus.Object,
+            unitOfWork.Object);
+        var eventQueue = GetEventQueue(domainEventBus);
+        Assert.AreEqual(0, eventQueue.Count);
+
+        var registerUserDomainEvent = new RegisterUserDomainEvent()
+        {
+            Name = "masa"
+        };
+        await domainEventBus.Enqueue(registerUserDomainEvent);
+        eventQueue = GetEventQueue(domainEventBus);
+        Assert.AreEqual(1, eventQueue.Count);
+
+        Assert.IsTrue(await domainEventBus.AnyQueueAsync());
+        await domainEventBus.PublishQueueAsync();
+
+        eventBus.Verify(bus => bus.PublishAsync(It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    private static ConcurrentQueue<IDomainEvent> GetEventQueue(DomainEventBus domainEventBus)
+    {
+        var eventQueue = EventQueueFileInfo.GetValue(domainEventBus) as ConcurrentQueue<IDomainEvent>;
+        Assert.IsNotNull(eventQueue);
+        return eventQueue;
     }
 }

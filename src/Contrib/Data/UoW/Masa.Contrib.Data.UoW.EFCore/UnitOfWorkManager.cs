@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.UoW.EFCore;
 
-public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext, IMasaDbContext
+public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -17,22 +17,25 @@ public class UnitOfWorkManager<TDbContext> : IUnitOfWorkManager where TDbContext
     /// <returns></returns>
     public IUnitOfWork CreateDbContext(bool lazyLoading = true)
     {
-        var scope = _serviceProvider.CreateAsyncScope();
+        var scope = _serviceProvider.CreateScope();
         if (!lazyLoading)
             scope.ServiceProvider.GetRequiredService<TDbContext>();
 
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }
 
-    public IUnitOfWork CreateDbContext(MasaDbContextConfigurationOptions options)
+    public IUnitOfWork CreateDbContext(DbContextConnectionStringOptions connectionStringOptions)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
-        if (string.IsNullOrEmpty(options.ConnectionString))
-            throw new ArgumentException($"Invalid {nameof(options)}");
+        ArgumentNullException.ThrowIfNull(connectionStringOptions, nameof(connectionStringOptions));
 
-        var scope = _serviceProvider.CreateAsyncScope();
+        if (string.IsNullOrEmpty(connectionStringOptions.ConnectionString))
+            throw new ArgumentException($"Invalid {nameof(connectionStringOptions)}");
+
+        var scope = _serviceProvider.CreateScope();
         var unitOfWorkAccessor = scope.ServiceProvider.GetRequiredService<IUnitOfWorkAccessor>();
-        unitOfWorkAccessor.CurrentDbContextOptions = options;
+        unitOfWorkAccessor.CurrentDbContextOptions.AddConnectionString(
+            ConnectionStringNameAttribute.GetConnStringName(typeof(TDbContext)),
+            connectionStringOptions.ConnectionString);
 
         return scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
     }

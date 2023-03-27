@@ -15,110 +15,48 @@ public class CredentialProviderTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
 
-        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
-            memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
+        var client = new CustomCredentialProvider(ALiYunStorageOptions, memoryCache);
         var securityToken = client.GetSecurityToken();
         Assert.IsTrue(securityToken.Expiration == client.TemporaryCredentials.Expiration &&
             securityToken.AccessKeyId == client.TemporaryCredentials.AccessKeyId &&
             securityToken.AccessKeySecret == client.TemporaryCredentials.AccessKeySecret &&
             securityToken.SessionToken == client.TemporaryCredentials.SessionToken);
-        Assert.IsNotNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
+        Assert.IsNotNull(memoryCache.Get<TemporaryCredentialsResponse>(ALiYunStorageOptions.TemporaryCredentialsCacheKey));
     }
 
     [TestMethod]
     public void TestGetSecurityTokenByCacheNotFoundAndGetTemporaryCredentialsIsNullReturnError()
     {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomNullClient(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
-            memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
+        var client = new CustomExceptionCredentialProvider(ALiYunStorageOptions, new MemoryCache(new MemoryDistributedCacheOptions()));
         Assert.ThrowsException<Exception>(() => client.GetSecurityToken(), client.Message);
-        Assert.IsNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
-    }
-
-    [TestMethod]
-    public void TestSetTemporaryCredentialsAndExpirationLessThan10SecondsReturnSkip()
-    {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
-            memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
-        client.TestExpirationTimeLessThan10Second(5);
-        Assert.IsNull(memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey));
     }
 
     [DataTestMethod]
-    [DataRow(15)]
-    [DataRow(20)]
-    public void TestSetTemporaryCredentialsAndExpirationGreatherThanOrEqual10SecondsReturnSkip(int durationSeconds)
+    [DataRow(5, true)]
+    [DataRow(15, false)]
+    [DataRow(20, false)]
+    public void TestSetTemporaryCredentials(int durationSeconds, bool isNull)
     {
         var services = new ServiceCollection();
         services.AddMemoryCache();
         services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
         var serviceProvider = services.BuildServiceProvider();
         var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
+        var client = new CustomCredentialProvider(
+            ALiYunStorageOptions,
             memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
-        client.TestExpirationTimeLessThan10Second(durationSeconds);
-        var res = memoryCache.Get<TemporaryCredentialsResponse>(_aLiYunStorageOptions.TemporaryCredentialsCacheKey);
-        Assert.IsNotNull(res);
-    }
+            serviceProvider.GetRequiredService<IOssClientFactory>(),
+            NullLoggerFactory.Instance);
+        client.TestExpirationTimeLessThan(durationSeconds);
 
-    [TestMethod]
-    public void TestGetTemporaryCredentialsReturnNull()
-    {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
-            memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
-        Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
-            "cn-shanghai",
-            "accessKeyId",
-            "accessKeySecret",
-            "roleArn",
-            "roleSessionName",
-            string.Empty,
-            3600));
-    }
-
-    [TestMethod]
-    public void TestGetTemporaryCredentialsAndNullLoggerReturnThrowException()
-    {
-        var services = new ServiceCollection();
-        services.AddMemoryCache();
-        services.AddSingleton<IOssClientFactory, DefaultOssClientFactory>();
-        var serviceProvider = services.BuildServiceProvider();
-        var memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
-        var client = new CustomCredentialProvider(serviceProvider.GetRequiredService<IOssClientFactory>(),
-            MockOptionProvider().Object,
-            memoryCache,
-            NullLogger<DefaultCredentialProvider>.Instance);
-        Assert.ThrowsException<ClientException>(() => client.TestGetTemporaryCredentials(
-            "cn-shanghai",
-            "accessKeyId",
-            "accessKeySecret",
-            "roleArn",
-            "roleSessionName",
-            "policy",
-            3600));
+        var result = memoryCache.Get<TemporaryCredentialsResponse>(ALiYunStorageOptions.TemporaryCredentialsCacheKey);
+        if (isNull)
+        {
+            Assert.IsNull(result);
+        }
+        else
+        {
+            Assert.IsNotNull(result);
+        }
     }
 }

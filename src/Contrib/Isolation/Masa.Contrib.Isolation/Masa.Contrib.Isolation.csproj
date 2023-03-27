@@ -7,12 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Configuration\Masa.BuildingBlocks.Configuration\Masa.BuildingBlocks.Configuration.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data.UoW\Masa.BuildingBlocks.Data.UoW.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\Data\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.Events\Masa.BuildingBlocks.Dispatcher.Events.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Dispatcher\Masa.BuildingBlocks.Dispatcher.IntegrationEvents\Masa.BuildingBlocks.Dispatcher.IntegrationEvents.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Isolation\Masa.BuildingBlocks.Isolation\Masa.BuildingBlocks.Isolation.csproj" />
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.Expressions\Masa.Utils.Extensions.Expressions.csproj" />
   </ItemGroup>
-
+  
 </Project>

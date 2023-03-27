@@ -68,6 +68,13 @@ public class HttpClientCaller : AbstractCaller
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
+    protected override void Dispose(bool disposing)
+    {
+        _httpClient.Dispose();
+        base.Dispose(disposing);
+    }
+
     protected virtual string GetRequestUri(string? methodName)
     {
         if (string.IsNullOrEmpty(methodName))
