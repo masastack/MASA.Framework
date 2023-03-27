@@ -75,6 +75,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
     {
         Options = options;
 
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
         _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
     }
