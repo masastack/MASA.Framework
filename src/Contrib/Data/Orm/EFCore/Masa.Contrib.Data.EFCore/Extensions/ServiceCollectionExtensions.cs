@@ -122,7 +122,8 @@ public static class ServiceCollectionExtensions
     private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(
         IServiceProvider serviceProvider,
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
-        bool enableSoftDelete, bool enablePluralizingTableName)
+        bool enableSoftDelete,
+        bool enablePluralizingTableName)
         where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
     {
         var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete, enablePluralizingTableName);
