@@ -32,7 +32,6 @@ public static class ServiceCollectionExtensions
             return services;
 
         services.AddSingleton<SchedulerProvider>();
-        services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>

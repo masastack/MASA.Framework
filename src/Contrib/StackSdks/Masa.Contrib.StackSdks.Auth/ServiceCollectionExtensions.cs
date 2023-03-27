@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
 
         services.AddAuthClientMultilevelCache(redisOptions);
