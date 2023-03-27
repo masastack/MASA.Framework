@@ -26,7 +26,6 @@ public static class CallerOptionsExtensions
                 return new DaprCaller(
                     serviceProvider,
                     callerOptionsBuilder.Name,
-                    callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                     appid,
                     masaDaprClient.RequestMessageFactory,
                     masaDaprClient.ResponseMessageFactory);

@@ -19,19 +19,6 @@ public class RedisCacheClient : RedisCacheClientBase
         _typeAliasProvider = typeAliasProvider;
     }
 
-    public RedisCacheClient(
-        string name,
-        RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions,
-        ITypeAliasProvider? typeAliasProvider,
-        IRedisMultiplexerPool redisMultiplexerProvider,
-        IFormatCacheKeyProvider? formatCacheKeyProvider = null)
-        : base(name, redisConfigurationOptions, jsonSerializerOptions, redisMultiplexerProvider)
-    {
-        _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
-        _typeAliasProvider = typeAliasProvider;
-    }
-
     #region Get
 
     public override T? Get<T>(

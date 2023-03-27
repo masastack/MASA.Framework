@@ -71,12 +71,10 @@ public static class ServiceCollectionExtensions
                     return optionsMonitor.Get(name);
                 });
 
-            var multilevelCacheProvider = serviceProvider.GetRequiredService<IMultilevelCachePool>();
-            var item = multilevelCacheProvider.GetCache(serviceProvider, name, multilevelCacheGlobalOptions);
-
+            var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(name);
             var multilevelCacheClient = new MultilevelCacheClient(
-                item.MemoryCache,
-                item.ManualDistributedCacheClient,
+                new MemoryCache(multilevelCacheGlobalOptions),
+                distributedCacheClient,
                 new MultilevelCacheOptions()
                 {
                     CacheKeyType = multilevelCacheGlobalOptions.GlobalCacheOptions.CacheKeyType,
@@ -91,7 +89,6 @@ public static class ServiceCollectionExtensions
             return multilevelCacheClient;
         });
 
-        services.TryAddSingleton<IMultilevelCachePool, DefaultMultilevelCachePool>();
         services.AddTypeAlias(name, typeAliasOptionsAction);
     }
 
@@ -112,12 +109,10 @@ public static class ServiceCollectionExtensions
             MultilevelCacheGlobalOptions multilevelCacheGlobalOptions = new();
             multilevelCacheOptionsAction?.Invoke(multilevelCacheGlobalOptions);
 
-            var multilevelCacheProvider = serviceProvider.GetRequiredService<IMultilevelCachePool>();
-            var item = multilevelCacheProvider.GetCache(serviceProvider, name, multilevelCacheGlobalOptions);
-
+            var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(name);
             var multilevelCacheClient = new MultilevelCacheClient(
-                item.MemoryCache,
-                item.ManualDistributedCacheClient,
+                new MemoryCache(multilevelCacheGlobalOptions),
+                distributedCacheClient,
                 new MultilevelCacheOptions
                 {
                     CacheKeyType = multilevelCacheGlobalOptions.GlobalCacheOptions.CacheKeyType,
@@ -132,7 +127,6 @@ public static class ServiceCollectionExtensions
             return multilevelCacheClient;
 
         });
-        services.TryAddSingleton<IMultilevelCachePool, DefaultMultilevelCachePool>();
         return services.AddTypeAlias(name, typeAliasOptionsAction);
     }
 

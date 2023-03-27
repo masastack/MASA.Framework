@@ -14,7 +14,7 @@ public static class ServiceCollectionExtensions
     {
         MasaApp.TrySetServiceCollection(services);
         services.TryAddTransient<IRulesEngineFactory, DefaultRulesEngineFactory>();
-        services.TryAddTransient(serviceProvider => serviceProvider.GetRequiredService<IRulesEngineFactory>().Create());
+        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IRulesEngineFactory>().Create());
         var rulesEngineOptionsBuilder = new RulesEngineOptionsBuilder(services, name);
         action.Invoke(rulesEngineOptionsBuilder);
         services.AddServiceFactory();

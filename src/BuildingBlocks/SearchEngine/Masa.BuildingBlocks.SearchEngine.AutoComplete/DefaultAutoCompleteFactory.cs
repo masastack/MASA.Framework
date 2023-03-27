@@ -21,13 +21,4 @@ public class DefaultAutoCompleteFactory : MasaFactoryBase<IManualAutoCompleteCli
     public IAutoCompleteClient CreateClient() => base.Create();
 
     public IAutoCompleteClient CreateClient(string name) => base.Create(name);
-
-    protected override IServiceProvider GetServiceProvider(string name)
-    {
-        var options = TransientServiceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-        if (options.Value is { Enable: true })
-            return ScopedServiceProvider;
-
-        return SingletonServiceProvider;
-    }
 }

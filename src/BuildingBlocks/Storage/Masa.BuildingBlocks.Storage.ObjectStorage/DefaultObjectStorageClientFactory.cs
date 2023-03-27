@@ -16,6 +16,4 @@ public class DefaultObjectStorageClientFactory : MasaFactoryBase<IObjectStorageC
     {
         _options = serviceProvider.GetRequiredService<IOptionsMonitor<ObjectStorageFactoryOptions>>();
     }
-
-    protected override IServiceProvider GetServiceProvider(string name) => TransientServiceProvider;
 }

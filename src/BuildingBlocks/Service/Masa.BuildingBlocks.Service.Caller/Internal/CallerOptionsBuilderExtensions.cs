@@ -21,8 +21,7 @@ internal static class CallerOptionsBuilderExtensions
 
             callerOptions.Options.Add(new CallerRelationOptions(
                 callerOptionsBuilder.Name,
-                implementationFactory,
-                callerOptionsBuilder.Lifetime));
+                implementationFactory));
         });
     }
 }

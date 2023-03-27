@@ -33,7 +33,6 @@ public static class CallerOptionsExtensions
                 httpClient,
                 serviceProvider,
                 callerOptionsBuilder.Name,
-                callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                 masaHttpClient.Prefix,
                 masaHttpClient.RequestMessageFactory,
                 masaHttpClient.ResponseMessageFactory);

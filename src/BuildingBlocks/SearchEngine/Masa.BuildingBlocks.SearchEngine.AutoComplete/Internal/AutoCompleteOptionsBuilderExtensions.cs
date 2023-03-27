@@ -34,7 +34,7 @@ internal static class AutoCompleteOptionsBuilderExtensions
         MasaArgumentException.ThrowIfNull(name);
 
         services.TryAddTransient<IAutoCompleteFactory, DefaultAutoCompleteFactory>();
-        services.TryAddTransient(serviceProvider
+        services.TryAddSingleton(serviceProvider
             => (IAutoCompleteClient)serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create());
 
         services.AddServiceFactory();

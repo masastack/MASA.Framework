@@ -30,7 +30,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
     }
 
     public MultilevelCacheClient(
-        IMemoryCache memoryCache,
+        IMemoryCache? memoryCache,
         IManualDistributedCacheClient distributedCacheClient,
         MultilevelCacheOptions? multilevelCacheOptions = null,
         SubscribeKeyType subscribeKeyType = SubscribeKeyType.ValueTypeFullNameAndKey,
@@ -39,7 +39,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         string? instanceId = null) : this(typeAliasProvider, formatCacheKeyProvider, instanceId)
     {
-        _memoryCache = memoryCache;
+        _memoryCache = memoryCache?? new MemoryCache(new MultilevelCacheGlobalOptions());
         _distributedCacheClient = distributedCacheClient;
         _subscribeKeyType = subscribeKeyType;
         GlobalCacheOptions = multilevelCacheOptions ?? new MultilevelCacheOptions();

@@ -12,11 +12,10 @@ public class HttpClientCaller : AbstractCaller
     public HttpClientCaller(System.Net.Http.HttpClient httpClient,
         IServiceProvider serviceProvider,
         string name,
-        bool supportAuthentication,
         string prefix,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory)
-        : base(serviceProvider, name, supportAuthentication, currentRequestMessageFactory, currentResponseMessageFactory)
+        : base(serviceProvider, name, currentRequestMessageFactory, currentResponseMessageFactory)
     {
         _httpClient = httpClient;
         _prefix = prefix;

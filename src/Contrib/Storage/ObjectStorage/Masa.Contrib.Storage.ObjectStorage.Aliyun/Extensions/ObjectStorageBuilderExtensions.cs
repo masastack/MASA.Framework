@@ -20,16 +20,12 @@ public static class ObjectStorageBuilderExtensions
             serviceProvider =>
             {
                 var aliyunStorageOptions = serviceProvider.GetAliyunStorageOptions(sectionName, name);
-                var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
-                var memoryCache = memoryCacheProvider.GetMemoryCache(name, aliyunStorageOptions);
                 return new DefaultStorageClient(
                     aliyunStorageOptions,
-                    memoryCache,
-                    memoryCacheProvider,
+                    null,
                     null,
                     serviceProvider.GetService<IOssClientFactory>(),
-                    serviceProvider.GetService<ILoggerFactory>(),
-                    name
+                    serviceProvider.GetService<ILoggerFactory>()
                 );
             },
             serviceProvider =>
@@ -83,16 +79,12 @@ public static class ObjectStorageBuilderExtensions
             serviceProvider =>
             {
                 var aliyunStorageOptions = func.Invoke(serviceProvider);
-                var memoryCacheProvider = serviceProvider.GetRequiredService<MemoryCacheProvider>();
-                var memoryCache = memoryCacheProvider.GetMemoryCache(name, aliyunStorageOptions);
                 return new DefaultStorageClient(
                     aliyunStorageOptions,
-                    memoryCache,
-                    memoryCacheProvider,
+                    null,
                     null,
                     serviceProvider.GetService<IOssClientFactory>(),
-                    serviceProvider.GetService<ILoggerFactory>(),
-                    name);
+                    serviceProvider.GetService<ILoggerFactory>());
 
             }, serviceProvider =>
             {
@@ -103,7 +95,6 @@ public static class ObjectStorageBuilderExtensions
 
     private static void AddAliyunStorageCore(this IServiceCollection services)
     {
-        services.TryAddSingleton<MemoryCacheProvider>();
         services.TryAddSingleton<IOssClientFactory, DefaultOssClientFactory>();
     }
 }

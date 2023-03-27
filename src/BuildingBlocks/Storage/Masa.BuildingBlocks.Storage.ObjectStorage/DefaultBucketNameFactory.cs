@@ -15,6 +15,4 @@ public class DefaultBucketNameFactory : MasaFactoryBase<IBucketNameProvider, Buc
     {
         _options = serviceProvider.GetRequiredService<IOptionsMonitor<BucketNameFactoryOptions>>();
     }
-
-    protected override IServiceProvider GetServiceProvider(string name) => TransientServiceProvider;
 }

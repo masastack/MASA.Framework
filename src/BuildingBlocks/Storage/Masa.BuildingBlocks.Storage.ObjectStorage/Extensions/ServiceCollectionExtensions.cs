@@ -38,14 +38,14 @@ public static class ServiceCollectionExtensions
 
     private static void TryAddObjectStorageClient(this IServiceCollection services)
     {
-        services.TryAddTransient<IObjectStorageClient>(serviceProvider =>
+        services.TryAddSingleton<IObjectStorageClient>(serviceProvider =>
             serviceProvider.GetRequiredService<IObjectStorageClientFactory>().Create());
         services.TryAddTransient<IObjectStorageClientFactory, DefaultObjectStorageClientFactory>();
     }
 
     private static void TryAddBucketNameProvider(this IServiceCollection services)
     {
-        services.TryAddTransient<IBucketNameProvider>(serviceProvider =>
+        services.TryAddSingleton<IBucketNameProvider>(serviceProvider =>
             serviceProvider.GetRequiredService<IBucketNameFactory>().Create());
         services.TryAddTransient<IBucketNameFactory, DefaultBucketNameFactory>();
     }
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
                 serviceProvider.GetRequiredService<IObjectStorageClient>(),
                 serviceProvider.GetRequiredService<IBucketNameProvider>().GetBucketName()));
 
-        services.TryAddTransient(typeof(IObjectStorageClientContainer<>), typeof(DefaultObjectStorageClientContainer<>));
+        services.TryAddSingleton(typeof(IObjectStorageClientContainer<>), typeof(DefaultObjectStorageClientContainer<>));
         services.TryAddTransient<IObjectStorageClientContainerFactory, DefaultObjectStorageClientContainerFactory>();
     }
 }

@@ -27,7 +27,6 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     private readonly string _name;
     private readonly RedisConfigurationOptions? _redisConfigurationOptions;
-    private readonly IRedisMultiplexerPool? _redisMultiplexerPool;
 
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
@@ -53,21 +52,6 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
             SlidingExpiration = expiredEntryOptions.SlidingExpiration
         };
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
-    }
-
-    protected RedisCacheClientBase(
-        string name,
-        RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions,
-        IRedisMultiplexerPool redisMultiplexerProvider)
-        : this(redisConfigurationOptions.GlobalCacheOptions, redisConfigurationOptions, jsonSerializerOptions)
-    {
-        _name = name;
-        _redisConfigurationOptions = redisConfigurationOptions.GetAvailableRedisOptions();
-        _redisMultiplexerPool = redisMultiplexerProvider;
-        _connection = _redisMultiplexerPool.GetConnectionMultiplexer(name, _redisConfigurationOptions);
-        Subscriber = _connection.GetSubscriber();
-        InstanceId = _redisConfigurationOptions.InstanceId;
     }
 
     protected T? ConvertToValue<T>(RedisValue value, out bool isExist)
@@ -220,8 +204,7 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     protected override void Dispose(bool disposing)
     {
-        _redisMultiplexerPool?.TryRemove(_name, _redisConfigurationOptions!);
-        _connection?.Dispose();
+        _connection.Dispose();
         base.Dispose(disposing);
     }
 

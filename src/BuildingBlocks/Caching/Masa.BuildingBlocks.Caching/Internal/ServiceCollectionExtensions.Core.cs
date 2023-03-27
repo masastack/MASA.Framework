@@ -18,9 +18,9 @@ internal static class ServiceCollectionExtensions
         services.AddServiceFactory();
 
         services.TryAddTransient<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
-        services.TryAddTransient(serviceProvider
+        services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
-        services.TryAddTransient(typeof(IDistributedCacheClient), serviceProvider
+        services.TryAddSingleton(typeof(IDistributedCacheClient), serviceProvider
             => serviceProvider.GetRequiredService<IManualDistributedCacheClient>());
 
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
@@ -41,9 +41,9 @@ internal static class ServiceCollectionExtensions
         });
 
         services.TryAddTransient<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
-        services.TryAddTransient(serviceProvider
+        services.TryAddSingleton(serviceProvider
             => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
-        services.TryAddTransient(typeof(IMultilevelCacheClient), serviceProvider
+        services.TryAddSingleton(typeof(IMultilevelCacheClient), serviceProvider
             => serviceProvider.GetRequiredService<IManualMultilevelCacheClient>());
 
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();

@@ -10,14 +10,15 @@ public abstract class ObjectStorageClientBase : AbstractStorageClient
 
     protected ObjectStorageClientBase(
         AliyunStorageOptions aliyunStorageOptions,
-        IMemoryCache memoryCache,
+        IMemoryCache? memoryCache,
         ICredentialProvider? credentialProvider,
         IOssClientFactory? ossClientFactory = null,
         ILoggerFactory? loggerFactory = null
     )
     {
         AliyunStorageOptions = aliyunStorageOptions;
-        CredentialProvider = credentialProvider ?? new DefaultCredentialProvider(aliyunStorageOptions, memoryCache, ossClientFactory, loggerFactory);
+
+        CredentialProvider = credentialProvider ?? new DefaultCredentialProvider(aliyunStorageOptions, memoryCache?? new MemoryCache(new MemoryCacheOptions()), ossClientFactory, loggerFactory);
     }
 
     [ExcludeFromCodeCoverage]

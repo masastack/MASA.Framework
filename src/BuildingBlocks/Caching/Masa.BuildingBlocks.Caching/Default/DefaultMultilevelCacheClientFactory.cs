@@ -19,6 +19,4 @@ public class DefaultMultilevelCacheClientFactory : CacheClientFactoryBase<IManua
     {
         _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheFactoryOptions>>();
     }
-
-    protected override IServiceProvider GetServiceProvider(string name) => TransientServiceProvider;
 }

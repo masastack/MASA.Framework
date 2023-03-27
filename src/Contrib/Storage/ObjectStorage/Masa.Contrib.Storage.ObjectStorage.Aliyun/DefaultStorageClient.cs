@@ -8,30 +8,15 @@ public class DefaultStorageClient :
     IObjectStorageClient
 {
     private readonly ILogger<DefaultStorageClient>? _logger;
-    private readonly IAliyunMemoryCacheProvider? _aliyunMemoryCacheProvider;
-    private readonly string _name;
 
     public DefaultStorageClient(
         AliyunStorageOptions aliyunStorageOptions,
-        IMemoryCache memoryCache,
+        IMemoryCache? memoryCache = null,
         ICredentialProvider? credentialProvider = null,
         IOssClientFactory? ossClientFactory = null,
         ILoggerFactory? loggerFactory = null) : base(aliyunStorageOptions, memoryCache, credentialProvider, ossClientFactory, loggerFactory)
     {
         _logger = loggerFactory?.CreateLogger<DefaultStorageClient>();
-    }
-
-    public DefaultStorageClient(
-        AliyunStorageOptions aliyunStorageOptions,
-        IMemoryCache memoryCache,
-        IAliyunMemoryCacheProvider aliyunMemoryCacheProvider,
-        ICredentialProvider? credentialProvider = null,
-        IOssClientFactory? ossClientFactory = null,
-        ILoggerFactory? loggerFactory = null,
-        string name = "") : this(aliyunStorageOptions, memoryCache, credentialProvider, ossClientFactory, loggerFactory)
-    {
-        _aliyunMemoryCacheProvider = aliyunMemoryCacheProvider;
-        _name = name;
     }
 
     /// <summary>
@@ -158,7 +143,6 @@ public class DefaultStorageClient :
 
     protected override void Dispose(bool disposing)
     {
-        _aliyunMemoryCacheProvider?.TryRemove(_name, AliyunStorageOptions);
         base.Dispose(disposing);
     }
 }

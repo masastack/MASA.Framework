@@ -19,6 +19,4 @@ public class DefaultAuthenticationServiceFactory :
     {
         _options = serviceProvider.GetRequiredService<IOptionsMonitor<AuthenticationServiceFactoryOptions>>();
     }
-
-    protected override IServiceProvider GetServiceProvider(string name) => TransientServiceProvider;
 }
