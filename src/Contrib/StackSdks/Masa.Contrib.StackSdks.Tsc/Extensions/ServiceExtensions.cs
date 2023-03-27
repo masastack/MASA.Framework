@@ -17,6 +17,8 @@ public static class ServiceExtensions
         if (services.Any(service => service.ServiceType == typeof(ITscClient)))
             return services;
 
+        services.AddHttpContextAccessor();
+
         services.AddCaller(DEFAULT_CLIENT_NAME, builder =>
         {
             builder.UseHttpClient(options =>
