@@ -40,6 +40,7 @@ public static class ServiceCollectionExtensions
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
+        services.AddHttpContextAccessor();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions.Invoke);
 
         services.AddScoped<IPmClient>(serviceProvider =>
