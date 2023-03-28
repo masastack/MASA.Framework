@@ -5,6 +5,7 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
+#pragma warning disable S1133
 internal class DefaultIAutoCompleteClient : IManualAutoCompleteClient
 {
     private readonly IManualAutoCompleteClient _autoCompleteClient;
@@ -105,8 +106,17 @@ internal class DefaultIAutoCompleteClient : IManualAutoCompleteClient
     public Task<DeleteMultiResponse> DeleteAsync<T>(IEnumerable<T> ids, CancellationToken cancellationToken = default) where T : IComparable
         => _autoCompleteClient.DeleteAsync(ids, cancellationToken);
 
+#pragma warning disable S3881
     public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
     {
         //don't need to be released
     }
+#pragma warning restore S3881
 }
+#pragma warning restore S1133

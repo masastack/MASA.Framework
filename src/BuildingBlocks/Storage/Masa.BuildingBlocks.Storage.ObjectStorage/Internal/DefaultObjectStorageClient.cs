@@ -59,8 +59,16 @@ internal class DefaultObjectStorageClient : IManualObjectStorageClient
         CancellationToken cancellationToken = default(CancellationToken))
         => _objectStorageClient.DeleteObjectAsync(bucketName, objectNames, cancellationToken);
 
+#pragma warning disable S3881
     public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
     {
         //don't need to be released
     }
+#pragma warning restore S3881
 }

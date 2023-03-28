@@ -10,20 +10,9 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-internal class ScopedService<TService>: IDisposable
+internal class ScopedService<TService> : SingletonService<TService>
 {
-    public TService Service { get; }
-
-    public ScopedService(TService service)
+    public ScopedService(TService service) : base(service)
     {
-        Service = service;
-    }
-
-    public void Dispose()
-    {
-        if (Service is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
     }
 }

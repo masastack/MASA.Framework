@@ -21,6 +21,12 @@ internal class SingletonService<TService> : IDisposable
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         if (Service is IDisposable disposable)
         {
             disposable.Dispose();
