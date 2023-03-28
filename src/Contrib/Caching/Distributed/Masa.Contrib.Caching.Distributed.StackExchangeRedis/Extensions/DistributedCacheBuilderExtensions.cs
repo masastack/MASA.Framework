@@ -29,6 +29,10 @@ public static class DistributedCacheBuilderExtensions
                 redisSectionName,
                 () =>
                 {
+                    if (serviceProvider.EnableIsolation())
+                        return serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>()
+                            .Get(distributedCacheBuilder.Name);
+
                     var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
                     return optionsMonitor.Get(distributedCacheBuilder.Name);
                 });

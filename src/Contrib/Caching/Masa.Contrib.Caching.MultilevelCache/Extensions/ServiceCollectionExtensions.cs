@@ -68,6 +68,9 @@ public static class ServiceCollectionExtensions
                 sectionName,
                 () =>
                 {
+                    if (serviceProvider.EnableIsolation())
+                        return serviceProvider.GetRequiredService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>().Get(name);
+
                     var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheGlobalOptions>>();
                     return optionsMonitor.Get(name);
                 });
