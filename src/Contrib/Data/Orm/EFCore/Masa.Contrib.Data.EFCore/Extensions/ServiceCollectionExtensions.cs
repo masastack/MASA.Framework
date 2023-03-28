@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
 
         services.TryAddConfigure<ConnectionStrings>();
 
-        MasaDbContextBuilder masaBuilder = new(services, typeof(TDbContextImplementation), typeof(TUserId));
+        MasaDbContextBuilder masaBuilder = new(services, typeof(TDbContextImplementation));
         optionsBuilder?.Invoke(masaBuilder);
         return services.AddCoreServices<TDbContextImplementation, TUserId>((serviceProvider, efDbContextOptionsBuilder) =>
         {
