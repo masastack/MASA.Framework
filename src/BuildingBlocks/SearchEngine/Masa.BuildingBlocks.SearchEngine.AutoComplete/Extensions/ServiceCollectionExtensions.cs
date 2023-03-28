@@ -44,10 +44,10 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(configure);
 
         services.TryAddTransient<IAutoCompleteFactory, DefaultAutoCompleteFactory>();
-        services.TryAddSingleton<SingletonService<IAutoCompleteClient>>(serviceProvider
-            => new SingletonService<IAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
-        services.TryAddScoped<ScopedService<IAutoCompleteClient>>(serviceProvider
-            => new ScopedService<IAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddSingleton<SingletonService<IManualAutoCompleteClient>>(serviceProvider
+            => new SingletonService<IManualAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddScoped<ScopedService<IManualAutoCompleteClient>>(serviceProvider
+            => new ScopedService<IManualAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
 
         services.TryAddTransient<IManualAutoCompleteClient>(serviceProvider =>
         {
