@@ -5,11 +5,15 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public class CallerRelationOptions : MasaRelationOptions<IManualCaller>
+public class CallerBuilder
 {
+    public IServiceCollection Services { get; }
 
-    public CallerRelationOptions(string name, Func<IServiceProvider, IManualCaller> func)
-        : base(name, func)
+    public string Name { get; }
+
+    public CallerBuilder(IServiceCollection services, string name)
     {
+        Services = services;
+        Name = name;
     }
 }

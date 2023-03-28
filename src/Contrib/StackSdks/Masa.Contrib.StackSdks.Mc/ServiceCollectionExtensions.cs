@@ -34,7 +34,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerBuilder> callerOptionsBuilder)
     {
         MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
 

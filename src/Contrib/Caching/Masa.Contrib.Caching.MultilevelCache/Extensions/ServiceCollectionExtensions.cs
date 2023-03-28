@@ -59,7 +59,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddConfigure<MultilevelCacheGlobalOptions>(sectionName, name);
 
-        services.TryAddMultilevelCache(name, serviceProvider =>
+        var multilevelCacheBuilder = new MultilevelCacheBuilder(services, name);
+        multilevelCacheBuilder.UseCustomMultilevelCache(serviceProvider =>
         {
             var multilevelCacheGlobalOptions = ComponentConfigUtils.GetComponentConfigByExecute(
                 serviceProvider,
@@ -104,7 +105,8 @@ public static class ServiceCollectionExtensions
         var distributedCacheOptions = new DistributedCacheBuilder(services, name);
         distributedCacheAction.Invoke(distributedCacheOptions);
 
-        services.TryAddMultilevelCache(name, serviceProvider =>
+        var multilevelCacheBuilder = new MultilevelCacheBuilder(services, name);
+        multilevelCacheBuilder.UseCustomMultilevelCache(serviceProvider =>
         {
             MultilevelCacheGlobalOptions multilevelCacheGlobalOptions = new();
             multilevelCacheOptionsAction?.Invoke(multilevelCacheGlobalOptions);

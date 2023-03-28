@@ -21,7 +21,7 @@ public static class DistributedCacheBuilderExtensions
     {
         distributedCacheBuilder.Services.AddConfigure<RedisConfigurationOptions>(redisSectionName, distributedCacheBuilder.Name);
 
-        distributedCacheBuilder.AddDistributedCache(serviceProvider =>
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
             var redisConfigurationOptions = ComponentConfigUtils.GetComponentConfigByExecute(
                 serviceProvider,
@@ -46,7 +46,7 @@ public static class DistributedCacheBuilderExtensions
         Action<RedisConfigurationOptions> action,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        distributedCacheBuilder.AddDistributedCache(serviceProvider =>
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
             var redisConfigurationOptions = new RedisConfigurationOptions();
             action.Invoke(redisConfigurationOptions);
@@ -65,7 +65,7 @@ public static class DistributedCacheBuilderExtensions
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        distributedCacheBuilder.AddDistributedCache(serviceProvider =>
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
         {
             var distributedCacheClient = new RedisCacheClient(
                 redisConfigurationOptions,

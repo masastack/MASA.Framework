@@ -42,9 +42,24 @@ public static class ServiceCollectionExtensions
         where TDocument : AutoCompleteDocument
     {
         MasaArgumentException.ThrowIfNull(configure);
+
+        services.TryAddTransient<IAutoCompleteFactory, DefaultAutoCompleteFactory>();
+        services.TryAddSingleton<SingletonAutoCompleteClient>(serviceProvider
+            => new SingletonAutoCompleteClient(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddScoped<ScopedAutoCompleteClient>(serviceProvider
+            => new ScopedAutoCompleteClient(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+
+        services.TryAddTransient(serviceProvider =>
+        {
+            if (serviceProvider.EnableIsolation())
+                return serviceProvider.GetRequiredService<ScopedAutoCompleteClient>().AutoCompleteClient;
+
+            return serviceProvider.GetRequiredService<SingletonAutoCompleteClient>().AutoCompleteClient;
+        });
+
+        MasaApp.TrySetServiceCollection(services);
+
         configure.Invoke(new AutoCompleteOptionsBuilder(services, name, typeof(TDocument)));
         return services;
     }
-
-
 }

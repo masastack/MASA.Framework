@@ -14,10 +14,21 @@ public static class ServiceCollectionExtensions
     {
         MasaApp.TrySetServiceCollection(services);
         services.TryAddTransient<IRulesEngineFactory, DefaultRulesEngineFactory>();
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IRulesEngineFactory>().Create());
+
+        services.TryAddSingleton<SingletonRulesEngine>(serviceProvider
+            => new SingletonRulesEngine(serviceProvider.GetRequiredService<IRulesEngineFactory>().Create()));
+        services.TryAddScoped<ScopedRulesEngine>(serviceProvider
+            => new ScopedRulesEngine(serviceProvider.GetRequiredService<IRulesEngineFactory>().Create()));
+
+        services.TryAddTransient(serviceProvider =>
+        {
+            if (serviceProvider.EnableIsolation())
+                return serviceProvider.GetRequiredService<ScopedRulesEngine>().RulesEngineClient;
+
+            return serviceProvider.GetRequiredService<SingletonRulesEngine>().RulesEngineClient;
+        });
         var rulesEngineOptionsBuilder = new RulesEngineOptionsBuilder(services, name);
         action.Invoke(rulesEngineOptionsBuilder);
-        services.AddServiceFactory();
         return services;
     }
 }

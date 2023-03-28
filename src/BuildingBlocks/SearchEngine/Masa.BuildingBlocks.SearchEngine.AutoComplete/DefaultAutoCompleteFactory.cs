@@ -5,11 +5,11 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public class DefaultAutoCompleteFactory : MasaFactoryBase<IManualAutoCompleteClient, AutoCompleteRelationsOptions>, IAutoCompleteFactory
+public class DefaultAutoCompleteFactory : MasaFactoryBase<IAutoCompleteClient, MasaRelationOptions<IAutoCompleteClient>>, IAutoCompleteFactory
 {
     protected override string DefaultServiceNotFoundMessage => "No default AutoComplete found";
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] AutoComplete, it was not found";
-    protected override MasaFactoryOptions<AutoCompleteRelationsOptions> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<MasaRelationOptions<IAutoCompleteClient>> FactoryOptions => _options.CurrentValue;
 
     private readonly IOptionsMonitor<AutoCompleteFactoryOptions> _options;
 

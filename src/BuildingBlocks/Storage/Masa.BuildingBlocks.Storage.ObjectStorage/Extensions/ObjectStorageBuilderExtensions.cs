@@ -1,15 +1,13 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-[assembly: InternalsVisibleTo("Masa.Contrib.Storage.ObjectStorage.Aliyun")]
-
 // ReSharper disable once CheckNamespace
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-internal static class ObjectStorageBuilderExtensions
+public static class ObjectStorageBuilderExtensions
 {
-    public static void AddObjectStorage(
+    public static void UseCustomObjectStorage(
         this ObjectStorageBuilder objectStorageBuilder,
         Func<IServiceProvider, IObjectStorageClient> implementationFactory,
         Func<IServiceProvider, IBucketNameProvider> bucketNameImplementationFactory)

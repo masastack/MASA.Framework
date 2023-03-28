@@ -9,19 +9,19 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
-        Action<CallerOptionsBuilder> configure)
+        Action<CallerBuilder> configure)
         => services.AddCaller(Microsoft.Extensions.Options.Options.DefaultName, configure);
 
     public static IServiceCollection AddCaller(
         this IServiceCollection services,
         string name,
-        Action<CallerOptionsBuilder> configure)
+        Action<CallerBuilder> configure)
     {
         MasaArgumentException.ThrowIfNull(services);
 
         services.AddCallerCore();
 
-        var optionsBuilder = new CallerOptionsBuilder(services, name);
+        var optionsBuilder = new CallerBuilder(services, name);
         configure.Invoke(optionsBuilder);
 
         return services;
@@ -57,7 +57,6 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IResponseMessage>(_ => new JsonResponseMessage());
 
         services.TryAddSingleton<ITypeConvertor, DefaultTypeConvertor>();
-        services.AddServiceFactory();
     }
 
     private static void AddAutomaticCaller(
@@ -88,7 +87,7 @@ public static class ServiceCollectionExtensions
                 var callerBase = (constructorInfo.Invoke(parameters.ToArray()) as CallerBase)!;
 
                 var name = callerBase.Name ?? type.FullName ?? type.Name;
-                callerBase.SetCallerOptions(new CallerOptionsBuilder(services, name), name);
+                callerBase.SetCallerOptions(new CallerBuilder(services, name), name);
                 callerBase.Initialize(serviceProvider, type);
 
                 return callerBase;

@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 using System.Net;
+using Masa.BuildingBlocks.Configuration;
+using Masa.Utils.Caching.Memory;
 
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 

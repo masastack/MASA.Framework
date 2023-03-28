@@ -12,10 +12,11 @@ namespace Masa.BuildingBlocks.Caching;
 /// </summary>
 internal static class ServiceCollectionExtensions
 {
-    public static void TryAddDistributedCache(this IServiceCollection services)
+    public static void TryAddDistributedCache(
+        this IServiceCollection services,
+        string name)
     {
         MasaApp.TrySetServiceCollection(services);
-        services.AddServiceFactory();
 
         services.TryAddTransient<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
         services.TryAddSingleton(serviceProvider
@@ -23,22 +24,14 @@ internal static class ServiceCollectionExtensions
         services.TryAddSingleton(typeof(IDistributedCacheClient), serviceProvider
             => serviceProvider.GetRequiredService<IManualDistributedCacheClient>());
 
-        services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
+        services.AddTypeAlias(name);
     }
 
     public static void TryAddMultilevelCache(
         this IServiceCollection services,
-        string name,
-        Func<IServiceProvider, IManualMultilevelCacheClient> func)
+        string name)
     {
-        services.Configure<MultilevelCacheFactoryOptions>(options =>
-        {
-            if (options.Options.Any(opt => opt.Name == name))
-                return;
-
-            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(name, func.Invoke);
-            options.Options.Add(cacheRelationOptions);
-        });
+        MasaApp.TrySetServiceCollection(services);
 
         services.TryAddTransient<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
         services.TryAddSingleton(serviceProvider
@@ -46,9 +39,14 @@ internal static class ServiceCollectionExtensions
         services.TryAddSingleton(typeof(IMultilevelCacheClient), serviceProvider
             => serviceProvider.GetRequiredService<IManualMultilevelCacheClient>());
 
+        services.AddTypeAlias(name);
+    }
+
+    private static void AddTypeAlias(
+        this IServiceCollection services,
+        string name)
+    {
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
-
-        services.TryAddDistributedCache();
     }
 }
