@@ -3,6 +3,7 @@
 
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Data;
+global using Masa.BuildingBlocks.Ddd.Domain;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.Contrib.Data.EFCore.Tests.Internal;
@@ -13,4 +14,3 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Options;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using Moq;

@@ -34,7 +34,6 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
     {
         if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
         {
-
             if (entity.State == EntityState.Added)
             {
                 if (userId != null)

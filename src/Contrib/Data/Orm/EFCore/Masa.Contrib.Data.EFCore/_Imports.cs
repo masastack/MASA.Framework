@@ -4,6 +4,7 @@
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Ddd.Domain;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Auditing;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;

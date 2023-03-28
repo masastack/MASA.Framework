@@ -5,11 +5,11 @@
 
 namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 
-public class User
+public class User : IMultiTenant<string>
 {
+    public Guid Id { get; set; }
+
     public string Name { get; set; } = default!;
 
-    public string Email { get; set; }
-
-    public string PhoneNumber { get; set; } = default!;
+    public string TenantId { get; set; }
 }

@@ -17,6 +17,7 @@ public class CustomDbContext : MasaDbContext<CustomDbContext>
 
         modelBuilder.Entity<User>();
         modelBuilder.Entity<Order>();
+        modelBuilder.Entity<Goods>();
     }
 }
 
