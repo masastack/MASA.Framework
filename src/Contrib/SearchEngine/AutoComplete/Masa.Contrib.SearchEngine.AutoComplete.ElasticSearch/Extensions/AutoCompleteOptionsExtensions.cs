@@ -14,7 +14,7 @@ public static class AutoCompleteOptionsExtensions
         MasaArgumentException.ThrowIfNull(action);
 
         autoCompleteOptionsBuilder.Services.TryAddSingleton<IElasticClientProvider, DefaultElasticClientProvider>();
-        autoCompleteOptionsBuilder.AddAutoComplete(serviceProvider =>
+        autoCompleteOptionsBuilder.UseCustomAutoComplete(serviceProvider =>
         {
             var elasticSearchAutoCompleteOptions = new ElasticSearchAutoCompleteOptions();
             action.Invoke(elasticSearchAutoCompleteOptions);

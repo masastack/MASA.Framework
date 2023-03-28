@@ -18,14 +18,14 @@ public class CallerTest
 
     private const string FRAMEWORK_BASE_ADDRESS = "https://github.com/masastack/MASA.Framework";
 
-    private CallerOptionsBuilder _callerOptions;
+    private CallerBuilder _callerOptions;
     private const string NAME = "";
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _callerOptions = new CallerOptionsBuilder(services, NAME);
+        _callerOptions = new CallerBuilder(services, NAME);
     }
 
     [TestMethod]

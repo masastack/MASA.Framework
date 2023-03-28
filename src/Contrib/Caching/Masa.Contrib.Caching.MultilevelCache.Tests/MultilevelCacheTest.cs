@@ -96,7 +96,7 @@ public class MultilevelCacheTest : TestBase
 
         var multilevelCacheClientFactory = serviceProvider.GetService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(multilevelCacheClientFactory);
-        var multilevelCacheClient = serviceProvider.GetService<IMultilevelCacheClient>();
+        var multilevelCacheClient = GetMultilevelCacheClient(serviceProvider.GetService<IManualMultilevelCacheClient>()!);
         using var multilevelCacheClient2 = multilevelCacheClientFactory.Create("test");
         Assert.IsNotNull(multilevelCacheClient);
         Assert.IsNotNull(multilevelCacheClient2);
@@ -135,7 +135,6 @@ public class MultilevelCacheTest : TestBase
 
         VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
-
         var rootPath = builder.Environment.ContentRootPath;
         var oldContent = await File.ReadAllTextAsync(Path.Combine(rootPath, "appsettings.json"));
 
@@ -158,9 +157,8 @@ public class MultilevelCacheTest : TestBase
         await Task.Delay(2000);
         VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
-        VerifyOriginal(multilevelCacheClientFactory.Create() as MultilevelCacheClient);
-
-        VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as MultilevelCacheClient);
+        VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as
+                MultilevelCacheClient);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
 
@@ -269,6 +267,12 @@ public class MultilevelCacheTest : TestBase
         var subscribeKeyType = (SubscribeKeyType?)SubscribeKeyTypeFieldInfo.GetValue(client);
         Assert.IsNotNull(subscribeKeyType);
         return subscribeKeyType.Value;
+    }
+
+    private static IMultilevelCacheClient GetMultilevelCacheClient(IManualMultilevelCacheClient cacheClient)
+    {
+        return (IMultilevelCacheClient)typeof(DefaultMultilevelCacheClient).GetField("_cacheClient",
+            BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(cacheClient)!;
     }
 }
 #pragma warning restore CS0618

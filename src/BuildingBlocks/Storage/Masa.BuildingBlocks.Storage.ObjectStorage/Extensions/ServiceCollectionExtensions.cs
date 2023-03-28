@@ -28,25 +28,46 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(services);
         MasaArgumentException.ThrowIfNull(name);
 
+        services.TryAddSingleton<SingletonService<IManualObjectStorageClient>>(serviceProvider
+            => new SingletonService<IManualObjectStorageClient>(serviceProvider.GetRequiredService<IObjectStorageClientFactory>()
+                .Create()));
+        services.TryAddScoped<ScopedService<IManualObjectStorageClient>>(serviceProvider
+            => new ScopedService<IManualObjectStorageClient>(serviceProvider.GetRequiredService<IObjectStorageClientFactory>().Create()));
+
+        services.TryAddSingleton<SingletonService<IBucketNameProvider>>(serviceProvider
+            => new SingletonService<IBucketNameProvider>(serviceProvider.GetRequiredService<IBucketNameFactory>().Create()));
+        services.TryAddScoped<ScopedService<IBucketNameProvider>>(serviceProvider
+            => new ScopedService<IBucketNameProvider>(serviceProvider.GetRequiredService<IBucketNameFactory>().Create()));
+
         services.TryAddObjectStorageClient();
         services.TryAddBucketNameProvider();
         services.TryAddObjectStorageClientContainer();
 
-        services.AddServiceFactory();
         MasaApp.TrySetServiceCollection(services);
     }
 
     private static void TryAddObjectStorageClient(this IServiceCollection services)
     {
-        services.TryAddTransient<IObjectStorageClient>(serviceProvider =>
-            serviceProvider.GetRequiredService<IObjectStorageClientFactory>().Create());
+        services.TryAddTransient<IManualObjectStorageClient>(serviceProvider =>
+        {
+            var objectStorageClient = serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IManualObjectStorageClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IManualObjectStorageClient>>().Service;
+            return new DefaultObjectStorageClient(objectStorageClient);
+        });
+        services.TryAddTransient<IObjectStorageClient>(serviceProvider => serviceProvider.GetRequiredService<IManualObjectStorageClient>());
         services.TryAddTransient<IObjectStorageClientFactory, DefaultObjectStorageClientFactory>();
     }
 
     private static void TryAddBucketNameProvider(this IServiceCollection services)
     {
         services.TryAddTransient<IBucketNameProvider>(serviceProvider =>
-            serviceProvider.GetRequiredService<IBucketNameFactory>().Create());
+        {
+            if (serviceProvider.EnableIsolation())
+                return serviceProvider.GetRequiredService<ScopedService<IBucketNameProvider>>().Service;
+
+            return serviceProvider.GetRequiredService<SingletonService<IBucketNameProvider>>().Service;
+        });
         services.TryAddTransient<IBucketNameFactory, DefaultBucketNameFactory>();
     }
 

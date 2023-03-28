@@ -60,7 +60,7 @@ public class StorageTest
         {
             using var scope = rootServiceProvider.CreateScope();
             action?.Invoke(scope.ServiceProvider);
-            var objectStorageClient = scope.ServiceProvider.GetService<IObjectStorageClient>();
+            var objectStorageClient = GetObjectStorageClient(scope.ServiceProvider.GetService<IManualObjectStorageClient>()!);
             var bucketNameProvider = scope.ServiceProvider.GetService<IBucketNameProvider>();
             var objectStorageClientContainer = scope.ServiceProvider.GetService<IObjectStorageClientContainer>();
             Assert.IsNotNull(objectStorageClient);
@@ -125,5 +125,10 @@ public class StorageTest
             Assert.IsNotNull(objectStorageClientContainer);
             return (objectStorageClient, bucketNameProvider, objectStorageClientContainer);
         }
+    }
+
+    private static IObjectStorageClient GetObjectStorageClient(IManualObjectStorageClient objectStorageClient)
+    {
+        return (IObjectStorageClient)typeof(DefaultObjectStorageClient).GetField("_objectStorageClient")!.GetValue(objectStorageClient)!;
     }
 }

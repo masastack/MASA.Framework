@@ -3,8 +3,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public abstract class AbstractStorageClient :
-    IManualObjectStorageClient
+public abstract class AbstractStorageClient : IManualObjectStorageClient
 {
     public abstract TemporaryCredentialsResponse GetSecurityToken();
 

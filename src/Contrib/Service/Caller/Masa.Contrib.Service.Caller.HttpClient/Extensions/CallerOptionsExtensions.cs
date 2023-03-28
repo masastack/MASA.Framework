@@ -7,10 +7,10 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class CallerOptionsExtensions
 {
-    public static MasaHttpClientBuilder UseHttpClient(this CallerOptionsBuilder callerOptionsBuilder)
+    public static MasaHttpClientBuilder UseHttpClient(this CallerBuilder callerOptionsBuilder)
         => callerOptionsBuilder.UseHttpClientCore(null);
 
-    public static MasaHttpClientBuilder UseHttpClient(this CallerOptionsBuilder callerOptionsBuilder,
+    public static MasaHttpClientBuilder UseHttpClient(this CallerBuilder callerOptionsBuilder,
         Action<MasaHttpClient> clientConfigure)
     {
         MasaArgumentException.ThrowIfNull(clientConfigure);
@@ -18,12 +18,12 @@ public static class CallerOptionsExtensions
         return callerOptionsBuilder.UseHttpClientCore(clientConfigure);
     }
 
-    private static MasaHttpClientBuilder UseHttpClientCore(this CallerOptionsBuilder callerOptionsBuilder,
+    private static MasaHttpClientBuilder UseHttpClientCore(this CallerBuilder callerOptionsBuilder,
         Action<MasaHttpClient>? clientConfigure)
     {
         callerOptionsBuilder.Services.AddHttpClient(callerOptionsBuilder.Name);
 
-        callerOptionsBuilder.AddCallerRelation(serviceProvider =>
+        callerOptionsBuilder.UseCustomCaller(serviceProvider =>
         {
             var masaHttpClient = new MasaHttpClient(serviceProvider);
             clientConfigure?.Invoke(masaHttpClient);
@@ -33,7 +33,6 @@ public static class CallerOptionsExtensions
                 httpClient,
                 serviceProvider,
                 callerOptionsBuilder.Name,
-                callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                 masaHttpClient.Prefix,
                 masaHttpClient.RequestMessageFactory,
                 masaHttpClient.ResponseMessageFactory);
