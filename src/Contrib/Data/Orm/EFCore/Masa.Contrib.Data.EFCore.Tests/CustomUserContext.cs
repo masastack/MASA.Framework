@@ -7,7 +7,7 @@ public class CustomUserContext: IUserContext
 {
     public bool IsAuthenticated { get; }
 
-    private readonly string _userId;
+    private readonly string? _userId;
     public string? UserId => _userId;
 
     public string? UserName { get; }

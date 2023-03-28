@@ -30,7 +30,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         }
     }
 
-    private void AuditEntityHandler(EntityEntry entity, object? userId)
+    private static void AuditEntityHandler(EntityEntry entity, object? userId)
     {
         if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
         {
