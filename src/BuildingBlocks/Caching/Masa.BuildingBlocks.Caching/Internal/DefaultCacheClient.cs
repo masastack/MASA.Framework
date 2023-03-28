@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class DefaultCacheClient : ICacheClient
+internal class DefaultCacheClient : ICacheClient
 {
     private readonly ICacheClient _cacheClient;
 
