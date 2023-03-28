@@ -9,7 +9,7 @@ public static class ObjectStorageBuilderExtensions
 {
     public static void UseCustomObjectStorage(
         this ObjectStorageBuilder objectStorageBuilder,
-        Func<IServiceProvider, IObjectStorageClient> implementationFactory,
+        Func<IServiceProvider, IManualObjectStorageClient> implementationFactory,
         Func<IServiceProvider, IBucketNameProvider> bucketNameImplementationFactory)
     {
         objectStorageBuilder.Services.Configure<ObjectStorageFactoryOptions>(callerOptions =>

@@ -19,11 +19,17 @@ internal static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
 
         services.TryAddTransient<IDistributedCacheClientFactory, DefaultDistributedCacheClientFactory>();
-        services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create());
-        services.TryAddSingleton(typeof(IDistributedCacheClient), serviceProvider
+        services.TryAddTransient<IManualDistributedCacheClient>(serviceProvider =>
+        {
+            var cacheClient = serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IManualDistributedCacheClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IManualDistributedCacheClient>>().Service;
+            return new DefaultDistributedCacheClient(cacheClient);
+        });
+        services.TryAddTransient<IDistributedCacheClient>(serviceProvider
             => serviceProvider.GetRequiredService<IManualDistributedCacheClient>());
 
+        services.AddCaching();
         services.AddTypeAlias(name);
     }
 
@@ -34,11 +40,17 @@ internal static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
 
         services.TryAddTransient<IMultilevelCacheClientFactory, DefaultMultilevelCacheClientFactory>();
-        services.TryAddSingleton(serviceProvider
-            => serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create());
-        services.TryAddSingleton(typeof(IMultilevelCacheClient), serviceProvider
+        services.TryAddTransient<IManualMultilevelCacheClient>(serviceProvider =>
+        {
+            var cacheClient = serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IManualMultilevelCacheClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IManualMultilevelCacheClient>>().Service;
+            return new DefaultMultilevelCacheClient(cacheClient);
+        });
+        services.TryAddTransient<IMultilevelCacheClient>(serviceProvider
             => serviceProvider.GetRequiredService<IManualMultilevelCacheClient>());
 
+        services.AddCaching();
         services.AddTypeAlias(name);
     }
 
@@ -48,5 +60,21 @@ internal static class ServiceCollectionExtensions
     {
         services.TryAddSingleton<ITypeAliasFactory, DefaultTypeAliasFactory>();
         services.Configure<TypeAliasFactoryOptions>(options => options.TryAdd(name));
+    }
+
+    private static void AddCaching(this IServiceCollection services)
+    {
+        services.TryAddSingleton<SingletonService<IManualDistributedCacheClient>>(serviceProvider =>
+            new SingletonService<IManualDistributedCacheClient>(serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
+                .Create()));
+        services.TryAddScoped<ScopedService<IManualDistributedCacheClient>>(serviceProvider =>
+            new ScopedService<IManualDistributedCacheClient>(serviceProvider.GetRequiredService<IDistributedCacheClientFactory>()
+                .Create()));
+
+        services.TryAddSingleton<SingletonService<IManualMultilevelCacheClient>>(serviceProvider =>
+            new SingletonService<IManualMultilevelCacheClient>(serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>()
+                .Create()));
+        services.TryAddScoped<ScopedService<IManualMultilevelCacheClient>>(serviceProvider =>
+            new ScopedService<IManualMultilevelCacheClient>(serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create()));
     }
 }

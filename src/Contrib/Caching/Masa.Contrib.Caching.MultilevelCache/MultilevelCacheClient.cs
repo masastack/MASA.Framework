@@ -642,7 +642,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
     protected override void Dispose(bool disposing)
     {
-        _distributedCacheClient?.Dispose();
+        _distributedCacheClient.Dispose();
         _memoryCache?.Dispose();
         base.Dispose(disposing);
     }

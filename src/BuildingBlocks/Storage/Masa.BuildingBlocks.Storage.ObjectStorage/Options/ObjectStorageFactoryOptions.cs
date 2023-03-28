@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class ObjectStorageFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IObjectStorageClient>>
+public class ObjectStorageFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IManualObjectStorageClient>>
 {
 
 }

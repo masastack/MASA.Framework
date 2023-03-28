@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public class AutoCompleteFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IAutoCompleteClient>>
+public class AutoCompleteFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IManualAutoCompleteClient>>
 {
 
 }

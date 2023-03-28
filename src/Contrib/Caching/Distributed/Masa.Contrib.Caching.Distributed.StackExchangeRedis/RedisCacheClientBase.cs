@@ -25,9 +25,6 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
     private readonly CacheEntryOptions _globalCacheEntryOptions;
     private readonly CacheOptions _globalCacheOptions;
 
-    private readonly string _name;
-    private readonly RedisConfigurationOptions? _redisConfigurationOptions;
-
     protected RedisCacheClientBase(
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions)

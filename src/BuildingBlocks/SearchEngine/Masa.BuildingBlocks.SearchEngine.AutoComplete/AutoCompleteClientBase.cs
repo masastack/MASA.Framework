@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 
-public abstract class AutoCompleteClientBase : IAutoCompleteClient, IDisposable
+public abstract class AutoCompleteClientBase : IManualAutoCompleteClient
 {
     public abstract Task<bool> BuildAsync(CancellationToken cancellationToken = default);
 

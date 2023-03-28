@@ -16,7 +16,7 @@ public static class DistributedCacheBuilderExtensions
             if (options.Options.Any(opt => opt.Name == distributedCacheBuilder.Name))
                 return;
 
-            options.Options.Add(new CacheRelationOptions<IManualDistributedCacheClient>(distributedCacheBuilder.Name, func));
+            options.Options.Add(new MasaRelationOptions<IManualDistributedCacheClient>(distributedCacheBuilder.Name, func));
         });
 
         distributedCacheBuilder.Services.TryAddDistributedCache(distributedCacheBuilder.Name);

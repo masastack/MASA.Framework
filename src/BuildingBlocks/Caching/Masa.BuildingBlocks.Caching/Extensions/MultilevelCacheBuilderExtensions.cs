@@ -16,7 +16,7 @@ public static class MultilevelCacheBuilderExtensions
             if (options.Options.Any(opt => opt.Name == multilevelCacheBuilder.Name))
                 return;
 
-            var cacheRelationOptions = new CacheRelationOptions<IManualMultilevelCacheClient>(multilevelCacheBuilder.Name, func.Invoke);
+            var cacheRelationOptions = new MasaRelationOptions<IManualMultilevelCacheClient>(multilevelCacheBuilder.Name, func.Invoke);
             options.Options.Add(cacheRelationOptions);
         });
 

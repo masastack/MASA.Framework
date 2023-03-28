@@ -9,7 +9,7 @@ public static class AutoCompleteOptionsBuilderExtensions
 {
     public static void UseCustomAutoComplete(
         this AutoCompleteOptionsBuilder autoCompleteOptionsBuilder,
-        Func<IServiceProvider, IAutoCompleteClient> implementationFactory)
+        Func<IServiceProvider, IManualAutoCompleteClient> implementationFactory)
     {
         MasaArgumentException.ThrowIfNull(implementationFactory);
 
@@ -19,7 +19,7 @@ public static class AutoCompleteOptionsBuilderExtensions
                 throw new ArgumentException(
                     $"The {nameof(IAutoCompleteClient)} name already exists, please change the name, the repeat name is [{autoCompleteOptionsBuilder.Name}]");
 
-            factoryOptions.Options.Add(new MasaRelationOptions<IAutoCompleteClient>(autoCompleteOptionsBuilder.Name, implementationFactory));
+            factoryOptions.Options.Add(new MasaRelationOptions<IManualAutoCompleteClient>(autoCompleteOptionsBuilder.Name, implementationFactory));
         });
     }
 }

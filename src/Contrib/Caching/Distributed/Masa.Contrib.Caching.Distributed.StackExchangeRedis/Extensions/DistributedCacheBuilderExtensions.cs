@@ -29,7 +29,7 @@ public static class DistributedCacheBuilderExtensions
                 redisSectionName,
                 () =>
                 {
-                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<RedisConfigurationOptions>>();
+                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisConfigurationOptions>>();
                     return optionsMonitor.Get(distributedCacheBuilder.Name);
                 });
 

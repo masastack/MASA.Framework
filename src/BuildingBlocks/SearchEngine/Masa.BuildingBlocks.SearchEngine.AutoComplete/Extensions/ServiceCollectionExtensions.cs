@@ -44,18 +44,19 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(configure);
 
         services.TryAddTransient<IAutoCompleteFactory, DefaultAutoCompleteFactory>();
-        services.TryAddSingleton<SingletonAutoCompleteClient>(serviceProvider
-            => new SingletonAutoCompleteClient(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
-        services.TryAddScoped<ScopedAutoCompleteClient>(serviceProvider
-            => new ScopedAutoCompleteClient(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddSingleton<SingletonService<IAutoCompleteClient>>(serviceProvider
+            => new SingletonService<IAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddScoped<ScopedService<IAutoCompleteClient>>(serviceProvider
+            => new ScopedService<IAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
 
-        services.TryAddTransient(serviceProvider =>
+        services.TryAddTransient<IManualAutoCompleteClient>(serviceProvider =>
         {
-            if (serviceProvider.EnableIsolation())
-                return serviceProvider.GetRequiredService<ScopedAutoCompleteClient>().AutoCompleteClient;
-
-            return serviceProvider.GetRequiredService<SingletonAutoCompleteClient>().AutoCompleteClient;
+            var autoCompleteClient = serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IManualAutoCompleteClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IManualAutoCompleteClient>>().Service;
+            return new DefaultIAutoCompleteClient(autoCompleteClient);
         });
+        services.TryAddTransient<IAutoCompleteClient>(serviceProvider => serviceProvider.GetRequiredService<IManualAutoCompleteClient>());
 
         MasaApp.TrySetServiceCollection(services);
 

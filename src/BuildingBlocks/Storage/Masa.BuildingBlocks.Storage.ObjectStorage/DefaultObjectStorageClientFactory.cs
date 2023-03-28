@@ -3,12 +3,12 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class DefaultObjectStorageClientFactory : MasaFactoryBase<IObjectStorageClient, MasaRelationOptions<IObjectStorageClient>>, IObjectStorageClientFactory
+public class DefaultObjectStorageClientFactory : MasaFactoryBase<IManualObjectStorageClient, MasaRelationOptions<IManualObjectStorageClient>>, IObjectStorageClientFactory
 {
     protected override string DefaultServiceNotFoundMessage => "No default ObjectStorage found";
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] ObjectStorage, it was not found";
 
-    protected override MasaFactoryOptions<MasaRelationOptions<IObjectStorageClient>> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<MasaRelationOptions<IManualObjectStorageClient>> FactoryOptions => _options.CurrentValue;
 
     private readonly IOptionsMonitor<ObjectStorageFactoryOptions> _options;
 

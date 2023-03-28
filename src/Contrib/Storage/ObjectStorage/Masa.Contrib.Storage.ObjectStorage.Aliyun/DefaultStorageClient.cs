@@ -140,9 +140,4 @@ public class DefaultStorageClient :
             result);
         return Task.CompletedTask;
     }
-
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
 }

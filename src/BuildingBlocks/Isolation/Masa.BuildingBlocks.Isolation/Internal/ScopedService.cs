@@ -10,8 +10,20 @@
 
 namespace Masa.BuildingBlocks.Isolation;
 
-internal static class ServiceProviderExtensions
+internal class ScopedService<TService>: IDisposable
 {
-    public static bool EnableIsolation(this IServiceProvider serviceProvider)
-        => serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value.Enable ?? false;
+    public TService Service { get; }
+
+    public ScopedService(TService service)
+    {
+        Service = service;
+    }
+
+    public void Dispose()
+    {
+        if (Service is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+    }
 }

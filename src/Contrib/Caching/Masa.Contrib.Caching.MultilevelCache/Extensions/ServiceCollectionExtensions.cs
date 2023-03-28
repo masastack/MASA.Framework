@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
                 sectionName,
                 () =>
                 {
-                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<MultilevelCacheGlobalOptions>>();
+                    var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheGlobalOptions>>();
                     return optionsMonitor.Get(name);
                 });
 
@@ -91,6 +91,16 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddTypeAlias(name, typeAliasOptionsAction);
+    }
+
+    public static IServiceCollection AddMultilevelCache(
+        this IServiceCollection services,
+        string name,
+        Func<IServiceProvider, IManualMultilevelCacheClient> func)
+    {
+        var multilevelCacheBuilder = new MultilevelCacheBuilder(services, name);
+        multilevelCacheBuilder.UseCustomMultilevelCache(func);
+        return services;
     }
 
     public static IServiceCollection AddMultilevelCache(

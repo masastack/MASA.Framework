@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public interface IObjectStorageClientFactory : IMasaFactory<IManualObjectStorageClient>
+public interface IManualObjectStorageClient : IObjectStorageClient, IDisposable
 {
 
 }

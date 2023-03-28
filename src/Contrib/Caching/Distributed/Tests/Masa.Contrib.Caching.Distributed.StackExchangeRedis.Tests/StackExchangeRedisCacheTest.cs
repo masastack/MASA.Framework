@@ -1,10 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using System.Net;
-using Masa.BuildingBlocks.Configuration;
-using Masa.Utils.Caching.Memory;
-
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests;
 
 #pragma warning disable CS0618
