@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
-    where TDbContext : IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
     private readonly DbContextOptions _originOptions;
 
@@ -29,7 +29,8 @@ public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
     /// Can be used to intercept SaveChanges(Async) method
     /// </summary>
     public override IEnumerable<ISaveChangesFilter> SaveChangesFilters
-        => _saveChangesFilters ??= ServiceProvider?.GetServices<ISaveChangesFilter<TDbContext>>() ?? new List<ISaveChangesFilter<TDbContext>>();
+        => _saveChangesFilters ??=
+            ServiceProvider?.GetServices<ISaveChangesFilter<TDbContext>>() ?? new List<ISaveChangesFilter<TDbContext>>();
 
     /// <summary>
     /// <inheritdoc/>

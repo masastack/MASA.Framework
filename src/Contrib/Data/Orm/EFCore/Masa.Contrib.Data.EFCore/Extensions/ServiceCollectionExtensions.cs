@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
+        where TDbContextImplementation : DbContext, IMasaDbContext
         => services
             .AddDbContext<TDbContextImplementation>(contextLifetime, optionsLifetime)
             .AddCoreServices<TDbContextImplementation>(optionsBuilder, optionsLifetime);
@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         Action<MasaDbContextBuilder>? optionsBuilder,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
+        where TDbContextImplementation : DbContext, IMasaDbContext
     {
         if (services.Any(service => service.ImplementationType == typeof(MasaDbContextProvider<TDbContextImplementation>)))
             return services;
@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
+        where TDbContextImplementation : DbContext, IMasaDbContext
     {
         MasaApp.TrySetServiceCollection(services);
 
@@ -62,17 +62,17 @@ public static class ServiceCollectionExtensions
                 serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
                 optionsLifetime));
 
-        services.TryAddSingleton<MultiTenantProvider>();
         services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
         {
             var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
             var saveChangeFilterType = typeof(SaveChangeFilter<,>).MakeGenericType(typeof(TDbContextImplementation), userIdType);
             return Activator.CreateInstance(saveChangeFilterType, serviceProvider.GetService<IUserContext>())!;
         }, optionsLifetime));
-        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),serviceProvider =>
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
         {
             var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
-            var softDeleteSaveChangesFilterType = typeof(SoftDeleteSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation), userIdType);
+            var softDeleteSaveChangesFilterType =
+                typeof(SoftDeleteSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation), userIdType);
             return Activator.CreateInstance(
                 softDeleteSaveChangesFilterType,
                 serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
@@ -86,8 +86,9 @@ public static class ServiceCollectionExtensions
             {
                 return new EmptySaveFilter<TDbContextImplementation>();
             }
+
             var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation),
-                serviceProvider.GetService<MultiTenantProvider>()?.MultiTenantIdType!);
+                isolationOptions.Value.MultiTenantIdType);
             var isolationSaveChangesFilter = Activator.CreateInstance(genericType,
                 new object?[]
                 {
@@ -123,7 +124,7 @@ public static class ServiceCollectionExtensions
         IServiceProvider serviceProvider,
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete)
-        where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
+        where TDbContextImplementation : DbContext, IMasaDbContext
     {
         var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete);
         optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);
