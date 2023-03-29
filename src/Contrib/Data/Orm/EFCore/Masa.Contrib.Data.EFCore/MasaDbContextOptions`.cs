@@ -13,7 +13,7 @@ public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
     public MasaDbContextOptions(
         IServiceProvider? serviceProvider,
         DbContextOptions originOptions,
-        bool enableSoftDelete, bool enablePluralizingTableName) : base(serviceProvider, enableSoftDelete, enablePluralizingTableName) => _originOptions = originOptions;
+        bool enableSoftDelete) : base(serviceProvider, enableSoftDelete) => _originOptions = originOptions;
 
     private IEnumerable<IModelCreatingProvider>? _modelCreatingProviders;
 
