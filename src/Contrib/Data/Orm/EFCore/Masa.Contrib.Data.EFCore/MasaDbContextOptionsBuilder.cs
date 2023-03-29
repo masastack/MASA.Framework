@@ -9,7 +9,7 @@ public abstract class MasaDbContextOptionsBuilder
 
     public bool EnableSoftDelete { get; }
 
-    public bool EnablePluarlizingTableName { get; }
+    public bool EnablePluralizingTableName { get; }
 
     public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
 
