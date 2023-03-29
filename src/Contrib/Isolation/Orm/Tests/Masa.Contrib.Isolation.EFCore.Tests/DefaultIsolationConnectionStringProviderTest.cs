@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
+namespace Masa.Contrib.Isolation.EFCore.Tests;
 
 [TestClass]
 public class DefaultIsolationConnectionStringProviderTest

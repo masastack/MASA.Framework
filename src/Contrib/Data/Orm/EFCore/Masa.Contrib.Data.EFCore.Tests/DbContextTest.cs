@@ -104,8 +104,16 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         string connectionString = $"data source=test-{Guid.NewGuid()}";
         string connectionStringByQuery = connectionString;
-        services.AddMasaDbContext<CustomQueryDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePluralizingTableName = false; });
-        services.AddMasaDbContext<CustomDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePluralizingTableName = false; });
+        services.AddMasaDbContext<CustomQueryDbContext>(options =>
+        {
+            options.UseSqlite(connectionStringByQuery).UseFilter();
+            options.EnablePluralizingTableName = false;
+        });
+        services.AddMasaDbContext<CustomDbContext>(options =>
+        {
+            options.UseSqlite(connectionStringByQuery).UseFilter();
+            options.EnablePluralizingTableName = false;
+        });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
@@ -173,7 +181,10 @@ public class DbContextTest : TestBase
     {
         Services.AddMasaDbContext<CustomDbContext>(options
             =>
-        { options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter(); options.EnablePluralizingTableName = false; });
+        {
+            options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+            options.EnablePluralizingTableName = false;
+        });
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -213,7 +224,7 @@ public class DbContextTest : TestBase
             .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 3);
+        Assert.AreEqual(2, serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count());
     }
 
     [TestMethod]
@@ -291,7 +302,11 @@ public class DbContextTest : TestBase
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); optionsBuilder.EnablePluralizingTableName = false; });
+        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder =>
+        {
+            optionsBuilder.UseSqlite();
+            optionsBuilder.EnablePluralizingTableName = false;
+        });
 
         var serviceProvider = services.BuildServiceProvider();
 

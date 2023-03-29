@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Isolation.EFCore.Tests")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Masa.Contrib.Data.EFCore;
@@ -40,7 +42,9 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
             _unitOfWorkAccessor.CurrentDbContextOptions.TryGetConnectionString(name, out var connectionString))
             return connectionString;
 
-        var connectionStrings = _isolationConfigProvider.GetComponentConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION, ConnectionStrings.DEFAULT_SECTION);
+        var connectionStrings =
+            _isolationConfigProvider.GetComponentConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION,
+                ConnectionStrings.DEFAULT_SECTION);
         if (connectionStrings != null)
             return SetConnectionString(name, connectionStrings.GetConnectionString(name));
 

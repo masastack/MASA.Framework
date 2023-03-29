@@ -3,12 +3,14 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
-global using Masa.BuildingBlocks.Ddd.Domain.Entities;
 global using Masa.BuildingBlocks.Isolation;
-global using Masa.Utils.Models;
+global using Masa.Contrib.Data.EFCore;
 global using Microsoft.EntityFrameworkCore;
-global using Microsoft.Extensions.Configuration;
+global using Microsoft.EntityFrameworkCore.ChangeTracking;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
+global using Microsoft.Extensions.Logging;
 global using Microsoft.Extensions.Options;
-global using Microsoft.VisualStudio.TestTools.UnitTesting;
-global using Moq;
+global using System.Linq.Expressions;
+global using System.Diagnostics.CodeAnalysis;
+global using System.Runtime.CompilerServices;

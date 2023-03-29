@@ -5,17 +5,7 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
-public abstract class MasaDbContext<TDbContext> : MasaDbContext<TDbContext, Guid>
-    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
-{
-    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
-    {
-    }
-}
-
-public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMasaDbContext
-    where TDbContext : MasaDbContext<TDbContext, TMultiTenantId>, IMasaDbContext
-    where TMultiTenantId : IComparable
+public abstract class MasaDbContext : DbContext, IMasaDbContext
 {
     private bool _initialized;
     private IDataFilter? _dataFilter;
@@ -29,7 +19,7 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
         }
     }
 
-    protected readonly MasaDbContextOptions Options;
+    protected MasaDbContextOptions? Options { get; private set; }
 
     private IDomainEventBus? _domainEventBus;
 
@@ -53,20 +43,22 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
         }
     }
 
-    private readonly IMultiEnvironmentContext? _environmentContext;
-    private readonly IMultiTenantContext? _tenantContext;
+    protected MasaDbContext() : base()
+    {
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+    }
 
-    protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
-
-    protected virtual bool IsTenantFilterEnabled => DataFilter?.IsEnabled<IMultiTenant<TMultiTenantId>>() ?? false;
-
-    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    public MasaDbContext(MasaDbContextOptions options) : base(options)
     {
         Options = options;
 
         base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-        _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
-        _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
+    }
+
+    internal void TrySetMasaDbContextOptions(MasaDbContextOptions? options)
+    {
+        if (options != null)
+            Options ??= options;
     }
 
     protected virtual void TryInitialize()
@@ -76,9 +68,9 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
 
     protected virtual void Initialize()
     {
-        _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
-        _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
-        _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
+        _dataFilter = Options!.ServiceProvider?.GetService<IDataFilter>();
+        _domainEventBus = Options!.ServiceProvider?.GetService<IDomainEventBus>();
+        _concurrencyStampProvider = Options!.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
         _initialized = true;
     }
 
@@ -94,7 +86,7 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
 
         OnModelCreatingConfigureGlobalFilters(modelBuilder);
 
-        foreach (var provider in Options.ModelCreatingProviders)
+        foreach (var provider in Options!.ModelCreatingProviders)
             provider.Configure(modelBuilder);
 
         if (!Options.EnablePluralizingTableName)
@@ -149,27 +141,8 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
             expression = entity => !IsSoftDeleteFilterEnabled || !EF.Property<bool>(entity, nameof(ISoftDelete.IsDeleted));
         }
 
-        if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
-        {
-            var defaultTenantId = default(IMultiTenant<TMultiTenantId>);
-            Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
-                EF.Property<TMultiTenantId>(entity, nameof(IMultiTenant.TenantId))
-                    .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
-
-            expression = tenantFilter.And(expression != null, expression);
-        }
-
-        if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && _environmentContext != null)
-        {
-            Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
-                EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
-                    .Equals(_environmentContext != null ? _environmentContext.CurrentEnvironment : default);
-            expression = envFilter.And(expression != null, expression);
-        }
-
         return expression;
     }
-
 
     protected virtual bool IsSoftDeleteFilterEnabled
         => Options is { EnableSoftDelete: true } && (DataFilter?.IsEnabled<ISoftDelete>() ?? false);
@@ -203,7 +176,7 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
 
     protected virtual void OnBeforeSaveChangesByFilters()
     {
-        foreach (var filter in Options.SaveChangesFilters)
+        foreach (var filter in Options!.SaveChangesFilters)
         {
             try
             {
@@ -270,5 +243,17 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
     {
         await OnBeforeSaveChangesAsync();
         return await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
+}
+
+public abstract class MasaDbContext<TDbContext> : MasaDbContext
+    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+{
+    protected MasaDbContext() : base()
+    {
+    }
+
+    public MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    {
     }
 }
