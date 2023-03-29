@@ -18,12 +18,12 @@ public abstract class MasaDbContextOptions : DbContextOptions
 
     public bool EnableSoftDelete { get; }
 
-    public bool EnablePluarlizingTableName { get; }
+    public bool EnablePluralizingTableName { get; }
 
-    private protected MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete, bool enablePluarlizingTableName)
+    private protected MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete, bool EnablePluralizingTableName)
     {
         ServiceProvider = serviceProvider;
         EnableSoftDelete = enableSoftDelete;
-        EnablePluarlizingTableName = enablePluarlizingTableName;
+        EnablePluralizingTableName = EnablePluralizingTableName;
     }
 }

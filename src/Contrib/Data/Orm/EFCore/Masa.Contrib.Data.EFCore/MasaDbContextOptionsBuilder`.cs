@@ -9,16 +9,16 @@ public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuild
     where TDbContext : DbContext, IMasaDbContext
 {
     public MasaDbContextOptions<TDbContext> MasaOptions
-        => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete, EnablePluarlizingTableName);
+        => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete, EnablePluralizingTableName);
 
-    public MasaDbContextOptionsBuilder(bool enableSoftDelete = false, bool enablePluarlizingTableName = false) : this(null, enableSoftDelete, enablePluarlizingTableName)
+    public MasaDbContextOptionsBuilder(bool enableSoftDelete = false, bool enablePluralizingTableName = false) : this(null, enableSoftDelete, enablePluralizingTableName)
     {
     }
 
     public MasaDbContextOptionsBuilder(
         IServiceProvider? serviceProvider,
-        bool enableSoftDelete, bool enablePluarlizingTableName)
-        : base(serviceProvider, new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete, enablePluarlizingTableName))
+        bool enableSoftDelete, bool enablePluralizingTableName)
+        : base(serviceProvider, new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete, enablePluralizingTableName))
     {
     }
 }
