@@ -88,14 +88,6 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
 
         foreach (var provider in Options!.ModelCreatingProviders)
             provider.Configure(modelBuilder);
-
-        if (!Options.EnablePluralizingTableName)
-        {
-            foreach (var item in modelBuilder.Model.GetEntityTypes())
-            {
-                item.SetTableName(item.ClrType.Name);
-            }
-        }
     }
 
     /// <summary>
@@ -104,7 +96,6 @@ public abstract class MasaDbContext : DbContext, IMasaDbContext
     /// <param name="modelBuilder"></param>
     protected virtual void OnModelCreatingExecuting(ModelBuilder modelBuilder)
     {
-
     }
 
     protected virtual void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
