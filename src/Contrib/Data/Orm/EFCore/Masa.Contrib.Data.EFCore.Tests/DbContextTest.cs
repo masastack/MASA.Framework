@@ -107,12 +107,10 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomQueryDbContext>(options =>
         {
             options.UseSqlite(connectionStringByQuery).UseFilter();
-            options.EnablePluralizingTableName = false;
         });
         services.AddMasaDbContext<CustomDbContext>(options =>
         {
             options.UseSqlite(connectionStringByQuery).UseFilter();
-            options.EnablePluralizingTableName = false;
         });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
@@ -183,7 +181,6 @@ public class DbContextTest : TestBase
             =>
         {
             options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
-            options.EnablePluralizingTableName = false;
         });
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
@@ -289,7 +286,6 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder =>
         {
             optionsBuilder.UseSqlite();
-            optionsBuilder.EnablePluralizingTableName = false;
         });
 
         var serviceProvider = services.BuildServiceProvider();
