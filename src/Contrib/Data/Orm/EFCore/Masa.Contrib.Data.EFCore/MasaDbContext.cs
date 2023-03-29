@@ -96,14 +96,6 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
 
         foreach (var provider in Options.ModelCreatingProviders)
             provider.Configure(modelBuilder);
-
-        if (!Options.EnablePluralizingTableName)
-        {
-            foreach (var item in modelBuilder.Model.GetEntityTypes())
-            {
-                item.SetTableName(item.ClrType.Name);
-            }
-        }
     }
 
     /// <summary>
@@ -112,7 +104,6 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
     /// <param name="modelBuilder"></param>
     protected virtual void OnModelCreatingExecuting(ModelBuilder modelBuilder)
     {
-
     }
 
     protected virtual void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
