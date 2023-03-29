@@ -34,24 +34,16 @@ public abstract class AbstractCaller : IManualCaller
 
     protected AbstractCaller(IServiceProvider serviceProvider,
         string name,
-        bool supportAuthentication,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory) : this(serviceProvider)
     {
-        if (supportAuthentication)
-        {
-            var authenticationServiceFactory = serviceProvider.GetService<IAuthenticationServiceFactory>();
-            bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
+        var authenticationServiceFactory = serviceProvider.GetService<IAuthenticationServiceFactory>();
+        bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
 
-            _logger?.LogDebug(
-                "----- The current Caller support authentication, caller Name: [{Name}], enable Authentication: [{EnableAuthentication}]",
-                name,
-                enableAuthentication);
-        }
-        else
-        {
-            _logger?.LogDebug("----- The current Caller does not support authentication, caller Name: [{Name}]", name);
-        }
+        _logger?.LogDebug(
+            "----- The current Caller support authentication, caller Name: [{Name}], enable Authentication: [{EnableAuthentication}]",
+            name,
+            enableAuthentication);
 
         _requestMessageFactory = currentRequestMessageFactory;
         _responseMessageFactory = currentResponseMessageFactory;

@@ -54,4 +54,31 @@ public class DefaultIsolationConnectionStringProviderTest
             return isolationConnectionStringProvider.GetConnectionStringAsync(name);
         }
     }
+
+    [TestMethod]
+    public async Task TestTenantIdByAddEntityAsync()
+    {
+        _services.Configure<IsolationOptions>(options => options.MultiTenantIdType = typeof(int));
+        _services.AddIsolation(isolationBuilder => isolationBuilder.UseMultiTenant());
+        var rootServiceProvider = _services.BuildServiceProvider();
+        var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = rootServiceProvider.CreateScope();
+        var multiTenantSetter = scope.ServiceProvider.GetRequiredService<IMultiTenantSetter>();
+        var tenantId = "1";
+        multiTenantSetter.SetTenant(new Tenant(tenantId));
+        var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext>();
+        var user = new User()
+        {
+            Id = Guid.NewGuid(),
+            Name = "masa",
+        };
+        await customDbContext.Set<User>().AddAsync(user);
+        await customDbContext.SaveChangesAsync();
+
+        var userTemp = await customDbContext.User.FirstOrDefaultAsync(u => u.Id == user.Id);
+        Assert.IsNotNull(userTemp);
+        Assert.AreEqual(tenantId, userTemp.TenantId.ToString());
+    }
 }

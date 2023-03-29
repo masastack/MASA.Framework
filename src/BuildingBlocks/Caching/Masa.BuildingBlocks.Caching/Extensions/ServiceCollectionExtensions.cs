@@ -19,14 +19,11 @@ public static class ServiceCollectionExtensions
         Action<DistributedCacheBuilder> action,
         Action<TypeAliasOptions>? typeAliasOptionsAction = null)
     {
-        services.TryAddDistributedCache();
         DistributedCacheBuilder distributedCacheBuilder = new(services, name);
         action.Invoke(distributedCacheBuilder);
 
         if (typeAliasOptionsAction != null)
             services.Configure(name, typeAliasOptionsAction);
-
-        services.TryAddSingleton<IFormatCacheKeyProvider, DefaultFormatCacheKeyProvider>();
         return services;
     }
 }

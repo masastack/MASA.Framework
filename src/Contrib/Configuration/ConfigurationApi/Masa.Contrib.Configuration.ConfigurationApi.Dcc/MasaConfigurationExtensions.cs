@@ -10,19 +10,19 @@ public static class MasaConfigurationExtensions
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptionsBuilder>? callerOptions = null,
+        Action<CallerBuilder>? callerBuilder = null,
         string sectionName = "DccOptions")
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
         var dccOptions = configurationSection.Get<DccOptions>();
-        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerOptions);
+        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         DccOptions dccOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptionsBuilder>? action = null)
+        Action<CallerBuilder>? action = null)
     {
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))

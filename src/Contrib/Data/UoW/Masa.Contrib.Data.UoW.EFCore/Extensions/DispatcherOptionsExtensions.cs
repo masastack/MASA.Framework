@@ -13,27 +13,17 @@ public static class DispatcherOptionsExtensions
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
         where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
-        => options.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+        => options.UseUoW<IDispatcherOptions, TDbContext>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 
-    public static IDispatcherOptions UseUoW<TDbContext, TUserId>(
-        this IDispatcherOptions options,
-        Action<MasaDbContextBuilder>? optionsBuilder = null,
-        bool disableRollbackOnFailure = false,
-        bool? useTransaction = null)
-        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
-        where TUserId : IComparable
-        => options.UseUoW<IDispatcherOptions, TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
-
-    internal static TDispatcherOptions UseUoW<TDispatcherOptions, TDbContext, TUserId>(
+    internal static TDispatcherOptions UseUoW<TDispatcherOptions, TDbContext>(
         this TDispatcherOptions options,
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
         where TDispatcherOptions : IDispatcherOptions
         where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
-        where TUserId : IComparable
     {
-        options.Services.UseUoW<TDbContext, TUserId>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
+        options.Services.UseUoW<TDbContext>(nameof(options.Services), optionsBuilder, disableRollbackOnFailure, useTransaction);
         return options;
     }
 }

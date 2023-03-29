@@ -74,7 +74,6 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
 
-        student = await dbContext.Set<Student>().Include(s => s.Address).Include(s => s.Hobbies).FirstAsync();
         dbContext.Set<Student>().Remove(student);
         await dbContext.SaveChangesAsync();
 
@@ -105,8 +104,8 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         string connectionString = $"data source=test-{Guid.NewGuid()}";
         string connectionStringByQuery = connectionString;
-        services.AddMasaDbContext<CustomQueryDbContext>(options => options.UseSqlite(connectionStringByQuery).UseFilter());
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        services.AddMasaDbContext<CustomQueryDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePluralizingTableName = false; });
+        services.AddMasaDbContext<CustomDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); options.EnablePluralizingTableName = false; });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
@@ -143,8 +142,7 @@ public class DbContextTest : TestBase
 
         Assert.IsTrue(await queryDbContext.Set<Student>().AnyAsync());
 
-        student = await dbContext.Set<Student>().Include(s => s.Address).Include(s => s.Hobbies).FirstAsync();
-        dbContext.Set<Student>().Remove(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
@@ -174,7 +172,8 @@ public class DbContextTest : TestBase
     public async Task TestDisabledSoftDelete()
     {
         Services.AddMasaDbContext<CustomDbContext>(options
-            => options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter());
+            =>
+        { options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter(); options.EnablePluralizingTableName = false; });
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         await dbContext.Database.EnsureCreatedAsync();
@@ -193,7 +192,7 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
 
-        dbContext.Set<Student>().Remove(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
@@ -210,8 +209,8 @@ public class DbContextTest : TestBase
     public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual1()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>()
-            .AddMasaDbContext<CustomDbContext>();
+        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()))
+            .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
 
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count() == 3);
@@ -224,6 +223,7 @@ public class DbContextTest : TestBase
         services.AddMasaDbContext<CustomDbContext>(opt =>
         {
             opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
+            opt.EnablePluralizingTableName = false;
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -269,8 +269,9 @@ public class DbContextTest : TestBase
         await dbContext.SaveChangesAsync();
         Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 2);
 
-        var student = await dbContext.Set<Student>().FirstAsync();
-        dbContext.Set<Student>().Remove(student);
+        var student = students.First();
+        dbContext.Attach(student);
+        dbContext.Remove(student);
         await dbContext.SaveChangesAsync();
 
         var result = await new Repository(dbContext).GetPaginatedListAsync(new PaginatedOptions()
@@ -290,7 +291,7 @@ public class DbContextTest : TestBase
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => optionsBuilder.UseSqlite());
+        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); optionsBuilder.EnablePluralizingTableName = false; });
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -328,5 +329,90 @@ public class DbContextTest : TestBase
         Assert.AreEqual(expectedNewConnectionString, connectionString);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
+    }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAsync()
+    {
+        var services = new ServiceCollection();
+        var userId = Guid.NewGuid().ToString();
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var order = new Order()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Order>().AddAsync(order);
+        await customDbContext.SaveChangesAsync();
+
+        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
+        Assert.IsNotNull(orderTemp);
+        Assert.AreEqual(userId, orderTemp.Creator.ToString());
+        Assert.AreEqual(userId, orderTemp.Modifier.ToString());
+    }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAndUserIdIsNullAsync()
+    {
+        var services = new ServiceCollection();
+        string? userId = null;
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var order = new Order()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Order>().AddAsync(order);
+        await customDbContext.SaveChangesAsync();
+
+        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
+        Assert.IsNotNull(orderTemp);
+        Assert.IsNull(orderTemp.Creator);
+        Assert.IsNull(orderTemp.Modifier);
+    }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAndUserIdIsIntAsync()
+    {
+        var services = new ServiceCollection();
+        services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+        var userId = "1";
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var goods = new Goods()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Goods>().AddAsync(goods);
+        await customDbContext.SaveChangesAsync();
+
+        var goodsTemp = await customDbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsTemp);
+        Assert.AreEqual(userId, goodsTemp.Creator.ToString());
+        Assert.AreEqual(userId, goodsTemp.Modifier.ToString());
     }
 }

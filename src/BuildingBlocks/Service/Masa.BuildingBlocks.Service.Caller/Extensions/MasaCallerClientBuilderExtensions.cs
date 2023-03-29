@@ -39,14 +39,14 @@ public static class MasaCallerClientBuilderExtensions
 
         AddAuthenticationCore(masaCallerClientBuilder.Services);
 
-        masaCallerClientBuilder.Services.Configure<AuthenticationServiceFactoryOptions>(callerOptions =>
+        masaCallerClientBuilder.Services.Configure<AuthenticationServiceFactoryOptions>(factoryOptions =>
         {
-            if (callerOptions.Options.Any(relation
+            if (factoryOptions.Options.Any(relation
                     => relation.Name.Equals(masaCallerClientBuilder.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException(
                     $"The caller name already exists, please change the name, the repeat name is [{masaCallerClientBuilder.Name}]");
 
-            callerOptions.Options.Add(new AuthenticationServiceRelationOptions(masaCallerClientBuilder.Name, implementationFactory));
+            factoryOptions.Options.Add(new AuthenticationServiceRelationOptions(masaCallerClientBuilder.Name, implementationFactory));
         });
     }
 

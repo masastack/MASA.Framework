@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
-    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
     where TUserId : IComparable
 {
     private readonly Type _userIdType;
@@ -31,7 +31,10 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             return;
 
         changeTracker.DetectChanges();
-        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete);
+
+        var userId = GetUserId(_userContext?.UserId);
+
+        var entries = changeTracker.Entries().Where(entry => entry is { State: EntityState.Deleted, Entity: ISoftDelete });
         foreach (var entity in entries)
         {
             var navigationEntries = entity.Navigations
@@ -47,11 +50,7 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             {
                 entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
                     DateTime.UtcNow; //The current time to change to localization after waiting for localization
-            }
 
-            if (entity.Entity is IAuditEntity<TUserId> && _userContext != null)
-            {
-                var userId = GetUserId(_userContext.UserId);
                 if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
             }
         }

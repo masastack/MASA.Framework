@@ -6,19 +6,19 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuilder
-    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
     public MasaDbContextOptions<TDbContext> MasaOptions
-        => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete);
+        => new(ServiceProvider, DbContextOptionsBuilder.Options, EnableSoftDelete, EnablePluralizingTableName);
 
-    public MasaDbContextOptionsBuilder(bool enableSoftDelete = false) : this(null, enableSoftDelete)
+    public MasaDbContextOptionsBuilder(bool enableSoftDelete = false, bool enablePluralizingTableName = false) : this(null, enableSoftDelete, enablePluralizingTableName)
     {
     }
 
     public MasaDbContextOptionsBuilder(
         IServiceProvider? serviceProvider,
-        bool enableSoftDelete)
-        : base(serviceProvider, new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete))
+        bool enableSoftDelete, bool enablePluralizingTableName)
+        : base(serviceProvider, new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete, enablePluralizingTableName))
     {
     }
 }

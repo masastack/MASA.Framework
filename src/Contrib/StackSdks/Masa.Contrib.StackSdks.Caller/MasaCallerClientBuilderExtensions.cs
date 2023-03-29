@@ -14,6 +14,7 @@ public static class MasaCallerClientBuilderExtensions
     public static IMasaCallerClientBuilder UseAuthentication(
         this IMasaCallerClientBuilder masaCallerClientBuilder)
     {
+        masaCallerClientBuilder.Services.AddHttpContextAccessor();
         masaCallerClientBuilder.Services.TryAddScoped<ITokenGenerater, DefaultTokenGenerater>();
         masaCallerClientBuilder.Services.TryAddScoped(s => s.GetRequiredService<ITokenGenerater>().Generater());
         masaCallerClientBuilder.UseAuthentication(serviceProvider =>

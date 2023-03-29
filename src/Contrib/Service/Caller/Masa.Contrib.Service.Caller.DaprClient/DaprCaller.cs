@@ -12,11 +12,10 @@ public class DaprCaller : AbstractCaller
     public DaprCaller(
         IServiceProvider serviceProvider,
         string name,
-        bool supportAuthentication,
         string appId,
         Func<IServiceProvider, IRequestMessage>? requestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? responseMessageFactory)
-        : base(serviceProvider, name, supportAuthentication, requestMessageFactory, responseMessageFactory)
+        : base(serviceProvider, name, requestMessageFactory, responseMessageFactory)
     {
         AppId = appId;
         var logger = serviceProvider.GetService<ILogger<DaprCaller>>();

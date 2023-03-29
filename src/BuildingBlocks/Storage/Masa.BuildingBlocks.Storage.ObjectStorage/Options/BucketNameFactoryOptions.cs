@@ -5,7 +5,7 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class BucketNameFactoryOptions : MasaFactoryOptions<BucketNameRelationOptions>
+public class BucketNameFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IBucketNameProvider>>
 {
 
 }

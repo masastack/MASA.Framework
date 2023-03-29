@@ -29,8 +29,6 @@ public interface IMasaStackConfig
 
     public bool SingleSsoClient { get; }
 
-    public string TscLayer { get; }
-
     string GetValue(string key);
 
     Dictionary<string, string> GetValues();

@@ -10,7 +10,7 @@ public class OidcDbContextOptionsTest
     public async Task TestSeedStandardResources1Async()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        services.AddMasaDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()); dbContext.EnablePluralizingTableName = true; });
 
         Mock<IUserClaimRepository> userClaimRepository = new();
         userClaimRepository.Setup(u => u.AddStandardUserClaimsAsync()).Verifiable();
@@ -35,7 +35,7 @@ public class OidcDbContextOptionsTest
     public async Task TestSeedStandardResources2Async()
     {
         var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()));
+        services.AddMasaDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()); dbContext.EnablePluralizingTableName = true; });
 
         Mock<IUserClaimRepository> userClaimRepository = new();
         userClaimRepository.Setup(u => u.AddStandardUserClaimsAsync()).Verifiable();

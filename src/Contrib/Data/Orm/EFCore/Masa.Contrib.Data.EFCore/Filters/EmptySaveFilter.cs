@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class EmptySaveFilter<TDbContext> : ISaveChangesFilter<TDbContext>
-    where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
     public void OnExecuting(ChangeTracker changeTracker)
     {
