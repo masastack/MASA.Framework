@@ -31,7 +31,7 @@ public class HttpClientCallerTest
         var services = new ServiceCollection();
         services.AddCaller(opt => opt.UseHttpClient());
         var serviceProvider = services.BuildServiceProvider();
-        var caller = new CustomHttpClientCaller(new System.Net.Http.HttpClient(), serviceProvider, "", false, prefix);
+        var caller = new CustomHttpClientCaller(new System.Net.Http.HttpClient(), serviceProvider, "", prefix);
         Assert.IsTrue(caller.GetResult(methods) == result);
     }
 }

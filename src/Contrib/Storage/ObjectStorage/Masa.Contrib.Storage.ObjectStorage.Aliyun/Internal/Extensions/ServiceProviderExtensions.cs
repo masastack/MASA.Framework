@@ -16,7 +16,10 @@ internal static class ServiceProviderExtensions
             sectionName,
             () =>
             {
-                var optionsSnapshot = serviceProvider.GetRequiredService<IOptionsSnapshot<AliyunStorageConfigureOptions>>();
+                if (serviceProvider.EnableIsolation())
+                    return serviceProvider.GetRequiredService<IOptionsSnapshot<AliyunStorageConfigureOptions>>().Get(name);
+
+                var optionsSnapshot = serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();
                 return optionsSnapshot.Get(name);
             });
     }

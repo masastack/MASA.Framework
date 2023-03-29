@@ -33,7 +33,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerBuilder> callerOptions)
     {
         MasaArgumentException.ThrowIfNull(callerOptions);
 

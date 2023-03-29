@@ -1,16 +1,13 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-[assembly: InternalsVisibleTo("Masa.Contrib.Service.Caller.HttpClient")]
-[assembly: InternalsVisibleTo("Masa.Contrib.Service.Caller.DaprClient")]
-
 // ReSharper disable once CheckNamespace
 namespace Masa.BuildingBlocks.Service.Caller;
 
-internal static class CallerOptionsBuilderExtensions
+public static class CallerBuilderExtensions
 {
-    public static void AddCallerRelation(
-        this CallerOptionsBuilder callerOptionsBuilder,
+    public static void UseCustomCaller(
+        this CallerBuilder callerOptionsBuilder,
         Func<IServiceProvider, IManualCaller> implementationFactory)
     {
         callerOptionsBuilder.Services.Configure<CallerFactoryOptions>(callerOptions =>
@@ -19,10 +16,9 @@ internal static class CallerOptionsBuilderExtensions
                 throw new ArgumentException(
                     $"The caller name already exists, please change the name, the repeat name is [{callerOptionsBuilder.Name}]");
 
-            callerOptions.Options.Add(new CallerRelationOptions(
+            callerOptions.Options.Add(new MasaRelationOptions<IManualCaller>(
                 callerOptionsBuilder.Name,
-                implementationFactory,
-                callerOptionsBuilder.Lifetime));
+                implementationFactory));
         });
     }
 }

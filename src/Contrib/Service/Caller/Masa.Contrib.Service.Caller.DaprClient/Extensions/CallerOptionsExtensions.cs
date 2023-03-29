@@ -7,7 +7,7 @@ namespace Masa.BuildingBlocks.Service.Caller;
 
 public static class CallerOptionsExtensions
 {
-    public static MasaDaprClientBuilder UseDapr(this CallerOptionsBuilder callerOptionsBuilder,
+    public static MasaDaprClientBuilder UseDapr(this CallerBuilder callerOptionsBuilder,
         Action<MasaDaprClient> masDaprClientConfigure,
         Action<DaprClientBuilder>? configure = null)
     {
@@ -17,7 +17,7 @@ public static class CallerOptionsExtensions
 
         return callerOptionsBuilder.UseDaprCore(() =>
         {
-            callerOptionsBuilder.AddCallerRelation(serviceProvider =>
+            callerOptionsBuilder.UseCustomCaller(serviceProvider =>
             {
                 var masaDaprClient = new MasaDaprClient(serviceProvider);
                 masDaprClientConfigure.Invoke(masaDaprClient);
@@ -26,7 +26,6 @@ public static class CallerOptionsExtensions
                 return new DaprCaller(
                     serviceProvider,
                     callerOptionsBuilder.Name,
-                    callerOptionsBuilder.Lifetime != ServiceLifetime.Singleton,
                     appid,
                     masaDaprClient.RequestMessageFactory,
                     masaDaprClient.ResponseMessageFactory);
@@ -34,7 +33,7 @@ public static class CallerOptionsExtensions
         });
     }
 
-    private static MasaDaprClientBuilder UseDaprCore(this CallerOptionsBuilder callerOptionsBuilder,
+    private static MasaDaprClientBuilder UseDaprCore(this CallerBuilder callerOptionsBuilder,
         Action action)
     {
         callerOptionsBuilder.Services.TryAddSingleton<ICallerProvider, DefaultCallerProvider>();

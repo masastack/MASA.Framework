@@ -5,6 +5,6 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public class CallerFactoryOptions : MasaFactoryOptions<CallerRelationOptions>
+public class CallerFactoryOptions : MasaFactoryOptions<MasaRelationOptions<IManualCaller>>
 {
 }

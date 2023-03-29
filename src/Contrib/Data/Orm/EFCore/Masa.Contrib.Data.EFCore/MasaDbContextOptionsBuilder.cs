@@ -9,6 +9,8 @@ public abstract class MasaDbContextOptionsBuilder
 
     public bool EnableSoftDelete { get; }
 
+    public bool EnablePluarlizingTableName { get; }
+
     public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
 
     protected MasaDbContextOptionsBuilder(IServiceProvider? serviceProvider, MasaDbContextOptions options)

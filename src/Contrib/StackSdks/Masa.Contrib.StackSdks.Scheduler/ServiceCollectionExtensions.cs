@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
+    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerBuilder> callerOptionsBuilder)
     {
         ArgumentNullException.ThrowIfNull(callerOptionsBuilder, nameof(callerOptionsBuilder));
 

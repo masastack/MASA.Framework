@@ -64,6 +64,7 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
     {
         Options = options;
 
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         _environmentContext = options.ServiceProvider?.GetService<IMultiEnvironmentContext>();
         _tenantContext = options.ServiceProvider?.GetService<IMultiTenantContext>();
     }
@@ -95,6 +96,14 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMa
 
         foreach (var provider in Options.ModelCreatingProviders)
             provider.Configure(modelBuilder);
+
+        if (!Options.EnablePluarlizingTableName)
+        {
+            foreach (var item in modelBuilder.Model.GetEntityTypes())
+            {
+                item.SetTableName(item.ClrType.Name);
+            }
+        }
     }
 
     /// <summary>
