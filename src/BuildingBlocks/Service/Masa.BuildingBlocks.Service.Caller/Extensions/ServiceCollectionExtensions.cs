@@ -87,7 +87,7 @@ public static class ServiceCollectionExtensions
                 var callerBase = (constructorInfo.Invoke(parameters.ToArray()) as CallerBase)!;
 
                 var name = callerBase.Name ?? type.FullName ?? type.Name;
-                callerBase.SetCallerOptions(new CallerBuilder(services, name), name);
+                callerBase.SetCallerBuilder(new CallerBuilder(services, name), name);
                 callerBase.Initialize(serviceProvider, type);
 
                 return callerBase;

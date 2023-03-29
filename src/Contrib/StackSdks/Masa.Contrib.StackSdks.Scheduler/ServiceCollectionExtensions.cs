@@ -14,9 +14,9 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(schedulerServiceBaseAddress));
         }
 
-        return services.AddSchedulerClient(callerOptions =>
+        return services.AddSchedulerClient(callerBuilder =>
         {
-            callerOptions
+            callerBuilder
                 .UseHttpClient(builder =>
                 {
                     builder.Configure = opt => opt.BaseAddress = new Uri(schedulerServiceBaseAddress);
@@ -24,15 +24,15 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerBuilder> callerOptionsBuilder)
+    public static IServiceCollection AddSchedulerClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder)
     {
-        ArgumentNullException.ThrowIfNull(callerOptionsBuilder, nameof(callerOptionsBuilder));
+        ArgumentNullException.ThrowIfNull(callerBuilder, nameof(callerBuilder));
 
         if (services.Any(service => service.ImplementationType == typeof(SchedulerProvider)))
             return services;
 
         services.AddSingleton<SchedulerProvider>();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddScoped<ISchedulerClient>(serviceProvider =>
         {

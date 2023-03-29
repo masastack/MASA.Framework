@@ -22,23 +22,23 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
-        return services.AddAuthClient(callerOptionsBuilder =>
+        return services.AddAuthClient(callerBuilder =>
         {
-            callerOptionsBuilder
+            callerBuilder
                 .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
                 .UseAuthentication();
         }, redisOptions);
     }
 
-    private static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerBuilder> callerOptionsBuilder,
+    private static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder,
         RedisConfigurationOptions redisOptions)
     {
-        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
+        MasaArgumentException.ThrowIfNull(callerBuilder);
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddAuthClientMultilevelCache(redisOptions);
         services.AddScoped<IAuthClient>(serviceProvider =>

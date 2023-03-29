@@ -34,9 +34,9 @@ public class TraceServiceTests
             options.UseNodes(new string[] { StaticConfig.HOST }).
             UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
         },
-        callerOptions =>
+            callerBuilder =>
         {
-            callerOptions.BaseAddress = StaticConfig.HOST;
+            callerBuilder.BaseAddress = StaticConfig.HOST;
         },
         StaticConfig.TRACE_INDEX_NAME);
         var serviceProvider = services.BuildServiceProvider();
@@ -135,6 +135,6 @@ public class TraceServiceTests
         var secondResult = await _traceService.ScrollAsync(query);
 
         Assert.IsNotNull(secondResult);
-        Assert.IsTrue(secondResult.Result.Any());       
+        Assert.IsTrue(secondResult.Result.Any());
     }
 }

@@ -12,22 +12,22 @@ public static class ObjectStorageBuilderExtensions
         Func<IServiceProvider, IManualObjectStorageClient> implementationFactory,
         Func<IServiceProvider, IBucketNameProvider> bucketNameImplementationFactory)
     {
-        objectStorageBuilder.Services.Configure<ObjectStorageFactoryOptions>(callerOptions =>
+        objectStorageBuilder.Services.Configure<ObjectStorageFactoryOptions>(factoryOptions =>
         {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(objectStorageBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+            if (factoryOptions.Options.Any(relation => relation.Name.Equals(objectStorageBuilder.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException(
                     $"The ObjectStorage name already exists, please change the name, the repeat name is [{objectStorageBuilder.Name}]");
 
-            callerOptions.Options.Add(new(objectStorageBuilder.Name, implementationFactory));
+            factoryOptions.Options.Add(new(objectStorageBuilder.Name, implementationFactory));
         });
 
-        objectStorageBuilder.Services.Configure<BucketNameFactoryOptions>(callerOptions =>
+        objectStorageBuilder.Services.Configure<BucketNameFactoryOptions>(factoryOptions =>
         {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(objectStorageBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+            if (factoryOptions.Options.Any(relation => relation.Name.Equals(objectStorageBuilder.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException(
                     $"The Bucket name already exists, please change the name, the repeat name is [{objectStorageBuilder.Name}]");
 
-            callerOptions.Options.Add(new(objectStorageBuilder.Name, bucketNameImplementationFactory));
+            factoryOptions.Options.Add(new(objectStorageBuilder.Name, bucketNameImplementationFactory));
         });
     }
 }
