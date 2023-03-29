@@ -303,6 +303,7 @@ public class IntegrationEventLogServiceTest : TestBase
         await integrationEventLogContext.DbContext.Set<IntegrationEventLog>().AddAsync(integrationEventLog);
         await integrationEventLogContext.DbContext.SaveChangesAsync();
         await integrationEventLogContext.DbContext.Database.CommitTransactionAsync();
+        integrationEventLogContext.DbContext.Entry(integrationEventLog).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
         return integrationEventLog.EventId;
     }
 }

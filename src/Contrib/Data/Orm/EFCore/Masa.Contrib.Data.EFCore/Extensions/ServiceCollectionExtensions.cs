@@ -45,13 +45,14 @@ public static class ServiceCollectionExtensions
         return services.AddCoreServices<TDbContextImplementation, TUserId>((serviceProvider, efDbContextOptionsBuilder) =>
         {
             masaBuilder.Builder?.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
-        }, masaBuilder.EnableSoftDelete, optionsLifetime);
+        }, masaBuilder.EnableSoftDelete, masaBuilder.EnablePularlizingTableName, optionsLifetime);
     }
 
     private static IServiceCollection AddCoreServices<TDbContextImplementation, TUserId>(
         this IServiceCollection services,
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete,
+        bool enablePluralizingTableName,
         ServiceLifetime optionsLifetime)
         where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
         where TUserId : IComparable
@@ -64,7 +65,7 @@ public static class ServiceCollectionExtensions
         services.TryAdd(
             new ServiceDescriptor(
                 typeof(MasaDbContextOptions<TDbContextImplementation>),
-                serviceProvider => CreateMasaDbContextOptions<TDbContextImplementation>(serviceProvider, optionsBuilder, enableSoftDelete),
+                serviceProvider => CreateMasaDbContextOptions<TDbContextImplementation>(serviceProvider, optionsBuilder, enableSoftDelete, enablePluralizingTableName),
                 optionsLifetime));
 
         services.TryAdd(
@@ -121,10 +122,11 @@ public static class ServiceCollectionExtensions
     private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(
         IServiceProvider serviceProvider,
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
-        bool enableSoftDelete)
+        bool enableSoftDelete,
+        bool enablePluralizingTableName)
         where TDbContextImplementation : MasaDbContext<TDbContextImplementation>, IMasaDbContext
     {
-        var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete);
+        var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete, enablePluralizingTableName);
         optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);
 
         return masaDbContextOptionsBuilder.MasaOptions;
