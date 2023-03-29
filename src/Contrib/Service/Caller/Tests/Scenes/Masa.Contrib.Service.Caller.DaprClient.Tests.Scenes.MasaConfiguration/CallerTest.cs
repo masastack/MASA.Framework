@@ -22,9 +22,9 @@ public class CallerTest
         var services = builder.Services;
         AddJsonConfig(services);
 
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -45,9 +45,9 @@ public class CallerTest
         var services = builder.Services;
         AddJsonConfig(services);
 
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -67,9 +67,9 @@ public class CallerTest
 
         AddJsonConfig(services);
 
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();

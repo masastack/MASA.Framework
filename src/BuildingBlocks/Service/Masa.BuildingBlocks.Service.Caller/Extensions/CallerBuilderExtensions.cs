@@ -7,17 +7,17 @@ namespace Masa.BuildingBlocks.Service.Caller;
 public static class CallerBuilderExtensions
 {
     public static void UseCustomCaller(
-        this CallerBuilder callerOptionsBuilder,
+        this CallerBuilder callerBuilder,
         Func<IServiceProvider, IManualCaller> implementationFactory)
     {
-        callerOptionsBuilder.Services.Configure<CallerFactoryOptions>(callerOptions =>
+        callerBuilder.Services.Configure<CallerFactoryOptions>(factoryOptions =>
         {
-            if (callerOptions.Options.Any(relation => relation.Name.Equals(callerOptionsBuilder.Name, StringComparison.OrdinalIgnoreCase)))
+            if (factoryOptions.Options.Any(relation => relation.Name.Equals(callerBuilder.Name, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException(
-                    $"The caller name already exists, please change the name, the repeat name is [{callerOptionsBuilder.Name}]");
+                    $"The caller name already exists, please change the name, the repeat name is [{callerBuilder.Name}]");
 
-            callerOptions.Options.Add(new MasaRelationOptions<IManualCaller>(
-                callerOptionsBuilder.Name,
+            factoryOptions.Options.Add(new MasaRelationOptions<IManualCaller>(
+                callerBuilder.Name,
                 implementationFactory));
         });
     }

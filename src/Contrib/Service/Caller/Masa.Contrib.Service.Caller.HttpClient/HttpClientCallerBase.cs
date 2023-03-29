@@ -28,7 +28,7 @@ public abstract class HttpClientCallerBase : CallerBase
     {
         UseHttpClientPre();
 
-        var masaHttpClientBuilder = CallerOptions.UseHttpClient(callerClient =>
+        var masaHttpClientBuilder = CallerBuilder.UseHttpClient(callerClient =>
         {
             callerClient.Prefix = Prefix;
             callerClient.BaseAddress = BaseAddress;

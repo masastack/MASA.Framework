@@ -27,6 +27,6 @@ public class McClientTest
     public void TestAddMcClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddMcClient(callerOptionsBuilder: null!));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddMcClient(callerBuilder: null!));
     }
 }
