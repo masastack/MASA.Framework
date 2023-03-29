@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Config.Models;
 
 public class ElasticModel
 {
-    public List<string> ElasticNodes { get; set; }
+    public List<string> Nodes { get; set; }
 
     public string Index { get; set; }
 }
