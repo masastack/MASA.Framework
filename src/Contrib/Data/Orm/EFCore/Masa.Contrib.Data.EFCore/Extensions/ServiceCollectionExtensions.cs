@@ -42,10 +42,12 @@ public static class ServiceCollectionExtensions
             {
                 parameters.Add(serviceProvider.GetService(parameter.ParameterType));
             }
-            var dbContext = Activator.CreateInstance(typeof(TDbContextImplementation), parameters.ToArray()) as MasaDbContext;
+            var dbContext = parameters.Count > 0 ?
+                Activator.CreateInstance(typeof(TDbContextImplementation), parameters.ToArray()) as DefaultMasaDbContext :
+                Activator.CreateInstance(typeof(TDbContextImplementation)) as DefaultMasaDbContext;
             MasaArgumentException.ThrowIfNull(dbContext);
 
-            dbContext.TrySetMasaDbContextOptions(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
+            dbContext.TryInitialize(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
             return dbContext;
         }, contextLifetime));
         services.TryAddConfigure<ConnectionStrings>();
@@ -68,21 +70,40 @@ public static class ServiceCollectionExtensions
         MasaApp.TrySetServiceCollection(services);
 
         services.TryAddSingleton<IConcurrencyStampProvider, DefaultConcurrencyStampProvider>();
-        services.AddConnectionStringProvider();
 
-        services.TryAdd(
-            new ServiceDescriptor(
-                typeof(MasaDbContextOptions<TDbContextImplementation>),
-                serviceProvider => CreateMasaDbContextOptions<TDbContextImplementation>(serviceProvider, optionsBuilder, enableSoftDelete),
-                    enablePluralizingTableName),
-                optionsLifetime));
+        return services
+            .AddMasaDbContextOptions<TDbContextImplementation>(optionsBuilder, enableSoftDelete, optionsLifetime)
+            .AddConnectionStringProvider()
+            .AddFilter<TDbContextImplementation>(optionsLifetime)
+            .AddTransient<IConnectionStringConfigProvider, ConnectionStringConfigProvider>();
+    }
 
-        services.TryAdd(
-            new ServiceDescriptor(
-                typeof(MasaDbContextOptions),
-                serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
-                optionsLifetime));
+    private static IServiceCollection AddConnectionStringProvider(this IServiceCollection services)
+    {
+        services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
+        services.TryAddScoped<IIsolationConnectionStringProviderWrapper>(serviceProvider =>
+            new DefaultIsolationConnectionStringProvider(
+                serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>(),
+                serviceProvider.GetRequiredService<IIsolationConfigProvider>(),
+                serviceProvider.GetService<IUnitOfWorkAccessor>(),
+                serviceProvider.GetService<IMultiEnvironmentContext>(),
+                serviceProvider.GetService<IMultiTenantContext>(),
+                serviceProvider.GetService<ILogger<DefaultIsolationConnectionStringProvider>>()));
+        services.TryAddScoped<IConnectionStringProvider>(serviceProvider =>
+        {
+            if (serviceProvider.EnableIsolation())
+                return serviceProvider.GetRequiredService<IIsolationConnectionStringProviderWrapper>();
 
+            return serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>();
+        });
+        return services;
+    }
+
+    private static IServiceCollection AddFilter<TDbContextImplementation>(
+        this IServiceCollection services,
+        ServiceLifetime optionsLifetime)
+        where TDbContextImplementation : DbContext, IMasaDbContext
+    {
         services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
         {
             var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
@@ -100,13 +121,41 @@ public static class ServiceCollectionExtensions
                 serviceProvider.GetRequiredService<TDbContextImplementation>(),
                 serviceProvider.GetService<IUserContext>())!;
         }, optionsLifetime));
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetService<IOptions<IsolationOptions>>();
+            if (isolationOptions == null || !isolationOptions.Value.Enable)
+            {
+                return new EmptySaveFilter<TDbContextImplementation>();
+            }
+
+            var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation),
+                isolationOptions.Value.MultiTenantIdType);
+            var isolationSaveChangesFilter = Activator.CreateInstance(genericType, serviceProvider);
+            return (isolationSaveChangesFilter as ISaveChangesFilter<TDbContextImplementation>)!;
+        }, optionsLifetime));
         return services;
     }
 
-    private static void AddConnectionStringProvider(this IServiceCollection services)
+    private static IServiceCollection AddMasaDbContextOptions<TDbContextImplementation>(
+        this IServiceCollection services,
+        Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
+        bool enableSoftDelete,
+        ServiceLifetime optionsLifetime)
+        where TDbContextImplementation : DbContext, IMasaDbContext
     {
-        services.TryAddScoped<IConnectionStringProviderWrapper, DefaultConnectionStringProvider>();
-        services.TryAddScoped<IConnectionStringProvider>(serviceProvider => serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>());
+        services.TryAdd(
+            new ServiceDescriptor(
+                typeof(MasaDbContextOptions<TDbContextImplementation>),
+                serviceProvider => CreateMasaDbContextOptions<TDbContextImplementation>(serviceProvider, optionsBuilder, enableSoftDelete),
+                optionsLifetime));
+
+        services.TryAdd(
+            new ServiceDescriptor(
+                typeof(MasaDbContextOptions),
+                serviceProvider => serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
+                optionsLifetime));
+        return services;
     }
 
     private static MasaDbContextOptions<TDbContextImplementation> CreateMasaDbContextOptions<TDbContextImplementation>(
@@ -116,7 +165,6 @@ public static class ServiceCollectionExtensions
         where TDbContextImplementation : DbContext, IMasaDbContext
     {
         var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete);
-            new MasaDbContextOptionsBuilder<TDbContextImplementation>(serviceProvider, enableSoftDelete, enablePluralizingTableName);
         optionsBuilder?.Invoke(serviceProvider, masaDbContextOptionsBuilder);
 
         return masaDbContextOptionsBuilder.MasaOptions;

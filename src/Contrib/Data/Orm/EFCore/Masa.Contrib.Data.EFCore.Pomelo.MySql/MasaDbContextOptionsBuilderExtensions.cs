@@ -12,6 +12,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseMySql(connectionString, serverVersion, mySqlOptionsAction);
+
+        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connectionString);
+
         return builder;
     }
 
@@ -22,6 +25,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<MySqlDbContextOptionsBuilder>? mySqlOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseMySql(connection, serverVersion, mySqlOptionsAction);
+
+        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connection.ConnectionString);
+
         return builder;
     }
 }

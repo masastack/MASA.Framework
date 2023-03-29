@@ -28,16 +28,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\..\..\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.InMemory\Masa.Contrib.Data.EFCore.InMemory.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
-    <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
-    <ProjectReference Include="..\..\..\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
-    <ProjectReference Include="..\..\Masa.Contrib.Isolation.EFCore\Masa.Contrib.Isolation.EFCore.csproj" />
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

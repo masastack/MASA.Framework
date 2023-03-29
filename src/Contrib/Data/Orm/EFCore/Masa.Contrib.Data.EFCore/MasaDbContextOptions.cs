@@ -18,9 +18,12 @@ public abstract class MasaDbContextOptions : DbContextOptions
 
     public bool EnableSoftDelete { get; }
 
-    private protected MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete)
+    internal Type DbContextType { get; }
+
+    private protected MasaDbContextOptions(IServiceProvider? serviceProvider, bool enableSoftDelete, Type dbContextType)
     {
         ServiceProvider = serviceProvider;
         EnableSoftDelete = enableSoftDelete;
+        DbContextType = dbContextType;
     }
 }

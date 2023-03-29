@@ -11,6 +11,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseSqlServer(connectionString, sqlServerOptionsAction);
+
+        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connectionString);
+
         return builder;
     }
 
@@ -20,6 +23,9 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<SqlServerDbContextOptionsBuilder>? sqlServerOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseSqlServer(connection, sqlServerOptionsAction);
+
+        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connection.ConnectionString);
+
         return builder;
     }
 }

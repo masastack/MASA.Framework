@@ -217,30 +217,14 @@ public class DbContextTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual1()
+    public void TestAddMasaDbContextReturnSaveChangeFilterEqual3()
     {
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()))
             .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
 
         var serviceProvider = services.BuildServiceProvider();
-        Assert.AreEqual(2, serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count());
-    }
-
-    [TestMethod]
-    public void TestAddMasaDbContextReturnSaveChangeFilterEqual2()
-    {
-        var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(opt =>
-        {
-            opt.UseSqlite(Guid.NewGuid().ToString()).UseFilter();
-            opt.EnablePluralizingTableName = false;
-        });
-
-        var serviceProvider = services.BuildServiceProvider();
-
-        var filters = serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>();
-        Assert.IsTrue(filters.Count() == 3);
+        Assert.AreEqual(3, serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count());
     }
 
     [TestMethod]

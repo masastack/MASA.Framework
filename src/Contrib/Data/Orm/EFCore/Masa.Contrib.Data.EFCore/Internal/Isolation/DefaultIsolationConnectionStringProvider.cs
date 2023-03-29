@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-[assembly: InternalsVisibleTo("Masa.Contrib.Isolation.EFCore.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests")]
 
 // ReSharper disable once CheckNamespace
 
