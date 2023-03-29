@@ -415,4 +415,20 @@ public class DbContextTest : TestBase
         Assert.AreEqual(userId, goodsTemp.Creator.ToString());
         Assert.AreEqual(userId, goodsTemp.Modifier.ToString());
     }
+
+    [TestMethod]
+    public async Task TestAddMasaDbContextPluralTableName()
+    {
+        var services = new ServiceCollection();
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(connectionString));
+
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        var entityTableName = dbContext.Model.FindEntityType(typeof(Student))?.GetTableName();
+
+        Assert.AreEqual("masa_students", entityTableName);
+    }
 }
