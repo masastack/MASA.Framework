@@ -63,19 +63,19 @@ public class MasaStackConfig : IMasaStackConfig
 
     public Dictionary<string, string> GetValues()
     {
-        //try
-        //{
-        //    var remoteConfigs = _configurationApiClient.GetAsync<Dictionary<string, string>>(
-        //       ConfigMap[MasaStackConfigConstant.ENVIRONMENT],
-        //       ConfigMap[MasaStackConfigConstant.CLUSTER],
-        //       DEFAULT_PUBLIC_ID,
-        //       DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
+        try
+        {
+            var remoteConfigs = _configurationApiClient.GetAsync<Dictionary<string, string>>(
+               ConfigMap[MasaStackConfigConstant.ENVIRONMENT],
+               ConfigMap[MasaStackConfigConstant.CLUSTER],
+               DEFAULT_PUBLIC_ID,
+               DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
 
-        //    return remoteConfigs;
-        //}
-        //catch (ArgumentException)
-        //{
-        return new(ConfigMap);
-        //}
+            return remoteConfigs;
+        }
+        catch (ArgumentException)
+        {
+            return new(ConfigMap);
+        }
     }
 }
