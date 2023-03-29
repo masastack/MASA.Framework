@@ -5,8 +5,17 @@
 
 namespace Microsoft.EntityFrameworkCore;
 
-public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
+public abstract class MasaDbContext<TDbContext> : MasaDbContext<TDbContext, Guid>
     where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+{
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    {
+    }
+}
+
+public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DbContext, IMasaDbContext
+    where TDbContext : MasaDbContext<TDbContext, TMultiTenantId>, IMasaDbContext
+    where TMultiTenantId : IComparable
 {
     private bool _initialized;
     private IDataFilter? _dataFilter;
@@ -17,17 +26,6 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         {
             TryInitialize();
             return _dataFilter;
-        }
-    }
-
-    private MultiTenantProvider? _multiTenantProvider;
-
-    internal MultiTenantProvider? MultiTenantProvider
-    {
-        get
-        {
-            TryInitialize();
-            return _multiTenantProvider;
         }
     }
 
@@ -60,16 +58,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
 
     protected virtual bool IsEnvironmentFilterEnabled => DataFilter?.IsEnabled<IMultiEnvironment>() ?? false;
 
-    protected virtual bool IsTenantFilterEnabled
-    {
-        get
-        {
-            if (DataFilter == null)
-                return false;
-
-            return MultiTenantProvider?.IsTenantFilterEnabled(DataFilter) ?? false;
-        }
-    }
+    protected virtual bool IsTenantFilterEnabled => DataFilter?.IsEnabled<IMultiTenant<TMultiTenantId>>() ?? false;
 
     protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
@@ -90,13 +79,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         _dataFilter = Options.ServiceProvider?.GetService<IDataFilter>();
         _domainEventBus = Options.ServiceProvider?.GetService<IDomainEventBus>();
         _concurrencyStampProvider = Options.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
-        _multiTenantProvider = Options.ServiceProvider?.GetRequiredService<MultiTenantProvider>();
         _initialized = true;
-    }
-
-    protected virtual void OnConfiguringExecuting(MasaDbContextOptionsBuilder<TDbContext> modelBuilder)
-    {
-
     }
 
     /// <summary>
@@ -114,7 +97,7 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
         foreach (var provider in Options.ModelCreatingProviders)
             provider.Configure(modelBuilder);
 
-        if (!Options.EnablePluralizingTableName)
+        if (!Options.EnablePluarlizingTableName)
         {
             foreach (var item in modelBuilder.Model.GetEntityTypes())
             {
@@ -168,10 +151,9 @@ public abstract class MasaDbContext<TDbContext> : DbContext, IMasaDbContext
 
         if (typeof(IMultiTenant<>).IsGenericInterfaceAssignableFrom(typeof(TEntity)) && _tenantContext != null)
         {
-            var multiTenantProvider = Options.ServiceProvider!.GetRequiredService<MultiTenantProvider>();
-            string defaultTenantId = multiTenantProvider.MultiTenantIdDefaultValue;
+            var defaultTenantId = default(IMultiTenant<TMultiTenantId>);
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
-                multiTenantProvider.GetMultiTenantId(entity)
+                EF.Property<TMultiTenantId>(entity, nameof(IMultiTenant.TenantId))
                     .Equals(_tenantContext.CurrentTenant != null ? _tenantContext.CurrentTenant.Id : defaultTenantId);
 
             expression = tenantFilter.And(expression != null, expression);

@@ -330,4 +330,89 @@ public class DbContextTest : TestBase
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAsync()
+    {
+        var services = new ServiceCollection();
+        var userId = Guid.NewGuid().ToString();
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var order = new Order()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Order>().AddAsync(order);
+        await customDbContext.SaveChangesAsync();
+
+        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
+        Assert.IsNotNull(orderTemp);
+        Assert.AreEqual(userId, orderTemp.Creator.ToString());
+        Assert.AreEqual(userId, orderTemp.Modifier.ToString());
+    }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAndUserIdIsNullAsync()
+    {
+        var services = new ServiceCollection();
+        string? userId = null;
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var order = new Order()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Order>().AddAsync(order);
+        await customDbContext.SaveChangesAsync();
+
+        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
+        Assert.IsNotNull(orderTemp);
+        Assert.IsNull(orderTemp.Creator);
+        Assert.IsNull(orderTemp.Modifier);
+    }
+
+    [TestMethod]
+    public async Task TestSetCreatorWhenAddEntityAndUserIdIsIntAsync()
+    {
+        var services = new ServiceCollection();
+        services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+        var userId = "1";
+        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
+        string connectionString = $"data source=test-{Guid.NewGuid()}";
+        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+
+        using var scope = serviceProvider.CreateScope();
+        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+        var goods = new Goods()
+        {
+            Name = "masa"
+        };
+        await customDbContext.Set<Goods>().AddAsync(goods);
+        await customDbContext.SaveChangesAsync();
+
+        var goodsTemp = await customDbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsTemp);
+        Assert.AreEqual(userId, goodsTemp.Creator.ToString());
+        Assert.AreEqual(userId, goodsTemp.Modifier.ToString());
+    }
 }

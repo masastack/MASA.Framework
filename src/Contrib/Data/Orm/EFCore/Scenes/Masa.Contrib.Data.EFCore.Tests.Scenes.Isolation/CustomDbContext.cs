@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 
-public class CustomDbContext : MasaDbContext<CustomDbContext>
+public class CustomDbContext : MasaDbContext<CustomDbContext, int>
 {
     public DbSet<User> User { get; set; }
 

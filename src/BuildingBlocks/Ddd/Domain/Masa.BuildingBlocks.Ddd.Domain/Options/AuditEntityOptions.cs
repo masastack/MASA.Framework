@@ -3,10 +3,14 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Microsoft.EntityFrameworkCore;
+namespace Masa.BuildingBlocks.Ddd.Domain;
 
-public interface ISaveChangesFilter<TDbContext> : ISaveChangesFilter
-    where TDbContext : DbContext, IMasaDbContext
+public class AuditEntityOptions
 {
+    public Type UserIdType { get; set; }
 
+    public AuditEntityOptions()
+    {
+        UserIdType = typeof(Guid);
+    }
 }

@@ -6,14 +6,14 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
-    where TDbContext : IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
     private readonly DbContextOptions _originOptions;
 
     public MasaDbContextOptions(
         IServiceProvider? serviceProvider,
         DbContextOptions originOptions,
-        bool enableSoftDelete, bool enablePluralizingTableName) : base(serviceProvider, enableSoftDelete, enablePluralizingTableName) => _originOptions = originOptions;
+        bool enableSoftDelete, bool enablePluarlizingTableName) : base(serviceProvider, enableSoftDelete, enablePluarlizingTableName) => _originOptions = originOptions;
 
     private IEnumerable<IModelCreatingProvider>? _modelCreatingProviders;
 
@@ -29,7 +29,8 @@ public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
     /// Can be used to intercept SaveChanges(Async) method
     /// </summary>
     public override IEnumerable<ISaveChangesFilter> SaveChangesFilters
-        => _saveChangesFilters ??= ServiceProvider?.GetServices<ISaveChangesFilter<TDbContext>>() ?? new List<ISaveChangesFilter<TDbContext>>();
+        => _saveChangesFilters ??=
+            ServiceProvider?.GetServices<ISaveChangesFilter<TDbContext>>() ?? new List<ISaveChangesFilter<TDbContext>>();
 
     /// <summary>
     /// <inheritdoc/>

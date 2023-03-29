@@ -11,18 +11,15 @@ public class MasaDbContextBuilder : IMasaDbContextBuilder
 
     public Type DbContextType { get; }
 
-    public Type UserIdType { get; }
-
     public Action<IServiceProvider, DbContextOptionsBuilder>? Builder { get; set; }
 
     public bool EnableSoftDelete { get; set; }
 
     public bool EnablePularlizingTableName { get; set; }
 
-    public MasaDbContextBuilder(IServiceCollection services, Type dbContextType, Type userIdType)
+    public MasaDbContextBuilder(IServiceCollection services, Type dbContextType)
     {
         Services = services;
         DbContextType = dbContextType;
-        UserIdType = userIdType;
     }
 }

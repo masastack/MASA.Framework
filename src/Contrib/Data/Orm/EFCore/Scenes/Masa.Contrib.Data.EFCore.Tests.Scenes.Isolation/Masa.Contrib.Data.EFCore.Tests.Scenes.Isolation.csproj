@@ -29,6 +29,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
+      <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
       <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
     </ItemGroup>
 
