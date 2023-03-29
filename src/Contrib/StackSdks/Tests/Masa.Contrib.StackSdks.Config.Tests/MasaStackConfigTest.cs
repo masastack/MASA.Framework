@@ -151,6 +151,6 @@ public class MasaStackConfigTest
     {
         var es = _stackConfig.ElasticModel;
 
-        Assert.IsTrue(es is not null && es.ElasticNodes.Any());
+        Assert.IsTrue(es is not null && es.Nodes.Any());
     }
 }
