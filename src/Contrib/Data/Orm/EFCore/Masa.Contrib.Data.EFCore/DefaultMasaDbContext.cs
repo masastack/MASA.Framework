@@ -11,19 +11,41 @@ namespace Microsoft.EntityFrameworkCore;
 public class DefaultMasaDbContext : DbContext, IMasaDbContext
 {
     private bool _initialized;
+
     private IDataFilter? _dataFilter;
 
-    protected IDataFilter? DataFilter => _dataFilter;
+    protected IDataFilter? DataFilter
+    {
+        get
+        {
+            TryInitialize();
+            return _dataFilter;
+        }
+    }
 
     protected MasaDbContextOptions? Options { get; private set; }
 
     private IDomainEventBus? _domainEventBus;
 
-    protected IDomainEventBus? DomainEventBus => _domainEventBus;
+    protected IDomainEventBus? DomainEventBus
+    {
+        get
+        {
+            TryInitialize();
+            return _domainEventBus;
+        }
+    }
 
     private IConcurrencyStampProvider? _concurrencyStampProvider;
 
-    public IConcurrencyStampProvider? ConcurrencyStampProvider => _concurrencyStampProvider;
+    public IConcurrencyStampProvider? ConcurrencyStampProvider
+    {
+        get
+        {
+            TryInitialize();
+            return _concurrencyStampProvider;
+        }
+    }
 
     private IMultiEnvironmentContext? EnvironmentContext => Options?.ServiceProvider?.GetService<IMultiEnvironmentContext>();
 
@@ -42,23 +64,10 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         Options = options;
     }
 
-    internal void TryInitialize(MasaDbContextOptions? options)
+    internal void TryInitializeMasaDbContextOptions(MasaDbContextOptions? options)
     {
-        if (_initialized)
-            return;
-
         if (options is { IsInitialize: false })
             Options = options;
-
-        Initialize();
-    }
-
-    protected virtual void Initialize()
-    {
-        _dataFilter = Options!.ServiceProvider?.GetService<IDataFilter>();
-        _domainEventBus = Options!.ServiceProvider?.GetService<IDomainEventBus>();
-        _concurrencyStampProvider = Options!.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
-        _initialized = true;
 
         try
         {
@@ -68,8 +77,22 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         {
             var logger = Options!.ServiceProvider?.GetService(Options.ContextType) as ILogger;
             logger?.LogDebug("Error generating data context", ex);
-            throw new InvalidOperationException("No database provider has been configured for this DbContext. A provider can be configured by overriding the 'MasaDbContext.OnConfiguring' method or by using 'AddMasaDbContext' on the application service provider. If 'AddMasaDbContext' is used, then also ensure that your DbContext type accepts a 'MasaDbContextOptions<TContext>' object in its constructor and passes it to the base constructor for DbContext.");
+            throw new InvalidOperationException(
+                "No database provider has been configured for this DbContext. A provider can be configured by overriding the 'MasaDbContext.OnConfiguring' method or by using 'AddMasaDbContext' on the application service provider. If 'AddMasaDbContext' is used, then also ensure that your DbContext type accepts a 'MasaDbContextOptions<TContext>' object in its constructor and passes it to the base constructor for DbContext.");
         }
+    }
+
+    protected virtual void TryInitialize()
+    {
+        if (!_initialized) Initialize();
+    }
+
+    protected virtual void Initialize()
+    {
+        _dataFilter = Options?.ServiceProvider?.GetService<IDataFilter>();
+        _domainEventBus = Options?.ServiceProvider?.GetService<IDomainEventBus>();
+        _concurrencyStampProvider = Options?.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
+        _initialized = true;
     }
 
     /// <summary>

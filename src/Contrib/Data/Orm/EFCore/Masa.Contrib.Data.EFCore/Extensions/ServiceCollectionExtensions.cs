@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
                 Activator.CreateInstance(typeof(TDbContextImplementation)) as DefaultMasaDbContext;
             MasaArgumentException.ThrowIfNull(dbContext);
 
-            dbContext.TryInitialize(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
+            dbContext.TryInitializeMasaDbContextOptions(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
             return dbContext;
         }, contextLifetime));
         services.TryAddConfigure<ConnectionStrings>();
