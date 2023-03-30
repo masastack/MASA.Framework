@@ -7,7 +7,7 @@ namespace Microsoft.EntityFrameworkCore;
 
 public abstract class MasaDbContext : DefaultMasaDbContext<Guid>
 {
-    protected MasaDbContext() : base()
+    protected MasaDbContext() : base(new MasaDbContextOptions<MasaDbContext>())
     {
     }
 

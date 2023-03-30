@@ -18,12 +18,12 @@ public class DefaultIsolationConnectionStringProviderTest
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         _services.AddSingleton<IConfiguration>(configuration);
-        _services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => dbContextBuilder.UseSqlite());
     }
 
     [TestMethod]
     public async Task TestGetConnectionStringAsync()
     {
+        _services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => dbContextBuilder.UseSqlite());
         _services.AddIsolation(isolationBuilder =>
         {
             isolationBuilder.UseMultiEnvironment();

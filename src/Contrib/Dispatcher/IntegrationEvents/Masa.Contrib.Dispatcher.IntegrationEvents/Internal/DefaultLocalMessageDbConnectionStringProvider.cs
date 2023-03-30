@@ -9,14 +9,14 @@ internal class DefaultLocalMessageDbConnectionStringProvider :
     LocalMessageDbConnectionStringProviderBase,
     ILocalMessageDbConnectionStringProviderWrapper
 {
-    private readonly IConnectionStringConfigProvider? _localConnectionStringProvider;
+    private readonly IOptionsSnapshot<ConnectionStrings> _options;
     private readonly IOptionsSnapshot<LocalMessageTableOptions> _localMessageTableOptions;
 
     public DefaultLocalMessageDbConnectionStringProvider(
-        IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions,
-        IConnectionStringConfigProvider? localConnectionStringProvider = null)
+        IOptionsSnapshot<ConnectionStrings> options,
+        IOptionsSnapshot<LocalMessageTableOptions> localMessageTableOptions)
     {
-        _localConnectionStringProvider = localConnectionStringProvider;
+        _options = options;
         _localMessageTableOptions = localMessageTableOptions;
     }
 
@@ -25,11 +25,11 @@ internal class DefaultLocalMessageDbConnectionStringProvider :
         if (_localMessageTableOptions.Value.DbContextType == null)
             return new();
 
-        var list = _localConnectionStringProvider?
-            .GetConnectionStrings()
+        var list = _options
+            .Value
             .Where(option => option.Key.Equals(_localMessageTableOptions.Value.SectionName, StringComparison.OrdinalIgnoreCase))
             .Select(item => item.Value)
-            .ToList() ?? new List<string>();
+            .ToList();
         return list;
     }
 }

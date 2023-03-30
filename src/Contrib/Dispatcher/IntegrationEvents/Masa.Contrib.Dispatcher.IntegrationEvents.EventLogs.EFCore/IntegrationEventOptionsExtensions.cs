@@ -17,7 +17,7 @@ public static class IntegrationEventOptionsExtensions
     /// <returns></returns>
     public static IIntegrationEventOptions UseEventLog<TDbContext>(
         this IIntegrationEventOptions options,
-        bool disableEntityTypeConfiguration = false) where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+        bool disableEntityTypeConfiguration = false) where TDbContext : DefaultMasaDbContext, IMasaDbContext
     {
         MasaArgumentException.ThrowIfNull(options.Services);
 

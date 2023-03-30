@@ -56,6 +56,7 @@ public static class ServiceCollectionExtensions
         optionsBuilder?.Invoke(masaBuilder);
         return services.AddCoreServices<TDbContextImplementation>((serviceProvider, efDbContextOptionsBuilder) =>
         {
+            efDbContextOptionsBuilder.DbContextOptionsBuilder.UseApplicationServiceProvider(serviceProvider);
             masaBuilder.Builder?.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
         }, masaBuilder.EnableSoftDelete, optionsLifetime);
     }
@@ -74,8 +75,7 @@ public static class ServiceCollectionExtensions
         return services
             .AddMasaDbContextOptions<TDbContextImplementation>(optionsBuilder, enableSoftDelete, optionsLifetime)
             .AddConnectionStringProvider()
-            .AddFilter<TDbContextImplementation>(optionsLifetime)
-            .AddTransient<IConnectionStringConfigProvider, ConnectionStringConfigProvider>();
+            .AddFilter<TDbContextImplementation>(optionsLifetime);
     }
 
     private static IServiceCollection AddConnectionStringProvider(this IServiceCollection services)

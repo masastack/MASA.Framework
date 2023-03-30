@@ -14,9 +14,6 @@ public static class MasaDbContextOptionsBuilderExtensions
     {
         builder.DbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
 
-        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType,
-            _ => $"AccountEndpoint={accountEndpoint};AccountKey={accountKey};Database={databaseName};");
-
         return builder;
     }
 
@@ -27,9 +24,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
-
-        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType,
-            _ => $"{connectionString};Database={databaseName};");
 
         return builder;
     }

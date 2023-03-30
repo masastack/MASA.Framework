@@ -1,5 +1,7 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+using Microsoft.Extensions.Logging;
 
 namespace Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests;
 
@@ -46,14 +48,15 @@ public class MasaDbContextTest
         Assert.AreEqual(tenantId, userTemp.TenantId.ToString());
     }
 
+
     [TestMethod]
     public async Task TestTenantIdByAddOrderAsync()
     {
         var services = new ServiceCollection();
         services.AddMasaDbContext<CustomDbContext2>(dbContext =>
         {
-            dbContext.UseFilter();
             dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString());
+            dbContext.UseFilter();
         });
         services.AddIsolation(isolationBuilder => isolationBuilder.UseMultiTenant());
         var rootServiceProvider = services.BuildServiceProvider();
@@ -97,7 +100,7 @@ public class MasaDbContextTest
     [TestMethod]
     public async Task TestTenantIdByAddOrderAndNoConstructorAsync()
     {
-        _services.AddMasaDbContext<CustomDbContext3>(builder=>builder.UseFilter());
+        _services.AddMasaDbContext<CustomDbContext3>(builder => builder.UseFilter());
         var rootServiceProvider = _services.BuildServiceProvider();
 
         var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext3>();
@@ -129,5 +132,14 @@ public class MasaDbContextTest
         Assert.AreEqual(2, orderList.Count);
         Assert.AreEqual(order.Id, orderList[0].Id);
         Assert.AreEqual(order2.Id, orderList[1].Id);
+    }
+
+    [TestMethod]
+    public void TestAddMasaDbContextWhenNotUseDatabase()
+    {
+        _services.AddMasaDbContext<CustomDbContext4>(builder => builder.UseFilter());
+        var rootServiceProvider = _services.BuildServiceProvider();
+
+        Assert.ThrowsException<InvalidOperationException>(() => rootServiceProvider.GetRequiredService<CustomDbContext4>());
     }
 }

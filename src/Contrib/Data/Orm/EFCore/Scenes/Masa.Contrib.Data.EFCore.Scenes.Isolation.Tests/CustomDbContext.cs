@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-
 namespace Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests;
 
 public class CustomDbContext : MasaDbContext<CustomDbContext, int>
@@ -29,7 +27,12 @@ public class CustomDbContext3 : MasaDbContext
 
     protected override void OnConfiguring(MasaDbContextOptionsBuilder optionsBuilder)
     {
-        var connectionString = $"data source=customDbContext3";
+        var connectionString = "data source=customDbContext3";
         optionsBuilder.UseSqlite(connectionString);
     }
+}
+
+public class CustomDbContext4 : MasaDbContext
+{
+    public DbSet<Order2> Order { get; set; }
 }

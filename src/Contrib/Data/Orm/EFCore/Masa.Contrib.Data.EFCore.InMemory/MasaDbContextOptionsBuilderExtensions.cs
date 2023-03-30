@@ -14,8 +14,6 @@ public static class MasaDbContextOptionsBuilderExtensions
     {
         builder.DbContextOptionsBuilder.UseInMemoryDatabase(connectionString, inMemoryOptionsAction);
 
-        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connectionString);
-
         return builder;
     }
 }

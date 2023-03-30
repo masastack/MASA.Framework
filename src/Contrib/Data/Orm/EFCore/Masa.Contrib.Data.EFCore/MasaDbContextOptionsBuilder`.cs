@@ -18,7 +18,7 @@ public class MasaDbContextOptionsBuilder<TDbContext> : MasaDbContextOptionsBuild
     public MasaDbContextOptionsBuilder(
         IServiceProvider? serviceProvider,
         bool enableSoftDelete = false)
-        : base(serviceProvider, new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete))
+        : base(new MasaDbContextOptions<TDbContext>(serviceProvider, new DbContextOptions<TDbContext>(), enableSoftDelete))
     {
     }
 }

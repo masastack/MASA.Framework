@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -47,8 +47,8 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         if (_initialized)
             return;
 
-        if (options != null)
-            Options ??= options;
+        if (options is { IsInitialize: false })
+            Options = options;
 
         Initialize();
     }
@@ -60,7 +60,16 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         _concurrencyStampProvider = Options!.ServiceProvider?.GetRequiredService<IConcurrencyStampProvider>();
         _initialized = true;
 
-        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        try
+        {
+            base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        }
+        catch (InvalidOperationException ex)
+        {
+            var logger = Options!.ServiceProvider?.GetService(Options.ContextType) as ILogger;
+            logger?.LogDebug("Error generating data context", ex);
+            throw new InvalidOperationException("No database provider has been configured for this DbContext. A provider can be configured by overriding the 'MasaDbContext.OnConfiguring' method or by using 'AddMasaDbContext' on the application service provider. If 'AddMasaDbContext' is used, then also ensure that your DbContext type accepts a 'MasaDbContextOptions<TContext>' object in its constructor and passes it to the base constructor for DbContext.");
+        }
     }
 
     /// <summary>
@@ -242,7 +251,7 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         if (Options == null)
             return;
 
-        var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder(Options?.ServiceProvider, optionsBuilder, Options?.DbContextType);
+        var masaDbContextOptionsBuilder = new MasaDbContextOptionsBuilder(optionsBuilder, Options);
         OnConfiguring(masaDbContextOptionsBuilder);
     }
 

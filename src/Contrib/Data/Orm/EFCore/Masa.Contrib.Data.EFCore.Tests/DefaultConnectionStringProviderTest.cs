@@ -1,25 +1,23 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Moq;
-
 namespace Masa.Contrib.Data.EFCore.Tests;
 
 [TestClass]
 public class DefaultConnectionStringProviderTest
 {
     private readonly DefaultConnectionStringProvider _defaultConnectionStringProvider;
+
     public DefaultConnectionStringProviderTest()
     {
-        Mock<IConnectionStringConfigProvider> connectionStringConfigProvider = new();
-        connectionStringConfigProvider.Setup(provider => provider.GetConnectionStrings()).Returns(new Dictionary<string, string>()
+        IServiceCollection services = new ServiceCollection();
+        services.Configure<ConnectionStrings>(options =>
         {
-            {
-                ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "Test1"
-            }
+            options.DefaultConnection = "Test1";
         });
-
-        _defaultConnectionStringProvider = new DefaultConnectionStringProvider(connectionStringConfigProvider.Object);
+        var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
+        _defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
     }
 
     [TestMethod]

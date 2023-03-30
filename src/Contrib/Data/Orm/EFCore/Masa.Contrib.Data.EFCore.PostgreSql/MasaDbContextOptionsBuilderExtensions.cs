@@ -12,8 +12,6 @@ public static class MasaDbContextOptionsBuilderExtensions
     {
         builder.DbContextOptionsBuilder.UseNpgsql(connectionString, npgsqlOptionsAction);
 
-        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connectionString);
-
         return builder;
     }
 
@@ -23,8 +21,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<NpgsqlDbContextOptionsBuilder>? npgsqlOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseNpgsql(connection, npgsqlOptionsAction);
-
-        ConnectionStringConfigProvider.ConnectionStrings.AddOrUpdate(builder.DbContextType, _ => connection.ConnectionString);
 
         return builder;
     }

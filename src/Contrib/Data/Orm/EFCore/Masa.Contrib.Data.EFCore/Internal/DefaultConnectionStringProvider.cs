@@ -10,13 +10,13 @@ namespace Masa.Contrib.Data.EFCore;
 internal class DefaultConnectionStringProvider : IConnectionStringProviderWrapper
 {
     private readonly IUnitOfWorkAccessor? _unitOfWorkAccessor;
-    private readonly IConnectionStringConfigProvider _localConnectionStringProvider;
+    private readonly IOptionsSnapshot<ConnectionStrings> _options;
 
     public DefaultConnectionStringProvider(
-        IConnectionStringConfigProvider localConnectionStringProvider,
+        IOptionsSnapshot<ConnectionStrings> options,
         IUnitOfWorkAccessor? unitOfWorkAccessor = null)
     {
-        _localConnectionStringProvider = localConnectionStringProvider;
+        _options = options;
         _unitOfWorkAccessor = unitOfWorkAccessor;
     }
 
@@ -43,12 +43,9 @@ internal class DefaultConnectionStringProvider : IConnectionStringProviderWrappe
 
     private string GetConnectionStringCore(string name)
     {
-        var actualName = name.IsNullOrWhiteSpace() ? ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME : name;
-        var data = _localConnectionStringProvider.GetConnectionStrings();
+        if (string.IsNullOrEmpty(name))
+            return _options.Value.DefaultConnection;
 
-        if (data.TryGetValue(actualName, out var connectionString))
-            return connectionString;
-
-        return string.Empty;
+        return _options.Value.GetConnectionString(name);
     }
 }

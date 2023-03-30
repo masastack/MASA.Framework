@@ -11,29 +11,20 @@ public class MasaDbContextOptionsBuilder
 
     internal bool EnableSoftDelete { get; }
 
-    public virtual DbContextOptionsBuilder DbContextOptionsBuilder { get; }
+    public DbContextOptionsBuilder DbContextOptionsBuilder { get; }
 
     public Type DbContextType { get; }
 
-    private MasaDbContextOptionsBuilder(bool enableSoftDelete, Type dbContextType)
+    public MasaDbContextOptionsBuilder(MasaDbContextOptions masaDbContextOptions, Func<DbContextOptionsBuilder>? configure = null)
     {
-        EnableSoftDelete = enableSoftDelete;
-        DbContextType = dbContextType;
+        ServiceProvider = masaDbContextOptions.ServiceProvider;
+        EnableSoftDelete = masaDbContextOptions.EnableSoftDelete;
+        DbContextType = masaDbContextOptions.DbContextType;
+        DbContextOptionsBuilder = configure == null ? new DbContextOptionsBuilder(masaDbContextOptions) : configure.Invoke();
     }
 
-    public MasaDbContextOptionsBuilder(IServiceProvider? serviceProvider, MasaDbContextOptions options)
-        : this(options.EnableSoftDelete, options.DbContextType)
+    public MasaDbContextOptionsBuilder(DbContextOptionsBuilder dbContextOptionsBuilder, MasaDbContextOptions masaDbContextOptions)
+        : this(masaDbContextOptions, () => dbContextOptionsBuilder)
     {
-        ServiceProvider = serviceProvider;
-        DbContextOptionsBuilder = new DbContextOptionsBuilder(options);
-    }
-
-    internal MasaDbContextOptionsBuilder(
-        IServiceProvider? serviceProvider,
-        DbContextOptionsBuilder dbContextOptionsBuilder,
-        Type dbContextType)
-        : this(false, dbContextType)
-    {
-        DbContextOptionsBuilder = dbContextOptionsBuilder;
     }
 }
