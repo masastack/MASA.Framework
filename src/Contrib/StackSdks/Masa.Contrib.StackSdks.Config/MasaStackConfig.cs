@@ -70,7 +70,6 @@ public class MasaStackConfig : IMasaStackConfig
                ConfigMap[MasaStackConfigConstant.CLUSTER],
                DEFAULT_PUBLIC_ID,
                DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
-
             return remoteConfigs;
         }
         catch (ArgumentException)
