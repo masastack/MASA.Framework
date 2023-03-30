@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -71,6 +71,6 @@ internal class DataCacheModel<T> : DataCacheModel
     {
         if (IsExist) existAction.Invoke();
 
-        else if (notExistFunc != null) Value = await notExistFunc.Invoke();
+        else if (notExistFunc != null) Value = await notExistFunc.Invoke().ConfigureAwait(false);
     }
 }
