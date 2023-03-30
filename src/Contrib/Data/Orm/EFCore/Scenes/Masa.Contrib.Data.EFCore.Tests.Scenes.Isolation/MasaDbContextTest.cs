@@ -104,24 +104,24 @@ public class MasaDbContextTest
         var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext3>();
         await dbContext.Database.EnsureCreatedAsync();
 
-        var list = dbContext.Set<Order2>().ToList();
-        dbContext.Set<Order2>().RemoveRange(list);
+        var list = dbContext.Set<Order>().ToList();
+        dbContext.Set<Order>().RemoveRange(list);
         await dbContext.SaveChangesAsync();
 
         using var scope = rootServiceProvider.CreateScope();
         var customDbContext = scope.ServiceProvider.GetRequiredService<CustomDbContext3>();
-        var order = new Order2()
+        var order = new Order()
         {
             Id = Guid.NewGuid(),
         };
-        await customDbContext.Set<Order2>().AddAsync(order);
+        await customDbContext.Set<Order>().AddAsync(order);
         await customDbContext.SaveChangesAsync();
 
-        var order2 = new Order2()
+        var order2 = new Order()
         {
             Id = Guid.NewGuid(),
         };
-        await customDbContext.Set<Order2>().AddAsync(order2);
+        await customDbContext.Set<Order>().AddAsync(order2);
         await customDbContext.SaveChangesAsync();
 
         var orderList = await customDbContext.Order.ToListAsync();

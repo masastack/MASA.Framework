@@ -23,7 +23,7 @@ public class CustomDbContext2 : MasaDbContext
 
 public class CustomDbContext3 : MasaDbContext
 {
-    public DbSet<Order2> Order { get; set; }
+    public DbSet<Order> Order { get; set; }
 
     protected override void OnConfiguring(MasaDbContextOptionsBuilder optionsBuilder)
     {
@@ -34,5 +34,5 @@ public class CustomDbContext3 : MasaDbContext
 
 public class CustomDbContext4 : MasaDbContext
 {
-    public DbSet<Order2> Order { get; set; }
+    public DbSet<Order> Order { get; set; }
 }
