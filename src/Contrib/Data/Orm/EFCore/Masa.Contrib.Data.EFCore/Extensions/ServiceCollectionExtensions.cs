@@ -5,6 +5,7 @@
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+#pragma warning disable S1135
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddMasaDbContext<TDbContextImplementation>(
@@ -184,3 +185,4 @@ public static class ServiceCollectionExtensions
 #pragma warning restore S2094
 #pragma warning restore S2326
 }
+#pragma warning restore S1135

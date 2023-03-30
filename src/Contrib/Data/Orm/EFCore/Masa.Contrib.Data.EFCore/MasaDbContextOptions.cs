@@ -24,8 +24,6 @@ public abstract class MasaDbContextOptions : DbContextOptions
 
     protected readonly DbContextOptions OriginOptions;
 
-    private readonly ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>? _extensionsMap;
-
     private protected MasaDbContextOptions(
         IServiceProvider? serviceProvider,
         bool enableSoftDelete,
@@ -54,12 +52,16 @@ public abstract class MasaDbContextOptions : DbContextOptions
     /// </summary>
     public override IEnumerable<IDbContextOptionsExtension> Extensions => OriginOptions.Extensions;
 
+#pragma warning disable CS8603
+#pragma warning disable S1135
     /// <summary>
     /// todo: Subsequent change to lambda tree to optimize performance
     /// </summary>
     protected override ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)> ExtensionsMap
         =>  typeof(DbContextOptions).GetProperty("ExtensionsMap", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)?
             .GetValue(OriginOptions) as ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>;
+#pragma warning restore S1135
+#pragma warning restore CS8603
 
     /// <summary>
     /// <inheritdoc/>
@@ -98,4 +100,8 @@ public abstract class MasaDbContextOptions : DbContextOptions
 
         return hashCode.ToHashCode();
     }
+
+    public override bool Equals(object? obj)
+        => ReferenceEquals(this, obj)
+            || (obj is DbContextOptions otherOptions && Equals(otherOptions));
 }

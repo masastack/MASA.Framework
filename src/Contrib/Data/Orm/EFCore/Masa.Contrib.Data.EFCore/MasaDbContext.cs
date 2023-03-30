@@ -11,7 +11,7 @@ public abstract class MasaDbContext : DefaultMasaDbContext<Guid>
     {
     }
 
-    public MasaDbContext(MasaDbContextOptions options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions options) : base(options)
     {
     }
 }
@@ -23,7 +23,7 @@ public abstract class MasaDbContext<TDbContext> : MasaDbContext
     {
     }
 
-    public MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
     }
 }
@@ -36,7 +36,7 @@ public abstract class MasaDbContext<TDbContext, TMultiTenantId> : DefaultMasaDbC
     {
     }
 
-    public MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
+    protected MasaDbContext(MasaDbContextOptions<TDbContext> options) : base(options)
     {
     }
 }

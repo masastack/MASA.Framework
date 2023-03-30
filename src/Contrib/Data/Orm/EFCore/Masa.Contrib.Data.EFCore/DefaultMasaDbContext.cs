@@ -119,6 +119,7 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
     {
     }
 
+#pragma warning disable S3011
     protected virtual void OnModelCreatingConfigureGlobalFilters(ModelBuilder modelBuilder)
     {
         var methodInfo = GetType().GetMethod(nameof(ConfigureGlobalFilters), BindingFlags.NonPublic | BindingFlags.Instance);
@@ -131,6 +132,7 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
             });
         }
     }
+#pragma warning restore S3011
 
     protected virtual void ConfigureGlobalFilters<TEntity>(ModelBuilder modelBuilder, IMutableEntityType mutableEntityType)
         where TEntity : class
