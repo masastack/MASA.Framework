@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
+
+    <RootNamespace>Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

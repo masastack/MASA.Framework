@@ -13,7 +13,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseSqlite(connectionString, sqliteOptionsAction);
-
         return builder;
     }
 
@@ -23,7 +22,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseSqlite(connection, sqliteOptionsAction);
-
         return builder;
     }
 }

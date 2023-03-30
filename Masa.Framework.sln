@@ -697,7 +697,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.UoW.EFCor
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scenes", "Scenes", "{02591EE4-1033-4575-984F-7AB290E7C6FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests", "src\Contrib\Data\Orm\EFCore\Scenes\Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests\Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests.csproj", "{A5B30EEA-2DE1-4233-8584-936CB862191B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation", "src\Contrib\Data\Orm\EFCore\Scenes\Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation\Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation.csproj", "{A5B30EEA-2DE1-4233-8584-936CB862191B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

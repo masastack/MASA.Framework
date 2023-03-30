@@ -13,7 +13,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<InMemoryDbContextOptionsBuilder>? inMemoryOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseInMemoryDatabase(connectionString, inMemoryOptionsAction);
-
         return builder;
     }
 }

@@ -13,7 +13,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseCosmos(accountEndpoint, accountKey, databaseName, cosmosOptionsAction);
-
         return builder;
     }
 
@@ -24,7 +23,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<CosmosDbContextOptionsBuilder>? cosmosOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseCosmos(connectionString, databaseName, cosmosOptionsAction);
-
         return builder;
     }
 }

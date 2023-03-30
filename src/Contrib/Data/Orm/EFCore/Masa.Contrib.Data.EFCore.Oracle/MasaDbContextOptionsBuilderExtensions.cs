@@ -11,7 +11,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseOracle(connectionString, oracleOptionsAction);
-
         return builder;
     }
 
@@ -21,7 +20,6 @@ public static class MasaDbContextOptionsBuilderExtensions
         Action<OracleDbContextOptionsBuilder>? oracleOptionsAction = null)
     {
         builder.DbContextOptionsBuilder.UseOracle(connection, oracleOptionsAction);
-
         return builder;
     }
 }

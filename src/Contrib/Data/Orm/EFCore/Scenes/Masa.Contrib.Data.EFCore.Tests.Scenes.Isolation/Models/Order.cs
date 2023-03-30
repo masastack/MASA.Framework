@@ -3,7 +3,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Data.EFCore.Scenes.Isolation.Tests;
+namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 
 public class Order : IMultiTenant
 {
