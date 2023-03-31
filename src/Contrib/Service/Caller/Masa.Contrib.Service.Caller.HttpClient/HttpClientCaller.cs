@@ -77,7 +77,7 @@ public class HttpClientCaller : AbstractCaller
     protected virtual string GetRequestUri(string? methodName)
     {
         if (string.IsNullOrEmpty(methodName))
-            return string.Empty;
+            return methodName.IsNullOrWhiteSpace() ? _prefix : string.Empty;
 
         if (Uri.IsWellFormedUriString(methodName, UriKind.Absolute) || _prefixIsNullOrEmpty)
             return methodName;
