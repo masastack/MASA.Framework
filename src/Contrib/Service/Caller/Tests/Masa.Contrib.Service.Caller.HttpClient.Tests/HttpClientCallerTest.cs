@@ -27,6 +27,7 @@ public class HttpClientCallerTest
     [DataRow("/v1/check/", "https://github.com/check/healthy?date=1650465417", "https://github.com/check/healthy?date=1650465417")]
     [DataRow("", "healthy", "healthy")]
     [DataRow("", "/healthy?id=1", "/healthy?id=1")]
+    [DataRow("", "", "")]
     public void TestGetRequestUri(string prefix, string methods, string result)
     {
         var services = new ServiceCollection();
