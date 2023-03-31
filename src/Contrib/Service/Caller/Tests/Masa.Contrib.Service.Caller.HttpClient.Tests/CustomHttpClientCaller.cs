@@ -9,10 +9,10 @@ public class CustomHttpClientCaller : HttpClientCaller
         System.Net.Http.HttpClient httpClient,
         IServiceProvider serviceProvider,
         string name,
-        string baseApi,
+        string prefix,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory = null,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory = null)
-        : base(httpClient, serviceProvider, name, baseApi, currentRequestMessageFactory, currentResponseMessageFactory)
+        : base(httpClient, serviceProvider, name, prefix, currentRequestMessageFactory, currentResponseMessageFactory)
     {
     }
 
