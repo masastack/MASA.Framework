@@ -15,8 +15,6 @@ public class MasaDbContextBuilder : IMasaDbContextBuilder
 
     public bool EnableSoftDelete { get; set; }
 
-    public bool EnablePluralizingTableName { get; set; }
-
     public MasaDbContextBuilder(IServiceCollection services, Type dbContextType)
     {
         Services = services;

@@ -12,6 +12,6 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+        where TDbContext : DefaultMasaDbContext, IMasaDbContext
         => options.UseUoW<IDomainEventOptions, TDbContext>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 }

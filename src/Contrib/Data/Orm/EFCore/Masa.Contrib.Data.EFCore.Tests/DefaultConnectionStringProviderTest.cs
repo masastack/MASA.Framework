@@ -6,8 +6,9 @@ namespace Masa.Contrib.Data.EFCore.Tests;
 [TestClass]
 public class DefaultConnectionStringProviderTest
 {
-    [TestMethod]
-    public async Task TestGetConnectionStringAsyncReturnTest1()
+    private readonly DefaultConnectionStringProvider _defaultConnectionStringProvider;
+
+    public DefaultConnectionStringProviderTest()
     {
         IServiceCollection services = new ServiceCollection();
         services.Configure<ConnectionStrings>(options =>
@@ -16,23 +17,20 @@ public class DefaultConnectionStringProviderTest
         });
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
-        var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
-        var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync();
+        _defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
+    }
+
+    [TestMethod]
+    public async Task TestGetConnectionStringAsyncReturnTest1()
+    {
+        var connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("Test1", connectionString);
     }
 
     [TestMethod]
     public async Task TestGetConnectionStringAsyncAndNameIsEmptyReturnTest1()
     {
-        IServiceCollection services = new ServiceCollection();
-        services.Configure<ConnectionStrings>(options =>
-        {
-            options.DefaultConnection = "Test1";
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
-        var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
-        var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
+        var connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
         Assert.AreEqual("Test1", connectionString);
     }
 }

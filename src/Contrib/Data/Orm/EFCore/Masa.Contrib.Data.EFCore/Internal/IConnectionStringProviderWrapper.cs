@@ -4,6 +4,7 @@
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Isolation.EFCore")]
 
 // ReSharper disable once CheckNamespace
 

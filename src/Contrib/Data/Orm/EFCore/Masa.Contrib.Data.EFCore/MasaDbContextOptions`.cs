@@ -8,12 +8,16 @@ namespace Microsoft.EntityFrameworkCore;
 public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
     where TDbContext : DbContext, IMasaDbContext
 {
-    private readonly DbContextOptions _originOptions;
+    public MasaDbContextOptions() : base(null, false, typeof(TDbContext), new DbContextOptions<TDbContext>())
+    {
+    }
 
     public MasaDbContextOptions(
         IServiceProvider? serviceProvider,
         DbContextOptions originOptions,
-        bool enableSoftDelete) : base(serviceProvider, enableSoftDelete) => _originOptions = originOptions;
+        bool enableSoftDelete) : base(serviceProvider, enableSoftDelete, typeof(TDbContext), originOptions)
+    {
+    }
 
     private IEnumerable<IModelCreatingProvider>? _modelCreatingProviders;
 
@@ -31,44 +35,4 @@ public class MasaDbContextOptions<TDbContext> : MasaDbContextOptions
     public override IEnumerable<ISaveChangesFilter> SaveChangesFilters
         => _saveChangesFilters ??=
             ServiceProvider?.GetServices<ISaveChangesFilter<TDbContext>>() ?? new List<ISaveChangesFilter<TDbContext>>();
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override Type ContextType => _originOptions.ContextType;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override bool IsFrozen => _originOptions.IsFrozen;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override IEnumerable<IDbContextOptionsExtension> Extensions => _originOptions.Extensions;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <typeparam name="TExtension"></typeparam>
-    /// <param name="extension"></param>
-    /// <returns></returns>
-    public override DbContextOptions WithExtension<TExtension>(TExtension extension)
-        => _originOptions.WithExtension(extension);
-
-    public override TExtension? FindExtension<TExtension>() where TExtension : class
-        => _originOptions.FindExtension<TExtension>();
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public override void Freeze() => _originOptions.Freeze();
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <typeparam name="TExtension"></typeparam>
-    /// <returns></returns>
-    public override TExtension GetExtension<TExtension>()
-        => _originOptions.GetExtension<TExtension>();
 }

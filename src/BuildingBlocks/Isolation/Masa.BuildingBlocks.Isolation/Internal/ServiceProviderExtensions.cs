@@ -5,6 +5,7 @@
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.RulesEngine")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.SearchEngine.AutoComplete")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.Storage.ObjectStorage")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore")]
 
 // ReSharper disable once CheckNamespace
 

@@ -12,7 +12,7 @@ public static class EventBusBuilderExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext<TDbContext>, IMasaDbContext
+        where TDbContext : DefaultMasaDbContext, IMasaDbContext
     {
         eventBusBuilder.Services.UseUoW<TDbContext>(
             nameof(eventBusBuilder.Services),

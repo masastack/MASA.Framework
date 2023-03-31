@@ -1,43 +1,46 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
 
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
+    <IsPackable>false</IsPackable>
 
-    <ItemGroup>
-      <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(MicrosoftPackageVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(MicrosoftPackageVersion)" />
-      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-      <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
-      <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
-      <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="coverlet.msbuild" Version="$(CoverletPackageVersion)">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
-    </ItemGroup>
+    <RootNamespace>Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation</RootNamespace>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
-      <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
-      <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(MicrosoftPackageVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.msbuild" Version="$(CoverletPackageVersion)">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(MicrosoftPackageVersion)" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Remove="appsettings.json" />
-      <Content Include="appsettings.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Isolation\Masa.Contrib.Isolation.MultiTenant\Masa.Contrib.Isolation.MultiTenant.csproj" />
+    <ProjectReference Include="..\..\..\..\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.InMemory\Masa.Contrib.Data.EFCore.InMemory.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

@@ -11,3 +11,28 @@ public class CustomDbContext : MasaDbContext<CustomDbContext, int>
     {
     }
 }
+
+public class CustomDbContext2 : MasaDbContext
+{
+    public DbSet<Order> Order { get; set; }
+
+    public CustomDbContext2(MasaDbContextOptions<CustomDbContext2> options) : base(options)
+    {
+    }
+}
+
+public class CustomDbContext3 : MasaDbContext
+{
+    public DbSet<Order> Order { get; set; }
+
+    protected override void OnConfiguring(MasaDbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = "data source=customDbContext3";
+        optionsBuilder.UseSqlite(connectionString);
+    }
+}
+
+public class CustomDbContext4 : MasaDbContext
+{
+    public DbSet<Order> Order { get; set; }
+}
