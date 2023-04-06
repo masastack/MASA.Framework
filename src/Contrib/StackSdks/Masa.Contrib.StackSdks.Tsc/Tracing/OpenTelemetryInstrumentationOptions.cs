@@ -4,9 +4,11 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
-{
+{    
     private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
     private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
+    internal static ILogger Logger { get; private set; }
+    internal static long MaxBodySize { get; private set; } = 200 * 1 << 10;
 
     /// <summary>
     /// Default record all data. You can replace it or set null
@@ -51,4 +53,38 @@ public class OpenTelemetryInstrumentationOptions
     /// Build trace callback, allow to supplement the build process
     /// </summary>
     public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
+
+    public void SetMaxBodySize(string val)
+    {
+        if (string.IsNullOrEmpty(val))
+            return;
+        var unit = val[val.Length - 1];
+        var isNum = int.TryParse(val[..(val.Length - 1)], out int num);
+        if (!isNum || num <= 0) return;
+        switch (unit)
+        {
+            case 'k':
+            case 'K':
+                MaxBodySize = num * 1 << 10;
+                break;
+            case 'm':
+            case 'M':
+                MaxBodySize = num * 1 << 20;
+                break;
+            default:
+                MaxBodySize = num;
+                break;
+        }
+    }
+
+    public void SetMaxBodySize(long val)
+    {
+        if (val > 0)
+            MaxBodySize = val;
+    }
+
+    public void SetLogger(ILogger logger)
+    {
+        Logger = logger;
+    }
 }

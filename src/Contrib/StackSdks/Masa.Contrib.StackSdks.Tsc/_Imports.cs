@@ -15,6 +15,7 @@ global using Masa.Contrib.StackSdks.Tsc.Service;
 global using Masa.Contrib.StackSdks.Tsc.Tracing.Handler;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using OpenTelemetry;
 global using OpenTelemetry.Contrib.Instrumentation.ElasticsearchClient;

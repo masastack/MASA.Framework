@@ -5,7 +5,7 @@ namespace System.Diagnostics;
 
 public static class ActivityExtension
 {
-    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
+    public static Activity AddMasaSupplement(this Activity activity, HttpRequest httpRequest)
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.FLAVOR, httpRequest.Protocol);
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.Scheme);
@@ -16,26 +16,26 @@ public static class ActivityExtension
         {
             if (!httpRequest.Body.CanSeek)
                 httpRequest.EnableBuffering();
-            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY, await httpRequest.Body.ReadAsStringAsync(GetHttpRequestEncoding(httpRequest)));
+            SetActivityBody(activity, httpRequest.Body, GetHttpRequestEncoding(httpRequest)).Wait();
         }
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
-
         return activity;
     }
 
-    public static async Task<Activity> AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
+    public static Activity AddMasaSupplement(this Activity activity, HttpRequestMessage httpRequest)
     {
         activity.SetTag(OpenTelemetryAttributeName.Http.SCHEME, httpRequest.RequestUri?.Scheme);
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
 
         if (httpRequest.Content is not null)
         {
-            var st = await httpRequest.Content.ReadAsStreamAsync();
-            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY, await st.ReadAsStringAsync(GetHttpRequestMessageEncoding(httpRequest)));
+            var streamTask = httpRequest.Content.ReadAsStreamAsync();
+            streamTask.Wait();
+            SetActivityBody(activity, streamTask.Result, GetHttpRequestMessageEncoding(httpRequest)).Wait();
         }
 
         return activity;
-    }    
+    }
 
     public static Activity AddMasaSupplement(this Activity activity, HttpResponse httpResponse)
     {
@@ -86,5 +86,21 @@ public static class ActivityExtension
         }
 
         return null;
+    }
+
+    private static async Task SetActivityBody(Activity activity, Stream inputSteam, Encoding? encoding = null)
+    {
+        (long length, string? body) = await inputSteam.ReadAsStringAsync(encoding);
+
+        if (length <= 0)
+            return;        
+        if (length - OpenTelemetryInstrumentationOptions.MaxBodySize > 0)
+        {
+            OpenTelemetryInstrumentationOptions.Logger?.LogInformation(body);
+        }
+        else
+        {
+            activity.SetTag(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY, body);
+        }
     }
 }

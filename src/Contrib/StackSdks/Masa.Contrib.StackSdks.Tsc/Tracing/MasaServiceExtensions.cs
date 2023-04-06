@@ -30,6 +30,8 @@ public static partial class MasaServiceExtensions
                 builder.AddRedisInstrumentation(option.Connection, option.StackExchangeRedisCallsInstrumentationOptions);
 
             option.BuildTraceCallback?.Invoke(builder);
+
+            option.SetLogger(services.BuildServiceProvider().GetRequiredService<ILogger<OpenTelemetryInstrumentationOptions>>());
         }).StartWithHost();
 
         return services;

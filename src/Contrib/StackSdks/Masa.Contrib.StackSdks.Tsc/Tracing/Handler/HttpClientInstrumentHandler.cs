@@ -5,9 +5,9 @@ namespace Masa.Contrib.StackSdks.Tsc.Tracing.Handler;
 
 public class HttpClientInstrumentHandler : ExceptionHandler
 {
-    public virtual async void OnHttpRequestMessage(Activity activity, HttpRequestMessage httpRequestMessage)
+    public virtual void OnHttpRequestMessage(Activity activity, HttpRequestMessage httpRequestMessage)
     {
-        await activity.AddMasaSupplement(httpRequestMessage);
+        _ = activity.AddMasaSupplement(httpRequestMessage);
         HttpMetricProviders.AddHttpRequestMessageMetric(httpRequestMessage);
     }
 
