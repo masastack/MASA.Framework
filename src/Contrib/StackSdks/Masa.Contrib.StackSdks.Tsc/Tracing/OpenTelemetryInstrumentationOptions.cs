@@ -62,8 +62,9 @@ public class OpenTelemetryInstrumentationOptions
 
     public static void SetMaxBodySize(string maxValue)
     {
+        var regex = new Regex(@"\s+");
         if (maxValue is not null)
-            maxValue = Regex.Replace(maxValue, @"\s+", "");
+            maxValue = regex.Replace(maxValue, "");
 
         if (string.IsNullOrEmpty(maxValue))
             return;
