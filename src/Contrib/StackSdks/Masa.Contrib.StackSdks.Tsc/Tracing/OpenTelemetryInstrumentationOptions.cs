@@ -4,7 +4,13 @@
 namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
-{    
+{
+    public OpenTelemetryInstrumentationOptions(IServiceProvider serviceProvider)
+    {
+        if (Logger != null)
+            Logger = serviceProvider.GetRequiredService<ILogger<OpenTelemetryInstrumentationOptions>>();
+    }
+
     private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
     private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
     internal static ILogger Logger { get; private set; }
@@ -54,7 +60,7 @@ public class OpenTelemetryInstrumentationOptions
     /// </summary>
     public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
 
-    public void SetMaxBodySize(string val)
+    public static void SetMaxBodySize(string val)
     {
         if (string.IsNullOrEmpty(val))
             return;
@@ -77,14 +83,9 @@ public class OpenTelemetryInstrumentationOptions
         }
     }
 
-    public void SetMaxBodySize(long val)
+    public static void SetMaxBodySize(long val)
     {
         if (val > 0)
             MaxBodySize = val;
-    }
-
-    public void SetLogger(ILogger logger)
-    {
-        Logger = logger;
     }
 }

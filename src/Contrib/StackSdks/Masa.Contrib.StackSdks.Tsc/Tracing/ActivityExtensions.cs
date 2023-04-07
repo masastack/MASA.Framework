@@ -93,10 +93,10 @@ public static class ActivityExtension
         (long length, string? body) = await inputSteam.ReadAsStringAsync(encoding);
 
         if (length <= 0)
-            return;        
+            return;
         if (length - OpenTelemetryInstrumentationOptions.MaxBodySize > 0)
         {
-            OpenTelemetryInstrumentationOptions.Logger?.LogInformation(body);
+            OpenTelemetryInstrumentationOptions.Logger?.LogInformation("Request body in base64 encode:{Body}", body);
         }
         else
         {
