@@ -29,7 +29,7 @@ public static class ActivityExtension
 
         if (httpRequest.Content is not null)
         {
-            SetActivityBody(activity, httpRequest.Content.ReadAsStream(), GetHttpRequestMessageEncoding(httpRequest)).Wait();
+            SetActivityBody(activity, httpRequest.Content.ReadAsStream(), GetHttpRequestMessageEncoding(httpRequest)).ConfigureAwait(false);
         }
 
         return activity;
@@ -94,7 +94,7 @@ public static class ActivityExtension
             return;
         if (length - OpenTelemetryInstrumentationOptions.MaxBodySize > 0)
         {
-            OpenTelemetryInstrumentationOptions.Logger?.LogInformation("Request body in base64 encode:{Body}", body);
+            OpenTelemetryInstrumentationOptions.Logger?.LogInformation("Request body in base64 encode: {Body}", body);
         }
         else
         {
