@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.Extensions.Logging;
+
 namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 
 [TestClass]
@@ -96,6 +98,50 @@ public class MasaDbContextTest
     }
 
     [TestMethod]
+    public void TestQueryTrackingBehaviorByDefault()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString());
+            dbContext.UseFilter();
+        });
+        var rootServiceProvider = services.BuildServiceProvider();
+
+        var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext>();
+        Assert.AreEqual(QueryTrackingBehavior.NoTracking, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
+    [TestMethod]
+    public void TestCustomQueryTrackingBehaviorByConstructor()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext2>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString());
+            dbContext.UseFilter();
+        });
+        var rootServiceProvider = services.BuildServiceProvider();
+
+        var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext2>();
+        Assert.AreEqual(QueryTrackingBehavior.NoTrackingWithIdentityResolution, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
+    [TestMethod]
+    public void TestCustomQueryTrackingBehaviorByOnConfiguring()
+    {
+        var services = new ServiceCollection();
+        services.AddMasaDbContext<CustomDbContext3>(dbContext =>
+        {
+            dbContext.UseFilter();
+        });
+        var rootServiceProvider = services.BuildServiceProvider();
+
+        var dbContext = rootServiceProvider.GetRequiredService<CustomDbContext3>();
+        Assert.AreEqual(QueryTrackingBehavior.NoTrackingWithIdentityResolution, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
+    [TestMethod]
     public async Task TestTenantIdByAddOrderAndNoConstructorAsync()
     {
         _services.AddMasaDbContext<CustomDbContext3>(builder => builder.UseFilter());
@@ -135,6 +181,7 @@ public class MasaDbContextTest
     [TestMethod]
     public void TestAddMasaDbContextWhenNotUseDatabase()
     {
+        _services.AddLogging(log => log.AddConsole());
         _services.AddMasaDbContext<CustomDbContext4>(builder => builder.UseFilter());
         var rootServiceProvider = _services.BuildServiceProvider();
 

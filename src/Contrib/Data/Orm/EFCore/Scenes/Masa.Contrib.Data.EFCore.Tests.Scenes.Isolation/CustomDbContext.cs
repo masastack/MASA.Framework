@@ -18,6 +18,7 @@ public class CustomDbContext2 : MasaDbContext
 
     public CustomDbContext2(MasaDbContextOptions<CustomDbContext2> options) : base(options)
     {
+        base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
     }
 }
 
@@ -29,6 +30,8 @@ public class CustomDbContext3 : MasaDbContext
     {
         var connectionString = "data source=customDbContext3";
         optionsBuilder.UseSqlite(connectionString);
+
+        optionsBuilder.DbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
     }
 }
 
