@@ -60,12 +60,12 @@ public class OpenTelemetryInstrumentationOptions
     /// </summary>
     public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
 
-    public static void SetMaxBodySize(string val)
+    public static void SetMaxBodySize(string maxValue)
     {
-        if (string.IsNullOrEmpty(val))
+        if (string.IsNullOrEmpty(maxValue))
             return;
-        var unit = val[val.Length - 1];
-        var isNum = int.TryParse(val[..(val.Length - 1)], out int num);
+        var unit = maxValue[^1];
+        var isNum = int.TryParse(maxValue[..(maxValue.Length - 1)], out int num);
         if (!isNum || num <= 0) return;
         switch (unit)
         {
@@ -83,9 +83,9 @@ public class OpenTelemetryInstrumentationOptions
         }
     }
 
-    public static void SetMaxBodySize(long val)
+    public static void SetMaxBodySize(long maxByteValue)
     {
-        if (val > 0)
-            MaxBodySize = val;
+        if (maxByteValue > 0)
+            MaxBodySize = maxByteValue;
     }
 }

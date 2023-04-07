@@ -29,9 +29,7 @@ public static class ActivityExtension
 
         if (httpRequest.Content is not null)
         {
-            var streamTask = httpRequest.Content.ReadAsStreamAsync();
-            streamTask.Wait();
-            SetActivityBody(activity, streamTask.Result, GetHttpRequestMessageEncoding(httpRequest)).Wait();
+            SetActivityBody(activity, httpRequest.Content.ReadAsStream(), GetHttpRequestMessageEncoding(httpRequest)).Wait();
         }
 
         return activity;
