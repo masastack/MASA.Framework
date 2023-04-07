@@ -16,7 +16,7 @@ public static class ActivityExtension
         {
             if (!httpRequest.Body.CanSeek)
                 httpRequest.EnableBuffering();
-            SetActivityBody(activity, httpRequest.Body, GetHttpRequestEncoding(httpRequest)).Wait();
+            SetActivityBody(activity, httpRequest.Body, GetHttpRequestEncoding(httpRequest)).ConfigureAwait(false);
         }
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
         return activity;
