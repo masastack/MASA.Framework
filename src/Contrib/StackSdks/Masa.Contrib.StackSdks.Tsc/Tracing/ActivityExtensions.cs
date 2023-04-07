@@ -16,7 +16,7 @@ public static class ActivityExtension
         {
             if (!httpRequest.Body.CanSeek)
                 httpRequest.EnableBuffering();
-            SetActivityBody(activity, httpRequest.Body, GetHttpRequestEncoding(httpRequest)).ConfigureAwait(false).GetAwaiter().GetResult(); ;
+            SetActivityBody(activity, httpRequest.Body, GetHttpRequestEncoding(httpRequest)).ConfigureAwait(false).GetAwaiter().GetResult();
         }
         activity.SetTag(OpenTelemetryAttributeName.Host.NAME, Dns.GetHostName());
         return activity;
@@ -29,7 +29,7 @@ public static class ActivityExtension
 
         if (httpRequest.Content is not null)
         {
-            SetActivityBody(activity, httpRequest.Content.ReadAsStream(), GetHttpRequestMessageEncoding(httpRequest)).ConfigureAwait(false).GetAwaiter().GetResult(); ;
+            SetActivityBody(activity, httpRequest.Content.ReadAsStream(), GetHttpRequestMessageEncoding(httpRequest)).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         return activity;
