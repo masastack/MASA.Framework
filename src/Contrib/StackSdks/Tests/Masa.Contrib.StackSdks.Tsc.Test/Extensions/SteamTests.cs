@@ -32,7 +32,9 @@ public class SteamTests
 
         using var ms = new MemoryStream(bytes);
 
-        var str = await ms.ReadAsStringAsync(encoding: coding, bufferSize: 16);
+        (long _, string? str) = await ms.ReadAsStringAsync(encoding: coding, bufferSize: 16);
+
+        Debug.WriteLine(str);
 
         if (string.IsNullOrEmpty(text))
             Assert.IsNull(str);
@@ -43,7 +45,7 @@ public class SteamTests
     [TestMethod]
     public async Task NullStreamReadTest()
     {
-        var text = await default(Stream)!.ReadAsStringAsync();
+        (long _, string? text) = await default(Stream)!.ReadAsStringAsync();
         Assert.IsNull(text);
     }
 }
