@@ -71,14 +71,20 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
 
         try
         {
-            base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            _ = base.ChangeTracker;
         }
         catch (InvalidOperationException ex)
         {
-            var logger = Options!.ServiceProvider?.GetService(Options.ContextType) as ILogger;
-            logger?.LogDebug("Error generating data context", ex);
-            throw new InvalidOperationException(
-                "No database provider has been configured for this DbContext. A provider can be configured by overriding the 'MasaDbContext.OnConfiguring' method or by using 'AddMasaDbContext' on the application service provider. If 'AddMasaDbContext' is used, then also ensure that your DbContext type accepts a 'MasaDbContextOptions<TContext>' object in its constructor and passes it to the base constructor for DbContext.");
+            ILogger? logger = null;
+            if (options != null)
+            {
+                var loggerType = typeof(ILogger<>).MakeGenericType(options.ContextType);
+                logger = options.ServiceProvider?.GetService(loggerType) as ILogger;
+            }
+
+            logger ??= MasaApp.GetService<ILogger<MasaDbContext>>();
+            logger?.LogDebug(ex, "Error generating data context");
+            throw new InvalidOperationException("No database provider has been configured for this DbContext. A provider can be configured by overriding the 'MasaDbContext.OnConfiguring' method or by using 'AddMasaDbContext' on the application service provider. If 'AddMasaDbContext' is used, then also ensure that your DbContext type accepts a 'MasaDbContextOptions<TContext>' object in its constructor and passes it to the base constructor for DbContext.");
         }
     }
 
@@ -158,8 +164,8 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         if (typeof(IMultiEnvironment).IsAssignableFrom(typeof(TEntity)) && EnvironmentContext != null)
         {
             Expression<Func<TEntity, bool>> envFilter = entity => !IsEnvironmentFilterEnabled ||
-                EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
-                    .Equals(EnvironmentContext != null ? EnvironmentContext.CurrentEnvironment : default);
+                                                                  EF.Property<string>(entity, nameof(IMultiEnvironment.Environment))
+                                                                      .Equals(EnvironmentContext != null ? EnvironmentContext.CurrentEnvironment : default);
             expression = envFilter.And(expression != null, expression);
         }
 
@@ -176,11 +182,12 @@ public class DefaultMasaDbContext : DbContext, IMasaDbContext
         {
             string defaultTenantId = Guid.Empty.ToString();
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
-                (EF.Property<Guid>(entity, nameof(IMultiTenant<Guid>.TenantId)).ToString())
-                .Equals(TenantContext.CurrentTenant != null ? TenantContext.CurrentTenant.Id : defaultTenantId);
+                                                                     (EF.Property<Guid>(entity, nameof(IMultiTenant<Guid>.TenantId)).ToString())
+                                                                     .Equals(TenantContext.CurrentTenant != null ? TenantContext.CurrentTenant.Id : defaultTenantId);
 
             expression = tenantFilter.And(expression != null, expression);
         }
+
         return expression;
     }
 
@@ -294,7 +301,7 @@ public class DefaultMasaDbContext<TMultiTenantId> : DefaultMasaDbContext
 {
     protected override bool IsTenantFilterEnabled => DataFilter?.IsEnabled<IMultiTenant<TMultiTenantId>>() ?? false;
 
-    protected DefaultMasaDbContext()
+    protected DefaultMasaDbContext() : base()
     {
     }
 
@@ -310,11 +317,12 @@ public class DefaultMasaDbContext<TMultiTenantId> : DefaultMasaDbContext
         {
             string defaultTenantId = default(TMultiTenantId)?.ToString() ?? string.Empty;
             Expression<Func<TEntity, bool>> tenantFilter = entity => !IsTenantFilterEnabled ||
-                (EF.Property<TMultiTenantId>(entity, nameof(IMultiTenant<TMultiTenantId>.TenantId)).ToString() ?? string.Empty)
-                .Equals(TenantContext.CurrentTenant != null ? TenantContext.CurrentTenant.Id : defaultTenantId);
+                                                                     (EF.Property<TMultiTenantId>(entity, nameof(IMultiTenant<TMultiTenantId>.TenantId)).ToString() ?? string.Empty)
+                                                                     .Equals(TenantContext.CurrentTenant != null ? TenantContext.CurrentTenant.Id : defaultTenantId);
 
             expression = tenantFilter.And(expression != null, expression);
         }
+
         return expression;
     }
 }

@@ -43,9 +43,10 @@ public static class ServiceCollectionExtensions
             {
                 parameters.Add(serviceProvider.GetService(parameter.ParameterType));
             }
-            var dbContext = parameters.Count > 0 ?
-                Activator.CreateInstance(typeof(TDbContextImplementation), parameters.ToArray()) as DefaultMasaDbContext :
-                Activator.CreateInstance(typeof(TDbContextImplementation)) as DefaultMasaDbContext;
+
+            var dbContext = parameters.Count > 0
+                ? Activator.CreateInstance(typeof(TDbContextImplementation), parameters.ToArray()) as DefaultMasaDbContext
+                : Activator.CreateInstance(typeof(TDbContextImplementation)) as DefaultMasaDbContext;
             MasaArgumentException.ThrowIfNull(dbContext);
 
             dbContext.TryInitializeMasaDbContextOptions(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
@@ -57,8 +58,12 @@ public static class ServiceCollectionExtensions
         optionsBuilder?.Invoke(masaBuilder);
         return services.AddCoreServices<TDbContextImplementation>((serviceProvider, efDbContextOptionsBuilder) =>
         {
-            efDbContextOptionsBuilder.DbContextOptionsBuilder.UseApplicationServiceProvider(serviceProvider);
-            masaBuilder.Builder?.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
+            if (masaBuilder.Builder != null)
+            {
+                efDbContextOptionsBuilder.DbContextOptionsBuilder.UseApplicationServiceProvider(serviceProvider);
+                efDbContextOptionsBuilder.DbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                masaBuilder.Builder.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
+            }
         }, masaBuilder.EnableSoftDelete, optionsLifetime);
     }
 
@@ -180,7 +185,6 @@ public static class ServiceCollectionExtensions
 #pragma warning disable S2094
     private sealed class MasaDbContextProvider<TDbContext>
     {
-
     }
 #pragma warning restore S2094
 #pragma warning restore S2326
