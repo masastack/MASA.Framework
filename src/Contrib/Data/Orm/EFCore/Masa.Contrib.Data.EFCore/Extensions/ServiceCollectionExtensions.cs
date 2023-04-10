@@ -63,7 +63,13 @@ public static class ServiceCollectionExtensions
                 efDbContextOptionsBuilder.DbContextOptionsBuilder.UseApplicationServiceProvider(serviceProvider);
                 efDbContextOptionsBuilder.DbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                 masaBuilder.Builder.Invoke(serviceProvider, efDbContextOptionsBuilder.DbContextOptionsBuilder);
+
+                foreach (var dbContextOptionsBuilder in masaBuilder.DbContextOptionsBuilders)
+                {
+                    dbContextOptionsBuilder.Invoke(efDbContextOptionsBuilder.DbContextOptionsBuilder);
+                }
             }
+
         }, masaBuilder.EnableSoftDelete, optionsLifetime);
     }
 

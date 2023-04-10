@@ -41,10 +41,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestSoftDeleteAsync()
     {
-        Services.Configure<ConnectionStrings>(options =>
-        {
-            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
-        });
+        Services.Configure<ConnectionStrings>(options => { options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"; });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var student = new Student()
         {
@@ -104,14 +101,9 @@ public class DbContextTest : TestBase
         var services = new ServiceCollection();
         string connectionString = $"data source=test-{Guid.NewGuid()}";
         string connectionStringByQuery = connectionString;
-        services.AddMasaDbContext<CustomQueryDbContext>(options =>
-        {
-            options.UseSqlite(connectionStringByQuery).UseFilter();
-        });
-        services.AddMasaDbContext<CustomDbContext>(options =>
-        {
-            options.UseSqlite(connectionStringByQuery).UseFilter();
-        });
+
+        services.AddMasaDbContext<CustomQueryDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); });
+        services.AddMasaDbContext<CustomDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); });
         var serviceProvider = services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
@@ -227,10 +219,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public async Task TestGetPaginatedListAsyncReturnCountEqualResultCount()
     {
-        Services.Configure<ConnectionStrings>(options =>
-        {
-            options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}";
-        });
+        Services.Configure<ConnectionStrings>(options => { options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"; });
         await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
         var students = new List<Student>()
         {
@@ -283,10 +272,7 @@ public class DbContextTest : TestBase
             .AddJsonFile("appsettings.json", true, true)
             .Build();
         services.AddSingleton<IConfiguration>(configuration);
-        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder =>
-        {
-            optionsBuilder.UseSqlite();
-        });
+        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); });
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -425,5 +411,19 @@ public class DbContextTest : TestBase
         var entityTableName = dbContext.Model.FindEntityType(typeof(Student))?.GetTableName();
 
         Assert.AreEqual("masa_students", entityTableName);
+    }
+
+    [TestMethod]
+    public void TestQueryTrackingBehaviorByUseQueryTrackingBehavior()
+    {
+        Services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder
+            =>
+        {
+            masaDbContextBuilder.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+            masaDbContextBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
+        });
+        var serviceProvider = Services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        Assert.AreEqual(QueryTrackingBehavior.NoTrackingWithIdentityResolution, dbContext.ChangeTracker.QueryTrackingBehavior);
     }
 }

@@ -13,6 +13,8 @@ public class MasaDbContextBuilder : IMasaDbContextBuilder
 
     public Action<IServiceProvider, DbContextOptionsBuilder>? Builder { get; set; }
 
+    public List<Action<DbContextOptionsBuilder>> DbContextOptionsBuilders { get; } = new();
+
     public bool EnableSoftDelete { get; set; }
 
     public MasaDbContextBuilder(IServiceCollection services, Type dbContextType)
