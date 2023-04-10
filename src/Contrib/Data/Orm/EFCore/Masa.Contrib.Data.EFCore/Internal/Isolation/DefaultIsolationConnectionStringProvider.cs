@@ -43,8 +43,7 @@ internal class DefaultIsolationConnectionStringProvider : IIsolationConnectionSt
             return connectionString;
 
         var connectionStrings =
-            _isolationConfigProvider.GetComponentConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION,
-                ConnectionStrings.DEFAULT_SECTION);
+            _isolationConfigProvider.GetComponentConfig<ConnectionStrings>(ConnectionStrings.DEFAULT_SECTION, string.Empty);
         if (connectionStrings != null)
             return SetConnectionString(name, connectionStrings.GetConnectionString(name));
 
