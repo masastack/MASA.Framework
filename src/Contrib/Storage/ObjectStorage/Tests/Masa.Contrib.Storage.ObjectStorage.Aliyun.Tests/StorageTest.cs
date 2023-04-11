@@ -51,8 +51,8 @@ public class StorageTest : TestBase
         services.AddObjectStorage(options => options.UseAliyunStorage(ALiYunStorageOptions));
         var serviceProvider = services.BuildServiceProvider();
 
-        var objectStorageClient = serviceProvider.GetRequiredService<IObjectStorageClient>();
-        var aliyunStorageOptions = GetAliyunStorageOptions(objectStorageClient as DefaultStorageClient);
+        var objectStorageClient = serviceProvider.GetRequiredService<IManualObjectStorageClient>();
+        var aliyunStorageOptions = GetAliyunStorageOptions(GetManualObjectStorageClient(objectStorageClient) as DefaultStorageClient);
         Assert.IsTrue(aliyunStorageOptions.AccessKeyId == ALiYunStorageOptions.AccessKeyId);
         Assert.IsTrue(aliyunStorageOptions.AccessKeySecret == ALiYunStorageOptions.AccessKeySecret);
         Assert.IsTrue(aliyunStorageOptions.Endpoint == ALiYunStorageOptions.Endpoint);
@@ -194,4 +194,12 @@ public class StorageTest : TestBase
 
     private static string? GetBucketName(IObjectStorageClientContainer objectStorageClientContainer)
         => BucketNameFieldInfo.GetValue(objectStorageClientContainer)!.ToString();
+
+    private static IManualObjectStorageClient GetManualObjectStorageClient(IManualObjectStorageClient manualObjectStorageClient)
+    {
+        return (IManualObjectStorageClient)typeof(DefaultObjectStorageClient)
+            .GetField("_objectStorageClient")!
+            .GetValue(
+            manualObjectStorageClient)!;
+    }
 }

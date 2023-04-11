@@ -11,9 +11,9 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(mcServiceBaseAddress);
 
-        return services.AddMcClient(callerOptions =>
+        return services.AddMcClient(callerBuilder =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerBuilder.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(mcServiceBaseAddress);
             }).UseAuthentication();
@@ -24,9 +24,9 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(mcServiceBaseAddressFunc);
 
-        return services.AddMcClient(callerOptionsBuilder =>
+        return services.AddMcClient(callerBuilder =>
         {
-            callerOptionsBuilder
+            callerBuilder
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = mcServiceBaseAddressFunc.Invoke();
@@ -34,15 +34,14 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
+    public static IServiceCollection AddMcClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder)
     {
-        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
+        MasaArgumentException.ThrowIfNull(callerBuilder);
 
         if (services.Any(service => service.ServiceType == typeof(IMcClient)))
             return services;
 
-        services.AddHttpContextAccessor();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddScoped<IMcClient>(serviceProvider =>
         {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionDescriptorExtensions
@@ -65,7 +66,8 @@ public static class ServiceCollectionDescriptorExtensions
     /// <typeparam name="TImplementation"></typeparam>
     /// <returns></returns>
     public static bool Any<TService, TImplementation>(this IServiceCollection services, ServiceLifetime lifetime)
-        => services.Any(d => d.ServiceType == typeof(TService) && d.ImplementationType == typeof(TImplementation) && d.Lifetime == lifetime);
+        => services.Any(d
+            => d.ServiceType == typeof(TService) && d.ImplementationType == typeof(TImplementation) && d.Lifetime == lifetime);
 
     /// <summary>
     /// Remove the first service in the service collection with the same service type and add the implementationType to the collection.
@@ -102,7 +104,8 @@ public static class ServiceCollectionDescriptorExtensions
     /// <param name="lifetime"></param>
     /// <typeparam name="TService"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection ReplaceAll<TService>(this IServiceCollection services, Type implementationType, ServiceLifetime lifetime)
+    public static IServiceCollection ReplaceAll<TService>(this IServiceCollection services, Type implementationType,
+        ServiceLifetime lifetime)
     {
         if (services.Any<TService>())
         {

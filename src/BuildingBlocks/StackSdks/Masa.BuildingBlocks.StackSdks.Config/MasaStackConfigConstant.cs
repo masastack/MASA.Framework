@@ -19,5 +19,4 @@ public static class MasaStackConfigConstant
     public const string OTLP_URL = "OTLP_URL";
     public const string ADMIN_PWD = "ADMIN_PWD";
     public const string DCC_SECRET = "DCC_SECRET";
-    public const string TSC_LAYER = "TSC_LAYER";
 }

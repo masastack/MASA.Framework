@@ -19,19 +19,6 @@ public class RedisCacheClient : RedisCacheClientBase
         _typeAliasProvider = typeAliasProvider;
     }
 
-    public RedisCacheClient(
-        string name,
-        RedisConfigurationOptions redisConfigurationOptions,
-        JsonSerializerOptions? jsonSerializerOptions,
-        ITypeAliasProvider? typeAliasProvider,
-        IRedisMultiplexerPool redisMultiplexerProvider,
-        IFormatCacheKeyProvider? formatCacheKeyProvider = null)
-        : base(name, redisConfigurationOptions, jsonSerializerOptions, redisMultiplexerProvider)
-    {
-        _formatCacheKeyProvider = formatCacheKeyProvider ?? new DefaultFormatCacheKeyProvider();
-        _typeAliasProvider = typeAliasProvider;
-    }
-
     #region Get
 
     public override T? Get<T>(
@@ -129,7 +116,7 @@ public class RedisCacheClient : RedisCacheClientBase
         key = FormatCacheKey<T>(key, action);
         return await GetAndRefreshAsync(key, async () =>
         {
-            var cacheEntry = await setter();
+            var cacheEntry = await setter().ConfigureAwait(false);
             if (cacheEntry.Value == null)
                 return default;
 
@@ -653,9 +640,9 @@ end";
     private async Task<T?> GetAndRefreshAsync<T>(string key, Func<Task<T>>? notExistFunc = null, CommandFlags flags = CommandFlags.None)
     {
         var redisValues = await Db.HashGetAsync(key, RedisConstant.ABSOLUTE_EXPIRATION_KEY, RedisConstant.SLIDING_EXPIRATION_KEY,
-            RedisConstant.DATA_KEY);
+            RedisConstant.DATA_KEY).ConfigureAwait(false);
         var dataCacheInfo = RedisHelper.ConvertToCacheModel<T>(key, redisValues, GlobalJsonSerializerOptions);
-        await dataCacheInfo.TrySetValueAsync(() => Refresh(dataCacheInfo, flags), notExistFunc);
+        await dataCacheInfo.TrySetValueAsync(() => Refresh(dataCacheInfo, flags), notExistFunc).ConfigureAwait(false);
         return dataCacheInfo.Value;
     }
 

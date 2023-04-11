@@ -19,7 +19,7 @@ public abstract class CallerBase
     /// </summary>
     protected virtual Func<IServiceProvider, IResponseMessage>? ResponseMessageFactory => null;
 
-    protected CallerOptionsBuilder CallerOptions { get; private set; } = default!;
+    protected CallerBuilder CallerBuilder { get; private set; } = default!;
 
     public ILogger? Logger { get; private set; }
 
@@ -41,9 +41,9 @@ public abstract class CallerBase
 
     public abstract void UseCallerExtension();
 
-    public void SetCallerOptions(CallerOptionsBuilder callerOptionsBuilder, string name)
+    internal void SetCallerBuilder(CallerBuilder callerBuilder, string name)
     {
-        CallerOptions = callerOptionsBuilder;
+        CallerBuilder = callerBuilder;
         Name = name;
     }
 

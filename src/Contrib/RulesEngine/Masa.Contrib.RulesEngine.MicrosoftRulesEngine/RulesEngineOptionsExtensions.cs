@@ -15,7 +15,7 @@ public static class RulesEngineOptionsExtensions
         this RulesEngineOptionsBuilder rulesEngineOptionsBuilder,
         ReSettings? reSettings = null)
     {
-        rulesEngineOptionsBuilder.AddRulesEngine(serviceProvider
+        rulesEngineOptionsBuilder.UseCustomRulesEngine(serviceProvider
             => new RulesEngineClient(reSettings, serviceProvider.GetService<ILogger<RulesEngineClient>>()));
         return rulesEngineOptionsBuilder;
     }
@@ -24,7 +24,7 @@ public static class RulesEngineOptionsExtensions
         this RulesEngineOptionsBuilder rulesEngineOptionsBuilder,
         Action<ReSettings>? configure)
     {
-        rulesEngineOptionsBuilder.AddRulesEngine(serviceProvider =>
+        rulesEngineOptionsBuilder.UseCustomRulesEngine(serviceProvider =>
         {
             var reSettings = new ReSettings();
             configure?.Invoke(reSettings);

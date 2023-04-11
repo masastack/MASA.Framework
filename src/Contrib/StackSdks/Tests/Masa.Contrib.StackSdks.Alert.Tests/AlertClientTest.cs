@@ -27,6 +27,6 @@ public class AlertClientTest
     public void TestAddAlertClientShouldThrowArgumentNullException2()
     {
         var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddAlertClient(callerOptionsBuilder: null!));
+        Assert.ThrowsException<MasaArgumentException>(() => services.AddAlertClient(callerBuilder: null!));
     }
 }

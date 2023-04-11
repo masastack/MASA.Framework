@@ -13,24 +13,12 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
     protected abstract string SpecifyServiceNotFoundMessage { get; }
     protected abstract MasaFactoryOptions<TRelationOptions> FactoryOptions { get; }
 
-    protected readonly IServiceProvider TransientServiceProvider;
-
-    private IServiceProvider? _scopedServiceProvider;
-
-    protected IServiceProvider ScopedServiceProvider
-        => _scopedServiceProvider ??= TransientServiceProvider.GetRequiredService<ScopedService>().ServiceProvider;
-
-    private IServiceProvider? _singletonServiceProvider;
-
-    protected IServiceProvider SingletonServiceProvider
-        => _singletonServiceProvider ??= TransientServiceProvider.GetRequiredService<SingletonService>().ServiceProvider;
+    protected readonly IServiceProvider ServiceProvider;
 
     protected MasaFactoryBase(IServiceProvider serviceProvider)
     {
-        TransientServiceProvider = serviceProvider;
+        ServiceProvider = serviceProvider;
     }
-
-    protected virtual IServiceProvider GetServiceProvider(string name) => SingletonServiceProvider;
 
     private static MasaRelationOptions<TService>? GetDefaultOptions(List<TRelationOptions> optionsList)
     {
@@ -44,7 +32,7 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
         if (defaultOptions == null)
             throw new NotSupportedException(DefaultServiceNotFoundMessage);
 
-        return defaultOptions.Func.Invoke(GetServiceProvider(defaultOptions.Name));
+        return defaultOptions.Func.Invoke(ServiceProvider);
     }
 
     public virtual TService Create(string name)
@@ -61,7 +49,7 @@ public abstract class MasaFactoryBase<TService, TRelationOptions> : IMasaFactory
 
         if (options != null)
         {
-            service = options.Func.Invoke(GetServiceProvider(name));
+            service = options.Func.Invoke(ServiceProvider);
             return true;
         }
         service = null;

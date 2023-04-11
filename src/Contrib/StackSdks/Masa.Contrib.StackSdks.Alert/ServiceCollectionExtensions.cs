@@ -9,9 +9,9 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(alertServiceBaseAddress);
 
-        return services.AddAlertClient(callerOptions =>
+        return services.AddAlertClient(callerBuilder =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerBuilder.UseHttpClient(builder =>
             {
                 builder.Configure = opt => opt.BaseAddress = new Uri(alertServiceBaseAddress);
             }).UseAuthentication();
@@ -22,9 +22,9 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(alertServiceBaseAddressFunc);
 
-        return services.AddAlertClient(callerOptionsBuilder =>
+        return services.AddAlertClient(callerBuilder =>
         {
-            callerOptionsBuilder
+            callerBuilder
                 .UseHttpClient(builder =>
                 {
                     builder.BaseAddress = alertServiceBaseAddressFunc.Invoke();
@@ -32,14 +32,14 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static IServiceCollection AddAlertClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder)
+    public static IServiceCollection AddAlertClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder)
     {
-        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
+        MasaArgumentException.ThrowIfNull(callerBuilder);
 
         if (services.Any(service => service.ServiceType == typeof(IAlertClient)))
             return services;
 
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddScoped<IAlertClient>(serviceProvider =>
         {

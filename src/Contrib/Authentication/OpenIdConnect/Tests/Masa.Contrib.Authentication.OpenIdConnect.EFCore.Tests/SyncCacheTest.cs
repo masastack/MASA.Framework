@@ -153,7 +153,6 @@ public class SyncCacheTest
         services.AddMasaDbContext<CustomDbContext>(dbContext => dbContext.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         services.AddScoped(provider => new OidcDbContext(provider.GetRequiredService<CustomDbContext>()));
 
-
         var options = new RedisConfigurationOptions()
         {
             Servers = new List<RedisServerOptions>

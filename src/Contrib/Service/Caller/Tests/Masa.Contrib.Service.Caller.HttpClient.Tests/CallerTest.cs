@@ -18,14 +18,14 @@ public class CallerTest
 
     private const string FRAMEWORK_BASE_ADDRESS = "https://github.com/masastack/MASA.Framework";
 
-    private CallerOptionsBuilder _callerOptions;
+    private CallerBuilder _callerBuilder;
     private const string NAME = "";
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _callerOptions = new CallerOptionsBuilder(services, NAME);
+        _callerBuilder = new CallerBuilder(services, NAME);
     }
 
     [TestMethod]
@@ -34,12 +34,12 @@ public class CallerTest
         var docBaseAddress = "https://docs.masastack.com";
         var key = "callerBaseAddress" + Guid.NewGuid();
         Environment.SetEnvironmentVariable(key, FRAMEWORK_BASE_ADDRESS);
-        var masaHttpClientBuilder = _callerOptions.UseHttpClient(httpClient =>
+        var masaHttpClientBuilder = _callerBuilder.UseHttpClient(httpClient =>
         {
             httpClient.BaseAddress = Environment.GetEnvironmentVariable(key)!;
         });
         Assert.AreEqual(NAME, masaHttpClientBuilder.Name);
-        Assert.AreEqual(_callerOptions.Services, masaHttpClientBuilder.Services);
+        Assert.AreEqual(_callerBuilder.Services, masaHttpClientBuilder.Services);
 
         var serviceProvider = masaHttpClientBuilder.Services.BuildServiceProvider();
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
@@ -60,9 +60,9 @@ public class CallerTest
         Environment.SetEnvironmentVariable(key, FRAMEWORK_BASE_ADDRESS);
 
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.Prefix = "masa";
                 client.BaseAddress = Environment.GetEnvironmentVariable(key)!;
@@ -95,9 +95,9 @@ public class CallerTest
     public void TestMiddlewaresByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             }).UseI18n();
@@ -116,9 +116,9 @@ public class CallerTest
     public void TestRequestMessageByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             });
@@ -145,9 +145,9 @@ public class CallerTest
     public void TestCustomRequestMessageByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.UseXml();
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;

@@ -27,7 +27,7 @@ public abstract class DaprCallerBase : CallerBase
     {
         UseDaprPre();
 
-        var daprClientBuilder = CallerOptions.UseDapr(callerClient =>
+        var daprClientBuilder = CallerBuilder.UseDapr(callerClient =>
         {
             callerClient.AppId = AppId;
             ConfigMasaCallerClient(callerClient);

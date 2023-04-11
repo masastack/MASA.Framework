@@ -51,8 +51,6 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string DccSecret => GetValue(MasaStackConfigConstant.DCC_SECRET);
 
-    public string TscLayer => GetValue(MasaStackConfigConstant.TSC_LAYER);
-
     public bool SingleSsoClient { get; }
 
     public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
@@ -72,7 +70,6 @@ public class MasaStackConfig : IMasaStackConfig
                ConfigMap[MasaStackConfigConstant.CLUSTER],
                DEFAULT_PUBLIC_ID,
                DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
-
             return remoteConfigs;
         }
         catch (ArgumentException)
