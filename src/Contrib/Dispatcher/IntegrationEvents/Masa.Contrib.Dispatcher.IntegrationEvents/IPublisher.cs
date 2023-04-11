@@ -7,6 +7,4 @@ public interface IPublisher
 {
     Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent;
     Task PublishAsync<T>(string topicName, T @event, Dictionary<string, string> metadata, CancellationToken stoppingToken = default) where T : IIntegrationEvent;
-
-   
 }

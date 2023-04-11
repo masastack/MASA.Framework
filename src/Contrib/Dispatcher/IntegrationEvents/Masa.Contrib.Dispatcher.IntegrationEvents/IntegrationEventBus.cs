@@ -36,7 +36,7 @@ public class IntegrationEventBus : IIntegrationEventBus
     {
         if (@event is IIntegrationEvent integrationEvent)
         {
-            await PublishIntegrationAsync(integrationEvent, cancellationToken);
+            await PublishIntegrationAsync(integrationEvent, null, cancellationToken);
         }
         else if (EventBus != null)
         {
@@ -48,8 +48,28 @@ public class IntegrationEventBus : IIntegrationEventBus
         }
     }
 
-    private async Task PublishIntegrationAsync<TEvent>(TEvent @event, CancellationToken cancellationToken)
-        where TEvent : IIntegrationEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, Dictionary<string, string> metadata, CancellationToken cancellationToken = default) where TEvent : IEvent
+    {
+        if (metadata.IsNullOrEmpty())
+        {
+            await PublishAsync(@event, cancellationToken);
+        }
+        else
+        {
+            if (@event is IIntegrationEvent integrationEvent)
+            {
+                await PublishIntegrationAsync(integrationEvent, metadata, cancellationToken);
+            }
+            else
+            {
+                throw new NotSupportedException(nameof(@event));
+            }
+        }
+
+    }
+
+    private async Task PublishIntegrationAsync<TEvent>(TEvent @event, Dictionary<string, string>? metadata, CancellationToken cancellationToken)
+    where TEvent : IIntegrationEvent
     {
         if (@event.UnitOfWork == null && _unitOfWork != null)
             @event.UnitOfWork = _unitOfWork;
@@ -72,10 +92,9 @@ public class IntegrationEventBus : IIntegrationEventBus
                 @event.GetEventId(),
                 _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-            await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);
+            await _publisher.PublishAsync(topicName, (dynamic)@event, metadata, cancellationToken);
         }
     }
-
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
         if (_unitOfWork is null)
@@ -83,4 +102,5 @@ public class IntegrationEventBus : IIntegrationEventBus
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
+
 }

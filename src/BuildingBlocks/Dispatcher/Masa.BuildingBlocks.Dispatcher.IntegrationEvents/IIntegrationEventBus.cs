@@ -5,5 +5,6 @@ namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
 public interface IIntegrationEventBus : IEventBus
 {
-
+    Task PublishAsync<TEvent>(TEvent @event, Dictionary<string, string> metadata, CancellationToken cancellationToken = default)
+       where TEvent : IEvent;
 }
