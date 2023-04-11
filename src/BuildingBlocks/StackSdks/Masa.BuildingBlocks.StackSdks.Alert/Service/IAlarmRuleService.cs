@@ -12,4 +12,6 @@ public interface IAlarmRuleService
     Task DeleteAsync(Guid id);
 
     Task<AlarmRuleModel?> GetAsync(Guid id);
+
+    Task SetIsEnabledAsync(Guid id, bool isEnabled);
 }

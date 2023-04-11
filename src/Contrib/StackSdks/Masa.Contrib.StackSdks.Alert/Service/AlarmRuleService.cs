@@ -36,4 +36,10 @@ public class AlarmRuleService : IAlarmRuleService
         var requestUri = $"{_party}/{id}";
         return await _caller.GetAsync<AlarmRuleModel>(requestUri);
     }
+
+    public async Task SetIsEnabledAsync(Guid id, bool isEnabled)
+    {
+        var requestUri = $"{_party}/{id}/enabled/{isEnabled}";
+        await _caller.PutAsync(requestUri, null);
+    }
 }
