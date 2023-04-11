@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
@@ -19,5 +19,10 @@ public class Publisher : IPublisher
     public async Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
     {
         await DaprClient.PublishEventAsync<object>(_pubSubName, topicName, @event, stoppingToken);
+    }
+
+    public async Task PublishAsync<T>(string topicName, T @event, Dictionary<string, string> metadata, CancellationToken stoppingToken = default) where T : IIntegrationEvent
+    {
+        await DaprClient.PublishEventAsync<object>(_pubSubName, topicName, @event, metadata, stoppingToken);
     }
 }
