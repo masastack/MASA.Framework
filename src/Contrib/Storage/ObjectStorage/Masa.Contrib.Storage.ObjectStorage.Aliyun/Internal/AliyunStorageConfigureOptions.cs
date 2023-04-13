@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-internal class AliyunStorageConfigureOptions : AliyunOptions
+public class AliyunStorageConfigureOptions : AliyunOptions
 {
     public AliyunStorageOptions Storage { get; set; } = new();
 
