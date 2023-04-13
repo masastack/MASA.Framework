@@ -233,7 +233,7 @@ public class IdGeneratorTest
     [TestMethod]
     public async Task TestGetDistibutedLockFaieldAsync()
     {
-        var workerIdBits = 10;
+        var workerIdBits = 2;
         var maxWorkerId = ~(-1L << workerIdBits);
         var tasks = new ConcurrentBag<Task>();
         ThreadPool.GetMinThreads(out int workerThreads, out var minIoc);
