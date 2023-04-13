@@ -42,4 +42,10 @@ public class ServiceRouteOptions
     /// When the collection is empty, the default Post, Get, Put, Delete all support access
     /// </summary>
     public string[] MapHttpMethodsForUnmatched { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Enable access to public properties
+    /// default: false
+    /// </summary>
+    public bool? EnableProperty { get; set; }
 }
