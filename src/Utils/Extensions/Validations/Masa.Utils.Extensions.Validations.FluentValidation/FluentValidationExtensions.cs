@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using Masa.Utils.Extensions.Validations.FluentValidation.Validators;
-
 namespace FluentValidation;
 
 public static class FluentValidationExtensions
