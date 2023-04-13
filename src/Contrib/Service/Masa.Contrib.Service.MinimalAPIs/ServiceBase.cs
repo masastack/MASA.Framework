@@ -89,7 +89,7 @@ public abstract class ServiceBase : IService
 
     protected virtual List<MethodInfo> GetMethodsByAutoMapRoute(Type type, ServiceGlobalRouteOptions globalOptions)
     {
-        BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+        var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
         var methodInfos = type
             .GetMethods(BindingFlags.DeclaredOnly | bindingFlags)
             .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)))

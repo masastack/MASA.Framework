@@ -15,6 +15,11 @@ public class OrderService : ServiceBase
 
     public int CreateTime;
 
+    public OrderService() : base()
+    {
+
+    }
+
     public OrderService(bool? enableProperty)
     {
         RouteOptions.EnableProperty = enableProperty;
