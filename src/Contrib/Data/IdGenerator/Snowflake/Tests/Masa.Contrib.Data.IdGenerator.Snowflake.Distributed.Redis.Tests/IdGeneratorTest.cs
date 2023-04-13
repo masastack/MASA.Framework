@@ -242,7 +242,7 @@ public class IdGeneratorTest
         int laterTime = 0;
         try
         {
-            Parallel.For(0, maxWorkerId * 2, _ =>
+            Parallel.For(0, maxWorkerId * 10, _ =>
             {
                 tasks.Add(GetWorkerIdAsync(null, workerIdBits));
             });

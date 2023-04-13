@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
+#pragma warning disable CA1822
 public class OrderService : ServiceBase
 {
     public string ConnectionString => GetConnectionString;
@@ -34,7 +35,7 @@ public class OrderService : ServiceBase
 
     public override string ToString()
     {
-        return base.ToString();
+        return nameof(OrderService);
     }
 
     [IgnoreRoute]
@@ -43,3 +44,4 @@ public class OrderService : ServiceBase
         return base.GetMethodsByAutoMapRoute(typeof(OrderService), globalOptions);
     }
 }
+#pragma warning restore CA1822
