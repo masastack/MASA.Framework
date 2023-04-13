@@ -56,11 +56,15 @@ body:
       label: .NET version
       description: |
         Run `dotnet --version`
+    validations:
+      required: false
   - type: input
     attributes:
-      label: MasaFramework version
+      label: MASA Framework version
       description: |
-        MasaFramework nuget package version
+        MASA Framework nuget package version
+    validations:
+      required: false
   - type: textarea
     id: other-info
     attributes:
