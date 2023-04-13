@@ -102,7 +102,7 @@ public class StackExchangeRedisCacheTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddStackExchangeRedisCacheByAppsettings()
+    public async Task TestAddStackExchangeRedisCacheByAppsettingsAsyncBySync()
     {
         var builder = WebApplication.CreateBuilder();
         var rootPath = builder.Environment.ContentRootPath;
@@ -112,10 +112,13 @@ public class StackExchangeRedisCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
         string key = "test_1";
+        // ReSharper disable once MethodHasAsyncOverload
         distributedCacheClient.Set(key, "test_content");
         Assert.IsTrue(distributedCacheClient.Exists(key));
 
+        // ReSharper disable once MethodHasAsyncOverload
         var oldContent = File.ReadAllText(Path.Combine(rootPath, "appsettings.json"));
+        // ReSharper disable once MethodHasAsyncOverload
         File.WriteAllText(Path.Combine(rootPath, "appsettings.json"),
             JsonSerializer.Serialize(new
             {
@@ -129,7 +132,7 @@ public class StackExchangeRedisCacheTest : TestBase
                 }
             }));
 
-        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         using (distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create())
         {
             var exist = distributedCacheClient.Exists(key);
@@ -144,10 +147,12 @@ public class StackExchangeRedisCacheTest : TestBase
 
             Assert.IsFalse(exist);
 
+            // ReSharper disable once MethodHasAsyncOverload
             File.WriteAllText(Path.Combine(Path.Combine(rootPath, "appsettings.json")), oldContent);
 
-            Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
+            await Task.Delay(1000);
 
+            // ReSharper disable once MethodHasAsyncOverload
             distributedCacheClient.Remove(key);
         }
     }
