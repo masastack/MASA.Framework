@@ -5,16 +5,20 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests.Services;
 
 public class OrderService : ServiceBase
 {
-    public OrderService(bool? enableProperty)
-    {
-        RouteOptions.EnableProperty = enableProperty;
-    }
-
     public string ConnectionString => GetConnectionString;
 
     public static string GetConnectionString => "connection string";
 
+    public int Id { private get; set; }
+
     private int Age { get; set; }
+
+    public int CreateTime;
+
+    public OrderService(bool? enableProperty)
+    {
+        RouteOptions.EnableProperty = enableProperty;
+    }
 
     private static string GetName() => "name";
 
