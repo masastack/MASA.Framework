@@ -17,6 +17,7 @@ internal static class RegularHelper
     internal const string CHINESE_LETTER_NUMBER = "^[\u4e00-\u9fa5a-zA-Z0-9]+$";
     internal const string CHINESE_LETTER = "^[\u4e00-\u9fa5a-zA-Z]+$";
     internal const string CHINESE_LETTER_NUMBER_UNDERLINE = "^[\u4e00-\u9fa5_a-zA-Z0-9]+$";
+    internal const string CHINESE_LETTER_NUMBER_SYMBOL = @"^\\s{0}$|^[\u4e00-\u9fa5_a-zA-Z0-9~!@#\$%\^&\*\(\)\+=\|\\\}\]\{\[_:;<.,>\?\/""]+$";
     internal const string CHINESE_LETTER_UNDERLINE = "^[\u4e00-\u9fa5_a-zA-Z]+$";
     internal const string IDCARD = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)";
     internal const string URL = "[a-zA-z]+://[^s]*";

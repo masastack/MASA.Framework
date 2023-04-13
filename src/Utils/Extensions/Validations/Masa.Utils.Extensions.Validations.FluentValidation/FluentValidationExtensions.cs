@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using Masa.Utils.Extensions.Validations.FluentValidation.Validators;
+
 namespace FluentValidation;
 
 public static class FluentValidationExtensions
@@ -33,6 +35,9 @@ public static class FluentValidationExtensions
 
     public static IRuleBuilderOptions<T, string?> ChineseLetterNumberUnderline<T>(this IRuleBuilder<T, string?> ruleBuilder)
         => ruleBuilder.SetValidator(new ChineseLetterNumberUnderlineValidator<T>());
+
+    public static IRuleBuilderOptions<T, string> ChineseLetterNumberSymbol<T>(this IRuleBuilder<T, string> ruleBuilder)
+        => ruleBuilder.SetValidator(new ChineseLetterNumberSymbolValidator<T>());
 
     public static IRuleBuilderOptions<T, string?> ChineseLetterNumber<T>(this IRuleBuilder<T, string?> ruleBuilder)
         => ruleBuilder.SetValidator(new ChineseLetterNumberValidator<T>());
@@ -67,4 +72,5 @@ public static class FluentValidationExtensions
 
     public static IRuleBuilderOptions<T, string?> Password<T>(this IRuleBuilder<T, string?> ruleBuilder, string expression = RegularHelper.PASSWORD_REGULAR)
         => ruleBuilder.SetValidator(new PasswordValidator<T>(expression));
+
 }
