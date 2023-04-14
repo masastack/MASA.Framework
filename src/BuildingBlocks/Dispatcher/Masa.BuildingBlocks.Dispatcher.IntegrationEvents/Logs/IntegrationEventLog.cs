@@ -11,6 +11,9 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     public string EventTypeName { get; private set; } = null!;
 
+    [NotMapped]
+    public string EventTypeShortName => EventTypeName.Split('.').Last();
+
     private object? _event;
 
     [NotMapped] public object Event => _event ??= JsonSerializer.Deserialize<object>(Content)!;
@@ -59,6 +62,10 @@ public class IntegrationEventLog : IHasConcurrencyStamp
     {
         var json = JsonSerializer.Deserialize<IntegrationEventTopic>(Content);
         Topic = json!.Topic;
+        if (Topic.IsNullOrWhiteSpace())
+        {
+            Topic = EventTypeShortName;//Used to handle when the Topic is not persisted, it is consistent with the class name by default
+        }
         return this;
     }
 
