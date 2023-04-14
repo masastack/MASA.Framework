@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.StackSdks.Caller;
 
-internal class Constant
+internal static class Constant
 {
     public const string HTTP_NAME = "IdentityClient";
 }
