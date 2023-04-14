@@ -60,7 +60,7 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
-    public void TestGetAndSubscribe()
+    public async Task TestGetAndSubscribeAsyncBySync()
     {
         var key = "test200";
         string? value = string.Empty;
@@ -70,9 +70,11 @@ public class MultilevelCacheClientTest : TestBase
         });
         Assert.AreEqual(null, value);
 
+        // ReSharper disable once MethodHasAsyncOverload
         _multilevelCacheClient.Set(key, "test2");
-        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         Assert.AreEqual("test2", value);
+        // ReSharper disable once MethodHasAsyncOverload
         _multilevelCacheClient.Remove<string>(key);
     }
 
@@ -88,7 +90,7 @@ public class MultilevelCacheClientTest : TestBase
 
         CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
         await _multilevelCacheClient.SetAsync(key, "test2", combinedCacheEntryOptions);
-        await Task.Delay(3000);
+        await Task.Delay(1000);
         Assert.AreEqual("test2", value);
         await _multilevelCacheClient.RemoveAsync<string>(key);
     }
@@ -225,20 +227,21 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
-    public void TestGetOrSet3()
+    public async Task TestGetOrSet3AsyncBySync()
     {
         var id = Guid.NewGuid().ToString();
         var result = GetValueByCaching(true);
         Assert.IsNull(result);
 
-        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         result = GetValueByCaching(false);
         Assert.AreEqual(GetValue(false), result);
 
-        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         result = _multilevelCacheClient.Get<int?>(id);
         Assert.AreEqual(GetValue(false), result);
 
+        // ReSharper disable once MethodHasAsyncOverload
         _distributedCacheClient.Remove(id);
 
         int? GetValueByCaching(bool isReturnNull)
@@ -312,11 +315,11 @@ public class MultilevelCacheClientTest : TestBase
         var result = await GetValueByCachingAsync(true);
         Assert.IsNull(result);
 
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         result = await GetValueByCachingAsync(false);
         Assert.AreEqual(GetValue(false), result);
 
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         result = _multilevelCacheClient.Get<int?>(id);
         Assert.AreEqual(GetValue(false), result);
 
