@@ -6,6 +6,9 @@ namespace Masa.Contrib.Service.MinimalAPIs.Tests;
 [TestClass]
 public class ServiceBaseTest
 {
+    private static FieldInfo _enablePropertyFieldInfo
+        => typeof(ServiceBase).GetField("_enableProperty", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
     [TestMethod]
     public void TestGetBaseUri()
     {
@@ -40,9 +43,7 @@ public class ServiceBaseTest
     {
         var uris = new[]
         {
-            "api",
-            "v1",
-            "order"
+            "api", "v1", "order"
         };
         Assert.AreEqual("api/v1/order", ServiceBaseHelper.CombineUris(uris));
     }
@@ -154,18 +155,26 @@ public class ServiceBaseTest
     }
 
     [DataTestMethod]
-    [DataRow("AddUser", "POST", "Add")]
-    [DataRow("PostUser", "POST", "Post")]
-    [DataRow("DeleteUser", "DELETE", "Delete")]
-    [DataRow("PutUser", "PUT", "Put")]
-    [DataRow("GetUser", "GET", "Get")]
-    [DataRow("AuditState", null, "")]
+    [DataRow("AddUser", "POST", "Add", false)]
+    [DataRow("PostUser", "POST", "Post", false)]
+    [DataRow("DeleteUser", "DELETE", "Delete", false)]
+    [DataRow("PutUser", "PUT", "Put", false)]
+    [DataRow("GetUser", "GET", "Get", false)]
+    [DataRow("get_Name", "GET", "get", false)]
+    [DataRow("get_Name", "GET", "get_", true)]
+    [DataRow("set_Name", null, "", false)]
+    [DataRow("set_Name", null, "", true)]
+    [DataRow("AuditState", null, "", false)]
     public void TestParseMethod(
         string methodName,
         string? actualHttpMethod,
-        string actualPrefix)
+        string actualPrefix,
+        bool enableProperty)
     {
         var service = new UserService();
+
+        _enablePropertyFieldInfo.SetValue(service, enableProperty);
+
         var globalOptions = new ServiceGlobalRouteOptions();
         var result = service.TestParseMethod(globalOptions, methodName);
         Assert.AreEqual(actualHttpMethod, result.HttpMethod);
@@ -200,6 +209,26 @@ public class ServiceBaseTest
 
         var pluralizationService = PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en"));
         Assert.AreEqual("Catalogs", service.TestGetServiceName(pluralizationService));
+    }
+
+    [DataTestMethod]
+    [DataRow(true, true, 2)]
+    [DataRow(true, false, 1)]
+    [DataRow(true, null, 2)]
+    [DataRow(null, true, 2)]
+    [DataRow(null, false, 1)]
+    [DataRow(null, null, 1)]
+    [DataRow(false, true, 2)]
+    [DataRow(false, false, 1)]
+    [DataRow(false, null, 1)]
+    public void TestGetMethodsByAutoMapRoute(bool? globalEnableProperty, bool? enableProperty, int expectedNumber)
+    {
+        var orderService = new OrderService(enableProperty);
+        var methodInfos = orderService.TestGetMethodsByAutoMapRoute(new ServiceGlobalRouteOptions()
+        {
+            EnableProperty = globalEnableProperty
+        });
+        Assert.AreEqual(expectedNumber, methodInfos.Count);
     }
 
     #region private methods
