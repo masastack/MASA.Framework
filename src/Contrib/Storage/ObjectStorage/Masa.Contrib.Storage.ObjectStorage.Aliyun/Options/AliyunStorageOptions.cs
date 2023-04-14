@@ -78,7 +78,7 @@ public class AliyunStorageOptions : AliyunOptions
         EnableResumableUpload = true;
         PartSize = null;
         BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
-        BucketNames = new BucketNames(new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+        BucketNames = new BucketNames(new Dictionary<string, string>());
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
@@ -137,11 +137,5 @@ public class AliyunStorageOptions : AliyunOptions
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
         return this;
-    }
-
-    [ExcludeFromCodeCoverage]
-    public void TryAddBucketName(string name, string bucketName)
-    {
-        BucketNames.TryAdd(name, bucketName);
     }
 }

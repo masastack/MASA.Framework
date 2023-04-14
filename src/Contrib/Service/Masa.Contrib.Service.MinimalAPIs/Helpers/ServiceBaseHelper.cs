@@ -9,7 +9,9 @@ public static class ServiceBaseHelper
     {
         var type = Expression.GetDelegateType(methodInfo.GetParameters().Select(parameterInfo => parameterInfo.ParameterType)
             .Concat(new List<Type>
-                { methodInfo.ReturnType }).ToArray());
+            {
+                methodInfo.ReturnType
+            }).ToArray());
         return Delegate.CreateDelegate(type, targetInstance, methodInfo);
     }
 
@@ -24,7 +26,7 @@ public static class ServiceBaseHelper
         var prefix = prefixes.FirstOrDefault(prefix => newMethodName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
 
         if (prefix is not null)
-            return prefix;
+            return methodName.Substring(0, prefix.Length);
 
         return string.Empty;
     }

@@ -14,8 +14,17 @@ public class BucketNames : Dictionary<string, string>
         set => this[DEFAULT_BUCKET_NAME] = value;
     }
 
-    public BucketNames() { }
-    public BucketNames(IEnumerable<KeyValuePair<string, string>> names) : base(names) { }
+    public BucketNames()
+    {
+    }
+
+    public BucketNames(IEnumerable<KeyValuePair<string, string>> names) : base(names, StringComparer.OrdinalIgnoreCase)
+    {
+    }
+
+    public BucketNames(IEnumerable<KeyValuePair<string, string>> names, IEqualityComparer<string>? comparer) : base(names, comparer)
+    {
+    }
 
     public string GetBucketName(string name)
     {

@@ -50,7 +50,7 @@ public class ProcessorTest
     {
         Mock<IProcessor> processor = new();
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(3000);
+        cancellationTokenSource.CancelAfter(100);
         processor.Setup(pro => pro.ExecuteAsync(cancellationTokenSource.Token)).Verifiable();
 
         InfiniteLoopProcessor infiniteLoopProcessor = new InfiniteLoopProcessor(_serviceProvider, processor.Object);
@@ -64,7 +64,7 @@ public class ProcessorTest
     {
         Mock<IProcessor> processor = new();
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(3000);
+        cancellationTokenSource.CancelAfter(300);
         processor.Setup(pro => pro.ExecuteAsync(cancellationTokenSource.Token)).Verifiable();
 
         InfiniteLoopProcessor infiniteLoopProcessor =
@@ -92,7 +92,7 @@ public class ProcessorTest
         var hostedService = serviceProvider.GetService<IProcessingServer>();
         Assert.IsNotNull(hostedService);
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(5000);
+        cancellationTokenSource.CancelAfter(100);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
         Assert.IsTrue(CustomProcessor.Times > 0);
@@ -117,7 +117,7 @@ public class ProcessorTest
         var hostedService = serviceProvider.GetService<IProcessingServer>();
         Assert.IsNotNull(hostedService);
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(5000);
+        cancellationTokenSource.CancelAfter(100);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
         Assert.IsTrue(CustomProcessor.Times > 0);

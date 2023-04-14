@@ -196,7 +196,10 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("cache_test_sync")]
     public void SetByStringArray(string key)
     {
-        string[] values = new[] { "test1", "test2" };
+        string[] values = new[]
+        {
+            "test1", "test2"
+        };
         _distributedCacheClient.Remove(key);
         _distributedCacheClient.Set(key, values);
 
@@ -211,7 +214,11 @@ public class DistributedCacheClientTest : TestBase
     [DataRow("cache_test_sync")]
     public void SetByStringCollection(string key)
     {
-        List<string> values = new List<string>() { "test1", "test2" };
+        List<string> values = new List<string>()
+        {
+            "test1",
+            "test2"
+        };
         _distributedCacheClient.Remove(key);
         _distributedCacheClient.Set(key, values);
 
@@ -227,9 +234,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         _distributedCacheClient.SetList(dic!);
 
@@ -247,9 +260,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         await _distributedCacheClient.SetListAsync(dic!);
 
@@ -267,9 +286,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         _distributedCacheClient.SetList(dic!, DateTimeOffset.Now.AddSeconds(30));
 
@@ -287,9 +312,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         await _distributedCacheClient.SetListAsync(dic!, DateTimeOffset.Now.AddSeconds(30));
 
@@ -307,9 +338,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         _distributedCacheClient.SetList(dic!, TimeSpan.FromSeconds(30));
 
@@ -327,9 +364,15 @@ public class DistributedCacheClientTest : TestBase
     {
         var dic = new Dictionary<string, string>()
         {
-            { "setlist_1", Guid.NewGuid().ToString() },
-            { "setlist_2", Guid.NewGuid().ToString() },
-            { "setlist_3", Guid.NewGuid().ToString() }
+            {
+                "setlist_1", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_2", Guid.NewGuid().ToString()
+            },
+            {
+                "setlist_3", Guid.NewGuid().ToString()
+            }
         };
         await _distributedCacheClient.SetListAsync(dic!, TimeSpan.FromSeconds(30));
 
@@ -631,7 +674,10 @@ public class DistributedCacheClientTest : TestBase
     {
         _distributedCacheClient.Set(key, "test_content");
         _distributedCacheClient.Set(key2, "test_2_content");
-        _distributedCacheClient.KeyExpire(new string[] { key, key2 }, new CacheEntryOptions(DateTimeOffset.Now.AddMinutes(1)));
+        _distributedCacheClient.KeyExpire(new string[]
+        {
+            key, key2
+        }, new CacheEntryOptions(DateTimeOffset.Now.AddMinutes(1)));
         var expireTimeSpan = _database.KeyTimeToLive(key);
         Assert.IsNotNull(expireTimeSpan);
         Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 60 and >= 55);
@@ -648,7 +694,10 @@ public class DistributedCacheClientTest : TestBase
     {
         await _distributedCacheClient.SetAsync(key, "test_content");
         await _distributedCacheClient.SetAsync(key2, "test_2_content");
-        await _distributedCacheClient.KeyExpireAsync(new[] { key, key2 }, new CacheEntryOptions(DateTimeOffset.Now.AddMinutes(5)));
+        await _distributedCacheClient.KeyExpireAsync(new[]
+        {
+            key, key2
+        }, new CacheEntryOptions(DateTimeOffset.Now.AddMinutes(5)));
         var expireTimeSpan = await _database.KeyTimeToLiveAsync(key);
         Assert.IsNotNull(expireTimeSpan);
         Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 60 * 5 and >= 60 * 5 - 5);
@@ -668,7 +717,10 @@ public class DistributedCacheClientTest : TestBase
 
         await _distributedCacheClient.SetAsync(key, "test_content");
 
-        var res = await _distributedCacheClient.KeyExpireAsync(new[] { key, key2 },
+        var res = await _distributedCacheClient.KeyExpireAsync(new[]
+            {
+                key, key2
+            },
             new CacheEntryOptions(DateTimeOffset.Now.AddMinutes(5)));
         Assert.AreEqual(1, res);
 
@@ -677,9 +729,10 @@ public class DistributedCacheClientTest : TestBase
 
     [DataTestMethod]
     [DataRow("test_chanel", "test_change_test", "2")]
-    public void TestPublish(string channel, string key, string value)
+    public async Task TestPublishAsyncBySync(string channel, string key, string value)
     {
         int timer = 0;
+        // ReSharper disable once MethodHasAsyncOverload
         _distributedCacheClient.Subscribe<string>(channel, option =>
         {
             timer++;
@@ -688,6 +741,7 @@ public class DistributedCacheClientTest : TestBase
             Assert.IsTrue(option.Value == value);
         });
 
+        // ReSharper disable once MethodHasAsyncOverload
         _distributedCacheClient.Publish(channel, option =>
         {
             option.Operation = SubscribeOperation.Set;
@@ -696,7 +750,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         Assert.IsTrue(timer == 1);
     }
 
@@ -721,7 +775,7 @@ public class DistributedCacheClientTest : TestBase
             option.Value = value;
         });
 
-        await Task.Delay(3000);
+        await Task.Delay(1000);
         Assert.IsTrue(timer == 1);
     }
 

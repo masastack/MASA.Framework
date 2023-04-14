@@ -156,7 +156,7 @@ public class IdGeneratorTest
         var serviceProvider = services.BuildServiceProvider();
         var workerIdProvider = serviceProvider.GetRequiredService<IWorkerProvider>();
         List<long> workerIds = new();
-        var maxWorkerId = ~(-1L << 10);
+        var maxWorkerId = ~(-1L << 2);
         for (int index = 0; index <= maxWorkerId; index++)
         {
             var workerId = await workerIdProvider.GetWorkerIdAsync();
@@ -193,7 +193,7 @@ public class IdGeneratorTest
         var serviceProvider = services.BuildServiceProvider();
         var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         var id = idGenerator.NewId();
-        var maxSequenceBit = ~(-1L << 12);
+        var maxSequenceBit = ~(-1L << 2);
         for (int i = 1; i < maxSequenceBit; i++)
         {
             var idTemp = idGenerator.NewId();
@@ -205,11 +205,12 @@ public class IdGeneratorTest
     public async Task TestGetWorkerIdAsync()
     {
         var services = new ServiceCollection();
-        var workerIdProvider = GetWorkerProvider(services);
+
+        var workerIdBits = 2;
+        var workerIdProvider = GetWorkerProvider(services, workerIdBits);
+
         List<long> workerIds = new();
         var errCount = 0;
-
-        var workerIdBits = 10;
         var maxWorkerId = ~(-1L << workerIdBits);
 
         for (int index = 0; index <= maxWorkerId + 1; index++)
@@ -233,7 +234,7 @@ public class IdGeneratorTest
     [TestMethod]
     public async Task TestGetDistibutedLockFaieldAsync()
     {
-        var workerIdBits = 10;
+        var workerIdBits = 2;
         var maxWorkerId = ~(-1L << workerIdBits);
         var tasks = new ConcurrentBag<Task>();
         ThreadPool.GetMinThreads(out int workerThreads, out var minIoc);
@@ -242,7 +243,7 @@ public class IdGeneratorTest
         int laterTime = 0;
         try
         {
-            Parallel.For(0, maxWorkerId * 2, _ =>
+            Parallel.For(0, maxWorkerId * 3, _ =>
             {
                 tasks.Add(GetWorkerIdAsync(null, workerIdBits));
             });
