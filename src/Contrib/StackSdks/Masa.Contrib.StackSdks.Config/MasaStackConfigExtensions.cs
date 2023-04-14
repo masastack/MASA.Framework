@@ -35,12 +35,13 @@ public static class MasaStackConfigExtensions
         return GetAllServer(masaStackConfig).ContainsKey(MasaStackConstant.SCHEDULER);
     }
 
-    public static string GetConnectionString(this IMasaStackConfig masaStackConfig, string datebaseName)
+    public static string GetConnectionString(this IMasaStackConfig masaStackConfig, string projectName)
     {
         var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
         var dbModel = JsonSerializer.Deserialize<DbModel>(connStr);
+        var databaseName = $"{projectName}{(string.IsNullOrWhiteSpace(masaStackConfig.SuffixIdentity) ? "" : "_" + masaStackConfig.SuffixIdentity)}";
 
-        return dbModel?.ToString(datebaseName) ?? "";
+        return dbModel?.ToString(databaseName) ?? "";
     }
 
     public static string GetServerDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)

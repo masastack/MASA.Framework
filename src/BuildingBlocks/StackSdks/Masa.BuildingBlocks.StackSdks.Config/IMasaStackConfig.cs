@@ -29,9 +29,11 @@ public interface IMasaStackConfig
 
     public bool SingleSsoClient { get; }
 
+    public string SuffixIdentity { get; }
+
+    List<string> GetProjectList();
+
     string GetValue(string key);
 
     Dictionary<string, string> GetValues();
-
-    List<string> GetProjectList();
 }
