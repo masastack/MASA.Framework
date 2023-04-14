@@ -25,5 +25,6 @@ public class ServiceGlobalRouteOptions : ServiceRouteOptions
         DisableTrimMethodPrefix = false;
         Assemblies = MasaApp.GetAssemblies();
         Pluralization = PluralizationService.CreateService(CultureInfo.CreateSpecificCulture("en"));
+        EnableProperty = false;
     }
 }
