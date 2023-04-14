@@ -3,9 +3,8 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 
-public abstract record IntegrationDomainEvent(Guid Id, DateTime CreationTime) : DomainEvent(Id, CreationTime), IIntegrationDomainEvent
+public abstract record IntegrationDomainEvent(Guid IntegrationEventId, DateTime IntegrationEvenCreateTime) : DomainEvent(IntegrationEventId, IntegrationEvenCreateTime), IIntegrationDomainEvent
 {
-    [JsonIgnore]
     public virtual string Topic { get; set; }
 
     protected IntegrationDomainEvent() : this(Guid.NewGuid(), DateTime.UtcNow)

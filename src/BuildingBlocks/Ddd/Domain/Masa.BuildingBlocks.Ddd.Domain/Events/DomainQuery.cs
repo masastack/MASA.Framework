@@ -3,10 +3,11 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 
-public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
+public abstract record DomainQuery<TResult>(Guid IntegrationEventId, DateTime IntegrationEvenCreateTime) : IDomainQuery<TResult>
 {
-    private Guid _eventId;
-    private DateTime _creationTime;
+    [JsonInclude] public Guid IntegrationEventId { private get; set; } = IntegrationEventId;
+
+    [JsonInclude] public DateTime IntegrationEvenCreateTime { private get; set; } = IntegrationEvenCreateTime;
 
     [JsonIgnore]
     public IUnitOfWork? UnitOfWork
@@ -19,17 +20,11 @@ public abstract record DomainQuery<TResult> : IDomainQuery<TResult>
 
     protected DomainQuery() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
-    protected DomainQuery(Guid eventId, DateTime creationTime)
-    {
-        _eventId = eventId;
-        _creationTime = creationTime;
-    }
+    public Guid GetEventId() => IntegrationEventId;
 
-    public Guid GetEventId() => _eventId;
+    public void SetEventId(Guid eventId) => IntegrationEventId = eventId;
 
-    public void SetEventId(Guid eventId) => _eventId = eventId;
+    public DateTime GetCreationTime() => IntegrationEvenCreateTime;
 
-    public DateTime GetCreationTime() => _creationTime;
-
-    public void SetCreationTime(DateTime creationTime) => _creationTime = creationTime;
+    public void SetCreationTime(DateTime creationTime) => IntegrationEvenCreateTime = creationTime;
 }

@@ -18,9 +18,9 @@ internal class IntegrationEventLogItem
 
     public int RetryCount { get; private set; }
 
-    public IIntegrationEvent Event { get; private set; }
+    public object Event { get; private set; }
 
-    public IntegrationEventLogItem(Guid eventId, string topic, IIntegrationEvent @event)
+    public IntegrationEventLogItem(Guid eventId, string topic, object @event)
     {
         EventId = eventId;
         Topic = topic;

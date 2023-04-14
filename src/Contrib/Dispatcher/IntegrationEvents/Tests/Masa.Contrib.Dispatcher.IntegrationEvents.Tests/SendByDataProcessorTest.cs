@@ -27,7 +27,7 @@ public class SendByDataProcessorTest
         };
         foreach (var log in eventLogs)
         {
-            log.DeserializeJsonContent(typeof(RegisterUserEvent));
+            log.DeserializeJsonContent();
         }
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
@@ -52,7 +52,7 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Never);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Once);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), default), Times.Once);
+        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), default), Times.Once);
     }
 
     [TestMethod]
@@ -65,7 +65,7 @@ public class SendByDataProcessorTest
         };
         foreach (var log in eventLogs)
         {
-            log.DeserializeJsonContent(typeof(RegisterUserEvent));
+            log.DeserializeJsonContent();
         }
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
@@ -90,6 +90,6 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Never);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), default), Times.Once);
+        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), default), Times.Once);
     }
 }

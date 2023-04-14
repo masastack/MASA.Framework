@@ -11,11 +11,12 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     public string EventTypeName { get; private set; } = null!;
 
-    [NotMapped]
-    public string EventTypeShortName => EventTypeName.Split('.').Last();
+    private object? _event;
+
+    [NotMapped] public object Event => _event ??= JsonSerializer.Deserialize<object>(Content)!;
 
     [NotMapped]
-    public IIntegrationEvent Event { get; private set; } = null!;
+    public string Topic { get; private set; } = null!;
 
     public IntegrationEventStates State { get; set; } = IntegrationEventStates.NotPublished;
 
@@ -43,22 +44,21 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         CreationTime = @event.GetCreationTime();
         ModificationTime = @event.GetCreationTime();
         EventTypeName = @event.GetType().FullName!;
-        Content = System.Text.Json.JsonSerializer.Serialize((object)@event);
+        Content = JsonSerializer.Serialize((object)@event);
         TransactionId = transactionId;
     }
 
     public void Initialize()
     {
-        this.CreationTime = this.GetCurrentTime();
+        CreationTime = GetCurrentTime();
     }
 
     public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
 
-    public IntegrationEventLog DeserializeJsonContent(Type type)
+    public IntegrationEventLog DeserializeJsonContent()
     {
-        Event = (System.Text.Json.JsonSerializer.Deserialize(Content, type) as IIntegrationEvent)!;
-        Event?.SetEventId(this.EventId);
-        Event?.SetCreationTime(this.CreationTime);
+        var json = JsonSerializer.Deserialize<IntegrationEventTopic>(Content);
+        Topic = json!.Topic;
         return this;
     }
 

@@ -3,24 +3,21 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
-public abstract record Event : IEvent
+public abstract record Event(Guid IntegrationEventId, DateTime IntegrationEvenCreateTime) : IEvent
 {
-    private Guid _eventId;
-    private DateTime _creationTime;
+    [JsonInclude] public Guid IntegrationEventId { private get; set; } = IntegrationEventId;
 
-    protected Event() : this(Guid.NewGuid(), DateTime.UtcNow) { }
+    [JsonInclude] public DateTime IntegrationEvenCreateTime { private get; set; } = IntegrationEvenCreateTime;
 
-    protected Event(Guid eventId, DateTime creationTime)
+    protected Event() : this(Guid.NewGuid(), DateTime.UtcNow)
     {
-        _eventId = eventId;
-        _creationTime = creationTime;
     }
 
-    public Guid GetEventId() => _eventId;
+    public Guid GetEventId() => IntegrationEventId;
 
-    public void SetEventId(Guid eventId) => _eventId = eventId;
+    public void SetEventId(Guid eventId) => IntegrationEventId = eventId;
 
-    public DateTime GetCreationTime() => _creationTime;
+    public DateTime GetCreationTime() => IntegrationEvenCreateTime;
 
-    public void SetCreationTime(DateTime creationTime) => _creationTime = creationTime;
+    public void SetCreationTime(DateTime creationTime) => IntegrationEvenCreateTime = creationTime;
 }
