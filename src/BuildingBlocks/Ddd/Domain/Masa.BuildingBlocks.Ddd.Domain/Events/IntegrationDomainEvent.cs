@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Ddd.Domain.Events;
 
-public abstract record IntegrationDomainEvent(Guid IntegrationEventId, DateTime IntegrationEvenCreateTime) : DomainEvent(IntegrationEventId, IntegrationEvenCreateTime), IIntegrationDomainEvent
+public abstract record IntegrationDomainEvent(Guid EventId, DateTime EvenCreateTime) : DomainEvent(EventId, EvenCreateTime), IIntegrationDomainEvent
 {
     public virtual string Topic { get; set; }
 

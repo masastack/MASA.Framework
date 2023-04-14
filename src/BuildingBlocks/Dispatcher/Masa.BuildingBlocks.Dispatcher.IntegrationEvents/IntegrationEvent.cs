@@ -5,10 +5,10 @@ namespace Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 
 public abstract record IntegrationEvent : IIntegrationEvent
 {
-    [JsonInclude]public Guid IntegrationEventId { private get; set; }
+    [JsonInclude]public Guid EventId { private get; set; }
 
     [JsonInclude]
-    public DateTime IntegrationEvenCreateTime { private get; set; }
+    public DateTime EvenCreateTime { private get; set; }
 
     [NotMapped] [JsonIgnore] public IUnitOfWork? UnitOfWork { get; set; }
 
@@ -22,15 +22,15 @@ public abstract record IntegrationEvent : IIntegrationEvent
     {
         if (string.IsNullOrWhiteSpace(Topic)) Topic = GetType().Name;
 
-        IntegrationEventId = eventId;
-        IntegrationEvenCreateTime = creationTime;
+        EventId = eventId;
+        EvenCreateTime = creationTime;
     }
 
-    public Guid GetEventId() => IntegrationEventId;
+    public Guid GetEventId() => EventId;
 
-    public void SetEventId(Guid eventId) => IntegrationEventId = eventId;
+    public void SetEventId(Guid eventId) => EventId = eventId;
 
-    public DateTime GetCreationTime() => IntegrationEvenCreateTime;
+    public DateTime GetCreationTime() => EvenCreateTime;
 
-    public void SetCreationTime(DateTime creationTime) => IntegrationEvenCreateTime = creationTime;
+    public void SetCreationTime(DateTime creationTime) => EvenCreateTime = creationTime;
 }
