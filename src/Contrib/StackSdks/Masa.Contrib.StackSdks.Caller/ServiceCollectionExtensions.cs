@@ -13,12 +13,18 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(jwtTokenValidatorOptions);
 
+        services.AddHttpClient(Constant.HTTP_NAME).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = delegate { return true; }
+        });
+
         services.Configure(jwtTokenValidatorOptions);
         services.Configure(clientRefreshTokenOptions);
         services.TryAddScoped<ITokenGenerater, DefaultTokenGenerater>();
         services.TryAddScoped(s => s.GetRequiredService<ITokenGenerater>().Generater());
         services.AddSingleton<JwtTokenValidator>();
         services.AddAutoRegistrationCaller(assembly);
+
         return services;
     }
 }

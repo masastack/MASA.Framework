@@ -45,6 +45,35 @@ public class StorageTest : TestBase
     }
 
     [TestMethod]
+    public void TestAddAliyunStorageAndUseOptions()
+    {
+        var services = new ServiceCollection();
+        var configurationRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddObjectStorage(options => options.UseAliyunStorage());
+
+        services.Configure<AliyunStorageConfigureOptions>(options =>
+        {
+            options.Storage.BucketNames.TryAdd("test-bucket", "test-bucket-new");
+            options.Storage.BucketNames.TryAdd("test-bucket3", "test-bucket3-value");
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var client = serviceProvider.GetService<IObjectStorageClient>();
+        Assert.IsNotNull(client);
+
+        var bucketProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketProvider);
+
+        Assert.IsTrue(bucketProvider.GetBucketName() == "test-storage");
+        Assert.IsTrue(bucketProvider.GetBucketName("test-bucket3") == "test-bucket3-value");
+        Assert.IsTrue(bucketProvider.GetBucketName<StorageContainer>() == "test-storage2");
+    }
+
+    [TestMethod]
     public void TestAddAliyunStorageByOptions()
     {
         var services = new ServiceCollection();
