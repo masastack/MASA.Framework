@@ -94,7 +94,7 @@ public class DataFilterTest
         var creationTime = queryStudent.CreationTime;
         var modificationTime = queryStudent.ModificationTime;
 
-        await Task.Delay(1000);
+        await Task.Delay(100);
 
         dbContext.Set<Student>().Remove(student);
         var row = await dbContext.SaveChangesAsync();

@@ -154,7 +154,7 @@ public class MultilevelCacheTest : TestBase
                     }
                 }
             }));
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
         VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as
