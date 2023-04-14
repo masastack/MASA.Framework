@@ -333,11 +333,11 @@ public class MultilevelCacheClientTest : TestBase
                     var value = GetValue(isReturnNull);
                     if (value.HasValue)
                     {
-                        timeSpan = TimeSpan.FromSeconds(5);
-                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(10));
+                        timeSpan = TimeSpan.FromSeconds(60);
+                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(100));
                     }
-                    timeSpan = TimeSpan.FromSeconds(1);
-                    return new CacheEntry<int?>(null, TimeSpan.FromSeconds(1));
+                    timeSpan = TimeSpan.FromMilliseconds(300);
+                    return new CacheEntry<int?>(null, TimeSpan.FromMilliseconds(500));
                 },
                 options => options.AbsoluteExpirationRelativeToNow = timeSpan);
         }
