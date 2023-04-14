@@ -4,9 +4,8 @@
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Dispatcher.Events;
-global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
-global using Microsoft.Extensions.Options;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Data.Common;
 global using System.Runtime.CompilerServices;
+global using System.Text.Json;
 global using System.Text.Json.Serialization;

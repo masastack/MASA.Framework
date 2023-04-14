@@ -30,9 +30,7 @@ public static class IntegrationEventOptionsExtensions
             option.DbContextType = typeof(TDbContext);
         });
 
-        var integrationEventTypes = options.Assemblies.SelectMany(assembly => assembly.GetTypes()).Where(type => type.IsClass &&typeof(IIntegrationEvent).IsAssignableFrom(type)).Distinct();
         options.Services.TryAddScoped<IIntegrationEventLogService>(serviceProvider => new IntegrationEventLogService(
-            integrationEventTypes,
             serviceProvider.GetRequiredService<IntegrationEventLogContext>(),
             serviceProvider.GetService<ILogger<IntegrationEventLogService>>()));
 

@@ -67,10 +67,7 @@ public class ProcessorTest
             new(@event, Guid.Empty),
             new(@event, Guid.Empty)
         };
-        list.ForEach(item =>
-        {
-            item.DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
-        });
+        list.ForEach(item => { item.DeserializeJsonContent(); });
         integrationEventLogService.Setup(service =>
                 service.RetrieveEventLogsFailedToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
                     cancellationTokenSource.Token))
@@ -131,7 +128,7 @@ public class ProcessorTest
         integrationEventLogService.Setup(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token))
             .Verifiable();
 
-        List<IntegrationEventLog> list = new List<IntegrationEventLog>()
+        var list = new List<IntegrationEventLog>()
         {
             new(new RegisterUserIntegrationEvent(), Guid.Empty),
             new(new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
@@ -139,18 +136,18 @@ public class ProcessorTest
         for (int index = 0; index < list.Count; index++)
         {
             if (index == 0)
-                list[index].DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
+                list[index].DeserializeJsonContent();
             else
-                list[index].DeserializeJsonContent(typeof(PaySuccessedIntegrationEvent));
+                list[index].DeserializeJsonContent();
         }
 
         Mock<IPublisher> publisher = new();
         publisher.Setup(client
-                => client.PublishAsync(nameof(RegisterUserIntegrationEvent), It.IsAny<IIntegrationEvent>(),
+                => client.PublishAsync(nameof(RegisterUserIntegrationEvent), It.IsAny<object>(),
                     cancellationTokenSource.Token))
             .Throws(new Exception("custom exception"));
         publisher.Setup(client
-                => client.PublishAsync(nameof(PaySuccessedIntegrationEvent), It.IsAny<IIntegrationEvent>(),
+                => client.PublishAsync(nameof(PaySuccessedIntegrationEvent), It.IsAny<object>(),
                     cancellationTokenSource.Token))
             .Throws(new UserFriendlyException("custom exception"));
         services.AddScoped(_ => publisher.Object);
