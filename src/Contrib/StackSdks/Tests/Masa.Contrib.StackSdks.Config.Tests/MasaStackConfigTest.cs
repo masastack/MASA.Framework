@@ -159,6 +159,6 @@ public class MasaStackConfigTest
     {
         var suffixIdentity = _stackConfig.SuffixIdentity;
 
-        Assert.AreEqual(suffixIdentity, "dev");
+        Assert.AreEqual("dev", suffixIdentity);
     }
 }
