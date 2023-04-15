@@ -1,11 +1,11 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Data.EFCore.Tests.Models;
+namespace Masa.Contrib.Data.EFCore.Tests.Entities;
 
 public class Student : ISoftDelete
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = default!;
 
@@ -15,5 +15,5 @@ public class Student : ISoftDelete
 
     public Address Address { get; set; } = default!;
 
-    public List<Hobby> Hobbies { get; set; } = default!;
+    public List<Hobby> Hobbies { get; set; }
 }

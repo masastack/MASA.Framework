@@ -14,6 +14,7 @@ public class DefaultConnectionStringProviderTest
         services.Configure<ConnectionStrings>(options =>
         {
             options.DefaultConnection = "Test1";
+            options.Add("masa", "Test-masa");
         });
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
@@ -21,16 +22,18 @@ public class DefaultConnectionStringProviderTest
     }
 
     [TestMethod]
-    public async Task TestGetConnectionStringAsyncReturnTest1()
+    public async Task TestGetConnectionStringAsync()
     {
         var connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("Test1", connectionString);
-    }
 
-    [TestMethod]
-    public async Task TestGetConnectionStringAsyncAndNameIsEmptyReturnTest1()
-    {
-        var connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
         Assert.AreEqual("Test1", connectionString);
+
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync("masa");
+        Assert.AreEqual("Test-masa", connectionString);
+
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync("pm");
+        Assert.AreEqual(string.Empty, connectionString);
     }
 }
