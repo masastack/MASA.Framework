@@ -3,7 +3,6 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Isolation;
-global using Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;

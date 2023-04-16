@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation;
 
 public class CustomDbContext : MasaDbContext<CustomDbContext, int>
@@ -12,7 +14,7 @@ public class CustomDbContext : MasaDbContext<CustomDbContext, int>
     }
 }
 
-public class CustomDbContext2 : MasaDbContext
+public class CustomDbContext2 : MasaDbContext<CustomDbContext2>
 {
     public DbSet<Order> Order { get; set; }
 
@@ -20,22 +22,4 @@ public class CustomDbContext2 : MasaDbContext
     {
         base.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTrackingWithIdentityResolution;
     }
-}
-
-public class CustomDbContext3 : MasaDbContext
-{
-    public DbSet<Order> Order { get; set; }
-
-    protected override void OnConfiguring(MasaDbContextOptionsBuilder optionsBuilder)
-    {
-        var connectionString = "data source=customDbContext3";
-        optionsBuilder.UseSqlite(connectionString);
-
-        optionsBuilder.DbContextOptionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
-    }
-}
-
-public class CustomDbContext4 : MasaDbContext
-{
-    public DbSet<Order> Order { get; set; }
 }

@@ -21,45 +21,41 @@ public class DefaultIsolationConnectionStringProviderTest
     }
 
     [TestMethod]
-    public async Task TestGetConnectionStringAsync()
+    public async Task TestConnectionStringAsync()
     {
         _services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => dbContextBuilder.UseSqlite());
-        _services.AddIsolation(isolationBuilder => { isolationBuilder.UseMultiEnvironment(); });
+        _services.AddIsolation(isolationBuilder =>
+        {
+            isolationBuilder.UseMultiEnvironment();
+        });
 
         var rootServiceProvider = _services.BuildServiceProvider();
         using var scope = rootServiceProvider.CreateScope();
-        var connectionString = await GetConnectionString(scope.ServiceProvider);
-        Assert.AreEqual("data source=test", connectionString);
+        var dbContext = scope.ServiceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(dbContext);
 
+        await VerifyConnectionStringAsync(scope.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "data source=test");
         using var scope2 = rootServiceProvider.CreateScope();
         scope2.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("dev");
-        var connectionString2 = await GetConnectionString(scope2.ServiceProvider);
-        Assert.AreEqual("Data Source=test2.db", connectionString2);
+        await VerifyConnectionStringAsync(scope2.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "Data Source=test2.db");
 
         scope2.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("pro");
-        connectionString2 = await GetConnectionString(scope2.ServiceProvider);
-        Assert.AreEqual("Data Source=test2.db", connectionString2);
+        await VerifyConnectionStringAsync(scope2.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "Data Source=test2.db");
 
         using var scope3 = rootServiceProvider.CreateScope();
         scope3.ServiceProvider.GetRequiredService<IMultiEnvironmentSetter>().SetEnvironment("pro");
-        var connectionString3 = await GetConnectionString(scope3.ServiceProvider);
-        Assert.AreEqual("Data Source=test3.db", connectionString3);
 
-        Task<string> GetConnectionString(IServiceProvider serviceProvider, string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
-        {
-            var isolationConnectionStringProvider = new DefaultIsolationConnectionStringProvider(
-                serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>(),
-                serviceProvider.GetRequiredService<IIsolationConfigProvider>()
-            );
-            return isolationConnectionStringProvider.GetConnectionStringAsync(name);
-        }
+        await VerifyConnectionStringAsync(scope3.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "Data Source=test3.db");
     }
 
     [TestMethod]
-    public async Task TestGetConnectionStringAsyncByAddIsolationConfiguration()
+    public async Task TestConnectionStringAsyncByOptions()
     {
         _services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => dbContextBuilder.UseSqlite());
-        _services.AddIsolation(isolationBuilder => { isolationBuilder.UseMultiEnvironment(); });
+        _services.AddIsolation(isolationBuilder =>
+        {
+            isolationBuilder.UseMultiEnvironment();
+        });
         _services.Configure<IsolationOptions<ConnectionStrings>>(options =>
         {
             options.Data.Add(new IsolationConfigurationOptions<ConnectionStrings>()
@@ -73,23 +69,31 @@ public class DefaultIsolationConnectionStringProviderTest
         });
         var rootServiceProvider = _services.BuildServiceProvider();
         using var scope = rootServiceProvider.CreateScope();
-        var connectionString = await GetConnectionString(scope.ServiceProvider);
-        Assert.AreEqual("data source=test", connectionString);
+        await VerifyConnectionStringAsync(scope.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "data source=test");
 
         using var scope2 = rootServiceProvider.CreateScope();
         var multiEnvironmentSetter = scope2.ServiceProvider.GetService<IMultiEnvironmentSetter>();
         Assert.IsNotNull(multiEnvironmentSetter);
         multiEnvironmentSetter.SetEnvironment("dev");
-        var connectionString2 = await GetConnectionString(scope2.ServiceProvider);
-        Assert.AreEqual("data source=test-manual", connectionString2);
 
-        Task<string> GetConnectionString(IServiceProvider serviceProvider, string name = ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME)
-        {
-            var isolationConnectionStringProvider = new DefaultIsolationConnectionStringProvider(
-                serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>(),
-                serviceProvider.GetRequiredService<IIsolationConfigProvider>()
-            );
-            return isolationConnectionStringProvider.GetConnectionStringAsync(name);
-        }
+        await VerifyConnectionStringAsync(scope2.ServiceProvider, ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, "data source=test-manual");
+    }
+
+    private static async Task VerifyConnectionStringAsync(
+        IServiceProvider serviceProvider,
+        string name,
+        string exceptedConnectionString)
+    {
+        var isolationConnectionStringProvider = new DefaultIsolationConnectionStringProvider(
+            serviceProvider.GetRequiredService<IConnectionStringProviderWrapper>(),
+            serviceProvider.GetRequiredService<IIsolationConfigProvider>()
+        );
+        var actualConnectionString = await isolationConnectionStringProvider.GetConnectionStringAsync(name);
+        Assert.AreEqual(exceptedConnectionString, actualConnectionString);
+
+        var currentDbContext = serviceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(currentDbContext);
+
+        Assert.AreEqual(exceptedConnectionString, currentDbContext.Database.GetConnectionString());
     }
 }

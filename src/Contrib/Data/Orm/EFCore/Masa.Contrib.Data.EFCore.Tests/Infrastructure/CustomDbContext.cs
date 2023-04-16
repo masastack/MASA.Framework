@@ -117,6 +117,17 @@ public class CustomDbContext7 : MasaDbContext<CustomDbContext7>, ICustomDbContex
     }
 }
 
+
+public class CustomDbContextByNotUseDatabase : MasaDbContext<CustomDbContextByNotUseDatabase>, ICustomDbContext
+{
+    public string Name => nameof(CustomDbContextByNotUseDatabase);
+
+    protected override void OnModelCreatingExecuting(ModelBuilder modelBuilder)
+    {
+        modelBuilder.InitializeStudentConfiguration();
+    }
+}
+
 public class CustomDbContextTrackingAll : CustomDbContext
 {
     public override string Name => nameof(CustomDbContextTrackingAll);

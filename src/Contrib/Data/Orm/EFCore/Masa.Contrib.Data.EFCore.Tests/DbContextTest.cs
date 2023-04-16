@@ -90,6 +90,12 @@ public class DbContextTest : TestBase
         VerifyStudent(dbContext, student.Id);
     }
 
+    [TestMethod]
+    public void TestDbContextWhenNotUseDatabase()
+    {
+        Assert.ThrowsException<InvalidOperationException>(() => CreateDbContext<CustomDbContextByNotUseDatabase>(null));
+    }
+
     #region Private methods
 
     private Student GenerateStudent()
@@ -209,7 +215,7 @@ public class DbContextTest : TestBase
         Services.AddSingleton<IConfiguration>(configuration);
 
         IServiceProvider serviceProvider = default!;
-        await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
         {
             optionsBuilder.UseSqlite();
         }, sp => serviceProvider = sp);
@@ -219,6 +225,7 @@ public class DbContextTest : TestBase
 
         var connectionString = await connectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("data source=test;", connectionString);
+        Assert.AreEqual("data source=test;", dbContext.Database.GetConnectionString());
 
         var rootPath = AppDomain.CurrentDomain.BaseDirectory;
 
