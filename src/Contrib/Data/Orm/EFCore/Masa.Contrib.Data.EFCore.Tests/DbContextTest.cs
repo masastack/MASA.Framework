@@ -6,46 +6,103 @@ namespace Masa.Contrib.Data.EFCore.Tests;
 [TestClass]
 public class DbContextTest : TestBase
 {
+    private static string SqliteConnectionString => $"data source=test-{Guid.NewGuid()}";
+
+    #region Test different ways to create context and use
+
     [TestMethod]
-    public async Task TestAddAsync()
+    public void TestDbContext()
     {
-        await using var dbContext = CreateDbContext(true, out _);
-        await dbContext.Set<Student>().AddAsync(new Student()
+        var dbContext = CreateDbContext<CustomDbContext>(dbContextBuilder =>
         {
-            Id = 1,
-            Name = "Jim",
-            Age = 18,
-            Address = new Address()
-            {
-                City = "ShangHai",
-                Street = "PuDong",
-            },
-            Hobbies = new List<Hobby>()
-            {
-                new()
-                {
-                    Name = "Sing",
-                    Description = "loves singing"
-                },
-                new()
-                {
-                    Name = "Game",
-                    Description = "mobile game"
-                }
-            }
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
         });
-        await dbContext.SaveChangesAsync();
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
     }
 
     [TestMethod]
-    public async Task TestSoftDeleteAsync()
+    public void TestDbContext3()
     {
-        Services.Configure<ConnectionStrings>(options => { options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"; });
-        await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
-        var student = new Student()
+        var dbContext = CreateDbContext<CustomDbContext3>(dbContextBuilder =>
         {
-            Id = 1,
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        });
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
+    }
+
+    [TestMethod]
+    public void TestDbContext4()
+    {
+        var dbContext = CreateDbContext<CustomDbContext4>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        });
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
+    }
+
+    [TestMethod]
+    public void TestDbContext5()
+    {
+        Services.Configure<AppConfigOptions>(options =>
+        {
+            options.DbConnectionString = MemoryConnectionString;
+        });
+        var dbContext = CreateDbContext<CustomDbContext5>(null);
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
+    }
+
+    [TestMethod]
+    public void TestDbContext6()
+    {
+        var dbContext = CreateDbContext<CustomDbContext6>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        });
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
+    }
+
+    [TestMethod]
+    public void TestDbContext7()
+    {
+        Services.Configure<AppConfigOptions>(options =>
+        {
+            options.DbConnectionString = MemoryConnectionString;
+        });
+        var dbContext = CreateDbContext<CustomDbContext7>(null);
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(dbContext.SaveChanges() > 0);
+        VerifyStudent(dbContext, student.Id);
+    }
+
+    [TestMethod]
+    public void TestDbContextWhenNotUseDatabase()
+    {
+        Assert.ThrowsException<InvalidOperationException>(() => CreateDbContext<CustomDbContextByNotUseDatabase>(null));
+    }
+
+    #region Private methods
+
+    private static Student GenerateStudent()
+    {
+        return new Student
+        {
+            Id = Guid.NewGuid(),
             Name = "Jim",
             Age = 18,
             Address = new Address()
@@ -67,220 +124,108 @@ public class DbContextTest : TestBase
                 }
             }
         };
-        await dbContext.Set<Student>().AddAsync(student);
-        await dbContext.SaveChangesAsync();
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
-
-        dbContext.Set<Student>().Remove(student);
-        await dbContext.SaveChangesAsync();
-
-        Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
-
-        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
-        using (dataFilter.Disable<ISoftDelete>())
-        {
-            Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
-
-            student = (await dbContext.Set<Student>().Include(s => s.Address).FirstOrDefaultAsync())!;
-            Assert.IsTrue(student.Id == 1);
-            Assert.IsTrue(student.Name == "Jim");
-            Assert.IsTrue(student.Age == 18);
-            Assert.IsTrue(student.IsDeleted);
-            Assert.IsTrue(student.Address.City == "ShangHai");
-            Assert.IsTrue(student.Address.Street == "PuDong");
-
-            Assert.IsTrue(student.Hobbies.Count == 2);
-            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Sing"));
-            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Game"));
-        }
     }
 
-    [TestMethod]
-    public async Task TestAddMultiDbContextAsync()
+    private static Student VerifyStudent(DbContext dbContext, Guid id, bool isTracking = false)
+    {
+        var student = isTracking ?
+            dbContext.Set<Student>().AsTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id) :
+            dbContext.Set<Student>().AsNoTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id);
+        Assert.IsNotNull(student);
+        return student;
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Test Filter
+
+    [DataRow(0)]
+    [DataRow(1)]
+    [DataTestMethod]
+    public void TestSaveChangeFilterEqual3(int repeatTimes)
     {
         var services = new ServiceCollection();
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        string connectionStringByQuery = connectionString;
-
-        services.AddMasaDbContext<CustomQueryDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); });
-        services.AddMasaDbContext<CustomDbContext>(options => { options.UseSqlite(connectionStringByQuery).UseFilter(); });
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        var queryDbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        await queryDbContext.Database.EnsureCreatedAsync();
-
-        var student = new Student()
+        for (int index = 0; index < repeatTimes + 1; index++)
         {
-            Id = 1,
-            Name = "Jim",
-            Age = 18,
-            Address = new Address()
-            {
-                City = "ShangHai",
-                Street = "PuDong",
-            },
-            Hobbies = new List<Hobby>()
-            {
-                new()
-                {
-                    Name = "Sing",
-                    Description = "loves singing"
-                },
-                new()
-                {
-                    Name = "Game",
-                    Description = "mobile game"
-                }
-            }
-        };
-        await dbContext.Set<Student>().AddAsync(student);
-        await dbContext.SaveChangesAsync();
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
-
-        Assert.IsTrue(await queryDbContext.Set<Student>().AnyAsync());
-
-        dbContext.Remove(student);
-        await dbContext.SaveChangesAsync();
-
-        Assert.IsFalse(await dbContext.Set<Student>().AnyAsync());
-        Assert.IsFalse(await queryDbContext.Set<Student>().AnyAsync());
-
-        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
-        using (dataFilter.Disable<ISoftDelete>())
-        {
-            Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
-            Assert.IsTrue(await queryDbContext.Set<Student>().CountAsync() == 1);
-
-            student = (await dbContext.Set<Student>().Include(s => s.Address).FirstOrDefaultAsync())!;
-            Assert.IsTrue(student.Id == 1);
-            Assert.IsTrue(student.Name == "Jim");
-            Assert.IsTrue(student.Age == 18);
-            Assert.IsTrue(student.IsDeleted);
-            Assert.IsTrue(student.Address.City == "ShangHai");
-            Assert.IsTrue(student.Address.Street == "PuDong");
-
-            Assert.IsTrue(student.Hobbies.Count == 2);
-            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Sing"));
-            Assert.IsTrue(student.Hobbies.Any(h => h.Name == "Game"));
+            services.AddMasaDbContext<CustomDbContext>(opt => opt.UseInMemoryDatabase(MemoryConnectionString));
         }
-    }
-
-    [TestMethod]
-    public async Task TestDisabledSoftDelete()
-    {
-        Services.AddMasaDbContext<CustomDbContext>(options
-            =>
-        {
-            options.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
-        });
-        var serviceProvider = Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-        var student = new Student
-        {
-            Id = 1,
-            Name = "Jim",
-            Age = 18,
-            Address = new Address()
-            {
-                City = "ShangHai",
-                Street = "PuDong",
-            }
-        };
-        await dbContext.Set<Student>().AddAsync(student);
-        await dbContext.SaveChangesAsync();
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 1);
-
-        dbContext.Remove(student);
-        await dbContext.SaveChangesAsync();
-
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 0);
-
-        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
-        using (dataFilter.Disable<ISoftDelete>())
-        {
-            var count = await dbContext.Set<Student>().CountAsync();
-            Assert.IsTrue(count == 1);
-        }
-    }
-
-    [TestMethod]
-    public void TestAddMasaDbContextReturnSaveChangeFilterEqual3()
-    {
-        var services = new ServiceCollection();
-        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()))
-            .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
 
         var serviceProvider = services.BuildServiceProvider();
         Assert.AreEqual(3, serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count());
     }
 
+    /// <summary>
+    /// When using tracking, the navigation property cannot get the desired result normally
+    /// </summary>
     [TestMethod]
-    public async Task TestGetPaginatedListAsyncReturnCountEqualResultCount()
+    public async Task TestSoftDeleteAsync()
     {
-        Services.Configure<ConnectionStrings>(options => { options.DefaultConnection = $"data source=soft-delete-db-{Guid.NewGuid()}"; });
-        await using var dbContext = CreateDbContext(true, out IServiceProvider serviceProvider);
-        var students = new List<Student>()
+        IServiceProvider serviceProvider = default!;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
         {
-            new()
-            {
-                Id = 1,
-                Name = "Jim",
-                Age = 18,
-                Address = new Address()
-                {
-                    City = "ShangHai",
-                    Street = "PuDong",
-                }
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Tom",
-                Age = 20,
-                Address = new Address()
-                {
-                    City = "ShangHai",
-                    Street = "PuDong",
-                }
-            }
-        };
-        await dbContext.Set<Student>().AddRangeAsync(students);
-        await dbContext.SaveChangesAsync();
-        Assert.IsTrue(await dbContext.Set<Student>().CountAsync() == 2);
+            dbContextBuilder.UseFilter();
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        }, sp => serviceProvider = sp);
 
-        var student = students.First();
-        dbContext.Attach(student);
-        dbContext.Remove(student);
-        await dbContext.SaveChangesAsync();
+        var student = GenerateStudent();
+        dbContext.Set<Student>().Add(student);
+        Assert.IsTrue(await dbContext.SaveChangesAsync() > 0);
+        var studentNew = VerifyStudent(dbContext, student.Id, true);
+        studentNew.Hobbies.Clear();
+        dbContext.Set<Student>().Update(studentNew);
+        Assert.IsTrue(await dbContext.SaveChangesAsync() > 0);
+        studentNew = VerifyStudent(dbContext, student.Id, true);
+        Assert.AreEqual(0, studentNew.Hobbies.Count);
 
-        var result = await new Repository(dbContext).GetPaginatedListAsync(new PaginatedOptions()
+        var dataFilter = serviceProvider.GetRequiredService<IDataFilter>();
+        using (dataFilter.Disable<ISoftDelete>())
         {
-            Page = 1,
-            PageSize = 10
-        });
+            studentNew = VerifyStudent(dbContext, student.Id, false);
+            Assert.AreEqual(2, studentNew.Hobbies.Count);
 
-        Assert.IsTrue(result.Result.Count == result.Total);
+            studentNew = VerifyStudent(dbContext, student.Id, true);
+            Assert.AreEqual(0, studentNew.Hobbies.Count);
+        }
+
+        dbContext.Set<Student>().Remove(studentNew);
+        Assert.IsTrue(await dbContext.SaveChangesAsync() > 0);
+
+        studentNew = dbContext.Set<Student>().AsTracking().FirstOrDefault(s => s.Id == student.Id);
+        Assert.IsNull(studentNew);
+
+        using (dataFilter.Disable<ISoftDelete>())
+        {
+            studentNew = VerifyStudent(dbContext, student.Id);
+            Assert.AreEqual(2, studentNew.Hobbies.Count);
+        }
     }
+
+    #endregion
+
+    #region Test ConnectionString
 
     [TestMethod]
     public async Task TestModifyConnectionString()
     {
-        var services = new ServiceCollection();
         var configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", true, true)
             .Build();
-        services.AddSingleton<IConfiguration>(configuration);
-        services.AddMasaDbContext<CustomQueryDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); });
+        Services.AddSingleton<IConfiguration>(configuration);
 
-        var serviceProvider = services.BuildServiceProvider();
+        IServiceProvider serviceProvider = default!;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
+        {
+            optionsBuilder.UseSqlite();
+        }, sp => serviceProvider = sp);
 
         var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
 
         var connectionString = await connectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("data source=test;", connectionString);
+        Assert.AreEqual("data source=test;", dbContext.Database.GetConnectionString());
 
         var rootPath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -295,7 +240,7 @@ public class DbContextTest : TestBase
                 }
             }));
 
-        await Task.Delay(2000);
+        await Task.Delay(500);
 
         connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
@@ -312,118 +257,262 @@ public class DbContextTest : TestBase
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
     }
 
+    #endregion
+
+    #region Test Multi DbContext
+
     [TestMethod]
-    public async Task TestSetCreatorWhenAddEntityAsync()
+    public async Task TestUseConfigurationAndSpecify()
     {
-        var services = new ServiceCollection();
-        var userId = Guid.NewGuid().ToString();
-        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        Services.AddSingleton<IConfiguration>(configuration);
 
-        using var scope = serviceProvider.CreateScope();
-        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
-        Assert.IsNotNull(customDbContext);
-        var order = new Order()
+        await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
         {
-            Name = "masa"
-        };
-        await customDbContext.Set<Order>().AddAsync(order);
-        await customDbContext.SaveChangesAsync();
-
-        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
-        Assert.IsNotNull(orderTemp);
-        Assert.AreEqual(userId, orderTemp.Creator.ToString());
-        Assert.AreEqual(userId, orderTemp.Modifier.ToString());
+            optionsBuilder.UseSqlite();
+        });
+        await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
+        {
+            await CreateDbContextAsync<CustomDbContext2>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlite(SqliteConnectionString);
+            });
+        });
     }
 
     [TestMethod]
-    public async Task TestSetCreatorWhenAddEntityAndUserIdIsNullAsync()
+    public async Task TestAddMultiDbContextAsync()
     {
-        var services = new ServiceCollection();
-        string? userId = null;
-        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-
-        using var scope = serviceProvider.CreateScope();
-        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
-        Assert.IsNotNull(customDbContext);
-        var order = new Order()
+        Services.AddMasaDbContext<CustomDbContext>(dbContextBuilder =>
         {
-            Name = "masa"
-        };
-        await customDbContext.Set<Order>().AddAsync(order);
-        await customDbContext.SaveChangesAsync();
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        });
+        IServiceProvider serviceProvider = default!;
+        var customDbContext2 = await CreateDbContextAsync<CustomDbContext2>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        }, sp => serviceProvider = sp);
 
-        var orderTemp = await customDbContext.Set<Order>().FirstOrDefaultAsync();
-        Assert.IsNotNull(orderTemp);
-        Assert.IsNull(orderTemp.Creator);
-        Assert.IsNull(orderTemp.Modifier);
+        var customDbContext = serviceProvider.GetService<CustomDbContext>();
+        Assert.IsNotNull(customDbContext);
+
+        Assert.IsTrue(customDbContext2 is CustomDbContext2);
+        Assert.AreNotEqual(customDbContext, customDbContext2);
     }
 
     [TestMethod]
-    public async Task TestSetCreatorWhenAddEntityAndUserIdIsIntAsync()
+    public void TestAddMultiMasaDbContextReturnSaveChangeFilterEqual3()
     {
         var services = new ServiceCollection();
-        services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
-        var userId = "1";
-        services.AddSingleton<IUserContext>(_ => new CustomUserContext(userId));
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        services.AddMasaDbContext<CustomDbContext>(options => options.UseSqlite(connectionString).UseFilter());
+        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()))
+            .AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(Guid.NewGuid().ToString()));
+
         var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
-
-        using var scope = serviceProvider.CreateScope();
-        var customDbContext = scope.ServiceProvider.GetService<CustomDbContext>();
-        Assert.IsNotNull(customDbContext);
-        var goods = new Goods()
-        {
-            Name = "masa"
-        };
-        await customDbContext.Set<Goods>().AddAsync(goods);
-        await customDbContext.SaveChangesAsync();
-
-        var goodsTemp = await customDbContext.Set<Goods>().FirstOrDefaultAsync();
-        Assert.IsNotNull(goodsTemp);
-        Assert.AreEqual(userId, goodsTemp.Creator.ToString());
-        Assert.AreEqual(userId, goodsTemp.Modifier.ToString());
+        Assert.AreEqual(3, serviceProvider.GetServices<ISaveChangesFilter<CustomDbContext>>().Count());
     }
 
-    [TestMethod]
-    public async Task TestAddMasaDbContextPluralTableName()
+    #endregion
+
+    #region Test Set Creator、Modifier、CreationTime、ModificationTime
+
+    [DataRow(1, 1, 2, 2, 3, 3)]
+    [DataRow(null, 0, 2, 2, null, 2)]
+    [DataRow(2, 2, null, 2, null, 2)]
+    [DataTestMethod]
+    public async Task TestAddOrUpdateOrDeleteWhenUserIdIsIntAsync(
+        int? creator, int? expectedCreator,
+        int? modifier, int? expectedModifier,
+        int? deleter, int? expectedDeleter)
     {
-        var services = new ServiceCollection();
-        string connectionString = $"data source=test-{Guid.NewGuid()}";
-        services.AddMasaDbContext<CustomDbContext>(opt => opt.UseSqlite(connectionString));
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
 
-        var serviceProvider = services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
-        await dbContext.Database.EnsureCreatedAsync();
+        var customUserContext = new CustomUserContext(creator?.ToString());
+        Services.AddSingleton<IUserContext>(customUserContext);
 
+        var connectionString = MemoryConnectionString;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder
+                .UseInMemoryDatabase(connectionString)
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .UseFilter();
+        });
+        Assert.IsNotNull(dbContext);
+        await dbContext.Set<Goods>().AddAsync(new Goods()
+        {
+            Name = "masa"
+        });
+        await dbContext.SaveChangesAsync();
+
+        var goodsByCreate = await dbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByCreate);
+        var creatorByCreate = goodsByCreate.Creator;
+        var creationTimeByCreate = goodsByCreate.CreationTime;
+        var modifierByCreate = goodsByCreate.Modifier;
+        var modificationTimeByCreate = goodsByCreate.ModificationTime;
+        Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
+        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+
+        customUserContext.SetUserId(modifier?.ToString());
+        goodsByCreate.Name = "masa1";
+        dbContext.Set<Goods>().Update(goodsByCreate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByUpdate = await dbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdate);
+        var creatorByUpdate = goodsByUpdate.Creator;
+        var creationTimeByUpdate = goodsByUpdate.CreationTime;
+        var modifierByUpdate = goodsByUpdate.Modifier;
+        var modificationTimeByUpdate = goodsByUpdate.ModificationTime;
+
+        Assert.AreEqual(creatorByCreate, creatorByUpdate);
+        Assert.AreEqual(creationTimeByCreate, creationTimeByUpdate);
+        Assert.AreEqual(expectedModifier, modifierByUpdate);
+        Assert.AreNotEqual(modificationTimeByCreate, modificationTimeByUpdate);
+
+        customUserContext.SetUserId(deleter?.ToString());
+
+        dbContext.Set<Goods>().Remove(goodsByUpdate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByDelete = await dbContext.Set<Goods>().IgnoreQueryFilters().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByDelete);
+        Assert.AreEqual(creatorByUpdate, goodsByDelete.Creator);
+        Assert.AreEqual(creationTimeByUpdate, goodsByDelete.CreationTime);
+        Assert.AreEqual(expectedDeleter, goodsByDelete.Modifier);
+        Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
+    }
+
+    [DataRow(1, 1, 2, 2, 3, 3)]
+    [DataRow(null, null, 2, 2, null, 2)]
+    [DataRow(2, 2, null, 2, null, 2)]
+    [DataTestMethod]
+    public async Task TestAddOrUpdateOrDeleteWhenUserIdIsNullableIntAsync(
+        int? creator, int? expectedCreator,
+        int? modifier, int? expectedModifier,
+        int? deleter, int? expectedDeleter)
+    {
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+
+        var customUserContext = new CustomUserContext(creator?.ToString());
+        Services.AddSingleton<IUserContext>(customUserContext);
+
+        var connectionString = MemoryConnectionString;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder
+                .UseInMemoryDatabase(connectionString)
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .UseFilter();
+        });
+        Assert.IsNotNull(dbContext);
+        await dbContext.Set<Goods2>().AddAsync(new Goods2()
+        {
+            Name = "masa"
+        });
+        await dbContext.SaveChangesAsync();
+
+        var goodsByCreate = await dbContext.Set<Goods2>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByCreate);
+        var creatorByCreate = goodsByCreate.Creator;
+        var creationTimeByCreate = goodsByCreate.CreationTime;
+        var modifierByCreate = goodsByCreate.Modifier;
+        var modificationTimeByCreate = goodsByCreate.ModificationTime;
+        Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
+        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+
+        customUserContext.SetUserId(modifier?.ToString());
+        goodsByCreate.Name = "masa1";
+        dbContext.Set<Goods2>().Update(goodsByCreate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByUpdate = await dbContext.Set<Goods2>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdate);
+        var creatorByUpdate = goodsByUpdate.Creator;
+        var creationTimeByUpdate = goodsByUpdate.CreationTime;
+        var modifierByUpdate = goodsByUpdate.Modifier;
+        var modificationTimeByUpdate = goodsByUpdate.ModificationTime;
+
+        Assert.AreEqual(creatorByCreate, creatorByUpdate);
+        Assert.AreEqual(creationTimeByCreate, creationTimeByUpdate);
+        Assert.AreEqual(expectedModifier, modifierByUpdate);
+        Assert.AreNotEqual(modificationTimeByCreate, modificationTimeByUpdate);
+
+        customUserContext.SetUserId(deleter?.ToString());
+
+        dbContext.Set<Goods2>().Remove(goodsByUpdate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByDelete = await dbContext.Set<Goods2>().IgnoreQueryFilters().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByDelete);
+        Assert.AreEqual(creatorByUpdate, goodsByDelete.Creator);
+        Assert.AreEqual(creationTimeByUpdate, goodsByDelete.CreationTime);
+        Assert.AreEqual(expectedDeleter, goodsByDelete.Modifier);
+        Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
+    }
+
+    #endregion
+
+    #region Test Model Mapping
+
+    [TestMethod]
+    public void TestCustomTableName()
+    {
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(MemoryConnectionString);
+        });
         var entityTableName = dbContext.Model.FindEntityType(typeof(Student))?.GetTableName();
 
         Assert.AreEqual("masa_students", entityTableName);
     }
 
+    #endregion
+
+    #region Test QueryTracking
+
+    [TestMethod]
+    public void TestQueryTrackingBehaviorByDefault()
+    {
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(MemoryConnectionString);
+        });
+        Assert.AreEqual(QueryTrackingBehavior.NoTracking, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
+    [TestMethod]
+    public void TestCustomQueryTrackingBehaviorByConstructor()
+    {
+        var dbContext = CreateDbContext<CustomDbContextTrackingAll>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(MemoryConnectionString);
+        });
+
+        Assert.AreEqual(QueryTrackingBehavior.TrackAll, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
+    [TestMethod]
+    public void TestCustomQueryTrackingBehaviorByOnConfiguring()
+    {
+        var dbContext = CreateDbContext<CustomDbContextTrackingAllByOnConfiguring>(null);
+        Assert.AreEqual(QueryTrackingBehavior.TrackAll, dbContext.ChangeTracker.QueryTrackingBehavior);
+    }
+
     [TestMethod]
     public void TestQueryTrackingBehaviorByUseQueryTrackingBehavior()
     {
-        Services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder
-            =>
+        Services.AddMasaDbContext<CustomDbContext>(masaDbContextBuilder =>
         {
-            masaDbContextBuilder.UseSqlite($"data source=disabled-soft-delete-db-{Guid.NewGuid()}").UseFilter();
+            masaDbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
             masaDbContextBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution);
         });
         var serviceProvider = Services.BuildServiceProvider();
         var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
         Assert.AreEqual(QueryTrackingBehavior.NoTrackingWithIdentityResolution, dbContext.ChangeTracker.QueryTrackingBehavior);
     }
+
+    #endregion
 }
