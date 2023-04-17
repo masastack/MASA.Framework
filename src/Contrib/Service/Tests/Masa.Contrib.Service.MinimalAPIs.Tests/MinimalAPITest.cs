@@ -123,9 +123,9 @@ public class MinimalAPITest
 
     static bool IsCompilerGeneratedType(Type? type = null)
     {
-        if ((object)type == null)
+        if (type == null)
             return false;
-        return Attribute.IsDefined((MemberInfo)type, typeof(CompilerGeneratedAttribute)) || IsCompilerGeneratedType(type.DeclaringType);
+        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute)) || IsCompilerGeneratedType(type.DeclaringType);
     }
 
     #endregion
