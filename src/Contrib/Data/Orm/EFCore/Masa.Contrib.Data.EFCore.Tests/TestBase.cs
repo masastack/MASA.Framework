@@ -47,7 +47,7 @@ public class TestBase
         return dbContext;
     }
 
-    private void VerifyDbContext<TDbContext>([NotNull] TDbContext? dbContext) where TDbContext : ICustomDbContext
+    private static void VerifyDbContext<TDbContext>([NotNull] TDbContext? dbContext) where TDbContext : ICustomDbContext
     {
         Assert.IsNotNull(dbContext);
         Assert.AreEqual(dbContext.GetType().Name, dbContext.Name);

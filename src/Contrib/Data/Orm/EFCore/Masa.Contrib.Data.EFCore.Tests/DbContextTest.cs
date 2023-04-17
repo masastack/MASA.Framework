@@ -98,7 +98,7 @@ public class DbContextTest : TestBase
 
     #region Private methods
 
-    private Student GenerateStudent()
+    private static Student GenerateStudent()
     {
         return new Student
         {
@@ -126,7 +126,7 @@ public class DbContextTest : TestBase
         };
     }
 
-    private Student VerifyStudent(DbContext dbContext, Guid id, bool isTracking = false)
+    private static Student VerifyStudent(DbContext dbContext, Guid id, bool isTracking = false)
     {
         var student = isTracking ?
             dbContext.Set<Student>().AsTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id) :
