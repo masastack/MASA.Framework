@@ -63,12 +63,23 @@ public static class ServiceCollectionExtensions
             return new MasaStackConfig(configurationApiClient, configs);
         });
 
+        services.TryAddScoped<IMultiEnvironmentMasaStackConfig>(serviceProvider =>
+        {
+            var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            return new MultiEnvironmentMasaStackConfig(configurationApiClient, configs);
+        });
+
         return services;
     }
 
     public static IMasaStackConfig GetMasaStackConfig(this IServiceCollection services)
     {
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
+    }
+
+    public static IMultiEnvironmentMasaStackConfig GetMultiEnvironmentMasaStackConfig(this IServiceCollection services)
+    {
+        return services.BuildServiceProvider().GetRequiredService<IMultiEnvironmentMasaStackConfig>();
     }
 
     private static Dictionary<string, string> GetConfigMap(IServiceCollection services)
@@ -94,7 +105,8 @@ public static class ServiceCollectionExtensions
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
             { MasaStackConfigConstant.ENVIRONMENT, environment },
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
-            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) },
+            { MasaStackConfigConstant.SUFFIX_IDENTITY, configuration.GetValue<string>(MasaStackConfigConstant.SUFFIX_IDENTITY) }
         };
 
         return configs;

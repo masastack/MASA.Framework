@@ -32,7 +32,8 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
             { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
-            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) },
+            { MasaStackConfigConstant.SUFFIX_IDENTITY, configuration.GetValue<string>(MasaStackConfigConstant.SUFFIX_IDENTITY) }
         };
 
         Mock<IConfigurationApiClient> dccClient = new();
@@ -45,7 +46,6 @@ public class MasaStackConfigTest
             .ReturnsAsync(_config);
 
         _stackConfig = new MasaStackConfig(dccClient.Object, _config);
-
     }
 
     [TestMethod]
@@ -152,5 +152,13 @@ public class MasaStackConfigTest
         var es = _stackConfig.ElasticModel;
 
         Assert.IsTrue(es is not null && es.Nodes.Any());
+    }
+
+    [TestMethod]
+    public void TestGetAuthConnectionString()
+    {
+        var suffixIdentity = _stackConfig.SuffixIdentity;
+
+        Assert.AreEqual("dev", suffixIdentity);
     }
 }
