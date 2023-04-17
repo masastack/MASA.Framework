@@ -246,5 +246,4 @@ public class ServiceBaseTest
         => new CatalogService();
 
     #endregion
-
 }

@@ -87,6 +87,8 @@ public static class ServiceCollectionExtensions
             var serviceProvider = services.BuildServiceProvider();
             var serviceMapOptions = serviceProvider.GetRequiredService<IOptions<ServiceGlobalRouteOptions>>().Value;
             var serviceTypes = TypeHelper.GetServiceTypes<ServiceBase>(serviceMapOptions.Assemblies.ToArray());
+
+            GlobalMinimalApiOptions.InitializeService();
             foreach (var serviceType in serviceTypes)
             {
                 GlobalMinimalApiOptions.AddService(serviceType);

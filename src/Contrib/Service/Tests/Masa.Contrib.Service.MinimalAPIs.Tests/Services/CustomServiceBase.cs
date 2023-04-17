@@ -20,8 +20,8 @@ public abstract class CustomServiceBase : ServiceBase
     }
 #pragma warning restore CS0618
 
-    public string TestGetBaseUri(ServiceRouteOptions globalOptions) => base.GetBaseUri(globalOptions,
-        PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
+    public string TestGetBaseUri(ServiceRouteOptions globalOptions)
+        => base.GetBaseUri(globalOptions, PluralizationService.CreateService(System.Globalization.CultureInfo.CreateSpecificCulture("en")));
 
     public string TestGetMethodName(MethodInfo methodInfo, string prefix, ServiceRouteOptions globalOptions)
         => base.GetMethodName(methodInfo, prefix, globalOptions);

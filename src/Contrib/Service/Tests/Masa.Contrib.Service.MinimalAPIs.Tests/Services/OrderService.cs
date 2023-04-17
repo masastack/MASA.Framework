@@ -10,12 +10,6 @@ public class OrderService : ServiceBase
 
     public static string GetConnectionString => "connection string";
 
-    public int Id { private get; set; }
-
-    private int Age { get; set; }
-
-    public int CreateTime;
-
     public OrderService() : base()
     {
 
