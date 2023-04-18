@@ -23,12 +23,13 @@ public class SendByDataProcessorTest
         Mock<IIntegrationEventLogService> logService = new();
         var eventLogs = new List<IntegrationEventLog>()
         {
-            new(new RegisterUserEvent(), Guid.NewGuid())
+            new(null, new RegisterUserEvent(), Guid.NewGuid())
         };
         foreach (var log in eventLogs)
         {
             log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);
@@ -61,12 +62,13 @@ public class SendByDataProcessorTest
         Mock<IIntegrationEventLogService> logService = new();
         var eventLogs = new List<IntegrationEventLog>()
         {
-            new(new RegisterUserEvent(), Guid.NewGuid())
+            new(null, new RegisterUserEvent(), Guid.NewGuid())
         };
         foreach (var log in eventLogs)
         {
             log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);

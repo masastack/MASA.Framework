@@ -35,13 +35,13 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     public string RowVersion { get; private set; }
 
-    private IntegrationEventLog()
+    private IntegrationEventLog(Guid? id = null)
     {
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.NewGuid();
         Initialize();
     }
 
-    public IntegrationEventLog(IIntegrationEvent @event, Guid transactionId) : this()
+    public IntegrationEventLog(Guid? id, IIntegrationEvent @event, Guid transactionId) : this(id)
     {
         EventId = @event.GetEventId();
         CreationTime = @event.GetCreationTime();
@@ -64,8 +64,9 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         Topic = json!.Topic;
         if (Topic.IsNullOrWhiteSpace())
         {
-            Topic = EventTypeShortName;//Used to handle when the Topic is not persisted, it is consistent with the class name by default
+            Topic = EventTypeShortName; //Used to handle when the Topic is not persisted, it is consistent with the class name by default
         }
+
         return this;
     }
 

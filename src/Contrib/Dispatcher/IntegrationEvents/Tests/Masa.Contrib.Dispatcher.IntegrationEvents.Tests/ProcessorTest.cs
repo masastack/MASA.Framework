@@ -64,8 +64,8 @@ public class ProcessorTest
 
         List<IntegrationEventLog> list = new List<IntegrationEventLog>()
         {
-            new(@event, Guid.Empty),
-            new(@event, Guid.Empty)
+            new(null, @event, Guid.Empty),
+            new(null, @event, Guid.Empty)
         };
         list.ForEach(item => { item.DeserializeJsonContent(); });
         integrationEventLogService.Setup(service =>
@@ -130,8 +130,8 @@ public class ProcessorTest
 
         var list = new List<IntegrationEventLog>()
         {
-            new(new RegisterUserIntegrationEvent(), Guid.Empty),
-            new(new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
+            new(null, new RegisterUserIntegrationEvent(), Guid.Empty),
+            new(null, new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
         };
         for (int index = 0; index < list.Count; index++)
         {

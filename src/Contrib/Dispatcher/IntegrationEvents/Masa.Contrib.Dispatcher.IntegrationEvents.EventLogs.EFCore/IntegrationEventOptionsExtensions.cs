@@ -18,6 +18,19 @@ public static class IntegrationEventOptionsExtensions
     public static IIntegrationEventOptions UseEventLog<TDbContext>(
         this IIntegrationEventOptions options,
         bool disableEntityTypeConfiguration = false) where TDbContext : DefaultMasaDbContext, IMasaDbContext
+        => options.UseEventLog<TDbContext>(eventLogOptions => eventLogOptions.DisableEntityTypeConfiguration = disableEntityTypeConfiguration);
+
+    /// <summary>
+    /// User database with IntegrationEventLogContext merge
+    /// User-defined DbContext need IntegrationEventLogContext inheritance
+    /// </summary>
+    /// <typeparam name="TDbContext"></typeparam>
+    /// <param name="options"></param>
+    /// <param name="configure"></param>
+    /// <returns></returns>
+    public static IIntegrationEventOptions UseEventLog<TDbContext>(
+        this IIntegrationEventOptions options,
+        Action<EventLogOptions> configure) where TDbContext : DefaultMasaDbContext, IMasaDbContext
     {
         MasaArgumentException.ThrowIfNull(options.Services);
 
@@ -25,17 +38,17 @@ public static class IntegrationEventOptionsExtensions
 
         options.Services.AddSingleton<EventLogProvider>();
 
-        options.Services.Configure<LocalMessageTableOptions>(option =>
-        {
-            option.DbContextType = typeof(TDbContext);
-        });
+        options.Services.Configure<LocalMessageTableOptions>(option => { option.DbContextType = typeof(TDbContext); });
 
+        var eventLogOptions = new EventLogOptions();
+        configure.Invoke(eventLogOptions);
         options.Services.TryAddScoped<IIntegrationEventLogService>(serviceProvider => new IntegrationEventLogService(
             serviceProvider.GetRequiredService<IntegrationEventLogContext>(),
+            eventLogOptions.IdGenerator ?? serviceProvider.GetService<IIdGenerator<Guid>>(),
             serviceProvider.GetService<ILogger<IntegrationEventLogService>>()));
 
         //Add local message table model mapping
-        if (!disableEntityTypeConfiguration)
+        if (!eventLogOptions.DisableEntityTypeConfiguration)
             options.Services.TryAddEnumerable(new ServiceDescriptor(typeof(IModelCreatingProvider),
                 typeof(IntegrationEventLogModelCreatingProvider),
                 ServiceLifetime.Singleton));
