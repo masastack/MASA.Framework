@@ -37,16 +37,21 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
             if (entity.State == EntityState.Added)
             {
                 if (userId != null)
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
+                {
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] ??= userId;
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] ??= userId;
+                }
 
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
-                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] ??= DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??= DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
-            if (userId != null)
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
+            else
+            {
+                if (userId != null)
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
 
-            entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
-                DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] = DateTime.UtcNow; //The current time to change to localization after waiting for localization
+            }
         }
     }
 

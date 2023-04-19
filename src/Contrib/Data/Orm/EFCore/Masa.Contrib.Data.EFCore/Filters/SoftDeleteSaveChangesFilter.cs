@@ -39,11 +39,15 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
         {
             var navigationEntries = entity.Navigations
                 .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
-                    !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null &&
-                    entries.All(e => e.Entity != navigationEntry.CurrentValue));
+                                          !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent &&
+                                          navigationEntry.CurrentValue != null &&
+                                          entries.All(e => e.Entity != navigationEntry.CurrentValue));
             HandleNavigationEntry(navigationEntries);
 
             entity.State = EntityState.Modified;
+
+            if (!bool.TryParse(entity.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) || isDeleted) continue;
+
             entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
 
             if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
@@ -84,11 +88,17 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
         entityEntry.State = EntityState.Modified;
 
         if (entityEntry.Entity is ISoftDelete)
-            entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+        {
+            if (bool.TryParse(entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) && !isDeleted)
+            {
+                entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+            }
+        }
 
         var navigationEntries = entityEntry.Navigations
             .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
-                !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null);
+                                      !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent &&
+                                      navigationEntry.CurrentValue != null);
         HandleNavigationEntry(navigationEntries);
     }
 
