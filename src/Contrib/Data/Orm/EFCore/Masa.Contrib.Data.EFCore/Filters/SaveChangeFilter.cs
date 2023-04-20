@@ -3,6 +3,8 @@
 
 // ReSharper disable once CheckNamespace
 
+using System.Globalization;
+
 namespace Microsoft.EntityFrameworkCore;
 
 public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
@@ -10,13 +12,13 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
 {
     private readonly Type _userIdType;
     private readonly IUserContext? _userContext;
-    private static readonly MemoryCache<Type, object?> _typeAndDefaultValues = new();
+    private static readonly MemoryCache<Type, string?> _typeAndDefaultValues = new();
 
     public SaveChangeFilter(IUserContext? userContext = null)
     {
         _userIdType = typeof(TUserId);
         _userContext = userContext;
-        _typeAndDefaultValues.TryAdd(_userIdType, Activator.CreateInstance);
+        _typeAndDefaultValues.TryAdd(_userIdType, type => Activator.CreateInstance(type)?.ToString());
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -26,14 +28,16 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         var userId = GetUserId(_userContext?.UserId);
 
         var defaultUserId = _typeAndDefaultValues[_userIdType];
+        var defaultDateTime = _typeAndDefaultValues[typeof(DateTime)];
+
         foreach (var entity in changeTracker.Entries()
                      .Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
         {
-            AuditEntityHandler(entity, userId, defaultUserId);
+            AuditEntityHandler(entity, userId, defaultUserId, defaultDateTime);
         }
     }
 
-    private static void AuditEntityHandler(EntityEntry entity, object? userId, object? defaultUserId)
+    private static void AuditEntityHandler(EntityEntry entity, object? userId, string? defaultUserId, string? defaultDateTime)
     {
         if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
         {
@@ -41,20 +45,28 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
             {
                 if (userId != null)
                 {
-                    if (entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] != defaultUserId)
+                    if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)], defaultUserId))
                     {
                         entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
                     }
-                    if (entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] != defaultUserId)
+
+                    if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)], defaultUserId))
                     {
                         entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
                     }
                 }
 
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] ??=
-                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
-                entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??=
-                    DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)], defaultDateTime))
+                {
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
+                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                }
+
+                if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)], defaultDateTime))
+                {
+                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??=
+                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
+                }
             }
             else
             {
@@ -66,6 +78,9 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
             }
         }
     }
+
+    private static bool IsDefault(object? value, string? defaultValue)
+        => value == null || value.ToString() == defaultValue;
 
     private object? GetUserId(string? userId)
     {

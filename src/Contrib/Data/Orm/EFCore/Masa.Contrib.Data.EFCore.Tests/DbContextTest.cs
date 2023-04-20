@@ -500,7 +500,7 @@ public class DbContextTest : TestBase
         Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
     }
 
-    [DataRow(1, 2, 2, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 2, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]
+    [DataRow(1, 2, 1, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 3, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]
     [DataTestMethod]
     public async Task TestAddOrUpdateOrDeleteWhenUserIdIsIntAsyncBySpecifyUserIdAndTime(
         int inputCreator, int currentCreator, int expectedCreator,
