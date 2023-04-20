@@ -9,9 +9,6 @@ jobs:
   test:
     name: redis on base image
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        dotnet-version: [ '6.0.x', '7.0.x', '8.0.x' ]
     services:
       # Label used to access the service container
       redis:
@@ -40,7 +37,10 @@ jobs:
     - name: setting dotnet version
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-version: |
+          6.0.x
+          7.0.x
+          8.0.x
         include-prerelease: true
 
 #     - name: Start Redis
