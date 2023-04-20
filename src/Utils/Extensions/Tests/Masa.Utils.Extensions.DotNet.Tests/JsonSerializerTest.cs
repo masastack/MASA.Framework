@@ -30,7 +30,7 @@ public class JsonSerializerTest
     [DataTestMethod]
     public void TestEnableDynamicTypes2(bool ignoreNullValues)
     {
-        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
+        var jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.EnableDynamicTypes();
         if (ignoreNullValues)
         {
@@ -302,7 +302,7 @@ public class JsonSerializerTest
     [DataTestMethod]
     public void TestSerializeAndDeserialize(bool ignoreNullValues)
     {
-        JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions();
+        var jsonSerializerOptions = new JsonSerializerOptions();
         jsonSerializerOptions.EnableDynamicTypes();
         if (ignoreNullValues)
         {
@@ -338,6 +338,74 @@ public class JsonSerializerTest
         var json = JsonSerializer.Serialize(user, jsonSerializerOptions);
 
         var deserializeUser = JsonSerializer.Deserialize<User>(json, jsonSerializerOptions);
+        Assert.IsNotNull(deserializeUser);
+        Assert.AreEqual(user.Id, deserializeUser.Id);
+        Assert.AreEqual(user.Name, deserializeUser.Name);
+        Assert.AreEqual(user.Age, deserializeUser.Age);
+        Assert.AreEqual(user.Age2, deserializeUser.Age2);
+        Assert.AreEqual(user.Gender, deserializeUser.Gender);
+        Assert.AreEqual(user.Gender2, deserializeUser.Gender2);
+        Assert.AreEqual(user.Tags.Count, deserializeUser.Tags.Count);
+        Assert.AreEqual(user.UserRoles.Length, deserializeUser.UserRoles.Length);
+        Assert.AreEqual(user.UserClaimType, deserializeUser.UserClaimType);
+
+        Assert.AreEqual(GetPropertyValue(user, "Avatar", "Host"), GetPropertyValue(deserializeUser, "Avatar", "Host"));
+        Assert.AreEqual(GetPropertyValue(user, "Avatar", "Path"), GetPropertyValue(deserializeUser, "Avatar", "Path"));
+
+        Assert.AreEqual(user.CreateTime, deserializeUser.CreateTime);
+
+        string? GetPropertyValue(object obj, params string[] names)
+        {
+            var currentObj =
+                JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(JsonSerializer.Serialize(obj, jsonSerializerOptions));
+            Assert.IsNotNull(currentObj);
+            return currentObj[names[0]].GetProperty(names[1]).GetString();
+        }
+    }
+
+    [TestMethod]
+    public void TestSerializeAndDeserialize()
+    {
+        var jsonSerializerOptions = new JsonSerializerOptions();
+        jsonSerializerOptions.EnableDynamicTypes();
+
+        var avatar = new
+        {
+            Host = "https://www.masastack.com/",
+            Path = "cover.png"
+        };
+        var user = new User()
+        {
+            Id = Guid.NewGuid(),
+            Name = "test",
+            Age = 18,
+            Age2 = null,
+            Gender = false,
+            Gender2 = null,
+            Tags = new List<string>()
+            {
+                "music"
+            },
+            UserRoles = new[]
+            {
+                1
+            },
+            UserClaimType = UserClaimType.Customize,
+            Avatar = avatar,
+            Avatar2 = avatar,
+            CreateTime = DateTime.Parse("2022-09-07 00:00:00")
+        };
+        var userList = new List<User>()
+        {
+            user
+        };
+
+        var json = JsonSerializer.Serialize(userList, jsonSerializerOptions);
+
+        var deserializeUserList = JsonSerializer.Deserialize<List<User>>(json, jsonSerializerOptions);
+        Assert.IsNotNull(deserializeUserList);
+        Assert.AreEqual(1, deserializeUserList.Count);
+        var deserializeUser = deserializeUserList.FirstOrDefault();
         Assert.IsNotNull(deserializeUser);
         Assert.AreEqual(user.Id, deserializeUser.Id);
         Assert.AreEqual(user.Name, deserializeUser.Name);
