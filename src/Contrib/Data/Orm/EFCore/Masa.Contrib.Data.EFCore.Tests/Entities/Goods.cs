@@ -7,6 +7,8 @@ public class Goods : FullAggregateRoot<Guid, int>
 {
     public string Name { get; set; }
 
+    public List<OperationLog> Logs { get; set; }
+
     public Goods()
     {
     }

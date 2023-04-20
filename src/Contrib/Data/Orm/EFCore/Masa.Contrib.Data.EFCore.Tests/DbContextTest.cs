@@ -196,6 +196,71 @@ public class DbContextTest : TestBase
         }
     }
 
+    [TestMethod]
+    public async Task TestModifierBySoftDeleteAsync()
+    {
+        var creatorUserContext = new CustomUserContext("1");
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+        Services.AddSingleton<IUserContext>(creatorUserContext);
+
+        IServiceProvider serviceProvider = default!;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseFilter();
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        }, sp => serviceProvider = sp);
+        var goods = new Goods()
+        {
+            Name = "masa",
+            Logs = new List<OperationLog>()
+            {
+                new("initialize"),
+                new("initialize2"),
+            }
+        };
+        await dbContext.Set<Goods>().AddAsync(goods);
+        await dbContext.SaveChangesAsync();
+
+        var goodsCreate = await dbContext.Set<Goods>().Include(g => g.Logs).FirstOrDefaultAsync(g => g.Name == "masa");
+        Assert.IsNotNull(goodsCreate);
+
+        var modifierByCrate = goodsCreate.Modifier;
+        var modificationTimeByCreate = goodsCreate.ModificationTime;
+
+        Assert.AreEqual(2, goodsCreate.Logs.Count);
+        var log1 = goods.Logs.FirstOrDefault(log => log.Name == "initialize");
+        Assert.IsNotNull(log1);
+        var log2 = goods.Logs.FirstOrDefault(log => log.Name == "initialize2");
+        Assert.IsNotNull(log2);
+
+        creatorUserContext.SetUserId("2");
+
+        var inputModificationTime = DateTime.UtcNow.AddDays(-1);
+        log1.SetDelete(true, 3, inputModificationTime);
+        goods.Logs.Clear();
+        dbContext.Set<Goods>().Update(goods);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByUpdate = await dbContext.Set<Goods>().IgnoreQueryFilters().Include(g => g.Logs).FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdate);
+
+        Assert.AreEqual(2, goodsByUpdate.Logs.Count);
+        var log1ByUpdate = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize");
+        Assert.IsNotNull(log1ByUpdate);
+
+        Assert.AreEqual(true,log1ByUpdate.IsDeleted);
+        Assert.AreEqual(3,log1ByUpdate.Modifier);
+        Assert.AreEqual(inputModificationTime,log1ByUpdate.ModificationTime);
+
+
+        var log1ByUpdate2 = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize2");
+        Assert.IsNotNull(log1ByUpdate2);
+
+        Assert.AreEqual(true,log1ByUpdate2.IsDeleted);
+        Assert.AreEqual(2,log1ByUpdate2.Modifier);
+        Assert.AreNotEqual(modificationTimeByCreate,log1ByUpdate.ModificationTime);
+    }
+
     #endregion
 
     #region Test ConnectionString
@@ -333,8 +398,9 @@ public class DbContextTest : TestBase
         var creationTimeByCreate = goodsByCreate.CreationTime;
         var modifierByCreate = goodsByCreate.Modifier;
         var modificationTimeByCreate = goodsByCreate.ModificationTime;
-        Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
-        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+
+        Assert.AreEqual(expectedCreator, creatorByCreate);
+        Assert.AreEqual(expectedCreator, modifierByCreate);
 
         customUserContext.SetUserId(modifier?.ToString());
         goodsByCreate.Name = "masa1";
@@ -434,7 +500,6 @@ public class DbContextTest : TestBase
         Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
     }
 
-
     [DataRow(1, 2, 2, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 2, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]
     [DataTestMethod]
     public async Task TestAddOrUpdateOrDeleteWhenUserIdIsIntAsyncBySpecifyUserIdAndTime(
@@ -475,8 +540,9 @@ public class DbContextTest : TestBase
         Assert.AreEqual(expectedModifier, modifierByCreate);
         Assert.AreEqual(expectedModificationTime, modificationTimeByCreate);
 
-        customUserContext.SetUserId((currentCreator + 1).ToString());
-        goodsByCreate.UpdateName("masa1", inputCreator + 2, inputCreationTime.AddDays(1), inputModifier + 3, inputModificationTime.AddDays(2), !inputIsDeleted);
+        customUserContext.SetUserId((currentCreator + 5).ToString());
+        goodsByCreate.UpdateName("masa1", inputCreator + 2, inputCreationTime.AddDays(1), inputModifier + 3,
+            inputModificationTime.AddDays(2));
         dbContext.Set<Goods>().Update(goodsByCreate);
         await dbContext.SaveChangesAsync();
 
@@ -486,26 +552,11 @@ public class DbContextTest : TestBase
         var creationTimeByUpdate = goodsByUpdate.CreationTime;
         var modifierByUpdate = goodsByUpdate.Modifier;
         var modificationTimeByUpdate = goodsByUpdate.ModificationTime;
-        var isDeletedByUpdate = goodsByCreate.ModificationTime;
-        Assert.AreEqual(expectedCreator, creatorByUpdate);
-        Assert.AreEqual(expectedCreationTime, creationTimeByUpdate);
-        Assert.AreEqual(expectedModifier + 3, modifierByUpdate);
-        Assert.AreEqual(expectedModificationTime.AddDays(2), modificationTimeByCreate);
-        Assert.AreEqual(expectedIsDeleted, isDeletedByUpdate);
-
-        var deleter = inputModifier + 5;
-        customUserContext.SetUserId(deleter.ToString());
-
-        goodsByUpdate.UpdateModifier(inputModifier + 6, expectedModificationTime.AddDays(6));
-        dbContext.Set<Goods>().Remove(goodsByUpdate);
-        await dbContext.SaveChangesAsync();
-
-        var goodsByDelete = await dbContext.Set<Goods>().IgnoreQueryFilters().FirstOrDefaultAsync();
-        Assert.IsNotNull(goodsByDelete);
-        Assert.AreEqual(expectedCreator, goodsByDelete.Creator);
-        Assert.AreEqual(expectedCreationTime, goodsByDelete.CreationTime);
-        Assert.AreEqual(deleter, goodsByDelete.Modifier);
-        Assert.AreNotEqual(expectedModificationTime.AddDays(6), goodsByDelete.ModificationTime);
+        Assert.AreEqual(inputCreator + 2, creatorByUpdate);
+        Assert.AreEqual(inputCreationTime.AddDays(1), creationTimeByUpdate);
+        Assert.AreEqual(currentCreator + 5, modifierByUpdate);
+        Assert.AreNotEqual(expectedModificationTime, modificationTimeByUpdate);
+        Assert.AreNotEqual(inputModificationTime.AddDays(2), modificationTimeByUpdate);
     }
 
     #endregion
