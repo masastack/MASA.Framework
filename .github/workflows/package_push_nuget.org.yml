@@ -8,6 +8,10 @@ jobs:
   package-build:
     name: package build and push
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        redis-version: [5]
+        dotnet-version: [ '6.0.x', '7.0.x' ]
     steps:
     - name: git pull
       uses: actions/checkout@v2
@@ -18,7 +22,7 @@ jobs:
     - name: setting dotnet version
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: ${{ matrix.dotnet-version }}
         include-prerelease: true
 
     - name: restore

@@ -6,7 +6,7 @@ on:
   #   paths:
   #     - 'test/**/**'
   workflow_dispatch:
-  
+
 jobs:
   test:
     name: ci_test_reports_to_oss
@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         redis-version: [5]
+        dotnet-version: [ '6.0.x', '7.0.x', '8.0.x' ]
 
 
     steps:
@@ -26,7 +27,7 @@ jobs:
     - name: setting dotnet version
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: ${{ matrix.dotnet-version }}
         include-prerelease: true
     # - name: dependencies
     #   run: git clone --recursive https://github.com/masastack/MASA.Contrib.git
@@ -43,7 +44,7 @@ jobs:
       with:
         redis-version: ${{ matrix.redis-version }}
 
-    - name: run dotnet test 
+    - name: run dotnet test
       run: |
         pwd
         ls
@@ -52,8 +53,8 @@ jobs:
         dotnet run -c Release --project src/Contrib/Dispatcher/Tests/Masa.Contrib.Dispatcher.Events.Tests.Perfs
         dotnet run -c Release --project src/Contrib/Data/IdGenerator/Snowflake/Tests/Perfs/Distributed.Redis.Tests.Perfs
         # cd /home/runner/work/MASA.Contrib/MASA.Contrib/MASA.Contrib
-        # pwd 
-        # ls 
+        # pwd
+        # ls
         # tree
         # dotnet run -c Release --project ./test/Masa.Contrib.Data.IdGenerator.Snowflake.BenchmarkDotnet.Tests
         # dotnet run -c Release --project ./test/Masa.Contrib.Dispatcher.Events.BenchmarkDotnet.Tests
@@ -65,7 +66,7 @@ jobs:
         access-key-id: ${{ secrets.ACCESS_KEY_ID }}
         access-key-secret: ${{ secrets.ACCESS_KEY_SECRET }}
     - name: push oss
-      run: | 
+      run: |
         pwd
         ls
         ossutil cp -rf /home/runner/work/MASA.Framework/MASA.Framework/BenchmarkDotNet.Artifacts/results/   oss://masa-cdn/masa-contrib/reports/
