@@ -259,12 +259,14 @@ public class DbContextTest : TestBase
         Assert.AreEqual(2, log1ByUpdate2.Modifier);
         Assert.AreNotEqual(modificationTimeByCreate, log1ByUpdate.ModificationTime);
 
+        var goodsByUpdateAgain = await dbContext.Set<Goods>().AsTracking().IgnoreQueryFilters().Include(g => g.Logs).FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdateAgain);
         var modificationTime = DateTime.Parse("2022-01-01 00:00:00");
-        goodsByUpdate.SetDeleted(true, 10, modificationTime);
-        dbContext.Set<Goods>().Remove(goodsByUpdate);
+        goodsByUpdateAgain.SetDeleted(true, 10, modificationTime);
+        dbContext.Set<Goods>().Remove(goodsByUpdateAgain);
         await dbContext.SaveChangesAsync();
 
-        var goodsByDelete = await dbContext.Set<Goods>().IgnoreQueryFilters().FirstOrDefaultAsync(g => g.Name == "masa");
+        var goodsByDelete = await dbContext.Set<Goods>().AsNoTracking().IgnoreQueryFilters().FirstOrDefaultAsync(g => g.Name == "masa");
         Assert.IsNotNull(goodsByDelete);
 
         Assert.AreEqual(10, goodsByDelete.Modifier);
