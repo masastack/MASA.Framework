@@ -75,7 +75,7 @@ public class DccClientTest
         var model = new PublishReleaseModel()
         {
             Content = "",
-            FormatLabelCode = "Json",
+            FormatLabelCode = "JSON",
         };
         var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Json);
