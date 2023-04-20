@@ -52,10 +52,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestDbContext5()
     {
-        Services.Configure<AppConfigOptions>(options =>
-        {
-            options.DbConnectionString = MemoryConnectionString;
-        });
+        Services.Configure<AppConfigOptions>(options => { options.DbConnectionString = MemoryConnectionString; });
         var dbContext = CreateDbContext<CustomDbContext5>(null);
         var student = GenerateStudent();
         dbContext.Set<Student>().Add(student);
@@ -79,10 +76,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestDbContext7()
     {
-        Services.Configure<AppConfigOptions>(options =>
-        {
-            options.DbConnectionString = MemoryConnectionString;
-        });
+        Services.Configure<AppConfigOptions>(options => { options.DbConnectionString = MemoryConnectionString; });
         var dbContext = CreateDbContext<CustomDbContext7>(null);
         var student = GenerateStudent();
         dbContext.Set<Student>().Add(student);
@@ -128,9 +122,9 @@ public class DbContextTest : TestBase
 
     private static Student VerifyStudent(DbContext dbContext, Guid id, bool isTracking = false)
     {
-        var student = isTracking ?
-            dbContext.Set<Student>().AsTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id) :
-            dbContext.Set<Student>().AsNoTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id);
+        var student = isTracking
+            ? dbContext.Set<Student>().AsTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id)
+            : dbContext.Set<Student>().AsNoTracking().Include(s => s.Hobbies).FirstOrDefault(s => s.Id == id);
         Assert.IsNotNull(student);
         return student;
     }
@@ -202,6 +196,83 @@ public class DbContextTest : TestBase
         }
     }
 
+    [TestMethod]
+    public async Task TestModifierBySoftDeleteAsync()
+    {
+        var creatorUserContext = new CustomUserContext("1");
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+        Services.AddSingleton<IUserContext>(creatorUserContext);
+
+        IServiceProvider serviceProvider = default!;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseFilter();
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        }, sp => serviceProvider = sp);
+        var goods = new Goods()
+        {
+            Name = "masa",
+            Logs = new List<OperationLog>()
+            {
+                new("initialize"),
+                new("initialize2"),
+            }
+        };
+        await dbContext.Set<Goods>().AddAsync(goods);
+        await dbContext.SaveChangesAsync();
+
+        var goodsCreate = await dbContext.Set<Goods>().Include(g => g.Logs).FirstOrDefaultAsync(g => g.Name == "masa");
+        Assert.IsNotNull(goodsCreate);
+
+        var modifierByCrate = goodsCreate.Modifier;
+        var modificationTimeByCreate = goodsCreate.ModificationTime;
+
+        Assert.AreEqual(2, goodsCreate.Logs.Count);
+        var log1 = goods.Logs.FirstOrDefault(log => log.Name == "initialize");
+        Assert.IsNotNull(log1);
+        var log2 = goods.Logs.FirstOrDefault(log => log.Name == "initialize2");
+        Assert.IsNotNull(log2);
+
+        creatorUserContext.SetUserId("2");
+
+        var inputModificationTime = DateTime.UtcNow.AddDays(-1);
+        log1.SetDeleted(true, 3, inputModificationTime);
+        goods.Logs.Clear();
+        dbContext.Set<Goods>().Update(goods);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByUpdate = await dbContext.Set<Goods>().IgnoreQueryFilters().Include(g => g.Logs).FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdate);
+
+        Assert.AreEqual(2, goodsByUpdate.Logs.Count);
+        var log1ByUpdate = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize");
+        Assert.IsNotNull(log1ByUpdate);
+
+        Assert.AreEqual(true, log1ByUpdate.IsDeleted);
+        Assert.AreEqual(3, log1ByUpdate.Modifier);
+        Assert.AreEqual(inputModificationTime, log1ByUpdate.ModificationTime);
+
+        var log1ByUpdate2 = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize2");
+        Assert.IsNotNull(log1ByUpdate2);
+
+        Assert.AreEqual(true, log1ByUpdate2.IsDeleted);
+        Assert.AreEqual(2, log1ByUpdate2.Modifier);
+        Assert.AreNotEqual(modificationTimeByCreate, log1ByUpdate.ModificationTime);
+
+        var goodsByUpdateAgain = await dbContext.Set<Goods>().AsTracking().IgnoreQueryFilters().Include(g => g.Logs).FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdateAgain);
+        var modificationTime = DateTime.Parse("2022-01-01 00:00:00");
+        goodsByUpdateAgain.SetDeleted(true, 10, modificationTime);
+        dbContext.Set<Goods>().Remove(goodsByUpdateAgain);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByDelete = await dbContext.Set<Goods>().AsNoTracking().IgnoreQueryFilters().FirstOrDefaultAsync(g => g.Name == "masa");
+        Assert.IsNotNull(goodsByDelete);
+
+        Assert.AreEqual(10, goodsByDelete.Modifier);
+        Assert.AreEqual(modificationTime, goodsByDelete.ModificationTime);
+    }
+
     #endregion
 
     #region Test ConnectionString
@@ -215,10 +286,8 @@ public class DbContextTest : TestBase
         Services.AddSingleton<IConfiguration>(configuration);
 
         IServiceProvider serviceProvider = default!;
-        var dbContext = await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
-        {
-            optionsBuilder.UseSqlite();
-        }, sp => serviceProvider = sp);
+        var dbContext =
+            await CreateDbContextAsync<CustomDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); }, sp => serviceProvider = sp);
 
         var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
@@ -269,31 +338,20 @@ public class DbContextTest : TestBase
             .Build();
         Services.AddSingleton<IConfiguration>(configuration);
 
-        await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
-        {
-            optionsBuilder.UseSqlite();
-        });
+        await CreateDbContextAsync<CustomDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); });
         await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
         {
-            await CreateDbContextAsync<CustomDbContext2>(optionsBuilder =>
-            {
-                optionsBuilder.UseSqlite(SqliteConnectionString);
-            });
+            await CreateDbContextAsync<CustomDbContext2>(optionsBuilder => { optionsBuilder.UseSqlite(SqliteConnectionString); });
         });
     }
 
     [TestMethod]
     public async Task TestAddMultiDbContextAsync()
     {
-        Services.AddMasaDbContext<CustomDbContext>(dbContextBuilder =>
-        {
-            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
-        });
+        Services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => { dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString); });
         IServiceProvider serviceProvider = default!;
-        var customDbContext2 = await CreateDbContextAsync<CustomDbContext2>(dbContextBuilder =>
-        {
-            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
-        }, sp => serviceProvider = sp);
+        var customDbContext2 = await CreateDbContextAsync<CustomDbContext2>(
+            dbContextBuilder => { dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString); }, sp => serviceProvider = sp);
 
         var customDbContext = serviceProvider.GetService<CustomDbContext>();
         Assert.IsNotNull(customDbContext);
@@ -352,8 +410,9 @@ public class DbContextTest : TestBase
         var creationTimeByCreate = goodsByCreate.CreationTime;
         var modifierByCreate = goodsByCreate.Modifier;
         var modificationTimeByCreate = goodsByCreate.ModificationTime;
-        Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
-        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+
+        Assert.AreEqual(expectedCreator, creatorByCreate);
+        Assert.AreEqual(expectedCreator, modifierByCreate);
 
         customUserContext.SetUserId(modifier?.ToString());
         goodsByCreate.Name = "masa1";
@@ -453,6 +512,65 @@ public class DbContextTest : TestBase
         Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
     }
 
+    [DataRow(1, 2, 1, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 3, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]
+    [DataTestMethod]
+    public async Task TestAddOrUpdateOrDeleteWhenUserIdIsIntAsyncBySpecifyUserIdAndTime(
+        int inputCreator, int currentCreator, int expectedCreator,
+        string inputCreationTimeStr, string expectedCreationTimeStr,
+        int inputModifier, int expectedModifier,
+        string inputModificationTimeStr, string expectedModificationTimeStr)
+    {
+        DateTime inputCreationTime = DateTime.Parse(inputCreationTimeStr), expectedCreationTime = DateTime.Parse(expectedCreationTimeStr);
+        DateTime inputModificationTime = DateTime.Parse(inputModificationTimeStr),
+            expectedModificationTime = DateTime.Parse(expectedModificationTimeStr);
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(int));
+
+        var customUserContext = new CustomUserContext(currentCreator.ToString());
+        Services.AddSingleton<IUserContext>(customUserContext);
+
+        var connectionString = MemoryConnectionString;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder
+                .UseInMemoryDatabase(connectionString)
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .UseFilter();
+        });
+        Assert.IsNotNull(dbContext);
+        var goods = new Goods("masa", inputCreator, inputCreationTime, inputModifier, inputModificationTime);
+        await dbContext.Set<Goods>().AddAsync(goods);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByCreate = await dbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByCreate);
+        var creatorByCreate = goodsByCreate.Creator;
+        var creationTimeByCreate = goodsByCreate.CreationTime;
+        var modifierByCreate = goodsByCreate.Modifier;
+        var modificationTimeByCreate = goodsByCreate.ModificationTime;
+        Assert.AreEqual(expectedCreator, creatorByCreate);
+        Assert.AreEqual(expectedCreationTime, creationTimeByCreate);
+        Assert.AreEqual(expectedModifier, modifierByCreate);
+        Assert.AreEqual(expectedModificationTime, modificationTimeByCreate);
+
+        customUserContext.SetUserId((currentCreator + 5).ToString());
+        goodsByCreate.UpdateName("masa1", inputCreator + 2, inputCreationTime.AddDays(1), inputModifier + 3,
+            inputModificationTime.AddDays(2));
+        dbContext.Set<Goods>().Update(goodsByCreate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByUpdate = await dbContext.Set<Goods>().FirstOrDefaultAsync();
+        Assert.IsNotNull(goodsByUpdate);
+        var creatorByUpdate = goodsByUpdate.Creator;
+        var creationTimeByUpdate = goodsByUpdate.CreationTime;
+        var modifierByUpdate = goodsByUpdate.Modifier;
+        var modificationTimeByUpdate = goodsByUpdate.ModificationTime;
+        Assert.AreEqual(inputCreator + 2, creatorByUpdate);
+        Assert.AreEqual(inputCreationTime.AddDays(1), creationTimeByUpdate);
+        Assert.AreEqual(currentCreator + 5, modifierByUpdate);
+        Assert.AreNotEqual(expectedModificationTime, modificationTimeByUpdate);
+        Assert.AreNotEqual(inputModificationTime.AddDays(2), modificationTimeByUpdate);
+    }
+
     #endregion
 
     #region Test Model Mapping
@@ -460,10 +578,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestCustomTableName()
     {
-        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
-        {
-            dbContext.UseInMemoryDatabase(MemoryConnectionString);
-        });
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(MemoryConnectionString); });
         var entityTableName = dbContext.Model.FindEntityType(typeof(Student))?.GetTableName();
 
         Assert.AreEqual("masa_students", entityTableName);
@@ -476,10 +591,7 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestQueryTrackingBehaviorByDefault()
     {
-        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
-        {
-            dbContext.UseInMemoryDatabase(MemoryConnectionString);
-        });
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(MemoryConnectionString); });
         Assert.AreEqual(QueryTrackingBehavior.NoTracking, dbContext.ChangeTracker.QueryTrackingBehavior);
     }
 
