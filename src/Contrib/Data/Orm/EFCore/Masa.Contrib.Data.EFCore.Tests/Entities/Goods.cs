@@ -36,6 +36,13 @@ public class Goods : FullAggregateRoot<Guid, int>
         Modifier = modifier;
         ModificationTime = modificationTime;
     }
+
+    public void SetDeleted(bool isDeleted, int modifier, DateTime modificationTime)
+    {
+        IsDeleted = isDeleted;
+        Modifier = modifier;
+        ModificationTime = modificationTime;
+    }
 }
 
 public class Goods2 : FullAggregateRoot<Guid, int?>

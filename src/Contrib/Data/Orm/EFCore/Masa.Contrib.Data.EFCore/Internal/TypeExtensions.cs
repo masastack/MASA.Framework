@@ -13,4 +13,6 @@ internal static class TypeExtensions
     public static bool IsGenericInterfaceAssignableFrom(this Type genericType, Type type) =>
         type.IsConcrete() &&
         type.GetInterfaces().Any(t => t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == genericType);
+
+    public static readonly MemoryCache<Type, string?> TypeAndDefaultValues = new();
 }

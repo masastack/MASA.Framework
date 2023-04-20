@@ -236,7 +236,7 @@ public class DbContextTest : TestBase
         creatorUserContext.SetUserId("2");
 
         var inputModificationTime = DateTime.UtcNow.AddDays(-1);
-        log1.SetDelete(true, 3, inputModificationTime);
+        log1.SetDeleted(true, 3, inputModificationTime);
         goods.Logs.Clear();
         dbContext.Set<Goods>().Update(goods);
         await dbContext.SaveChangesAsync();
@@ -248,17 +248,27 @@ public class DbContextTest : TestBase
         var log1ByUpdate = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize");
         Assert.IsNotNull(log1ByUpdate);
 
-        Assert.AreEqual(true,log1ByUpdate.IsDeleted);
-        Assert.AreEqual(3,log1ByUpdate.Modifier);
-        Assert.AreEqual(inputModificationTime,log1ByUpdate.ModificationTime);
-
+        Assert.AreEqual(true, log1ByUpdate.IsDeleted);
+        Assert.AreEqual(3, log1ByUpdate.Modifier);
+        Assert.AreEqual(inputModificationTime, log1ByUpdate.ModificationTime);
 
         var log1ByUpdate2 = goodsByUpdate.Logs.FirstOrDefault(log => log.Name == "initialize2");
         Assert.IsNotNull(log1ByUpdate2);
 
-        Assert.AreEqual(true,log1ByUpdate2.IsDeleted);
-        Assert.AreEqual(2,log1ByUpdate2.Modifier);
-        Assert.AreNotEqual(modificationTimeByCreate,log1ByUpdate.ModificationTime);
+        Assert.AreEqual(true, log1ByUpdate2.IsDeleted);
+        Assert.AreEqual(2, log1ByUpdate2.Modifier);
+        Assert.AreNotEqual(modificationTimeByCreate, log1ByUpdate.ModificationTime);
+
+        var modificationTime = DateTime.Parse("2022-01-01 00:00:00");
+        goodsByUpdate.SetDeleted(true, 10, modificationTime);
+        dbContext.Set<Goods>().Remove(goodsByUpdate);
+        await dbContext.SaveChangesAsync();
+
+        var goodsByDelete = await dbContext.Set<Goods>().IgnoreQueryFilters().FirstOrDefaultAsync(g => g.Name == "masa");
+        Assert.IsNotNull(goodsByDelete);
+
+        Assert.AreEqual(10, goodsByDelete.Modifier);
+        Assert.AreEqual(modificationTime, goodsByDelete.ModificationTime);
     }
 
     #endregion

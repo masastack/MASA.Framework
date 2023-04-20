@@ -20,9 +20,9 @@ public class OperationLog : FullEntity<Guid, int>
         Name = name;
     }
 
-    public void SetDelete(bool isDelete, int modifier, DateTime modificationTime)
+    public void SetDeleted(bool isDeleted, int modifier, DateTime modificationTime)
     {
-        IsDeleted = isDelete;
+        IsDeleted = isDeleted;
         Modifier = modifier;
         ModificationTime = modificationTime;
     }

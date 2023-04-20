@@ -3,8 +3,6 @@
 
 // ReSharper disable once CheckNamespace
 
-using System.Globalization;
-
 namespace Microsoft.EntityFrameworkCore;
 
 public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
@@ -12,13 +10,12 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
 {
     private readonly Type _userIdType;
     private readonly IUserContext? _userContext;
-    private static readonly MemoryCache<Type, string?> _typeAndDefaultValues = new();
 
     public SaveChangeFilter(IUserContext? userContext = null)
     {
         _userIdType = typeof(TUserId);
         _userContext = userContext;
-        _typeAndDefaultValues.TryAdd(_userIdType, type => Activator.CreateInstance(type)?.ToString());
+        Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues.TryAdd(_userIdType, type => Activator.CreateInstance(type)?.ToString());
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -27,8 +24,8 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
 
         var userId = GetUserId(_userContext?.UserId);
 
-        var defaultUserId = _typeAndDefaultValues[_userIdType];
-        var defaultDateTime = _typeAndDefaultValues[typeof(DateTime)];
+        var defaultUserId = Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues[_userIdType];
+        var defaultDateTime = Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues[typeof(DateTime)];
 
         foreach (var entity in changeTracker.Entries()
                      .Where(entry => entry.State == EntityState.Added || entry.State == EntityState.Modified))
@@ -43,30 +40,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         {
             if (entity.State == EntityState.Added)
             {
-                if (userId != null)
-                {
-                    if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)], defaultUserId))
-                    {
-                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
-                    }
-
-                    if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)], defaultUserId))
-                    {
-                        entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
-                    }
-                }
-
-                if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)], defaultDateTime))
-                {
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
-                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
-                }
-
-                if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)], defaultDateTime))
-                {
-                    entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??=
-                        DateTime.UtcNow; //The current time to change to localization after waiting for localization
-                }
+                AuditEntityHandlerByAdded(entity, userId, defaultUserId, defaultDateTime);
             }
             else
             {
@@ -76,6 +50,34 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
                 entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
                     DateTime.UtcNow; //The current time to change to localization after waiting for localization
             }
+        }
+    }
+
+    private static void AuditEntityHandlerByAdded(EntityEntry entity, object? userId, string? defaultUserId, string? defaultDateTime)
+    {
+        if (userId != null)
+        {
+            if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)], defaultUserId))
+            {
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.Creator)] = userId;
+            }
+
+            if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)], defaultUserId))
+            {
+                entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
+            }
+        }
+
+        if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)], defaultDateTime))
+        {
+            entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
+                DateTime.UtcNow; //The current time to change to localization after waiting for localization
+        }
+
+        if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)], defaultDateTime))
+        {
+            entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??=
+                DateTime.UtcNow; //The current time to change to localization after waiting for localization
         }
     }
 

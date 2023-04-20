@@ -46,7 +46,8 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
 
             entity.State = EntityState.Modified;
 
-            if (!bool.TryParse(entity.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) || isDeleted) continue;
+            if (!bool.TryParse(entity.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) || isDeleted)
+                continue;
 
             entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
 
@@ -87,12 +88,10 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
         var entityEntry = _context.Entry(dependentEntry);
         entityEntry.State = EntityState.Modified;
 
-        if (entityEntry.Entity is ISoftDelete)
+        if (entityEntry.Entity is ISoftDelete &&
+            bool.TryParse(entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) && !isDeleted)
         {
-            if (bool.TryParse(entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) && !isDeleted)
-            {
-                entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
-            }
+            entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
         }
 
         var navigationEntries = entityEntry.Navigations
