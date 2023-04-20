@@ -144,7 +144,7 @@ public class DccTest
         var response = new PublishReleaseModel()
         {
             Content = string.Empty,
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
@@ -205,7 +205,7 @@ public class DccTest
         var response = new PublishReleaseModel()
         {
             Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
@@ -245,7 +245,7 @@ public class DccTest
         var value = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         multilevelCacheClient.Set(key, value);
 
@@ -288,7 +288,7 @@ public class DccTest
         string value = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         }.Serialize(_jsonSerializerOptions);
         multilevelCacheClient.Set(key, value);
 

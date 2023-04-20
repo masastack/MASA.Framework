@@ -103,7 +103,7 @@ public class DccClientTest
         var model = new PublishReleaseModel()
         {
             Content = content,
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Json);
@@ -119,7 +119,7 @@ public class DccClientTest
         var model = new PublishReleaseModel()
         {
             Content = encryptContent,
-            ConfigFormat = ConfigFormats.Json,
+            ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
         var result = client.TestFormatRaw(model, "DccObjectName");
@@ -135,7 +135,7 @@ public class DccClientTest
         var model = new PublishReleaseModel()
         {
             Content = encryptContent,
-            ConfigFormat = ConfigFormats.Json,
+            ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
         Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
@@ -149,7 +149,7 @@ public class DccClientTest
         var model = new PublishReleaseModel()
         {
             Content = content,
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         var result = client.TestFormatRaw(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Text);
@@ -206,7 +206,7 @@ public class DccClientTest
                       <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.Xml };
+        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.XML };
 
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
@@ -222,7 +222,7 @@ public class DccClientTest
                           <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.Xml };
+        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.XML };
         var result = client.TestFormatRaw(raw, "DccObjectName");
 
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Xml);
@@ -238,7 +238,7 @@ age: 1.5
 addresses:
 home:
     city: hangzhou";
-        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.Yaml };
+        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.YAML };
         Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
     }
 
@@ -257,7 +257,7 @@ addresses:
 
         var serializer = new SerializerBuilder().JsonCompatible().Build();
         var json = serializer.Serialize(yamlObject);
-        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.Yaml };
+        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.YAML };
         var result = client.TestFormatRaw(raw, "DccObjectName");
 
         Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Yaml);
@@ -271,7 +271,7 @@ addresses:
         var model = new PublishReleaseModel()
         {
             Content = content,
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         string key = "DccObjectName";
         bool isExecute = false;
@@ -280,11 +280,11 @@ addresses:
             .ReturnsAsync(model)
             .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
-                _trigger.Formats = ConfigFormats.Raw;
+                _trigger.Formats = ConfigFormats.RAW;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
                 {
                     Content = "Apple",
-                    ConfigFormat = ConfigFormats.Raw
+                    ConfigFormat = ConfigFormats.RAW
                 }, _jsonSerializerOptions);
                 _trigger.Action = action;
             });
@@ -316,14 +316,14 @@ addresses:
                 id = "1",
                 name = "Apple"
             }, _jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(raw)
             .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
-                _trigger.Formats = ConfigFormats.Json;
+                _trigger.Formats = ConfigFormats.JSON;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
                 {
                     Content = JsonSerializer.Serialize(new
@@ -331,7 +331,7 @@ addresses:
                         id = "1",
                         name = "HuaWei"
                     }, _jsonSerializerOptions),
-                    ConfigFormat = ConfigFormats.Json
+                    ConfigFormat = ConfigFormats.JSON
                 }, _jsonSerializerOptions);
                 _trigger.Action = action;
             });
@@ -435,12 +435,12 @@ addresses:
             .ReturnsAsync(()
                 => new PublishReleaseModel()
                 {
-                    ConfigFormat = ConfigFormats.Json,
+                    ConfigFormat = ConfigFormats.JSON,
                     Content = brand.Serialize(_jsonSerializerOptions)
                 })
             .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
             {
-                _trigger.Formats = ConfigFormats.Json;
+                _trigger.Formats = ConfigFormats.JSON;
                 _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
                 _trigger.Action = action;
             });
@@ -470,7 +470,7 @@ addresses:
         var response = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
@@ -512,7 +512,7 @@ addresses:
         var response = new PublishReleaseModel()
         {
             Content = masaDic.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         memoryCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
@@ -550,7 +550,7 @@ addresses:
         var response = new PublishReleaseModel()
         {
             Content = "Test",
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
@@ -586,7 +586,7 @@ addresses:
         var response = new PublishReleaseModel()
         {
             Content = null,
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         memoryCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
