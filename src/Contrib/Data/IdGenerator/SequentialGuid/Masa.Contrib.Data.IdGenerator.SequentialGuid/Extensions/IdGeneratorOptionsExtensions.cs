@@ -21,8 +21,10 @@ public static class IdGeneratorOptionsExtensions
         options.Services.TryAddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISequentialGuidGenerator>());
     }
 
+#pragma warning disable S2094
     private sealed class SequentialGuidGeneratorProvider
     {
 
     }
+#pragma warning restore S2094
 }

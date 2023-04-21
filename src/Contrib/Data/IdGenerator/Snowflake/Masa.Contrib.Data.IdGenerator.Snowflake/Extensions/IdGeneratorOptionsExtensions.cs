@@ -60,20 +60,18 @@ public static class IdGeneratorOptionsExtensions
     internal static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
     {
         if (generatorOptions.BaseTime > DateTime.UtcNow)
-            throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),
-                $"{nameof(generatorOptions.BaseTime)} must not be greater than the current time");
+            throw new ArgumentOutOfRangeException(nameof(generatorOptions), $"{nameof(generatorOptions.BaseTime)} must not be greater than the current time");
 
         if (generatorOptions.SupportDistributed)
         {
             if (generatorOptions.HeartbeatInterval < 100)
-                throw new ArgumentOutOfRangeException($"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 100");
+                throw new ArgumentOutOfRangeException(nameof(generatorOptions), $"{nameof(generatorOptions.HeartbeatInterval)} must be greater than 100");
         }
         else
         {
             long workerId = GetInstance<IWorkerProvider>(services).GetWorkerIdAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             if (workerId > generatorOptions.MaxWorkerId)
-                throw new ArgumentOutOfRangeException(
-                    $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
+                throw new ArgumentOutOfRangeException(nameof(generatorOptions), $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
         }
 
         var maxLength = generatorOptions.TimestampType == TimestampType.Milliseconds ? 22 : 31;
@@ -85,7 +83,9 @@ public static class IdGeneratorOptionsExtensions
     private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
         services.BuildServiceProvider().GetRequiredService<TService>();
 
+#pragma warning disable S2094
     private sealed class SnowflakeGeneratorProvider
     {
     }
+#pragma warning restore S2094
 }
