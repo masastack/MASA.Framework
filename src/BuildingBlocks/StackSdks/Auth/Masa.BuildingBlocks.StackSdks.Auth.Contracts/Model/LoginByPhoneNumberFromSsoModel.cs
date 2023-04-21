@@ -3,15 +3,17 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByPhoneNumberFromSsoModel
+public class LoginByPhoneNumberFromSsoModel : IEnvironmentModel
 {
     public string ClientId { get; set; } = "";
 
     public string ClientSecret { get; set; } = "";
 
-    public List<string> Scope { get; set; } = new (){ "openid", "profile" };
+    public List<string> Scope { get; set; } = new() { "openid", "profile" };
 
     public string PhoneNumber { get; set; } = "";
 
     public string Code { get; set; } = "";
+
+    public string Environment { get; set; }
 }

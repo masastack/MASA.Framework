@@ -3,11 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class SendEmailModel
+public class SendEmailModel : IEnvironmentModel
 {
     public string Email { get; set; } = "";
 
     public SendEmailTypes SendEmailType { get; set; } = SendEmailTypes.Undefined;
+
+    public string Environment { get; set; }
 
     public SendEmailModel()
     {

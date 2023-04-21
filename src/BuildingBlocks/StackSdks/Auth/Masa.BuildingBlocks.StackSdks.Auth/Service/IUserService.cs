@@ -27,7 +27,7 @@ public interface IUserService
 
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
-    Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
+    Task<UserModel?> ValidateAccountAsync(ValidateAccountModel validateAccountModel);
 
     Task<UserModel?> GetByAccountAsync(string account);
 
@@ -100,5 +100,7 @@ public interface IUserService
     Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
 
     Task RemoveAsync(Guid id);
+
+    Task<List<UserSelectModel>> SearchAsync(string search);
 }
 

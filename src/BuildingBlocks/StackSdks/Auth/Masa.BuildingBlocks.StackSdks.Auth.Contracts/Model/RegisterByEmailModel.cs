@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RegisterByEmailModel : RegisterByPhoneModel
+public class RegisterByEmailModel : RegisterByPhoneModel, IEnvironmentModel
 {
     public RegisterByEmailModel()
     {
@@ -13,4 +13,6 @@ public class RegisterByEmailModel : RegisterByPhoneModel
     public string Email { get; set; }
 
     public string EmailCode { get; set; }
+
+    public string Environment { get; set; }
 }

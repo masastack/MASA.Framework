@@ -3,11 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RegisterThirdPartyUserModel : RegisterByEmailModel
+public class RegisterThirdPartyUserModel : RegisterByEmailModel, IEnvironmentModel
 {
     public string ThridPartyIdentity { get; set; } = "";
 
     public object ExtendedData { get; set; }
 
     public string Scheme { get; set; }
+
+    public string Environment { get; set; }
 }

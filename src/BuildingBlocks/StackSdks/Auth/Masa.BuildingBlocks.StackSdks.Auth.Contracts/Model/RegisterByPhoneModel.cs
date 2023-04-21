@@ -3,11 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class RegisterByPhoneModel : RegisterModel
+public class RegisterByPhoneModel : RegisterModel, IEnvironmentModel
 {
     public UserRegisterTypes UserRegisterType { get; set; } = UserRegisterTypes.PhoneNumber;
 
     public string PhoneNumber { get; set; }
 
     public string SmsCode { get; set; }
+
+    public string Environment { get; set; }
 }
