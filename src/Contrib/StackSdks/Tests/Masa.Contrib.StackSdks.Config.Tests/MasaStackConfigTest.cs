@@ -28,6 +28,7 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
             { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
             { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
+            { MasaStackConfigConstant.MASA_STACK, configuration.GetValue<string>(MasaStackConfigConstant.MASA_STACK) },
             { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
             { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
@@ -116,6 +117,14 @@ public class MasaStackConfigTest
         var version = _stackConfig.Version;
 
         Assert.IsNotNull(version);
+    }
+
+    [TestMethod]
+    public void TestGetServiceId()
+    {
+        var pmServiceId = _stackConfig.GetServerId(MasaStackConstant.PM);
+
+        Assert.AreEqual("masa-pm-service", pmServiceId);
     }
 
     [TestMethod]

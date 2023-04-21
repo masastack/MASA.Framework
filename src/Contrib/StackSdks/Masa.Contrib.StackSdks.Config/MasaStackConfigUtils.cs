@@ -5,34 +5,31 @@ namespace Masa.Contrib.StackSdks.Config
 {
     public static class MasaStackConfigUtils
     {
-        public static Dictionary<string, JsonObject> GetAllServer(Dictionary<string, string> configMap)
+        public static JsonArray GetAllServer(Dictionary<string, string> configMap)
         {
-            var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_SERVER);
+            var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK);
             if (string.IsNullOrEmpty(value))
             {
                 return new();
             }
-            return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(value) ?? new();
+            return JsonSerializer.Deserialize<JsonArray>(value) ?? new();
         }
 
-        public static string GetServerDomain(Dictionary<string, string> configMap, string protocol, string project, string service)
+        public static string GetServerDomain(Dictionary<string, string> configMap, string project, string service)
         {
             var domain = "";
-            GetAllServer(configMap).TryGetValue(project, out JsonObject? jsonObject);
+            var jsonObject = GetAllServer(configMap).FirstOrDefault(jNode => jNode?["id"]?.ToString() == project);
             if (jsonObject != null)
             {
                 var secondaryDomain = jsonObject[service]?.ToString();
-                if (secondaryDomain != null)
-                {
-                    domain = $"{protocol}://{secondaryDomain}.{configMap.GetValueOrDefault(MasaStackConfigConstant.NAMESPACE)}";
-                }
+                domain = jsonObject[service]?.ToString() ?? "";
             }
             return domain;
         }
 
         public static string GetDccServiceDomain(Dictionary<string, string> configMap)
         {
-            return GetServerDomain(configMap, HttpProtocol.HTTP, MasaStackConstant.DCC, MasaStackConstant.SERVER);
+            return GetServerDomain(configMap, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
         }
 
         public static DccOptions GetDefaultDccOptions(Dictionary<string, string> configMap)
