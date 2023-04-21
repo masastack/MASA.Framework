@@ -40,7 +40,6 @@ public static class JsonSerializerExtensions
     /// When deserializing <see cref="System.Text.Json.JsonTokenType.Number"/>, <see cref="JsonDynamicNumber"/> is returned.
     /// An explicit cast or assignment is required to the appropriate number type, such as <see cref="decimal"/> or <see cref="long"/>.
     /// When deserializing <see cref="System.Text.Json.JsonTokenType.True"/> and <see cref="System.Text.Json.JsonTokenType.False"/>,
-    /// <see cref="JsonDynamicBool"/> is returned and supports an implicit cast to <see cref="bool"/>.
     /// An explicit cast or assignment to other types is supported provided there is a custom converter for that type.
     /// When deserializing <see cref="System.Text.Json.JsonTokenType.Null"/>, <see langword="null"/> is returned.
     /// </remarks>
@@ -55,6 +54,7 @@ public static class JsonSerializerExtensions
             return options;
 
         options.Converters.Add(new DynamicObjectConverter());
+        options.Converters.Add(new JsonDynamicObjectConverter());
         return options;
     }
 
@@ -342,8 +342,9 @@ public static class JsonSerializerExtensions
         public JsonDynamicObject(JsonSerializerOptions options)
             : base(options)
         {
-            _value = new Dictionary<string, object?>(options.PropertyNameCaseInsensitive ?
-                StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+            _value = new Dictionary<string, object?>(options.PropertyNameCaseInsensitive
+                ? StringComparer.OrdinalIgnoreCase
+                : StringComparer.Ordinal);
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object? result)
@@ -399,7 +400,13 @@ public static class JsonSerializerExtensions
         public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() => _value.GetEnumerator();
         public bool Remove(string key) => _value.Remove(key);
         bool ICollection<KeyValuePair<string, object?>>.Remove(KeyValuePair<string, object?> item) => _value.Remove(item);
-        public object? this[string key] { get => _value[key]; set => _value[key] = value; }
+
+        public object? this[string key]
+        {
+            get => _value[key];
+            set => _value[key] = value;
+        }
+
         ICollection<string> IDictionary<string, object?>.Keys => _value.Keys;
         ICollection<object?> IDictionary<string, object?>.Values => _value.Values;
         public int Count => _value.Count;
@@ -438,7 +445,12 @@ public static class JsonSerializerExtensions
         public override void SetValue(object value) => throw new NotSupportedException();
 
         // IList members.
-        public object? this[int index] { get => _value[index]; set => _value[index] = value; }
+        public object? this[int index]
+        {
+            get => _value[index];
+            set => _value[index] = value;
+        }
+
         public int Count => _value.Count;
         bool ICollection<object?>.IsReadOnly => _value.IsReadOnly;
         public void Add(object? item) => _value.Add(item);
@@ -500,8 +512,15 @@ public static class JsonSerializerExtensions
             {
                 value = dynamicType.Value;
             }
-
-            JsonSerializer.Serialize<object>(writer, value, options);
+#if NET6_0
+            JsonSerializer.Serialize(writer, value, options);
+#elif NET7_0_OR_GREATER
+            var actualJsonSerializerOptions = new JsonSerializerOptions(options);
+            var converter = actualJsonSerializerOptions.Converters.FirstOrDefault(x => x is DynamicObjectConverter);
+            if (converter != null)
+                actualJsonSerializerOptions.Converters.Remove(converter);
+            JsonSerializer.Serialize(writer, value, actualJsonSerializerOptions);
+#endif
         }
 
         private void ReadList(JsonDynamicArray dynamicArray, ref Utf8JsonReader reader, JsonSerializerOptions options)
@@ -540,6 +559,25 @@ public static class JsonSerializerExtensions
                 object? value = Read(ref reader, typeof(object), options);
                 dynamicObject.Add(key, value);
             }
+        }
+    }
+
+    private sealed class JsonDynamicObjectConverter : JsonConverter<JsonDynamicObject>
+    {
+        public override JsonDynamicObject? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(Utf8JsonWriter writer, JsonDynamicObject value, JsonSerializerOptions options)
+        {
+            var expandoObject = new ExpandoObject();
+            foreach (var item in value)
+            {
+                if (item.Value is JsonDynamicType jsonDynamicType)
+                    expandoObject.TryAdd(item.Key, jsonDynamicType.Value);
+            }
+            JsonSerializer.Serialize(writer, expandoObject, options);
         }
     }
 }
