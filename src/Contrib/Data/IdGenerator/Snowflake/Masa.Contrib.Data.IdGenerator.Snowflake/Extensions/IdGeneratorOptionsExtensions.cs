@@ -1,21 +1,27 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.IdGenerator.Snowflake.Tests")]
+
 // ReSharper disable once CheckNamespace
-namespace Microsoft.Extensions.DependencyInjection;
 
-public static class ServiceCollectionExtensions
+namespace Masa.BuildingBlocks.Data;
+
+public static class IdGeneratorOptionsExtensions
 {
-    public static IServiceCollection AddSnowflake(this IServiceCollection services)
-        => services.AddSnowflake(Options.Options.DefaultName);
+    public static void UseSnowflakeGenerator(this IdGeneratorOptions options)
+        => options.UseSnowflakeGenerator(null);
 
-    public static IServiceCollection AddSnowflake(this IServiceCollection services, string name)
-        => services.AddSnowflake(name, null);
+    public static void UseSnowflakeGenerator(this IdGeneratorOptions options, Action<SnowflakeGeneratorOptions>? action)
+    {
+        if (options.Services.Any(service => service.ImplementationType == typeof(SnowflakeGeneratorProvider))) return;
 
-    public static IServiceCollection AddSnowflake(this IServiceCollection services, Action<SnowflakeGeneratorOptions>? action)
-        => services.AddSnowflake(Options.Options.DefaultName, action);
+        options.Services.AddSingleton<SnowflakeGeneratorProvider>();
 
-    public static IServiceCollection AddSnowflake(this IServiceCollection services, string name, Action<SnowflakeGeneratorOptions>? action)
+        UseSnowflakeGeneratorCore(options.Services, action);
+    }
+
+    private static void UseSnowflakeGeneratorCore(IServiceCollection services, Action<SnowflakeGeneratorOptions>? action)
     {
         var snowflakeGeneratorOptions = new SnowflakeGeneratorOptions(services);
         action?.Invoke(snowflakeGeneratorOptions);
@@ -35,17 +41,9 @@ public static class ServiceCollectionExtensions
                 => new SnowflakeIdGenerator(serviceProvider.GetRequiredService<IWorkerProvider>(),
                     snowflakeGeneratorOptions));
         }
-        services.AddIdGeneratorCore();
-        services.AddSingleton<IIdGenerator<long>>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
-        services.AddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
 
-        services.Configure<IdGeneratorFactoryOptions>(factoryOptions =>
-        {
-            factoryOptions.Options.Add(new IdGeneratorRelationOptions(name)
-            {
-                Func = serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>()
-            });
-        });
+        services.TryAddSingleton<IIdGenerator<long>>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
+        services.TryAddSingleton<IIdGenerator>(serviceProvider => serviceProvider.GetRequiredService<ISnowflakeGenerator>());
 
         if (snowflakeGeneratorOptions.SupportDistributed)
         {
@@ -57,14 +55,9 @@ public static class ServiceCollectionExtensions
                     serviceProvider.GetService<ILogger<WorkerIdBackgroundServices>>()
                 )));
         }
-        MasaApp.TrySetServiceCollection(services);
-        return services;
     }
 
-    private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
-        services.BuildServiceProvider().GetRequiredService<TService>();
-
-    public static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
+    internal static void CheckIdGeneratorOptions(IServiceCollection services, SnowflakeGeneratorOptions generatorOptions)
     {
         if (generatorOptions.BaseTime > DateTime.UtcNow)
             throw new ArgumentOutOfRangeException(nameof(generatorOptions.BaseTime),
@@ -87,5 +80,12 @@ public static class ServiceCollectionExtensions
         if (generatorOptions.SequenceBits + generatorOptions.WorkerIdBits > maxLength)
             throw new ArgumentOutOfRangeException(
                 $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {maxLength}");
+    }
+
+    private static TService GetInstance<TService>(this IServiceCollection services) where TService : notnull =>
+        services.BuildServiceProvider().GetRequiredService<TService>();
+
+    private sealed class SnowflakeGeneratorProvider
+    {
     }
 }

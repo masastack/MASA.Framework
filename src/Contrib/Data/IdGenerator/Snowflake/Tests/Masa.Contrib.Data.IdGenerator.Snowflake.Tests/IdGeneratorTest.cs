@@ -4,6 +4,7 @@
 extern alias Snowflake;
 using Snowflake.Microsoft.Extensions.DependencyInjection;
 using DefaultWorkerProvider = Snowflake::Masa.Contrib.Data.IdGenerator.Snowflake.DefaultWorkerProvider;
+using IdGeneratorOptionsExtensions = Snowflake::Masa.BuildingBlocks.Data.IdGeneratorOptionsExtensions;
 using IWorkerProvider = Snowflake::Masa.Contrib.Data.IdGenerator.Snowflake.IWorkerProvider;
 using SnowflakeGeneratorOptions = Snowflake::Masa.Contrib.Data.IdGenerator.Snowflake.SnowflakeGeneratorOptions;
 using SnowflakeDependencyInjection = Snowflake.Microsoft.Extensions.DependencyInjection;
@@ -17,10 +18,7 @@ public class IdGeneratorTest
     public void TestEnableMachineClock()
     {
         var services = new ServiceCollection();
-        services.AddSnowflake(opt =>
-        {
-            opt.EnableMachineClock = true;
-        });
+        services.AddSnowflake(opt => { opt.EnableMachineClock = true; });
         var serviceProvider = services.BuildServiceProvider();
         var idGenerator = serviceProvider.GetRequiredService<IIdGenerator<long>>();
         int count = 1;
@@ -61,10 +59,7 @@ public class IdGeneratorTest
         var services = new ServiceCollection();
         Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
         {
-            services.AddSnowflake(options =>
-            {
-                options.BaseTime = DateTime.UtcNow.AddHours(1);
-            });
+            services.AddSnowflake(options => { options.BaseTime = DateTime.UtcNow.AddHours(1); });
         });
     }
 
@@ -75,13 +70,7 @@ public class IdGeneratorTest
         long workerId = maxWorkerId + 1;
         Environment.SetEnvironmentVariable("WORKER_ID", workerId.ToString());
         var services = new ServiceCollection();
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
-        {
-            services.AddSnowflake(options =>
-            {
-                options.WorkerIdBits = 5;
-            });
-        });
+        Assert.ThrowsException<ArgumentOutOfRangeException>(() => { services.AddSnowflake(options => { options.WorkerIdBits = 5; }); });
     }
 
     [TestMethod]
@@ -106,19 +95,20 @@ public class IdGeneratorTest
         var workerProvider = new Mock<IWorkerProvider>();
         workerProvider.Setup(provider => provider.GetWorkerIdAsync()).ReturnsAsync(0);
         services.AddSingleton(workerProvider.Object);
-        SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, generatorOptions);
+
+        IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions);
 
         generatorOptions.BaseTime = DateTime.UtcNow.AddDays(1);
         var options = generatorOptions;
         Assert.ThrowsException<ArgumentOutOfRangeException>(()
-            => SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, options));
+            => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, options));
 
         generatorOptions = new SnowflakeGeneratorOptions(services)
         {
             HeartbeatInterval = 5
         };
         var options1 = generatorOptions;
-        SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, options1);
+        IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, options1);
 
         workerProvider.Setup(provider => provider.GetWorkerIdAsync()).ReturnsAsync(200);
         generatorOptions = new SnowflakeGeneratorOptions(services)
@@ -127,7 +117,7 @@ public class IdGeneratorTest
         };
         var generatorOptions1 = generatorOptions;
         Assert.ThrowsException<ArgumentOutOfRangeException>(()
-                => SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, generatorOptions1),
+                => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions1),
             $"workerId must be greater than 0 or less than or equal to {generatorOptions.MaxWorkerId}");
 
         generatorOptions = new SnowflakeGeneratorOptions(services)
@@ -138,7 +128,7 @@ public class IdGeneratorTest
         };
 
         Assert.ThrowsException<ArgumentOutOfRangeException>(()
-                => SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, generatorOptions),
+                => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions),
             $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {22}");
 
         generatorOptions = new SnowflakeGeneratorOptions(services)
@@ -149,7 +139,7 @@ public class IdGeneratorTest
         };
 
         Assert.ThrowsException<ArgumentOutOfRangeException>(()
-                => SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, generatorOptions),
+                => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions),
             $"The sum of {nameof(generatorOptions.WorkerIdBits)} And {nameof(generatorOptions.SequenceBits)} must be less than {31}");
 
         generatorOptions = new SnowflakeGeneratorOptions(services)
@@ -158,7 +148,7 @@ public class IdGeneratorTest
         };
         generatorOptions.EnableSupportDistributed();
         Assert.ThrowsException<ArgumentOutOfRangeException>(()
-            => SnowflakeDependencyInjection.ServiceCollectionExtensions.CheckIdGeneratorOptions(services, generatorOptions));
+            => IdGeneratorOptionsExtensions.CheckIdGeneratorOptions(services, generatorOptions));
     }
 
     [TestMethod]
@@ -181,7 +171,8 @@ public class IdGeneratorTest
         var factory = MasaApp.GetService<IIdGeneratorFactory>();
         Assert.IsNotNull(factory);
 
-        var snowflakeGenerator = factory.Create<long>();
+        var snowflakeGenerator = factory.SnowflakeGenerator;
+        Assert.IsNotNull(snowflakeGenerator);
         Assert.IsTrue(snowflakeGenerator.NewId() > 0L);
     }
 
