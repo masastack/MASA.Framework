@@ -18,6 +18,6 @@ public class DefaultDisabledEventDeterminer : IDisabledEventDeterminer
 
     public bool Determiner()
     {
-        return _masaStackConfig.IsDemo && _userContext.GetUser<MasaUser>()?.Account?.ToLower() == "guest";
+        return _masaStackConfig.IsDemo && _userContext.GetUser<MasaUser>()?.Account?.ToLower() != "admin";
     }
 }
