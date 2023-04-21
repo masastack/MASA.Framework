@@ -49,8 +49,7 @@ public class IdGeneratorTest
             count++;
         }
 
-        if (ids.Distinct().Count() != ids.Count)
-            throw new Exception("duplicate id");
+        Assert.AreEqual(ids.Distinct().Count(), ids.Count);
     }
 
     [TestMethod]
