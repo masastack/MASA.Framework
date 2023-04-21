@@ -52,7 +52,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetAllServers()
     {
-        var allServer = _stackConfig.GetAllServer();
+        var allServer = _stackConfig.GetAllService();
 
         Assert.IsNotNull(allServer);
     }
@@ -122,7 +122,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetServiceId()
     {
-        var pmServiceId = _stackConfig.GetServerId(MasaStackConstant.PM);
+        var pmServiceId = _stackConfig.GetServiceId(MasaStackConstant.PM);
 
         Assert.AreEqual("masa-pm-service", pmServiceId);
     }
@@ -169,5 +169,13 @@ public class MasaStackConfigTest
         var suffixIdentity = _stackConfig.SuffixIdentity;
 
         Assert.AreEqual("dev", suffixIdentity);
+    }
+
+    [TestMethod]
+    public void TestHasAlert()
+    {
+        var result = _stackConfig.HasAlert();
+
+        Assert.AreEqual(false, result);
     }
 }
