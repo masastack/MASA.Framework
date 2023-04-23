@@ -96,6 +96,14 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetPmDomain()
+    {
+        var pmDomain = _stackConfig.GetPmServiceDomain();
+
+        Assert.IsNotNull(pmDomain);
+    }
+
+    [TestMethod]
     public void TestGetAuthServiceDomain()
     {
         var authServiceDomain = _stackConfig.GetAuthServiceDomain();
@@ -124,7 +132,7 @@ public class MasaStackConfigTest
     {
         var pmServiceId = _stackConfig.GetServiceId(MasaStackConstant.PM);
 
-        Assert.AreEqual("masa-pm-service", pmServiceId);
+        Assert.AreEqual("pm-service", pmServiceId);
     }
 
     [TestMethod]
@@ -132,7 +140,7 @@ public class MasaStackConfigTest
     {
         var pmWebId = _stackConfig.GetWebId(MasaStackConstant.PM);
 
-        Assert.AreEqual("masa-pm-ui-demo", pmWebId);
+        Assert.AreEqual("pm-web", pmWebId);
     }
 
     [TestMethod]
@@ -176,6 +184,6 @@ public class MasaStackConfigTest
     {
         var result = _stackConfig.HasAlert();
 
-        Assert.AreEqual(false, result);
+        Assert.AreEqual(true, result);
     }
 }
