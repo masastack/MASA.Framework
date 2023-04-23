@@ -71,7 +71,7 @@ public static class MasaStackConfigExtensions
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return MasaStackConfigUtils.GetDccServiceDomain(masaStackConfig.GetValues());
+        return GetHost(masaStackConfig, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)

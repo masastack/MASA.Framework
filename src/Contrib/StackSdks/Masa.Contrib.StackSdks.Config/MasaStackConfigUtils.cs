@@ -6,36 +6,11 @@ namespace Masa.Contrib.StackSdks.Config;
 
 internal static class MasaStackConfigUtils
 {
-    public static JsonArray GetAllServer(Dictionary<string, string> configMap)
-    {
-        var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK);
-        if (string.IsNullOrEmpty(value))
-        {
-            return new();
-        }
-        return JsonSerializer.Deserialize<JsonArray>(value) ?? new();
-    }
-
-    public static string GetServerDomain(Dictionary<string, string> configMap, string project, string service)
-    {
-        var domain = "";
-        var jsonObject = GetAllServer(configMap).FirstOrDefault(jNode => jNode?["id"]?.ToString() == project);
-        if (jsonObject != null)
-        {
-            var secondaryDomain = jsonObject[service]?.ToString();
-            domain = jsonObject[service]?.ToString() ?? "";
-        }
-        return domain;
-    }
-
-    public static string GetDccServiceDomain(Dictionary<string, string> configMap)
-    {
-        return GetServerDomain(configMap, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
-    }
-
     public static DccOptions GetDefaultDccOptions(Dictionary<string, string> configMap)
     {
-        var dccServerAddress = GetDccServiceDomain(configMap);
+        var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK);
+        var data = JsonSerializer.Deserialize<JsonArray>(value) ?? new();
+        var dccServerAddress = data.FirstOrDefault(i => i?["id"]?.ToString() == MasaStackConstant.DCC)?[MasaStackConstant.SERVICE]?["host"]?.ToString() ?? "";
         var redisStr = configMap.GetValueOrDefault(MasaStackConfigConstant.REDIS) ?? throw new Exception("redis options can not null");
         var redis = JsonSerializer.Deserialize<RedisModel>(redisStr) ?? throw new JsonException();
         var secret = configMap.GetValueOrDefault(MasaStackConfigConstant.DCC_SECRET);

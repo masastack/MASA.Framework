@@ -53,8 +53,6 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string DccSecret => GetValue(MasaStackConfigConstant.DCC_SECRET);
 
-    public bool SingleSsoClient { get; }
-
     public string SuffixIdentity => GetValue(MasaStackConfigConstant.SUFFIX_IDENTITY);
 
     public List<string> GetProjectList() => this.GetMasaStack().Select(jNode => jNode!["id"]!.ToString()).ToList();

@@ -58,9 +58,9 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
-        var dccOptions1 = MasaStackConfigUtils.GetDefaultDccOptions(_config);
+        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config);
 
-        Assert.IsNotNull(dccOptions1?.RedisOptions);
+        Assert.IsNotNull(dccOptions?.RedisOptions);
     }
 
     [TestMethod]
