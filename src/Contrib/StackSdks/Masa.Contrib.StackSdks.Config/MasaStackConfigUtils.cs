@@ -10,7 +10,7 @@ internal static class MasaStackConfigUtils
     {
         var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK) ?? "";
         var data = JsonSerializer.Deserialize<JsonArray>(value) ?? new();
-        var dccServerAddress = data.FirstOrDefault(i => i?["id"]?.ToString() == MasaStackConstant.DCC)?[MasaStackConstant.SERVICE]?["host"]?.ToString() ?? "";
+        var dccServerAddress = data.FirstOrDefault(i => i?["id"]?.ToString() == MasaStackConstant.DCC)?[MasaStackConstant.SERVICE]?["domain"]?.ToString() ?? "";
         var redisStr = configMap.GetValueOrDefault(MasaStackConfigConstant.REDIS) ?? throw new Exception("redis options can not null");
         var redis = JsonSerializer.Deserialize<RedisModel>(redisStr) ?? throw new JsonException();
         var secret = configMap.GetValueOrDefault(MasaStackConfigConstant.DCC_SECRET);
