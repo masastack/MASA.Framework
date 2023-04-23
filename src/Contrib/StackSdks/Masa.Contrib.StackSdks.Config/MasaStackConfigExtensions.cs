@@ -5,7 +5,7 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public static class MasaStackConfigExtensions
 {
-    internal static JsonArray GetMasaStack(this IMasaStackConfig masaStackConfig)
+    public static JsonArray GetMasaStack(this IMasaStackConfig masaStackConfig)
     {
         var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_STACK);
         if (string.IsNullOrEmpty(value))
