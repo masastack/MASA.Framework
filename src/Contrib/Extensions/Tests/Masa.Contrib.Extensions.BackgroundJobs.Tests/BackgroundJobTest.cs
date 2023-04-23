@@ -14,10 +14,7 @@ public class BackgroundJobTest
 
         services.AddBackgroundJob(jobBuilder =>
         {
-            jobBuilder.UseBackgroundJobCore(_ =>
-                {
-
-                },
+            jobBuilder.UseBackgroundJobCore(_ => { },
                 _ => deserializer.Object);
         });
 
@@ -40,17 +37,13 @@ public class BackgroundJobTest
         services.AddBackgroundJob(jobBuilder =>
         {
             jobBuilder.DisableBackgroundJob = true;
-            jobBuilder.UseBackgroundJobCore(_ =>
-                {
-
-                },
-                _ => deserializer.Object);
+            jobBuilder.UseBackgroundJobCore(_ => { }, _ => deserializer.Object);
         });
 
-        Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor)));
-        Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IProcessor)));
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessingServer) && s.Lifetime == ServiceLifetime.Singleton));
-        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IHostedService) && s.Lifetime == ServiceLifetime.Singleton));
+        Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IProcessingServer)));
+        Assert.IsFalse(services.Any(s => s.ServiceType == typeof(IHostedService) && s.Lifetime == ServiceLifetime.Singleton));
+        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IBackgroundJobProcessor)));
+        Assert.IsTrue(services.Any(s => s.ServiceType == typeof(IProcessor)));
     }
 
     [TestMethod]
@@ -63,15 +56,9 @@ public class BackgroundJobTest
         services.AddSingleton(backgroundJobStorage.Object);
         services.AddBackgroundJob(jobBuilder =>
         {
-            jobBuilder.UseBackgroundJobCore(backgroundJobOptions =>
-                {
-                    backgroundJobOptions.PollInterval = 1;
-                },
+            jobBuilder.UseBackgroundJobCore(backgroundJobOptions => { backgroundJobOptions.PollInterval = 1; },
                 _ => deserializer.Object);
-            jobBuilder.UseBackgroundJobCore(backgroundJobOptions =>
-                {
-                    backgroundJobOptions.PollInterval = 2;
-                },
+            jobBuilder.UseBackgroundJobCore(backgroundJobOptions => { backgroundJobOptions.PollInterval = 2; },
                 _ => deserializer.Object);
         });
 
