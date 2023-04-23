@@ -8,7 +8,7 @@ internal static class MasaStackConfigUtils
 {
     public static DccOptions GetDefaultDccOptions(Dictionary<string, string> configMap)
     {
-        var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK);
+        var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK) ?? "";
         var data = JsonSerializer.Deserialize<JsonArray>(value) ?? new();
         var dccServerAddress = data.FirstOrDefault(i => i?["id"]?.ToString() == MasaStackConstant.DCC)?[MasaStackConstant.SERVICE]?["host"]?.ToString() ?? "";
         var redisStr = configMap.GetValueOrDefault(MasaStackConfigConstant.REDIS) ?? throw new Exception("redis options can not null");
