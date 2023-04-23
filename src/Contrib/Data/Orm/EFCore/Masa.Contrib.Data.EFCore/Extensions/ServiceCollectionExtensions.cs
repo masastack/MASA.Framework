@@ -1,6 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.EFCore.Tests.Scenes.Isolation")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -13,17 +16,25 @@ public static class ServiceCollectionExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         ServiceLifetime contextLifetime = ServiceLifetime.Scoped,
         ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
-        where TDbContextImplementation : DbContext, IMasaDbContext
+        where TDbContextImplementation : DefaultMasaDbContext, IMasaDbContext
         => services
             .AddDbContext<TDbContextImplementation>(contextLifetime, optionsLifetime)
             .AddCoreServices<TDbContextImplementation>(optionsBuilder, contextLifetime, optionsLifetime);
+
+    /// <summary>
+    /// Initialize cache data, only for testing
+    /// </summary>
+    internal static void InitializeCacheData(this IServiceCollection services)
+    {
+        DbContextExtensions.InitializeCacheData();
+    }
 
     private static IServiceCollection AddCoreServices<TDbContextImplementation>(
         this IServiceCollection services,
         Action<MasaDbContextBuilder>? optionsBuilder,
         ServiceLifetime contextLifetime,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : DbContext, IMasaDbContext
+        where TDbContextImplementation : DefaultMasaDbContext, IMasaDbContext
     {
         if (services.Any(service => service.ImplementationType == typeof(MasaDbContextProvider<TDbContextImplementation>)))
             return services;
@@ -32,21 +43,7 @@ public static class ServiceCollectionExtensions
 
         services.Replace(new ServiceDescriptor(typeof(TDbContextImplementation), serviceProvider =>
         {
-            //todo: Temporarily use reflection, and then change to expression tree
-            var dbContextType = typeof(TDbContextImplementation);
-            var constructorInfo = dbContextType.GetConstructors(BindingFlags.Instance | BindingFlags.Public)
-                .MaxBy(c => c.GetParameters().Length);
-            MasaArgumentException.ThrowIfNull(constructorInfo);
-
-            var parameters = new List<object?>();
-            foreach (var parameter in constructorInfo.GetParameters())
-            {
-                parameters.Add(serviceProvider.GetService(parameter.ParameterType));
-            }
-
-            var dbContext = parameters.Count > 0
-                ? Activator.CreateInstance(typeof(TDbContextImplementation), parameters.ToArray()) as DefaultMasaDbContext
-                : Activator.CreateInstance(typeof(TDbContextImplementation)) as DefaultMasaDbContext;
+            var dbContext = DbContextExtensions.CreateDbContext<TDbContextImplementation>(serviceProvider);
             MasaArgumentException.ThrowIfNull(dbContext);
 
             dbContext.TryInitializeMasaDbContextOptions(serviceProvider.GetService<MasaDbContextOptions<TDbContextImplementation>>());
@@ -69,7 +66,6 @@ public static class ServiceCollectionExtensions
                     dbContextOptionsBuilder.Invoke(efDbContextOptionsBuilder.DbContextOptionsBuilder);
                 }
             }
-
         }, masaBuilder.EnableSoftDelete, optionsLifetime);
     }
 
@@ -78,7 +74,7 @@ public static class ServiceCollectionExtensions
         Action<IServiceProvider, MasaDbContextOptionsBuilder>? optionsBuilder,
         bool enableSoftDelete,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : DbContext, IMasaDbContext
+        where TDbContextImplementation : DefaultMasaDbContext, IMasaDbContext
     {
         MasaApp.TrySetServiceCollection(services);
 
@@ -114,38 +110,14 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddFilter<TDbContextImplementation>(
         this IServiceCollection services,
         ServiceLifetime optionsLifetime)
-        where TDbContextImplementation : DbContext, IMasaDbContext
+        where TDbContextImplementation : DefaultMasaDbContext, IMasaDbContext
     {
-        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
-        {
-            var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
-            var saveChangeFilterType = typeof(SaveChangeFilter<,>).MakeGenericType(typeof(TDbContextImplementation), userIdType);
-            return Activator.CreateInstance(saveChangeFilterType, serviceProvider.GetService<IUserContext>())!;
-        }, optionsLifetime));
-        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
-        {
-            var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
-            var softDeleteSaveChangesFilterType =
-                typeof(SoftDeleteSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation), userIdType);
-            return Activator.CreateInstance(
-                softDeleteSaveChangesFilterType,
-                serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
-                serviceProvider.GetRequiredService<TDbContextImplementation>(),
-                serviceProvider.GetService<IUserContext>())!;
-        }, optionsLifetime));
-        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>), serviceProvider =>
-        {
-            var isolationOptions = serviceProvider.GetService<IOptions<IsolationOptions>>();
-            if (isolationOptions == null || !isolationOptions.Value.Enable)
-            {
-                return new EmptySaveFilter<TDbContextImplementation>();
-            }
-
-            var genericType = typeof(IsolationSaveChangesFilter<,>).MakeGenericType(typeof(TDbContextImplementation),
-                isolationOptions.Value.MultiTenantIdType);
-            var isolationSaveChangesFilter = Activator.CreateInstance(genericType, serviceProvider);
-            return (isolationSaveChangesFilter as ISaveChangesFilter<TDbContextImplementation>)!;
-        }, optionsLifetime));
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
+            DbContextExtensions.CreateSaveChangesFilter<TDbContextImplementation>, optionsLifetime));
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
+            DbContextExtensions.CreateSoftDeleteSaveChangesFilter<TDbContextImplementation>, optionsLifetime));
+        services.Add(new ServiceDescriptor(typeof(ISaveChangesFilter<TDbContextImplementation>),
+            DbContextExtensions.CreateIsolationSaveChangesFilter<TDbContextImplementation>, optionsLifetime));
         return services;
     }
 
