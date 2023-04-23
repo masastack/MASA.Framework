@@ -12,6 +12,7 @@ public class TestBase
     protected TestBase()
     {
         Services = new ServiceCollection();
+        Services.InitializeCacheData();
     }
 
     protected DefaultMasaDbContext CreateDbContext<TDbContext>(

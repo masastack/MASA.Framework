@@ -3,10 +3,12 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public class IdGeneratorRelationOptions : MasaRelationOptions<IIdGenerator>
+public class IdGeneratorOptions
 {
-    public IdGeneratorRelationOptions(string name)
-        : base(name)
+    public IServiceCollection Services { get; }
+
+    public IdGeneratorOptions(IServiceCollection services)
     {
+        Services = services;
     }
 }
