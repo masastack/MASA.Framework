@@ -28,7 +28,6 @@ public static class BackgroundJobOptionsBuilderExtensions
 
         backgroundJobOptionsBuilder.Services.AddSingleton<BackgroundJobProvider>();
 
-        backgroundJobOptionsBuilder.Services.AddBackgroundJobServer();
         backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobManager, DefaultBackgroundJobManager>();
         configure.Invoke(backgroundJobOptionsBuilder.Services);
     }

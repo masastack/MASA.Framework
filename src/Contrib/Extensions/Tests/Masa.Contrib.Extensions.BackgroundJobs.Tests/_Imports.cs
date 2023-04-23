@@ -3,7 +3,7 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Extensions.BackgroundJobs;
-global using Masa.Contrib.Extensions.BackgroundJobs.Extensions;
+global using Masa.Contrib.Extensions.BackgroundJobs;
 global using Masa.Contrib.Extensions.BackgroundJobs.Tests.Parameters;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
