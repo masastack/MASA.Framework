@@ -53,55 +53,55 @@ public static class MasaStackConfigExtensions
         return dbModel?.ToString(databaseName) ?? "";
     }
 
-    public static string GetHost(this IMasaStackConfig masaStackConfig, string project, string app)
+    public static string GetDomain(this IMasaStackConfig masaStackConfig, string project, string app)
     {
-        return GetMasaStack(masaStackConfig).FirstOrDefault(i => i?["id"]?.ToString() == project)?[app]?["host"]?.ToString() ?? "";
+        return GetMasaStack(masaStackConfig).FirstOrDefault(i => i?["id"]?.ToString() == project)?[app]?["domain"]?.ToString() ?? "";
     }
 
 
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SERVICE);
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.PM, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.PM, MasaStackConstant.SERVICE);
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.TSC, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.TSC, MasaStackConstant.SERVICE);
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.ALERT, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.ALERT, MasaStackConstant.SERVICE);
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.MC, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.MC, MasaStackConstant.SERVICE);
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.SERVICE);
+        return GetDomain(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.SERVICE);
     }
 
     public static string GetSchedulerWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.WORKER);
+        return GetDomain(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.WORKER);
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetHost(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SSO);
+        return GetDomain(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SSO);
     }
 
     public static IEnumerable<(string, string, string)> GetAllUINames(this IMasaStackConfig masaStackConfig)
@@ -110,12 +110,12 @@ public static class MasaStackConfigExtensions
         {
             var id = web["id"]?.ToString() ?? "";
             var name = web["name"]?.ToString() ?? "";
-            var host = web["host"]?.ToString() ?? "";
+            var domain = web["domain"]?.ToString() ?? "";
             if (string.IsNullOrEmpty(id))
             {
                 continue;
             }
-            yield return (id, name, host);
+            yield return (id, name, domain);
         }
     }
 
