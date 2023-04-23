@@ -5,34 +5,43 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public static class MasaStackConfigExtensions
 {
-    public static Dictionary<string, JsonObject> GetAllServer(this IMasaStackConfig masaStackConfig)
+    internal static JsonArray GetMasaStack(this IMasaStackConfig masaStackConfig)
     {
-        return MasaStackConfigUtils.GetAllServer(masaStackConfig.GetValues());
-    }
-
-    public static Dictionary<string, JsonObject> GetAllUI(this IMasaStackConfig masaStackConfig)
-    {
-        var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_UI);
+        var value = masaStackConfig.GetValue(MasaStackConfigConstant.MASA_STACK);
         if (string.IsNullOrEmpty(value))
         {
             return new();
         }
-        return JsonSerializer.Deserialize<Dictionary<string, JsonObject>>(value) ?? new();
+        return JsonSerializer.Deserialize<JsonArray>(value) ?? new();
+    }
+
+    public static List<JsonNode> GetAllService(this IMasaStackConfig masaStackConfig)
+    {
+        var webs = GetMasaStack(masaStackConfig).Select(jsonObject => jsonObject?[MasaStackConstant.SERVICE]!).ToList();
+        webs.RemoveAll(i => i == null);
+        return webs ?? new();
+    }
+
+    public static List<JsonNode> GetAllWeb(this IMasaStackConfig masaStackConfig)
+    {
+        var webs = GetMasaStack(masaStackConfig).Select(jsonObject => jsonObject?[MasaStackConstant.WEB]!).ToList();
+        webs.RemoveAll(i => i == null);
+        return webs ?? new();
     }
 
     public static bool HasAlert(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConstant.ALERT);
+        return GetMasaStack(masaStackConfig).Any(jsonObject => jsonObject?["id"]?.ToString() == MasaStackConstant.ALERT);
     }
 
     public static bool HasTsc(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConstant.TSC);
+        return GetMasaStack(masaStackConfig).Any(jsonObject => jsonObject?["id"]?.ToString() == MasaStackConstant.TSC);
     }
 
     public static bool HasScheduler(this IMasaStackConfig masaStackConfig)
     {
-        return GetAllServer(masaStackConfig).ContainsKey(MasaStackConstant.SCHEDULER);
+        return GetMasaStack(masaStackConfig).Any(jsonObject => jsonObject?["id"]?.ToString() == MasaStackConstant.SCHEDULER);
     }
 
     public static string GetConnectionString(this IMasaStackConfig masaStackConfig, string projectName)
@@ -44,115 +53,81 @@ public static class MasaStackConfigExtensions
         return dbModel?.ToString(databaseName) ?? "";
     }
 
-    public static string GetServerDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
+    public static string GetDomain(this IMasaStackConfig masaStackConfig, string project, string app)
     {
-        return MasaStackConfigUtils.GetServerDomain(masaStackConfig.GetValues(), protocol, project, service);
+        return GetMasaStack(masaStackConfig).FirstOrDefault(i => i?["id"]?.ToString() == project)?[app]?["domain"]?.ToString() ?? "";
     }
 
-    public static string GetUIDomain(this IMasaStackConfig masaStackConfig, string protocol, string project, string service)
-    {
-        var domain = "";
-        GetAllUI(masaStackConfig).TryGetValue(project, out JsonObject? jsonObject);
-        if (jsonObject != null)
-        {
-            var secondaryDomain = jsonObject[service]?.ToString();
-            if (secondaryDomain != null)
-            {
-                domain = $"{protocol}://{secondaryDomain}.{masaStackConfig.DomainName.TrimStart('.')}";
-            }
-        }
-        return domain.TrimEnd('.');
-    }
 
     public static string GetAuthServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.AUTH, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SERVICE);
     }
 
     public static string GetPmServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.PM, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.PM, MasaStackConstant.SERVICE);
     }
 
     public static string GetDccServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return MasaStackConfigUtils.GetDccServiceDomain(masaStackConfig.GetValues());
+        return GetDomain(masaStackConfig, MasaStackConstant.DCC, MasaStackConstant.SERVICE);
     }
 
     public static string GetTscServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.TSC, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.TSC, MasaStackConstant.SERVICE);
     }
 
     public static string GetAlertServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.ALERT, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.ALERT, MasaStackConstant.SERVICE);
     }
 
     public static string GetMcServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.MC, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.MC, MasaStackConstant.SERVICE);
     }
 
     public static string GetSchedulerServiceDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, MasaStackConstant.SERVER);
+        return GetDomain(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.SERVICE);
     }
 
     public static string GetSchedulerWorkerDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetServerDomain(masaStackConfig, HttpProtocol.HTTP, MasaStackConstant.SCHEDULER, MasaStackConstant.WORKER);
+        return GetDomain(masaStackConfig, MasaStackConstant.SCHEDULER, MasaStackConstant.WORKER);
     }
 
     public static string GetSsoDomain(this IMasaStackConfig masaStackConfig)
     {
-        return GetUIDomain(masaStackConfig, HttpProtocol.HTTPS, MasaStackConstant.AUTH, MasaStackConstant.SSO);
+        return GetDomain(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SSO);
     }
 
-    public static IEnumerable<KeyValuePair<string, List<string>>> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<(string, string, string)> GetAllUINames(this IMasaStackConfig masaStackConfig)
     {
-        foreach (var server in GetAllUI(masaStackConfig))
+        foreach (var web in GetAllWeb(masaStackConfig))
         {
-            var uiName = server.Value[MasaStackConstant.UI]?.ToString();
-            if (string.IsNullOrEmpty(uiName))
+            var id = web["id"]?.ToString() ?? "";
+            var name = web["name"]?.ToString() ?? "";
+            var domain = web["domain"]?.ToString() ?? "";
+            if (string.IsNullOrEmpty(id))
             {
                 continue;
             }
-            yield return new KeyValuePair<string, List<string>>(uiName, new List<string> {
-                GetUIDomain(masaStackConfig,HttpProtocol.HTTP,server.Key,MasaStackConstant.UI),
-                GetUIDomain(masaStackConfig,HttpProtocol.HTTPS,server.Key,MasaStackConstant.UI)
-            });
+            yield return (id, name, domain);
         }
     }
 
-    public static string GetServerId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.SERVER)
+    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project)
     {
-        masaStackConfig.GetAllServer().TryGetValue(project, out var obj);
-        return obj?[service]?.ToString() ?? "";
+        return masaStackConfig.GetMasaStack().FirstOrDefault(i => i?["id"]?.ToString() == project)
+            ?[MasaStackConstant.SERVICE]?["id"]?.ToString() ?? "";
     }
 
-    public static string GetWebId(this IMasaStackConfig masaStackConfig, string project, string service = MasaStackConstant.UI)
+    public static string GetWebId(this IMasaStackConfig masaStackConfig, string project)
     {
-        masaStackConfig.GetAllUI().TryGetValue(project, out var obj);
-        return obj?[service]?.ToString() ?? "";
-    }
-
-    public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)
-    {
-        return CreateGuid(masaStackConfig.Namespace);
-    }
-
-    public static Guid GetDefaultTeamId(this IMasaStackConfig masaStackConfig)
-    {
-        return CreateGuid(masaStackConfig.Namespace + " team");
-    }
-
-    static Guid CreateGuid(string str)
-    {
-#pragma warning disable S4790
-        using var md5 = MD5.Create();
-#pragma warning restore S4790
-        byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(str));
-        return new Guid(hash);
+        return masaStackConfig.GetMasaStack().FirstOrDefault(i => i?["id"]?.ToString() == project)
+            ?[MasaStackConstant.WEB]?["id"]?.ToString() ?? "";
     }
 }
