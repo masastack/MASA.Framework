@@ -10,24 +10,26 @@ namespace Masa.Contrib.Data.EFCore;
 #pragma warning disable S1135
 internal static class DbContextOptionsExtensions
 {
-    private static readonly Func<DbContextOptions, ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>> _func;
+    private static readonly Func<DbContextOptions, ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>>
+        Func = InitializeExtensionsMap();
 
-    static DbContextOptionsExtensions()
+    static Func<DbContextOptions, ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>> InitializeExtensionsMap()
     {
         var property =
             typeof(DbContextOptions).GetProperty("ExtensionsMap", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        MasaArgumentException.ThrowIfNull(property);
         var param = Expression.Parameter(typeof(DbContextOptions));
         var body = Expression.Property(param, property);
         var lambda = Expression
             .Lambda<Func<DbContextOptions, ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)>>>(body,
                 param);
-        _func = lambda.Compile();
+        return lambda.Compile();
     }
 
     public static ImmutableSortedDictionary<Type, (IDbContextOptionsExtension Extension, int Ordinal)> GetExtensionsMap(
         this DbContextOptions dbContextOptions)
     {
-        return _func.Invoke(dbContextOptions);
+        return Func.Invoke(dbContextOptions);
     }
 }
 #pragma warning restore S1135
