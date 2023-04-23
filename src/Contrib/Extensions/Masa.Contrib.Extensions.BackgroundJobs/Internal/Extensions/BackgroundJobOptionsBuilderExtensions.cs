@@ -30,7 +30,9 @@ internal static class BackgroundJobOptionsBuilderExtensions
                 ServiceLifetime.Singleton));
     }
 
+#pragma warning disable S2094
     private sealed class BackgroundJobProvider
     {
     }
+#pragma warning restore S2094
 }
