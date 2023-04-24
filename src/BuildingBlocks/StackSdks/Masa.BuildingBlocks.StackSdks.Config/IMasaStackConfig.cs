@@ -27,8 +27,6 @@ public interface IMasaStackConfig
 
     public string DccSecret { get; }
 
-    public bool SingleSsoClient { get; }
-
     public string SuffixIdentity { get; }
 
     List<string> GetProjectList();

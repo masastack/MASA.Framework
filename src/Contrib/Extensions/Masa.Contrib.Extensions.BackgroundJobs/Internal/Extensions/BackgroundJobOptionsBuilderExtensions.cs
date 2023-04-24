@@ -6,7 +6,7 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Extensions.BackgroundJobs.Extensions;
+namespace Masa.Contrib.Extensions.BackgroundJobs;
 
 internal static class BackgroundJobOptionsBuilderExtensions
 {
@@ -21,20 +21,18 @@ internal static class BackgroundJobOptionsBuilderExtensions
         backgroundJobOptionsBuilder.Services.AddSingleton<BackgroundJobProvider>();
 
         backgroundJobOptionsBuilder.Services.Configure(configure);
-        if (!backgroundJobOptionsBuilder.DisableBackgroundJob)
-        {
-            backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobProcessor>(serviceProvider =>
-                new BackgroundJobProcessor(serviceProvider, deserializerFunc.Invoke(serviceProvider)));
-            backgroundJobOptionsBuilder.Services.Add(
-                new ServiceDescriptor(
-                    typeof(IProcessor),
-                    serviceProvider => serviceProvider.GetRequiredService<IBackgroundJobProcessor>(),
-                    ServiceLifetime.Singleton));
-        }
-        backgroundJobOptionsBuilder.Services.AddBackgroundJobServer();
+        backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobProcessor>(serviceProvider =>
+            new BackgroundJobProcessor(serviceProvider, deserializerFunc.Invoke(serviceProvider)));
+        backgroundJobOptionsBuilder.Services.Add(
+            new ServiceDescriptor(
+                typeof(IProcessor),
+                serviceProvider => serviceProvider.GetRequiredService<IBackgroundJobProcessor>(),
+                ServiceLifetime.Singleton));
     }
 
+#pragma warning disable S2094
     private sealed class BackgroundJobProvider
     {
     }
+#pragma warning restore S2094
 }

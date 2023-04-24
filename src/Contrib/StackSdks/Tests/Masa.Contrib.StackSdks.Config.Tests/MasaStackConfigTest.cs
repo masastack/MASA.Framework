@@ -27,9 +27,7 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
             { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
-            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
             { MasaStackConfigConstant.MASA_STACK, configuration.GetValue<string>(MasaStackConfigConstant.MASA_STACK) },
-            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
             { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
@@ -52,7 +50,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetAllServers()
     {
-        var allServer = _stackConfig.GetAllServer();
+        var allServer = _stackConfig.GetAllService();
 
         Assert.IsNotNull(allServer);
     }
@@ -60,9 +58,9 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
-        var dccOptions1 = MasaStackConfigUtils.GetDefaultDccOptions(_config);
+        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config);
 
-        Assert.IsNotNull(dccOptions1?.RedisOptions);
+        Assert.IsNotNull(dccOptions?.RedisOptions);
     }
 
     [TestMethod]
@@ -96,6 +94,14 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetPmDomain()
+    {
+        var pmDomain = _stackConfig.GetPmServiceDomain();
+
+        Assert.IsNotNull(pmDomain);
+    }
+
+    [TestMethod]
     public void TestGetAuthServiceDomain()
     {
         var authServiceDomain = _stackConfig.GetAuthServiceDomain();
@@ -122,9 +128,9 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetServiceId()
     {
-        var pmServiceId = _stackConfig.GetServerId(MasaStackConstant.PM);
+        var pmServiceId = _stackConfig.GetServiceId(MasaStackConstant.PM);
 
-        Assert.AreEqual("masa-pm-service", pmServiceId);
+        Assert.AreEqual("pm-service", pmServiceId);
     }
 
     [TestMethod]
@@ -132,7 +138,7 @@ public class MasaStackConfigTest
     {
         var pmWebId = _stackConfig.GetWebId(MasaStackConstant.PM);
 
-        Assert.AreEqual("masa-pm-ui-demo", pmWebId);
+        Assert.AreEqual("pm-web", pmWebId);
     }
 
     [TestMethod]
@@ -169,5 +175,13 @@ public class MasaStackConfigTest
         var suffixIdentity = _stackConfig.SuffixIdentity;
 
         Assert.AreEqual("dev", suffixIdentity);
+    }
+
+    [TestMethod]
+    public void TestHasAlert()
+    {
+        var result = _stackConfig.HasAlert();
+
+        Assert.AreEqual(true, result);
     }
 }

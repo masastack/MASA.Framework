@@ -13,7 +13,7 @@ public static class MasaStackConstant
     public const string ALERT = "alert";
     public const string TSC = "tsc";
 
-    public const string UI = "ui";
+    public const string WEB = "web";
     public const string SERVICE = "service";
     public const string SSO = "sso";
     public const string WORKER = "worker";

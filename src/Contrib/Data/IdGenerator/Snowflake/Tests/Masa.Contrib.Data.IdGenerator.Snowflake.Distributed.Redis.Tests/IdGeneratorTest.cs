@@ -232,7 +232,7 @@ public class IdGeneratorTest
     }
 
     [TestMethod]
-    public async Task TestGetDistibutedLockFaieldAsync()
+    public async Task TestGetDistributedLockFailedAsync()
     {
         var workerIdBits = 2;
         var maxWorkerId = ~(-1L << workerIdBits);

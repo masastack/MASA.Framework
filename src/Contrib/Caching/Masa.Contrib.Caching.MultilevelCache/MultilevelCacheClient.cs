@@ -174,7 +174,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            PubSub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
+            Pub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
         }
 
         return value;
@@ -233,7 +233,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
+            await PubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
                 .ConfigureAwait(false);
         }
 
@@ -260,7 +260,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             Value = value
         });
 
-        PubSub(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions);
+        Pub(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions);
     }
 
     public override async Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options, Action<CacheOptions>? action = null)
@@ -280,7 +280,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
             Value = value
         });
 
-        await PubSubAsync(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions).ConfigureAwait(false);
+        await PubAsync(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions).ConfigureAwait(false);
     }
 
     public override void SetList<T>(
@@ -299,7 +299,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         SetListCore(formattedKeyValues, options?.MemoryCacheEntryOptions, item =>
         {
-            PubSub(item.Key.Key, item.Key.FormattedKey, SubscribeOperation.Set, item.Value, options?.DistributedCacheEntryOptions);
+            Pub(item.Key.Key, item.Key.FormattedKey, SubscribeOperation.Set, item.Value, options?.DistributedCacheEntryOptions);
         });
     }
 
@@ -321,7 +321,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         SetListCore(formattedKeyValues, options?.MemoryCacheEntryOptions);
 
         await Task.WhenAll(formattedKeyValues.Select(item
-            => PubSubAsync(item.Key.Key, item.Key.FormattedKey, SubscribeOperation.Set, item.Value,
+            => PubAsync(item.Key.Key, item.Key.FormattedKey, SubscribeOperation.Set, item.Value,
                 options?.DistributedCacheEntryOptions))).ConfigureAwait(false);
     }
 
@@ -537,19 +537,19 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
     private void RemoveOne<T>(string key, string formattedKey)
     {
-        PubSub(key, formattedKey, SubscribeOperation.Remove, default(T));
+        Pub(key, formattedKey, SubscribeOperation.Remove, default(T));
 
         _memoryCache.Remove(formattedKey);
     }
 
     private async Task RemoveOneAsync<T>(string key, string formattedKey)
     {
-        await PubSubAsync(key, formattedKey, SubscribeOperation.Remove, default(T)).ConfigureAwait(false);
+        await PubAsync(key, formattedKey, SubscribeOperation.Remove, default(T)).ConfigureAwait(false);
 
         _memoryCache.Remove(formattedKey);
     }
 
-    private void PubSub<T>(
+    private void Pub<T>(
         string key,
         string formattedKey,
         SubscribeOperation operation,
@@ -571,7 +571,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         }
     }
 
-    private async Task PubSubAsync<T>(string key,
+    private async Task PubAsync<T>(string key,
         string formattedKey,
         SubscribeOperation operation,
         T? value,
