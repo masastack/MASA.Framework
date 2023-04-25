@@ -5,6 +5,10 @@ namespace Masa.Contrib.Globalization.I18n.Dcc;
 
 public class DccI18nResourceContributor : II18nResourceContributor
 {
+    /// <summary>
+    /// Random number for handling special keys.
+    /// </summary>
+    private static readonly string _randomNumber = Guid.NewGuid().ToString();
     private readonly IConfigurationSection _configurationSection;
 
     public string CultureName { get; }
@@ -24,7 +28,8 @@ public class DccI18nResourceContributor : II18nResourceContributor
     {
         if (_configurationSection.Exists())
         {
-            return _configurationSection.GetValue<string>(name);
+            string newName = name.Replace("\\.", _randomNumber).Replace(".", ConfigurationPath.KeyDelimiter).Replace(_randomNumber, ".");
+            return _configurationSection.GetValue<string>(newName);
         }
         return null;
     }
