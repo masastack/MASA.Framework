@@ -50,7 +50,9 @@ public class I18nTest
 
     [DataTestMethod]
     [DataRow("appid", "appid2", "zh-CN", "key", "吉姆")]
+    [DataRow("appid", "appid2", "zh-CN", "exception.notfind", "未找到")]
     [DataRow("appid", "appid2", "en-US", "key", "JIM")]
+    [DataRow("appid", "appid2", "en-US", "exception.notfind", "not find")]
     public void Test2(string appId, string appId2, string cultureName, string key, string expectedValue)
     {
         var configObjectPrefix = "Culture";
@@ -60,8 +62,8 @@ public class I18nTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(new List<KeyValuePair<string, string>>()
         {
-            new($"{configObjectPrefix}.{cultureName}:{key}", expectedValue),
-            new($"{configObjectPrefix}2.{cultureName}:{key}", $"{expectedValue}2")
+            new($"{configObjectPrefix}.{cultureName}:{key.Replace(".", ":")}", expectedValue),
+            new($"{configObjectPrefix}2.{cultureName}:{key.Replace(".", ":")}", $"{expectedValue}2")
         });
         var configuration = configurationBuilder.Build();
         masaConfiguration.Setup(config => config.ConfigurationApi.Get(appId)).Returns(configuration);
