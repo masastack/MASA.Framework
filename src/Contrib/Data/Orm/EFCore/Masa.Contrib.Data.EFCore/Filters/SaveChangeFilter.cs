@@ -16,6 +16,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         _userIdType = typeof(TUserId);
         _userContext = userContext;
         Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues.TryAdd(_userIdType, type => Activator.CreateInstance(type)?.ToString());
+        Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues.TryAdd(typeof(DateTime), type => Activator.CreateInstance(type)?.ToString());
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -70,14 +71,12 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
 
         if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)], defaultDateTime))
         {
-            entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] =
-                DateTime.UtcNow; //The current time to change to localization after waiting for localization
+            entity.CurrentValues[nameof(IAuditEntity<TUserId>.CreationTime)] = DateTime.UtcNow; //The current time to change to localization after waiting for localization
         }
 
         if (IsDefault(entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)], defaultDateTime))
         {
-            entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] ??=
-                DateTime.UtcNow; //The current time to change to localization after waiting for localization
+            entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] = DateTime.UtcNow; //The current time to change to localization after waiting for localization
         }
     }
 

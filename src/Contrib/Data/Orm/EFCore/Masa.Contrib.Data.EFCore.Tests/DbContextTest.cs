@@ -467,10 +467,7 @@ public class DbContextTest : TestBase
                 .UseFilter();
         });
         Assert.IsNotNull(dbContext);
-        await dbContext.Set<Goods2>().AddAsync(new Goods2()
-        {
-            Name = "masa"
-        });
+        await dbContext.Set<Goods2>().AddAsync(new Goods2("masa"));
         await dbContext.SaveChangesAsync();
 
         var goodsByCreate = await dbContext.Set<Goods2>().FirstOrDefaultAsync();
@@ -480,7 +477,9 @@ public class DbContextTest : TestBase
         var modifierByCreate = goodsByCreate.Modifier;
         var modificationTimeByCreate = goodsByCreate.ModificationTime;
         Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
-        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+        Assert.AreEqual(modifierByCreate, goodsByCreate.Modifier);
+        Assert.IsTrue((DateTime.UtcNow - creationTimeByCreate).TotalSeconds < 1);
+        Assert.IsTrue((DateTime.UtcNow - modificationTimeByCreate).TotalSeconds < 1);
 
         customUserContext.SetUserId(modifier?.ToString());
         goodsByCreate.Name = "masa1";
@@ -498,6 +497,7 @@ public class DbContextTest : TestBase
         Assert.AreEqual(creationTimeByCreate, creationTimeByUpdate);
         Assert.AreEqual(expectedModifier, modifierByUpdate);
         Assert.AreNotEqual(modificationTimeByCreate, modificationTimeByUpdate);
+        Assert.IsTrue((DateTime.UtcNow - modificationTimeByUpdate).TotalSeconds < 1);
 
         customUserContext.SetUserId(deleter?.ToString());
 
@@ -510,6 +510,7 @@ public class DbContextTest : TestBase
         Assert.AreEqual(creationTimeByUpdate, goodsByDelete.CreationTime);
         Assert.AreEqual(expectedDeleter, goodsByDelete.Modifier);
         Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
+        Assert.IsTrue((DateTime.UtcNow - goodsByDelete.ModificationTime).TotalSeconds < 1);
     }
 
     [DataRow(1, 2, 1, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 3, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]

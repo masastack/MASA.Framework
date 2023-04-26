@@ -48,4 +48,11 @@ public class Goods : FullAggregateRoot<Guid, int>
 public class Goods2 : FullAggregateRoot<Guid, int?>
 {
     public string Name { get; set; }
+
+    public Goods2(string name)
+    {
+        Name = name;
+        CreationTime = default(DateTime);
+        ModificationTime = default(DateTime);
+    }
 }
