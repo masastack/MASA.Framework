@@ -467,10 +467,7 @@ public class DbContextTest : TestBase
                 .UseFilter();
         });
         Assert.IsNotNull(dbContext);
-        await dbContext.Set<Goods2>().AddAsync(new Goods2()
-        {
-            Name = "masa"
-        });
+        await dbContext.Set<Goods2>().AddAsync(new Goods2("masa"));
         await dbContext.SaveChangesAsync();
 
         var goodsByCreate = await dbContext.Set<Goods2>().FirstOrDefaultAsync();
