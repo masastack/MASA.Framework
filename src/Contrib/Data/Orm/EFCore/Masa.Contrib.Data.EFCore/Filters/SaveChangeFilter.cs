@@ -16,6 +16,7 @@ public class SaveChangeFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbConte
         _userIdType = typeof(TUserId);
         _userContext = userContext;
         Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues.TryAdd(_userIdType, type => Activator.CreateInstance(type)?.ToString());
+        Masa.Contrib.Data.EFCore.TypeExtensions.TypeAndDefaultValues.TryAdd(typeof(DateTime), type => Activator.CreateInstance(type)?.ToString());
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
