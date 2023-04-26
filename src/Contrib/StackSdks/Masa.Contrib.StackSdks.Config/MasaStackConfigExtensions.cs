@@ -119,15 +119,19 @@ public static class MasaStackConfigExtensions
         }
     }
 
-    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project)
+    public static string GetId(this IMasaStackConfig masaStackConfig, string project, string app)
     {
         return masaStackConfig.GetMasaStack().FirstOrDefault(i => i?["id"]?.ToString() == project)
-            ?[MasaStackConstant.SERVICE]?["id"]?.ToString() ?? "";
+            ?[app]?["id"]?.ToString() ?? "";
+    }
+
+    public static string GetServiceId(this IMasaStackConfig masaStackConfig, string project)
+    {
+        return masaStackConfig.GetId(project, MasaStackConstant.SERVICE);
     }
 
     public static string GetWebId(this IMasaStackConfig masaStackConfig, string project)
     {
-        return masaStackConfig.GetMasaStack().FirstOrDefault(i => i?["id"]?.ToString() == project)
-            ?[MasaStackConstant.WEB]?["id"]?.ToString() ?? "";
+        return masaStackConfig.GetId(project, MasaStackConstant.WEB);
     }
 }
