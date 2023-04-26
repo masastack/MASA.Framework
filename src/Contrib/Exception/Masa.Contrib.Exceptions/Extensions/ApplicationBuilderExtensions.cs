@@ -17,13 +17,10 @@ public static class ApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseMasaExceptionHandler(
         this IApplicationBuilder app,
-        Action<MasaExceptionHandlerOptions>? exceptionHandlingOptions = null,
-        string? defaultCulture = null)
+        Action<MasaExceptionHandlerOptions>? exceptionHandlingOptions = null)
     {
         var option = new MasaExceptionHandlerOptions();
         exceptionHandlingOptions?.Invoke(option);
-
-        app.UseI18n(defaultCulture);
 
         app.UseMiddleware<ExceptionHandlerMiddleware>(Options.Create(option));
 
