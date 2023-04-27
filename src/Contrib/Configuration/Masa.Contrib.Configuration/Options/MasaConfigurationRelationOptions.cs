@@ -41,7 +41,7 @@ public class MasaConfigurationRelationOptions
     /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public MasaConfigurationRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
+    private MasaConfigurationRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
         where TModel : class
     {
         name ??= Options.DefaultName;
