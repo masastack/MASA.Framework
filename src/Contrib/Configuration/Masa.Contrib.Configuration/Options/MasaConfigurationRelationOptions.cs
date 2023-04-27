@@ -23,13 +23,13 @@ public class MasaConfigurationRelationOptions
     /// Map Section relationship By ConfigurationApi
     /// </summary>
     /// <typeparam name="TModel"></typeparam>
-    /// <param name="parentSection">The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType</param>
+    /// <param name="appId">Dcc's appId</param>
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
     /// <param name="name"></param>
     /// <returns></returns>
-    public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string parentSection, string? section = null, string? name = null)
+    public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string appId, string? section = null, string? name = null)
         where TModel : class
-        => Mapping<TModel>(SectionTypes.ConfigurationApi, parentSection, section, name);
+        => Mapping<TModel>(SectionTypes.ConfigurationApi, appId, section, name);
 
     /// <summary>
     /// Map Section relationship
