@@ -23,7 +23,7 @@ public class MasaConfigurationRelationOptions
     /// Map Section relationship By ConfigurationApi
     /// </summary>
     /// <typeparam name="TModel"></typeparam>
-    /// <param name="appId">Dcc's appId</param>
+    /// <param name="appId">Distributed Configuration Center's appId</param>
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
     /// <param name="name"></param>
     /// <returns></returns>
