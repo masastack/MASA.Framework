@@ -13,16 +13,19 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
     private readonly IUserContext? _userContext;
     private readonly TDbContext _context;
     private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
+    private readonly ITypeConvertProvider _typeConvertProvider;
 
     public SoftDeleteSaveChangesFilter(
         MasaDbContextOptions<TDbContext> masaDbContextOptions,
         TDbContext dbContext,
-        IUserContext? userContext = null)
+        IUserContext? userContext = null,
+        ITypeConvertProvider? typeConvertProvider = null)
     {
         _userIdType = typeof(TUserId);
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;
         _userContext = userContext;
+        _typeConvertProvider = typeConvertProvider ?? new DefaultTypeConvertProvider();
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -103,12 +106,9 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
 
     private object? GetUserId(string? userId)
     {
-        if (userId == null)
+        if (string.IsNullOrWhiteSpace(userId))
             return null;
 
-        if (_userIdType == typeof(Guid))
-            return Guid.Parse(userId);
-
-        return Convert.ChangeType(userId, _userIdType);
+        return _typeConvertProvider.ConvertTo(userId, _userIdType);
     }
 }
