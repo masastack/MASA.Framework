@@ -77,7 +77,10 @@ internal static class DbContextExtensions
             var userIdType = serviceProvider.GetService<IOptions<AuditEntityOptions>>()?.Value.UserIdType ?? typeof(Guid);
             return typeof(SaveChangeFilter<,>).MakeGenericType(type, userIdType);
         });
-        return Activator.CreateInstance(saveChangeFilterType, serviceProvider.GetService<IUserContext>())!;
+        return Activator.CreateInstance(saveChangeFilterType,
+            serviceProvider.GetService<IUserContext>(),
+            serviceProvider.GetService<ITypeAndDefaultValueProvider>(),
+            serviceProvider.GetService<ITypeConvertProvider>())!;
     }
 
     #endregion
@@ -99,7 +102,8 @@ internal static class DbContextExtensions
             softDeleteSaveChangesFilterType,
             serviceProvider.GetRequiredService<MasaDbContextOptions<TDbContextImplementation>>(),
             serviceProvider.GetRequiredService<TDbContextImplementation>(),
-            serviceProvider.GetService<IUserContext>())!;
+            serviceProvider.GetService<IUserContext>(),
+            serviceProvider.GetService<ITypeConvertProvider>())!;
     }
 
     #endregion

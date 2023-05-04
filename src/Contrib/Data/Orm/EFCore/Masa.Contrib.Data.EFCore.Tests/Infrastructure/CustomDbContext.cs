@@ -20,6 +20,8 @@ public class CustomDbContext : MasaDbContext, ICustomDbContext
     {
         modelBuilder.InitializeStudentConfiguration();
         modelBuilder.Entity<User>();
+        modelBuilder.Entity<People>();
+        modelBuilder.Entity<People2>();
     }
 }
 
