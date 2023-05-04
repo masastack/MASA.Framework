@@ -8,7 +8,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
 {
     private readonly object _lock = new();
 
-    private readonly IDaprProcessProvider _daprProvider;
+    private readonly IDaprProcessProvider _daprProcessProvider;
     private readonly IProcessProvider _processProvider;
     private readonly ILogger<DaprProcess>? _logger;
     private readonly IOptionsMonitor<DaprOptions> _daprOptions;
@@ -29,7 +29,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
     private bool _isFirst = true;
 
     public DaprProcess(
-        IDaprProcessProvider daprProvider,
+        IDaprProcessProvider daprProcessProvider,
         IProcessProvider processProvider,
         IOptionsMonitor<DaprOptions> daprOptions,
         IDaprEnvironmentProvider daprEnvironmentProvider,
@@ -38,7 +38,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null)
         : base(daprEnvironmentProvider, masaAppConfigureOptions, daprProvide)
     {
-        _daprProvider = daprProvider;
+        _daprProcessProvider = daprProcessProvider;
         _processProvider = processProvider;
         _logger = logger;
         _daprOptions = daprOptions;
@@ -67,7 +67,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         UpdateStatus(DaprProcessStatus.Starting);
         var commandLineBuilder = CreateCommandLineBuilder(options);
 
-        _process = _daprProvider.DaprStart(
+        _process = _daprProcessProvider.DaprStart(
             commandLineBuilder.ToString(),
             options.CreateNoWindow,
             (_, args) =>
@@ -111,6 +111,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         {
             // Register the child process to the job object to ensure that the child process terminates when the parent process terminates
             // Windows only
+
             ChildProcessTracker.AddProcess(_process);
 
             DaprEnvironmentProvider.TrySetHttpPort(SuccessDaprOptions.DaprHttpPort);
@@ -158,7 +159,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         _process?.Kill();
         if (SuccessDaprOptions!.EnableSsl is not true)
         {
-            _daprProvider.DaprStop(SuccessDaprOptions.AppId);
+            _daprProcessProvider.DaprStop(SuccessDaprOptions.AppId);
         }
 
         if (SuccessDaprOptions.DaprHttpPort != null)
@@ -231,7 +232,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
                 return;
             }
 
-            var daprList = _daprProvider.GetDaprList(SuccessDaprOptions.AppId);
+            var daprList = _daprProcessProvider.GetDaprList(SuccessDaprOptions.AppId);
             if (daprList.Count > 1)
             {
                 _logger?.LogDebug("dapr sidecar appears more than 1 same appid, this may cause error");

@@ -9,6 +9,8 @@ public static class DaprStarterConstant
 
     public const string DEFAULT_FILE_NAME = "dapr";
 
+    public const string DEFAULT_SIDECAR_FILE_NAME = "daprd";
+
     public const string DEFAULT_PROCESS_NAME = "dapr-starter";
 
     public const string DEFAULT_ARGUMENT_PREFIX = "--";

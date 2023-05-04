@@ -54,10 +54,17 @@ public abstract class DaprProcessBase
             MetricsPort = options.MetricsPort,
             ProfilePort = options.ProfilePort,
             UnixDomainSocket = options.UnixDomainSocket,
-            DaprMaxRequestSize = options.DaprMaxRequestSize
+            DaprMaxRequestSize = options.DaprMaxRequestSize,
+            PlacementHostAddress = options.PlacementHostAddress
         };
         sidecarOptions.TrySetHttpPort(options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort());
         sidecarOptions.TrySetGrpcPort(options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort());
+
+        if (sidecarOptions.EnableDefaultPlacementHostAddress && sidecarOptions.PlacementHostAddress.IsNullOrWhiteSpace())
+        {
+            var port = Environment.OSVersion.Platform == PlatformID.Win32NT ? 6050 : 50005;
+            sidecarOptions.PlacementHostAddress = $"127.0.0.1:{port}";
+        }
 
         return sidecarOptions;
     }
@@ -81,7 +88,8 @@ public abstract class DaprProcessBase
             .Add("metrics-port", options.MetricsPort?.ToString() ?? string.Empty, options.MetricsPort == null)
             .Add("profile-port", options.ProfilePort?.ToString() ?? string.Empty, options.ProfilePort == null)
             .Add("unix-domain-socket", options.UnixDomainSocket ?? string.Empty, options.UnixDomainSocket == null)
-            .Add("dapr-http-max-request-size", options.DaprMaxRequestSize?.ToString() ?? string.Empty, options.DaprMaxRequestSize == null);
+            .Add("dapr-http-max-request-size", options.DaprMaxRequestSize?.ToString() ?? string.Empty, options.DaprMaxRequestSize == null)
+            .Add("placement-host-address", options.PlacementHostAddress, options.PlacementHostAddress.IsNullOrWhiteSpace());
 
         SuccessDaprOptions ??= options;
         return commandLineBuilder;

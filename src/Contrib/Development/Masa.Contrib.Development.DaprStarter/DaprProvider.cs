@@ -68,7 +68,7 @@ public class DaprProcessProvider : IDaprProcessProvider
             exitAction.Invoke();
             _logger?.LogDebug("{Name} process has exited", DaprStarterConstant.DEFAULT_PROCESS_NAME);
         };
-        return processUtils.Run(DaprStarterConstant.DEFAULT_FILE_NAME, $"run {arguments}", createNoWindow);
+        return processUtils.Run(DaprStarterConstant.DEFAULT_SIDECAR_FILE_NAME, $" {arguments}", createNoWindow);
     }
 
     private static void DaprProcess_OutputDataReceived(DataReceivedEventArgs e)
@@ -113,11 +113,20 @@ public class DaprProcessProvider : IDaprProcessProvider
 
     public void DaprStop(string appId)
     {
-        var process = new ProcessUtils(_logger).Run(
-            $"{DaprStarterConstant.DEFAULT_FILE_NAME}",
-            $"stop {appId}",
-            createNoWindow: false,
-            isWait: false);
-        process.WaitForExit();
+        var daprList = GetDaprList(appId);
+        var pid = 0;
+        foreach (var dapr in daprList)
+        {
+            try
+            {
+                pid = dapr.PId;
+                var process = Process.GetProcessById(dapr.PId);
+                process.Kill();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error stopping dapr sidecar, appid is {AppId}, pid is {PId}", appId, pid);
+            }
+        }
     }
 }

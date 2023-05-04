@@ -184,6 +184,8 @@ public class DaprOptions: DaprOptionsBase
         }
     }
 
+    public string PlacementHostAddress { get; set; }
+
     public bool IsIncompleteAppId()
     {
         return !DisableAppIdSuffix && (AppIdSuffix == null || AppIdSuffix.Trim() != string.Empty);

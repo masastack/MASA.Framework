@@ -14,6 +14,14 @@ internal class SidecarOptions : DaprOptionsBase
     /// </summary>
     public string AppId { get; }
 
+    /// <summary>
+    /// Whether to use the default placement host address when no PlacementHostAddress is specified
+    /// default: true
+    /// </summary>
+    public bool EnableDefaultPlacementHostAddress { get; set; } = true;
+
+    public string PlacementHostAddress { get; set; }
+
     // ReSharper disable once InconsistentNaming
     public SidecarOptions(
         string appId,
