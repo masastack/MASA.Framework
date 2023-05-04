@@ -55,31 +55,4 @@ public class DaprEnvironmentProviderTest
         var port = _daprEnvironmentProvider.GetGrpcPort();
         Assert.AreEqual(grpcPort, port);
     }
-
-    [TestMethod]
-    // ReSharper disable once InconsistentNaming
-    public void TestCompleteDaprEnvironment()
-    {
-        // ReSharper disable once InconsistentNaming
-        ushort? grpcPort = null;
-        ushort? httpPort = null;
-        _daprEnvironmentProvider.CompleteDaprEnvironment(httpPort, grpcPort);
-
-        grpcPort = _daprEnvironmentProvider.GetGrpcPort();
-        Assert.AreEqual(null, grpcPort);
-
-        httpPort = _daprEnvironmentProvider.GetHttpPort();
-        Assert.AreEqual(null, httpPort);
-
-        httpPort = 9;
-        grpcPort = 10;
-
-        _daprEnvironmentProvider.CompleteDaprEnvironment(httpPort, grpcPort);
-
-        httpPort = _daprEnvironmentProvider.GetHttpPort();
-        Assert.AreEqual((ushort)9, httpPort);
-
-        grpcPort = _daprEnvironmentProvider.GetGrpcPort();
-        Assert.AreEqual((ushort)10, grpcPort);
-    }
 }

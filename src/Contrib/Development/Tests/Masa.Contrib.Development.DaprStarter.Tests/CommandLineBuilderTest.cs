@@ -14,7 +14,7 @@ public class CommandLineBuilderTest
     [DataRow(5001, 5000, "--app-id test --dapr-grpc-port 5001 --dapr-http-port 5000")]
     public void TestToString(int? grpcPort, int? httpPort, string expectedResult)
     {
-        var builder = new CommandLineBuilder(Masa.BuildingBlocks.Development.DaprStarter.Constant.DEFAULT_ARGUMENT_PREFIX);
+        var builder = new CommandLineBuilder(Masa.BuildingBlocks.Development.DaprStarter.DaprStarterConstant.DEFAULT_ARGUMENT_PREFIX);
         builder
             .Add("app-id", "test", false)
             .Add("dapr-grpc-port", grpcPort?.ToString() ?? string.Empty, !(grpcPort > 0))

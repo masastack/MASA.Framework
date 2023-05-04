@@ -25,33 +25,19 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
     {
         if (httpPort is > 0)
         {
-            SetHttpPort(httpPort.Value);
+            Environment.SetEnvironmentVariable(HTTP_PORT, httpPort.Value.ToString());
             return true;
         }
         return false;
     }
 
-    // ReSharper disable once InconsistentNaming
     public bool TrySetGrpcPort(ushort? grpcPort)
     {
         if (grpcPort is > 0)
         {
-            SetGrpcPort(grpcPort.Value);
+            Environment.SetEnvironmentVariable(GRPC_PORT, grpcPort.Value.ToString());
             return true;
         }
         return false;
-    }
-
-    public void SetHttpPort(ushort httpPort) => Environment.SetEnvironmentVariable(HTTP_PORT, httpPort.ToString());
-
-    // ReSharper disable once InconsistentNaming
-    public void SetGrpcPort(ushort grpcPort) => Environment.SetEnvironmentVariable(GRPC_PORT, grpcPort.ToString());
-
-    // ReSharper disable once InconsistentNaming
-    public void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort)
-    {
-        if (grpcPort is > 0) SetGrpcPort(grpcPort.Value);
-
-        if (httpPort is > 0) SetHttpPort(httpPort.Value);
     }
 }

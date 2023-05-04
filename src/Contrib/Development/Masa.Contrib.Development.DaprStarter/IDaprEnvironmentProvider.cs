@@ -25,12 +25,4 @@ public interface IDaprEnvironmentProvider
     /// <returns></returns>
     // ReSharper disable once InconsistentNaming
     bool TrySetGrpcPort(ushort? grpcPort);
-
-    void SetHttpPort(ushort httpPort);
-
-    // ReSharper disable once InconsistentNaming
-    void SetGrpcPort(ushort grpcPort);
-
-    // ReSharper disable once InconsistentNaming
-    void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort);
 }

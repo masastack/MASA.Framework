@@ -54,7 +54,8 @@ public static class ServiceCollectionExtensions
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
         var daprEnvironmentProvider = serviceProvider.GetRequiredService<IDaprEnvironmentProvider>();
-        daprEnvironmentProvider.CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
+        daprEnvironmentProvider.TrySetGrpcPort(options.CurrentValue.DaprGrpcPort);
+        daprEnvironmentProvider.TrySetHttpPort(options.CurrentValue.DaprHttpPort);
 
         if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 

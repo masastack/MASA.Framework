@@ -3,6 +3,9 @@
 
 namespace Masa.BuildingBlocks.Development.DaprStarter;
 
+/// <summary>
+/// Manage dapr sidecar start or stop
+/// </summary>
 public interface IDaprProcess : IDisposable
 {
     void Start();

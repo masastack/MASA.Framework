@@ -3,53 +3,59 @@
 
 // ReSharper disable once CheckNamespace
 
-namespace Masa.Contrib.Development.DaprStarter;
+namespace Masa.BuildingBlocks.Development.DaprStarter;
 
-[ExcludeFromCodeCoverage]
-internal class DaprCoreOptions
+public abstract class DaprOptionsBase
 {
-    /// <summary>
-    /// The id for your application, used for service discovery
-    /// Required, no blanks allowed
-    /// </summary>
-    public string AppId { get; }
+    private ushort? _appPort;
 
     /// <summary>
     /// The port your application is listening on
+    /// Required. Must be between 0-65535
     /// </summary>
-    public ushort AppPort { get; }
+    public ushort? AppPort
+    {
+        get => _appPort;
+        set
+        {
+            if (value != null)
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(AppPort));
+
+            _appPort = value;
+        }
+    }
 
     /// <summary>
     /// The protocol (gRPC or HTTP) Dapr uses to talk to the application. Valid values are: http or grpc
     /// </summary>
-    public Protocol? AppProtocol { get; }
+    public Protocol? AppProtocol { get; protected set; }
 
     /// <summary>
     /// Enable https when Dapr invokes the application
     /// </summary>
-    public bool? EnableSsl { get; }
+    public bool? EnableSsl { get; set; }
 
     /// <summary>
     /// The gRPC port for Dapr to listen on
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public ushort? DaprGrpcPort { get; private set; }
+    public virtual ushort? DaprGrpcPort { get; set; }
 
     /// <summary>
     /// The HTTP port for Dapr to listen on
     /// </summary>
-    public ushort? DaprHttpPort { get; private set; }
+    public virtual ushort? DaprHttpPort { get; set; }
 
-    public bool EnableHeartBeat { get; private set; }
+    public bool EnableHeartBeat { get; set; }
 
-    public int HeartBeatInterval { get; set; }
+    public virtual int HeartBeatInterval { get; set; }
 
     public bool CreateNoWindow { get; set; } = true;
 
     /// <summary>
     /// The concurrency level of the application, otherwise is unlimited
     /// </summary>
-    public int? MaxConcurrency { get; set; }
+    public virtual int? MaxConcurrency { get; set; }
 
     /// <summary>
     /// Dapr configuration file
@@ -73,20 +79,10 @@ internal class DaprCoreOptions
     public bool? EnableProfiling { get; set; }
 
     /// <summary>
-    /// The image to build the code in. Input is: repository/image
-    /// </summary>
-    public string? Image { get; set; }
-
-    /// <summary>
     /// The log verbosity. Valid values are: debug, info, warn, error, fatal, or panic
     /// default: info
     /// </summary>
     public LogLevel? LogLevel { get; set; }
-
-    /// <summary>
-    /// default: localhost
-    /// </summary>
-    public string? PlacementHostAddress { get; set; }
 
     /// <summary>
     /// Address for the Sentry CA service
@@ -96,12 +92,12 @@ internal class DaprCoreOptions
     /// <summary>
     /// The port that Dapr sends its metrics information to
     /// </summary>
-    public ushort? MetricsPort { get; set; }
+    public virtual ushort? MetricsPort { get; set; }
 
     /// <summary>
     /// The port for the profile server to listen on
     /// </summary>
-    public ushort? ProfilePort { get; set; }
+    public virtual ushort? ProfilePort { get; set; }
 
     /// <summary>
     /// Path to a unix domain socket dir mount. If specified
@@ -113,45 +109,5 @@ internal class DaprCoreOptions
     /// <summary>
     /// Max size of request body in MB.
     /// </summary>
-    public int? DaprMaxRequestSize { get; set; }
-
-    // ReSharper disable once InconsistentNaming
-    public DaprCoreOptions(
-        string appId,
-        ushort appPort,
-        Protocol? appProtocol,
-        bool? enableSsl,
-        ushort? daprGRPCPort,
-        ushort? daprHttpPort,
-        bool enableHeartBeat)
-    {
-        AppId = appId;
-        AppPort = appPort;
-        AppProtocol = appProtocol;
-        EnableSsl = enableSsl;
-        DaprGrpcPort = daprGRPCPort;
-        DaprHttpPort = daprHttpPort;
-        EnableHeartBeat = enableHeartBeat;
-    }
-
-    public bool TrySetHttpPort(ushort? httpPort)
-    {
-        if (DaprHttpPort == null && httpPort is > 0)
-        {
-            DaprHttpPort = httpPort;
-            return true;
-        }
-        return false;
-    }
-
-    // ReSharper disable once InconsistentNaming
-    public bool TrySetGrpcPort(ushort? grpcPort)
-    {
-        if (DaprGrpcPort == null && grpcPort is > 0)
-        {
-            DaprGrpcPort = grpcPort;
-            return true;
-        }
-        return false;
-    }
+    public virtual int? DaprMaxRequestSize { get; set; }
 }

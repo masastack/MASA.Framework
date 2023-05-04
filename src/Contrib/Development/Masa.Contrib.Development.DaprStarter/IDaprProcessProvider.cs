@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Development.DaprStarter;
 
-public interface IDaprProvider
+public interface IDaprProcessProvider
 {
     List<DaprRuntimeOptions> GetDaprList(string appId);
 
@@ -13,6 +13,4 @@ public interface IDaprProvider
         Action exitAction);
 
     void DaprStop(string appId);
-
-    bool IsExist(string appId);
 }
