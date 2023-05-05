@@ -15,15 +15,14 @@ public abstract class DaprProcessBase
     private static readonly string UserFilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     internal SidecarOptions? SuccessDaprOptions;
-    protected readonly IOptionsMonitor<DaprOptions> _daprOptions;
-    protected static string? _defaultDaprFileName;
-    protected static string? _defaultSidecarFileName;
+    protected readonly IOptionsMonitor<DaprOptions> DaprOptions;
+    private static string? _defaultDaprFileName;
+    private static string? _defaultSidecarFileName;
 
     /// <summary>
     /// record whether dapr is initialized for the first time
     /// </summary>
-    protected bool _isFirst = true;
-
+    protected bool IsFirst = true;
 
     protected DaprProcessBase(
         IDaprEnvironmentProvider daprEnvironmentProvider,
@@ -32,7 +31,7 @@ public abstract class DaprProcessBase
     {
         DaprEnvironmentProvider = daprEnvironmentProvider;
         _daprProvider = daprProvider;
-        _daprOptions = daprOptions;
+        DaprOptions = daprOptions;
     }
 
     internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
@@ -131,14 +130,13 @@ public abstract class DaprProcessBase
             .Add("enable-api-logging", () => "", options.EnableApiLogging is not true)
             .Add("enable-metrics", () => "", options.EnableMetrics is not true)
             .Add("mode", () => options.Mode, options.Mode.IsNullOrWhiteSpace())
-            .Add(options.ExtendedParameter, () => "");
+            .Add(options.ExtendedParameter, () => "", options.ExtendedParameter.IsNullOrWhiteSpace());
 
-        if (_isFirst)
-        {
-            _defaultDaprFileName = Path.Combine(options.DaprRootPath, GetFileName(DaprStarterConstant.DEFAULT_DAPR_FILE_NAME));
-            _defaultSidecarFileName = Path.Combine(options.RootPath, "bin", GetFileName(DaprStarterConstant.DEFAULT_FILE_NAME));
-            SuccessDaprOptions = options;
-        }
+        if (!IsFirst)
+            return commandLineBuilder;
+
+        SetDefaultFileName(options.DaprRootPath, options.RootPath);
+        SuccessDaprOptions = options;
 
         return commandLineBuilder;
     }
@@ -166,7 +164,7 @@ public abstract class DaprProcessBase
     static ushort? GetPort(string data, string pattern)
     {
         ushort? port = null;
-        var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+        var regex = new Regex(pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
         var match = regex.Matches(data);
         if (match.Count > 0)
         {
@@ -197,4 +195,14 @@ public abstract class DaprProcessBase
     #endregion
 
     static string GetFileName(string fileName) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"{fileName}.exe" : fileName;
+
+    protected static string GetDefaultDaprFileName() => _defaultDaprFileName!;
+
+    protected static string GetDefaultSidecarFileName() => _defaultSidecarFileName!;
+
+    private static void SetDefaultFileName(string daprRootPath, string sidecarRootPath)
+    {
+        _defaultDaprFileName = Path.Combine(daprRootPath, GetFileName(DaprStarterConstant.DEFAULT_DAPR_FILE_NAME));
+        _defaultSidecarFileName = Path.Combine(sidecarRootPath, "bin", GetFileName(DaprStarterConstant.DEFAULT_FILE_NAME));
+    }
 }

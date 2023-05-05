@@ -9,7 +9,36 @@ public class DefaultAppPortProvider : IAppPortProvider
 
     public DefaultAppPortProvider(IServer server) => _server = server;
 
+    public bool GetEnableSsl(ushort appPort)
+    {
+        var ports = GetPorts();
+        if (ports.Any(p => p.Port == appPort))
+        {
+            var port = ports.First(p => p.Port == appPort);
+            return port.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+        }
+
+        throw new UserFriendlyException($"The current port {appPort} is unavailable, Dapr failed to start");
+    }
+
     public (bool EnableSsl, ushort AppPort) GetAppPort(bool? enableSsl)
+    {
+        var ports = GetPorts();
+
+        if (ports.Count == 1)
+        {
+            return new(ports[0].Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), (ushort)ports[0].Item2);
+        }
+
+        if (enableSsl is false && ports.Any(p => p.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)))
+        {
+            return new(false, GetAppPort(ports, false));
+        }
+
+        return new(true, GetAppPort(ports, true));
+    }
+
+    private List<(string Scheme, int Port)> GetPorts()
     {
         var addresses = _server.Features.Get<IServerAddressesFeature>()?.Addresses;
         if (addresses is { IsReadOnly: false, Count: 0 })
@@ -19,19 +48,9 @@ public class DefaultAppPortProvider : IAppPortProvider
             .Select(address => new Uri(address))
             .Where(address
                 => address.Scheme.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)
-                || address.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
+                   || address.Scheme.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
             .Select(address => new ValueTuple<string, int>(address.Scheme, address.Port)).ToList();
-
-        if (ports.Count == 1)
-        {
-            return new(ports[0].Item1.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase), (ushort)ports[0].Item2);
-        }
-
-        if (enableSsl is true && ports.Any(p => p.Item1.Equals(Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase)))
-        {
-            return new(true, GetAppPort(ports, true));
-        }
-        return new(false, GetAppPort(ports, false));
+        return ports;
     }
 
     public static ushort GetAppPort(List<ValueTuple<string, int>> ports, bool enableSsl)
@@ -43,6 +62,7 @@ public class DefaultAppPortProvider : IAppPortProvider
                 .Select(p => (ushort)p.Item2)
                 .FirstOrDefault();
         }
+
         return ports
             .Where(p => p.Item1.Equals(Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase))
             .Select(p => (ushort)p.Item2)

@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Development.DaprStarter;
 
+#pragma warning disable S3236
 [ExcludeFromCodeCoverage]
 internal class SidecarOptions : DaprOptionsBase
 {
@@ -184,3 +185,4 @@ internal class SidecarOptions : DaprOptionsBase
         };
     }
 }
+#pragma warning restore S3236

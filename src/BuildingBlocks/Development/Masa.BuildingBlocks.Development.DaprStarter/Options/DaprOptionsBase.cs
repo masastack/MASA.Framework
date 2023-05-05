@@ -5,6 +5,7 @@
 
 namespace Masa.BuildingBlocks.Development.DaprStarter;
 
+#pragma warning disable S3236
 public abstract class DaprOptionsBase
 {
     private ushort? _appPort;
@@ -29,7 +30,7 @@ public abstract class DaprOptionsBase
     /// The protocol (gRPC or HTTP) Dapr uses to talk to the application. Valid values are: http or grpc
     /// default: HTTP
     /// </summary>
-    public Protocol? AppProtocol { get; protected set; }
+    public Protocol? AppProtocol { get; protected set; } = Protocol.Http;
 
     /// <summary>
     /// Enable https when Dapr invokes the application
@@ -121,3 +122,4 @@ public abstract class DaprOptionsBase
     /// </summary>
     public string? UnixDomainSocket { get; set; }
 }
+#pragma warning restore S3236
