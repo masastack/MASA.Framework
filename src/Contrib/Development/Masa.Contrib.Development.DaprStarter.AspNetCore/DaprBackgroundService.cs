@@ -11,18 +11,21 @@ public class DaprBackgroundService : BackgroundService
     private readonly DaprOptions _options;
     private readonly IHostApplicationLifetime _hostApplicationLifetime;
     private readonly ILogger<DaprBackgroundService>? _logger;
+    private readonly IServiceProvider _serviceProvider;
 
     public DaprBackgroundService(
         IAppPortProvider appPortProvider,
         IDaprProcess daprProcess,
         IOptionsMonitor<DaprOptions> options,
         IHostApplicationLifetime hostApplicationLifetime,
+        IServiceProvider serviceProvider,
         ILogger<DaprBackgroundService>? logger)
     {
         _appPortProvider = appPortProvider;
         _daprProcess = daprProcess;
         _options = options.CurrentValue;
         _hostApplicationLifetime = hostApplicationLifetime;
+        _serviceProvider = serviceProvider;
         _logger = logger;
     }
 
@@ -41,21 +44,36 @@ public class DaprBackgroundService : BackgroundService
         {
             _logger?.LogInformation("{Name} is Starting ...", nameof(DaprBackgroundService));
 
-            CheckCompletionAppPort(_options);
+            CheckCompletionAppPortAndEnableSSl(_options);
+            PortUtils.CheckCompletionPort(_options, _serviceProvider);
 
             _daprProcess.Start();
         }
     }
 
-    private void CheckCompletionAppPort(DaprOptions daprOptions)
+    private void CheckCompletionAppPortAndEnableSSl(DaprOptions daprOptions)
     {
-        if (daprOptions.AppPort == null)
+        if (daprOptions.AppPort == null || daprOptions.EnableSsl == null)
         {
-            CompletionAppPort(daprOptions);
+            if (daprOptions.EnableSsl == null && daprOptions.AppPort != null)
+            {
+                daprOptions.EnableSsl = _appPortProvider.GetEnableSsl(daprOptions.AppPort.Value);
+            }
+            else
+            {
+                CompletionAppPortAndEnableSSl(daprOptions);
+            }
+        }
+        else
+        {
+            if (daprOptions.EnableSsl != _appPortProvider.GetEnableSsl(daprOptions.AppPort.Value))
+            {
+                throw new UserFriendlyException($"The current AppPort: {daprOptions.AppPort.Value} is not an {(daprOptions.EnableSsl is true ? "Https" : "Http")} port, Dapr failed to start");
+            }
         }
     }
 
-    private void CompletionAppPort(DaprOptions daprOptions)
+    private void CompletionAppPortAndEnableSSl(DaprOptions daprOptions)
     {
         var item = _appPortProvider.GetAppPort(daprOptions.EnableSsl);
         if (daprOptions.EnableSsl == null)

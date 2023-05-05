@@ -21,23 +21,18 @@ public static class ChildProcessTracker
     /// <param name="process"></param>
     public static void AddProcess(Process? process)
     {
-        if (Environment.OSVersion.Platform != PlatformID.Win32NT)
-        {
-            //Only supported on windows
-            return;
-        }
-
         if (process == null)
             return;
 
-        if (s_jobHandle != IntPtr.Zero)
+        if (SJobHandle != IntPtr.Zero)
         {
-            bool success = AssignProcessToJobObject(s_jobHandle, process.Handle);
+            bool success = AssignProcessToJobObject(SJobHandle, process.Handle);
             if (!success && !process.HasExited)
                 throw new System.ComponentModel.Win32Exception();
         }
     }
-
+#pragma warning disable S3963
+#pragma warning disable S3877
     static ChildProcessTracker()
     {
         // This feature requires Windows 8 or later. To support Windows 7 requires
@@ -51,26 +46,29 @@ public static class ChildProcessTracker
         // The job name is optional (and can be null) but it helps with diagnostics.
         //  If it's not null, it has to be unique. Use SysInternals' Handle command-line
         //  utility: handle -a ChildProcessTracker
-        string jobName = "ChildProcessTracker" + Process.GetCurrentProcess().Id;
-        s_jobHandle = CreateJobObject(IntPtr.Zero, jobName);
+        string jobName = "ChildProcessTracker" + Environment.ProcessId;
+        SJobHandle = CreateJobObject(IntPtr.Zero, jobName);
 
-        var info = new JOBOBJECT_BASIC_LIMIT_INFORMATION();
+        var info = new JobObjectBasicLimitInformation
+        {
+            //  be killed, too.
+            //  close the job handle, and when that happens, we want the child processes to
+            // This is the key flag. When our process is killed, Windows will automatically
+            LimitFlags = JobObjectLimits.JobObjectLimitKillOnJobClose
+        };
 
-        // This is the key flag. When our process is killed, Windows will automatically
-        //  close the job handle, and when that happens, we want the child processes to
-        //  be killed, too.
-        info.LimitFlags = JOBOBJECTLIMIT.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        var extendedInfo = new JobObjectExtendedLimitInformation
+        {
+            BasicLimitInformation = info
+        };
 
-        var extendedInfo = new JOBOBJECT_EXTENDED_LIMIT_INFORMATION();
-        extendedInfo.BasicLimitInformation = info;
-
-        int length = Marshal.SizeOf(typeof(JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
+        int length = Marshal.SizeOf(typeof(JobObjectExtendedLimitInformation));
         IntPtr extendedInfoPtr = Marshal.AllocHGlobal(length);
         try
         {
             Marshal.StructureToPtr(extendedInfo, extendedInfoPtr, false);
 
-            if (!SetInformationJobObject(s_jobHandle, JobObjectInfoType.ExtendedLimitInformation,
+            if (!SetInformationJobObject(SJobHandle, JobObjectInfoType.ExtendedLimitInformation,
                     extendedInfoPtr, (uint)length))
             {
                 throw new System.ComponentModel.Win32Exception();
@@ -81,13 +79,14 @@ public static class ChildProcessTracker
             Marshal.FreeHGlobal(extendedInfoPtr);
         }
     }
+#pragma warning restore S3877
+#pragma warning restore S3963
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
     static extern IntPtr CreateJobObject(IntPtr lpJobAttributes, string name);
 
     [DllImport("kernel32.dll")]
-    static extern bool SetInformationJobObject(IntPtr job, JobObjectInfoType infoType,
-        IntPtr lpJobObjectInfo, uint cbJobObjectInfoLength);
+    static extern bool SetInformationJobObject(IntPtr job, JobObjectInfoType infoType, IntPtr lpJobObjectInfo, uint cbJobObjectInfoLength);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     static extern bool AssignProcessToJobObject(IntPtr job, IntPtr process);
@@ -95,14 +94,14 @@ public static class ChildProcessTracker
     // Windows will automatically close any open job handles when our process terminates.
     //  This can be verified by using SysInternals' Handle utility. When the job handle
     //  is closed, the child processes will be killed.
-    private static readonly IntPtr s_jobHandle;
+    private static readonly IntPtr SJobHandle;
 }
 
 public enum JobObjectInfoType
 {
     AssociateCompletionPortInformation = 7,
     BasicLimitInformation = 2,
-    BasicUIRestrictions = 4,
+    BasicUiRestrictions = 4,
     EndOfJobTimeInformation = 6,
     ExtendedLimitInformation = 9,
     SecurityLimitInformation = 5,
@@ -110,11 +109,11 @@ public enum JobObjectInfoType
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct JOBOBJECT_BASIC_LIMIT_INFORMATION
+public struct JobObjectBasicLimitInformation
 {
     public Int64 PerProcessUserTimeLimit;
     public Int64 PerJobUserTimeLimit;
-    public JOBOBJECTLIMIT LimitFlags;
+    public JobObjectLimits LimitFlags;
     public UIntPtr MinimumWorkingSetSize;
     public UIntPtr MaximumWorkingSetSize;
     public UInt32 ActiveProcessLimit;
@@ -124,13 +123,13 @@ public struct JOBOBJECT_BASIC_LIMIT_INFORMATION
 }
 
 [Flags]
-public enum JOBOBJECTLIMIT : uint
+public enum JobObjectLimits : uint
 {
-    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000
+    JobObjectLimitKillOnJobClose = 0x2000
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct IO_COUNTERS
+public struct IoCounters
 {
     public UInt64 ReadOperationCount;
     public UInt64 WriteOperationCount;
@@ -141,10 +140,10 @@ public struct IO_COUNTERS
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct JOBOBJECT_EXTENDED_LIMIT_INFORMATION
+public struct JobObjectExtendedLimitInformation
 {
-    public JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
-    public IO_COUNTERS IoInfo;
+    public JobObjectBasicLimitInformation BasicLimitInformation;
+    public IoCounters IoInfo;
     public UIntPtr ProcessMemoryLimit;
     public UIntPtr JobMemoryLimit;
     public UIntPtr PeakProcessMemoryUsed;

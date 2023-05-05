@@ -117,13 +117,13 @@ public class DaprProcessProvider : IDaprProcessProvider
     public void DaprStop(string fileName, string appId)
     {
         var daprList = GetDaprList(fileName, appId, out _);
-        var pid = 0;
-        foreach (var dapr in daprList)
+
+        var pidList = daprList.Select(dapr => dapr.PId).ToList();
+        foreach (var pid in pidList)
         {
             try
             {
-                pid = dapr.PId;
-                var process = Process.GetProcessById(dapr.PId);
+                var process = Process.GetProcessById(pid);
                 process.Kill();
             }
             catch (Exception ex)

@@ -48,7 +48,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         lock (_lock)
         {
             _isStopByManually = false;
-            var sidecarOptions = ConvertToSidecarOptions(_daprOptions.CurrentValue);
+            var sidecarOptions = ConvertToSidecarOptions(DaprOptions.CurrentValue);
 
             StartCore(sidecarOptions);
         }
@@ -60,7 +60,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         var commandLineBuilder = CreateCommandLineBuilder(options);
 
         _process = _daprProcessProvider.DaprStart(
-            _defaultSidecarFileName!,
+            GetDefaultSidecarFileName(),
             commandLineBuilder.ToString(),
             options.CreateNoWindow,
             (_, args) =>
@@ -68,7 +68,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
                 if (args.Data == null)
                     return;
 
-                if (_isFirst) CheckAndCompleteDaprEnvironment(args.Data);
+                if (IsFirst) CheckAndCompleteDaprEnvironment(args.Data);
             }, () => UpdateStatus(DaprProcessStatus.Stopped));
 
         _retryTime = 0;
@@ -90,6 +90,11 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         // Register the child process to the job object to ensure that the child process terminates when the parent process terminates
         // Windows only
 
+        if (Environment.OSVersion.Platform != PlatformID.Win32NT)
+        {
+            //Only supported on windows
+            return;
+        }
         ChildProcessTracker.AddProcess(_process);
     }
 
@@ -109,7 +114,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         {
             DaprEnvironmentProvider.TrySetHttpPort(SuccessDaprOptions.DaprHttpPort);
             DaprEnvironmentProvider.TrySetGrpcPort(SuccessDaprOptions.DaprGrpcPort);
-            _isFirst = false;
+            IsFirst = false;
             _retryTime = 0;
             UpdateStatus(DaprProcessStatus.Started);
         }
@@ -152,7 +157,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         _process?.Kill();
         if (SuccessDaprOptions!.EnableSsl is not true)
         {
-            _daprProcessProvider.DaprStop(_defaultSidecarFileName!, SuccessDaprOptions.AppId);
+            _daprProcessProvider.DaprStop(GetDefaultDaprFileName(), SuccessDaprOptions.AppId);
         }
 
         if (SuccessDaprOptions.DaprHttpPort != null)
@@ -194,7 +199,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
                 StopCore();
             }
 
-            _isFirst = true;
+            IsFirst = true;
             SuccessDaprOptions = null;
             _logger?.LogDebug("Dapr sidecar configuration updated, Dapr AppId is {AppId}, restarting dapr, please wait...", options.AppId);
             StartCore(sidecarOptionsByRefresh);
@@ -226,13 +231,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
             if (SuccessDaprOptions == null)
                 return;
 
-            if (SuccessDaprOptions!.EnableSsl is true)
-            {
-                _logger?.LogDebug("The dapr status cannot be monitored in https mode, the check has been skipped");
-                return;
-            }
-
-            var daprList = _daprProcessProvider.GetDaprList(_defaultDaprFileName!, SuccessDaprOptions.AppId, out bool isException);
+            var daprList = _daprProcessProvider.GetDaprList(GetDefaultDaprFileName(), SuccessDaprOptions.AppId, out bool isException);
             if (daprList.Count > 1)
             {
                 _logger?.LogDebug("dapr sidecar appears more than 1 same appid, this may cause error");

@@ -29,7 +29,7 @@ public abstract class DaprOptionsBase
     /// The protocol (gRPC or HTTP) Dapr uses to talk to the application. Valid values are: http or grpc
     /// default: HTTP
     /// </summary>
-    public Protocol? AppProtocol { get; protected set; }
+    public Protocol? AppProtocol { get; protected set; } = Protocol.Http;
 
     /// <summary>
     /// Enable https when Dapr invokes the application
