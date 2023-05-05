@@ -6,23 +6,26 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChangesFilter<TDbContext>
-    where TDbContext : MasaDbContext, IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
     where TUserId : IComparable
 {
     private readonly Type _userIdType;
     private readonly IUserContext? _userContext;
     private readonly TDbContext _context;
     private readonly MasaDbContextOptions<TDbContext> _masaDbContextOptions;
+    private readonly ITypeConvertProvider _typeConvertProvider;
 
     public SoftDeleteSaveChangesFilter(
         MasaDbContextOptions<TDbContext> masaDbContextOptions,
         TDbContext dbContext,
-        IUserContext? userContext = null)
+        IUserContext? userContext = null,
+        ITypeConvertProvider? typeConvertProvider = null)
     {
         _userIdType = typeof(TUserId);
         _masaDbContextOptions = masaDbContextOptions;
         _context = dbContext;
         _userContext = userContext;
+        _typeConvertProvider = typeConvertProvider ?? new DefaultTypeConvertProvider();
     }
 
     public void OnExecuting(ChangeTracker changeTracker)
@@ -31,27 +34,31 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
             return;
 
         changeTracker.DetectChanges();
-        var entries = changeTracker.Entries().Where(entry => entry.State == EntityState.Deleted && entry.Entity is ISoftDelete);
+
+        var userId = GetUserId(_userContext?.UserId);
+
+        var entries = changeTracker.Entries().Where(entry => entry is { State: EntityState.Deleted, Entity: ISoftDelete });
         foreach (var entity in entries)
         {
             var navigationEntries = entity.Navigations
                 .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
-                    !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null &&
-                    entries.All(e => e.Entity != navigationEntry.CurrentValue));
+                                          !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent &&
+                                          navigationEntry.CurrentValue != null &&
+                                          entries.All(e => e.Entity != navigationEntry.CurrentValue));
             HandleNavigationEntry(navigationEntries);
 
             entity.State = EntityState.Modified;
+
+            if (!bool.TryParse(entity.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) || isDeleted)
+                continue;
+
             entity.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
 
             if (entity.Entity.GetType().IsImplementerOfGeneric(typeof(IAuditEntity<>)))
             {
                 entity.CurrentValues[nameof(IAuditEntity<TUserId>.ModificationTime)] =
                     DateTime.UtcNow; //The current time to change to localization after waiting for localization
-            }
 
-            if (entity.Entity is IAuditEntity<TUserId> && _userContext != null)
-            {
-                var userId = GetUserId(_userContext.UserId);
                 if (userId != null) entity.CurrentValues[nameof(IAuditEntity<TUserId>.Modifier)] = userId;
             }
         }
@@ -84,23 +91,24 @@ public sealed class SoftDeleteSaveChangesFilter<TDbContext, TUserId> : ISaveChan
         var entityEntry = _context.Entry(dependentEntry);
         entityEntry.State = EntityState.Modified;
 
-        if (entityEntry.Entity is ISoftDelete)
+        if (entityEntry.Entity is ISoftDelete &&
+            bool.TryParse(entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)]?.ToString(), out bool isDeleted) && !isDeleted)
+        {
             entityEntry.CurrentValues[nameof(ISoftDelete.IsDeleted)] = true;
+        }
 
         var navigationEntries = entityEntry.Navigations
             .Where(navigationEntry => navigationEntry.Metadata is not ISkipNavigation &&
-                !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent && navigationEntry.CurrentValue != null);
+                                      !((IReadOnlyNavigation)navigationEntry.Metadata).IsOnDependent &&
+                                      navigationEntry.CurrentValue != null);
         HandleNavigationEntry(navigationEntries);
     }
 
     private object? GetUserId(string? userId)
     {
-        if (userId == null)
+        if (string.IsNullOrWhiteSpace(userId))
             return null;
 
-        if (_userIdType == typeof(Guid))
-            return Guid.Parse(userId);
-
-        return Convert.ChangeType(userId, _userIdType);
+        return _typeConvertProvider.ConvertTo(userId, _userIdType);
     }
 }

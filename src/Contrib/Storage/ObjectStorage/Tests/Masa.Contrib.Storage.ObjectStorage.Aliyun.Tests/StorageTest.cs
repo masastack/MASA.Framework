@@ -6,7 +6,10 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class StorageTest : TestBase
 {
-    private static FieldInfo _bucketNameFieldInfo => typeof(DefaultObjectStorageClientContainer).GetField("_bucketName",
+    private static FieldInfo ObjectStorageClientBaseFieldInfo
+        => typeof(DefaultStorageClient).GetField("AliyunStorageOptions", BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+    private static FieldInfo BucketNameFieldInfo => typeof(DefaultObjectStorageClientContainer).GetField("_bucketName",
         BindingFlags.Instance | BindingFlags.NonPublic)!;
 
     [TestMethod]
@@ -18,13 +21,6 @@ public class StorageTest : TestBase
         Assert.IsNotNull(serviceProvider.GetService<IObjectStorageClient>());
         Assert.IsNotNull(serviceProvider.GetService<IObjectStorageClientContainer>());
         Assert.IsNotNull(serviceProvider.GetService<IBucketNameProvider>());
-    }
-
-    [TestMethod]
-    public void TestAddAliyunStorageByEmptySectionReturnThrowArgumentException()
-    {
-        var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddObjectStorage(options => options.UseAliyunStorage(string.Empty)));
     }
 
     [TestMethod]
@@ -49,7 +45,68 @@ public class StorageTest : TestBase
     }
 
     [TestMethod]
-    public void TestAddAliyunStorageByJsonReturnGetOptions()
+    public void TestAddAliyunStorageAndUseOptions()
+    {
+        var services = new ServiceCollection();
+        var configurationRoot = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, true)
+            .Build();
+        services.AddSingleton<IConfiguration>(configurationRoot);
+        services.AddObjectStorage(options => options.UseAliyunStorage());
+
+        services.Configure<AliyunStorageConfigureOptions>(options =>
+        {
+            options.Storage.BucketNames.TryAdd("test-bucket", "test-bucket-new");
+            options.Storage.BucketNames.TryAdd("test-bucket3", "test-bucket3-value");
+        });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var client = serviceProvider.GetService<IObjectStorageClient>();
+        Assert.IsNotNull(client);
+
+        var bucketProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketProvider);
+
+        Assert.IsTrue(bucketProvider.GetBucketName() == "test-storage");
+        Assert.IsTrue(bucketProvider.GetBucketName("test-bucket3") == "test-bucket3-value");
+        Assert.IsTrue(bucketProvider.GetBucketName<StorageContainer>() == "test-storage2");
+    }
+
+    [TestMethod]
+    public void TestAddAliyunStorageByOptions()
+    {
+        var services = new ServiceCollection();
+        services.AddObjectStorage(options => options.UseAliyunStorage(ALiYunStorageOptions));
+        var serviceProvider = services.BuildServiceProvider();
+
+        var objectStorageClient = serviceProvider.GetRequiredService<IManualObjectStorageClient>();
+        var aliyunStorageOptions = GetAliyunStorageOptions(GetManualObjectStorageClient(objectStorageClient) as DefaultStorageClient);
+        Assert.IsTrue(aliyunStorageOptions.AccessKeyId == ALiYunStorageOptions.AccessKeyId);
+        Assert.IsTrue(aliyunStorageOptions.AccessKeySecret == ALiYunStorageOptions.AccessKeySecret);
+        Assert.IsTrue(aliyunStorageOptions.Endpoint == ALiYunStorageOptions.Endpoint);
+        Assert.IsTrue(aliyunStorageOptions.RoleArn == ALiYunStorageOptions.RoleArn);
+        Assert.IsTrue(aliyunStorageOptions.RoleSessionName == ALiYunStorageOptions.RoleSessionName);
+    }
+
+    [TestMethod]
+    public void TestAddAliyunStorage()
+    {
+        var services = new ServiceCollection();
+        services.AddObjectStorage(options => options.UseAliyunStorage());
+        var serviceProvider = services.BuildServiceProvider();
+
+        var objectStorageClient = serviceProvider.GetService<IObjectStorageClient>();
+        Assert.IsNotNull(objectStorageClient);
+
+        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketNameProvider);
+        var bucketName = bucketNameProvider.GetBucketName();
+        Assert.AreEqual(BucketNames.DEFAULT_BUCKET_NAME, bucketName);
+    }
+
+    [TestMethod]
+    public void TestAddAliyunStorageAndUseAppsettings()
     {
         var services = new ServiceCollection();
         var configurationRoot = new ConfigurationBuilder()
@@ -59,170 +116,15 @@ public class StorageTest : TestBase
         services.AddSingleton<IConfiguration>(configurationRoot);
         services.AddObjectStorage(options => options.UseAliyunStorage());
         var serviceProvider = services.BuildServiceProvider();
-        var optionProvider = serviceProvider.GetService<IAliyunStorageOptionProvider>();
-        Assert.IsNotNull(optionProvider);
-        Assert.IsFalse(optionProvider.SupportCallback);
-        Assert.IsFalse(optionProvider.IncompleteStsOptions);
 
-        var aliyunStorageOptions = optionProvider.GetOptions();
-        Assert.IsNotNull(aliyunStorageOptions);
+        var objectStorageClient = serviceProvider.GetService<IObjectStorageClient>();
+        Assert.IsNotNull(objectStorageClient);
 
-        Assert.IsTrue(aliyunStorageOptions.AccessKeyId == "Replace-With-Your-AccessKeyId");
-        Assert.IsTrue(aliyunStorageOptions.AccessKeySecret == "Replace-With-Your-AccessKeySecret");
-        Assert.IsNotNull(aliyunStorageOptions.Sts);
-        Assert.IsTrue(aliyunStorageOptions.Sts.RegionId == "cn-hangzhou");
-        Assert.IsTrue(aliyunStorageOptions.Sts.DurationSeconds == 900);
-        Assert.IsTrue(aliyunStorageOptions.Endpoint == "oss-cn-hangzhou.aliyuncs.com");
-        Assert.IsTrue(aliyunStorageOptions.TemporaryCredentialsCacheKey == "Aliyun.Storage.TemporaryCredentials");
-        Assert.IsTrue(aliyunStorageOptions.Policy == "Policy");
-        Assert.IsTrue(aliyunStorageOptions.RoleArn == "Replace-With-Your-RoleArn");
-        Assert.IsTrue(aliyunStorageOptions.RoleSessionName == "Replace-With-Your-RoleSessionName");
-    }
-
-    [TestMethod]
-    public void TestAddAliyunStorageByOptions()
-    {
-        var services = new ServiceCollection();
-        services.AddObjectStorage(options => options.UseAliyunStorage(_aLiYunStorageOptions));
-
-        var serviceProvider = services.BuildServiceProvider();
-        var optionProvider = serviceProvider.GetService<IAliyunStorageOptionProvider>();
-
-        Assert.IsNotNull(optionProvider);
-        Assert.IsFalse(optionProvider.SupportCallback);
-        Assert.IsTrue(optionProvider.IncompleteStsOptions);
-
-        var options = optionProvider.GetOptions();
-        Assert.IsTrue(options.AccessKeyId == _aLiYunStorageOptions.AccessKeyId);
-        Assert.IsTrue(options.AccessKeySecret == _aLiYunStorageOptions.AccessKeySecret);
-        Assert.IsTrue(options.Endpoint == _aLiYunStorageOptions.Endpoint);
-        Assert.IsTrue(options.RoleArn == _aLiYunStorageOptions.RoleArn);
-        Assert.IsTrue(options.RoleSessionName == _aLiYunStorageOptions.RoleSessionName);
-    }
-
-    [TestMethod]
-    public void TestAddAliyunStorage()
-    {
-        var services = new ServiceCollection();
-        services.Configure<AliyunStorageConfigureOptions>(option =>
-        {
-            option.AccessKeyId = "AccessKeyId";
-            option.AccessKeySecret = "AccessKeySecret";
-            option.Sts = new AliyunStsOptions("RegionId")
-            {
-                DurationSeconds = 900,
-                EarlyExpires = 10,
-            };
-            option.Storage = new AliyunStorageOptions()
-            {
-                Endpoint = "Endpoint",
-                TemporaryCredentialsCacheKey = "TemporaryCredentialsCacheKey",
-                Policy = "Policy",
-                RoleArn = "RoleArn",
-                RoleSessionName = "RoleSessionName",
-                CallbackUrl = "CallbackUrl",
-                CallbackBody = "CallbackBody",
-                EnableResumableUpload = true,
-                BigObjectContentLength = 200,
-                PartSize = 10,
-                Quiet = true
-            };
-        });
-        services.AddObjectStorage(options => options.UseAliyunStorage());
-
-        var serviceProvider = services.BuildServiceProvider();
-        var optionProvider = serviceProvider.GetService<IAliyunStorageOptionProvider>();
-
-        Assert.IsNotNull(optionProvider);
-        Assert.IsTrue(optionProvider.SupportCallback);
-        Assert.IsFalse(optionProvider.IncompleteStsOptions);
-
-        var options = optionProvider.GetOptions();
-
-        Assert.IsNotNull(options.Sts);
-        Assert.IsTrue(options.Sts.DurationSeconds == 900);
-        Assert.IsTrue(options.Sts.EarlyExpires == 10);
-        Assert.IsTrue(options.Sts.RegionId == "RegionId");
-        Assert.IsTrue(options.AccessKeyId == "AccessKeyId");
-        Assert.IsTrue(options.AccessKeySecret == "AccessKeySecret");
-        Assert.IsTrue(options.Endpoint == "Endpoint");
-        Assert.IsTrue(options.RoleArn == "RoleArn");
-        Assert.IsTrue(options.RoleSessionName == "RoleSessionName");
-        Assert.IsTrue(options.TemporaryCredentialsCacheKey == "TemporaryCredentialsCacheKey");
-        Assert.IsTrue(options.Policy == "Policy");
-        Assert.IsTrue(options.CallbackUrl == "CallbackUrl");
-        Assert.IsTrue(options.CallbackBody == "CallbackBody");
-        Assert.IsTrue(options.EnableResumableUpload == true);
-        Assert.IsTrue(options.BigObjectContentLength == 200);
-        Assert.IsTrue(options.PartSize == 10);
-        Assert.IsTrue(options.Quiet);
-    }
-
-    [TestMethod]
-    public void TestAddAliyunStorage2()
-    {
-        var services = new ServiceCollection();
-        services.Configure<AliyunStorageConfigureOptions>(option =>
-        {
-            option.AccessKeyId = "AccessKeyId";
-            option.AccessKeySecret = "AccessKeySecret";
-            option.Sts = new AliyunStsOptions("RegionId")
-            {
-                DurationSeconds = 900,
-                EarlyExpires = 10,
-            };
-            option.Storage = new AliyunStorageOptions()
-            {
-                Sts = new AliyunStsOptions()
-                {
-                    DurationSeconds = 1200,
-                    EarlyExpires = 100,
-                    RegionId = "RegionId2"
-                },
-                AccessKeyId = "AccessKeyId2",
-                AccessKeySecret = "AccessKeySecret2",
-                Endpoint = "Endpoint",
-                TemporaryCredentialsCacheKey = "TemporaryCredentialsCacheKey",
-                Policy = "Policy",
-                RoleArn = "RoleArn",
-                RoleSessionName = "RoleSessionName",
-                CallbackUrl = "CallbackUrl",
-                CallbackBody = "CallbackBody",
-                EnableResumableUpload = true,
-                BigObjectContentLength = 200,
-                PartSize = 10,
-                Quiet = true
-            };
-        });
-        services.AddObjectStorage(options => options.UseAliyunStorage());
-
-        var serviceProvider = services.BuildServiceProvider();
-        var optionProvider = serviceProvider.GetService<IAliyunStorageOptionProvider>();
-
-        Assert.IsNotNull(optionProvider);
-        Assert.IsTrue(optionProvider.SupportCallback);
-        Assert.IsFalse(optionProvider.IncompleteStsOptions);
-
-        var options = optionProvider.GetOptions();
-
-        Assert.IsNotNull(options.Sts);
-
-        Assert.IsTrue(options.Sts.DurationSeconds == 1200);
-        Assert.IsTrue(options.Sts.EarlyExpires == 100);
-        Assert.IsTrue(options.Sts.RegionId == "RegionId2");
-        Assert.IsTrue(options.AccessKeyId == "AccessKeyId2");
-        Assert.IsTrue(options.AccessKeySecret == "AccessKeySecret2");
-        Assert.IsTrue(options.Endpoint == "Endpoint");
-        Assert.IsTrue(options.RoleArn == "RoleArn");
-        Assert.IsTrue(options.RoleSessionName == "RoleSessionName");
-        Assert.IsTrue(options.TemporaryCredentialsCacheKey == "TemporaryCredentialsCacheKey");
-        Assert.IsTrue(options.Policy == "Policy");
-        Assert.IsTrue(options.CallbackUrl == "CallbackUrl");
-        Assert.IsTrue(options.CallbackBody == "CallbackBody");
-        Assert.IsTrue(options.EnableResumableUpload == true);
-        Assert.IsTrue(options.BigObjectContentLength == 200);
-        Assert.IsTrue(options.PartSize == 10);
-        Assert.IsTrue(options.Quiet);
+        var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
+        Assert.IsNotNull(bucketNameProvider);
+        var bucketName = bucketNameProvider.GetBucketName();
+        Assert.AreEqual("test-storage", bucketName);
+        Assert.AreEqual("test-storage2", bucketNameProvider.GetBucketName("test-bucket"));
     }
 
     [TestMethod]
@@ -263,22 +165,22 @@ public class StorageTest : TestBase
     public void TestDefaultBucketNameReturnDefaultBucketNameEqualTest()
     {
         var services = new ServiceCollection();
-        services.AddObjectStorage(options => options.UseAliyunStorage(_aLiYunStorageOptions));
+        services.AddObjectStorage(options => options.UseAliyunStorage(ALiYunStorageOptions));
         var serviceProvider = services.BuildServiceProvider();
         var bucketNameProvider = serviceProvider.GetService<IBucketNameProvider>();
         Assert.IsNotNull(bucketNameProvider);
-        Assert.AreEqual(_aLiYunStorageOptions.BucketNames.DefaultBucketName, bucketNameProvider.GetBucketName());
+        Assert.AreEqual(ALiYunStorageOptions.BucketNames.DefaultBucketName, bucketNameProvider.GetBucketName());
     }
 
     [TestMethod]
     public void TestClientContainer()
     {
         var services = new ServiceCollection();
-        _aLiYunStorageOptions.BucketNames = new BucketNames(new List<KeyValuePair<string, string>>()
+        ALiYunStorageOptions.BucketNames = new BucketNames(new List<KeyValuePair<string, string>>()
         {
             new("test-bucket", "test")
         });
-        services.AddObjectStorage(options => options.UseAliyunStorage(_aLiYunStorageOptions));
+        services.AddObjectStorage(options => options.UseAliyunStorage(ALiYunStorageOptions));
         var serviceProvider = services.BuildServiceProvider();
         var defaultClientContainer = serviceProvider.GetService<IObjectStorageClientContainer>();
         Assert.IsNotNull(defaultClientContainer);
@@ -299,18 +201,34 @@ public class StorageTest : TestBase
     public void TestClientFactory()
     {
         var services = new ServiceCollection();
-        services.AddObjectStorage(options => options.UseAliyunStorage(_aLiYunStorageOptions));
+        services.AddObjectStorage(options => options.UseAliyunStorage(ALiYunStorageOptions));
         var serviceProvider = services.BuildServiceProvider();
 
-        var clientFactory = serviceProvider.GetService<IObjectStorageClientFactory>();
-        Assert.IsNotNull(clientFactory);
+        var clientContainerFactory = serviceProvider.GetService<IObjectStorageClientContainerFactory>();
+        Assert.IsNotNull(clientContainerFactory);
 
-        var clientContainer = clientFactory.Create("test-bucket2");
+        var clientContainer = clientContainerFactory.Create();
         var bucketName = GetBucketName(clientContainer);
         Assert.IsNotNull(bucketName);
-        Assert.IsTrue(bucketName == "test-bucket2");
+        Assert.AreEqual(BucketNames.DEFAULT_BUCKET_NAME, bucketName);
+    }
+
+    private static AliyunStorageOptions GetAliyunStorageOptions(DefaultStorageClient? storageClient)
+    {
+        Assert.IsNotNull(storageClient);
+        var aliyunStorageOptions = ObjectStorageClientBaseFieldInfo.GetValue(storageClient) as AliyunStorageOptions;
+        Assert.IsNotNull(aliyunStorageOptions);
+        return aliyunStorageOptions;
     }
 
     private static string? GetBucketName(IObjectStorageClientContainer objectStorageClientContainer)
-        => _bucketNameFieldInfo.GetValue(objectStorageClientContainer)!.ToString();
+        => BucketNameFieldInfo.GetValue(objectStorageClientContainer)!.ToString();
+
+    private static IManualObjectStorageClient GetManualObjectStorageClient(IManualObjectStorageClient manualObjectStorageClient)
+    {
+        return (IManualObjectStorageClient)typeof(DefaultObjectStorageClient)
+            .GetField("_objectStorageClient")!
+            .GetValue(
+            manualObjectStorageClient)!;
+    }
 }

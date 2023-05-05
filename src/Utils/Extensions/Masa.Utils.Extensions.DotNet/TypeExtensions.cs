@@ -67,4 +67,7 @@ public static class TypeExtensions
 
         return baseType.IsImplementerOfGenericClass(genericType);
     }
+
+    public static object? GetDefaultValue(this Type type)
+        => type.IsValueType ? Activator.CreateInstance(type) : null;
 }

@@ -16,9 +16,9 @@ public class CallerTest
     public void TestAppIdByUseDapr()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -37,9 +37,9 @@ public class CallerTest
         var services = new ServiceCollection();
         var key = "callerBaseAddress" + Guid.NewGuid();
         Environment.SetEnvironmentVariable(key, DEFAULT_APP_ID);
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client =>
+            callerBuilder.UseDapr(client =>
             {
                 client.AppId = Environment.GetEnvironmentVariable(key)!;
             });
@@ -74,9 +74,9 @@ public class CallerTest
         var services = new ServiceCollection();
         var actualAppId = Guid.NewGuid().ToString();
         Environment.SetEnvironmentVariable(DEFAULT_APP_ID, actualAppId);
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -98,9 +98,9 @@ public class CallerTest
 
         var actualAppId = Guid.NewGuid().ToString();
         Environment.SetEnvironmentVariable(DEFAULT_APP_ID, actualAppId);
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();
@@ -120,9 +120,9 @@ public class CallerTest
         var services = new ServiceCollection();
         AddJsonConfig(services);
 
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseDapr(client => client.AppId = DEFAULT_APP_ID);
+            callerBuilder.UseDapr(client => client.AppId = DEFAULT_APP_ID);
         });
 
         var serviceProvider = services.BuildServiceProvider();

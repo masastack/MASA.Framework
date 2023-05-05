@@ -25,7 +25,7 @@ public static class ServiceExtensions
             }).UseAuthentication();
         });
 
-        services.AddSingleton<ITscClient>(serviceProvider =>
+        services.AddScoped<ITscClient>(serviceProvider =>
         {
             var caller = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             return new TscClient(caller);

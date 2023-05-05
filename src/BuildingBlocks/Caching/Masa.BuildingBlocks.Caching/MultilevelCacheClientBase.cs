@@ -73,13 +73,19 @@ public abstract class MultilevelCacheClientBase : CacheClientBase, IManualMultil
         => Remove<T>(GetKeys(keys));
 
     public override void Remove<T>(string key, Action<CacheOptions>? action = null)
-        => Remove<T>(new[] { key }, action);
+        => Remove<T>(new[]
+        {
+            key
+        }, action);
 
     public Task RemoveAsync<T>(params string[] keys)
         => RemoveAsync<T>(GetKeys(keys));
 
     public override Task RemoveAsync<T>(string key, Action<CacheOptions>? action = null)
-        => RemoveAsync<T>(new[] { key }, action);
+        => RemoveAsync<T>(new[]
+        {
+            key
+        }, action);
 
     public virtual void Set<T>(string key,
         T value,

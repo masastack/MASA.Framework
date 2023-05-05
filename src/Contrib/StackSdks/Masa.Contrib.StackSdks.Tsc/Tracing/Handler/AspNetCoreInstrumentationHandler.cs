@@ -5,9 +5,9 @@ namespace Masa.Contrib.StackSdks.Tsc.Tracing.Handler;
 
 public class AspNetCoreInstrumentationHandler : ExceptionHandler
 {
-    public virtual async void OnHttpRequest(Activity activity, HttpRequest httpRequest)
+    public virtual void OnHttpRequest(Activity activity, HttpRequest httpRequest)
     {
-        await activity.AddMasaSupplement(httpRequest);
+        activity.AddMasaSupplement(httpRequest);
         HttpMetricProviders.AddHttpRequestMetric(httpRequest);
     }
 

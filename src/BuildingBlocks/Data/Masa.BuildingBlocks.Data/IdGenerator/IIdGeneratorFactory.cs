@@ -3,15 +3,11 @@
 
 namespace Masa.BuildingBlocks.Data;
 
-public interface IIdGeneratorFactory : IMasaFactory<IIdGenerator>
+public interface IIdGeneratorFactory
 {
-    IGuidGenerator GuidGenerator { get; }
+    IGuidGenerator? GuidGenerator { get; }
 
-    ISequentialGuidGenerator SequentialGuidGenerator { get; }
+    ISequentialGuidGenerator? SequentialGuidGenerator { get; }
 
-    ISnowflakeGenerator SnowflakeGenerator { get; }
-
-    IIdGenerator<TOut> Create<TOut>() where TOut : notnull;
-
-    IIdGenerator<TOut> Create<TOut>(string name) where TOut : notnull;
+    ISnowflakeGenerator? SnowflakeGenerator { get; }
 }

@@ -144,7 +144,7 @@ public class DccTest
         var response = new PublishReleaseModel()
         {
             Content = string.Empty,
-            ConfigFormat = ConfigFormats.Raw
+            ConfigFormat = ConfigFormats.RAW
         };
         Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
@@ -205,7 +205,7 @@ public class DccTest
         var response = new PublishReleaseModel()
         {
             Content = JsonSerializer.Serialize(brand),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
         memoryCacheClient
@@ -228,21 +228,24 @@ public class DccTest
     {
         var builder = WebApplication.CreateBuilder();
         var brand = new Brands("Apple");
-        // builder.Services.AddMemoryCache();
-        builder.Services.AddStackExchangeRedisCache(DEFAULT_CLIENT_NAME, new RedisConfigurationOptions()
-        {
-            Servers = new List<RedisServerOptions>()
-            {
-                new("localhost", 6379)
-            }
-        }).AddMultilevelCache();
+        builder.Services.AddMultilevelCache(
+            DEFAULT_CLIENT_NAME,
+            distributedCacheBuilder => distributedCacheBuilder.UseStackExchangeRedisCache(
+                new RedisConfigurationOptions()
+                {
+                    Servers = new List<RedisServerOptions>()
+                    {
+                        new("localhost", 6379)
+                    }
+                }));
+
         string key = "Development-Default-WebApplication1-Brand".ToLower();
         var serviceProvider = builder.Services.BuildServiceProvider();
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClient>();
         var value = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         };
         multilevelCacheClient.Set(key, value);
 
@@ -285,7 +288,7 @@ public class DccTest
         string value = new PublishReleaseModel()
         {
             Content = brand.Serialize(_jsonSerializerOptions),
-            ConfigFormat = ConfigFormats.Json
+            ConfigFormat = ConfigFormats.JSON
         }.Serialize(_jsonSerializerOptions);
         multilevelCacheClient.Set(key, value);
 
@@ -340,7 +343,10 @@ public class DccTest
             Secret = "secret",
             ExpandSections = new List<DccSectionOptions>()
             {
-                new("appid2", "dev", "default2", new List<string> { "configObjects2" }, "secret2")
+                new("appid2", "dev", "default2", new List<string>
+                {
+                    "configObjects2"
+                }, "secret2")
             }
         };
         DccConfigurationOptions dccConfigurationOptions = dccOptions;

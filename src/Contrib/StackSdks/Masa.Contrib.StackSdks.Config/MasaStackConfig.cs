@@ -5,9 +5,11 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackConfig : IMasaStackConfig
 {
-    private IConfigurationApiClient _configurationApiClient;
+    private readonly IConfigurationApiClient _configurationApiClient;
 
     private static ConcurrentDictionary<string, string> ConfigMap { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
+    public MasaStackConfig() { }
 
     public MasaStackConfig(IConfigurationApiClient client, Dictionary<string, string> configs)
     {
@@ -51,11 +53,9 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string DccSecret => GetValue(MasaStackConfigConstant.DCC_SECRET);
 
-    public string TscLayer => GetValue(MasaStackConfigConstant.TSC_LAYER);
+    public string SuffixIdentity => GetValue(MasaStackConfigConstant.SUFFIX_IDENTITY);
 
-    public bool SingleSsoClient { get; }
-
-    public List<string> GetProjectList() => this.GetAllServer().Keys.ToList();
+    public List<string> GetProjectList() => this.GetMasaStack().Select(jNode => jNode!["id"]!.ToString()).ToList();
 
     public string GetValue(string key)
     {
@@ -63,7 +63,7 @@ public class MasaStackConfig : IMasaStackConfig
         return value ?? ConfigMap[key];
     }
 
-    public Dictionary<string, string> GetValues()
+    public virtual Dictionary<string, string> GetValues()
     {
         try
         {
@@ -72,7 +72,6 @@ public class MasaStackConfig : IMasaStackConfig
                ConfigMap[MasaStackConfigConstant.CLUSTER],
                DEFAULT_PUBLIC_ID,
                DEFAULT_CONFIG_NAME).ConfigureAwait(false).GetAwaiter().GetResult();
-
             return remoteConfigs;
         }
         catch (ArgumentException)

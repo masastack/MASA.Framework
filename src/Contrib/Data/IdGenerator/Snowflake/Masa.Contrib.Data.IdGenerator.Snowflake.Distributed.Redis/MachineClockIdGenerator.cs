@@ -11,13 +11,12 @@ public class MachineClockIdGenerator : Snowflake.MachineClockIdGenerator
     private readonly BaseRedis _redis;
 
     public MachineClockIdGenerator(
-        IDistributedCacheClient distributedCacheClient,
         IWorkerProvider workerProvider,
         RedisConfigurationOptions redisOptions,
         DistributedIdGeneratorOptions distributedIdGeneratorOptions)
         : base(workerProvider, distributedIdGeneratorOptions.IdGeneratorOptions)
     {
-        _redis = new BaseRedis(distributedCacheClient, redisOptions);
+        _redis = new BaseRedis(redisOptions);
         _refreshTimestampInterval = distributedIdGeneratorOptions.IdGeneratorOptions.TimestampType == TimestampType.Seconds ?
             long.Parse(Math.Ceiling(distributedIdGeneratorOptions.RefreshTimestampInterval / 1000m)
                 .ToString(CultureInfo.InvariantCulture)) : distributedIdGeneratorOptions.RefreshTimestampInterval;

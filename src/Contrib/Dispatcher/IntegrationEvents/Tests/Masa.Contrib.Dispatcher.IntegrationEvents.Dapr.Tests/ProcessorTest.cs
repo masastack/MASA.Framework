@@ -16,7 +16,8 @@ public class ProcessorTest
         var services = new ServiceCollection();
         services.AddDaprEventBus<CustomIntegrationEventLogService>();
         _serviceProvider = services.BuildServiceProvider();
-        _options = Microsoft.Extensions.Options.Options.Create(new DaprIntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
+        _options = Microsoft.Extensions.Options.Options.Create(new DaprIntegrationEventOptions(services,
+            AppDomain.CurrentDomain.GetAssemblies()));
     }
 
     [TestMethod]
@@ -31,16 +32,11 @@ public class ProcessorTest
         uoW.Setup(uow => uow.ServiceProvider).Returns(_options.Value.Services.BuildServiceProvider()).Verifiable();
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
-        {
-            new(string.Empty)
-        }).Verifiable();
-        _options.Value.Services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        _options.Value.Services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         var processor = new DeletePublishedExpireEventProcessor(_options.Value.Services.BuildServiceProvider(), _options);
         await processor.ExecuteAsync(default);
@@ -54,7 +50,7 @@ public class ProcessorTest
     {
         Mock<IProcessor> processor = new();
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(3000);
+        cancellationTokenSource.CancelAfter(100);
         processor.Setup(pro => pro.ExecuteAsync(cancellationTokenSource.Token)).Verifiable();
 
         InfiniteLoopProcessor infiniteLoopProcessor = new InfiniteLoopProcessor(_serviceProvider, processor.Object);
@@ -68,7 +64,7 @@ public class ProcessorTest
     {
         Mock<IProcessor> processor = new();
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(3000);
+        cancellationTokenSource.CancelAfter(300);
         processor.Setup(pro => pro.ExecuteAsync(cancellationTokenSource.Token)).Verifiable();
 
         InfiniteLoopProcessor infiniteLoopProcessor =
@@ -96,7 +92,7 @@ public class ProcessorTest
         var hostedService = serviceProvider.GetService<IProcessingServer>();
         Assert.IsNotNull(hostedService);
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(5000);
+        cancellationTokenSource.CancelAfter(100);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
         Assert.IsTrue(CustomProcessor.Times > 0);
@@ -121,7 +117,7 @@ public class ProcessorTest
         var hostedService = serviceProvider.GetService<IProcessingServer>();
         Assert.IsNotNull(hostedService);
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(5000);
+        cancellationTokenSource.CancelAfter(100);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
         Assert.IsTrue(CustomProcessor.Times > 0);

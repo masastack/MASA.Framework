@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(MicrosoftPackageVersion)" />
@@ -27,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Contracts\Masa.Contrib.Data.Contracts\Masa.Contrib.Data.Contracts.csproj" />
+    <ProjectReference Include="..\Masa.Contrib.Data.EFCore.InMemory\Masa.Contrib.Data.EFCore.InMemory.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
   </ItemGroup>
 

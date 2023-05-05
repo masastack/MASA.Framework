@@ -68,8 +68,6 @@ public class AliyunStorageOptions : AliyunOptions
     /// </summary>
     public bool Quiet { get; set; }
 
-    private readonly List<KeyValuePair<string, string>> _bucketNames = new();
-
     public BucketNames BucketNames { get; set; }
 
     public AliyunStorageOptions()
@@ -80,7 +78,7 @@ public class AliyunStorageOptions : AliyunOptions
         EnableResumableUpload = true;
         PartSize = null;
         BigObjectContentLength = 5 * (long)Math.Pow(1024, 3);
-        BucketNames = new BucketNames(_bucketNames);
+        BucketNames = new BucketNames(new Dictionary<string, string>());
     }
 
     public AliyunStorageOptions(string accessKeyId, string accessKeySecret) : this()
@@ -139,11 +137,5 @@ public class AliyunStorageOptions : AliyunOptions
     {
         TemporaryCredentialsCacheKey = temporaryCredentialsCacheKey;
         return this;
-    }
-
-    public void TryAddBucketName(string name, string bucketName)
-    {
-        if (_bucketNames.All(item => item.Key != name))
-            _bucketNames.Add(new KeyValuePair<string, string>(name, bucketName));
     }
 }

@@ -3,9 +3,9 @@
 
 namespace Masa.Contrib.Data.UoW.EFCore.Tests;
 
-public class CustomDbContext : MasaDbContext
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
-    public CustomDbContext(MasaDbContextOptions options) : base(options) { }
+    public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options) { }
 
     public DbSet<Users> User { get; set; }
 

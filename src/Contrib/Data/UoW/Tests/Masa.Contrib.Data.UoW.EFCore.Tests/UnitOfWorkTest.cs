@@ -152,7 +152,6 @@ public class UnitOfWorkTest : TestBase
         options.Object.UseUoW<CustomDbContext>(masaDbContextBuilder => masaDbContextBuilder.UseSqlite(_connectionString));
         var serviceProvider = options.Object.Services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<CustomDbContext>());
-        Assert.IsNotNull(serviceProvider.GetService<IDbConnectionStringProvider>());
         Assert.IsNotNull(serviceProvider.GetService<IUnitOfWork>());
         Assert.IsNotNull(serviceProvider.GetService<IUnitOfWorkAccessor>());
     }
@@ -168,7 +167,6 @@ public class UnitOfWorkTest : TestBase
 
         var serviceProvider = options.Object.Services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IUnitOfWork>().Count() == 1);
-        Assert.AreEqual(1, serviceProvider.GetServices<IDbConnectionStringProvider>().Count());
         Assert.AreEqual(1, serviceProvider.GetServices<IUnitOfWork>().Count());
         Assert.AreEqual(1, serviceProvider.GetServices<IUnitOfWorkAccessor>().Count());
     }
@@ -177,12 +175,9 @@ public class UnitOfWorkTest : TestBase
     public void TestUnitOfWorkByEventBusBuilder()
     {
         var services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = _connectionString
-            };
+            options.DefaultConnection = _connectionString;
         });
         Mock<IEventBusBuilder> eventBuilder = new();
         eventBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();

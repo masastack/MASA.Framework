@@ -27,12 +27,12 @@ public class MasaStackConfigTest
             { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
             { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
-            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
-            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
+            { MasaStackConfigConstant.MASA_STACK, configuration.GetValue<string>(MasaStackConfigConstant.MASA_STACK) },
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
             { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
-            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) },
+            { MasaStackConfigConstant.SUFFIX_IDENTITY, configuration.GetValue<string>(MasaStackConfigConstant.SUFFIX_IDENTITY) }
         };
 
         Mock<IConfigurationApiClient> dccClient = new();
@@ -45,13 +45,12 @@ public class MasaStackConfigTest
             .ReturnsAsync(_config);
 
         _stackConfig = new MasaStackConfig(dccClient.Object, _config);
-
     }
 
     [TestMethod]
     public void TestGetAllServers()
     {
-        var allServer = _stackConfig.GetAllServer();
+        var allServer = _stackConfig.GetAllService();
 
         Assert.IsNotNull(allServer);
     }
@@ -59,9 +58,9 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
-        var dccOptions1 = MasaStackConfigUtils.GetDefaultDccOptions(_config);
+        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config);
 
-        Assert.IsNotNull(dccOptions1?.RedisOptions);
+        Assert.IsNotNull(dccOptions?.RedisOptions);
     }
 
     [TestMethod]
@@ -95,6 +94,14 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetPmDomain()
+    {
+        var pmDomain = _stackConfig.GetPmServiceDomain();
+
+        Assert.IsNotNull(pmDomain);
+    }
+
+    [TestMethod]
     public void TestGetAuthServiceDomain()
     {
         var authServiceDomain = _stackConfig.GetAuthServiceDomain();
@@ -119,11 +126,19 @@ public class MasaStackConfigTest
     }
 
     [TestMethod]
+    public void TestGetServiceId()
+    {
+        var pmServiceId = _stackConfig.GetServiceId(MasaStackConstant.PM);
+
+        Assert.AreEqual("pm-service", pmServiceId);
+    }
+
+    [TestMethod]
     public void TestGetWebId()
     {
         var pmWebId = _stackConfig.GetWebId(MasaStackConstant.PM);
 
-        Assert.AreEqual("masa-pm-ui-demo", pmWebId);
+        Assert.AreEqual("pm-web", pmWebId);
     }
 
     [TestMethod]
@@ -151,6 +166,22 @@ public class MasaStackConfigTest
     {
         var es = _stackConfig.ElasticModel;
 
-        Assert.IsTrue(es is not null && es.ElasticNodes.Any());
+        Assert.IsTrue(es is not null && es.Nodes.Any());
+    }
+
+    [TestMethod]
+    public void TestGetAuthConnectionString()
+    {
+        var suffixIdentity = _stackConfig.SuffixIdentity;
+
+        Assert.AreEqual("dev", suffixIdentity);
+    }
+
+    [TestMethod]
+    public void TestHasAlert()
+    {
+        var result = _stackConfig.HasAlert();
+
+        Assert.AreEqual(true, result);
     }
 }

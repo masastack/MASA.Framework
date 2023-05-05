@@ -1,20 +1,20 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Isolation.Options;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.BuildingBlocks.Isolation;
 
 public class IsolationOptions
 {
-    public string TenantId { get; set; }
+    public string? SectionName { get; set; }
 
-    public string Environment { get; set; }
+    public Type MultiTenantIdType { get; set; }
 
-    public string Name { get; set; } = string.Empty;
+    public bool Enable => !string.IsNullOrWhiteSpace(SectionName);
 
-    public string ConnectionString { get; set; }
-
-    /// <summary>
-    /// Used to control the configuration with the highest score when multiple configurations are satisfied. The default score is 100
-    /// </summary>
-    public int Score { get; set; } = 100;
+    public IsolationOptions()
+    {
+        MultiTenantIdType = typeof(Guid);
+    }
 }

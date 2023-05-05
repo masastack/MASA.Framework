@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore.Tests.Infrastructure;
 
-internal class CustomDbContext : MasaDbContext
+internal class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public DbSet<User> Users { get; set; } = null!;
 

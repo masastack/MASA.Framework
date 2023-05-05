@@ -5,7 +5,6 @@
 用例：
 
 ``` powershell
-Install-Package Masa.Contrib.Isolation.UoW.EFCore //基于EFCore实现Isolation的工作单元，不需要Isolation的请使用Masa.Contrib.Data.UoW.EFCore
 Install-Package Masa.Contrib.Isolation.MultiEnvironment
 Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer数据库使用
 ```
@@ -13,21 +12,28 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 ### 入门
 
 1. 配置`appsettings.json`
+
 ``` appsettings.json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
-  },
-  "IsolationConnectionStrings": [
-    {
-      "Environment": "development",
-      "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "ConnectionStrings":{
+        "DefaultConnection": "server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;"
     },
-    {
-      "Environment": "staging",
-      "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+    "Isolation":{
+        "ConnectionStrings":[
+            {
+                "Environment":"development",
+                "Data":{
+                    "ConnectionString": "server=localhost,1674;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            },
+            {
+                "Environment":"staging",
+                "Data":{
+                    "ConnectionString": "server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;"
+                }
+            }
+        ]
     }
-  ]
 }
 ```
 
@@ -35,20 +41,19 @@ Install-Package Masa.Contrib.Data.EFCore.SqlServer //基于EFCore以及SqlServer
 * 1.2 当前环境是staging时：数据库地址：server=localhost,1672;uid=sa;pwd=P@ssw0rd;database=identity;
 * 1.3 当前环境是其他环境时：数据库地址：server=localhost;uid=sa;pwd=P@ssw0rd;database=identity;
 
-2. 使用Isolation.UoW.EF
-``` C#
-builder.Services.AddEventBus(eventBusBuilder =>
+2. 使用Isolation
+
+```csharp
+builder.Services.AddIsolation(isolationBuilder =>
 {
-    eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment(),
-        dbOptions => dbOptions.UseSqlServer());
+    isolationBuilder.UseMultiEnvironment(),//使用环境隔离
 });
 ```
 
-3. DbContext需要继承IsolationDbContext
+3. DbContext需要继承`MasaDbContext<>`
 
-``` C#
-public class CustomDbContext : IsolationDbContext
+```csharp
+public class CustomDbContext : MasaDbContext<CustomDbContext>
 {
     public CustomDbContext(MasaDbContextOptions<CustomDbContext> options) : base(options)
     {
@@ -56,7 +61,16 @@ public class CustomDbContext : IsolationDbContext
 }
 ```
 
-4. 隔离的表对应的类需要实现IMultiEnvironment
+4. 添加数据上下文
+
+```csharp
+builder.Services.AddMasaDbContext<CustomDbContext>(optionsBuilder =>
+{
+    optionsBuilder.UseSqlServer();//使用SqlServer数据库，也可自行选择其它实现
+});
+```
+
+5. 隔离的表对应的类需要实现IMultiEnvironment
 
 采用物理隔离时也可以选择不实现IMultiEnvironment
 
@@ -79,23 +93,19 @@ public class CustomDbContext : IsolationDbContext
 * 如何更改默认环境参数名
 
 ``` C#
-builder.Services.AddEventBus(eventBusBuilder =>
+builder.Services.AddIsolation(isolationBuilder =>
 {
-    eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env"),// 使用环境隔离
-        dbOptions => dbOptions.UseSqlServer());
+    isolationBuilder.UseMultiEnvironment("env"),//使用环境隔离
 });
 ```
 * 如何更改解析器
 
 ``` C#
-builder.Services.AddEventBus(eventBusBuilder =>
+builder.Services.AddIsolation(isolationBuilder =>
 {
-    eventBusBuilder.UseIsolationUoW<CustomDbContext>(
-        isolationBuilder => isolationBuilder.UseMultiEnvironment("env", new List<IEnvironmentParserProvider>()
-        {
-            new EnvironmentVariablesParserProvider() // 默认从系统环境变量中获取环境隔离中的环境信息
-        }),
-        dbOptions => dbOptions.UseSqlServer());// 使用环境隔离
+    isolationBuilder.UseMultiEnvironment("env", new List<IEnvironmentParserProvider>()
+    {
+        new EnvironmentVariablesParserProvider() //默认从系统环境变量中获取环境隔离中的环境信息
+    });
 });
 ```

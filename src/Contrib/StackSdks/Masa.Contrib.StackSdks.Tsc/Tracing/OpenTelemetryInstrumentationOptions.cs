@@ -5,8 +5,16 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public class OpenTelemetryInstrumentationOptions
 {
+    public OpenTelemetryInstrumentationOptions(IServiceProvider serviceProvider)
+    {
+        if (Logger != null)
+            Logger = serviceProvider.GetRequiredService<ILogger<OpenTelemetryInstrumentationOptions>>();
+    }
+
     private readonly static AspNetCoreInstrumentationHandler aspNetCoreInstrumentationHandler = new();
     private readonly static HttpClientInstrumentHandler httpClientInstrumentHandler = new();
+    internal static ILogger Logger { get; private set; }
+    internal static long MaxBodySize { get; private set; } = 200 * 1 << 10;
 
     /// <summary>
     /// Default record all data. You can replace it or set null
@@ -51,4 +59,37 @@ public class OpenTelemetryInstrumentationOptions
     /// Build trace callback, allow to supplement the build process
     /// </summary>
     public Action<TracerProviderBuilder> BuildTraceCallback { get; set; }
+
+    public static void SetMaxBodySize(string maxValue)
+    {
+        var regex = new Regex(@"\s+", RegexOptions.None, TimeSpan.FromSeconds(1));
+        if (maxValue is not null)
+            maxValue = regex.Replace(maxValue, "");
+
+        if (string.IsNullOrEmpty(maxValue))
+            return;
+        var unit = maxValue[^1];
+        var isNum = int.TryParse(maxValue[..(maxValue.Length - 1)], out int num);
+        if (!isNum || num <= 0) return;
+        switch (unit)
+        {
+            case 'k':
+            case 'K':
+                MaxBodySize = num * 1 << 10;
+                break;
+            case 'm':
+            case 'M':
+                MaxBodySize = num * 1 << 20;
+                break;
+            default:
+                MaxBodySize = num;
+                break;
+        }
+    }
+
+    public static void SetMaxBodySize(long maxByteValue)
+    {
+        if (maxByteValue > 0)
+            MaxBodySize = maxByteValue;
+    }
 }

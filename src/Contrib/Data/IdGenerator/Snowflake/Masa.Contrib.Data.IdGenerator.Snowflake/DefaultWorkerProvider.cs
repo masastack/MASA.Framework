@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake;
 
+[ExcludeFromCodeCoverage]
 public sealed class DefaultWorkerProvider : IWorkerProvider
 {
     private readonly long _workerId;
@@ -17,4 +18,9 @@ public sealed class DefaultWorkerProvider : IWorkerProvider
     public Task RefreshAsync() => Task.CompletedTask;
 
     public Task LogOutAsync() => Task.CompletedTask;
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 }

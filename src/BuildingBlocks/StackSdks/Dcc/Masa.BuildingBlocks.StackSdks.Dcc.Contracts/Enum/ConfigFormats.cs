@@ -6,8 +6,8 @@ namespace Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Enum;
 public enum ConfigFormats
 {
     Properties = 1,
-    Raw,
-    Json,
-    Yaml,
-    Xml
+    RAW,
+    JSON,
+    YAML,
+    XML
 }

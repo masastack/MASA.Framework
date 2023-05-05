@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Data;
+global using Masa.Contrib.Data.EFCore;
 global using Microsoft.Extensions.DependencyInjection;
 global using MySql.EntityFrameworkCore.Infrastructure;
 global using System.Data.Common;

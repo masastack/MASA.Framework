@@ -21,13 +21,11 @@ public static class ServiceCollectionExtensions
                 backgroundJobOptionsBuilder.Assemblies ?? MasaApp.GetAssemblies()).Build());
         services.TryAddSingleton<IBackgroundJobExecutor, DefaultBackgroundJobExecutor>();
 
-        services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
-        services.AddHostedService<BackgroundJobService>();
-        return services;
-    }
+        if (backgroundJobOptionsBuilder.DisableBackgroundJob)
+        {
+            return services;
+        }
 
-    public static IServiceCollection AddBackgroundJobServer(this IServiceCollection services)
-    {
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
         services.AddHostedService<BackgroundJobService>();
         return services;

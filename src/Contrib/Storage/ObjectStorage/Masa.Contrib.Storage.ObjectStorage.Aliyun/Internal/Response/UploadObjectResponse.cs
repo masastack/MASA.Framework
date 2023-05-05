@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Internal.Response;
 
+[ExcludeFromCodeCoverage]
 internal class UploadObjectResponse
 {
     public string ETag { get; set; }

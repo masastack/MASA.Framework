@@ -11,9 +11,9 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(pmServiceBaseAddress);
 
-        return services.AddPmClient(callerOptions =>
+        return services.AddPmClient(callerBuilder =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerBuilder.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddress;
             }).UseAuthentication();
@@ -24,23 +24,23 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNull(pmServiceBaseAddressFunc);
 
-        return services.AddPmClient(callerOptions =>
+        return services.AddPmClient(callerBuilder =>
         {
-            callerOptions.UseHttpClient(builder =>
+            callerBuilder.UseHttpClient(builder =>
             {
                 builder.BaseAddress = pmServiceBaseAddressFunc.Invoke();
             }).UseAuthentication();
         });
     }
 
-    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptions)
+    public static IServiceCollection AddPmClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder)
     {
-        MasaArgumentException.ThrowIfNull(callerOptions);
+        MasaArgumentException.ThrowIfNull(callerBuilder);
 
         if (services.Any(service => service.ServiceType == typeof(IPmClient)))
             return services;
 
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptions.Invoke);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder.Invoke);
 
         services.AddScoped<IPmClient>(serviceProvider =>
         {

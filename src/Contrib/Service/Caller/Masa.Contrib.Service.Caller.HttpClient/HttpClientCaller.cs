@@ -12,11 +12,10 @@ public class HttpClientCaller : AbstractCaller
     public HttpClientCaller(System.Net.Http.HttpClient httpClient,
         IServiceProvider serviceProvider,
         string name,
-        bool supportAuthentication,
         string prefix,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory)
-        : base(serviceProvider, name, supportAuthentication, currentRequestMessageFactory, currentResponseMessageFactory)
+        : base(serviceProvider, name, currentRequestMessageFactory, currentResponseMessageFactory)
     {
         _httpClient = httpClient;
         _prefix = prefix;
@@ -68,10 +67,17 @@ public class HttpClientCaller : AbstractCaller
         throw new NotImplementedException();
     }
 
+    [ExcludeFromCodeCoverage]
+    protected override void Dispose(bool disposing)
+    {
+        _httpClient.Dispose();
+        base.Dispose(disposing);
+    }
+
     protected virtual string GetRequestUri(string? methodName)
     {
         if (string.IsNullOrEmpty(methodName))
-            return string.Empty;
+            return methodName.IsNullOrWhiteSpace() ? _prefix : string.Empty;
 
         if (Uri.IsWellFormedUriString(methodName, UriKind.Absolute) || _prefixIsNullOrEmpty)
             return methodName;

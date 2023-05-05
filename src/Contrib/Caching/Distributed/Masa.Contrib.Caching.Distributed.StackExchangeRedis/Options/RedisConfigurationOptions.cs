@@ -1,10 +1,14 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 public class RedisConfigurationOptions : CacheEntryOptions
 {
+    public string? InstanceId { get; set; }
+
     /// <summary>
     /// Gets the servers.
     /// </summary>
@@ -68,7 +72,7 @@ public class RedisConfigurationOptions : CacheEntryOptions
     /// <summary>
     /// Specifies the time in milliseconds that the system should allow for synchronous operations (defaults to 5 seconds)
     /// </summary>
-    public int SyncTimeout { get; set; } = 1000;
+    public int SyncTimeout { get; set; } = 5000;
 
     public CacheOptions GlobalCacheOptions { get; set; } = new()
     {

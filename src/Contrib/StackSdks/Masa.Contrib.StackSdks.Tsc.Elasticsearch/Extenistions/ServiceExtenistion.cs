@@ -77,9 +77,9 @@ public static class ServiceExtenistion
                 options.UseNodes(nodes).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
 
             })
-            .AddCaller(name, callerOptionsBuilder =>
+            .AddCaller(name, callerBuilder =>
             {
-                callerOptionsBuilder.UseHttpClient(builder =>
+                callerBuilder.UseHttpClient(builder =>
                 {
                     builder.BaseAddress = nodes[0];
                 }).UseAuthentication();

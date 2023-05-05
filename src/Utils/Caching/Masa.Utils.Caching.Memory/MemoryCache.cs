@@ -23,6 +23,17 @@ public class MemoryCache<TKey, TValue> : IDisposable where TKey : notnull
         }
     }
 
+    public TValue? this[TKey key]
+    {
+        get
+        {
+            if (_dicCache.TryGetValue(key, out var lazyValue))
+                return lazyValue.Value;
+            
+            return default;
+        }
+    }
+
     public bool Get(TKey key, out TValue? value)
     {
         bool result = _dicCache.TryGetValue(key, out var lazyValue);
@@ -31,13 +42,13 @@ public class MemoryCache<TKey, TValue> : IDisposable where TKey : notnull
         return result;
     }
 
-    public bool TryGet(TKey key, out TValue? value)
+    public bool TryGet(TKey key, [NotNullWhen(true)] out TValue? value)
     {
         var result = _dicCache.TryGetValue(key, out var lazyValue);
 
         if (result)
         {
-            value =  lazyValue == null ? default :lazyValue.Value;
+            value = lazyValue == null ? default : lazyValue.Value;
         }
         else
         {

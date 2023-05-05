@@ -115,8 +115,6 @@ public class TestALiYunStorageOptions
         Assert.IsTrue(options.BigObjectContentLength == 5 * 1024L * 1024 * 1024);
         Assert.IsNull(options.RoleArn);
         Assert.IsNull(options.RoleSessionName);
-
-
     }
 
     [TestMethod]

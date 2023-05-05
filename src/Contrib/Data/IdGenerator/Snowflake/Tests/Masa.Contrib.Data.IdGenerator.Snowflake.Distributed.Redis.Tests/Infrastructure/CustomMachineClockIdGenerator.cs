@@ -7,11 +7,11 @@ namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.Tests.Infras
 
 public class CustomMachineClockIdGenerator : SnowflakeRedis::Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis.MachineClockIdGenerator
 {
-    public CustomMachineClockIdGenerator(IDistributedCacheClient distributedCacheClient,
+    public CustomMachineClockIdGenerator(
         IWorkerProvider workerProvider,
         RedisConfigurationOptions redisOptions,
         DistributedIdGeneratorOptions distributedIdGeneratorOptions)
-        : base(distributedCacheClient, workerProvider, redisOptions, distributedIdGeneratorOptions)
+        : base(workerProvider, redisOptions, distributedIdGeneratorOptions)
     {
     }
 

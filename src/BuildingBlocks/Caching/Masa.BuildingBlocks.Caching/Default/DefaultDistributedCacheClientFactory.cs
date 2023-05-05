@@ -10,7 +10,7 @@ public class DefaultDistributedCacheClientFactory : CacheClientFactoryBase<IManu
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] DistributedCache, it was not found";
 
-    protected override MasaFactoryOptions<CacheRelationOptions<IManualDistributedCacheClient>> FactoryOptions => _optionsMonitor.CurrentValue;
+    protected override MasaFactoryOptions<MasaRelationOptions<IManualDistributedCacheClient>> FactoryOptions => _optionsMonitor.CurrentValue;
 
     private readonly IOptionsMonitor<DistributedCacheFactoryOptions> _optionsMonitor;
 

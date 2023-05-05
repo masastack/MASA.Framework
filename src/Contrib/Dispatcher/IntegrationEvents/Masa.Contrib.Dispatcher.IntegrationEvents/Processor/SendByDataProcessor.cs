@@ -44,9 +44,9 @@ public class SendByDataProcessor : ProcessorBase
 
                 _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                     eventLog,
-                    eventLog.Event.Topic);
+                    eventLog.Topic);
 
-                await publisher.PublishAsync(eventLog.Event.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
 
                 await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
             }
@@ -61,7 +61,7 @@ public class SendByDataProcessor : ProcessorBase
                     eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
                 await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
 
-                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(eventLog.EventId, eventLog.Event.Topic, eventLog.Event));
+                LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(eventLog.EventId, eventLog.Topic, eventLog.Event));
             }
         }
     }

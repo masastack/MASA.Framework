@@ -25,8 +25,10 @@ public static class IsolationBuilderExtensions
 
         isolationBuilder.Services.AddSingleton<MultiTenantProvider>();
 
-        isolationBuilder.Services.AddScoped<IIsolationMiddleware>(serviceProvider => new MultiTenantMiddleware(serviceProvider, tenantName, parserProviders));
-        isolationBuilder.Services.TryAddSingleton<IConvertProvider, ConvertProvider>();
+        isolationBuilder.Services
+            .AddHttpContextAccessor()
+            .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
+            .AddScoped<IIsolationMiddleware>(serviceProvider => new MultiTenantMiddleware(serviceProvider, tenantName, parserProviders));
         isolationBuilder.Services.TryAddScoped<MultiTenantContext>();
         isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantContext), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());
         isolationBuilder.Services.TryAddScoped(typeof(IMultiTenantSetter), serviceProvider => serviceProvider.GetRequiredService<MultiTenantContext>());

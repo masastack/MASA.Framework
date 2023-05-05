@@ -1,12 +1,14 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 
 internal static class DataCacheOptionsExtensions
 {
     internal static (bool State, TimeSpan? Expire) GetExpiration(
-        this DataCacheModel model,
+        this DataCacheBaseModel model,
         DateTimeOffset? createTime = null,
         CancellationToken token = default)
     {

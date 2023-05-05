@@ -47,7 +47,7 @@ public class ProcessorTest
         services.AddLogging();
 
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(1000);
+        cancellationTokenSource.CancelAfter(100);
 
         Mock<IPublisher> publisher = new();
         publisher.Setup(client
@@ -67,10 +67,7 @@ public class ProcessorTest
             new(@event, Guid.Empty),
             new(@event, Guid.Empty)
         };
-        list.ForEach(item =>
-        {
-            item.DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
-        });
+        list.ForEach(item => { item.DeserializeJsonContent(); });
         integrationEventLogService.Setup(service =>
                 service.RetrieveEventLogsFailedToPublishAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(),
                     cancellationTokenSource.Token))
@@ -84,16 +81,10 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
-
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         Mock<IOptions<IntegrationEventOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
@@ -126,7 +117,7 @@ public class ProcessorTest
         if (useLogger) services.AddLogging();
 
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(1000);
+        cancellationTokenSource.CancelAfter(100);
 
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
         integrationEventLogService.Setup(service
@@ -137,7 +128,7 @@ public class ProcessorTest
         integrationEventLogService.Setup(service => service.MarkEventAsFailedAsync(It.IsAny<Guid>(), cancellationTokenSource.Token))
             .Verifiable();
 
-        List<IntegrationEventLog> list = new List<IntegrationEventLog>()
+        var list = new List<IntegrationEventLog>()
         {
             new(new RegisterUserIntegrationEvent(), Guid.Empty),
             new(new PaySuccessedIntegrationEvent(Guid.NewGuid().ToString()), Guid.Empty)
@@ -145,18 +136,18 @@ public class ProcessorTest
         for (int index = 0; index < list.Count; index++)
         {
             if (index == 0)
-                list[index].DeserializeJsonContent(typeof(RegisterUserIntegrationEvent));
+                list[index].DeserializeJsonContent();
             else
-                list[index].DeserializeJsonContent(typeof(PaySuccessedIntegrationEvent));
+                list[index].DeserializeJsonContent();
         }
 
         Mock<IPublisher> publisher = new();
         publisher.Setup(client
-                => client.PublishAsync(nameof(RegisterUserIntegrationEvent), It.IsAny<IIntegrationEvent>(),
+                => client.PublishAsync(nameof(RegisterUserIntegrationEvent), It.IsAny<object>(),
                     cancellationTokenSource.Token))
             .Throws(new Exception("custom exception"));
         publisher.Setup(client
-                => client.PublishAsync(nameof(PaySuccessedIntegrationEvent), It.IsAny<IIntegrationEvent>(),
+                => client.PublishAsync(nameof(PaySuccessedIntegrationEvent), It.IsAny<object>(),
                     cancellationTokenSource.Token))
             .Throws(new UserFriendlyException("custom exception"));
         services.AddScoped(_ => publisher.Object);
@@ -174,16 +165,11 @@ public class ProcessorTest
         services.AddScoped(_ => uoW.Object);
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>
-        {
-            new(string.Empty)
-        }).Verifiable();
-        services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         Mock<IOptions<IntegrationEventOptions>> options = new();
         options.Setup(opt => opt.Value).Returns(new IntegrationEventOptions(services, AppDomain.CurrentDomain.GetAssemblies()));
@@ -228,16 +214,11 @@ public class ProcessorTest
         uoW.Setup(uow => uow.ServiceProvider).Returns(_options.Value.Services.BuildServiceProvider()).Verifiable();
 
         Mock<IUnitOfWorkManager> unitOfWorkManager = new();
-        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<MasaDbContextConfigurationOptions>())).Returns(uoW.Object)
+        unitOfWorkManager.Setup(uoWManager => uoWManager.CreateDbContext(It.IsAny<DbContextConnectionStringOptions>())).Returns(uoW.Object)
             .Verifiable();
         _options.Value.Services.AddSingleton(_ => unitOfWorkManager.Object);
 
-        Mock<IDbConnectionStringProvider> dataConnectionStringProvider = new();
-        dataConnectionStringProvider.Setup(provider => provider.DbContextOptionsList).Returns(new List<MasaDbContextConfigurationOptions>()
-        {
-            new(string.Empty)
-        }).Verifiable();
-        _options.Value.Services.AddSingleton(_ => dataConnectionStringProvider.Object);
+        _options.Value.Services.AddSingleton<ILocalMessageDbConnectionStringProvider, LocalMessageDbConnectionStringProvider>();
 
         var processor = new DeletePublishedExpireEventProcessor(_options.Value.Services.BuildServiceProvider(), _options);
         await processor.ExecuteAsync(default);
@@ -251,7 +232,7 @@ public class ProcessorTest
     {
         Mock<IProcessor> processor = new();
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(3000);
+        cancellationTokenSource.CancelAfter(100);
         processor.Setup(pro => pro.ExecuteAsync(cancellationTokenSource.Token)).Verifiable();
 
         InfiniteLoopProcessor infiniteLoopProcessor = new InfiniteLoopProcessor(_serviceProvider, processor.Object);
@@ -282,7 +263,7 @@ public class ProcessorTest
         var hostedService = serviceProvider.GetService<IProcessingServer>();
         Assert.IsNotNull(hostedService);
         CancellationTokenSource cancellationTokenSource = new();
-        cancellationTokenSource.CancelAfter(5000);
+        cancellationTokenSource.CancelAfter(100);
         await hostedService.ExecuteAsync(cancellationTokenSource.Token);
 
         Assert.IsTrue(CustomProcessor.Times > 0);
