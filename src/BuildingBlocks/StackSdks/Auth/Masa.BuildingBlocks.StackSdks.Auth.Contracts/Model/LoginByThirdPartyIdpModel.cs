@@ -13,5 +13,7 @@ public class LoginByThirdPartyIdpModel
 
     public string Scheme { get; set; }
 
-    public string Code { get; set; } = "";
+    public string? Code { get; set; }
+
+    public string? IdToken { get; set; }
 }
