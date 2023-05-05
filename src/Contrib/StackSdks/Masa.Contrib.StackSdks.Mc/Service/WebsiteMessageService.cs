@@ -30,7 +30,7 @@ public class WebsiteMessageService : IWebsiteMessageService
 
     public async Task<List<WebsiteMessageChannelModel>> GetChannelListAsync()
     {
-        var requestUri = $"{_party}/GetChannelList";
+        var requestUri = $"{_party}/ChannelList";
         return await _caller.GetAsync<List<WebsiteMessageChannelModel>>(requestUri) ?? new();
     }
 
@@ -42,7 +42,7 @@ public class WebsiteMessageService : IWebsiteMessageService
 
     public async Task<List<WebsiteMessageModel>> GetNoticeListAsync(GetNoticeListModel options)
     {
-        var requestUri = $"{_party}/GetNoticeList";
+        var requestUri = $"{_party}/NoticeList";
         return await _caller.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options) ?? new();
     }
 

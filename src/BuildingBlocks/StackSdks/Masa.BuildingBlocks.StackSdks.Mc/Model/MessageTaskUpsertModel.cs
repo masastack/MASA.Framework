@@ -9,6 +9,8 @@ public class MessageTaskUpsertModel
 
     public Guid ChannelId { get; set; }
 
+    public string ChannelCode { get; set; } = string.Empty;
+
     public ChannelTypes ChannelType { get; set; }
 
     public MessageTypes EntityType { get; set; }
