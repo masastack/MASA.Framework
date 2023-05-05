@@ -9,9 +9,13 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
 
     private const string HTTP_PORT = "DAPR_HTTP_PORT";
 
+    private const string METRICS_PORT = "DAPR_METRICS_PORT";
+
     public ushort? GetHttpPort() => GetEnvironmentVariable(HTTP_PORT);
 
     public ushort? GetGrpcPort() => GetEnvironmentVariable(GRPC_PORT);
+
+    public ushort? GetMetricsPort() => GetEnvironmentVariable(METRICS_PORT);
 
     private static ushort? GetEnvironmentVariable(string environment)
     {
@@ -28,6 +32,7 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
             Environment.SetEnvironmentVariable(HTTP_PORT, httpPort.Value.ToString());
             return true;
         }
+
         return false;
     }
 
@@ -38,6 +43,18 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
             Environment.SetEnvironmentVariable(GRPC_PORT, grpcPort.Value.ToString());
             return true;
         }
+
+        return false;
+    }
+
+    public bool TrySetMetricsPort(ushort? metricsPort)
+    {
+        if (metricsPort is > 0)
+        {
+            Environment.SetEnvironmentVariable(METRICS_PORT, metricsPort.Value.ToString());
+            return true;
+        }
+
         return false;
     }
 }

@@ -22,8 +22,6 @@ internal class SidecarOptions : DaprOptionsBase
 
     public string PlacementHostAddress { get; set; }
 
-    public override bool EnableHeartBeat { get; set; }
-
     /// <summary>
     /// Allowed HTTP origins (default "*")
     /// </summary>
@@ -65,9 +63,9 @@ internal class SidecarOptions : DaprOptionsBase
     public string Mode { get; set; }
 
     /// <summary>
-    /// Path for resources directory. If empty, resources will not be loaded. Self-hosted mode only
+    /// Extended parameters, used to supplement unsupported parameters
     /// </summary>
-    public string ResourcesPath { get; set; }
+    public string ExtendedParameter { get; set; }
 
     // ReSharper disable once InconsistentNaming
     public SidecarOptions(
@@ -99,6 +97,28 @@ internal class SidecarOptions : DaprOptionsBase
         if (DaprGrpcPort == null && grpcPort is > 0)
         {
             DaprGrpcPort = grpcPort;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TrySetProfilePort(ushort? profilePort)
+    {
+        if (ProfilePort == null && profilePort is > 0)
+        {
+            ProfilePort = profilePort;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool TrySetMetricsPort(ushort? metricsPort)
+    {
+        if (MetricsPort == null && metricsPort is > 0)
+        {
+            MetricsPort = metricsPort;
             return true;
         }
 
@@ -152,7 +172,15 @@ internal class SidecarOptions : DaprOptionsBase
             DaprHttpReadBufferSize,
             AppId,
             EnableDefaultPlacementHostAddress,
-            PlacementHostAddress
+            PlacementHostAddress,
+            AllowedOrigins,
+            ControlPlaneAddress,
+            DaprHttpMaxRequestSize,
+            DaprInternalGrpcPort,
+            EnableApiLogging,
+            EnableMetrics,
+            Mode,
+            ExtendedParameter
         };
     }
 }

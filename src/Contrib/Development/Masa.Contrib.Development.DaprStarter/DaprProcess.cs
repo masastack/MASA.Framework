@@ -11,7 +11,6 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
     private readonly IDaprProcessProvider _daprProcessProvider;
     private readonly IProcessProvider _processProvider;
     private readonly ILogger<DaprProcess>? _logger;
-    private readonly IOptionsMonitor<DaprOptions> _daprOptions;
     private DaprProcessStatus Status { get; set; }
 
     /// <summary>
@@ -23,11 +22,6 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
     private Process? _process;
     private int _retryTime;
 
-    /// <summary>
-    /// record whether dapr is initialized for the first time
-    /// </summary>
-    private bool _isFirst = true;
-
     public DaprProcess(
         IDaprProcessProvider daprProcessProvider,
         IProcessProvider processProvider,
@@ -35,12 +29,11 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         IDaprEnvironmentProvider daprEnvironmentProvider,
         IDaprProvider daprProvide,
         ILogger<DaprProcess>? logger = null)
-        : base(daprEnvironmentProvider, daprProvide)
+        : base(daprEnvironmentProvider, daprProvide, daprOptions)
     {
         _daprProcessProvider = daprProcessProvider;
         _processProvider = processProvider;
         _logger = logger;
-        _daprOptions = daprOptions;
         daprOptions.OnChange(Refresh);
     }
 
@@ -67,6 +60,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         var commandLineBuilder = CreateCommandLineBuilder(options);
 
         _process = _daprProcessProvider.DaprStart(
+            _defaultSidecarFileName!,
             commandLineBuilder.ToString(),
             options.CreateNoWindow,
             (_, args) =>
@@ -97,7 +91,6 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         // Windows only
 
         ChildProcessTracker.AddProcess(_process);
-
     }
 
     private void CheckAndCompleteDaprEnvironment(string data)
@@ -159,7 +152,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         _process?.Kill();
         if (SuccessDaprOptions!.EnableSsl is not true)
         {
-            _daprProcessProvider.DaprStop(SuccessDaprOptions.AppId);
+            _daprProcessProvider.DaprStop(_defaultSidecarFileName!, SuccessDaprOptions.AppId);
         }
 
         if (SuccessDaprOptions.DaprHttpPort != null)
@@ -180,11 +173,9 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
         {
             if (_isStopByManually)
             {
-                _logger?.LogDebug("Dapr sidecar configuration update, you need to start dapr through Start");
+                _logger?.LogDebug("configuration update, you need to start dapr through Start (Restart is not supported due to manual stop of sidecar)");
                 return;
             }
-
-            _logger?.LogDebug("Dapr sidecar configuration updated, Dapr AppId is {AppId}, please wait...", SuccessDaprOptions!.AppId);
 
             var sidecarOptionsByRefresh = ConvertToSidecarOptions(options);
             if (SuccessDaprOptions != null)
@@ -200,8 +191,6 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
                 }
 
                 UpdateStatus(DaprProcessStatus.Restarting);
-                _logger?.LogDebug("Dapr sidecar configuration updated, Dapr AppId is {AppId}, closing dapr, please wait...",
-                    SuccessDaprOptions!.AppId);
                 StopCore();
             }
 
@@ -243,7 +232,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
                 return;
             }
 
-            var daprList = _daprProcessProvider.GetDaprList(SuccessDaprOptions.AppId);
+            var daprList = _daprProcessProvider.GetDaprList(_defaultDaprFileName!, SuccessDaprOptions.AppId, out bool isException);
             if (daprList.Count > 1)
             {
                 _logger?.LogDebug("dapr sidecar appears more than 1 same appid, this may cause error");
@@ -251,31 +240,30 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
 
             if (!daprList.Any())
             {
-                if (Status == DaprProcessStatus.Started)
+                if(isException)
+                    return;
+
+                switch (Status)
                 {
-                    _logger?.LogWarning("Dapr sidecar terminated abnormally, restarting, please wait...");
-                    StartCore(SuccessDaprOptions);
-                }
-                else if (Status == DaprProcessStatus.Starting)
-                {
-                    if (_retryTime < DaprStarterConstant.DEFAULT_RETRY_TIME)
-                    {
+                    case DaprProcessStatus.Started:
+                        _logger?.LogWarning("Dapr sidecar terminated abnormally, restarting, please wait...");
+                        StartCore(SuccessDaprOptions);
+                        break;
+                    case DaprProcessStatus.Starting when _retryTime < DaprStarterConstant.DEFAULT_RETRY_TIME:
                         _retryTime++;
                         _logger?.LogDebug("Dapr is not started: The {Retries}th heartbeat check. AppId is {AppId}",
                             _retryTime,
                             SuccessDaprOptions.AppId);
-                    }
-                    else
-                    {
+                        break;
+                    case DaprProcessStatus.Starting:
                         _logger?.LogWarning(
                             "Dapr is not started: The {Retries}th heartbeat check. Dapr stopped, restarting, please wait...",
                             _retryTime + 1);
                         StartCore(SuccessDaprOptions);
-                    }
-                }
-                else if (Status == DaprProcessStatus.Restarting)
-                {
-                    _logger?.LogWarning("Dapr is restarting, the current state is {State}, please wait...", Status);
+                        break;
+                    case DaprProcessStatus.Restarting:
+                        _logger?.LogWarning("Dapr is restarting, the current state is {State}, please wait...", Status);
+                        break;
                 }
             }
             else

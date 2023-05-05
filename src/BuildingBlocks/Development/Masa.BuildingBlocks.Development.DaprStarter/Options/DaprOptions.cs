@@ -58,11 +58,11 @@ public class DaprOptions : DaprOptionsBase
     /// </summary>
     public bool DisableAppIdSuffix { get; set; }
 
-    private int? _maxConcurrency;
+    private int? _maxConcurrency = -1;
 
     /// <summary>
     /// The concurrency level of the application, otherwise is unlimited
-    /// Must be greater than 0
+    /// Must be greater than or equal -1
     /// </summary>
     public override int? MaxConcurrency
     {
@@ -70,7 +70,7 @@ public class DaprOptions : DaprOptionsBase
         set
         {
             if (value != null)
-                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(MaxConcurrency));
+                MasaArgumentException.ThrowIfLessThan(value.Value, -1, nameof(MaxConcurrency));
 
             _maxConcurrency = value;
         }
@@ -230,9 +230,9 @@ public class DaprOptions : DaprOptionsBase
     public string Mode { get; set; }
 
     /// <summary>
-    /// Path for resources directory. If empty, resources will not be loaded. Self-hosted mode only
+    /// Extended parameters, used to supplement unsupported parameters
     /// </summary>
-    public string ResourcesPath { get; set; }
+    public string ExtendedParameter { get; set; }
 
     public bool IsIncompleteAppId()
     {

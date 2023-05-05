@@ -7,9 +7,9 @@ public static class DaprStarterConstant
 {
     public const string DEFAULT_APPID_DELIMITER = "-";
 
-    public const string DEFAULT_FILE_NAME = "dapr";
+    public const string DEFAULT_DAPR_FILE_NAME = "dapr";
 
-    public const string DEFAULT_SIDECAR_FILE_NAME = "daprd";
+    public const string DEFAULT_FILE_NAME = "daprd";
 
     public const string DEFAULT_PROCESS_NAME = "dapr-starter";
 

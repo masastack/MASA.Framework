@@ -10,17 +10,29 @@ public abstract class DaprProcessBase
 
     private readonly IDaprProvider _daprProvider;
 
-    private static readonly string[] HttpPortPatterns = { "HTTP Port: ([0-9]+)", "http server is running on port ([0-9]+)" };
-    private static readonly string[] GrpcPortPatterns = { "gRPC Port: ([0-9]+)", "API gRPC server is running on port ([0-9]+)" };
+    private static readonly string[] HttpPortPatterns = { "http server is running on port ([0-9]+)" };
+    private static readonly string[] GrpcPortPatterns = { "API gRPC server is running on port ([0-9]+)" };
+    private static readonly string UserFilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     internal SidecarOptions? SuccessDaprOptions;
+    protected readonly IOptionsMonitor<DaprOptions> _daprOptions;
+    protected static string? _defaultDaprFileName;
+    protected static string? _defaultSidecarFileName;
+
+    /// <summary>
+    /// record whether dapr is initialized for the first time
+    /// </summary>
+    protected bool _isFirst = true;
+
 
     protected DaprProcessBase(
         IDaprEnvironmentProvider daprEnvironmentProvider,
-        IDaprProvider daprProvider)
+        IDaprProvider daprProvider,
+        IOptionsMonitor<DaprOptions> daprOptions)
     {
         DaprEnvironmentProvider = daprEnvironmentProvider;
         _daprProvider = daprProvider;
+        _daprOptions = daprOptions;
     }
 
     internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
@@ -45,7 +57,6 @@ public abstract class DaprProcessBase
             UnixDomainSocket = options.UnixDomainSocket,
             DaprHttpMaxRequestSize = options.DaprHttpMaxRequestSize,
             PlacementHostAddress = options.PlacementHostAddress,
-
             AllowedOrigins = options.AllowedOrigins,
             ControlPlaneAddress = options.ControlPlaneAddress,
             DaprHttpReadBufferSize = options.DaprHttpReadBufferSize,
@@ -53,15 +64,38 @@ public abstract class DaprProcessBase
             EnableApiLogging = options.EnableApiLogging,
             EnableMetrics = options.EnableMetrics,
             Mode = options.Mode,
-            ResourcesPath = options.ResourcesPath,
+            RootPath = options.RootPath,
+            DaprRootPath = options.DaprRootPath,
+            ExtendedParameter = options.ExtendedParameter
         };
         sidecarOptions.TrySetHttpPort(options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort());
         sidecarOptions.TrySetGrpcPort(options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort());
+        sidecarOptions.TrySetMetricsPort(options.MetricsPort ?? DaprEnvironmentProvider.GetMetricsPort());
 
         if (sidecarOptions.EnableDefaultPlacementHostAddress && sidecarOptions.PlacementHostAddress.IsNullOrWhiteSpace())
         {
             var port = Environment.OSVersion.Platform == PlatformID.Win32NT ? 6050 : 50005;
             sidecarOptions.PlacementHostAddress = $"127.0.0.1:{port}";
+        }
+
+        if (sidecarOptions.RootPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.RootPath = Path.Combine(UserFilePath, ".dapr");
+        }
+
+        if (sidecarOptions.DaprRootPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.DaprRootPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:\\dapr" : "/usr/local/bin";
+        }
+
+        if (sidecarOptions.ComponentPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.ComponentPath = "components";
+        }
+
+        if (sidecarOptions.Config.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.Config = "config.yaml";
         }
 
         return sidecarOptions;
@@ -75,9 +109,9 @@ public abstract class DaprProcessBase
             .Add("app-port", () => options.GetAppPort().ToString())
             .Add("app-protocol", () => options.AppProtocol!.Value.ToString().ToLower(), options.AppProtocol == null)
             .Add("app-ssl", () => "", options.EnableSsl != true)
-            .Add("components-path", () => options.ComponentPath!, options.ComponentPath == null)
+            .Add("components-path", () => Path.Combine(options.RootPath, options.ComponentPath))
             .Add("app-max-concurrency", () => options.MaxConcurrency!.Value.ToString(), options.MaxConcurrency == null)
-            .Add("config", () => options.Config!, options.Config == null)
+            .Add("config", () => Path.Combine(options.RootPath, options.Config))
             .Add("dapr-grpc-port", () => options.DaprGrpcPort!.Value.ToString(), !(options.DaprGrpcPort > 0))
             .Add("dapr-http-port", () => options.DaprHttpPort!.Value.ToString(), !(options.DaprHttpPort > 0))
             .Add("enable-profiling", () => options.EnableProfiling!.Value.ToString().ToLower(), options.EnableProfiling == null)
@@ -95,12 +129,17 @@ public abstract class DaprProcessBase
                 options.DaprHttpReadBufferSize == null)
             .Add("dapr-internal-grpc-port", () => options.DaprInternalGrpcPort!.Value.ToString(), options.DaprInternalGrpcPort == null)
             .Add("enable-api-logging", () => "", options.EnableApiLogging is not true)
-
             .Add("enable-metrics", () => "", options.EnableMetrics is not true)
             .Add("mode", () => options.Mode, options.Mode.IsNullOrWhiteSpace())
-            .Add("resources-path", () => options.ResourcesPath, options.ResourcesPath.IsNullOrWhiteSpace());
+            .Add(options.ExtendedParameter, () => "");
 
-        SuccessDaprOptions ??= options;
+        if (_isFirst)
+        {
+            _defaultDaprFileName = Path.Combine(options.DaprRootPath, GetFileName(DaprStarterConstant.DEFAULT_DAPR_FILE_NAME));
+            _defaultSidecarFileName = Path.Combine(options.RootPath, "bin", GetFileName(DaprStarterConstant.DEFAULT_FILE_NAME));
+            SuccessDaprOptions = options;
+        }
+
         return commandLineBuilder;
     }
 
@@ -156,4 +195,6 @@ public abstract class DaprProcessBase
     }
 
     #endregion
+
+    static string GetFileName(string fileName) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"{fileName}.exe" : fileName;
 }

@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
-        CheckCompletionHttPortAndGrpcPort(options.CurrentValue, serviceProvider);
+        CheckCompletionPort(options.CurrentValue, serviceProvider);
 
         if (isDelay) return services.AddHostedService<DaprBackgroundService>();
 
@@ -55,7 +55,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    private static void CheckCompletionHttPortAndGrpcPort(DaprOptions daprOptions, IServiceProvider serviceProvider)
+    private static void CheckCompletionPort(DaprOptions daprOptions, IServiceProvider serviceProvider)
     {
         var daprEnvironmentProvider = serviceProvider.GetRequiredService<IDaprEnvironmentProvider>();
 
@@ -64,36 +64,53 @@ public static class ServiceCollectionExtensions
 
         var httpPortStatus = IsAvailablePort(daprOptions.DaprHttpPort);
         var gRpcPortStatus = IsAvailablePort(daprOptions.DaprGrpcPort);
+        var metricsStatus = IsAvailablePort(daprOptions.MetricsPort);
+
         var httpPortByAvailability = daprOptions.DaprHttpPort;
         var gRpcPortByAvailability = daprOptions.DaprGrpcPort;
-        if (!httpPortStatus || !gRpcPortStatus)
+        var metricsPortByAvailability = daprOptions.MetricsPort;
+
+        if (!httpPortStatus || !gRpcPortStatus || !metricsStatus)
         {
             var reservedPorts = new List<int>();
+            AddReservedPorts(httpPortByAvailability);
+            AddReservedPorts(gRpcPortByAvailability);
+            AddReservedPorts(metricsPortByAvailability);
+            AddReservedPorts(daprOptions.ProfilePort);
+            AddReservedPorts(daprOptions.AppPort);
+
             var availabilityPortProvider = serviceProvider.GetRequiredService<IAvailabilityPortProvider>();
 
-            if (!httpPortStatus && !gRpcPortStatus)
+            if (!httpPortStatus)
             {
-                //httpPort and grpcPort are not available
                 httpPortByAvailability = availabilityPortProvider.GetAvailablePort(3500, reservedPorts);
                 if (httpPortByAvailability != null) reservedPorts.Add(httpPortByAvailability.Value);
-                gRpcPortByAvailability = availabilityPortProvider.GetAvailablePort(50001, reservedPorts);
             }
-            else if (!httpPortStatus)
+
+            if (!gRpcPortStatus)
             {
-                //httpPort is not available
-                reservedPorts.Add(gRpcPortByAvailability!.Value);
-                httpPortByAvailability = availabilityPortProvider.GetAvailablePort(3500);
-            }
-            else if (!gRpcPortStatus)
-            {
-                //gRpcPort is not available
-                reservedPorts.Add(httpPortByAvailability!.Value);
                 gRpcPortByAvailability = availabilityPortProvider.GetAvailablePort(50001, reservedPorts);
+                if (gRpcPortByAvailability != null) reservedPorts.Add(gRpcPortByAvailability.Value);
+            }
+
+            if (!metricsStatus)
+            {
+                metricsPortByAvailability = availabilityPortProvider.GetAvailablePort(9090, reservedPorts);
+                if (metricsPortByAvailability != null) reservedPorts.Add(metricsPortByAvailability.Value);
+            }
+
+            void AddReservedPorts(ushort? port)
+            {
+                if (port is > 0)
+                {
+                    reservedPorts.Add(port.Value);
+                }
             }
         }
 
         daprEnvironmentProvider.TrySetHttpPort(httpPortByAvailability);
         daprEnvironmentProvider.TrySetGrpcPort(gRpcPortByAvailability);
+        daprEnvironmentProvider.TrySetMetricsPort(metricsPortByAvailability);
 
         // Environment variables need to be improved
         bool IsAvailablePort([NotNullWhen(true)] ushort? port)

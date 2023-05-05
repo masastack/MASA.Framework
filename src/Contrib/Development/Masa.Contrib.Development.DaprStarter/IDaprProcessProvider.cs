@@ -5,12 +5,14 @@ namespace Masa.Contrib.Development.DaprStarter;
 
 public interface IDaprProcessProvider
 {
-    List<DaprRuntimeOptions> GetDaprList(string appId);
+    List<DaprRuntimeOptions> GetDaprList(string fileName, string appId, out bool isException);
 
-    Process DaprStart(string arguments,
+    Process DaprStart(
+        string fileName,
+        string arguments,
         bool createNoWindow,
         Action<object?, DataReceivedEventArgs> outputDataReceivedAction,
         Action exitAction);
 
-    void DaprStop(string appId);
+    void DaprStop(string fileName, string appId);
 }

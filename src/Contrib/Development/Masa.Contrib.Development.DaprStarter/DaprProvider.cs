@@ -8,19 +8,20 @@ public class DaprProcessProvider : IDaprProcessProvider
 {
     private readonly ILogger<DaprProcessProvider>? _logger;
 
-    public DaprProcessProvider(ILogger<DaprProcessProvider>? logger)
+    public DaprProcessProvider(ILogger<DaprProcessProvider>? logger = null)
     {
         _logger = logger;
     }
 
-    public List<DaprRuntimeOptions> GetDaprList(string appId)
+    public List<DaprRuntimeOptions> GetDaprList(string fileName, string appId, out bool isException)
     {
+        isException = false;
         var processUtils = new ProcessUtils(_logger);
         processUtils.Exit += delegate
         {
             _logger?.LogDebug("{Name} process has exited, appid: {AppId}", DaprStarterConstant.DEFAULT_PROCESS_NAME, appId);
         };
-        processUtils.Run(DaprStarterConstant.DEFAULT_FILE_NAME, "list -o json", out string response, true, true);
+        processUtils.Run(fileName, "list -o json", out string response, true, true);
         List<DaprRuntimeOptions> daprList = new();
         try
         {
@@ -43,6 +44,7 @@ public class DaprProcessProvider : IDaprProcessProvider
         }
         catch (Exception exception)
         {
+            isException = true;
             _logger?.LogWarning(exception, "----- Error getting list of running dapr, response message is {Response}", response);
             return new List<DaprRuntimeOptions>();
         }
@@ -50,7 +52,8 @@ public class DaprProcessProvider : IDaprProcessProvider
         return daprList.Where(dapr => dapr.AppId == appId).ToList();
     }
 
-    public Process DaprStart(string arguments,
+    public Process DaprStart(string fileName,
+        string arguments,
         bool createNoWindow,
         Action<object?, DataReceivedEventArgs> outputDataReceivedAction,
         Action exitAction)
@@ -68,7 +71,7 @@ public class DaprProcessProvider : IDaprProcessProvider
             exitAction.Invoke();
             _logger?.LogDebug("{Name} process has exited", DaprStarterConstant.DEFAULT_PROCESS_NAME);
         };
-        return processUtils.Run(DaprStarterConstant.DEFAULT_SIDECAR_FILE_NAME, $" {arguments}", createNoWindow);
+        return processUtils.Run(fileName, $" {arguments}", createNoWindow);
     }
 
     private static void DaprProcess_OutputDataReceived(DataReceivedEventArgs e)
@@ -111,9 +114,9 @@ public class DaprProcessProvider : IDaprProcessProvider
         Console.ForegroundColor = color;
     }
 
-    public void DaprStop(string appId)
+    public void DaprStop(string fileName, string appId)
     {
-        var daprList = GetDaprList(appId);
+        var daprList = GetDaprList(fileName, appId, out _);
         var pid = 0;
         foreach (var dapr in daprList)
         {

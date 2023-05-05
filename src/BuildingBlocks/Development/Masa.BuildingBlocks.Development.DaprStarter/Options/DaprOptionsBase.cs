@@ -27,6 +27,7 @@ public abstract class DaprOptionsBase
 
     /// <summary>
     /// The protocol (gRPC or HTTP) Dapr uses to talk to the application. Valid values are: http or grpc
+    /// default: HTTP
     /// </summary>
     public Protocol? AppProtocol { get; protected set; }
 
@@ -60,19 +61,32 @@ public abstract class DaprOptionsBase
 
     /// <summary>
     /// Dapr configuration file
-    /// default:
-    /// Linux & Mac: $HOME/.dapr/config.yaml
-    /// Windows: %USERPROFILE%\.dapr\config.yaml
+    /// default: config.yaml
+    /// The actual components-path is equal to Path.Combine(options.RootPath, options.Config)
     /// </summary>
-    public string? Config { get; set; }
+    public string Config { get; set; }
 
     /// <summary>
     /// The path for components directory
-    /// default:
-    /// Linux & Mac: $HOME/.dapr/components
-    /// Windows: %USERPROFILE%\.dapr\components
+    /// default: components
+    /// The actual components-path is equal to Path.Combine(options.RootPath, options.ComponentPath)
     /// </summary>
-    public string? ComponentPath { get; set; }
+    public string ComponentPath { get; set; }
+
+    /// <summary>
+    /// The root address of dapr configuration
+    /// daprd, dapr runtime required component configuration path
+    /// default：Linux/Mac: $HOME/.dapr/
+    ///          Windows: %USERPROFILE%\.dapr\
+    /// </summary>
+    public string RootPath { get; set; }
+
+    /// <summary>
+    /// The path to the dapr directory
+    /// defdult: Linux/Mac: /usr/local/bin
+    ///          Windows: C:\dapr
+    /// </summary>
+    public string DaprRootPath { get; set; }
 
     /// <summary>
     /// Enable pprof profiling via an HTTP endpoint

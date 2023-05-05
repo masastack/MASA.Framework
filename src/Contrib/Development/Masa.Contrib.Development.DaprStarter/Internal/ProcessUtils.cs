@@ -29,7 +29,7 @@ internal sealed class ProcessUtils
         bool createNoWindow = true,
         bool isWait = false)
     {
-        _logger?.LogDebug("FileName: {FileName}, Arguments: {Arguments}", fileName, arguments);
+        _logger?.LogDebug("Execute the command: {Command} on {Name}", $"{fileName} {arguments}", "DaprStarter");
         var processStartInfo = new ProcessStartInfo
         {
             FileName = fileName,
@@ -62,9 +62,6 @@ internal sealed class ProcessUtils
         }
 
         daprProcess.Exited += (_, _) => OnExited();
-        string command = $"{fileName} {arguments}";
-        _logger?.LogDebug("Process: {ProcessName}, Command: {Command}, PID: {ProcessId} executed successfully", fileName,
-            command, daprProcess.Id);
 
         if (isWait)
         {
