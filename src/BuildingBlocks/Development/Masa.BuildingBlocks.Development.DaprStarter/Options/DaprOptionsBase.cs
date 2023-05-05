@@ -32,6 +32,7 @@ public abstract class DaprOptionsBase
 
     /// <summary>
     /// Enable https when Dapr invokes the application
+    /// Sets the URI scheme of the app to https and attempts an SSL connection
     /// </summary>
     public bool? EnableSsl { get; set; }
 
@@ -46,11 +47,11 @@ public abstract class DaprOptionsBase
     /// </summary>
     public virtual ushort? DaprHttpPort { get; set; }
 
-    public bool EnableHeartBeat { get; set; }
+    public virtual bool EnableHeartBeat { get; set; }
 
     public virtual int HeartBeatInterval { get; set; }
 
-    public bool CreateNoWindow { get; set; } = true;
+    public virtual bool CreateNoWindow { get; set; }
 
     /// <summary>
     /// The concurrency level of the application, otherwise is unlimited
@@ -105,9 +106,4 @@ public abstract class DaprOptionsBase
     /// Not available on Windows OS
     /// </summary>
     public string? UnixDomainSocket { get; set; }
-
-    /// <summary>
-    /// Max size of request body in MB.
-    /// </summary>
-    public virtual int? DaprMaxRequestSize { get; set; }
 }

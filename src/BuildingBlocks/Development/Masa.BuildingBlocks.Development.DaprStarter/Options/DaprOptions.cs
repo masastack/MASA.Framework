@@ -9,7 +9,7 @@ namespace Masa.BuildingBlocks.Development.DaprStarter;
 /// dapr startup configuration information
 /// When the specified attribute is configured as null, the default value of the parameter is subject to the default value of dapr of the current version
 /// </summary>
-public class DaprOptions: DaprOptionsBase
+public class DaprOptions : DaprOptionsBase
 {
     /// <summary>
     /// The id for your application, used for service discovery
@@ -148,21 +148,21 @@ public class DaprOptions: DaprOptionsBase
         }
     }
 
-    private int? _daprMaxRequestSize;
+    private int? _daprHttpMaxRequestSize;
 
     /// <summary>
     /// Max size of request body in MB.
     /// Must be greater than 0
     /// </summary>
-    public override int? DaprMaxRequestSize
+    public int? DaprHttpMaxRequestSize
     {
-        get => _daprMaxRequestSize;
+        get => _daprHttpMaxRequestSize;
         set
         {
             if (value != null)
-                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprMaxRequestSize));
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprHttpMaxRequestSize));
 
-            _daprMaxRequestSize = value;
+            _daprHttpMaxRequestSize = value;
         }
     }
 
@@ -185,6 +185,54 @@ public class DaprOptions: DaprOptionsBase
     }
 
     public string PlacementHostAddress { get; set; }
+
+    /// <summary>
+    /// Start the heartbeat check to ensure that the dapr program is active.
+    /// When the heartbeat check is turned off, dapr will not start automatically after it exits abnormally.
+    /// </summary>
+    public override bool EnableHeartBeat { get; set; } = true;
+
+    public override bool CreateNoWindow { get; set; } = true;
+
+    /// <summary>
+    /// Allowed HTTP origins (default "*")
+    /// </summary>
+    public string AllowedOrigins { get; set; }
+
+    /// <summary>
+    /// Address for a Dapr control plane
+    /// </summary>
+    public string ControlPlaneAddress { get; set; }
+
+    /// <summary>
+    /// Increasing max size of read buffer in KB to handle sending multi-KB headers (default 4)
+    /// </summary>
+    public int? DaprHttpReadBufferSize { get; set; }
+
+    /// <summary>
+    /// gRPC port for the Dapr Internal API to listen on.
+    /// </summary>
+    public int? DaprInternalGrpcPort { get; set; }
+
+    /// <summary>
+    /// Enable API logging for API calls
+    /// </summary>
+    public bool? EnableApiLogging { get; set; }
+
+    /// <summary>
+    /// Enable prometheus metric (default true)
+    /// </summary>
+    public bool? EnableMetrics { get; set; }
+
+    /// <summary>
+    /// Runtime mode for Dapr (default "standalone")
+    /// </summary>
+    public string Mode { get; set; }
+
+    /// <summary>
+    /// Path for resources directory. If empty, resources will not be loaded. Self-hosted mode only
+    /// </summary>
+    public string ResourcesPath { get; set; }
 
     public bool IsIncompleteAppId()
     {
