@@ -59,7 +59,8 @@ public class LoginService : ILoginService
             ["grant_type"] = GrantType.THIRD_PARTY_IDP,
             ["scope"] = string.Join(' ', login.Scope),
             ["scheme"] = login.Scheme,
-            ["code"] = login.Code
+            ["code"] = login.Code ?? "",
+            ["idToken"] = login.IdToken ?? "",
         };
 
         var tokenResponse = await RequestTokenRawAsync(client, paramter);
