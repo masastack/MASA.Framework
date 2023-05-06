@@ -9,11 +9,23 @@ public static class IntegrationEventOptionsExtensions
 {
     public static Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions UseDapr(
         this Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions options,
-        string daprPubSubName = Constant.DAPR_PUBSUB_NAME,
+        string daprPubSubName = DaprConstant.DAPR_PUBSUB_NAME,
+        Action<DaprClientBuilder>? builder = null)
+        => options.UseDapr(null, daprPubSubName, builder);
+
+    public static Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions UseDapr(
+        this Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions options,
+        string? appId,
+        string daprPubSubName,
         Action<DaprClientBuilder>? builder = null)
     {
-        options.Services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(serviceProvider, daprPubSubName));
+        options.Services.TryAddSingleton<IPublisher>(serviceProvider =>
+            new Publisher(
+                serviceProvider,
+                daprPubSubName,
+                !appId.IsNullOrWhiteSpace() ? ConfigurationUtils.CompletionParameter(appId) : appId));
         options.Services.AddDaprClient(builder);
+
         return options;
     }
 }

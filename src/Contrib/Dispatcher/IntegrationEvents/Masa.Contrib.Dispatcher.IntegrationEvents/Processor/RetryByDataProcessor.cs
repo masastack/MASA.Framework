@@ -51,7 +51,7 @@ public class RetryByDataProcessor : ProcessorBase
                     eventLog,
                     eventLog.Topic);
 
-                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event,  eventLog.EventExpand, stoppingToken);
 
                 LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
 

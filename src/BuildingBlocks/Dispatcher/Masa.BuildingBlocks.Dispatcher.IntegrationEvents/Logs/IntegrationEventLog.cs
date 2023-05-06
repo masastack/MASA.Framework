@@ -18,6 +18,8 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     [NotMapped] public object Event => _event ??= JsonSerializer.Deserialize<object>(Content)!;
 
+    [NotMapped] public IntegrationEventExpand? EventExpand { get; private set; }
+
     [NotMapped]
     public string Topic { get; private set; } = null!;
 
@@ -31,6 +33,8 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     public string Content { get; private set; } = null!;
 
+    public string ExpandContent { get; private set; } = string.Empty;
+
     public Guid TransactionId { get; private set; } = Guid.Empty;
 
     public string RowVersion { get; private set; }
@@ -41,13 +45,18 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         Initialize();
     }
 
-    public IntegrationEventLog(IIntegrationEvent @event, Guid transactionId) : this()
+    public IntegrationEventLog(IIntegrationEvent @event, IntegrationEventExpand? eventExpand,  Guid transactionId) : this()
     {
         EventId = @event.GetEventId();
         CreationTime = @event.GetCreationTime();
         ModificationTime = @event.GetCreationTime();
         EventTypeName = @event.GetType().FullName!;
         Content = JsonSerializer.Serialize((object)@event);
+
+        if (eventExpand != null)
+        {
+            ExpandContent = JsonSerializer.Serialize(eventExpand);
+        }
         TransactionId = transactionId;
     }
 
@@ -65,6 +74,10 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         if (Topic.IsNullOrWhiteSpace())
         {
             Topic = EventTypeShortName;//Used to handle when the Topic is not persisted, it is consistent with the class name by default
+        }
+        if (!string.IsNullOrWhiteSpace(ExpandContent))
+        {
+            EventExpand = JsonSerializer.Deserialize<IntegrationEventExpand>(ExpandContent)!;
         }
         return this;
     }

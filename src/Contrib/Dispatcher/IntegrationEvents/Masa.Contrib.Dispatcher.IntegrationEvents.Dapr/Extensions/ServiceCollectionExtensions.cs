@@ -41,10 +41,13 @@ public static class ServiceCollectionExtensions
 
         return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
         {
-            DaprIntegrationEventOptions daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
+            var daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
-            services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(serviceProvider, daprDispatcherOptions.PubSubName));
-
+            services.TryAddSingleton<IPublisher>(serviceProvider =>
+                new Publisher(
+                    serviceProvider,
+                    daprDispatcherOptions.PubSubName,
+                    !daprDispatcherOptions.AppId.IsNullOrWhiteSpace() ? ConfigurationUtils.CompletionParameter(daprDispatcherOptions.AppId) : daprDispatcherOptions.AppId));
             daprDispatcherOptions.CopyTo(opt);
         });
     }

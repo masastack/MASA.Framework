@@ -9,15 +9,38 @@ public class Publisher : IPublisher
     private DaprClient? _daprClient;
     public DaprClient DaprClient => _daprClient ??= _serviceProvider.GetRequiredService<DaprClient>();
     private readonly string _pubSubName;
+    private readonly string? _appId;
 
-    public Publisher(IServiceProvider serviceProvider, string pubSubName)
+    public Publisher(IServiceProvider serviceProvider, string pubSubName, string? appId)
     {
         _serviceProvider = serviceProvider;
         _pubSubName = pubSubName;
+        if (serviceProvider.EnableIsolation() && appId == null)
+        {
+            throw new ArgumentNullException(appId);
+        }
+
+        _appId = appId;
     }
 
-    public async Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default)
+
+    public Task PublishAsync<T>(
+        string topicName,
+        T @event,
+        IntegrationEventExpand? eventMessageExpand,
+        CancellationToken stoppingToken = default)
     {
-        await DaprClient.PublishEventAsync(_pubSubName, topicName, @event, stoppingToken);
+        if (eventMessageExpand is { Isolation.Count: > 0 })
+        {
+            var integrationEventMessage = new IntegrationEventMessage(@event, eventMessageExpand);
+
+            var masaCloudEvent = new MasaCloudEvent<object>(integrationEventMessage)
+            {
+                Source = new Uri(_appId, UriKind.RelativeOrAbsolute)
+            };
+            return DaprClient.PublishEventAsync(_pubSubName, topicName, masaCloudEvent, stoppingToken);
+        }
+
+        return DaprClient.PublishEventAsync<object>(_pubSubName, topicName, @event!, stoppingToken);
     }
 }

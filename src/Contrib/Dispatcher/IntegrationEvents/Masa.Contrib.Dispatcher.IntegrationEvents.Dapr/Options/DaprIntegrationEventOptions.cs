@@ -6,6 +6,8 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 [Obsolete("Later versions will be changed to Internal")]
 public class DaprIntegrationEventOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions
 {
+    public string? AppId { get; set; }
+    
     private string _pubSubName = "pubsub";
 
     public string PubSubName

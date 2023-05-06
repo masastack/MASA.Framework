@@ -8,7 +8,7 @@
     <MoqPackageVersion>4.16.1</MoqPackageVersion>
     <NSubstitutePackageVersion>4.4.0</NSubstitutePackageVersion>
     <MapsterPackageVersion>7.3.0</MapsterPackageVersion>
-    <DaprPackageVersion>1.5.0</DaprPackageVersion>
+    <DaprPackageVersion>1.10.0</DaprPackageVersion>
     <GoogleProtobufPackageVersion>3.19.1</GoogleProtobufPackageVersion>
     <MedallionDistributedLockPackageVersion>1.0.4</MedallionDistributedLockPackageVersion>
     <FluentValidationPackageVersion>11.1.0</FluentValidationPackageVersion>
