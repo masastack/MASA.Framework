@@ -9,7 +9,9 @@ public class IntegrationEventBus : IIntegrationEventBus
 
     private IEventBus? EventBus => _lazyEventBus.Value;
 
-    private readonly IPublisher _publisher;
+    private readonly Lazy<IPublisher> _lazyPublisher;
+    private IPublisher Publisher => _lazyPublisher.Value;
+
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
@@ -20,7 +22,7 @@ public class IntegrationEventBus : IIntegrationEventBus
 
     public IntegrationEventBus(
         Lazy<IEventBus?> eventBusLazy,
-        IPublisher publisher,
+        Lazy<IPublisher> lazyPublisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
@@ -30,7 +32,7 @@ public class IntegrationEventBus : IIntegrationEventBus
         IMultiEnvironmentContext? multiEnvironmentContext = null)
     {
         _lazyEventBus = eventBusLazy;
-        _publisher = publisher;
+        _lazyPublisher = lazyPublisher;
         _eventLogService = eventLogService;
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;
@@ -85,7 +87,7 @@ public class IntegrationEventBus : IIntegrationEventBus
                 @event.GetEventId(),
                 _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-            await _publisher.PublishAsync(topicName, (dynamic)@event, integrationEventMessageExpand, cancellationToken);
+            await Publisher.PublishAsync(topicName, (dynamic)@event, integrationEventMessageExpand, cancellationToken);
         }
     }
 

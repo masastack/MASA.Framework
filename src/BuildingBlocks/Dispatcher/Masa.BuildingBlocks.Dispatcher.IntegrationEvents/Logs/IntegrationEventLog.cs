@@ -45,6 +45,10 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         Initialize();
     }
 
+    public IntegrationEventLog(IIntegrationEvent @event, Guid transactionId) : this(@event, null, transactionId)
+    {
+    }
+
     public IntegrationEventLog(IIntegrationEvent @event, IntegrationEventExpand? eventExpand,  Guid transactionId) : this()
     {
         EventId = @event.GetEventId();

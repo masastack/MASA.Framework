@@ -1,3 +1,10 @@
+// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests")]
+
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 internal class MasaCloudEventsMiddleware
@@ -12,6 +19,7 @@ internal class MasaCloudEventsMiddleware
         this._isolationOptions = isolationOptions.Value;
     }
 
+    [ExcludeFromCodeCoverage]
     public Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
         if (!this.MatchesContentType(httpContext, out var charset))
@@ -22,7 +30,7 @@ internal class MasaCloudEventsMiddleware
         return this.ProcessBodyAsync(httpContext, serviceProvider, charset);
     }
 
-    private async Task ProcessBodyAsync(HttpContext httpContext, IServiceProvider serviceProvider, string charSet)
+    public async Task ProcessBodyAsync(HttpContext httpContext, IServiceProvider serviceProvider, string charSet)
     {
         JsonElement json;
         if (string.Equals(charSet, Encoding.UTF8.WebName, StringComparison.OrdinalIgnoreCase))
@@ -31,17 +39,13 @@ internal class MasaCloudEventsMiddleware
         }
         else
         {
-            using (var reader = new HttpRequestStreamReader(httpContext.Request.Body, Encoding.GetEncoding(charSet)))
-            {
-                var text = await reader.ReadToEndAsync();
-                json = JsonSerializer.Deserialize<JsonElement>(text);
-            }
+            using var reader = new HttpRequestStreamReader(httpContext.Request.Body, Encoding.GetEncoding(charSet));
+            var text = await reader.ReadToEndAsync();
+            json = JsonSerializer.Deserialize<JsonElement>(text);
         }
 
         Stream body;
-        string? contentType;
 
-        //
         var isDataSet = json.TryGetProperty("data", out var data);
         var isIsolationSet = json.TryGetProperty("isolation", out var isolation);
 
@@ -52,32 +56,15 @@ internal class MasaCloudEventsMiddleware
 
         if (isDataSet)
         {
-            contentType = this.GetDataContentType(json, out var isJson);
-
-            // If the value is anything other than a JSON string, treat it as JSON. Cloud Events requires
-            // non-JSON text to be enclosed in a JSON string.
-            isJson |= data.ValueKind != JsonValueKind.String;
-
             body = new MemoryStream();
-            if (isJson)
-            {
-                // Rehydrate body from JSON payload
-                await JsonSerializer.SerializeAsync(body, data);
-            }
-            else
-            {
-                // Rehydrate body from contents of the string
-                var text = data.GetString();
-                await using var writer = new HttpResponseStreamWriter(body, Encoding.UTF8);
-                await writer.WriteAsync(text);
-            }
+
+            await JsonSerializer.SerializeAsync(body, data);
 
             body.Seek(0L, SeekOrigin.Begin);
         }
         else
         {
             body = new MemoryStream();
-            contentType = null;
         }
 
         var originalBody = httpContext.Request.Body;
@@ -86,7 +73,6 @@ internal class MasaCloudEventsMiddleware
         try
         {
             httpContext.Request.Body = body;
-            httpContext.Request.ContentType = contentType;
 
             await this._next(httpContext);
         }
@@ -97,7 +83,7 @@ internal class MasaCloudEventsMiddleware
         }
     }
 
-    void InitializeIsolation(IServiceProvider serviceProvider, JsonElement.ObjectEnumerator isolationEnumerator)
+    public void InitializeIsolation(IServiceProvider serviceProvider, JsonElement.ObjectEnumerator isolationEnumerator)
     {
         foreach (var item in isolationEnumerator)
         {
@@ -116,38 +102,7 @@ internal class MasaCloudEventsMiddleware
         }
     }
 
-    private string? GetDataContentType(JsonElement json, out bool isJson)
-    {
-        string? contentType;
-        if (json.TryGetProperty("datacontenttype", out var dataContentType) &&
-            dataContentType.ValueKind == JsonValueKind.String &&
-            MediaTypeHeaderValue.TryParse(dataContentType.GetString(), out var parsed))
-        {
-            contentType = dataContentType.GetString();
-            isJson =
-                parsed.MediaType.Equals("application/json", StringComparison.Ordinal) ||
-                parsed.Suffix.EndsWith("+json", StringComparison.Ordinal);
-
-            // Since S.T.Json always outputs utf-8, we may need to normalize the data content type
-            // to remove any charset information. We generally just assume utf-8 everywhere, so omitting
-            // a charset is a safe bet.
-            if (contentType != null && contentType.Contains("charset"))
-            {
-                parsed.Charset = StringSegment.Empty;
-                contentType = parsed.ToString();
-            }
-        }
-        else
-        {
-            // assume JSON is not specified.
-            contentType = "application/json";
-            isJson = true;
-        }
-
-        return contentType;
-    }
-
-    private bool MatchesContentType(HttpContext httpContext, [NotNullWhen(true)] out string? charset)
+    public bool MatchesContentType(HttpContext httpContext, [NotNullWhen(true)] out string? charset)
     {
         if (httpContext.Request.ContentType == null)
         {

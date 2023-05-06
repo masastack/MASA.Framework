@@ -64,11 +64,14 @@ public static class ServiceCollectionExtensions
         LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus>(serviceProvider => new IntegrationEventBus(
             new Lazy<IEventBus?>(serviceProvider.GetService<IEventBus>),
-            serviceProvider.GetRequiredService<IPublisher>(),
+            new Lazy<IPublisher>(serviceProvider.GetRequiredService<IPublisher>()),
             serviceProvider.GetService<IIntegrationEventLogService>(),
             serviceProvider.GetService<IOptionsMonitor<MasaAppConfigureOptions>>(),
             serviceProvider.GetService<ILogger<IntegrationEventBus>>(),
-            serviceProvider.GetService<IUnitOfWork>()
+            serviceProvider.GetService<IUnitOfWork>(),
+            serviceProvider.GetService<IOptions<IsolationOptions>>(),
+            serviceProvider.GetService<IMultiTenantContext>(),
+            serviceProvider.GetService<IMultiEnvironmentContext>()
         ));
         action?.Invoke();
 

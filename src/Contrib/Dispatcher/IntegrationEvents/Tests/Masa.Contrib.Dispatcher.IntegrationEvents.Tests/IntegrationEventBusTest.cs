@@ -27,7 +27,7 @@ public class IntegrationEventBusTest
         _publisher = new();
         _logger = new();
         _eventLog = new();
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>(), default)).Verifiable();
@@ -68,7 +68,7 @@ public class IntegrationEventBusTest
     {
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -78,16 +78,18 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(), It.IsAny<DbTransaction>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Never);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Never);
     }
 
     [DataTestMethod]
@@ -97,7 +99,7 @@ public class IntegrationEventBusTest
     {
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null);
@@ -106,16 +108,18 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(), It.IsAny<DbTransaction>(),
+                It.IsAny<CancellationToken>()),
             Times.Never);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Once);
     }
 
     [DataTestMethod]
@@ -126,7 +130,7 @@ public class IntegrationEventBusTest
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -136,16 +140,17 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
             Times.Never);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Once);
     }
 
     [DataTestMethod]
@@ -153,11 +158,11 @@ public class IntegrationEventBusTest
     [DataRow(false)]
     public async Task TestSaveEventFailedAsync(bool useLogger)
     {
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -176,7 +181,7 @@ public class IntegrationEventBusTest
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -195,7 +200,7 @@ public class IntegrationEventBusTest
     {
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -205,7 +210,7 @@ public class IntegrationEventBusTest
             Name = "Tom"
         };
         await integrationEventBus.PublishAsync(@event);
-        _eventBus.Verify(bus=>bus.PublishAsync(It.IsAny<CreateUserEvent>(),It.IsAny<CancellationToken>()), Times.Once);
+        _eventBus.Verify(bus => bus.PublishAsync(It.IsAny<CreateUserEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]
@@ -213,7 +218,7 @@ public class IntegrationEventBusTest
     {
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -228,7 +233,7 @@ public class IntegrationEventBusTest
     {
         var integrationEventBus = new IntegrationEventBus(
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,

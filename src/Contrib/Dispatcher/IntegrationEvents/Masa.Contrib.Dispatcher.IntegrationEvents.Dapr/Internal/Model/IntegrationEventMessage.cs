@@ -9,6 +9,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 /// The object that dapr sends integration events
 /// when isolation is used, use this object to send events
 /// </summary>
+[ExcludeFromCodeCoverage]
 internal class IntegrationEventMessage : IntegrationEventExpand
 {
     /// <summary>

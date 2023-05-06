@@ -3,6 +3,7 @@
 
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiEnvironment")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiTenant")]
 

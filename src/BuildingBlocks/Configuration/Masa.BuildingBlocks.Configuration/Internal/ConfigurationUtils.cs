@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.BuildingBlocks.Configuration.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr")]
 
 // ReSharper disable once CheckNamespace
@@ -24,7 +26,7 @@ internal static class ConfigurationUtils
     {
         var value = configuration == null
             ? Environment.GetEnvironmentVariable(initialParameter)
-            : configuration?.GetSection(initialParameter).Value;
+            : configuration.GetSection(initialParameter).Value;
         if (string.IsNullOrWhiteSpace(value))
             value = masaConfiguration?.Local.GetSection(initialParameter).Value;
 

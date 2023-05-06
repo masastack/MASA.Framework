@@ -1,9 +1,14 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests")]
+
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
-public class MasaCloudEvent<TData> : CloudEvent
+[ExcludeFromCodeCoverage]
+internal class MasaCloudEvent<TData> : CloudEvent
 {
     /// <summary>
     /// Initialize a new instance of the <see cref="T:Dapr.CloudEvent`1" /> class.
@@ -15,5 +20,5 @@ public class MasaCloudEvent<TData> : CloudEvent
 
     /// <summary>Gets event data.</summary>
     [JsonPropertyName("datacontenttype")]
-    public string DataContentType { get; } = "application/masacloudevents+json";
+    public string DataContentType => "application/masacloudevents+json";
 }
