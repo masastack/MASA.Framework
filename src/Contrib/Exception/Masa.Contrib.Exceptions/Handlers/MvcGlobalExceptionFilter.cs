@@ -64,7 +64,7 @@ public class MvcGlobalExceptionFilter : IExceptionFilter
         if (masaExceptionContext.Exception is MasaException masaException)
         {
             context.ExceptionHandled = true;
-            context.Result = new DefaultExceptionResult(masaException.GetLocalizedMessage(),
+            context.Result = new DefaultExceptionResult(masaException.Message,
                 httpStatusCode,
                 masaExceptionContext.ContentType);
             return;

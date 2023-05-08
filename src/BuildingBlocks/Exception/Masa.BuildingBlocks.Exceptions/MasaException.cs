@@ -58,6 +58,8 @@ public class MasaException : Exception
         }
     }
 
+    public override string Message => GetLocalizedMessage();
+
     private void TryInitialize()
     {
         if (_initialize)
@@ -108,10 +110,10 @@ public class MasaException : Exception
     {
     }
 
-    public string GetLocalizedMessage()
+    private string GetLocalizedMessage()
     {
         if (string.IsNullOrWhiteSpace(ErrorCode))
-            return Message;
+            return base.Message;
 
         return GetLocalizedMessageExecuting();
     }
@@ -121,7 +123,7 @@ public class MasaException : Exception
         if (!SupportI18n)
         {
             if (ErrorMessage.IsNullOrWhiteSpace())
-                return Message;
+                return base.Message;
 
             var parameters = GetParameters();
             if (parameters != null! && parameters.Any())
@@ -133,10 +135,10 @@ public class MasaException : Exception
         if (ErrorCode!.StartsWith(Masa.BuildingBlocks.Data.Constants.ExceptionErrorCode.FRAMEWORK_PREFIX))
         {
             //The current framework frame exception
-            return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? Message;
+            return FrameworkI18n!.T(ErrorCode!, false, GetParameters()) ?? base.Message;
         }
 
-        return I18n!.T(ErrorCode, false, GetParameters()) ?? Message;
+        return I18n!.T(ErrorCode, false, GetParameters()) ?? base.Message;
     }
 
     protected virtual object[] GetParameters() => Parameters;
