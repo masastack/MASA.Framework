@@ -104,18 +104,17 @@ public static class MasaStackConfigExtensions
         return GetDomain(masaStackConfig, MasaStackConstant.AUTH, MasaStackConstant.SSO);
     }
 
-    public static IEnumerable<(string, string, string)> GetAllUINames(this IMasaStackConfig masaStackConfig)
+    public static IEnumerable<KeyValuePair<string, string>> GetUIDomainPairs(this IMasaStackConfig masaStackConfig)
     {
         foreach (var web in GetAllWeb(masaStackConfig))
         {
             var id = web["id"]?.ToString() ?? "";
-            var name = web["name"]?.ToString() ?? "";
             var domain = web["domain"]?.ToString() ?? "";
             if (string.IsNullOrEmpty(id))
             {
                 continue;
             }
-            yield return (id, name, domain);
+            yield return new KeyValuePair<string, string>(id, domain);
         }
     }
 
