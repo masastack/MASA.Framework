@@ -13,6 +13,7 @@ public class Publisher : IPublisher
     private readonly string? _daprAppId;
     private readonly ILogger<Publisher>? _logger;
 
+    [ExcludeFromCodeCoverage]
     public Publisher(IServiceProvider serviceProvider, string pubSubName, string appId, string? daprAppId)
     {
         _serviceProvider = serviceProvider;

@@ -6,4 +6,6 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Internal;
 internal static class DaprConstant
 {
     public const string DAPR_PUBSUB_NAME = "pubsub";
+
+    public const string DEFAULT_DATA_CONTENT_TYPE = "application/masacloudevents+json";
 }

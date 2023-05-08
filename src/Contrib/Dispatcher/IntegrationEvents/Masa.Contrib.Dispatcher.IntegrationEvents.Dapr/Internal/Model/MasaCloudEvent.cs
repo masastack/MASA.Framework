@@ -20,5 +20,5 @@ internal class MasaCloudEvent<TData> : CloudEvent
 
     /// <summary>Gets event data.</summary>
     [JsonPropertyName("datacontenttype")]
-    public string DataContentType => "application/masacloudevents+json";
+    public string DataContentType { get; set; } = DaprConstant.DEFAULT_DATA_CONTENT_TYPE;
 }

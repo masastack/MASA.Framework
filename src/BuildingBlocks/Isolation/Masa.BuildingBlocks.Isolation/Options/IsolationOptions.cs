@@ -4,8 +4,11 @@
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.IntegrationEvents.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiEnvironment")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiEnvironment.Tests")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiTenant")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Isolation.MultiTenant.Tests")]
 
 // ReSharper disable once CheckNamespace
 

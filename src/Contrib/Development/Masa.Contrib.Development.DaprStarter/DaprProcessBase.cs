@@ -37,7 +37,7 @@ public abstract class DaprProcessBase
     internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
     {
         var sidecarOptions = new SidecarOptions(
-            _daprProvider.CompletionAppId(options.AppId),
+            _daprProvider.CompletionAppId(options.AppId, options.DisableAppIdSuffix, options.AppIdSuffix, options.AppIdDelimiter),
             options.AppPort,
             options.AppProtocol,
             options.EnableSsl)

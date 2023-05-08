@@ -1,11 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Isolation;
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]
 public class IntegrationEventBusTest
 {
+    private Mock<IServiceProvider> _serviceProvider;
     private Mock<IDispatcherOptions> _options;
     private Mock<IOptions<IntegrationEventOptions>> _dispatcherOptions;
     private Mock<IPublisher> _publisher;
@@ -18,6 +21,7 @@ public class IntegrationEventBusTest
     [TestInitialize]
     public void Initialize()
     {
+        _serviceProvider = new();
         _options = new();
         _options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
         _dispatcherOptions = new();
@@ -67,6 +71,7 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -98,6 +103,7 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAndNotUoWAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -129,6 +135,7 @@ public class IntegrationEventBusTest
     {
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -161,6 +168,7 @@ public class IntegrationEventBusTest
         _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -180,6 +188,7 @@ public class IntegrationEventBusTest
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -199,6 +208,7 @@ public class IntegrationEventBusTest
     public async Task TestPublishEventAndNotEventBusAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -217,6 +227,7 @@ public class IntegrationEventBusTest
     public async Task TestCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -232,6 +243,7 @@ public class IntegrationEventBusTest
     public async Task TestNotUseUowCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
             new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
@@ -240,6 +252,50 @@ public class IntegrationEventBusTest
             null);
 
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());
+    }
+
+    [DataRow("env", "tenant", "1", "dev", 2)]
+    [DataRow("env", "tenant", "", "dev", 1)]
+    [DataRow("env", "tenant", "1", "", 1)]
+    [DataRow("env", "tenant", "", "", 0)]
+    [DataTestMethod]
+    public void TestTryAddIntegrationEventMessageExpand(
+        string multiEnvironmentName,
+        string multiTenantIdName,
+        string inputCurrentTenantId,
+        string inputCurrentEnvironment,
+        int expectedCount)
+    {
+        var services = new ServiceCollection();
+
+        services.Configure<IsolationOptions>(options =>
+        {
+            options.MultiEnvironmentName = multiEnvironmentName;
+            options.MultiTenantIdName = multiTenantIdName;
+        });
+        Mock<IMultiTenantContext> multiTenantContext = new();
+        if (!inputCurrentTenantId.IsNullOrWhiteSpace())
+            multiTenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant(inputCurrentTenantId));
+        services.AddSingleton(_ => multiTenantContext.Object);
+
+        Mock<IMultiEnvironmentContext> multiEnvironmentContext = new();
+        if (!inputCurrentEnvironment.IsNullOrWhiteSpace())
+            multiEnvironmentContext.Setup(context => context.CurrentEnvironment).Returns(inputCurrentEnvironment);
+        services.AddSingleton(_ => multiEnvironmentContext.Object);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var integrationEventBus = new IntegrationEventBus(
+            serviceProvider,
+            new Lazy<IEventBus?>(_eventBus.Object),
+            new Lazy<IPublisher>(_publisher.Object),
+            _eventLog.Object,
+            _masaAppConfigureOptions.Object,
+            _logger.Object);
+        var integrationEventExpand = integrationEventBus.TryAddIntegrationEventMessageExpand();
+        Assert.IsNotNull(integrationEventExpand);
+        Assert.IsNotNull(integrationEventExpand.Isolation);
+
+        Assert.AreEqual(expectedCount, integrationEventExpand.Isolation.Count);
     }
 
     [TestMethod]

@@ -21,15 +21,13 @@ public class IntegrationEventBus : IIntegrationEventBus
     private readonly IMultiEnvironmentContext? _multiEnvironmentContext;
 
     public IntegrationEventBus(
+        IServiceProvider serviceProvider,
         Lazy<IEventBus?> eventBusLazy,
         Lazy<IPublisher> lazyPublisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
-        IUnitOfWork? unitOfWork = null,
-        IOptions<IsolationOptions>? isolationOptions = null,
-        IMultiTenantContext? multiTenantContext = null,
-        IMultiEnvironmentContext? multiEnvironmentContext = null)
+        IUnitOfWork? unitOfWork = null)
     {
         _lazyEventBus = eventBusLazy;
         _lazyPublisher = lazyPublisher;
@@ -37,9 +35,9 @@ public class IntegrationEventBus : IIntegrationEventBus
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;
         _unitOfWork = unitOfWork;
-        _isolationOptions = isolationOptions?.Value;
-        _multiTenantContext = multiTenantContext;
-        _multiEnvironmentContext = multiEnvironmentContext;
+        _isolationOptions = serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value;
+        _multiTenantContext = serviceProvider.GetService<IMultiTenantContext>();
+        _multiEnvironmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)

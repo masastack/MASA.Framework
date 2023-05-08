@@ -22,7 +22,7 @@ internal class MasaCloudEventsMiddleware
     [ExcludeFromCodeCoverage]
     public Task InvokeAsync(HttpContext httpContext, IServiceProvider serviceProvider)
     {
-        if (!this.MatchesContentType(httpContext, out var charset))
+        if (!MatchesContentType(httpContext, out var charset))
         {
             return this._next(httpContext);
         }
@@ -102,7 +102,7 @@ internal class MasaCloudEventsMiddleware
         }
     }
 
-    public bool MatchesContentType(HttpContext httpContext, [NotNullWhen(true)] out string? charset)
+    public static bool MatchesContentType(HttpContext httpContext, [NotNullWhen(true)] out string? charset)
     {
         if (httpContext.Request.ContentType == null)
         {

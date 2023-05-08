@@ -31,7 +31,9 @@ public class MasaCloudEventsMiddlewareTest
 
     [DataRow(null, false, null)]
     [DataRow("", false, null)]
+    [DataRow(" application/masacloudevents+json; charset=UTF-8", false, null)]
     [DataRow("application/masacloudevents+json; charset=UTF-8", true, "UTF-8")]
+    [DataRow("application/masacloudevents+json?", false, null)]
     [DataRow("application/masacloudevents+json-custom", false, null)]
     [DataRow("application/masacloudevents+json", true, "UTF-8")]
     [DataRow("application/masacloudevents+json; charset=gb2312", true, "gb2312")]
@@ -49,7 +51,7 @@ public class MasaCloudEventsMiddlewareTest
                 ContentType = contextType
             }
         };
-        var result = _masaCloudEventsMiddleware.MatchesContentType(httpContext, out string? charset);
+        var result = MasaCloudEventsMiddleware.MatchesContentType(httpContext, out string? charset);
 
         Assert.AreEqual(expectedResult, result);
         Assert.AreEqual(expectedCharset, charset);
