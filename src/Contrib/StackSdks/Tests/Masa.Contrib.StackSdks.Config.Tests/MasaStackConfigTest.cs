@@ -80,7 +80,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetAllUINames()
     {
-        var allUIs = _stackConfig.GetAllUINames();
+        var allUIs = _stackConfig.GetUIDomainPairs();
 
         Assert.IsNotNull(allUIs);
     }
