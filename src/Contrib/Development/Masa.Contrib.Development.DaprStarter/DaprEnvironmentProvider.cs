@@ -11,6 +11,8 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
 
     private const string METRICS_PORT = "DAPR_METRICS_PORT";
 
+    public string? GetDaprAppId() => Environment.GetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID);
+
     public ushort? GetHttpPort() => GetEnvironmentVariable(HTTP_PORT);
 
     public ushort? GetGrpcPort() => GetEnvironmentVariable(GRPC_PORT);

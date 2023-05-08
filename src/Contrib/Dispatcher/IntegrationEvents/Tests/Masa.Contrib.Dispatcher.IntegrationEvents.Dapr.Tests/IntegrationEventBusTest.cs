@@ -93,7 +93,10 @@ public class IntegrationEventBusTest
         IServiceCollection services = new ServiceCollection();
 
         services.AddDaprEventBus<CustomIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(),
-            option => { option.PubSubName = "pubsub"; });
+            option =>
+            {
+                option.PubSubName = "pubsub";
+            });
         var serviceProvider = services.BuildServiceProvider();
         var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
         Assert.IsNotNull(integrationEventBus);
@@ -115,7 +118,10 @@ public class IntegrationEventBusTest
     public void TestUseDaprReturnNotNull()
     {
         var services = new ServiceCollection();
-        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt => { opt.UseDapr(); });
+        services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt =>
+        {
+            opt.UseDapr("pubsub", "{Replace-Your-DaprAppId}");
+        });
         Mock<IIntegrationEventLogService> eventLogService = new();
         services.AddScoped(_ => eventLogService.Object);
 

@@ -5,6 +5,8 @@ namespace Masa.Contrib.Development.DaprStarter;
 
 public interface IDaprEnvironmentProvider
 {
+    string? GetDaprAppId();
+
     ushort? GetHttpPort();
 
     ushort? GetGrpcPort();
