@@ -5,18 +5,19 @@
 
 namespace Masa.BuildingBlocks.Development.DaprStarter;
 
+#pragma warning disable S3236
 /// <summary>
 /// dapr startup configuration information
 /// When the specified attribute is configured as null, the default value of the parameter is subject to the default value of dapr of the current version
 /// </summary>
-public class DaprOptions
+public class DaprOptions : DaprOptionsBase
 {
     /// <summary>
     /// The id for your application, used for service discovery
     /// </summary>
     public string? AppId { get; set; }
 
-    private string _appIdDelimiter = Constant.DEFAULT_APPID_DELIMITER;
+    private string _appIdDelimiter = DaprStarterConstant.DEFAULT_APPID_DELIMITER;
 
     /// <summary>
     /// Separator used to splice AppId and AppIdSuffix
@@ -58,68 +59,23 @@ public class DaprOptions
     /// </summary>
     public bool DisableAppIdSuffix { get; set; }
 
-    private int? _maxConcurrency;
+    private int? _maxConcurrency = -1;
 
     /// <summary>
     /// The concurrency level of the application, otherwise is unlimited
-    /// Must be greater than 0
+    /// Must be greater than or equal -1
     /// </summary>
-    public int? MaxConcurrency
+    public override int? MaxConcurrency
     {
         get => _maxConcurrency;
         set
         {
             if (value != null)
-                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(MaxConcurrency));
+                MasaArgumentException.ThrowIfLessThan(value.Value, -1, nameof(MaxConcurrency));
 
             _maxConcurrency = value;
         }
     }
-
-    private ushort? _appPort;
-
-    /// <summary>
-    /// The port your application is listening on
-    /// Required. Must be between 0-65535
-    /// </summary>
-    public ushort? AppPort
-    {
-        get => _appPort;
-        set
-        {
-            if (value != null)
-                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(AppPort));
-
-            _appPort = value;
-        }
-    }
-
-    /// <summary>
-    /// The protocol (gRPC or HTTP) Dapr uses to talk to the application. Valid values are: http or grpc
-    /// </summary>
-    public Protocol? AppProtocol { get; set; }
-
-    /// <summary>
-    /// Enable https when Dapr invokes the application
-    /// default: null (don't use https)
-    /// </summary>
-    public bool? EnableSsl { get; set; }
-
-    /// <summary>
-    /// Dapr configuration file
-    /// default:
-    /// Linux & Mac: $HOME/.dapr/config.yaml
-    /// Windows: %USERPROFILE%\.dapr\config.yaml
-    /// </summary>
-    public string? Config { get; set; }
-
-    /// <summary>
-    /// The path for components directory
-    /// default:
-    /// Linux & Mac: $HOME/.dapr/components
-    /// Windows: %USERPROFILE%\.dapr\components
-    /// </summary>
-    public string? ComponentPath { get; set; }
 
     private ushort? _daprGrpcPort;
 
@@ -127,7 +83,7 @@ public class DaprOptions
     /// The gRPC port for Dapr to listen on
     /// Must be greater than 0
     /// </summary>
-    public ushort? DaprGrpcPort
+    public override ushort? DaprGrpcPort
     {
         get => _daprGrpcPort;
         set
@@ -145,7 +101,7 @@ public class DaprOptions
     /// The HTTP port for Dapr to listen on
     /// Must be greater than 0
     /// </summary>
-    public ushort? DaprHttpPort
+    public override ushort? DaprHttpPort
     {
         get => _daprHttpPort;
         set
@@ -157,39 +113,13 @@ public class DaprOptions
         }
     }
 
-    /// <summary>
-    /// Enable pprof profiling via an HTTP endpoint
-    /// </summary>
-    public bool? EnableProfiling { get; set; }
-
-    /// <summary>
-    /// The image to build the code in. Input is: repository/image
-    /// </summary>
-    public string? Image { get; set; }
-
-    /// <summary>
-    /// The log verbosity. Valid values are: debug, info, warn, error, fatal, or panic
-    /// default: info
-    /// </summary>
-    public LogLevel? LogLevel { get; set; }
-
-    /// <summary>
-    /// default: localhost
-    /// </summary>
-    public string? PlacementHostAddress { get; set; }
-
-    /// <summary>
-    /// Address for the Sentry CA service
-    /// </summary>
-    public string? SentryAddress { get; set; }
-
     private ushort? _metricsPort;
 
     /// <summary>
     /// The port that Dapr sends its metrics information to
     /// Must be greater than 0
     /// </summary>
-    public ushort? MetricsPort
+    public override ushort? MetricsPort
     {
         get => _metricsPort;
         set
@@ -207,7 +137,7 @@ public class DaprOptions
     /// The port for the profile server to listen on
     /// Must be greater than 0
     /// </summary>
-    public ushort? ProfilePort
+    public override ushort? ProfilePort
     {
         get => _profilePort;
         set
@@ -219,39 +149,32 @@ public class DaprOptions
         }
     }
 
-    /// <summary>
-    /// Path to a unix domain socket dir mount. If specified
-    /// communication with the Dapr sidecar uses unix domain sockets for lower latency and greater throughput when compared to using TCP ports
-    /// Not available on Windows OS
-    /// </summary>
-    public string? UnixDomainSocket { get; set; }
-
-    private int? _daprMaxRequestSize;
+    private int? _daprHttpMaxRequestSize;
 
     /// <summary>
     /// Max size of request body in MB.
     /// Must be greater than 0
     /// </summary>
-    public int? DaprMaxRequestSize
+    public int? DaprHttpMaxRequestSize
     {
-        get => _daprMaxRequestSize;
+        get => _daprHttpMaxRequestSize;
         set
         {
             if (value != null)
-                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprMaxRequestSize));
+                MasaArgumentException.ThrowIfLessThanOrEqual(value.Value, (ushort)0, nameof(DaprHttpMaxRequestSize));
 
-            _daprMaxRequestSize = value;
+            _daprHttpMaxRequestSize = value;
         }
     }
 
-    private int _heartBeatInterval = Constant.DEFAULT_HEARTBEAT_INTERVAL;
+    private int _heartBeatInterval = DaprStarterConstant.DEFAULT_HEARTBEAT_INTERVAL;
 
     /// <summary>
     /// Heartbeat detection interval, used to detect dapr status
     /// default: 5000 ms
     /// Must be greater than 0
     /// </summary>
-    public int HeartBeatInterval
+    public override int HeartBeatInterval
     {
         get => _heartBeatInterval;
         set
@@ -262,16 +185,59 @@ public class DaprOptions
         }
     }
 
+    public string PlacementHostAddress { get; set; }
+
     /// <summary>
     /// Start the heartbeat check to ensure that the dapr program is active.
     /// When the heartbeat check is turned off, dapr will not start automatically after it exits abnormally.
     /// </summary>
-    public bool EnableHeartBeat { get; set; } = true;
+    public override bool EnableHeartBeat { get; set; } = true;
 
-    public bool CreateNoWindow { get; set; } = true;
+    public override bool CreateNoWindow { get; set; } = true;
+
+    /// <summary>
+    /// Allowed HTTP origins (default "*")
+    /// </summary>
+    public string AllowedOrigins { get; set; }
+
+    /// <summary>
+    /// Address for a Dapr control plane
+    /// </summary>
+    public string ControlPlaneAddress { get; set; }
+
+    /// <summary>
+    /// Increasing max size of read buffer in KB to handle sending multi-KB headers (default 4)
+    /// </summary>
+    public int? DaprHttpReadBufferSize { get; set; }
+
+    /// <summary>
+    /// gRPC port for the Dapr Internal API to listen on.
+    /// </summary>
+    public int? DaprInternalGrpcPort { get; set; }
+
+    /// <summary>
+    /// Enable API logging for API calls
+    /// </summary>
+    public bool? EnableApiLogging { get; set; }
+
+    /// <summary>
+    /// Enable prometheus metric (default true)
+    /// </summary>
+    public bool? EnableMetrics { get; set; }
+
+    /// <summary>
+    /// Runtime mode for Dapr (default "standalone")
+    /// </summary>
+    public string Mode { get; set; }
+
+    /// <summary>
+    /// Extended parameters, used to supplement unsupported parameters
+    /// </summary>
+    public string ExtendedParameter { get; set; }
 
     public bool IsIncompleteAppId()
     {
         return !DisableAppIdSuffix && (AppIdSuffix == null || AppIdSuffix.Trim() != string.Empty);
     }
 }
+#pragma warning restore S3236

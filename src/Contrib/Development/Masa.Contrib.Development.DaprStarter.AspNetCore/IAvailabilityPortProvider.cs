@@ -3,9 +3,7 @@
 
 namespace Masa.Contrib.Development.DaprStarter.AspNetCore;
 
-public interface IAppPortProvider
+public interface IAvailabilityPortProvider
 {
-    bool GetEnableSsl(ushort appPort);
-
-    (bool EnableSsl, ushort AppPort) GetAppPort(bool? enableSsl);
+    ushort? GetAvailablePort(ushort startingPort, IEnumerable<int>? reservedPorts = null);
 }

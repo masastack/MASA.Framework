@@ -1,18 +1,18 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Development.DaprStarter;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.BuildingBlocks.Development.DaprStarter;
 
 public interface IDaprProvider
 {
-    List<DaprRuntimeOptions> GetDaprList(string appId);
-
-    Process DaprStart(string arguments,
-        bool createNoWindow,
-        Action<object?, DataReceivedEventArgs> outputDataReceivedAction,
-        Action exitAction);
-
-    void DaprStop(string appId);
-
-    bool IsExist(string appId);
+    /// <summary>
+    /// Complete dapr appid
+    /// </summary>
+    /// <returns></returns>
+    string CompletionAppId(string? appId = null,
+        bool disableAppIdSuffix = false,
+        string? appIdSuffix = null,
+        string appIdDelimiter = DaprStarterConstant.DEFAULT_APPID_DELIMITER);
 }

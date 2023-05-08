@@ -9,6 +9,8 @@ public interface IDaprEnvironmentProvider
 
     ushort? GetGrpcPort();
 
+    ushort? GetMetricsPort();
+
     /// <summary>
     /// Set the HttpPort environment variable
     /// When httpPort is greater than 0, return true
@@ -26,11 +28,9 @@ public interface IDaprEnvironmentProvider
     // ReSharper disable once InconsistentNaming
     bool TrySetGrpcPort(ushort? grpcPort);
 
-    void SetHttpPort(ushort httpPort);
-
-    // ReSharper disable once InconsistentNaming
-    void SetGrpcPort(ushort grpcPort);
-
-    // ReSharper disable once InconsistentNaming
-    void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort);
+    /// <summary>
+    /// Set the metricsPort environment variable
+    /// When metricsPort is greater than 0, return true
+    /// </summary>
+    bool TrySetMetricsPort(ushort? metricsPort);
 }
