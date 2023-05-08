@@ -19,4 +19,3 @@ global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;
 global using System.Text.Json.Serialization;
 global using System.Text.RegularExpressions;
-global using LogLevel = Masa.BuildingBlocks.Development.DaprStarter.LogLevel;

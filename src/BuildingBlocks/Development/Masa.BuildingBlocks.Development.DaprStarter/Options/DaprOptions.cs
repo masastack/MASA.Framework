@@ -235,6 +235,12 @@ public class DaprOptions : DaprOptionsBase
     /// </summary>
     public string ExtendedParameter { get; set; }
 
+    /// <summary>
+    /// Whether to use the default placement host address when no PlacementHostAddress is specified
+    /// default: true
+    /// </summary>
+    public bool EnableDefaultPlacementHostAddress { get; set; } = true;
+
     public bool IsIncompleteAppId()
     {
         return !DisableAppIdSuffix && (AppIdSuffix == null || AppIdSuffix.Trim() != string.Empty);
