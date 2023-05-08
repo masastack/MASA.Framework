@@ -17,8 +17,10 @@ public class LocalMessageTableOptions
         {
             if (DbContextType == null)
                 _sectionName = string.Empty;
-            
+
             return _sectionName ??= ConnectionStringNameAttribute.GetConnStringName(DbContextType!);
         }
     }
+
+    public IIdGenerator<Guid>? IdGenerator { get; set; }
 }

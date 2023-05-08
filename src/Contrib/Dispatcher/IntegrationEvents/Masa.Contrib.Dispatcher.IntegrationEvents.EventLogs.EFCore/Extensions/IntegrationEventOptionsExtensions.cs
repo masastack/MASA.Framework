@@ -30,9 +30,14 @@ public static class IntegrationEventOptionsExtensions
             option.DbContextType = typeof(TDbContext);
         });
 
-        options.Services.TryAddScoped<IIntegrationEventLogService>(serviceProvider => new IntegrationEventLogService(
-            serviceProvider.GetRequiredService<IntegrationEventLogContext>(),
-            serviceProvider.GetService<ILogger<IntegrationEventLogService>>()));
+        options.Services.TryAddScoped<IIntegrationEventLogService>(serviceProvider =>
+        {
+            var idGenerator = serviceProvider.GetRequiredService<IOptions<LocalMessageTableOptions>>().Value.IdGenerator?? serviceProvider.GetService<IIdGenerator<Guid>>();
+            return new IntegrationEventLogService(
+                serviceProvider.GetRequiredService<IntegrationEventLogContext>(),
+                idGenerator,
+                serviceProvider.GetService<ILogger<IntegrationEventLogService>>());
+        });
 
         //Add local message table model mapping
         if (!disableEntityTypeConfiguration)

@@ -11,15 +11,13 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     public string EventTypeName { get; private set; } = null!;
 
-    [NotMapped]
-    public string EventTypeShortName => EventTypeName.Split('.').Last();
+    [NotMapped] public string EventTypeShortName => EventTypeName.Split('.').Last();
 
     private object? _event;
 
     [NotMapped] public object Event => _event ??= JsonSerializer.Deserialize<object>(Content)!;
 
-    [NotMapped]
-    public string Topic { get; private set; } = null!;
+    [NotMapped] public string Topic { get; private set; } = null!;
 
     public IntegrationEventStates State { get; set; } = IntegrationEventStates.NotPublished;
 
@@ -37,12 +35,16 @@ public class IntegrationEventLog : IHasConcurrencyStamp
 
     private IntegrationEventLog()
     {
-        Id = Guid.NewGuid();
         Initialize();
     }
 
-    public IntegrationEventLog(IIntegrationEvent @event, Guid transactionId) : this()
+    public IntegrationEventLog(IIntegrationEvent @event, Guid transactionId) : this(Guid.NewGuid(), @event, transactionId)
     {
+    }
+
+    public IntegrationEventLog(Guid id, IIntegrationEvent @event, Guid transactionId) : this()
+    {
+        Id = id;
         EventId = @event.GetEventId();
         CreationTime = @event.GetCreationTime();
         ModificationTime = @event.GetCreationTime();
@@ -64,8 +66,9 @@ public class IntegrationEventLog : IHasConcurrencyStamp
         Topic = json!.Topic;
         if (Topic.IsNullOrWhiteSpace())
         {
-            Topic = EventTypeShortName;//Used to handle when the Topic is not persisted, it is consistent with the class name by default
+            Topic = EventTypeShortName; //Used to handle when the Topic is not persisted, it is consistent with the class name by default
         }
+
         return this;
     }
 
