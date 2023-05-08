@@ -93,6 +93,68 @@ public class IntegrationEventLogServiceTest : TestBase
         Assert.AreEqual(1, count);
     }
 
+    [TestMethod]
+    public async Task TestSaveEventAsyncByAssignIdGenerator()
+    {
+        var guid = Guid.NewGuid();
+        Mock<IIdGenerator<Guid>> idGenerator = new();
+        idGenerator.Setup(generator => generator.NewId()).Returns(guid);
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(_ => Task.CompletedTask,
+                false,
+                idGenerator.Object
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+
+        var count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(0, count);
+
+        var orderPaymentSucceededIntegrationEvent = new OrderPaymentSucceededIntegrationEvent
+        {
+            OrderId = "1234567890123",
+            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+        };
+        await using var transaction = await integrationEventLogContext.DbContext.Database.BeginTransactionAsync();
+        await integrationEventLogService.SaveEventAsync(orderPaymentSucceededIntegrationEvent, transaction.GetDbTransaction());
+        await integrationEventLogContext.DbContext.SaveChangesAsync();
+        await transaction.CommitAsync();
+        count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(1, count);
+        Assert.IsTrue(integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Any(log => log.Id == guid));
+    }
+
+    [TestMethod]
+    public async Task TestSaveEventAsyncByUseGlobalIdGenerator()
+    {
+        Mock<IIdGenerator<Guid>> idGenerator = new();
+        var guid = Guid.NewGuid();
+        idGenerator.Setup(generator => generator.NewId()).Returns(guid);
+        _services.AddIdGenerator(generator => generator.Services.AddSingleton(_ => idGenerator.Object));
+        var integrationEventLogService =
+            await CreateIntegrationEventLogServiceAsync(_ => Task.CompletedTask,
+                false
+            );
+        var serviceProvider = _services.BuildServiceProvider();
+        var integrationEventLogContext = serviceProvider.GetRequiredService<IntegrationEventLogContext>();
+
+        var count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(0, count);
+
+        var orderPaymentSucceededIntegrationEvent = new OrderPaymentSucceededIntegrationEvent
+        {
+            OrderId = "1234567890123",
+            PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
+        };
+        await using var transaction = await integrationEventLogContext.DbContext.Database.BeginTransactionAsync();
+        await integrationEventLogService.SaveEventAsync(orderPaymentSucceededIntegrationEvent, transaction.GetDbTransaction());
+        await integrationEventLogContext.DbContext.SaveChangesAsync();
+        await transaction.CommitAsync();
+        count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();
+        Assert.AreEqual(1, count);
+        Assert.IsTrue(integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Any(log => log.Id == guid));
+    }
+
     [DataRow(true)]
     [DataRow(false)]
     [DataTestMethod]
@@ -100,7 +162,8 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         Guid eventId = default!;
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
                 isUseLogger
             );
         var serviceProvider = _services.BuildServiceProvider();
@@ -118,7 +181,8 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         Guid eventId = default!;
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
                 isUseLogger
             );
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
@@ -150,7 +214,8 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         Guid eventId = default!;
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
                 isUseLogger
             );
         await Assert.ThrowsExceptionAsync<UserFriendlyException>(async ()
@@ -179,7 +244,8 @@ public class IntegrationEventLogServiceTest : TestBase
     {
         Guid eventId = default!;
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => eventId = await InsertDataAsync(eventLogContext, IntegrationEventStates.InProgress),
                 isUseLogger
             );
         var serviceProvider = _services.BuildServiceProvider();
@@ -223,7 +289,8 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestDeleteExpiresAsync(bool isUseLogger)
     {
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.Published),
                 isUseLogger
             );
         var serviceProvider = _services.BuildServiceProvider();
@@ -240,7 +307,8 @@ public class IntegrationEventLogServiceTest : TestBase
     public async Task TestDeleteExpires2Async(bool isUseLogger)
     {
         var integrationEventLogService =
-            await CreateIntegrationEventLogServiceAsync(async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
+            await CreateIntegrationEventLogServiceAsync(
+                async eventLogContext => await InsertDataAsync(eventLogContext, IntegrationEventStates.NotPublished),
                 isUseLogger
             );
         var serviceProvider = _services.BuildServiceProvider();
@@ -253,7 +321,8 @@ public class IntegrationEventLogServiceTest : TestBase
 
     private async Task<IntegrationEventLogService> CreateIntegrationEventLogServiceAsync(
         Func<IntegrationEventLogContext, Task> func,
-        bool isUseLogger)
+        bool isUseLogger,
+        IIdGenerator<Guid>? idGenerator = null)
     {
         if (isUseLogger) _services.AddLogging();
         var serviceProvider = _services.BuildServiceProvider();
@@ -261,7 +330,7 @@ public class IntegrationEventLogServiceTest : TestBase
         await integrationEventLogContext.DbContext.Database.EnsureCreatedAsync();
         await func.Invoke(integrationEventLogContext);
         var logger = isUseLogger ? serviceProvider.GetRequiredService<ILogger<IntegrationEventLogService>>() : null;
-        return new IntegrationEventLogService(integrationEventLogContext, logger);
+        return new IntegrationEventLogService(integrationEventLogContext, idGenerator ?? serviceProvider.GetService<IIdGenerator<Guid>>(), logger);
     }
 
     private static async Task<Guid> InsertDataAsync(

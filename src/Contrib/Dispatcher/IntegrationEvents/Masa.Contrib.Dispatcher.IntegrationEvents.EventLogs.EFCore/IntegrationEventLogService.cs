@@ -7,12 +7,15 @@ public class IntegrationEventLogService : IIntegrationEventLogService
 {
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly ILogger<IntegrationEventLogService>? _logger;
+    private readonly IIdGenerator<Guid>? _idGenerator;
 
     public IntegrationEventLogService(
         IntegrationEventLogContext eventLogContext,
+        IIdGenerator<Guid>? idGenerator,
         ILogger<IntegrationEventLogService>? logger = null)
     {
         _eventLogContext = eventLogContext;
+        _idGenerator = idGenerator;
         _logger = logger;
     }
 
@@ -33,8 +36,8 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         var time = DateTime.UtcNow.AddSeconds(-minimumRetryInterval);
         var result = await _eventLogContext.EventLogs
             .Where(e => (e.State == IntegrationEventStates.PublishedFailed || e.State == IntegrationEventStates.InProgress) &&
-                e.TimesSent <= maxRetryTimes &&
-                e.ModificationTime < time)
+                        e.TimesSent <= maxRetryTimes &&
+                        e.ModificationTime < time)
             .OrderBy(e => e.CreationTime)
             .Take(retryBatchSize)
             .ToListAsync(cancellationToken);
@@ -80,7 +83,10 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(),
                 cancellationToken: cancellationToken);
 
-        var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
+        var eventLogEntry = new IntegrationEventLog(
+            _idGenerator?.NewId() ?? Guid.NewGuid(),
+            @event,
+            _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry, cancellationToken);
         await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
 
@@ -115,6 +121,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
                 throw new UserFriendlyException(
                     $"Failed to modify the state of the local message table to {IntegrationEventStates.InProgress}, the current State is {eventLog.State}, Id: {eventLog.Id}, Multitasking execution error, waiting for the next retry");
             }
+
             if (eventLog.State != IntegrationEventStates.NotPublished &&
                 eventLog.State != IntegrationEventStates.InProgress &&
                 eventLog.State != IntegrationEventStates.PublishedFailed)

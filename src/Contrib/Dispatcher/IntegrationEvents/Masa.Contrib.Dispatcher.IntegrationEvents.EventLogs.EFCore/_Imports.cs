@@ -10,6 +10,7 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.Extensions.Options;
 global using System;
 global using System.Collections.Generic;
 global using System.Data.Common;
