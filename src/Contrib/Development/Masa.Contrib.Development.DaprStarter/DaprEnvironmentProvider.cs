@@ -57,4 +57,9 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
 
         return false;
     }
+
+    public void SetDaprAppId(string appId)
+    {
+        Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, appId);
+    }
 }

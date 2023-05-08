@@ -16,15 +16,16 @@ public static class IntegrationEventOptionsExtensions
     public static Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions UseDapr(
         this Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions options,
         string daprPubSubName,
-        string? appId,
+        string? daprAppId,
         Action<DaprClientBuilder>? builder = null)
     {
+        options.Services.TryAddSingleton<IIntegrationEventDaprProvider, DefaultIntegrationEventDaprProvider>();
         options.Services.TryAddSingleton<IPublisher>(serviceProvider =>
             new Publisher(
                 serviceProvider,
                 daprPubSubName,
                 serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty,
-                !appId.IsNullOrWhiteSpace() ? ConfigurationUtils.CompletionParameter(appId) : appId));
+                serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprAppId)));
         options.Services.AddDaprClient(builder);
 
         return options;

@@ -9,9 +9,9 @@ public class DaprIntegrationEventOptions : Masa.Contrib.Dispatcher.IntegrationEv
     /// <summary>
     /// dapr appid
     /// It is a must when using isolation
-    ///
+    /// priority: User specified appid > environment variable (dapr-appid) > global appId
     /// </summary>
-    public string? AppId { get; set; }
+    public string? DaprAppId { get; set; }
 
     private string _pubSubName = "pubsub";
 

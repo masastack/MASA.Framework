@@ -39,22 +39,17 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IntegrationEventBusProvider>();
 
         services.AddDaprClient(builder);
-
+        services.TryAddSingleton<IIntegrationEventDaprProvider, DefaultIntegrationEventDaprProvider>();
         return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
         {
             var daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
 
-            services.TryAddSingleton<IPublisher>(serviceProvider =>
-            {
-                var appId = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty;
-                return new Publisher(
-                    serviceProvider,
-                    daprDispatcherOptions.PubSubName,
-                    appId,
-                    !daprDispatcherOptions.AppId.IsNullOrWhiteSpace() ?
-                        ConfigurationUtils.CompletionParameter(daprDispatcherOptions.AppId) : daprDispatcherOptions.AppId);
-            });
+            services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(
+                serviceProvider,
+                daprDispatcherOptions.PubSubName,
+                serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty,
+                serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprDispatcherOptions.DaprAppId)));
             daprDispatcherOptions.CopyTo(opt);
         });
     }

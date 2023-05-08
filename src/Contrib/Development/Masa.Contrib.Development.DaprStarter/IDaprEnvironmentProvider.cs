@@ -33,4 +33,6 @@ public interface IDaprEnvironmentProvider
     /// When metricsPort is greater than 0, return true
     /// </summary>
     bool TrySetMetricsPort(ushort? metricsPort);
+
+    void SetDaprAppId(string appId);
 }

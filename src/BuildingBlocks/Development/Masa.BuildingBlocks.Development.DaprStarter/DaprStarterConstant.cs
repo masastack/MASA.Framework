@@ -24,4 +24,9 @@ public static class DaprStarterConstant
     /// Default number of retries
     /// </summary>
     public const int DEFAULT_RETRY_TIME = 10;
+
+    /// <summary>
+    /// When sidecar is started, the appid of the current dapr will be set to this environment variable
+    /// </summary>
+    public const string DEFAULT_DAPR_APPID = "dapr-appid";
 }

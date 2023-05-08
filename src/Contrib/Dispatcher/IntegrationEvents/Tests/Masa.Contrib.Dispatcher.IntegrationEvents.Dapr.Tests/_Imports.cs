@@ -5,6 +5,7 @@ global using Dapr.Client;
 global using Masa.BuildingBlocks.Configuration.Options;
 global using Masa.BuildingBlocks.Data;
 global using Masa.BuildingBlocks.Data.UoW;
+global using Masa.BuildingBlocks.Development.DaprStarter;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
