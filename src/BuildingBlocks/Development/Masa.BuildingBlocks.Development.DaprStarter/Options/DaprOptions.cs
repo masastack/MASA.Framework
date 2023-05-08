@@ -5,6 +5,7 @@
 
 namespace Masa.BuildingBlocks.Development.DaprStarter;
 
+#pragma warning disable S3236
 /// <summary>
 /// dapr startup configuration information
 /// When the specified attribute is configured as null, the default value of the parameter is subject to the default value of dapr of the current version
@@ -239,3 +240,4 @@ public class DaprOptions : DaprOptionsBase
         return !DisableAppIdSuffix && (AppIdSuffix == null || AppIdSuffix.Trim() != string.Empty);
     }
 }
+#pragma warning restore S3236
