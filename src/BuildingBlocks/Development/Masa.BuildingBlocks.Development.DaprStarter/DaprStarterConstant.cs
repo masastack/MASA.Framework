@@ -28,5 +28,5 @@ public static class DaprStarterConstant
     /// <summary>
     /// When sidecar is started, the appid of the current dapr will be set to this environment variable
     /// </summary>
-    public const string DEFAULT_DAPR_APPID = "dapr-appid";
+    public const string DEFAULT_DAPR_APPID = "DAPR_APPID";
 }
