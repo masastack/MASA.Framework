@@ -73,7 +73,8 @@ public abstract class DaprProcessBase
             Mode = options.Mode,
             RootPath = options.RootPath,
             DaprRootPath = options.DaprRootPath,
-            ExtendedParameter = options.ExtendedParameter
+            ExtendedParameter = options.ExtendedParameter,
+            EnableDefaultPlacementHostAddress = options.EnableDefaultPlacementHostAddress
         };
         sidecarOptions.TrySetHttpPort(options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort());
         sidecarOptions.TrySetGrpcPort(options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort());

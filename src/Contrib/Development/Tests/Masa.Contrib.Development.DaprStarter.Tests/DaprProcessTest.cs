@@ -6,14 +6,19 @@ namespace Masa.Contrib.Development.DaprStarter.Tests;
 [TestClass]
 public class DaprProcessTest
 {
-    [DataRow(true, "AppId", "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(true, "AppId", "", "", "", "", "")]
-    [DataRow(false, "AppId-AppIdSuffix", "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(false, "AppId-AppIdSuffix", "", "", "", "", "")]
+    [DataRow(true, "AppId", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "AppId", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "AppId", true, "", "", "", "", "")]
+    [DataRow(true, "AppId", false, "", "", "", "", "")]
+    [DataRow(false, "AppId-AppIdSuffix", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "AppId-AppIdSuffix", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "AppId-AppIdSuffix", true, "", "", "", "", "")]
+    [DataRow(false, "AppId-AppIdSuffix", false, "", "", "", "", "")]
     [DataTestMethod]
     public void TestConvertToSidecarOptions(
         bool disableAppIdSuffix,
         string expectedAppId,
+        bool inputEnableDefaultPlacementHostAddress,
         string inputPlacementHostAddress,
         string inputRootPath,
         string inputDaprRootPath,
@@ -46,6 +51,7 @@ public class DaprProcessTest
             AppIdDelimiter = "-",
             DisableAppIdSuffix = disableAppIdSuffix,
             DaprHttpMaxRequestSize = 1,
+            EnableDefaultPlacementHostAddress = inputEnableDefaultPlacementHostAddress,
             PlacementHostAddress = inputPlacementHostAddress,
             AllowedOrigins = "AllowedOrigins",
             ControlPlaneAddress = "ControlPlaneAddress",
@@ -84,7 +90,7 @@ public class DaprProcessTest
         Assert.AreEqual(daprOptions.UnixDomainSocket, sidecarOptions.UnixDomainSocket);
         Assert.AreEqual(daprOptions.EnableDefaultPlacementHostAddress, sidecarOptions.EnableDefaultPlacementHostAddress);
 
-        Assert.AreEqual(GetPlacementHostAddress(inputPlacementHostAddress), sidecarOptions.PlacementHostAddress);
+        Assert.AreEqual(GetPlacementHostAddress(inputEnableDefaultPlacementHostAddress, inputPlacementHostAddress), sidecarOptions.PlacementHostAddress);
         Assert.AreEqual(daprOptions.AllowedOrigins, sidecarOptions.AllowedOrigins);
         Assert.AreEqual(daprOptions.ControlPlaneAddress, sidecarOptions.ControlPlaneAddress);
         Assert.AreEqual(daprOptions.DaprHttpMaxRequestSize, sidecarOptions.DaprHttpMaxRequestSize);
@@ -95,13 +101,14 @@ public class DaprProcessTest
         Assert.AreEqual(daprOptions.Mode, sidecarOptions.Mode);
         Assert.AreEqual(daprOptions.ExtendedParameter, sidecarOptions.ExtendedParameter);
 
-        string GetPlacementHostAddress(string placementHostAddress)
+        string GetPlacementHostAddress(bool enableDefaultPlacementHostAddress, string placementHostAddress)
         {
-            if (!placementHostAddress.IsNullOrWhiteSpace())
-                return placementHostAddress;
-
-            var port = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 6050 : 50005;
-            return $"127.0.0.1:{port}";
+            if (enableDefaultPlacementHostAddress && placementHostAddress.IsNullOrWhiteSpace())
+            {
+                var port = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 6050 : 50005;
+                return $"127.0.0.1:{port}";
+            }
+            return placementHostAddress;
         }
 
         string GetRootPath(string rootPath)
