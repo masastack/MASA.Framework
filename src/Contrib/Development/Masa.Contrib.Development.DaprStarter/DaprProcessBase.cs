@@ -10,8 +10,16 @@ public abstract class DaprProcessBase
 
     private readonly IDaprProvider _daprProvider;
 
-    private static readonly string[] HttpPortPatterns = { "http server is running on port ([0-9]+)" };
-    private static readonly string[] GrpcPortPatterns = { "API gRPC server is running on port ([0-9]+)" };
+    private static readonly string[] HttpPortPatterns =
+    {
+        "http server is running on port ([0-9]+)"
+    };
+
+    private static readonly string[] GrpcPortPatterns =
+    {
+        "API gRPC server is running on port ([0-9]+)"
+    };
+
     private static readonly string UserFilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
     internal SidecarOptions? SuccessDaprOptions;
@@ -37,7 +45,7 @@ public abstract class DaprProcessBase
     internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
     {
         var sidecarOptions = new SidecarOptions(
-            _daprProvider.CompletionAppId(options.AppId),
+            _daprProvider.CompletionAppId(options.AppId, options.DisableAppIdSuffix, options.AppIdSuffix, options.AppIdDelimiter),
             options.AppPort,
             options.AppProtocol,
             options.EnableSsl)
@@ -73,7 +81,7 @@ public abstract class DaprProcessBase
 
         if (sidecarOptions.EnableDefaultPlacementHostAddress && sidecarOptions.PlacementHostAddress.IsNullOrWhiteSpace())
         {
-            var port = Environment.OSVersion.Platform == PlatformID.Win32NT ? 6050 : 50005;
+            var port = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 6050 : 50005;
             sidecarOptions.PlacementHostAddress = $"127.0.0.1:{port}";
         }
 
