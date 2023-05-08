@@ -10,5 +10,5 @@ public interface IIntegrationEventDaprProvider
     /// priority: User specified appid > environment variable > global appId
     /// </summary>
     /// <returns></returns>
-    string? GetDaprAppId(string? appId);
+    string? GetDaprAppId(string? daprAppId, string appId);
 }

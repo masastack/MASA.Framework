@@ -13,12 +13,12 @@ public class DefaultIntegrationEventDaprProviderTest
     [DataRow(null, "masa-test", "masa-test")]
     [DataRow(null, "", null)]
     [DataTestMethod]
-    public void TestGetDaprAppId(string? appId, string appIdByGlobal, string? exceptedAppId)
+    public void TestGetDaprAppId(string? daprAppId, string appIdByGlobal, string? exceptedDaprAppId)
     {
-        Initialize(appIdByGlobal, () =>
+        Initialize(() =>
         {
-            var actualAppId = _provider.GetDaprAppId(appId);
-            Assert.AreEqual(exceptedAppId, actualAppId);
+            var actualDaprAppId = _provider.GetDaprAppId(daprAppId, appIdByGlobal);
+            Assert.AreEqual(exceptedDaprAppId, actualDaprAppId);
         });
     }
 
@@ -27,25 +27,21 @@ public class DefaultIntegrationEventDaprProviderTest
     [DataRow(null, "masa-test", "masa-env")]
     [DataRow(null, "", "masa-env")]
     [DataTestMethod]
-    public void TestGetDaprAppIdBySetDaprAppId(string? appId, string appIdByGlobal, string? exceptedAppId)
+    public void TestGetDaprAppIdBySetDaprAppId(string? daprAppId, string appIdByGlobal, string? exceptedDaprAppId)
     {
-        Initialize(appIdByGlobal, () =>
+        Initialize(() =>
         {
             Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, "masa-env");
-            var actualAppId = _provider.GetDaprAppId(appId);
-            Assert.AreEqual(exceptedAppId, actualAppId);
+            var actualAppId = _provider.GetDaprAppId(daprAppId, appIdByGlobal);
+            Assert.AreEqual(exceptedDaprAppId, actualAppId);
             Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, "");
         });
     }
 
-    void Initialize(string appIdByGlobal, Action action)
+    void Initialize(Action action)
     {
         Environment.SetEnvironmentVariable("masa", "masa-dev");
-        var options = Microsoft.Extensions.Options.Options.Create(new MasaAppConfigureOptions()
-        {
-            AppId = appIdByGlobal
-        });
-        _provider = new DefaultIntegrationEventDaprProvider(options);
+        _provider = new DefaultIntegrationEventDaprProvider();
         action.Invoke();
         Environment.SetEnvironmentVariable("masa", "");
     }

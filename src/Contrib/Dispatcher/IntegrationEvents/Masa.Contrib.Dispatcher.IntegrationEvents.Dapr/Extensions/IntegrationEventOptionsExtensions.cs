@@ -21,11 +21,14 @@ public static class IntegrationEventOptionsExtensions
     {
         options.Services.TryAddSingleton<IIntegrationEventDaprProvider, DefaultIntegrationEventDaprProvider>();
         options.Services.TryAddSingleton<IPublisher>(serviceProvider =>
-            new Publisher(
+        {
+            var appId = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty;
+            return new Publisher(
                 serviceProvider,
                 daprPubSubName,
-                serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty,
-                serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprAppId)));
+                appId,
+                serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprAppId, appId));
+        });
         options.Services.AddDaprClient(builder);
 
         return options;

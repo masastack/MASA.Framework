@@ -7,25 +7,22 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 internal class DefaultIntegrationEventDaprProvider : IIntegrationEventDaprProvider
 {
-    private readonly IOptions<MasaAppConfigureOptions>? _options;
     private readonly IConfiguration? _configuration;
     private readonly IMasaConfiguration? _masaConfiguration;
 
     public DefaultIntegrationEventDaprProvider(
-        IOptions<MasaAppConfigureOptions>? options = null,
         IConfiguration? configuration = null,
         IMasaConfiguration? masaConfiguration = null)
     {
-        _options = options;
         _configuration = configuration;
         _masaConfiguration = masaConfiguration;
     }
 
-    public string? GetDaprAppId(string? appId)
+    public string? GetDaprAppId(string? daprAppId, string appId)
     {
         string? actualAppId = null;
-        if (!appId.IsNullOrWhiteSpace())
-            actualAppId = ConfigurationUtils.CompletionParameter(appId, _configuration, _masaConfiguration);
+        if (!daprAppId.IsNullOrWhiteSpace())
+            actualAppId = ConfigurationUtils.CompletionParameter(daprAppId, _configuration, _masaConfiguration);
         if (!actualAppId.IsNullOrWhiteSpace())
             return actualAppId;
 
@@ -33,8 +30,8 @@ internal class DefaultIntegrationEventDaprProvider : IIntegrationEventDaprProvid
         if (!actualAppId.IsNullOrWhiteSpace())
             return actualAppId;
 
-        if (_options != null && !_options.Value.AppId.IsNullOrWhiteSpace())
-            actualAppId = ConfigurationUtils.CompletionParameter(_options.Value.AppId, _configuration, _masaConfiguration);
+        if (!appId.IsNullOrWhiteSpace())
+            actualAppId = ConfigurationUtils.CompletionParameter(appId, _configuration, _masaConfiguration);
 
         return actualAppId;
     }

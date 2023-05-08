@@ -45,11 +45,15 @@ public static class ServiceCollectionExtensions
             var daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
 
-            services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(
-                serviceProvider,
-                daprDispatcherOptions.PubSubName,
-                serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty,
-                serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprDispatcherOptions.DaprAppId)));
+            services.TryAddSingleton<IPublisher>(serviceProvider =>
+            {
+                var appId = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty;
+                return new Publisher(
+                    serviceProvider,
+                    daprDispatcherOptions.PubSubName,
+                    appId,
+                    serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprDispatcherOptions.DaprAppId, appId));
+            });
             daprDispatcherOptions.CopyTo(opt);
         });
     }
