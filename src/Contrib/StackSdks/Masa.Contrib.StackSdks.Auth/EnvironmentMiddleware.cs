@@ -19,7 +19,7 @@ public class EnvironmentMiddleware : ICallerMiddleware
                 });
                 if (!string.IsNullOrEmpty(obj?.Environment))
                 {
-                    masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, "Staging");
+#warning IsolationConsts.ENVIRONMENT
                     masaHttpContext.RequestMessage.Headers.Add("Environment", obj?.Environment);
                 }
             }
