@@ -3,4 +3,6 @@
 
 global using Masa.BuildingBlocks.Data;
 global using Masa.Contrib.Data.IdGenerator.NormalGuid;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Runtime.CompilerServices;

@@ -11,6 +11,7 @@ global using Masa.BuildingBlocks.Ddd.Domain.Events;
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Isolation;
 global using Masa.Contrib.Data.EFCore;
+global using Masa.Utils.Caching.Memory;
 global using Masa.Utils.Models;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.ChangeTracking;

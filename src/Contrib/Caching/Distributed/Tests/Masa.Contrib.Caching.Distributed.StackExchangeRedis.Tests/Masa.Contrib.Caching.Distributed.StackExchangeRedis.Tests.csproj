@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0;net8.0;</TargetFrameworks>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -12,25 +12,25 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)" />
-    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)" />
-    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftPackageVersion)"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftPackageVersion)"/>
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftTeskSdkPackageVersion)"/>
+    <PackageReference Include="MSTest.TestAdapter" Version="$(MSTestPackageVersion)"/>
+    <PackageReference Include="MSTest.TestFramework" Version="$(MSTestPackageVersion)"/>
     <PackageReference Include="coverlet.collector" Version="$(CoverletPackageVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
+    <ProjectReference Include="..\..\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.json" />
+    <None Remove="appsettings.json"/>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

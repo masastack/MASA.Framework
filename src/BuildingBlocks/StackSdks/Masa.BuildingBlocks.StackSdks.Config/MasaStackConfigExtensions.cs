@@ -5,13 +5,6 @@ namespace Masa.BuildingBlocks.StackSdks.Config;
 
 public static class MasaStackConfigExtensions
 {
-    static string systemUer = "system";
-
-    public static string GetDefaultUserName(this IMasaStackConfig masaStackConfig)
-    {
-        return systemUer;
-    }
-
     public static Guid GetDefaultUserId(this IMasaStackConfig masaStackConfig)
     {
         return CreateGuid(masaStackConfig.Namespace);

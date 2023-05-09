@@ -166,7 +166,7 @@ public class I18nTest
 
         Assert.AreEqual(
             expected,
-            backgroundException.GetLocalizedMessage());
+            backgroundException.Message);
     }
 
     [TestMethod]

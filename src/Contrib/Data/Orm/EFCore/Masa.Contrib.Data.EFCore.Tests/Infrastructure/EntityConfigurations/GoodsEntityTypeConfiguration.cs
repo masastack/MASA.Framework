@@ -10,6 +10,10 @@ public class GoodsEntityTypeConfiguration : IEntityTypeConfiguration<Goods>
     public void Configure(EntityTypeBuilder<Goods> builder)
     {
         builder.Property(s => s.Id).IsRequired();
+
+        builder
+            .HasMany(u => u.Logs)
+            .WithOne(ur => ur.Goods).HasForeignKey(ur => ur.GoodsId);
     }
 }
 

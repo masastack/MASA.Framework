@@ -24,10 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Development.DaprStarter\Masa.Contrib.Development.DaprStarter.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.json" />
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

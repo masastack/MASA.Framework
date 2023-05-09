@@ -5,5 +5,7 @@ namespace Masa.Contrib.Development.DaprStarter.AspNetCore;
 
 public interface IAppPortProvider
 {
+    bool GetEnableSsl(ushort appPort);
+
     (bool EnableSsl, ushort AppPort) GetAppPort(bool? enableSsl);
 }

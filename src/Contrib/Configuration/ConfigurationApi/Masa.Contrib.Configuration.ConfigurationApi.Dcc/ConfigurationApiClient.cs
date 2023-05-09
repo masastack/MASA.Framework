@@ -143,10 +143,10 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         switch (result.ConfigFormat)
         {
-            case ConfigFormats.Json:
+            case ConfigFormats.JSON:
                 return (result.Content!, ConfigurationTypes.Json);
 
-            case ConfigFormats.Raw:
+            case ConfigFormats.RAW:
                 return (result.Content!, ConfigurationTypes.Text);
 
             case ConfigFormats.Properties:
@@ -162,7 +162,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                     throw new ArgumentException("configObject invalid");
                 }
 
-            case ConfigFormats.Xml:
+            case ConfigFormats.XML:
                 try
                 {
                     var json = XmlConfigurationParser.XmlToJson(result.Content!);
@@ -175,7 +175,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                     throw new ArgumentException("configObject invalid");
                 }
 
-            case ConfigFormats.Yaml:
+            case ConfigFormats.YAML:
                 try
                 {
                     var yamlObject = _yamlDeserializer.Deserialize<object>(result.Content!);

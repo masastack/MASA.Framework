@@ -1,9 +1,14 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Data.Serialization.Json.Tests")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Extensions.BackgroundJobs.Memory")]
+
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Data.Serialization.Json;
 
-public class DefaultJsonSerializer : IJsonSerializer
+internal class DefaultJsonSerializer : IJsonSerializer
 {
     private readonly JsonSerializerOptions? _options;
 

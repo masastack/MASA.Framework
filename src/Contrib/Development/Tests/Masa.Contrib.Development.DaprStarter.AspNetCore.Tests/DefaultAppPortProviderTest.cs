@@ -18,7 +18,7 @@ public class DefaultAppPortProviderTest
     }
 
     [DataTestMethod]
-    [DataRow(null, false, 5000)]
+    [DataRow(null, true, 5001)]
     [DataRow(false, false, 5000)]
     [DataRow(true, true, 5001)]
     public void TestGetAppPort2(bool? enableSsl, bool expectedEnableSsl, int expectedAppPort)
@@ -32,6 +32,29 @@ public class DefaultAppPortProviderTest
         var result = provider.GetAppPort(enableSsl);
         Assert.AreEqual(expectedAppPort, result.AppPort);
         Assert.AreEqual(expectedEnableSsl, result.EnableSsl);
+    }
+
+    [DataTestMethod]
+    [DataRow(5000, false)]
+    [DataRow(5001, true)]
+    [DataRow(6000, null)]
+    public void TestGetAppPort2(ushort appPort, bool? expectedEnableSsl)
+    {
+        var service = new Mock<IServer>();
+        IServerAddressesFeature serverAddressesFeature = new ServerAddressesFeature();
+        serverAddressesFeature.Addresses.Add("https://localhost:5001");
+        serverAddressesFeature.Addresses.Add("http://localhost:5000");
+        service.Setup(s => s.Features.Get<IServerAddressesFeature>()).Returns(() => serverAddressesFeature).Verifiable();
+        var provider = new DefaultAppPortProvider(service.Object);
+        var enableSsl = provider.GetEnableSsl(appPort);
+        if (expectedEnableSsl != null)
+        {
+            Assert.AreEqual(expectedEnableSsl, enableSsl);
+        }
+        else
+        {
+            Assert.ThrowsException<UserFriendlyException>(() => Assert.AreEqual(expectedEnableSsl, enableSsl));
+        }
     }
 
     [DataTestMethod]

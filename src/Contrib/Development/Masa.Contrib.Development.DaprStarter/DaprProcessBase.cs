@@ -6,112 +6,212 @@ namespace Masa.Contrib.Development.DaprStarter;
 [ExcludeFromCodeCoverage]
 public abstract class DaprProcessBase
 {
-    private readonly IOptions<MasaAppConfigureOptions>? _masaAppConfigureOptions;
-
     protected IDaprEnvironmentProvider DaprEnvironmentProvider { get; }
 
+    private readonly IDaprProvider _daprProvider;
+
+    private static readonly string[] HttpPortPatterns =
+    {
+        "http server is running on port ([0-9]+)"
+    };
+
+    private static readonly string[] GrpcPortPatterns =
+    {
+        "API gRPC server is running on port ([0-9]+)"
+    };
+
+    private static readonly string UserFilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+
+    internal SidecarOptions? SuccessDaprOptions;
+    protected readonly IOptionsMonitor<DaprOptions> DaprOptions;
+    private static string? _defaultDaprFileName;
+    private static string? _defaultSidecarFileName;
+
     /// <summary>
-    /// Use after getting dapr AppId and global AppId fails
+    /// record whether dapr is initialized for the first time
     /// </summary>
-    private static readonly string DefaultAppId = (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(
-        ".",
-        Constant.DEFAULT_APPID_DELIMITER);
+    protected bool IsFirst = true;
 
-    private const string HTTP_PORT_PATTERN = @"HTTP Port: ([0-9]+)";
-    private const string GRPC_PORT_PATTERN = @"gRPC Port: ([0-9]+)";
-
-    internal DaprCoreOptions? SuccessDaprOptions;
-
-    protected DaprProcessBase(IDaprEnvironmentProvider daprEnvironmentProvider, IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions)
+    protected DaprProcessBase(
+        IDaprEnvironmentProvider daprEnvironmentProvider,
+        IDaprProvider daprProvider,
+        IOptionsMonitor<DaprOptions> daprOptions)
     {
         DaprEnvironmentProvider = daprEnvironmentProvider;
-        _masaAppConfigureOptions = masaAppConfigureOptions;
+        _daprProvider = daprProvider;
+        DaprOptions = daprOptions;
     }
 
-    internal DaprCoreOptions ConvertToDaprCoreOptions(DaprOptions options)
+    internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
     {
-        var appId = options.AppId;
-        if (appId.IsNullOrWhiteSpace())
-            appId = _masaAppConfigureOptions?.Value.AppId;
-        if (appId.IsNullOrWhiteSpace())
-            appId = DefaultAppId;
-        if (options.IsIncompleteAppId())
-            appId = $"{appId}{options.AppIdDelimiter}{options.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
-        DaprCoreOptions
-            dataOptions = new(
-                appId!,
-                options.AppPort ?? throw new ArgumentNullException(nameof(options), $"{options.AppPort} must be greater than 0"),
-                options.AppProtocol,
-                options.EnableSsl,
-                options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort(),
-                options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort(),
-                options.EnableHeartBeat)
-            {
-                HeartBeatInterval = options.HeartBeatInterval,
-                CreateNoWindow = options.CreateNoWindow,
-                MaxConcurrency = options.MaxConcurrency,
-                Config = options.Config,
-                ComponentPath = options.ComponentPath,
-                EnableProfiling = options.EnableProfiling,
-                Image = options.Image,
-                LogLevel = options.LogLevel,
-                PlacementHostAddress = options.PlacementHostAddress,
-                SentryAddress = options.PlacementHostAddress,
-                MetricsPort = options.MetricsPort,
-                ProfilePort = options.ProfilePort,
-                UnixDomainSocket = options.UnixDomainSocket,
-                DaprMaxRequestSize = options.DaprMaxRequestSize
-            };
-        return dataOptions;
+        var sidecarOptions = new SidecarOptions(
+            _daprProvider.CompletionAppId(options.AppId, options.DisableAppIdSuffix, options.AppIdSuffix, options.AppIdDelimiter),
+            options.AppPort,
+            options.AppProtocol,
+            options.EnableSsl)
+        {
+            EnableHeartBeat = options.EnableHeartBeat,
+            HeartBeatInterval = options.HeartBeatInterval,
+            CreateNoWindow = options.CreateNoWindow,
+            MaxConcurrency = options.MaxConcurrency,
+            Config = options.Config,
+            ComponentPath = options.ComponentPath,
+            EnableProfiling = options.EnableProfiling,
+            LogLevel = options.LogLevel,
+            SentryAddress = options.SentryAddress,
+            MetricsPort = options.MetricsPort,
+            ProfilePort = options.ProfilePort,
+            UnixDomainSocket = options.UnixDomainSocket,
+            DaprHttpMaxRequestSize = options.DaprHttpMaxRequestSize,
+            PlacementHostAddress = options.PlacementHostAddress,
+            AllowedOrigins = options.AllowedOrigins,
+            ControlPlaneAddress = options.ControlPlaneAddress,
+            DaprHttpReadBufferSize = options.DaprHttpReadBufferSize,
+            DaprInternalGrpcPort = options.DaprInternalGrpcPort,
+            EnableApiLogging = options.EnableApiLogging,
+            EnableMetrics = options.EnableMetrics,
+            Mode = options.Mode,
+            RootPath = options.RootPath,
+            DaprRootPath = options.DaprRootPath,
+            ExtendedParameter = options.ExtendedParameter,
+            EnableDefaultPlacementHostAddress = options.EnableDefaultPlacementHostAddress
+        };
+        sidecarOptions.TrySetHttpPort(options.DaprHttpPort ?? DaprEnvironmentProvider.GetHttpPort());
+        sidecarOptions.TrySetGrpcPort(options.DaprGrpcPort ?? DaprEnvironmentProvider.GetGrpcPort());
+        sidecarOptions.TrySetMetricsPort(options.MetricsPort ?? DaprEnvironmentProvider.GetMetricsPort());
+
+        if (sidecarOptions.EnableDefaultPlacementHostAddress && sidecarOptions.PlacementHostAddress.IsNullOrWhiteSpace())
+        {
+            var port = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? 6050 : 50005;
+            sidecarOptions.PlacementHostAddress = $"127.0.0.1:{port}";
+        }
+
+        if (sidecarOptions.RootPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.RootPath = Path.Combine(UserFilePath, ".dapr");
+        }
+
+        if (sidecarOptions.DaprRootPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.DaprRootPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:\\dapr" : "/usr/local/bin";
+        }
+
+        if (sidecarOptions.ComponentPath.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.ComponentPath = "components";
+        }
+
+        if (sidecarOptions.Config.IsNullOrWhiteSpace())
+        {
+            sidecarOptions.Config = "config.yaml";
+        }
+
+        return sidecarOptions;
     }
 
-    internal CommandLineBuilder CreateCommandLineBuilder(DaprCoreOptions options)
+    internal CommandLineBuilder CreateCommandLineBuilder(SidecarOptions options)
     {
-        var commandLineBuilder = new CommandLineBuilder(Constant.DEFAULT_ARGUMENT_PREFIX);
+        var commandLineBuilder = new CommandLineBuilder(DaprStarterConstant.DEFAULT_ARGUMENT_PREFIX);
         commandLineBuilder
-            .Add("app-id", options.AppId)
-            .Add("app-port", options.AppPort.ToString())
-            .Add("app-protocol", options.AppProtocol?.ToString().ToLower() ?? string.Empty, options.AppProtocol == null)
-            .Add("app-ssl", "", options.EnableSsl != true)
-            .Add("components-path", options.ComponentPath ?? string.Empty, options.ComponentPath == null)
-            .Add("app-max-concurrency", options.MaxConcurrency?.ToString() ?? string.Empty, options.MaxConcurrency == null)
-            .Add("config", options.Config ?? string.Empty, options.Config == null)
-            .Add("dapr-grpc-port", options.DaprGrpcPort?.ToString() ?? string.Empty, !(options.DaprGrpcPort > 0))
-            .Add("dapr-http-port", options.DaprHttpPort?.ToString() ?? string.Empty, !(options.DaprHttpPort > 0))
-            .Add("enable-profiling", options.EnableProfiling?.ToString().ToLower() ?? string.Empty, options.EnableProfiling == null)
-            .Add("image", options.Image ?? string.Empty, options.Image == null)
-            .Add("log-level", options.LogLevel?.ToString().ToLower() ?? string.Empty, options.LogLevel == null)
-            .Add("placement-host-address", options.PlacementHostAddress ?? string.Empty, options.PlacementHostAddress == null)
-            .Add("sentry-address", options.SentryAddress ?? string.Empty, options.SentryAddress == null)
-            .Add("metrics-port", options.MetricsPort?.ToString() ?? string.Empty, options.MetricsPort == null)
-            .Add("profile-port", options.ProfilePort?.ToString() ?? string.Empty, options.ProfilePort == null)
-            .Add("unix-domain-socket", options.UnixDomainSocket ?? string.Empty, options.UnixDomainSocket == null)
-            .Add("dapr-http-max-request-size", options.DaprMaxRequestSize?.ToString() ?? string.Empty, options.DaprMaxRequestSize == null);
+            .Add("app-id", () => options.AppId)
+            .Add("app-port", () => options.GetAppPort().ToString())
+            .Add("app-protocol", () => options.AppProtocol!.Value.ToString().ToLower(), options.AppProtocol == null)
+            .Add("app-ssl", () => "", options.EnableSsl != true)
+            .Add("components-path", () => Path.Combine(options.RootPath, options.ComponentPath))
+            .Add("app-max-concurrency", () => options.MaxConcurrency!.Value.ToString(), options.MaxConcurrency == null)
+            .Add("config", () => Path.Combine(options.RootPath, options.Config))
+            .Add("dapr-grpc-port", () => options.DaprGrpcPort!.Value.ToString(), !(options.DaprGrpcPort > 0))
+            .Add("dapr-http-port", () => options.DaprHttpPort!.Value.ToString(), !(options.DaprHttpPort > 0))
+            .Add("enable-profiling", () => options.EnableProfiling!.Value.ToString().ToLower(), options.EnableProfiling == null)
+            .Add("log-level", () => options.LogLevel!.Value.ToString().ToLower(), options.LogLevel == null)
+            .Add("sentry-address", () => options.SentryAddress!, options.SentryAddress == null)
+            .Add("metrics-port", () => options.MetricsPort!.Value.ToString(), options.MetricsPort == null)
+            .Add("profile-port", () => options.ProfilePort!.Value.ToString(), options.ProfilePort == null)
+            .Add("unix-domain-socket", () => options.UnixDomainSocket!, options.UnixDomainSocket == null)
+            .Add("dapr-http-max-request-size", () => options.DaprHttpMaxRequestSize!.Value.ToString(),
+                options.DaprHttpMaxRequestSize == null)
+            .Add("placement-host-address", () => options.PlacementHostAddress, options.PlacementHostAddress.IsNullOrWhiteSpace())
+            .Add("allowed-origins", () => options.AllowedOrigins, options.AllowedOrigins.IsNullOrWhiteSpace())
+            .Add("control-plane-address", () => options.ControlPlaneAddress, options.ControlPlaneAddress.IsNullOrWhiteSpace())
+            .Add("dapr-http-read-buffer-size", () => options.DaprHttpReadBufferSize!.Value.ToString(),
+                options.DaprHttpReadBufferSize == null)
+            .Add("dapr-internal-grpc-port", () => options.DaprInternalGrpcPort!.Value.ToString(), options.DaprInternalGrpcPort == null)
+            .Add("enable-api-logging", () => "", options.EnableApiLogging is not true)
+            .Add("enable-metrics", () => "", options.EnableMetrics is not true)
+            .Add("mode", () => options.Mode, options.Mode.IsNullOrWhiteSpace())
+            .Add(options.ExtendedParameter, () => "", options.ExtendedParameter.IsNullOrWhiteSpace());
 
-        SuccessDaprOptions ??= options;
+        if (!IsFirst)
+            return commandLineBuilder;
+
+        SetDefaultFileName(options.DaprRootPath, options.RootPath);
+        SuccessDaprOptions = options;
+
         return commandLineBuilder;
     }
-#pragma warning disable S6444
-    protected static ushort GetHttpPort(string data)
+
+    #region GetHttpPort、GetGrpcPort
+
+    /// <summary>
+    /// Get the HttpPort according to the output, but it is unreliable
+    /// After the prompt information output by dapr is adjusted, it may cause the failure to obtain the port
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    protected static ushort? GetHttpPort(string data)
     {
-        ushort httpPort = 0;
-        var httpPortMatch = Regex.Matches(data, HTTP_PORT_PATTERN);
-        if (httpPortMatch.Count > 0)
+        foreach (var pattern in HttpPortPatterns)
         {
-            httpPort = ushort.Parse(httpPortMatch[0].Groups[1].ToString());
+            var port = GetPort(data, pattern);
+            if (port is > 0)
+                return port;
         }
-        return httpPort;
+
+        return null;
     }
 
-    protected static ushort GetgRPCPort(string data)
+    static ushort? GetPort(string data, string pattern)
     {
-        ushort grpcPort = 0;
-        var gRPCPortMatch = Regex.Matches(data, GRPC_PORT_PATTERN);
-        if (gRPCPortMatch.Count > 0)
+        ushort? port = null;
+        var regex = new Regex(pattern, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+        var match = regex.Matches(data);
+        if (match.Count > 0)
         {
-            grpcPort = ushort.Parse(gRPCPortMatch[0].Groups[1].ToString());
+            port = ushort.Parse(match[0].Groups[1].ToString());
         }
-        return grpcPort;
+
+        return port;
     }
-#pragma warning restore S6444
+
+    /// <summary>
+    /// Get the gRpcPort according to the output, but it is unreliable
+    /// After the prompt information output by dapr is adjusted, it may cause the failure to obtain the port
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    protected static ushort? GetGrpcPort(string data)
+    {
+        foreach (var pattern in GrpcPortPatterns)
+        {
+            var port = GetPort(data, pattern);
+            if (port is > 0)
+                return port;
+        }
+
+        return null;
+    }
+
+    #endregion
+
+    static string GetFileName(string fileName) => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? $"{fileName}.exe" : fileName;
+
+    protected static string GetDefaultDaprFileName() => _defaultDaprFileName!;
+
+    protected static string GetDefaultSidecarFileName() => _defaultSidecarFileName!;
+
+    private static void SetDefaultFileName(string daprRootPath, string sidecarRootPath)
+    {
+        _defaultDaprFileName = Path.Combine(daprRootPath, GetFileName(DaprStarterConstant.DEFAULT_DAPR_FILE_NAME));
+        _defaultSidecarFileName = Path.Combine(sidecarRootPath, "bin", GetFileName(DaprStarterConstant.DEFAULT_FILE_NAME));
+    }
 }

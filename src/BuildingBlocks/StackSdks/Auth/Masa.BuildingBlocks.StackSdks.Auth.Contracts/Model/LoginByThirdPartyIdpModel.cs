@@ -13,7 +13,9 @@ public class LoginByThirdPartyIdpModel : IEnvironmentModel
 
     public string Scheme { get; set; }
 
-    public string Code { get; set; } = "";
+    public string? Code { get; set; }
+
+    public string? IdToken { get; set; }
 
     public string Environment { get; set; }
 }
