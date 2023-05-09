@@ -41,27 +41,28 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    static void CheckRequiredService(this IServiceCollection services)
+    internal static void CheckRequiredService(this IServiceCollection services)
     {
-        var isRegisterEventBus = services.All(service => service.ServiceType != typeof(IEventBus));
-        var isRegisterUnitOfWork = services.All(service => service.ServiceType != typeof(IUnitOfWork));
-        var isRegisterIntegrationEventBus = services.All(service => service.ServiceType != typeof(IIntegrationEventBus));
+        var isRegisterEventBus = services.Any(service => service.ServiceType == typeof(IEventBus));
+        var isRegisterUnitOfWork = services.Any(service => service.ServiceType == typeof(IUnitOfWork));
+        var isRegisterIntegrationEventBus = services.Any(service => service.ServiceType == typeof(IIntegrationEventBus));
 
         if (isRegisterEventBus && isRegisterUnitOfWork && isRegisterIntegrationEventBus)
             return;
 
         var logger = services.BuildServiceProvider().GetService<ILogger<DomainEventBusProvider>>();
 
-        if (isRegisterEventBus)
+        if (!isRegisterEventBus)
             logger?.LogWarning("Please add EventBus first.");
 
-        if (isRegisterUnitOfWork)
+        if (!isRegisterUnitOfWork)
             logger?.LogWarning("Please add UoW first.");
 
-        if (isRegisterIntegrationEventBus)
+        if (!isRegisterIntegrationEventBus)
             logger?.LogWarning("Please add IntegrationEventBus first.");
     }
 
+    [ExcludeFromCodeCoverage]
     private static void CheckAggregateRootRepositories(this IServiceCollection services, List<Type> aggregateRootRepositoryTypes)
     {
         foreach (var aggregateRootRepositoryType in aggregateRootRepositoryTypes)

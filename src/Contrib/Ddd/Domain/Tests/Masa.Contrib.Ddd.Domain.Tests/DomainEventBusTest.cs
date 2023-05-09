@@ -127,6 +127,38 @@ public class DomainEventBusTest
         });
     }
 
+    /// <summary>
+    /// Only used to record log execution times
+    /// </summary>
+    internal static int ExecuteTimer = 0;
+
+    [DataRow(true, true, true, 0)]
+    [DataRow(true, false, true, 1)]
+    [DataRow(false, true, true, 1)]
+    [DataRow(true, true, false, 1)]
+    [DataRow(false, false, true, 2)]
+    [DataRow(false, false, false, 3)]
+    [DataTestMethod]
+    public void TestCheckRequiredService(
+        bool isRegisterEventBus,
+        bool isRegisterIntegrationEventBus,
+        bool isRegisterUnitOfWork,
+        int expectedTimer)
+    {
+        ExecuteTimer = 0;
+        Mock<IEventBus> eventBus = new();
+        Mock<IIntegrationEventBus> integrationEventBus = new();
+        Mock<IUnitOfWork> unitOfWork = new();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(typeof(ILogger<>), typeof(CustomLogger<>));
+        if (isRegisterEventBus) services.AddScoped<IEventBus>(_ => eventBus.Object);
+        if (isRegisterIntegrationEventBus) services.AddScoped<IIntegrationEventBus>(_ => integrationEventBus.Object);
+        if (isRegisterUnitOfWork) services.AddScoped<IUnitOfWork>(_ => unitOfWork.Object);
+        services.CheckRequiredService();
+        Assert.AreEqual(expectedTimer, ExecuteTimer);
+    }
+
     private static ConcurrentQueue<IDomainEvent> GetEventQueue(DomainEventBus domainEventBus)
     {
         var eventQueue = EventQueueFileInfo.GetValue(domainEventBus) as ConcurrentQueue<IDomainEvent>;
