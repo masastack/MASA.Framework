@@ -62,6 +62,9 @@ public class DomainEventBusTest
         var domainService = serviceProvider.GetService<UserDomainService>();
         Assert.IsNotNull(domainService);
         Assert.AreNotEqual(default, domainService.EventBus);
+
+        Assert.IsNotNull(serviceProvider.GetService<CustomDomainService>());
+        Assert.IsNull(serviceProvider.GetService<OrderDomainService>());
     }
 
     [TestMethod]
@@ -100,12 +103,28 @@ public class DomainEventBusTest
         services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
         services.RegisterDomainService(new List<Type>()
         {
-            typeof(UserDomainService)
+            typeof(UserDomainService),
+            typeof(CustomDomainService)
         });
         var serviceProvider = services.BuildServiceProvider();
         var userDomainService = serviceProvider.GetService<UserDomainService>();
         Assert.IsNotNull(userDomainService);
         Assert.AreEqual(eventBus.Object, userDomainService.EventBus);
+    }
+
+    [TestMethod]
+    public void TestRegisterDomainServiceByNoConstructor()
+    {
+        var services = new ServiceCollection();
+        Mock<IDomainEventBus> eventBus = new();
+        services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
+        Assert.ThrowsException<MasaArgumentException>(() =>
+        {
+            services.RegisterDomainService(new List<Type>()
+            {
+                typeof(OrderDomainService)
+            });
+        });
     }
 
     private static ConcurrentQueue<IDomainEvent> GetEventQueue(DomainEventBus domainEventBus)
