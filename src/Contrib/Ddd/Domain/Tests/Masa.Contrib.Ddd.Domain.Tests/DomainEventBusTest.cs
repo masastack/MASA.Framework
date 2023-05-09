@@ -92,6 +92,22 @@ public class DomainEventBusTest
         eventBus.Verify(bus => bus.PublishAsync(It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    [TestMethod]
+    public void TestRegisterDomainService()
+    {
+        var services = new ServiceCollection();
+        Mock<IDomainEventBus> eventBus = new();
+        services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
+        services.RegisterDomainService(new List<Type>()
+        {
+            typeof(UserDomainService)
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var userDomainService = serviceProvider.GetService<UserDomainService>();
+        Assert.IsNotNull(userDomainService);
+        Assert.AreEqual(eventBus.Object, userDomainService.EventBus);
+    }
+
     private static ConcurrentQueue<IDomainEvent> GetEventQueue(DomainEventBus domainEventBus)
     {
         var eventQueue = EventQueueFileInfo.GetValue(domainEventBus) as ConcurrentQueue<IDomainEvent>;

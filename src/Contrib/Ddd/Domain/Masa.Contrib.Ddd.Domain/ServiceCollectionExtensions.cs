@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Ddd.Domain.Tests")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -28,18 +30,53 @@ public static class ServiceCollectionExtensions
         options?.Invoke(dispatcherOptions);
         services.AddSingleton(typeof(IOptions<DispatcherOptions>), _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
-        if (services.All(service => service.ServiceType != typeof(IEventBus)))
-            throw new MasaException("Please add EventBus first.");
-
-        if (services.All(service => service.ServiceType != typeof(IUnitOfWork)))
-            throw new MasaException("Please add UoW first.");
-
-        if (services.All(service => service.ServiceType != typeof(IIntegrationEventBus)))
-            throw new MasaException("Please add IntegrationEventBus first.");
+        services.CheckRequiredService();
 
         services.CheckAggregateRootRepositories(dispatcherOptions.AllAggregateRootTypes);
 
-        foreach (var domainServiceType in dispatcherOptions.AllDomainServiceTypes)
+        services.RegisterDomainService(dispatcherOptions.AllDomainServiceTypes);
+
+        services.TryAddScoped<IDomainEventBus, DomainEventBus>();
+        MasaApp.TrySetServiceCollection(services);
+        return services;
+    }
+
+    static void CheckRequiredService(this IServiceCollection services)
+    {
+        var isRegisterEventBus = services.All(service => service.ServiceType != typeof(IEventBus));
+        var isRegisterUnitOfWork = services.All(service => service.ServiceType != typeof(IUnitOfWork));
+        var isRegisterIntegrationEventBus = services.All(service => service.ServiceType != typeof(IIntegrationEventBus));
+
+        if (isRegisterEventBus && isRegisterUnitOfWork && isRegisterIntegrationEventBus)
+            return;
+
+        var logger = services.BuildServiceProvider().GetService<ILogger<DomainEventBusProvider>>();
+
+        if (isRegisterEventBus)
+            logger?.LogWarning("Please add EventBus first.");
+
+        if (isRegisterUnitOfWork)
+            logger?.LogWarning("Please add UoW first.");
+
+        if (isRegisterIntegrationEventBus)
+            logger?.LogWarning("Please add IntegrationEventBus first.");
+    }
+
+    private static void CheckAggregateRootRepositories(this IServiceCollection services, List<Type> aggregateRootRepositoryTypes)
+    {
+        foreach (var aggregateRootRepositoryType in aggregateRootRepositoryTypes)
+        {
+            var serviceType = GetServiceRepositoryType(aggregateRootRepositoryType);
+            if (services.All(service => service.ServiceType != serviceType))
+                throw new NotImplementedException($"The number of types of {serviceType.FullName} implementation class must be 1.");
+        }
+    }
+
+    private static Type GetServiceRepositoryType(Type entityType) => typeof(IRepository<>).MakeGenericType(entityType);
+
+    internal static void RegisterDomainService(this IServiceCollection services, List<Type> domainServiceTypes)
+    {
+        foreach (var domainServiceType in domainServiceTypes)
         {
             var constructorInfo = domainServiceType
                 .GetConstructors()
@@ -62,23 +99,7 @@ public static class ServiceCollectionExtensions
                 return domainServiceInstance;
             });
         }
-
-        services.TryAddScoped<IDomainEventBus, DomainEventBus>();
-        MasaApp.TrySetServiceCollection(services);
-        return services;
     }
-
-    private static void CheckAggregateRootRepositories(this IServiceCollection services, List<Type> aggregateRootRepositoryTypes)
-    {
-        foreach (var aggregateRootRepositoryType in aggregateRootRepositoryTypes)
-        {
-            var serviceType = GetServiceRepositoryType(aggregateRootRepositoryType);
-            if (services.All(service => service.ServiceType != serviceType))
-                throw new NotImplementedException($"The number of types of {serviceType.FullName} implementation class must be 1.");
-        }
-    }
-
-    private static Type GetServiceRepositoryType(Type entityType) => typeof(IRepository<>).MakeGenericType(entityType);
 
     private sealed class DomainEventBusProvider
     {
