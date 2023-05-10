@@ -15,17 +15,19 @@ public class TeamDetailModel
 
     public TeamTypes TeamType { get; set; }
 
-    public List<StaffModel> Admins { get; set; }
+    public List<StaffModel> Admins { get; set; } = new();
 
-    public List<StaffModel> Members { get; set; }
+    public List<StaffModel> Members { get; set; } = new();
+
+    public List<RoleModel> AdminRoles { get; set; } = new();
+
+    public List<RoleModel> MemberRoles { get; set; } = new();
 
     public TeamDetailModel()
     {
         Name = "";
         Avatar = "";
         Description = "";
-        Admins = new();
-        Members = new();
     }
 
     public TeamDetailModel(
