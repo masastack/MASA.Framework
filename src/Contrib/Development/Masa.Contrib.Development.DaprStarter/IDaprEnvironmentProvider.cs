@@ -5,6 +5,8 @@ namespace Masa.Contrib.Development.DaprStarter;
 
 public interface IDaprEnvironmentProvider
 {
+    string? GetDaprAppId();
+
     ushort? GetHttpPort();
 
     ushort? GetGrpcPort();
@@ -33,4 +35,6 @@ public interface IDaprEnvironmentProvider
     /// When metricsPort is greater than 0, return true
     /// </summary>
     bool TrySetMetricsPort(ushort? metricsPort);
+
+    void SetDaprAppId(string appId);
 }

@@ -23,7 +23,7 @@ public class IntegrationEventBusTest
             .Setup(option => option.Value)
             .Returns(() => new DaprIntegrationEventOptions(_options.Object.Services, AppDomain.CurrentDomain.GetAssemblies()));
         _eventLog = new();
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>(), default)).Verifiable();
@@ -92,10 +92,11 @@ public class IntegrationEventBusTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        services.AddDaprEventBus<CustomIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(), option =>
-        {
-            option.PubSubName = "pubsub";
-        });
+        services.AddDaprEventBus<CustomIntegrationEventLogService>(AppDomain.CurrentDomain.GetAssemblies(),
+            option =>
+            {
+                option.PubSubName = "pubsub";
+            });
         var serviceProvider = services.BuildServiceProvider();
         var integrationEventBus = serviceProvider.GetRequiredService<IIntegrationEventBus>();
         Assert.IsNotNull(integrationEventBus);
@@ -119,7 +120,7 @@ public class IntegrationEventBusTest
         var services = new ServiceCollection();
         services.AddIntegrationEventBus<CustomIntegrationEventLogService>(opt =>
         {
-            opt.UseDapr();
+            opt.UseDapr("pubsub", "{Replace-Your-DaprAppId}");
         });
         Mock<IIntegrationEventLogService> eventLogService = new();
         services.AddScoped(_ => eventLogService.Object);

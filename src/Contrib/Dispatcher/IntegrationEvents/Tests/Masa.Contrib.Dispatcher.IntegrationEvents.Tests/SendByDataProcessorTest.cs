@@ -29,6 +29,7 @@ public class SendByDataProcessorTest
         {
             log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);
@@ -41,7 +42,7 @@ public class SendByDataProcessorTest
 
         Mock<IPublisher> publisher = new();
         publisher
-            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, default))
+            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, null, default))
             .Returns(() => throw new NotSupportedException());
         _services.AddSingleton(_ => publisher.Object);
         _services.AddScoped(_ => logService.Object);
@@ -52,7 +53,9 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Never);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Once);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), default), Times.Once);
+        publisher.Verify(
+            p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IntegrationEventExpand?>(), default),
+            Times.Once);
     }
 
     [TestMethod]
@@ -67,6 +70,7 @@ public class SendByDataProcessorTest
         {
             log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);
@@ -79,7 +83,7 @@ public class SendByDataProcessorTest
 
         Mock<IPublisher> publisher = new();
         publisher
-            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, default))
+            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, null, default))
             .Verifiable();
         _services.AddSingleton(_ => publisher.Object);
         _services.AddScoped(_ => logService.Object);
@@ -90,6 +94,8 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Never);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), default), Times.Once);
+        publisher.Verify(
+            p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IntegrationEventExpand?>(), default),
+            Times.Once);
     }
 }

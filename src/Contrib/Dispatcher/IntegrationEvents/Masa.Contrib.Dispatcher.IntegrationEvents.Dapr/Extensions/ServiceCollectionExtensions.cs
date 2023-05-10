@@ -7,6 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+
     #region Obsolete
 
     [Obsolete("Use AddIntegrationEventBus instead")]
@@ -38,13 +39,21 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IntegrationEventBusProvider>();
 
         services.AddDaprClient(builder);
-
+        services.TryAddSingleton<IIntegrationEventDaprProvider, DefaultIntegrationEventDaprProvider>();
         return services.AddIntegrationEventBus<TIntegrationEventLogService>(assemblies, opt =>
         {
-            DaprIntegrationEventOptions daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
+            var daprDispatcherOptions = new DaprIntegrationEventOptions(opt.Services, opt.Assemblies);
             options?.Invoke(daprDispatcherOptions);
-            services.TryAddSingleton<IPublisher>(serviceProvider => new Publisher(serviceProvider, daprDispatcherOptions.PubSubName));
 
+            services.TryAddSingleton<IPublisher>(serviceProvider =>
+            {
+                var appId = serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()?.Value.AppId ?? string.Empty;
+                return new Publisher(
+                    serviceProvider,
+                    daprDispatcherOptions.PubSubName,
+                    appId,
+                    serviceProvider.GetRequiredService<IIntegrationEventDaprProvider>().GetDaprAppId(daprDispatcherOptions.DaprAppId, appId));
+            });
             daprDispatcherOptions.CopyTo(opt);
         });
     }
@@ -54,4 +63,5 @@ public static class ServiceCollectionExtensions
     }
 
     #endregion
+
 }
