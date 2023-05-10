@@ -28,8 +28,6 @@ public class TeamDetailModel
         Name = "";
         Avatar = "";
         Description = "";
-        Admins = new();
-        Members = new();
     }
 
     public TeamDetailModel(
