@@ -19,6 +19,10 @@ public class TeamDetailModel
 
     public List<StaffModel> Members { get; set; }
 
+    public List<RoleModel> AdminRoles { get; set; }
+
+    public List<RoleModel> MemberRoles { get; set; }
+
     public TeamDetailModel()
     {
         Name = "";
