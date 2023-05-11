@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Options;
 
+#pragma warning disable S3236
 public class IntegrationEventOptions : IIntegrationEventOptions
 {
     public IServiceCollection Services { get; }
@@ -231,3 +232,4 @@ public class IntegrationEventOptions : IIntegrationEventOptions
             .ToList();
     }
 }
+#pragma warning restore S3236
