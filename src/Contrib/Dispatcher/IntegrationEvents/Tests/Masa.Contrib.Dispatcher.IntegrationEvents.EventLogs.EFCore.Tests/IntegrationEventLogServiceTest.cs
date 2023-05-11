@@ -86,7 +86,7 @@ public class IntegrationEventLogServiceTest : TestBase
             PaymentTime = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds
         };
         await using var transaction = await integrationEventLogContext.DbContext.Database.BeginTransactionAsync();
-        await integrationEventLogService.SaveEventAsync(orderPaymentSucceededIntegrationEvent, transaction.GetDbTransaction());
+        await integrationEventLogService.SaveEventAsync(orderPaymentSucceededIntegrationEvent, null, transaction.GetDbTransaction());
         await integrationEventLogContext.DbContext.SaveChangesAsync();
         await transaction.CommitAsync();
         count = integrationEventLogContext.DbContext.Set<IntegrationEventLog>().Count();

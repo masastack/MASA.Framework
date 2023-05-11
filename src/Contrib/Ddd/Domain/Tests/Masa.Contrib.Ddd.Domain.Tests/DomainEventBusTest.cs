@@ -62,6 +62,9 @@ public class DomainEventBusTest
         var domainService = serviceProvider.GetService<UserDomainService>();
         Assert.IsNotNull(domainService);
         Assert.AreNotEqual(default, domainService.EventBus);
+
+        Assert.IsNotNull(serviceProvider.GetService<CustomDomainService>());
+        Assert.IsNull(serviceProvider.GetService<OrderDomainService>());
     }
 
     [TestMethod]
@@ -90,6 +93,70 @@ public class DomainEventBusTest
         await domainEventBus.PublishQueueAsync();
 
         eventBus.Verify(bus => bus.PublishAsync(It.IsAny<IEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [TestMethod]
+    public void TestRegisterDomainService()
+    {
+        var services = new ServiceCollection();
+        Mock<IDomainEventBus> eventBus = new();
+        services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
+        services.RegisterDomainService(new List<Type>()
+        {
+            typeof(UserDomainService),
+            typeof(CustomDomainService)
+        });
+        var serviceProvider = services.BuildServiceProvider();
+        var userDomainService = serviceProvider.GetService<UserDomainService>();
+        Assert.IsNotNull(userDomainService);
+        Assert.AreEqual(eventBus.Object, userDomainService.EventBus);
+    }
+
+    [TestMethod]
+    public void TestRegisterDomainServiceByNoConstructor()
+    {
+        var services = new ServiceCollection();
+        Mock<IDomainEventBus> eventBus = new();
+        services.AddScoped<IDomainEventBus>(_ => eventBus.Object);
+        Assert.ThrowsException<MasaArgumentException>(() =>
+        {
+            services.RegisterDomainService(new List<Type>()
+            {
+                typeof(OrderDomainService)
+            });
+        });
+    }
+
+    /// <summary>
+    /// Only used to record log execution times
+    /// </summary>
+    internal static int ExecuteTimer = 0;
+
+    [DataRow(true, true, true, 0)]
+    [DataRow(true, false, true, 1)]
+    [DataRow(false, true, true, 1)]
+    [DataRow(true, true, false, 1)]
+    [DataRow(false, false, true, 2)]
+    [DataRow(false, false, false, 3)]
+    [DataTestMethod]
+    public void TestCheckRequiredService(
+        bool isRegisterEventBus,
+        bool isRegisterIntegrationEventBus,
+        bool isRegisterUnitOfWork,
+        int expectedTimer)
+    {
+        ExecuteTimer = 0;
+        Mock<IEventBus> eventBus = new();
+        Mock<IIntegrationEventBus> integrationEventBus = new();
+        Mock<IUnitOfWork> unitOfWork = new();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(typeof(ILogger<>), typeof(CustomLogger<>));
+        if (isRegisterEventBus) services.AddScoped<IEventBus>(_ => eventBus.Object);
+        if (isRegisterIntegrationEventBus) services.AddScoped<IIntegrationEventBus>(_ => integrationEventBus.Object);
+        if (isRegisterUnitOfWork) services.AddScoped<IUnitOfWork>(_ => unitOfWork.Object);
+        services.CheckRequiredService();
+        Assert.AreEqual(expectedTimer, ExecuteTimer);
     }
 
     private static ConcurrentQueue<IDomainEvent> GetEventQueue(DomainEventBus domainEventBus)

@@ -51,7 +51,8 @@ public class ProcessorTest
 
         Mock<IPublisher> publisher = new();
         publisher.Setup(client
-            => client.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), cancellationTokenSource.Token));
+            => client.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(),
+                cancellationTokenSource.Token));
         services.AddScoped(_ => publisher.Object);
 
         Mock<IIntegrationEventLogService> integrationEventLogService = new();
@@ -144,10 +145,12 @@ public class ProcessorTest
         Mock<IPublisher> publisher = new();
         publisher.Setup(client
                 => client.PublishAsync(nameof(RegisterUserIntegrationEvent), It.IsAny<object>(),
+                    It.IsAny<IntegrationEventExpand?>(),
                     cancellationTokenSource.Token))
             .Throws(new Exception("custom exception"));
         publisher.Setup(client
                 => client.PublishAsync(nameof(PaySuccessedIntegrationEvent), It.IsAny<object>(),
+                    It.IsAny<IntegrationEventExpand?>(),
                     cancellationTokenSource.Token))
             .Throws(new UserFriendlyException("custom exception"));
         services.AddScoped(_ => publisher.Object);
@@ -272,7 +275,9 @@ public class ProcessorTest
     private void MockPublisher(IServiceCollection services)
     {
         Mock<IPublisher> publisher = new();
-        publisher.Setup(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), default)).Verifiable();
+        publisher.Setup(p =>
+                p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(), default))
+            .Verifiable();
         services.AddSingleton(publisher.Object);
     }
 }

@@ -63,8 +63,9 @@ public static class ServiceCollectionExtensions
 
         LocalQueueProcessor.SetLogger(services);
         services.AddScoped<IIntegrationEventBus>(serviceProvider => new IntegrationEventBus(
+            serviceProvider,
             new Lazy<IEventBus?>(serviceProvider.GetService<IEventBus>),
-            serviceProvider.GetRequiredService<IPublisher>(),
+            new Lazy<IPublisher>(serviceProvider.GetRequiredService<IPublisher>()),
             serviceProvider.GetService<IIntegrationEventLogService>(),
             serviceProvider.GetService<IOptionsMonitor<MasaAppConfigureOptions>>(),
             serviceProvider.GetService<ILogger<IntegrationEventBus>>(),
@@ -85,6 +86,7 @@ public static class ServiceCollectionExtensions
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
             logger?.LogWarning("The local message table is not used correctly, it will cause integration events not to be sent normally");
         }
+
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
 
         services.AddHostedService<IntegrationEventHostedService>();
