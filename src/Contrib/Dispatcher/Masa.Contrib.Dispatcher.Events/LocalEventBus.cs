@@ -33,7 +33,7 @@ public class LocalEventBus : ILocalEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
-        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+        MasaArgumentException.ThrowIfNull(@event);
         var eventType = @event.GetType();
 
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();
