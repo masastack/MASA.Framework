@@ -44,8 +44,12 @@ public abstract class DaprProcessBase
 
     internal SidecarOptions ConvertToSidecarOptions(DaprOptions options)
     {
+        var daprAppIdByEnvironment = DaprEnvironmentProvider.GetDaprAppId();
+        var daprAppId = daprAppIdByEnvironment.IsNullOrWhiteSpace() ?
+            _daprProvider.CompletionAppId(options.AppId, options.DisableAppIdSuffix, options.AppIdSuffix, options.AppIdDelimiter) :
+            daprAppIdByEnvironment;
         var sidecarOptions = new SidecarOptions(
-            _daprProvider.CompletionAppId(options.AppId, options.DisableAppIdSuffix, options.AppIdSuffix, options.AppIdDelimiter),
+            daprAppId,
             options.AppPort,
             options.AppProtocol,
             options.EnableSsl)

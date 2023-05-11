@@ -113,17 +113,17 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestGetListByRoleAsync()
     {
-        var data = new List<StaffModel>()
+        var data = new List<UserModel>()
         {
-            new StaffModel()
+            new UserModel()
         };
         Guid roleId = Guid.NewGuid();
-        var requestUri = $"api/staff/getListByRole";
+        var requestUri = $"api/user/getListByRole";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        caller.Setup(provider => provider.GetAsync<object, List<UserModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
         var result = await userService.GetListByRoleAsync(roleId);
-        caller.Verify(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<object, List<UserModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }
 

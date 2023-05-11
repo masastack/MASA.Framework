@@ -29,7 +29,11 @@ public interface IIntegrationEventLogService
         int batchSize,
         CancellationToken cancellationToken = default);
 
-    Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default);
+    Task SaveEventAsync(
+        IIntegrationEvent @event,
+        IntegrationEventExpand? messageExpand,
+        DbTransaction transaction,
+        CancellationToken cancellationToken = default);
 
     Task MarkEventAsPublishedAsync(Guid eventId, CancellationToken cancellationToken = default);
 

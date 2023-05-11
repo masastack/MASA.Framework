@@ -7,7 +7,7 @@ public interface IUserService
 {
     Task<List<StaffModel>> GetListByTeamAsync(Guid teamId);
 
-    Task<List<StaffModel>> GetListByRoleAsync(Guid roleId);
+    Task<List<UserModel>> GetListByRoleAsync(Guid roleId);
 
     Task<List<StaffModel>> GetListByDepartmentAsync(Guid departmentId);
 

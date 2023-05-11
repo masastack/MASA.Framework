@@ -40,10 +40,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = departmentId }) ?? new();
     }
 
-    public async Task<List<StaffModel>> GetListByRoleAsync(Guid roleId)
+    public async Task<List<UserModel>> GetListByRoleAsync(Guid roleId)
     {
-        var requestUri = $"api/staff/getListByRole";
-        return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = roleId }) ?? new();
+        var requestUri = $"api/user/getListByRole";
+        return await _caller.GetAsync<object, List<UserModel>>(requestUri, new { id = roleId }) ?? new();
     }
 
     public async Task<List<StaffModel>> GetListByTeamAsync(Guid teamId)

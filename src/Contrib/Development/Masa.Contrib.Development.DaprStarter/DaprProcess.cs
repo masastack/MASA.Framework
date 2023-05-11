@@ -118,6 +118,7 @@ public class DaprProcess : DaprProcessBase, IDaprProcess
             _retryTime = 0;
             UpdateStatus(DaprProcessStatus.Started);
         }
+        DaprEnvironmentProvider.SetDaprAppId(SuccessDaprOptions.AppId);
     }
 
     /// <summary>

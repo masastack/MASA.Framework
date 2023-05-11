@@ -20,13 +20,16 @@ internal class IntegrationEventLogItem
 
     public object Event { get; private set; }
 
-    public IntegrationEventLogItem(Guid eventId, string topic, object @event)
+    public IntegrationEventExpand? EventExpand { get; private set; }
+
+    public IntegrationEventLogItem(Guid eventId, string topic, object @event, IntegrationEventExpand? eventExpand)
     {
         EventId = eventId;
         Topic = topic;
         RetryCount = 0;
         CreationTime = DateTime.UtcNow;
         Event = @event;
+        EventExpand = eventExpand;
     }
 
     public void Retry()
