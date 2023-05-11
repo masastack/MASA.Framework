@@ -7,7 +7,10 @@ namespace Masa.Contrib.Configuration;
 
 public class MasaConfigurationRelationOptions
 {
-    internal List<ConfigurationRelationOptions> Relations { get; } = new();
+    private readonly List<ConfigurationRelationOptions> _relationOptions;
+
+    public MasaConfigurationRelationOptions(List<ConfigurationRelationOptions> relationOptions)
+        => _relationOptions = relationOptions;
 
     /// <summary>
     /// Map Section relationship By Local
@@ -29,7 +32,10 @@ public class MasaConfigurationRelationOptions
     /// <returns></returns>
     public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string appId, string? section = null, string? name = null)
         where TModel : class
-        => Mapping<TModel>(SectionTypes.ConfigurationApi, appId, section, name);
+    {
+        MasaArgumentException.ThrowIfNullOrWhiteSpace(appId);
+        return Mapping<TModel>(SectionTypes.ConfigurationApi, appId, section, name);
+    }
 
     /// <summary>
     /// Map Section relationship
@@ -41,16 +47,17 @@ public class MasaConfigurationRelationOptions
     /// <param name="name"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    private MasaConfigurationRelationOptions Mapping<TModel>(SectionTypes sectionType, string parentSection, string? section = null, string? name = null)
+    private MasaConfigurationRelationOptions Mapping<TModel>(
+        SectionTypes sectionType,
+        string parentSection,
+        string? section = null,
+        string? name = null)
         where TModel : class
     {
         name ??= Options.DefaultName;
         section ??= typeof(TModel).Name;
 
-        if (Relations.Any(relation => relation.SectionType == sectionType && relation.Section == section && relation.Name == name))
-            throw new ArgumentOutOfRangeException(nameof(section), "The current section already has a configuration");
-
-        Relations.Add(new ConfigurationRelationOptions()
+        ConfigurationUtils.AddRegistrationOptions(_relationOptions, new ConfigurationRelationOptions()
         {
             SectionType = sectionType,
             ParentSection = parentSection,

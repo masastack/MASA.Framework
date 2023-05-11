@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Extensions;
-
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
 public class DccSectionOptions
@@ -39,28 +37,5 @@ public class DccSectionOptions
         Cluster = cluster;
         ConfigObjects = configObjects;
         Secret = secret ?? string.Empty;
-    }
-
-    public void ComplementConfigObjects(IDistributedCacheClient distributedCacheClient)
-    {
-        if (!ConfigObjects.Any())
-        {
-            ConfigObjects = distributedCacheClient.GetAllConfigObjects(AppId, Environment, Cluster);
-        }
-    }
-
-    public void ComplementAndCheckAppId(string defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(AppId)) AppId = defaultValue;
-    }
-
-    public void ComplementAndCheckEnvironment(string defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(Environment)) Environment = defaultValue;
-    }
-
-    public void ComplementAndCheckCluster(string defaultValue)
-    {
-        if (string.IsNullOrWhiteSpace(Cluster)) Cluster = defaultValue;
     }
 }

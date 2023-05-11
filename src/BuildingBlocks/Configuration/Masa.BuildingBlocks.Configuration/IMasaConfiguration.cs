@@ -8,4 +8,6 @@ public interface IMasaConfiguration
     public IConfiguration Local { get; }
 
     public IConfigurationApi ConfigurationApi { get; }
+
+    IConfiguration GetConfiguration(SectionTypes sectionType);
 }

@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.Tests.Scenes.AutoMap;
 
-public class KafkaOptions : LocalMasaConfigurationOptions
+public class KafkaOptions : LocalMasaOptionsConfigurable
 {
     public string Servers { get; set; }
 

@@ -5,12 +5,12 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
-    private readonly Lazy<IEventBus?> _lazyEventBus;
+    private readonly Lazy<IEventBus?> _eventBusLazy;
 
-    private IEventBus? EventBus => _lazyEventBus.Value;
+    private IEventBus? EventBus => _eventBusLazy.Value;
 
-    private readonly Lazy<IPublisher> _lazyPublisher;
-    private IPublisher Publisher => _lazyPublisher.Value;
+    private readonly Lazy<IPublisher> _publisherLazy;
+    private IPublisher Publisher => _publisherLazy.Value;
 
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
@@ -23,14 +23,14 @@ public class IntegrationEventBus : IIntegrationEventBus
     public IntegrationEventBus(
         IServiceProvider serviceProvider,
         Lazy<IEventBus?> eventBusLazy,
-        Lazy<IPublisher> lazyPublisher,
+        Lazy<IPublisher> publisherLazy,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
         IUnitOfWork? unitOfWork = null)
     {
-        _lazyEventBus = eventBusLazy;
-        _lazyPublisher = lazyPublisher;
+        _eventBusLazy = eventBusLazy;
+        _publisherLazy = publisherLazy;
         _eventLogService = eventLogService;
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;

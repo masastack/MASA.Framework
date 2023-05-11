@@ -1,21 +1,23 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.BuildingBlocks.Configuration.Options;
-public abstract class MasaConfigurationOptions : IMasaConfigurationOptions
+
+public class MasaConfigurationOptions
 {
-    /// <summary>
-    /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType
-    /// </summary>
-    [JsonIgnore]
-    public virtual string? ParentSection => null;
+    private readonly List<(SectionTypes SectionType, Func<IServiceProvider, IConfigurationRepository> Func)> _configurationRepositoryHandlers;
 
-    /// <summary>
-    /// The section null means same as the class name, else load from the specify section
-    /// </summary>
-    [JsonIgnore]
-    public virtual string? Section => null;
+    public IReadOnlyList<(SectionTypes SectionType, Func<IServiceProvider, IConfigurationRepository> Func)> ConfigurationRepositoryHandlers
+        => _configurationRepositoryHandlers;
 
-    [JsonIgnore]
-    public abstract SectionTypes SectionType { get; }
+    public MasaConfigurationOptions() => _configurationRepositoryHandlers = new();
+
+    public void AddConfigurationRepository(
+        SectionTypes sectionType,
+        Func<IServiceProvider, IConfigurationRepository> configurationRepository)
+    {
+        _configurationRepositoryHandlers.Add((sectionType, configurationRepository));
+    }
 }

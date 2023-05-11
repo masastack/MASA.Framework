@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
-internal class DccConfigurationRepository : AbstractConfigurationRepository
+internal class DccConfigurationRepository : ConfigurationRepositoryBase
 {
     private readonly IConfigurationApiClient _client;
 
@@ -16,7 +16,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
     public DccConfigurationRepository(
         IEnumerable<DccSectionOptions> sectionOptions,
         IConfigurationApiClient client,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory? loggerFactory)
         : base(loggerFactory)
     {
         _client = client;
@@ -31,7 +31,7 @@ internal class DccConfigurationRepository : AbstractConfigurationRepository
     {
         foreach (var configObject in sectionOption.ConfigObjects)
         {
-            string key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
+            var key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
             var result = await _client.GetRawAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
             {
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))

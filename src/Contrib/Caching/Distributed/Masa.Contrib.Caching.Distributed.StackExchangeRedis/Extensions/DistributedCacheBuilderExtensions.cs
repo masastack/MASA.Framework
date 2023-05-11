@@ -66,6 +66,24 @@ public static class DistributedCacheBuilderExtensions
 
     public static void UseStackExchangeRedisCache(
         this DistributedCacheBuilder distributedCacheBuilder,
+        Func<IServiceProvider, RedisConfigurationOptions> action,
+        JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        distributedCacheBuilder.UseCustomDistributedCache(serviceProvider =>
+        {
+            var redisConfigurationOptions = action.Invoke(serviceProvider);
+            var distributedCacheClient = new RedisCacheClient(
+                redisConfigurationOptions,
+                serviceProvider.GetService<IFormatCacheKeyProvider>(),
+                jsonSerializerOptions,
+                serviceProvider.GetRequiredService<ITypeAliasFactory>().Create(distributedCacheBuilder.Name)
+            );
+            return distributedCacheClient;
+        });
+    }
+
+    public static void UseStackExchangeRedisCache(
+        this DistributedCacheBuilder distributedCacheBuilder,
         RedisConfigurationOptions redisConfigurationOptions,
         JsonSerializerOptions? jsonSerializerOptions = null)
     {

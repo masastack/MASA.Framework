@@ -3,16 +3,16 @@
 
 namespace Masa.BuildingBlocks.Configuration;
 
-public abstract class AbstractConfigurationRepository : IConfigurationRepository
+public abstract class ConfigurationRepositoryBase : IConfigurationRepository
 {
-    private readonly ILogger<AbstractConfigurationRepository>? _logger;
+    private readonly ILogger<ConfigurationRepositoryBase>? _logger;
 
     private readonly List<IRepositoryChangeListener> _listeners = new();
 
     public abstract SectionTypes SectionType { get; }
 
-    public AbstractConfigurationRepository(ILoggerFactory? loggerFactory = null)
-        => _logger = loggerFactory?.CreateLogger<AbstractConfigurationRepository>();
+    public ConfigurationRepositoryBase(ILoggerFactory? loggerFactory = null)
+        => _logger = loggerFactory?.CreateLogger<ConfigurationRepositoryBase>();
 
     public abstract Properties Load();
 

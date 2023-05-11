@@ -1,8 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Extensions;
+// ReSharper disable once CheckNamespace
 
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 internal static class DistributedCacheClientExtensions
 {
@@ -14,7 +15,7 @@ internal static class DistributedCacheClientExtensions
     {
         var defaultConfigObjects = new List<string>();
 
-        string partialKey =
+        var partialKey =
             $"{environment}-{cluster}-{appId}".ToLower();
         var keys = distributedCacheClient.GetKeys<PublishReleaseModel>($"{partialKey}*");
         foreach (var key in keys)

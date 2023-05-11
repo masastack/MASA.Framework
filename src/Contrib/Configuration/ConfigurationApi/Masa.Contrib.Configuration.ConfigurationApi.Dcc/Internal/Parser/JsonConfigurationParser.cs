@@ -26,7 +26,7 @@ internal sealed class JsonConfigurationParser
             AllowTrailingCommas = true,
         };
 
-        using (JsonDocument doc = JsonDocument.Parse(input, jsonDocumentOptions))
+        using (var doc = JsonDocument.Parse(input, jsonDocumentOptions))
         {
             if (doc.RootElement.ValueKind == JsonValueKind.Object) {
                 VisitObjectElement(doc.RootElement);
@@ -47,7 +47,7 @@ internal sealed class JsonConfigurationParser
     {
         var isEmpty = true;
 
-        foreach (JsonProperty property in element.EnumerateObject())
+        foreach (var property in element.EnumerateObject())
         {
             isEmpty = false;
             EnterContext(property.Name);
@@ -60,9 +60,9 @@ internal sealed class JsonConfigurationParser
 
     private void VisitArrayElement(JsonElement element)
     {
-        int index = 0;
+        var index = 0;
 
-        foreach (JsonElement arrayElement in element.EnumerateArray())
+        foreach (var arrayElement in element.EnumerateArray())
         {
             EnterContext(index.ToString());
             VisitValue(arrayElement);
@@ -100,7 +100,7 @@ internal sealed class JsonConfigurationParser
             case JsonValueKind.True:
             case JsonValueKind.False:
             case JsonValueKind.Null:
-                string key = _paths.Peek();
+                var key = _paths.Peek();
                 if (_data.ContainsKey(key))
                 {
                     throw new FormatException($"A duplicate key '{key}' was found.");

@@ -15,18 +15,29 @@ public static class CallerBuilderExtensions
     {
         MasaArgumentException.ThrowIfNull(clientConfigure);
 
+        return callerBuilder.UseHttpClientCore((masaHttpClient, _) =>
+        {
+            clientConfigure.Invoke(masaHttpClient);
+        });
+    }
+
+    public static MasaHttpClientBuilder UseHttpClient(this CallerBuilder callerBuilder,
+        Action<MasaHttpClient, IServiceProvider> clientConfigure)
+    {
+        MasaArgumentException.ThrowIfNull(clientConfigure);
+
         return callerBuilder.UseHttpClientCore(clientConfigure);
     }
 
     private static MasaHttpClientBuilder UseHttpClientCore(this CallerBuilder callerBuilder,
-        Action<MasaHttpClient>? clientConfigure)
+        Action<MasaHttpClient, IServiceProvider>? clientConfigure)
     {
         callerBuilder.Services.AddHttpClient(callerBuilder.Name);
 
         callerBuilder.UseCustomCaller(serviceProvider =>
         {
             var masaHttpClient = new MasaHttpClient(serviceProvider);
-            clientConfigure?.Invoke(masaHttpClient);
+            clientConfigure?.Invoke(masaHttpClient, serviceProvider);
             var httpClient = serviceProvider.GetRequiredService<IHttpClientFactory>().CreateClient(callerBuilder.Name);
             masaHttpClient.ConfigureHttpClient(httpClient);
             return new HttpClientCaller(

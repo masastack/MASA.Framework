@@ -3,7 +3,6 @@
 
 namespace Masa.Contrib.Configuration.Tests.Scenes.AutoMap;
 
-#pragma warning disable CS0618
 [TestClass]
 public class ConfigurationTest
 {
@@ -11,7 +10,7 @@ public class ConfigurationTest
     public void TestAddMasaConfiguration()
     {
         var builder = WebApplication.CreateBuilder();
-        builder.AddMasaConfiguration();
+        builder.Services.AddMasaConfiguration();
         var serviceProvider = builder.Services.BuildServiceProvider();
         var options = serviceProvider.GetService<IOptions<KafkaOptions>>();
         Assert.IsNotNull(options);
@@ -19,4 +18,3 @@ public class ConfigurationTest
         Assert.AreEqual(10, options.Value.ConnectionPoolSize);
     }
 }
-#pragma warning restore CS0618

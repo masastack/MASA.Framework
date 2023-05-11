@@ -5,11 +5,11 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
-    private readonly IMultilevelCacheClient _client;
+    private readonly IMultilevelCacheClient _multilevelCacheClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly JsonSerializerOptions _dynamicJsonSerializerOptions;
     private readonly ILogger<ConfigurationApiClient>? _logger;
-    private readonly DccOptions _dccOptions;
+    private readonly string? _configObjectSecret;
 
     private readonly ConcurrentDictionary<string, Lazy<Task<ExpandoObject>>> _taskExpandoObjects = new();
     private readonly ConcurrentDictionary<string, Lazy<Task<object>>> _taskJsonObjects = new();
@@ -17,24 +17,24 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     private readonly Masa.BuildingBlocks.Data.IDeserializer _yamlDeserializer;
 
     public ConfigurationApiClient(
-        IServiceProvider serviceProvider,
+        IMultilevelCacheClient multilevelCacheClient,
         JsonSerializerOptions jsonSerializerOptions,
-        DccOptions dccOptions,
+        string? configObjectSecret,
         DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions>? expandSectionOptions)
+        List<DccSectionOptions>? expandSectionOptions,
+        ILogger<ConfigurationApiClient>? logger = null)
         : base(defaultSectionOption, expandSectionOptions)
     {
-        var client = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
-        ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(multilevelCacheClient);
 
-        _client = client;
+        _multilevelCacheClient = multilevelCacheClient;
         _jsonSerializerOptions = jsonSerializerOptions;
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
-        _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        _logger = logger;
         _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        _dccOptions = dccOptions;
+        _configObjectSecret = configObjectSecret;
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)
@@ -128,7 +128,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     protected virtual async Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawByKeyAsync(string key,
         Action<string>? valueChanged)
     {
-        var publishRelease = await _client.GetAsync<PublishReleaseModel>(key, value =>
+        var publishRelease = await _multilevelCacheClient.GetAsync<PublishReleaseModel>(key, value =>
         {
             var result = FormatRaw(value, key);
             valueChanged?.Invoke(result.Raw);
@@ -139,7 +139,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
     protected virtual (string Raw, ConfigurationTypes ConfigurationType) FormatRaw(PublishReleaseModel? publishRelease, string key)
     {
-        PublishReleaseModel result = FormatPublishRelease(publishRelease, key);
+        var result = FormatPublishRelease(publishRelease, key);
 
         switch (result.ConfigFormat)
         {
@@ -208,11 +208,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         if (publishRelease.Encryption)
         {
-            if (string.IsNullOrEmpty(_dccOptions.ConfigObjectSecret))
-            {
-                throw new ArgumentNullException(_dccOptions.ConfigObjectSecret, nameof(_dccOptions.ConfigObjectSecret));
-            }
-            publishRelease.Content = DecryptContent(_dccOptions.ConfigObjectSecret, publishRelease.Content);
+            MasaArgumentException.ThrowIfNullOrWhiteSpace(_configObjectSecret);
+            publishRelease.Content = DecryptContent(_configObjectSecret, publishRelease.Content);
         }
 
         return publishRelease;

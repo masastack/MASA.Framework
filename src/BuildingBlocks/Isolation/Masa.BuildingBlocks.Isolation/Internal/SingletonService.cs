@@ -5,31 +5,15 @@
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.RulesEngine")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.SearchEngine.AutoComplete")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.Storage.ObjectStorage")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.ConfigurationApi.Dcc")]
 
 // ReSharper disable once CheckNamespace
 
 namespace Masa.BuildingBlocks.Isolation;
 
-internal class SingletonService<TService> : IDisposable
+internal class SingletonService<TService> : LifetimeServiceBase<TService>
 {
-    public TService Service { get; }
-
-    public SingletonService(TService service)
+    public SingletonService(TService service) : base(service)
     {
-        Service = service;
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (Service is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
     }
 }

@@ -10,8 +10,8 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
 
     public ConfigurationApiManage(
         ICaller caller,
-        DccSectionOptions defaultSectionOption,
         JsonSerializerOptions jsonSerializerOptions,
+        DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
         : base(defaultSectionOption, expandSectionOptions)
     {

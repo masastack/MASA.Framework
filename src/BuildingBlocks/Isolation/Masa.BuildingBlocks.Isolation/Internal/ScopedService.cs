@@ -5,12 +5,13 @@
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.RulesEngine")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.SearchEngine.AutoComplete")]
 [assembly: InternalsVisibleTo("Masa.BuildingBlocks.Storage.ObjectStorage")]
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.ConfigurationApi.Dcc")]
 
 // ReSharper disable once CheckNamespace
 
 namespace Masa.BuildingBlocks.Isolation;
 
-internal class ScopedService<TService> : SingletonService<TService>
+internal class ScopedService<TService> : LifetimeServiceBase<TService>
 {
     public ScopedService(TService service) : base(service)
     {

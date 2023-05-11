@@ -501,8 +501,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Utils.Extensions.DotNe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Caching.Distributed.StackExchangeRedis", "src\Contrib\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj", "{AA7D8CBE-5222-4109-BFC5-545813A4CB67}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap", "src\Contrib\Configuration\Tests\Scenes\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap\Masa.Contrib.Configuration.Tests.Scenes.DisableAutoMap.csproj", "{A6486486-382C-41B8-951B-BDA55AE0174B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7958FEC3-EF97-4C37-82BB-C780A6DBDBC9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests", "src\Contrib\Caching\Distributed\Tests\Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests\Masa.Contrib.Caching.Distributed.StackExchangeRedis.Tests.csproj", "{4485AEB4-303D-4DED-B667-F188EE237A21}"
@@ -1955,14 +1953,6 @@ Global
 		{AA7D8CBE-5222-4109-BFC5-545813A4CB67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA7D8CBE-5222-4109-BFC5-545813A4CB67}.Release|x64.ActiveCfg = Release|Any CPU
 		{AA7D8CBE-5222-4109-BFC5-545813A4CB67}.Release|x64.Build.0 = Release|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Debug|x64.Build.0 = Debug|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.ActiveCfg = Release|Any CPU
-		{A6486486-382C-41B8-951B-BDA55AE0174B}.Release|x64.Build.0 = Release|Any CPU
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4485AEB4-303D-4DED-B667-F188EE237A21}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2769,7 +2759,6 @@ Global
 		{60A02980-398C-40CD-9FAA-ACAD7A9A866C} = {94D15C26-7204-4299-BC23-B89F5A0B0BF9}
 		{9E9122FD-8E27-4524-862F-FFEFA97E404A} = {C2FAC276-9D6E-498A-BBA2-F3F14ADF4D0D}
 		{AA7D8CBE-5222-4109-BFC5-545813A4CB67} = {B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}
-		{A6486486-382C-41B8-951B-BDA55AE0174B} = {258E4702-B414-4629-BD37-CAEE20BE052B}
 		{7958FEC3-EF97-4C37-82BB-C780A6DBDBC9} = {B0A31E10-BE6D-4EC1-ACAE-D8103AD47C81}
 		{4485AEB4-303D-4DED-B667-F188EE237A21} = {7958FEC3-EF97-4C37-82BB-C780A6DBDBC9}
 		{DD21D149-6786-4D51-9A4E-49EF4E8A56D1} = {2BAF3BB2-A14C-4591-AD9C-10084B14B05D}

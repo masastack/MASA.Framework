@@ -5,7 +5,8 @@
 
 namespace Masa.Contrib.Configuration;
 
-public abstract class LocalMasaConfigurationOptions : MasaConfigurationOptions
+[ExcludeFromCodeCoverage]
+public abstract class LocalMasaOptionsConfigurable : MasaOptionsConfigurableBase
 {
     /// <summary>
     /// ParentSection is not required for local configuration

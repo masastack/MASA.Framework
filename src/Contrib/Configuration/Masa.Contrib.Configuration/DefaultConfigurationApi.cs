@@ -3,17 +3,20 @@
 
 namespace Masa.Contrib.Configuration;
 
+[ExcludeFromCodeCoverage]
 public class DefaultConfigurationApi : IConfigurationApi
 {
-    private readonly IConfiguration _configuration;
+    private readonly IMasaConfiguration _masaConfiguration;
 
-    public DefaultConfigurationApi(IConfiguration configuration)
+    public DefaultConfigurationApi(IMasaConfiguration masaConfiguration)
     {
-        _configuration = configuration;
+        _masaConfiguration = masaConfiguration;
     }
 
     public IConfiguration Get(string appId)
     {
-        return _configuration.GetSection(SectionTypes.ConfigurationApi.ToString()).GetSection(appId);
+        return _masaConfiguration
+            .GetConfiguration(SectionTypes.ConfigurationApi)
+            .GetSection(appId);
     }
 }

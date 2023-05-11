@@ -7,7 +7,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 public class DccTest
 {
     private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
-    private Mock<IMasaConfigurationBuilder> _masaConfigurationBuilder;
+    private Mock<IConfigurationRepositoryBuilder> _masaConfigurationBuilder;
     private JsonSerializerOptions _jsonSerializerOptions;
     private IServiceCollection _services;
 
@@ -117,7 +117,7 @@ public class DccTest
     {
         Mock<IHttpClientFactory> httpClientFactory = new();
         _services.AddSingleton(httpClientFactory.Object);
-        _services.AddCaller(options => options.UseHttpClient());
+        _services.AddCallerByDcc(options => options.UseHttpClient());
 
         MasaConfigurationExtensions.TryAddConfigurationApiManage(
             _services,

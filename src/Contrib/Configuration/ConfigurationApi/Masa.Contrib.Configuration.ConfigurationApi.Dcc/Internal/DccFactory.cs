@@ -8,21 +8,24 @@ internal static class DccFactory
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
         JsonSerializerOptions jsonSerializerOptions,
-        DccOptions dccOptions,
+        string? configObjectSecret,
         DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
     {
-        return new ConfigurationApiClient(serviceProvider,
+        var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        var logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
+        return new ConfigurationApiClient(multilevelCacheClient,
             jsonSerializerOptions,
-            dccOptions,
+            configObjectSecret,
             defaultSectionOption,
-            expandSectionOptions);
+            expandSectionOptions,
+            logger);
     }
 
     public static IConfigurationApiManage CreateManage(
         ICaller caller,
-        DccSectionOptions defaultSectionOption,
         JsonSerializerOptions jsonSerializerOptions,
+        DccSectionOptions defaultSectionOption,
         List<DccSectionOptions>? expandSectionOptions)
-        => new ConfigurationApiManage(caller, defaultSectionOption, jsonSerializerOptions, expandSectionOptions);
+        => new ConfigurationApiManage(caller, jsonSerializerOptions,defaultSectionOption,  expandSectionOptions);
 }

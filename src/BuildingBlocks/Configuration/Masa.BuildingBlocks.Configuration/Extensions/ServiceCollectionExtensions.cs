@@ -26,7 +26,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddOptions();
         var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<Masa.BuildingBlocks.Configuration.IMasaConfiguration>()?.Local ??
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
             serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             return services;
@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
         string sectionName)
     {
         var serviceProvider = services.BuildServiceProvider();
-        IConfiguration? configuration = serviceProvider.GetService<Masa.BuildingBlocks.Configuration.IMasaConfiguration>()?.Local ??
+        IConfiguration? configuration = serviceProvider.GetService<IMasaConfiguration>()?.Local ??
             serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             throw new NotSupportedException(); //Need to make sure IConfiguration has been injected in DI

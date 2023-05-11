@@ -3,5 +3,10 @@
     "Ip": "localhost",
     "Password": "",
     "Port": 6379
+  },
+  "RedisOptionsNew": {
+    "Ip": "localhost",
+    "Password": "",
+    "Port": 6378
   }
 }

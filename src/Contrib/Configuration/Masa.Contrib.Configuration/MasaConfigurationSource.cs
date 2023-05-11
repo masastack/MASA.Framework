@@ -3,26 +3,16 @@
 
 namespace Masa.Contrib.Configuration;
 
+[ExcludeFromCodeCoverage]
 public class MasaConfigurationSource : IConfigurationSource
 {
-    internal readonly MasaConfigurationBuilder? Builder;
+    private readonly IEnumerable<IConfigurationRepository> _repositories;
 
-    internal readonly IConfigurationProvider? ConfigurationProvider;
-
-    private readonly List<MigrateConfigurationRelationsInfo> _relations;
-
-    public MasaConfigurationSource(MasaConfigurationBuilder builder, List<MigrateConfigurationRelationsInfo> relations)
+    public MasaConfigurationSource(IEnumerable<IConfigurationRepository> repositories)
     {
-        Builder = builder;
-        _relations = relations;
-    }
-
-    public MasaConfigurationSource(IConfigurationProvider configurationProvider, List<MigrateConfigurationRelationsInfo> relations)
-    {
-        ConfigurationProvider = configurationProvider;
-        _relations = relations;
+        _repositories = repositories;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
-        => Builder != null ? new MasaConfigurationProvider(this, _relations) : ConfigurationProvider!;
+        => new MasaConfigurationProvider(_repositories);
 }

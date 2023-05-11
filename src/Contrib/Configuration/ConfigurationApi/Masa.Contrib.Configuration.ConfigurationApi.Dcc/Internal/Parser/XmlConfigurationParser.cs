@@ -50,10 +50,10 @@ internal static class XmlConfigurationParser
         if (table.Rows.Count > 0)
         {
             jsonStringBuilder.Append('[');
-            for (int i = 0; i < table.Rows.Count; i++)
+            for (var i = 0; i < table.Rows.Count; i++)
             {
                 jsonStringBuilder.Append('{');
-                for (int j = 0; j < table.Columns.Count; j++)
+                for (var j = 0; j < table.Columns.Count; j++)
                 {
                     if (j < table.Columns.Count - 1)
                     {

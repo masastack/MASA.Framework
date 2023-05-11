@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
-public abstract class ConfigurationApiMasaConfigurationOptions : MasaConfigurationOptions
+public abstract class ConfigurationApiMasaOptionsConfigurable : MasaOptionsConfigurableBase
 {
     /// <summary>
     /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType

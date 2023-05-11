@@ -1,0 +1,7 @@
+{
+  "RedisOptionsNew": {
+    "Ip": "localhost-test",
+    "Password": "test",
+    "Port": 6376
+  }
+}

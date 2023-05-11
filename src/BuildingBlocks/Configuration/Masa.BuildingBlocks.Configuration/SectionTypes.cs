@@ -3,8 +3,10 @@
 
 namespace Masa.BuildingBlocks.Configuration;
 
+[Flags]
 public enum SectionTypes
 {
-    Local = 1,
-    ConfigurationApi
+    Local = 0b_0000_0001, //1
+    ConfigurationApi = 0b_0000_0010, //2
+    All = Local | ConfigurationApi
 }

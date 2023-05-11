@@ -23,12 +23,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="*.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Isolation\Masa.Contrib.Isolation.MultiEnvironment\Masa.Contrib.Isolation.MultiEnvironment.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Configuration\Masa.Contrib.Configuration.csproj" />
     <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor\Masa.Contrib.Configuration.Tests.Scenes.NoLessConstructor.csproj" />
     <ProjectReference Include="..\Scenes\Masa.Contrib.Configuration.Tests.Scenes.AutoMap\Masa.Contrib.Configuration.Tests.Scenes.AutoMap.csproj" />

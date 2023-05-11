@@ -5,6 +5,12 @@ namespace Masa.BuildingBlocks.Configuration.Options;
 
 public class ConfigurationRelationOptions
 {
+    /// <summary>
+    /// Whether it is a required (required when initializing the configuration) configuration component
+    /// default: false
+    /// </summary>
+    public bool IsRequiredConfigComponent { get; set; } = false;
+
     public SectionTypes SectionType { get; set; }
 
     public string? ParentSection { get; set; }
