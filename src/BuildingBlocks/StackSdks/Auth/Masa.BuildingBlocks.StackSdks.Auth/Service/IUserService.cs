@@ -59,7 +59,7 @@ public interface IUserService
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
-    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
+    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel staff);
 
     Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds);
 
