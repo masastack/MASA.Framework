@@ -720,6 +720,36 @@ public class UserServiceTest
         caller.Verify(provider => provider.DeleteAsync("api/user", It.IsAny<object>(), true, default), Times.Once);
     }
 
+    [TestMethod]
+    public async Task TestBindRolesAsync()
+    {
+        var model = new BindUserRolesModel
+        {
+            Id = Guid.NewGuid(),
+            RoleCodes = new[] { "test_code" }
+        };
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync("api/user/bind_roles", model, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.BindRolesAsync(model);
+        caller.Verify(provider => provider.PostAsync("api/user/bind_roles", model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestUnbindRolesAsync()
+    {
+        var model = new UnbindUserRolesModel
+        {
+            Id = Guid.NewGuid(),
+            RoleCodes = new[] { "test_code" }
+        };
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync("api/user/unbind_roles", model, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.UnbindRolesAsync(model);
+        caller.Verify(provider => provider.PostAsync("api/user/unbind_roles", model, true, default), Times.Once);
+    }
+
     static UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)
     {
         userContext ??= new Mock<IUserContext>();

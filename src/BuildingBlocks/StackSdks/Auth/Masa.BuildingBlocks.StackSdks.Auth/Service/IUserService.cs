@@ -100,5 +100,9 @@ public interface IUserService
     Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
 
     Task RemoveAsync(Guid id);
+
+    Task BindRolesAsync(BindUserRolesModel model);
+
+    Task UnbindRolesAsync(UnbindUserRolesModel model);
 }
 

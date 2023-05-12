@@ -356,5 +356,17 @@ public class UserService : IUserService
         var requestUri = "api/user";
         await _caller.DeleteAsync(requestUri, new RemoveUserModel(id));
     }
+
+    public Task BindRolesAsync(BindUserRolesModel model)
+    {
+        var requestUri = $"api/user/bind_roles";
+        return _caller.PostAsync(requestUri, model);
+    }
+
+    public Task UnbindRolesAsync(UnbindUserRolesModel model)
+    {
+        var requestUri = $"api/user/unbind_roles";
+        return _caller.PostAsync(requestUri, model);
+    }
 }
 
