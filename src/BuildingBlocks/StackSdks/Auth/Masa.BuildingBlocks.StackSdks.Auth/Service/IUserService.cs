@@ -59,7 +59,7 @@ public interface IUserService
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
-    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
+    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel staff);
 
     Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds);
 
@@ -100,5 +100,9 @@ public interface IUserService
     Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
 
     Task RemoveAsync(Guid id);
+
+    Task BindRolesAsync(BindUserRolesModel model);
+
+    Task UnbindRolesAsync(UnbindUserRolesModel model);
 }
 
