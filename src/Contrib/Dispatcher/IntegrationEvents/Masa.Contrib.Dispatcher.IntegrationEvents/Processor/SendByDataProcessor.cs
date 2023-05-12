@@ -9,7 +9,7 @@ public class SendByDataProcessor : ProcessorBase
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly ILogger<SendByDataProcessor>? _logger;
 
-    public override int Delay => 1;
+    public override int Delay => _options.Value.ExecuteInterval;
 
     public SendByDataProcessor(
         IServiceProvider serviceProvider,

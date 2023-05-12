@@ -52,8 +52,6 @@ public class IntegrationEventLog : IHasConcurrencyStamp
     public IntegrationEventLog(IIntegrationEvent @event, IntegrationEventExpand? eventExpand,  Guid transactionId) : this()
     {
         EventId = @event.GetEventId();
-        CreationTime = @event.GetCreationTime();
-        ModificationTime = @event.GetCreationTime();
         EventTypeName = @event.GetType().FullName!;
         Content = JsonSerializer.Serialize((object)@event);
 
@@ -67,6 +65,7 @@ public class IntegrationEventLog : IHasConcurrencyStamp
     public void Initialize()
     {
         CreationTime = GetCurrentTime();
+        ModificationTime = GetCurrentTime();
     }
 
     public virtual DateTime GetCurrentTime() => DateTime.UtcNow;
