@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Scheduler.Request;
 
-public class AddSchedulerJobRequest
+public class UpsertSchedulerJobRequest
 {
     public string ProjectIdentity { get; set; } = string.Empty;
 
