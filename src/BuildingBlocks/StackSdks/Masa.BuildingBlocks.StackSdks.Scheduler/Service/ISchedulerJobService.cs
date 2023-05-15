@@ -7,6 +7,8 @@ public interface ISchedulerJobService
 {
     Task<Guid> AddAsync(AddSchedulerJobRequest job);
 
+    Task UpdateAsync(Guid id, UpdateSchedulerJobRequest job); 
+
     Task<bool> StartAsync(SchedulerJobRequestBase request);
 
     Task<bool> RemoveAsync(SchedulerJobRequestBase request);
@@ -17,3 +19,8 @@ public interface ISchedulerJobService
 
     Task<SchedulerJobModel?> GetSchedulerJobQueryByIdentityAsync(GetSchedulerJobByIdentityRequest request);
 }
+
+
+
+
+

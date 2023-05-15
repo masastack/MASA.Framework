@@ -38,6 +38,30 @@ public class SchedulerJobService : ISchedulerJobService
         return await _caller.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
     }
 
+    public async Task UpdateAsync(Guid id, UpdateSchedulerJobRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
+        {
+            throw new ArgumentNullException(nameof(request.ProjectIdentity));
+        }
+
+        switch (request.JobType)
+        {
+            case JobTypes.JobApp:
+                ArgumentNullException.ThrowIfNull(request.JobAppConfig, nameof(request.JobAppConfig));
+                break;
+            case JobTypes.Http:
+                ArgumentNullException.ThrowIfNull(request.HttpConfig, nameof(request.HttpConfig));
+                break;
+            case JobTypes.DaprServiceInvocation:
+                ArgumentNullException.ThrowIfNull(request.DaprServiceInvocationConfig, nameof(request.DaprServiceInvocationConfig));
+                break;
+        }
+
+        var requestUri = $"{API}/{id}/updateSchedulerJobBySdk";
+        await _caller.PutAsync<UpdateSchedulerJobRequest>(requestUri, request);
+    }
+
     public async Task<bool> DisableAsync(SchedulerJobRequestBase request)
     {
         var requestData = new ChangeEnabledStatusRequest()
