@@ -78,21 +78,18 @@ public class SchedulerJobService : ISchedulerJobService
 
     private static void ValidateUpsertSchedulerJobRequest(UpsertSchedulerJobRequest job)
     {
-        if (string.IsNullOrWhiteSpace(job.ProjectIdentity))
-        {
-            throw new ArgumentNullException(nameof(UpsertSchedulerJobRequest.ProjectIdentity));
-        }
+        MasaArgumentException.ThrowIfNull(job.ProjectIdentity, nameof(job.ProjectIdentity));
 
         switch (job.JobType)
         {
             case JobTypes.JobApp:
-                ArgumentNullException.ThrowIfNull(job.JobAppConfig, nameof(job.JobAppConfig));
+                MasaArgumentException.ThrowIfNull(job.JobAppConfig, nameof(job.JobAppConfig));
                 break;
             case JobTypes.Http:
-                ArgumentNullException.ThrowIfNull(job.HttpConfig, nameof(job.HttpConfig));
+                MasaArgumentException.ThrowIfNull(job.HttpConfig, nameof(job.HttpConfig));
                 break;
             case JobTypes.DaprServiceInvocation:
-                ArgumentNullException.ThrowIfNull(job.DaprServiceInvocationConfig, nameof(job.DaprServiceInvocationConfig));
+                MasaArgumentException.ThrowIfNull(job.DaprServiceInvocationConfig, nameof(job.DaprServiceInvocationConfig));
                 break;
         }
     }
