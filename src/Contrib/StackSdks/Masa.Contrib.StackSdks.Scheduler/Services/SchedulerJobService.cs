@@ -80,7 +80,7 @@ public class SchedulerJobService : ISchedulerJobService
     {
         if (string.IsNullOrWhiteSpace(job.ProjectIdentity))
         {
-            throw new ArgumentNullException(nameof(job.ProjectIdentity));
+            throw new ArgumentNullException(nameof(UpsertSchedulerJobRequest.ProjectIdentity));
         }
 
         switch (job.JobType)
