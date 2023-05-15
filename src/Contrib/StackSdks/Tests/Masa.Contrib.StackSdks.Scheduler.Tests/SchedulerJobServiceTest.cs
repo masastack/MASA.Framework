@@ -145,22 +145,6 @@ public class SchedulerJobServiceTest
             JobType = JobTypes.Http,
             CronExpression = "",
             JobIdentity = "masa-mc-sync-job",
-            HttpConfig = new SchedulerJobHttpConfig()
-            {
-                RequestUrl = "www.baidu.com",
-                HttpVerifyType = HttpVerifyTypes.CustomStatusCode,
-                HttpBody = "",
-                HttpHeaders = new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36")
-                },
-                HttpMethod = HttpMethods.GET,
-                VerifyContent = "200",
-                HttpParameters = new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>("ie", "utf-8"),
-                }
-            },
             OperatorId = Guid.NewGuid()
         };
 
