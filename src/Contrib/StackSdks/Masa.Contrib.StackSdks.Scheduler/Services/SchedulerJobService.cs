@@ -14,52 +14,20 @@ public class SchedulerJobService : ISchedulerJobService
         _caller = caller;
     }
 
-    public async Task<Guid> AddAsync(AddSchedulerJobRequest request)
+    public async Task<Guid> AddAsync(UpsertSchedulerJobRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
-        {
-            throw new ArgumentNullException(nameof(request.ProjectIdentity));
-        }
+        ValidateUpsertSchedulerJobRequest(request);
 
-        switch (request.JobType)
-        {
-            case JobTypes.JobApp:
-                ArgumentNullException.ThrowIfNull(request.JobAppConfig, nameof(request.JobAppConfig));
-                break;
-            case JobTypes.Http:
-                ArgumentNullException.ThrowIfNull(request.HttpConfig, nameof(request.HttpConfig));
-                break;
-            case JobTypes.DaprServiceInvocation:
-                ArgumentNullException.ThrowIfNull(request.DaprServiceInvocationConfig, nameof(request.DaprServiceInvocationConfig));
-                break;
-        }
-        
         var requestUri = $"{API}/addSchedulerJobBySdk";
-        return await _caller.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
+        return await _caller.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, request);
     }
 
-    public async Task UpdateAsync(Guid id, UpdateSchedulerJobRequest request)
+    public async Task UpdateAsync(Guid id, UpsertSchedulerJobRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
-        {
-            throw new ArgumentNullException(nameof(request.ProjectIdentity));
-        }
-
-        switch (request.JobType)
-        {
-            case JobTypes.JobApp:
-                ArgumentNullException.ThrowIfNull(request.JobAppConfig, nameof(request.JobAppConfig));
-                break;
-            case JobTypes.Http:
-                ArgumentNullException.ThrowIfNull(request.HttpConfig, nameof(request.HttpConfig));
-                break;
-            case JobTypes.DaprServiceInvocation:
-                ArgumentNullException.ThrowIfNull(request.DaprServiceInvocationConfig, nameof(request.DaprServiceInvocationConfig));
-                break;
-        }
+        ValidateUpsertSchedulerJobRequest(request);
 
         var requestUri = $"{API}/{id}/updateSchedulerJobBySdk";
-        await _caller.PutAsync<UpdateSchedulerJobRequest>(requestUri, request);
+        await _caller.PutAsync<UpsertSchedulerJobRequest>(requestUri, request);
     }
 
     public async Task<bool> DisableAsync(SchedulerJobRequestBase request)
@@ -106,5 +74,26 @@ public class SchedulerJobService : ISchedulerJobService
         var requestUri = $"{API}/startJob";
         await _caller.PutAsync(requestUri, request);
         return true;
+    }
+
+    private void ValidateUpsertSchedulerJobRequest(UpsertSchedulerJobRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
+        {
+            throw new ArgumentNullException(nameof(request.ProjectIdentity));
+        }
+
+        switch (request.JobType)
+        {
+            case JobTypes.JobApp:
+                ArgumentNullException.ThrowIfNull(request.JobAppConfig, nameof(request.JobAppConfig));
+                break;
+            case JobTypes.Http:
+                ArgumentNullException.ThrowIfNull(request.HttpConfig, nameof(request.HttpConfig));
+                break;
+            case JobTypes.DaprServiceInvocation:
+                ArgumentNullException.ThrowIfNull(request.DaprServiceInvocationConfig, nameof(request.DaprServiceInvocationConfig));
+                break;
+        }
     }
 }

@@ -5,9 +5,9 @@ namespace Masa.BuildingBlocks.StackSdks.Scheduler.Service;
 
 public interface ISchedulerJobService
 {
-    Task<Guid> AddAsync(AddSchedulerJobRequest job);
+    Task<Guid> AddAsync(UpsertSchedulerJobRequest job);
 
-    Task UpdateAsync(Guid id, UpdateSchedulerJobRequest job); 
+    Task UpdateAsync(Guid id, UpsertSchedulerJobRequest job); 
 
     Task<bool> StartAsync(SchedulerJobRequestBase request);
 
