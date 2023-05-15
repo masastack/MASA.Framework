@@ -19,8 +19,3 @@ public interface ISchedulerJobService
 
     Task<SchedulerJobModel?> GetSchedulerJobQueryByIdentityAsync(GetSchedulerJobByIdentityRequest request);
 }
-
-
-
-
-
