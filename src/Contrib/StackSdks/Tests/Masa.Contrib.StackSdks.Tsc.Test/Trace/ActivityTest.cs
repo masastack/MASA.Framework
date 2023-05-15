@@ -13,7 +13,7 @@ public class ActivityTest
     }
 
     [TestMethod]
-    public async Task HttpRequestMessageAddTagsTest()
+    public void HttpRequestMessageAddTagsTest()
     {
         HttpRequestMessage request = new();
         request.Method = HttpMethod.Post;
@@ -22,7 +22,7 @@ public class ActivityTest
         request.RequestUri = new Uri("http://localhost");
 
         var activity = new Activity("tets");
-        await activity.AddMasaSupplement(request);
+        activity.AddMasaSupplement(request);
         Assert.AreEqual(body, activity.GetTagItem(OpenTelemetryAttributeName.Http.REQUEST_CONTENT_BODY) as string);
     }
 
@@ -31,7 +31,7 @@ public class ActivityTest
     {
         HttpResponseMessage response = new()
         {
-            StatusCode = System.Net.HttpStatusCode.OK,
+            StatusCode = HttpStatusCode.OK,
             Content = new StringContent("OK")
         };
 
@@ -41,7 +41,7 @@ public class ActivityTest
     }
 
     [TestMethod]
-    public async Task HttpRequestAddTagsTest()
+    public void HttpRequestAddTagsTest()
     {
         Mock<HttpRequest> mock = new();
         mock.Setup(request => request.Method).Returns("post");
@@ -59,7 +59,7 @@ public class ActivityTest
         mock.Setup(request => request.ContentLength).Returns(ms.Length);
 
         var activity = new Activity("tets");
-        await activity.AddMasaSupplement(mock.Object);
+        activity.AddMasaSupplement(mock.Object);
         Assert.IsNotNull(activity);
         Assert.AreEqual("http", activity.GetTagItem(OpenTelemetryAttributeName.Http.SCHEME) as string);
         Assert.AreEqual("http1.1", activity.GetTagItem(OpenTelemetryAttributeName.Http.FLAVOR) as string);

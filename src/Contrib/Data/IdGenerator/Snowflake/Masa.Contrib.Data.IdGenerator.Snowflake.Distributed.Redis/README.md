@@ -19,7 +19,7 @@ Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
 builder.Services.AddSnowflake(option => option.UseRedis());
 ```
 
-> Due to the dependency on Redis, [Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
+> Default redis server address: localhost:6379
 
 3. Get id
 

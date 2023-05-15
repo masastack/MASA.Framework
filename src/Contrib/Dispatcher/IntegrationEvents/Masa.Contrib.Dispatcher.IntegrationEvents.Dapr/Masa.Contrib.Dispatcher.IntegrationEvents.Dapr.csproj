@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\BuildingBlocks\Development\Masa.BuildingBlocks.Development.DaprStarter\Masa.BuildingBlocks.Development.DaprStarter.csproj" />
     <ProjectReference Include="..\Masa.Contrib.Dispatcher.IntegrationEvents\Masa.Contrib.Dispatcher.IntegrationEvents.csproj" />
   </ItemGroup>
 

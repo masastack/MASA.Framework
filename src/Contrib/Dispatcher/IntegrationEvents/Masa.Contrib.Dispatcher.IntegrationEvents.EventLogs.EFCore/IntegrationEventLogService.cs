@@ -5,16 +5,13 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore;
 
 public class IntegrationEventLogService : IIntegrationEventLogService
 {
-    private readonly IEnumerable<Type> _integrationEventTypes;
     private readonly IntegrationEventLogContext _eventLogContext;
     private readonly ILogger<IntegrationEventLogService>? _logger;
 
     public IntegrationEventLogService(
-        IEnumerable<Type> integrationEventTypes,
         IntegrationEventLogContext eventLogContext,
         ILogger<IntegrationEventLogService>? logger = null)
     {
-        _integrationEventTypes = integrationEventTypes;
         _eventLogContext = eventLogContext;
         _logger = logger;
     }
@@ -45,7 +42,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (result.Any())
         {
             return result.OrderBy(e => e.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_integrationEventTypes.First(t => t.Name == e.EventTypeShortName)));
+                .Select(e => e.DeserializeJsonContent());
         }
 
         return result;
@@ -69,13 +66,17 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         if (result.Any())
         {
             return result.OrderBy(e => e.CreationTime)
-                .Select(e => e.DeserializeJsonContent(_integrationEventTypes.First(t => t.Name == e.EventTypeShortName)));
+                .Select(e => e.DeserializeJsonContent());
         }
 
         return result;
     }
 
-    public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default)
+    public async Task SaveEventAsync(
+        IIntegrationEvent @event,
+        IntegrationEventExpand? messageExpand,
+        DbTransaction transaction,
+        CancellationToken cancellationToken = default)
     {
         MasaArgumentException.ThrowIfNull(transaction);
 
@@ -83,7 +84,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(),
                 cancellationToken: cancellationToken);
 
-        var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
+        var eventLogEntry = new IntegrationEventLog(@event, messageExpand, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry, cancellationToken);
         await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
 

@@ -3,35 +3,17 @@
 
 namespace Masa.BuildingBlocks.Storage.ObjectStorage;
 
-public class DefaultObjectStorageClientFactory : IObjectStorageClientFactory
+public class DefaultObjectStorageClientFactory : MasaFactoryBase<IManualObjectStorageClient, MasaRelationOptions<IManualObjectStorageClient>>, IObjectStorageClientFactory
 {
-    private readonly IObjectStorageClient _objectStorageClient;
-    private readonly IBucketNameProvider _bucketNameProvider;
-    private readonly IOptionsMonitor<StorageOptions> _storageOptions;
+    protected override string DefaultServiceNotFoundMessage => "No default ObjectStorage found";
+    protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] ObjectStorage, it was not found";
 
-    public DefaultObjectStorageClientFactory(
-        IObjectStorageClient objectStorageClient,
-        IBucketNameProvider bucketNameProvider,
-        IOptionsMonitor<StorageOptions> storageOptions)
+    protected override MasaFactoryOptions<MasaRelationOptions<IManualObjectStorageClient>> FactoryOptions => _options.CurrentValue;
+
+    private readonly IOptionsMonitor<ObjectStorageFactoryOptions> _options;
+
+    public DefaultObjectStorageClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _objectStorageClient = objectStorageClient;
-        _bucketNameProvider = bucketNameProvider;
-        _storageOptions = storageOptions;
-    }
-
-    public IObjectStorageClientContainer Create()
-        => new DefaultObjectStorageClientContainer(
-            _objectStorageClient,
-            _bucketNameProvider.GetBucketName());
-
-    public IObjectStorageClientContainer Create(string name)
-        => new DefaultObjectStorageClientContainer(
-            _objectStorageClient,
-            _storageOptions.CurrentValue.BucketNames.GetBucketName(name));
-
-    public bool TryCreate(string name, [NotNullWhen(true)] out IObjectStorageClientContainer? service)
-    {
-        service = Create(name);
-        return true;
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<ObjectStorageFactoryOptions>>();
     }
 }

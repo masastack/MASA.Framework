@@ -8,11 +8,11 @@ namespace Masa.Contrib.Development.DaprStarter;
 [ExcludeFromCodeCoverage]
 internal sealed class ProcessUtils
 {
-    private readonly ILogger<ProcessUtils>? _logger;
+    private readonly ILogger? _logger;
 
-    public ProcessUtils(ILoggerFactory? loggerFactory = null)
+    public ProcessUtils(ILogger? logger)
     {
-        _logger = loggerFactory?.CreateLogger<ProcessUtils>();
+        _logger = logger;
     }
 
     public Process Run(
@@ -29,12 +29,12 @@ internal sealed class ProcessUtils
         bool createNoWindow = true,
         bool isWait = false)
     {
-        _logger?.LogDebug("FileName: {FileName}, Arguments: {Arguments}", fileName, arguments);
+        _logger?.LogDebug("Execute the command: {Command} on {Name}", $"{fileName} {arguments}", "DaprStarter");
         var processStartInfo = new ProcessStartInfo
         {
             FileName = fileName,
             Arguments = arguments,
-            UseShellExecute = !createNoWindow,
+            UseShellExecute = false,
             CreateNoWindow = createNoWindow
         };
         var daprProcess = new Process()
@@ -53,16 +53,15 @@ internal sealed class ProcessUtils
                 daprProcess.ErrorDataReceived += (_, args) => OnErrorDataReceived(args);
             }
         }
+
         daprProcess.Start();
         if (createNoWindow && !isWait)
         {
             daprProcess.BeginOutputReadLine();
             daprProcess.BeginErrorReadLine();
         }
+
         daprProcess.Exited += (_, _) => OnExited();
-        string command = $"{fileName} {arguments}";
-        _logger?.LogDebug("Process: {ProcessName}, Command: {Command}, PID: {ProcessId} executed successfully", fileName,
-            command, daprProcess.Id);
 
         if (isWait)
         {
@@ -73,6 +72,7 @@ internal sealed class ProcessUtils
         {
             response = string.Empty;
         }
+
         return daprProcess;
     }
 

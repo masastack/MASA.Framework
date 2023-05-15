@@ -14,23 +14,6 @@ public static class ServiceCollectionExtensions
         Action<AutoCompleteOptionsBuilder> configure)
         => services.AddAutoComplete<Guid>(name, configure);
 
-    public static IServiceCollection AddAutoComplete(
-        this IServiceCollection services,
-        string name,
-        Func<IServiceProvider, IAutoCompleteClient> implementationFactory)
-    {
-        MasaArgumentException.ThrowIfNull(implementationFactory);
-
-        services.Configure<AutoCompleteFactoryOptions>(factoryOptions =>
-        {
-            if (factoryOptions.Options.Any(relation => relation.Name == name))
-                throw new ArgumentException($"The {nameof(IAutoCompleteClient)} name already exists, please change the name, the repeat name is [{name}]");
-
-            factoryOptions.Options.Add(new AutoCompleteRelationsOptions(name, implementationFactory));
-        });
-        return services.AddAutoCompleteBySpecifyDocumentCore(name);
-    }
-
     public static IServiceCollection AddAutoComplete<TValue>(
         this IServiceCollection services,
         Action<AutoCompleteOptionsBuilder> configure)
@@ -59,22 +42,25 @@ public static class ServiceCollectionExtensions
         where TDocument : AutoCompleteDocument
     {
         MasaArgumentException.ThrowIfNull(configure);
-        configure.Invoke(new AutoCompleteOptionsBuilder(services, name, typeof(TDocument)));
-        return services;
-    }
 
-    private static IServiceCollection AddAutoCompleteBySpecifyDocumentCore(
-        this IServiceCollection services,
-        string name)
-    {
-        MasaArgumentException.ThrowIfNull(services);
-        MasaArgumentException.ThrowIfNull(name);
+        services.TryAddTransient<IAutoCompleteFactory, DefaultAutoCompleteFactory>();
+        services.TryAddSingleton<SingletonService<IManualAutoCompleteClient>>(serviceProvider
+            => new SingletonService<IManualAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
+        services.TryAddScoped<ScopedService<IManualAutoCompleteClient>>(serviceProvider
+            => new ScopedService<IManualAutoCompleteClient>(serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create()));
 
-        services.TryAddSingleton<IAutoCompleteFactory, AutoCompleteFactory>();
-        services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IAutoCompleteFactory>().Create());
+        services.TryAddTransient<IManualAutoCompleteClient>(serviceProvider =>
+        {
+            var autoCompleteClient = serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IManualAutoCompleteClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IManualAutoCompleteClient>>().Service;
+            return new DefaultIAutoCompleteClient(autoCompleteClient);
+        });
+        services.TryAddTransient<IAutoCompleteClient>(serviceProvider => serviceProvider.GetRequiredService<IManualAutoCompleteClient>());
 
-        services.AddServiceFactory();
         MasaApp.TrySetServiceCollection(services);
+
+        configure.Invoke(new AutoCompleteOptionsBuilder(services, name, typeof(TDocument)));
         return services;
     }
 }

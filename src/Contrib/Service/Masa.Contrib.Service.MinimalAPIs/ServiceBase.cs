@@ -28,6 +28,8 @@ public abstract class ServiceBase : IService
 
     public IServiceCollection Services => MasaApp.GetServices();
 
+    private bool? _enableProperty;
+
 #pragma warning disable S4136
     protected ServiceBase() { }
 
@@ -50,14 +52,7 @@ public abstract class ServiceBase : IService
 
     internal void AutoMapRoute(ServiceGlobalRouteOptions globalOptions, PluralizationService pluralizationService)
     {
-        var type = GetType();
-
-        var methodInfos = type
-            .GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)))
-            .Concat(type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(methodInfo => methodInfo.CustomAttributes.Any(attr => attr.AttributeType == typeof(RoutePatternAttribute))))
-            .Distinct();
+        var methodInfos = GetMethodsByAutoMapRoute(GetType(), globalOptions);
 
         foreach (var method in methodInfos)
         {
@@ -92,6 +87,25 @@ public abstract class ServiceBase : IService
         }
     }
 
+    protected virtual List<MethodInfo> GetMethodsByAutoMapRoute(Type type, ServiceGlobalRouteOptions globalOptions)
+    {
+        var bindingFlags = BindingFlags.Public | BindingFlags.Instance;
+        var methodInfos = type
+            .GetMethods(BindingFlags.DeclaredOnly | bindingFlags)
+            .Where(methodInfo => methodInfo.CustomAttributes.All(attr => attr.AttributeType != typeof(IgnoreRouteAttribute)))
+            .Concat(type.GetMethods(bindingFlags)
+                .Where(methodInfo => methodInfo.CustomAttributes.Any(attr => attr.AttributeType == typeof(RoutePatternAttribute))))
+            .Distinct();
+        _enableProperty = RouteOptions.EnableProperty ?? globalOptions.EnableProperty ?? false;
+        if (!_enableProperty.Value)
+        {
+            return methodInfos.Where(methodInfo => !methodInfo.IsSpecialName).ToList();
+        }
+
+        return methodInfos.Where(methodInfo
+            => !methodInfo.IsSpecialName || (methodInfo.IsSpecialName && methodInfo.Name.StartsWith("get_"))).ToList();
+    }
+
     protected virtual string GetBaseUri(ServiceRouteOptions globalOptions, PluralizationService pluralizationService)
     {
         if (!string.IsNullOrWhiteSpace(BaseUri))
@@ -112,7 +126,10 @@ public abstract class ServiceBase : IService
     RouteHandlerBuilder MapMethods(ServiceRouteOptions globalOptions, string pattern, string? httpMethod, Delegate handler)
     {
         if (!string.IsNullOrWhiteSpace(httpMethod))
-            return App.MapMethods(pattern, new[] { httpMethod }, handler);
+            return App.MapMethods(pattern, new[]
+            {
+                httpMethod
+            }, handler);
 
         var httpMethods = GetDefaultHttpMethods(globalOptions);
         if (httpMethods.Length > 0)
@@ -173,7 +190,12 @@ public abstract class ServiceBase : IService
 
     protected virtual (string? HttpMethod, string Prefix) ParseMethod(ServiceRouteOptions globalOptions, string methodName)
     {
-        var prefix = ServiceBaseHelper.ParseMethodPrefix(RouteOptions.GetPrefixes ?? globalOptions.GetPrefixes!, methodName);
+        var getPrefixes = RouteOptions.GetPrefixes ?? globalOptions.GetPrefixes!;
+        if (_enableProperty!.Value)
+        {
+            getPrefixes.Insert(0, "get_");
+        }
+        var prefix = ServiceBaseHelper.ParseMethodPrefix(getPrefixes, methodName);
         if (!string.IsNullOrEmpty(prefix))
             return ("GET", prefix);
 

@@ -14,10 +14,9 @@ public static class MasaStackConfigConstant
     public const string DOMAIN_NAME = "DOMAIN_NAME";
     public const string NAMESPACE = "NAMESPACE";
     public const string CONNECTIONSTRING = "CONNECTIONSTRING";
-    public const string MASA_UI = "MASA_UI";
-    public const string MASA_SERVER = "MASA_SERVER";
-    public const string TLS_NAME = "TLS_NAME";
+    public const string MASA_STACK = "MASA_STACK";
     public const string OTLP_URL = "OTLP_URL";
     public const string ADMIN_PWD = "ADMIN_PWD";
     public const string DCC_SECRET = "DCC_SECRET";
+    public const string SUFFIX_IDENTITY = "SUFFIX_IDENTITY";
 }

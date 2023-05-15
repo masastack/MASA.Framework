@@ -28,12 +28,13 @@ public static class BackgroundJobOptionsBuilderExtensions
 
         backgroundJobOptionsBuilder.Services.AddSingleton<BackgroundJobProvider>();
 
-        backgroundJobOptionsBuilder.Services.AddBackgroundJobServer();
         backgroundJobOptionsBuilder.Services.TryAddSingleton<IBackgroundJobManager, DefaultBackgroundJobManager>();
         configure.Invoke(backgroundJobOptionsBuilder.Services);
     }
 
+#pragma warning disable S2094
     private sealed class BackgroundJobProvider
     {
     }
+#pragma warning restore S2094
 }

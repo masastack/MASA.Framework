@@ -11,8 +11,4 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Extensions\Masa.BuildingBlocks.Extensions.BackgroundJobs\Masa.BuildingBlocks.Extensions.BackgroundJobs.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Extensions" />
-  </ItemGroup>
-
 </Project>

@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Options;
 
+#pragma warning disable S3236
 public class IntegrationEventOptions : IIntegrationEventOptions
 {
     public IServiceCollection Services { get; }
@@ -199,6 +200,24 @@ public class IntegrationEventOptions : IIntegrationEventOptions
 
     public Func<DateTime>? GetCurrentTime { get; set; }
 
+    private int _executeInterval = 1;
+
+    /// <summary>
+    /// The interval at which the execution sends integration events.
+    /// Defaults to 1 second.
+    /// Unit: second
+    /// </summary>
+    public int ExecuteInterval
+    {
+        get => _executeInterval;
+        set
+        {
+            MasaArgumentException.ThrowIfLessThan(value, 1, nameof(DeleteBatchCount));
+
+            _executeInterval = value;
+        }
+    }
+
     public List<Type> AllEventTypes { get; }
 
     private IntegrationEventOptions(IServiceCollection services) => Services = services;
@@ -213,3 +232,4 @@ public class IntegrationEventOptions : IIntegrationEventOptions
             .ToList();
     }
 }
+#pragma warning restore S3236

@@ -15,11 +15,11 @@ public class CommandLineBuilder
         Arguments = new();
     }
 
-    public CommandLineBuilder Add(string name, string value, bool isSkip = false)
+    public CommandLineBuilder Add(string name, Func<string> valueFunc, bool isSkip = false)
     {
         if (!isSkip)
         {
-            Arguments.Add($"{Prefix}{name} {value}");
+            Arguments.Add($"{Prefix}{name} {valueFunc.Invoke()}");
         }
 
         return this;

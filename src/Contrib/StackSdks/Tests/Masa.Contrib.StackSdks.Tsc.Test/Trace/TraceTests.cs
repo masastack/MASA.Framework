@@ -24,7 +24,7 @@ public class TraceTests
                     if (uri != null)
                         options.Endpoint = uri;
                 });
-                builder.AddInMemoryExporter(logRecords);
+                builder.AddInMemoryExporter(logRecords);                
                 isConfigureCalled = true;
             });
         });

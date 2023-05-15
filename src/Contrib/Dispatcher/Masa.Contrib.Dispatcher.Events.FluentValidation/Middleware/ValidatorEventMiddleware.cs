@@ -5,6 +5,7 @@
 
 namespace Masa.BuildingBlocks.Dispatcher.Events;
 
+[ExcludeFromCodeCoverage]
 public class ValidatorEventMiddleware<TEvent> : EventMiddleware<TEvent>
     where TEvent : IEvent
 {

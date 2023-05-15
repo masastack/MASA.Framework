@@ -1,0 +1,27 @@
+name: Question
+description: Ask a question about Masa Framework
+labels: []
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        If you have any questions about the use of MASA Framework, you can ask questions through this template. This template will help us gather the information we need to start the classification process.
+  - type: textarea
+    id: background
+    attributes:
+      label: Description
+      description: Please describe your problem.
+      placeholder: Description
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: .NET version
+      description: |
+        Run `dotnet --version`
+  - type: input
+    attributes:
+      label: MASA Framework version
+      description: |
+        MASA Framework nuget package version

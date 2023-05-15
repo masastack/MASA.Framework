@@ -11,7 +11,7 @@ public class UserModel
 
     public string DisplayName { get; set; }
 
-    public string? StaffDislpayName { get; set; }
+    public string? StaffDisplayName { get; set; }
 
     public string Account { get; set; }
 
@@ -58,7 +58,7 @@ public class UserModel
         Guid id,
         string? name,
         string displayName,
-        string staffDislpayName,
+        string staffDisplayName,
         string account,
         GenderTypes gender,
         string avatar,
@@ -73,7 +73,7 @@ public class UserModel
         Id = id;
         Name = name;
         DisplayName = displayName;
-        StaffDislpayName = staffDislpayName;
+        StaffDisplayName = staffDisplayName;
         Account = account;
         Gender = gender;
         Avatar = avatar;

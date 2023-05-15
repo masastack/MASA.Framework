@@ -1,6 +1,8 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.EntityFrameworkCore;
+
 namespace Masa.Contrib.Data.Contracts.Tests;
 
 [TestClass]
@@ -86,19 +88,19 @@ public class DataFilterTest
         dbContext.Set<Student>().Add(student);
         await dbContext.SaveChangesAsync();
 
-        student = dbContext.Set<Student>().Include(s => s.Address).FirstOrDefault(s => s.Id == 1);
-        Assert.IsNotNull(student);
+        var queryStudent = dbContext.Set<Student>().Include(s => s.Address).FirstOrDefault(s => s.Id == 1);
+        Assert.IsNotNull(queryStudent);
 
-        var creationTime = student.CreationTime;
-        var modificationTime = student.ModificationTime;
+        var creationTime = queryStudent.CreationTime;
+        var modificationTime = queryStudent.ModificationTime;
 
-        await Task.Delay(1000);
+        await Task.Delay(100);
 
         dbContext.Set<Student>().Remove(student);
         var row = await dbContext.SaveChangesAsync();
         Assert.IsTrue(row > 0);
 
-        var newStudent = dbContext.Set<Student>().IgnoreQueryFilters().FirstOrDefault(s => s.Id == student.Id);
+        var newStudent = dbContext.Set<Student>().IgnoreQueryFilters().Include(s => s.Address).Include(e=>e.Address.LastLog).FirstOrDefault(s => s.Id == student.Id);
         Assert.IsNotNull(newStudent);
 
         Assert.AreEqual(creationTime, newStudent.CreationTime);

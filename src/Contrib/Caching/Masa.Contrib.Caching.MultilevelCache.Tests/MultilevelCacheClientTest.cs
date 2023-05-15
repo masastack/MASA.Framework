@@ -15,12 +15,14 @@ public class MultilevelCacheClientTest : TestBase
     public void Initialize()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache(RedisConfigurationOptions);
+        services.AddDistributedCache(distributedCacheBuilder
+            => distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions));
         services.AddMemoryCache();
         var serviceProvider = services.BuildServiceProvider();
         _memoryCache = serviceProvider.GetRequiredService<IMemoryCache>();
         _distributedCacheClient = serviceProvider.GetRequiredService<IManualDistributedCacheClient>();
-        _multilevelCacheClient = new MultilevelCacheClient(_memoryCache,
+        _multilevelCacheClient = new MultilevelCacheClient(
+            _memoryCache,
             _distributedCacheClient,
             new MultilevelCacheOptions()
             {
@@ -38,7 +40,8 @@ public class MultilevelCacheClientTest : TestBase
         Assert.AreEqual("success", _multilevelCacheClient.Get<string>("test_multilevel_cache"));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
-        _memoryCache.Remove(CacheKeyHelper.FormatCacheKey<decimal>("test_multilevel_cache_2", CacheKeyType.TypeName));
+        _memoryCache.Remove(
+            new DefaultFormatCacheKeyProvider().FormatCacheKey<decimal>("", "test_multilevel_cache_2", CacheKeyType.TypeName));
         Assert.AreEqual(99.99m, _multilevelCacheClient.Get<decimal>("test_multilevel_cache_2"));
 
         Assert.AreEqual(null, _multilevelCacheClient.Get<string>("test10"));
@@ -57,7 +60,7 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
-    public void TestGetAndSubscribe()
+    public async Task TestGetAndSubscribeAsyncBySync()
     {
         var key = "test200";
         string? value = string.Empty;
@@ -67,9 +70,11 @@ public class MultilevelCacheClientTest : TestBase
         });
         Assert.AreEqual(null, value);
 
+        // ReSharper disable once MethodHasAsyncOverload
         _multilevelCacheClient.Set(key, "test2");
-        Task.Delay(3000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         Assert.AreEqual("test2", value);
+        // ReSharper disable once MethodHasAsyncOverload
         _multilevelCacheClient.Remove<string>(key);
     }
 
@@ -85,7 +90,7 @@ public class MultilevelCacheClientTest : TestBase
 
         CombinedCacheEntryOptions? combinedCacheEntryOptions = null;
         await _multilevelCacheClient.SetAsync(key, "test2", combinedCacheEntryOptions);
-        await Task.Delay(3000);
+        await Task.Delay(1000);
         Assert.AreEqual("test2", value);
         await _multilevelCacheClient.RemoveAsync<string>(key);
     }
@@ -222,20 +227,21 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
-    public void TestGetOrSet3()
+    public async Task TestGetOrSet3AsyncBySync()
     {
         var id = Guid.NewGuid().ToString();
         var result = GetValueByCaching(true);
         Assert.IsNull(result);
 
-        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         result = GetValueByCaching(false);
         Assert.AreEqual(GetValue(false), result);
 
-        Task.Delay(2000).ConfigureAwait(false).GetAwaiter().GetResult();
+        await Task.Delay(1000);
         result = _multilevelCacheClient.Get<int?>(id);
         Assert.AreEqual(GetValue(false), result);
 
+        // ReSharper disable once MethodHasAsyncOverload
         _distributedCacheClient.Remove(id);
 
         int? GetValueByCaching(bool isReturnNull)
@@ -309,11 +315,11 @@ public class MultilevelCacheClientTest : TestBase
         var result = await GetValueByCachingAsync(true);
         Assert.IsNull(result);
 
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         result = await GetValueByCachingAsync(false);
         Assert.AreEqual(GetValue(false), result);
 
-        await Task.Delay(2000);
+        await Task.Delay(1000);
         result = _multilevelCacheClient.Get<int?>(id);
         Assert.AreEqual(GetValue(false), result);
 
@@ -327,11 +333,11 @@ public class MultilevelCacheClientTest : TestBase
                     var value = GetValue(isReturnNull);
                     if (value.HasValue)
                     {
-                        timeSpan = TimeSpan.FromSeconds(5);
-                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(10));
+                        timeSpan = TimeSpan.FromSeconds(60);
+                        return new CacheEntry<int?>(value, TimeSpan.FromSeconds(100));
                     }
-                    timeSpan = TimeSpan.FromSeconds(1);
-                    return new CacheEntry<int?>(null, TimeSpan.FromSeconds(1));
+                    timeSpan = TimeSpan.FromMilliseconds(300);
+                    return new CacheEntry<int?>(null, TimeSpan.FromMilliseconds(500));
                 },
                 options => options.AbsoluteExpirationRelativeToNow = timeSpan);
         }
@@ -652,8 +658,9 @@ public class MultilevelCacheClientTest : TestBase
     private static IManualMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
     {
         var services = new ServiceCollection();
-        services.AddStackExchangeRedisCache("test", RedisConfigurationOptions).AddMultilevelCache(_ =>
+        services.AddMultilevelCache("test", distributedCacheBuilder =>
         {
+            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
         });
         var serviceProvider = services.BuildServiceProvider();
         var cacheClientFactory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();

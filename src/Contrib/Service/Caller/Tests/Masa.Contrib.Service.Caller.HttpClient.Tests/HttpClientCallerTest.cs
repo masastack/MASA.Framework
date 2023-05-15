@@ -17,8 +17,9 @@ public class HttpClientCallerTest
     [DataRow("https://github.com/check/", "healthy?date=1650465417", "https://github.com/check/healthy?date=1650465417")]
     [DataRow("https://github.com/check", "healthy?date=1650465417", "https://github.com/check/healthy?date=1650465417")]
     [DataRow("https://github.com", "https://github.com/check/healthy?date=1650465417", "https://github.com/check/healthy?date=1650465417")]
-    [DataRow("https://github.com", "", "")]
-    [DataRow("http://github.com", "", "")]
+    [DataRow("https://github.com", "", "https://github.com")]
+    [DataRow("http://github.com", "", "http://github.com")]
+    [DataRow("/v1/check", "", "/v1/check")]
     [DataRow("/v1/check", "healthy", "/v1/check/healthy")]
     [DataRow("/v1/check/", "healthy", "/v1/check/healthy")]
     [DataRow("/v1/check/", "/healthy", "/v1/check/healthy")]
@@ -26,12 +27,13 @@ public class HttpClientCallerTest
     [DataRow("/v1/check/", "https://github.com/check/healthy?date=1650465417", "https://github.com/check/healthy?date=1650465417")]
     [DataRow("", "healthy", "healthy")]
     [DataRow("", "/healthy?id=1", "/healthy?id=1")]
+    [DataRow("", "", "")]
     public void TestGetRequestUri(string prefix, string methods, string result)
     {
         var services = new ServiceCollection();
         services.AddCaller(opt => opt.UseHttpClient());
         var serviceProvider = services.BuildServiceProvider();
-        var caller = new CustomHttpClientCaller(new System.Net.Http.HttpClient(), serviceProvider, "", false, prefix);
+        var caller = new CustomHttpClientCaller(new System.Net.Http.HttpClient(), serviceProvider, "", prefix);
         Assert.IsTrue(caller.GetResult(methods) == result);
     }
 }

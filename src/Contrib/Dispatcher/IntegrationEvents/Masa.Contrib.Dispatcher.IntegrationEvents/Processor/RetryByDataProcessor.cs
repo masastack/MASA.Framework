@@ -49,9 +49,9 @@ public class RetryByDataProcessor : ProcessorBase
 
                 _logger?.LogDebug("Publishing integration event {Event} to {TopicName}",
                     eventLog,
-                    eventLog.Event.Topic);
+                    eventLog.Topic);
 
-                await publisher.PublishAsync(eventLog.Event.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event,  eventLog.EventExpand, stoppingToken);
 
                 LocalQueueProcessor.Default.RemoveJobs(eventLog.EventId);
 

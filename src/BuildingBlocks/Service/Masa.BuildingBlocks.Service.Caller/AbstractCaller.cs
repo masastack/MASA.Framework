@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Service.Caller;
 
-public abstract class AbstractCaller : ICaller
+public abstract class AbstractCaller : IManualCaller
 {
     private readonly ITypeConvertor _typeConvertor;
     protected readonly IServiceProvider ServiceProvider;
@@ -26,7 +26,7 @@ public abstract class AbstractCaller : ICaller
 
     private readonly ILogger<AbstractCaller>? _logger;
 
-    protected AbstractCaller(IServiceProvider serviceProvider)
+    private AbstractCaller(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         _logger = serviceProvider.GetService<ILogger<AbstractCaller>>();
@@ -34,24 +34,16 @@ public abstract class AbstractCaller : ICaller
 
     protected AbstractCaller(IServiceProvider serviceProvider,
         string name,
-        bool supportAuthentication,
         Func<IServiceProvider, IRequestMessage>? currentRequestMessageFactory,
         Func<IServiceProvider, IResponseMessage>? currentResponseMessageFactory) : this(serviceProvider)
     {
-        if (supportAuthentication)
-        {
-            var authenticationServiceFactory = serviceProvider.GetService<IAuthenticationServiceFactory>();
-            bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
+        var authenticationServiceFactory = serviceProvider.GetService<IAuthenticationServiceFactory>();
+        bool enableAuthentication = authenticationServiceFactory?.TryCreate(name, out _authenticationService) ?? false;
 
-            _logger?.LogDebug(
-                "----- The current Caller support authentication, caller Name: [{Name}], enable Authentication: [{EnableAuthentication}]",
-                name,
-                enableAuthentication);
-        }
-        else
-        {
-            _logger?.LogDebug("----- The current Caller does not support authentication, caller Name: [{Name}]", name);
-        }
+        _logger?.LogDebug(
+            "----- The current Caller support authentication, caller Name: [{Name}], enable Authentication: [{EnableAuthentication}]",
+            name,
+            enableAuthentication);
 
         _requestMessageFactory = currentRequestMessageFactory;
         _responseMessageFactory = currentResponseMessageFactory;
@@ -460,5 +452,15 @@ public abstract class AbstractCaller : ICaller
             return _authenticationService.ExecuteAsync(masaHttpContext.RequestMessage);
         }
         return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
     }
 }

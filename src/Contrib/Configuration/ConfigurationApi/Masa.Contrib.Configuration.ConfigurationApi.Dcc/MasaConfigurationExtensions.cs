@@ -10,19 +10,19 @@ public static class MasaConfigurationExtensions
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptionsBuilder>? callerOptions = null,
+        Action<CallerBuilder>? callerBuilder = null,
         string sectionName = "DccOptions")
     {
         var configurationSection = builder.Configuration.GetSection(sectionName);
         var dccOptions = configurationSection.Get<DccOptions>();
-        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerOptions);
+        return builder.UseDcc(dccOptions, jsonSerializerOptions, callerBuilder);
     }
 
     public static IMasaConfigurationBuilder UseDcc(
         this IMasaConfigurationBuilder builder,
         DccOptions dccOptions,
         Action<JsonSerializerOptions>? jsonSerializerOptions = null,
-        Action<CallerOptionsBuilder>? action = null)
+        Action<CallerBuilder>? action = null)
     {
         var services = builder.Services;
         if (services.Any(service => service.ImplementationType == typeof(DccConfigurationProvider)))
@@ -43,8 +43,18 @@ public static class MasaConfigurationExtensions
 
         var globalJsonSerializerOptions = MasaApp.GetJsonSerializerOptions();
         var jsonSerializerOption = globalJsonSerializerOptions != null ?
-            new JsonSerializerOptions(globalJsonSerializerOptions) { PropertyNameCaseInsensitive = true } :
-            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+            new JsonSerializerOptions(globalJsonSerializerOptions)
+            {
+                PropertyNameCaseInsensitive = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true
+            } :
+            new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true
+            };
 
         jsonSerializerOptions?.Invoke(jsonSerializerOption);
         string callerName = DEFAULT_CLIENT_NAME;
@@ -69,7 +79,8 @@ public static class MasaConfigurationExtensions
         TryAddConfigurationApiManage(services,
             callerName,
             dccConfigurationOptions.DefaultSection,
-            dccConfigurationOptions.ExpandSections);
+            dccConfigurationOptions.ExpandSections,
+            jsonSerializerOption);
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -86,12 +97,6 @@ public static class MasaConfigurationExtensions
         List<DccSectionOptions> expansionSectionOptions,
         JsonSerializerOptions jsonSerializerOption)
     {
-        services.AddYaml(DEFAULT_CLIENT_NAME, options =>
-        {
-            options.Serializer = new SerializerBuilder().JsonCompatible().Build();
-            options.Deserializer = new DeserializerBuilder().Build();
-        });
-
         services.TryAddSingleton(serviceProvider =>
         {
             return DccFactory.CreateClient(
@@ -107,12 +112,13 @@ public static class MasaConfigurationExtensions
     public static IServiceCollection TryAddConfigurationApiManage(IServiceCollection services,
         string callerName,
         DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions> expansionSectionOptions)
+        List<DccSectionOptions> expansionSectionOptions,
+        JsonSerializerOptions jsonSerializerOptions)
     {
         services.TryAddSingleton(serviceProvider =>
         {
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-            return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, expansionSectionOptions);
+            return DccFactory.CreateManage(callerFactory.Create(callerName), defaultSectionOption, jsonSerializerOptions, expansionSectionOptions);
         });
         return services;
     }

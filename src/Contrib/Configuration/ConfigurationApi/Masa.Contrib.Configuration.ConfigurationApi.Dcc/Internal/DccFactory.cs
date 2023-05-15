@@ -22,6 +22,7 @@ internal static class DccFactory
     public static IConfigurationApiManage CreateManage(
         ICaller caller,
         DccSectionOptions defaultSectionOption,
+        JsonSerializerOptions jsonSerializerOptions,
         List<DccSectionOptions>? expandSectionOptions)
-        => new ConfigurationApiManage(caller, defaultSectionOption, expandSectionOptions);
+        => new ConfigurationApiManage(caller, defaultSectionOption, jsonSerializerOptions, expandSectionOptions);
 }

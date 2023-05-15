@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
+
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
@@ -30,8 +31,8 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             return services;
 
-        name ??= Microsoft.Extensions.Options.Options.DefaultName;
-        var configurationSection = configuration.GetSection(sectionName);
+        name ??= Options.Options.DefaultName;
+        var configurationSection = configuration.GetSection(string.IsNullOrWhiteSpace(sectionName) ? "" : sectionName);
         if (!configurationSection.Exists())
             return services;
 
@@ -48,6 +49,7 @@ public static class ServiceCollectionExtensions
             serviceProvider.GetService<IConfiguration>();
         if (configuration == null)
             throw new NotSupportedException(); //Need to make sure IConfiguration has been injected in DI
+
         return configuration.GetSection(sectionName);
     }
 }

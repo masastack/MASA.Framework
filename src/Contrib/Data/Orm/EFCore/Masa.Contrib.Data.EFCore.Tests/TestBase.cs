@@ -5,40 +5,52 @@ namespace Masa.Contrib.Data.EFCore.Tests;
 
 public class TestBase
 {
-    protected IServiceCollection Services;
+    protected static string MemoryConnectionString => $"test-{Guid.NewGuid()}";
 
-    public TestBase()
+    protected readonly IServiceCollection Services;
+
+    protected TestBase()
     {
         Services = new ServiceCollection();
+        Services.InitializeCacheData();
     }
 
-    protected CustomDbContext CreateDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider)
+    protected DefaultMasaDbContext CreateDbContext<TDbContext>(
+        Action<MasaDbContextBuilder>? optionsBuilder,
+        Action<IServiceProvider>? configure = null)
+        where TDbContext : DefaultMasaDbContext, ICustomDbContext
     {
-        Services.AddMasaDbContext<CustomDbContext>(options =>
-        {
-            if (enableSoftDelete)
-                options.UseFilter();
+        Services.AddMasaDbContext<TDbContext>(optionsBuilder);
 
-            options.UseSqlite($"data source=test-{Guid.NewGuid()}");
-        });
-        serviceProvider = Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomDbContext>();
+        var serviceScope = Services.BuildServiceProvider().CreateScope();
+        var serviceProvider = serviceScope.ServiceProvider;
+        var dbContext = serviceProvider.GetService<TDbContext>();
+
+        VerifyDbContext(dbContext);
         dbContext.Database.EnsureCreated();
+        configure?.Invoke(serviceProvider);
         return dbContext;
     }
 
-    protected CustomQueryDbContext CreateQueryDbContext(bool enableSoftDelete, out IServiceProvider serviceProvider)
+    protected async Task<DefaultMasaDbContext> CreateDbContextAsync<TDbContext>(
+        Action<MasaDbContextBuilder>? optionsBuilder,
+        Action<IServiceProvider>? configure = null)
+        where TDbContext : DefaultMasaDbContext, ICustomDbContext
     {
-        Services.AddMasaDbContext<CustomQueryDbContext>(options =>
-        {
-            if (enableSoftDelete)
-                options.UseFilter();
+        Services.AddMasaDbContext<TDbContext>(optionsBuilder);
+        var serviceScope = Services.BuildServiceProvider().CreateAsyncScope();
+        var serviceProvider = serviceScope.ServiceProvider;
+        var dbContext = serviceProvider.GetService<TDbContext>();
 
-            options.UseSqlite($"data source=test2-{Guid.NewGuid()}");
-        });
-        serviceProvider = Services.BuildServiceProvider();
-        var dbContext = serviceProvider.GetRequiredService<CustomQueryDbContext>();
-        dbContext.Database.EnsureCreated();
+        VerifyDbContext(dbContext);
+        await dbContext.Database.EnsureCreatedAsync();
+        configure?.Invoke(serviceProvider);
         return dbContext;
+    }
+
+    private static void VerifyDbContext<TDbContext>([NotNull] TDbContext? dbContext) where TDbContext : ICustomDbContext
+    {
+        Assert.IsNotNull(dbContext);
+        Assert.AreEqual(dbContext.GetType().Name, dbContext.Name);
     }
 }

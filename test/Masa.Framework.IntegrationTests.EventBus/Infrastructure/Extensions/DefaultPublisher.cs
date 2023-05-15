@@ -5,7 +5,7 @@ namespace Masa.Framework.IntegrationTests.EventBus.Infrastructure.Extensions;
 
 public class DefaultPublisher : IPublisher
 {
-    public Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent
+    public Task PublishAsync<T>(string topicName, T @event, IntegrationEventExpand? eventMessageExpand, CancellationToken stoppingToken = default)
     {
         return Task.CompletedTask;
     }

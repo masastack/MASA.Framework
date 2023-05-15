@@ -32,8 +32,8 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _dynamicJsonSerializerOptions = new JsonSerializerOptions(_jsonSerializerOptions);
         _dynamicJsonSerializerOptions.EnableDynamicTypes();
         _logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
-        _yamlSerializer = serviceProvider.GetRequiredService<ISerializerFactory>().Create(DEFAULT_CLIENT_NAME);
-        _yamlDeserializer = serviceProvider.GetRequiredService<IDeserializerFactory>().Create(DEFAULT_CLIENT_NAME);
+        _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
+        _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
         _dccOptions = dccOptions;
     }
 
@@ -143,10 +143,10 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
 
         switch (result.ConfigFormat)
         {
-            case ConfigFormats.Json:
+            case ConfigFormats.JSON:
                 return (result.Content!, ConfigurationTypes.Json);
 
-            case ConfigFormats.Raw:
+            case ConfigFormats.RAW:
                 return (result.Content!, ConfigurationTypes.Text);
 
             case ConfigFormats.Properties:
@@ -162,7 +162,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                     throw new ArgumentException("configObject invalid");
                 }
 
-            case ConfigFormats.Xml:
+            case ConfigFormats.XML:
                 try
                 {
                     var json = XmlConfigurationParser.XmlToJson(result.Content!);
@@ -175,7 +175,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
                     throw new ArgumentException("configObject invalid");
                 }
 
-            case ConfigFormats.Yaml:
+            case ConfigFormats.YAML:
                 try
                 {
                     var yamlObject = _yamlDeserializer.Deserialize<object>(result.Content!);

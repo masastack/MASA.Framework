@@ -1,0 +1,24 @@
+name: Discussion
+description: Start a discussion for MASA Framework
+labels: []
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        We welcome your ideas, through discussions with more people to determine the solution, and finally form a proposal. This template will help us gather the information we need to start the classification process.
+  - type: textarea
+    id: background
+    attributes:
+      label: Description
+      description: Please share your thoughts and usage scenarios, etc.
+      placeholder: Description
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: .NET version
+      description: |
+        Run `dotnet --version`
+    validations:
+      required: false

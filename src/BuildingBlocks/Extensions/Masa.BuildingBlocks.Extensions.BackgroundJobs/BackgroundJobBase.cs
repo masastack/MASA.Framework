@@ -9,7 +9,11 @@ public abstract class BackgroundJobBase<TArgs> : IBackgroundJob<TArgs>
 
     protected readonly ILogger<BackgroundJobBase<TArgs>>? Logger;
 
-    protected BackgroundJobBase(ILogger<BackgroundJobBase<TArgs>>? logger)
+    protected BackgroundJobBase()
+    {
+    }
+
+    protected BackgroundJobBase(ILogger<BackgroundJobBase<TArgs>>? logger) : this()
     {
         Logger = logger;
     }

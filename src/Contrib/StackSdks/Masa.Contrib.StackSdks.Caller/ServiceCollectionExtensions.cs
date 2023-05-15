@@ -8,17 +8,23 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddStackCaller(
         this IServiceCollection services,
         Assembly assembly,
-        Func<IServiceProvider, TokenProvider> tokenProvider,
         Action<JwtTokenValidatorOptions> jwtTokenValidatorOptions,
         Action<ClientRefreshTokenOptions>? clientRefreshTokenOptions = null)
     {
         MasaArgumentException.ThrowIfNull(jwtTokenValidatorOptions);
 
+        services.AddHttpClient(Constant.HTTP_NAME).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+        {
+            ServerCertificateCustomValidationCallback = delegate { return true; }
+        });
+
         services.Configure(jwtTokenValidatorOptions);
         services.Configure(clientRefreshTokenOptions);
-        services.AddScoped((serviceProvider) => { return tokenProvider.Invoke(serviceProvider); });
+        services.TryAddScoped<ITokenGenerater, DefaultTokenGenerater>();
+        services.TryAddScoped(s => s.GetRequiredService<ITokenGenerater>().Generater());
         services.AddSingleton<JwtTokenValidator>();
         services.AddAutoRegistrationCaller(assembly);
+
         return services;
     }
 }

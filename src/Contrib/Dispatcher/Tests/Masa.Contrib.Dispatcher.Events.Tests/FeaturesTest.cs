@@ -64,7 +64,7 @@ public class FeaturesTest : TestBase
     public async Task TestNullEvent()
     {
         AddShoppingCartEvent? @event = null;
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event!));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _eventBus.PublishAsync(@event!));
     }
 
     [DataTestMethod]

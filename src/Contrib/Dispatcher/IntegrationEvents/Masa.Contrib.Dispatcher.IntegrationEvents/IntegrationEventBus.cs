@@ -5,26 +5,39 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public class IntegrationEventBus : IIntegrationEventBus
 {
-    private readonly IPublisher _publisher;
+    private readonly Lazy<IEventBus?> _lazyEventBus;
+
+    private IEventBus? EventBus => _lazyEventBus.Value;
+
+    private readonly Lazy<IPublisher> _lazyPublisher;
+    private IPublisher Publisher => _lazyPublisher.Value;
+
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
     private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
-    private readonly IEventBus? _eventBus;
     private readonly IUnitOfWork? _unitOfWork;
+    private readonly IsolationOptions? _isolationOptions;
+    private readonly IMultiTenantContext? _multiTenantContext;
+    private readonly IMultiEnvironmentContext? _multiEnvironmentContext;
 
-    public IntegrationEventBus(IPublisher publisher,
+    public IntegrationEventBus(
+        IServiceProvider serviceProvider,
+        Lazy<IEventBus?> eventBusLazy,
+        Lazy<IPublisher> lazyPublisher,
         IIntegrationEventLogService? eventLogService = null,
         IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
-        IEventBus? eventBus = null,
         IUnitOfWork? unitOfWork = null)
     {
-        _publisher = publisher;
+        _lazyEventBus = eventBusLazy;
+        _lazyPublisher = lazyPublisher;
         _eventLogService = eventLogService;
         _masaAppConfigureOptions = masaAppConfigureOptions;
         _logger = logger;
-        _eventBus = eventBus;
         _unitOfWork = unitOfWork;
+        _isolationOptions = serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value;
+        _multiTenantContext = serviceProvider.GetService<IMultiTenantContext>();
+        _multiEnvironmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
     }
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
@@ -34,9 +47,9 @@ public class IntegrationEventBus : IIntegrationEventBus
         {
             await PublishIntegrationAsync(integrationEvent, cancellationToken);
         }
-        else if (_eventBus != null)
+        else if (EventBus != null)
         {
-            await _eventBus.PublishAsync(@event, cancellationToken);
+            await EventBus.PublishAsync(@event, cancellationToken);
         }
         else
         {
@@ -44,17 +57,21 @@ public class IntegrationEventBus : IIntegrationEventBus
         }
     }
 
-    private async Task PublishIntegrationAsync<TEvent>(TEvent @event, CancellationToken cancellationToken)
+    private async Task PublishIntegrationAsync<TEvent>(
+        TEvent @event,
+        CancellationToken cancellationToken)
         where TEvent : IIntegrationEvent
     {
         if (@event.UnitOfWork == null && _unitOfWork != null)
             @event.UnitOfWork = _unitOfWork;
 
+        var integrationEventMessageExpand = TryAddIntegrationEventMessageExpand();
+
         var topicName = @event.Topic;
         if (@event.UnitOfWork is { UseTransaction: true } && _eventLogService != null)
         {
             _logger?.LogDebug("----- Saving changes and integrationEvent: {IntegrationEventId}", @event.GetEventId());
-            await _eventLogService.SaveEventAsync(@event, @event.UnitOfWork.Transaction, cancellationToken);
+            await _eventLogService.SaveEventAsync(@event, integrationEventMessageExpand, @event.UnitOfWork.Transaction, cancellationToken);
 
 #pragma warning disable S1135
             //todo: Status changes will be notified by local messaging services after subsequent upgrades
@@ -68,8 +85,30 @@ public class IntegrationEventBus : IIntegrationEventBus
                 @event.GetEventId(),
                 _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
 
-            await _publisher.PublishAsync(topicName, (dynamic)@event, cancellationToken);
+            await Publisher.PublishAsync(topicName, (dynamic)@event, integrationEventMessageExpand, cancellationToken);
         }
+    }
+
+    internal IntegrationEventExpand? TryAddIntegrationEventMessageExpand()
+    {
+        if (!(_isolationOptions?.Enable ?? false))
+            return null;
+
+        var messageExpand = new IntegrationEventExpand()
+        {
+            Isolation = new()
+        };
+        if (_isolationOptions.EnableMultiTenant && !(_multiTenantContext!.CurrentTenant?.Id ?? null).IsNullOrWhiteSpace())
+        {
+            messageExpand.Isolation.Add(_isolationOptions.MultiTenantIdName, _multiTenantContext.CurrentTenant!.Id!);
+        }
+
+        if (_isolationOptions.EnableMultiEnvironment && !_multiEnvironmentContext!.CurrentEnvironment.IsNullOrWhiteSpace())
+        {
+            messageExpand.Isolation.Add(_isolationOptions.MultiEnvironmentName, _multiEnvironmentContext.CurrentEnvironment);
+        }
+
+        return messageExpand;
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)

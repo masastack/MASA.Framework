@@ -38,17 +38,18 @@ public static class ServiceCollectionExtensions
                 configs[MasaStackConfigConstant.ENVIRONMENT],
                 configs[MasaStackConfigConstant.CLUSTER],
                 DEFAULT_PUBLIC_ID,
-                new Dictionary<string, string>
+                new Dictionary<string, object>
                 {
-                    { DEFAULT_CONFIG_NAME, JsonSerializer.Serialize(configs) }
+                    { DEFAULT_CONFIG_NAME, configs }
                 });
         }
     }
 
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false)
+    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, bool init = false, DccOptions? dccOptions = null)
     {
         var configs = GetConfigMap(services);
-        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(configs);
+
+        dccOptions ??= MasaStackConfigUtils.GetDefaultDccOptions(configs);
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
         if (init)
@@ -62,23 +63,10 @@ public static class ServiceCollectionExtensions
             return new MasaStackConfig(configurationApiClient, configs);
         });
 
-        return services;
-    }
-
-    public static async Task<IServiceCollection> AddMasaStackConfigAsync(this IServiceCollection services, DccOptions dccOptions, bool init = false)
-    {
-        services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
-        var configs = GetConfigMap(services);
-
-        if (init)
+        services.TryAddScoped<IMultiEnvironmentMasaStackConfig>(serviceProvider =>
         {
-            await InitializeMasaStackConfiguration(services, configs).ConfigureAwait(false);
-        }
-
-        services.TryAddScoped<IMasaStackConfig>(serviceProvider =>
-        {
-            var client = serviceProvider.GetRequiredService<IConfigurationApiClient>();
-            return new MasaStackConfig(client, configs);
+            var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+            return new MultiEnvironmentMasaStackConfig(configurationApiClient, configs);
         });
 
         return services;
@@ -89,10 +77,18 @@ public static class ServiceCollectionExtensions
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
     }
 
+    public static IMultiEnvironmentMasaStackConfig GetMultiEnvironmentMasaStackConfig(this IServiceCollection services)
+    {
+        return services.BuildServiceProvider().GetRequiredService<IMultiEnvironmentMasaStackConfig>();
+    }
+
     private static Dictionary<string, string> GetConfigMap(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+
+        string environment = configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT);
+        environment = string.IsNullOrWhiteSpace(environment) ? configuration["ASPNETCORE_ENVIRONMENT"] : environment;
 
         var configs = new Dictionary<string, string>()
         {
@@ -100,17 +96,16 @@ public static class ServiceCollectionExtensions
             { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
             { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME) },
             { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE) },
-            { MasaStackConfigConstant.TLS_NAME, configuration.GetValue<string>(MasaStackConfigConstant.TLS_NAME) },
             { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER) },
             { MasaStackConfigConstant.OTLP_URL, configuration.GetValue<string>(MasaStackConfigConstant.OTLP_URL) },
             { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS) },
             { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING) },
-            { MasaStackConfigConstant.MASA_SERVER, configuration.GetValue<string>(MasaStackConfigConstant.MASA_SERVER) },
-            { MasaStackConfigConstant.MASA_UI, configuration.GetValue<string>(MasaStackConfigConstant.MASA_UI) },
+            { MasaStackConfigConstant.MASA_STACK, configuration.GetValue<string>(MasaStackConfigConstant.MASA_STACK) },
             { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC) },
-            { MasaStackConfigConstant.ENVIRONMENT, configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT) },
+            { MasaStackConfigConstant.ENVIRONMENT, environment },
             { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD) },
-            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) }
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET) },
+            { MasaStackConfigConstant.SUFFIX_IDENTITY, configuration.GetValue<string>(MasaStackConfigConstant.SUFFIX_IDENTITY) }
         };
 
         return configs;

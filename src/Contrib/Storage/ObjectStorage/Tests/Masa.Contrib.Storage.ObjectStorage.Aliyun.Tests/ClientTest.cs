@@ -6,30 +6,18 @@ namespace Masa.Contrib.Storage.ObjectStorage.Aliyun.Tests;
 [TestClass]
 public class ClientTest : TestBase
 {
-    private CustomClient _client;
+    private CustomStorageClientClient _client;
 
     [TestInitialize]
     public void Initialize()
     {
-        Mock<ICredentialProvider> credentialProvider = new Mock<ICredentialProvider>();
-        Mock<IAliyunStorageOptionProvider> optionProvider = MockOptionProvider(true);
-        _client = new CustomClient(credentialProvider.Object, optionProvider.Object, NullLogger<DefaultStorageClient>.Instance);
+        _client = new CustomStorageClientClient(ALiYunStorageOptions, new MemoryCache(new MemoryDistributedCacheOptions()));
     }
 
     [TestMethod]
-    public void TestGetTokenAndNullLoggerReturnFalse()
+    public void TestGetToken()
     {
-        Mock<ICredentialProvider> credentialProvider = new();
-        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(false).Object, null);
-        Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
-    }
-
-    [TestMethod]
-    public void TestGetTokenAndNotNullLoggerReturnFalse()
-    {
-        Mock<ICredentialProvider> credentialProvider = new();
-        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider().Object, NullLogger<DefaultStorageClient>.Instance);
-        Assert.ThrowsException<NotSupportedException>(() => client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
+        Assert.ThrowsException<NotSupportedException>(() => _client.GetToken(), "GetToken is not supported, please use GetSecurityToken");
     }
 
     [TestMethod]
@@ -42,7 +30,17 @@ public class ClientTest : TestBase
             "sessionToken",
             DateTime.UtcNow.AddHours(-1));
         credentialProvider.Setup(provider => provider.GetSecurityToken()).Returns(temporaryCredentials);
-        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(false).Object, NullLogger<DefaultStorageClient>.Instance);
+
+        var aliyunStorageOptions = new AliyunStorageOptions()
+        {
+            Sts=new AliyunStsOptions("regionId"),
+            RoleArn = "roleArn",
+            RoleSessionName = "roleSessionName"
+        };
+        var client = new DefaultStorageClient(
+            aliyunStorageOptions,
+            new MemoryCache(new MemoryDistributedCacheOptions()),
+            credentialProvider.Object);
         var responseBase = client.GetSecurityToken();
         Assert.IsTrue(responseBase == temporaryCredentials);
     }
@@ -51,8 +49,8 @@ public class ClientTest : TestBase
     public void TestEmptyRoleArnGetSecurityTokenReturnThrowArgumentException()
     {
         Mock<ICredentialProvider> credentialProvider = new();
-        _aLiYunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
-        var client = new DefaultStorageClient(credentialProvider.Object, MockOptionProvider(true).Object, NullLogger<DefaultStorageClient>.Instance);
+        var aliyunStorageOptions = new AliyunStorageOptions("AccessKeyId", "AccessKeySecret", HANG_ZHOUE_PUBLIC_ENDPOINT);
+        var client = new DefaultStorageClient(aliyunStorageOptions,new MemoryCache(new MemoryDistributedCacheOptions()),credentialProvider.Object);
         Assert.ThrowsException<ArgumentException>(() => client.GetSecurityToken());
     }
 
@@ -95,7 +93,7 @@ public class ClientTest : TestBase
     [TestMethod]
     public async Task TestPutObjectAsyncReturnResumableUploadObjectVerifytOnce()
     {
-        _aLiYunStorageOptions.BigObjectContentLength = 2;
+        ALiYunStorageOptions.BigObjectContentLength = 2;
         string str = "JIm";
         await _client.PutObjectAsync("bucketName", "objectName", new MemoryStream(Encoding.Default.GetBytes(str)));
         _client.Oss!.Verify(oss => oss.ResumableUploadObject(It.IsAny<UploadObjectRequest>()), Times.Once);

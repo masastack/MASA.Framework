@@ -7,5 +7,7 @@ public interface IBucketNameProvider
 {
     string GetBucketName();
 
+    string GetBucketName(string aliasName);
+
     string GetBucketName<TContainer>() where TContainer : class;
 }

@@ -13,5 +13,18 @@ public class GoodsService : CustomServiceBase
 
     public GoodsService(IServiceCollection services, string baseUri) : base(services, baseUri)
     {
+        RouteOptions.DisableAutoMapRoute = true;
+        App.MapGet("add", AddAsync);
+        App.MapGet("update", UpdateAsync);
+    }
+
+    private Task<IResult> AddAsync()
+    {
+        return Task.FromResult(Results.Accepted());
+    }
+
+    private Task<IResult> UpdateAsync()
+    {
+        return Task.FromResult(Results.Accepted());
     }
 }

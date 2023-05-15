@@ -11,8 +11,6 @@ public interface IMasaStackConfig
 
     public bool IsDemo { get; }
 
-    public string TlsName { get; }
-
     public string Version { get; }
 
     public string Environment { get; }
@@ -29,11 +27,11 @@ public interface IMasaStackConfig
 
     public string DccSecret { get; }
 
-    public bool SingleSsoClient { get; }
+    public string SuffixIdentity { get; }
+
+    List<string> GetProjectList();
 
     string GetValue(string key);
 
     Dictionary<string, string> GetValues();
-
-    List<string> GetProjectList();
 }

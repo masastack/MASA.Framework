@@ -18,7 +18,7 @@ Install-Package Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis
 builder.Services.AddSnowflake(option => option.UseRedis());
 ```
 
-> 由于依赖Redis，需使用[Masa.Utils.Caching.Redis](https://github.com/masastack/MASA.Utils/tree/main/src/Caching/Masa.Utils.Caching.Redis)
+> 默认使用redis服务器地址: localhost:6379
 
 2. 获取id
 

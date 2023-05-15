@@ -7,14 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 internal static class ServiceCollectionExtensions
 {
-    public static IServiceCollection UseUoW<TDbContext, TUserId>(
+    public static IServiceCollection UseUoW<TDbContext>(
         this IServiceCollection services,
         string paramName,
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
-        where TUserId : IComparable
+        where TDbContext : DefaultMasaDbContext, IMasaDbContext
     {
         MasaArgumentException.ThrowIfNull(services, paramName);
 
@@ -24,7 +23,6 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<UoWProvider>();
         services.TryAddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
         services.TryAddSingleton<IUnitOfWorkManager, UnitOfWorkManager<TDbContext>>();
-        services.TryAddScoped<IConnectionStringProvider, Masa.Contrib.Data.UoW.EFCore.DefaultConnectionStringProvider>();
 
         services.AddScoped<IUnitOfWork>(serviceProvider => new UnitOfWork<TDbContext>(serviceProvider)
         {
@@ -32,7 +30,7 @@ internal static class ServiceCollectionExtensions
             UseTransaction = useTransaction
         });
         if (services.All(service => service.ServiceType != typeof(MasaDbContextOptions<TDbContext>)))
-            services.AddMasaDbContext<TDbContext, TUserId>(optionsBuilder);
+            services.AddMasaDbContext<TDbContext>(optionsBuilder);
 
         services.AddScoped<ITransaction, Transaction>();
         MasaApp.TrySetServiceCollection(services);

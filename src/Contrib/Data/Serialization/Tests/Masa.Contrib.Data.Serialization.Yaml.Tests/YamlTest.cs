@@ -35,7 +35,7 @@ public class YamlTest
     public void TestAddYamlReturnNotNull()
     {
         var services = new ServiceCollection();
-        services.AddYaml();
+        services.AddSerialization(builder => builder.UseYaml());
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsNotNull(serviceProvider.GetService<ISerializer>());
         Assert.IsNotNull(serviceProvider.GetService<IDeserializer>());
@@ -54,7 +54,7 @@ public class YamlTest
     {
         var services = new ServiceCollection();
         MasaApp.SetServiceCollection(services);
-        services.AddYaml();
+        services.AddSerialization(builder => builder.UseYaml());
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());
         Assert.IsNotNull(MasaApp.GetService<IDeserializer>());
@@ -73,11 +73,11 @@ public class YamlTest
     {
         var services = new ServiceCollection();
         MasaApp.SetServiceCollection(services);
-        services.AddYaml(options =>
+        services.AddSerialization(builder => builder.UseYaml(options =>
         {
             options.Serializer = new SerializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
             options.Deserializer = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).Build();
-        });
+        }));
         MasaApp.Build();
         Assert.IsNotNull(MasaApp.GetService<ISerializer>());
         Assert.IsNotNull(MasaApp.GetService<IDeserializer>());
@@ -95,7 +95,8 @@ public class YamlTest
     public void TestAddMultiYamlReturnCountIs1()
     {
         var services = new ServiceCollection();
-        services.AddYaml().AddYaml();
+        services.AddSerialization(builder => builder.UseYaml());
+        services.AddSerialization(builder => builder.UseYaml());
         var serviceProvider = services.BuildServiceProvider();
         Assert.IsTrue(serviceProvider.GetServices<IYamlSerializer>().Count() == 1);
         Assert.IsTrue(serviceProvider.GetServices<IYamlDeserializer>().Count() == 1);

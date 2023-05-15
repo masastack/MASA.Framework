@@ -31,12 +31,5 @@ public class AuthClientTest
         var services = new ServiceCollection();
         Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(authServiceBaseAddress: null!, new()));
     }
-
-    [TestMethod]
-    public void TestAddAuthClientShouldThrowArgumentNullException2()
-    {
-        var services = new ServiceCollection();
-        Assert.ThrowsException<MasaArgumentException>(() => services.AddAuthClient(callerOptionsBuilder: null!, new()));
-    }
 }
 

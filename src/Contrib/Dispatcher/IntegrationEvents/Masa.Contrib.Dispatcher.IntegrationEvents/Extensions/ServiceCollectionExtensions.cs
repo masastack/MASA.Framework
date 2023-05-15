@@ -7,11 +7,13 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         Action<IntegrationEventOptions>? options = null)
         => services.AddIntegrationEventBus(MasaApp.GetAssemblies(), options);
 
+    [ExcludeFromCodeCoverage]
     public static IServiceCollection AddIntegrationEventBus(
         this IServiceCollection services,
         IEnumerable<Assembly> assemblies,
@@ -60,7 +62,15 @@ public static class ServiceCollectionExtensions
             serviceProvider => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
 
         LocalQueueProcessor.SetLogger(services);
-        services.AddScoped<IIntegrationEventBus, IntegrationEventBus>();
+        services.AddScoped<IIntegrationEventBus>(serviceProvider => new IntegrationEventBus(
+            serviceProvider,
+            new Lazy<IEventBus?>(serviceProvider.GetService<IEventBus>),
+            new Lazy<IPublisher>(serviceProvider.GetRequiredService<IPublisher>()),
+            serviceProvider.GetService<IIntegrationEventLogService>(),
+            serviceProvider.GetService<IOptionsMonitor<MasaAppConfigureOptions>>(),
+            serviceProvider.GetService<ILogger<IntegrationEventBus>>(),
+            serviceProvider.GetService<IUnitOfWork>()
+        ));
         action?.Invoke();
 
         if (services.Any(d => d.ServiceType == typeof(IIntegrationEventLogService)))
@@ -76,6 +86,7 @@ public static class ServiceCollectionExtensions
             var logger = services.BuildServiceProvider().GetService<ILogger<IntegrationEventBus>>();
             logger?.LogWarning("The local message table is not used correctly, it will cause integration events not to be sent normally");
         }
+
         services.TryAddSingleton<IProcessingServer, DefaultHostedService>();
 
         services.AddHostedService<IntegrationEventHostedService>();
@@ -89,8 +100,28 @@ public static class ServiceCollectionExtensions
         if (services.All(d => d.ServiceType != typeof(IPublisher)))
             throw new NotSupportedException($"{nameof(IPublisher)} has no implementing");
 
+        services.AddLocalMessageDbConnectionStringProvider();
+
         MasaApp.TrySetServiceCollection(services);
         return services;
+    }
+
+    private static void AddLocalMessageDbConnectionStringProvider(this IServiceCollection services)
+    {
+        services.TryAddScoped<ILocalMessageDbConnectionStringProviderWrapper, DefaultLocalMessageDbConnectionStringProvider>();
+        services.TryAddScoped<IIsolationLocalMessageDbConnectionStringProviderWrapper>(serviceProvider
+            => new DefaultIsolationLocalMessageDbConnectionStringProvider(
+                serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>(),
+                serviceProvider.GetRequiredService<IIsolationConfigProvider>(),
+                serviceProvider.GetRequiredService<IOptionsSnapshot<LocalMessageTableOptions>>()));
+        services.TryAddScoped<ILocalMessageDbConnectionStringProvider>(serviceProvider =>
+        {
+            var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+            if (isolationOptions.Value.Enable)
+                return serviceProvider.GetRequiredService<IIsolationLocalMessageDbConnectionStringProviderWrapper>();
+
+            return serviceProvider.GetRequiredService<ILocalMessageDbConnectionStringProviderWrapper>();
+        });
     }
 
     private sealed class IntegrationEventBusProvider

@@ -9,4 +9,5 @@ public enum ThirdPartyIdpTypes
     WeChat = 2,
     GitHub = 3,
     Ldap = 4,
+    Apple = 5
 }

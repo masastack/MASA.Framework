@@ -21,22 +21,15 @@ public class SendByDataProcessorTest
     public async Task TestPublishEventByPublishIsFailedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<IDbConnectionStringProvider> dbConnectionStringProvider = new();
-        dbConnectionStringProvider
-            .Setup(p => p.DbContextOptionsList)
-            .Returns(() => new List<MasaDbContextConfigurationOptions>()
-            {
-                new("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity")
-            });
-
         var eventLogs = new List<IntegrationEventLog>()
         {
             new(new RegisterUserEvent(), Guid.NewGuid())
         };
         foreach (var log in eventLogs)
         {
-            log.DeserializeJsonContent(typeof(RegisterUserEvent));
+            log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);
@@ -49,7 +42,7 @@ public class SendByDataProcessorTest
 
         Mock<IPublisher> publisher = new();
         publisher
-            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, default))
+            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, null, default))
             .Returns(() => throw new NotSupportedException());
         _services.AddSingleton(_ => publisher.Object);
         _services.AddScoped(_ => logService.Object);
@@ -60,29 +53,24 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Never);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Once);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), default), Times.Once);
+        publisher.Verify(
+            p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IntegrationEventExpand?>(), default),
+            Times.Once);
     }
 
     [TestMethod]
     public async Task TestPublishEventByPublishIsSuccessedAsync()
     {
         Mock<IIntegrationEventLogService> logService = new();
-        Mock<IDbConnectionStringProvider> dbConnectionStringProvider = new();
-        dbConnectionStringProvider
-            .Setup(p => p.DbContextOptionsList)
-            .Returns(() => new List<MasaDbContextConfigurationOptions>()
-            {
-                new("server=localhost;uid=sa;pwd=P@ssw0rd;database=identity")
-            });
-
         var eventLogs = new List<IntegrationEventLog>()
         {
             new(new RegisterUserEvent(), Guid.NewGuid())
         };
         foreach (var log in eventLogs)
         {
-            log.DeserializeJsonContent(typeof(RegisterUserEvent));
+            log.DeserializeJsonContent();
         }
+
         logService
             .Setup(l => l.RetrieveEventLogsPendingToPublishAsync(20, default))
             .ReturnsAsync(() => eventLogs);
@@ -95,7 +83,7 @@ public class SendByDataProcessorTest
 
         Mock<IPublisher> publisher = new();
         publisher
-            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, default))
+            .Setup(p => p.PublishAsync(It.IsAny<string>(), eventLogs[0].Event, null, default))
             .Verifiable();
         _services.AddSingleton(_ => publisher.Object);
         _services.AddScoped(_ => logService.Object);
@@ -106,6 +94,8 @@ public class SendByDataProcessorTest
         logService.Verify(l => l.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default), Times.Once);
         logService.Verify(l => l.MarkEventAsFailedAsync(It.IsAny<Guid>(), default), Times.Never);
-        publisher.Verify(p => p.PublishAsync(It.IsAny<string>(), It.IsAny<IIntegrationEvent>(), default), Times.Once);
+        publisher.Verify(
+            p => p.PublishAsync(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<IntegrationEventExpand?>(), default),
+            Times.Once);
     }
 }

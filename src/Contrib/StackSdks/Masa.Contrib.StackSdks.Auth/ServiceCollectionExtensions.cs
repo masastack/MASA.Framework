@@ -22,22 +22,23 @@ public static class ServiceCollectionExtensions
     {
         MasaArgumentException.ThrowIfNullOrEmpty(authServiceBaseAddress);
 
-        return services.AddAuthClient(callerOptionsBuilder =>
+        return services.AddAuthClient(callerBuilder =>
         {
-            callerOptionsBuilder
-                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress);//Need to use the AuthenticationService provided by MasaStack
+            callerBuilder
+                .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .UseAuthentication();
         }, redisOptions);
     }
 
-    public static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerOptionsBuilder> callerOptionsBuilder,
+    private static IServiceCollection AddAuthClient(this IServiceCollection services, Action<CallerBuilder> callerBuilder,
         RedisConfigurationOptions redisOptions)
     {
-        MasaArgumentException.ThrowIfNull(callerOptionsBuilder);
+        MasaArgumentException.ThrowIfNull(callerBuilder);
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
         services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
-        services.AddCaller(DEFAULT_CLIENT_NAME, callerOptionsBuilder);
+        services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddAuthClientMultilevelCache(redisOptions);
         services.AddScoped<IAuthClient>(serviceProvider =>
@@ -48,7 +49,7 @@ public static class ServiceCollectionExtensions
             var authClient = new AuthClient(caller, userContext, authClientMultilevelCacheProvider.GetMultilevelCacheClient());
             return authClient;
         });
-        services.AddSingleton<IThirdPartyIdpService>(serviceProvider =>
+        services.AddScoped<IThirdPartyIdpService>(serviceProvider =>
         {
             var callProvider = serviceProvider.GetRequiredService<ICallerFactory>().Create(DEFAULT_CLIENT_NAME);
             var authClientMultilevelCacheProvider = serviceProvider.GetRequiredService<AuthClientMultilevelCacheProvider>();

@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Data.IdGenerator.Snowflake.Distributed.Redis;
 
+[ExcludeFromCodeCoverage]
 public class DistributedIdGeneratorOptions
 {
     /// <summary>

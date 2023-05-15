@@ -17,7 +17,7 @@ public static class WebApplicationExtensions
         {
             var serviceInstance = (ServiceBase)webApplication.Services.GetRequiredService(serviceType);
             if (serviceInstance.RouteOptions.DisableAutoMapRoute ?? serviceMapOptions.DisableAutoMapRoute ?? false)
-                return;
+                continue;
 
             serviceInstance.AutoMapRoute(serviceMapOptions, serviceMapOptions.Pluralization);
         }

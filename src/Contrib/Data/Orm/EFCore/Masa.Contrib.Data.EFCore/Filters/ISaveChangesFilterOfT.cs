@@ -6,7 +6,7 @@
 namespace Microsoft.EntityFrameworkCore;
 
 public interface ISaveChangesFilter<TDbContext> : ISaveChangesFilter
-    where TDbContext : MasaDbContext, IMasaDbContext
+    where TDbContext : DbContext, IMasaDbContext
 {
 
 }

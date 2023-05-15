@@ -61,7 +61,7 @@ public class WebsiteMessageServiceTest
     public async Task TestGetChannelListAsync()
     {
         var data = new List<WebsiteMessageChannelModel>();
-        var requestUri = $"api/website-message/GetChannelList";
+        var requestUri = $"api/website-message/ChannelList";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<List<WebsiteMessageChannelModel>>(requestUri, default)).ReturnsAsync(data).Verifiable();
         var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);
@@ -75,7 +75,7 @@ public class WebsiteMessageServiceTest
     {
         var options = new GetNoticeListModel();
         var data = new List<WebsiteMessageModel>();
-        var requestUri = $"api/website-message/GetNoticeList";
+        var requestUri = $"api/website-message/NoticeList";
         var caller = new Mock<ICaller>();
         caller.Setup(provider => provider.GetAsync<GetNoticeListModel, List<WebsiteMessageModel>>(requestUri, options, default)).ReturnsAsync(data).Verifiable();
         var websiteMessageService = new Mock<WebsiteMessageService>(caller.Object);

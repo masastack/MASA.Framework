@@ -18,14 +18,14 @@ public class CallerTest
 
     private const string FRAMEWORK_BASE_ADDRESS = "https://github.com/masastack/MASA.Framework";
 
-    private CallerOptionsBuilder _callerOptions;
+    private CallerBuilder _callerBuilder;
     private const string NAME = "";
 
     [TestInitialize]
     public void Initialize()
     {
         var services = new ServiceCollection();
-        _callerOptions = new CallerOptionsBuilder(services, NAME);
+        _callerBuilder = new CallerBuilder(services, NAME);
     }
 
     [TestMethod]
@@ -34,12 +34,12 @@ public class CallerTest
         var docBaseAddress = "https://docs.masastack.com";
         var key = "callerBaseAddress" + Guid.NewGuid();
         Environment.SetEnvironmentVariable(key, FRAMEWORK_BASE_ADDRESS);
-        var masaHttpClientBuilder = _callerOptions.UseHttpClient(httpClient =>
+        var masaHttpClientBuilder = _callerBuilder.UseHttpClient(httpClient =>
         {
             httpClient.BaseAddress = Environment.GetEnvironmentVariable(key)!;
         });
         Assert.AreEqual(NAME, masaHttpClientBuilder.Name);
-        Assert.AreEqual(_callerOptions.Services, masaHttpClientBuilder.Services);
+        Assert.AreEqual(_callerBuilder.Services, masaHttpClientBuilder.Services);
 
         var serviceProvider = masaHttpClientBuilder.Services.BuildServiceProvider();
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>();
@@ -60,9 +60,9 @@ public class CallerTest
         Environment.SetEnvironmentVariable(key, FRAMEWORK_BASE_ADDRESS);
 
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.Prefix = "masa";
                 client.BaseAddress = Environment.GetEnvironmentVariable(key)!;
@@ -95,9 +95,9 @@ public class CallerTest
     public void TestMiddlewaresByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             }).UseI18n();
@@ -116,9 +116,9 @@ public class CallerTest
     public void TestRequestMessageByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
             });
@@ -145,9 +145,9 @@ public class CallerTest
     public void TestCustomRequestMessageByUseHttpClient()
     {
         var services = new ServiceCollection();
-        services.AddCaller(callerOptions =>
+        services.AddCaller(callerBuilder =>
         {
-            callerOptions.UseHttpClient(client =>
+            callerBuilder.UseHttpClient(client =>
             {
                 client.UseXml();
                 client.BaseAddress = FRAMEWORK_BASE_ADDRESS;
@@ -209,6 +209,55 @@ public class CallerTest
 
         Assert.AreEqual("custom_xml", GetPrefix(xmlCallerBase.GetBaseCaller()));
     }
+
+    // [TestMethod]
+    // public void TestCallerLifetimeByDefault()
+    // {
+    //     var services = new ServiceCollection();
+    //     services.AddCaller(callerBuilder =>
+    //     {
+    //         callerBuilder.UseHttpClient(httpClient =>
+    //         {
+    //             httpClient.BaseAddress = "https://github.com";
+    //         });
+    //     });
+    //     var serviceProvider = services.BuildServiceProvider();
+    //     var caller = serviceProvider.GetService<ICaller>();
+    //     var caller2 = serviceProvider.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller2);
+    //
+    //     var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
+    //     var caller3 = serviceProvider2.GetService<ICaller>();
+    //     var caller4 = serviceProvider2.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller4);
+    //     Assert.AreNotEqual(caller3, caller4);
+    // }
+    //
+    // /// <summary>
+    // ///
+    // /// </summary>
+    // [TestMethod]
+    // public void TestCallerLifetimeEqualSingleton()
+    // {
+    //     var services = new ServiceCollection();
+    //     services.AddCaller(callerBuilder =>
+    //     {
+    //         callerBuilder.UseHttpClient(httpClient =>
+    //         {
+    //             httpClient.BaseAddress = "https://github.com";
+    //         });
+    //     }, ServiceLifetime.Singleton);
+    //     var serviceProvider = services.BuildServiceProvider();
+    //     var caller = serviceProvider.GetService<ICaller>();
+    //     var caller2 = serviceProvider.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller2);
+    //
+    //     var serviceProvider2 = serviceProvider.CreateScope().ServiceProvider;
+    //     var caller3 = serviceProvider2.GetService<ICaller>();
+    //     var caller4 = serviceProvider2.GetService<ICaller>();
+    //     Assert.AreNotEqual(caller, caller4);
+    //     Assert.AreNotEqual(caller3, caller4);
+    // }
 
     private static FieldInfo GetCustomFieldInfo(Type type, string name)
         => type.GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!;

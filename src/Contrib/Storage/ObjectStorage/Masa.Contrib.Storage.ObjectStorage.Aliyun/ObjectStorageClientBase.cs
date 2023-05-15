@@ -3,29 +3,35 @@
 
 namespace Masa.Contrib.Storage.ObjectStorage.Aliyun;
 
-public abstract class ObjectStorageClientBase
+public abstract class ObjectStorageClientBase : AbstractStorageClient
 {
     protected readonly ICredentialProvider CredentialProvider;
-    protected IAliyunStorageOptionProvider OptionProvider { get; }
-    protected AliyunStorageOptions Options => OptionProvider.GetOptions();
+    protected readonly AliyunStorageOptions AliyunStorageOptions;
 
-    protected ObjectStorageClientBase(ICredentialProvider credentialProvider,
-        IAliyunStorageOptionProvider optionProvider)
+    protected ObjectStorageClientBase(
+        AliyunStorageOptions aliyunStorageOptions,
+        IMemoryCache? memoryCache,
+        ICredentialProvider? credentialProvider,
+        IOssClientFactory? ossClientFactory = null,
+        ILoggerFactory? loggerFactory = null
+    )
     {
-        CredentialProvider = credentialProvider;
-        OptionProvider = optionProvider;
+        AliyunStorageOptions = aliyunStorageOptions;
+
+        CredentialProvider = credentialProvider ?? new DefaultCredentialProvider(aliyunStorageOptions, memoryCache?? new MemoryCache(new MemoryCacheOptions()), ossClientFactory, loggerFactory);
     }
 
+    [ExcludeFromCodeCoverage]
     protected virtual IOss GetClient()
     {
         var credential = GetCredential();
-        return new OssClient(Options.Endpoint, credential.AccessKeyId, credential.AccessKeySecret, credential.SecurityToken);
+        return new OssClient(AliyunStorageOptions.Endpoint, credential.AccessKeyId, credential.AccessKeySecret, credential.SecurityToken);
     }
 
-    protected virtual (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
+    private (string AccessKeyId, string AccessKeySecret, string? SecurityToken) GetCredential()
     {
-        if (OptionProvider.IncompleteStsOptions)
-            return new(Options.AccessKeyId, Options.AccessKeySecret, null);
+        if (AliyunStorageOptions.IsIncompleteStsOptions())
+            return new(AliyunStorageOptions.AccessKeyId, AliyunStorageOptions.AccessKeySecret, null);
 
         var securityToken = CredentialProvider.GetSecurityToken();
         return new(securityToken.AccessKeyId, securityToken.AccessKeySecret, securityToken.SessionToken);

@@ -6,39 +6,34 @@ namespace Masa.Contrib.Data.EFCore.Tests;
 [TestClass]
 public class DefaultConnectionStringProviderTest
 {
-    [TestMethod]
-    public async Task TestGetConnectionStringAsyncReturnTest1()
+    private readonly DefaultConnectionStringProvider _defaultConnectionStringProvider;
+
+    public DefaultConnectionStringProviderTest()
     {
         IServiceCollection services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
+        services.Configure<ConnectionStrings>(options =>
         {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = "Test1"
-            };
+            options.DefaultConnection = "Test1";
+            options.Add("masa", "Test-masa");
         });
         var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
-        var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
-        var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync();
-        Assert.AreEqual("Test1", connectionString);
+        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<ConnectionStrings>>();
+        _defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
     }
 
     [TestMethod]
-    public async Task TestGetConnectionStringAsyncAndNameIsEmptyReturnTest1()
+    public async Task TestGetConnectionStringAsync()
     {
-        IServiceCollection services = new ServiceCollection();
-        services.Configure<MasaDbConnectionOptions>(options =>
-        {
-            options.ConnectionStrings = new ConnectionStrings()
-            {
-                DefaultConnection = "Test1"
-            };
-        });
-        var serviceProvider = services.BuildServiceProvider();
-        var options = serviceProvider.GetRequiredService<IOptionsSnapshot<MasaDbConnectionOptions>>();
-        var defaultConnectionStringProvider = new DefaultConnectionStringProvider(options);
-        var connectionString = await defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
+        var connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync();
         Assert.AreEqual("Test1", connectionString);
+
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync(string.Empty);
+        Assert.AreEqual("Test1", connectionString);
+
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync("masa");
+        Assert.AreEqual("Test-masa", connectionString);
+
+        connectionString = await _defaultConnectionStringProvider.GetConnectionStringAsync("pm");
+        Assert.AreEqual(string.Empty, connectionString);
     }
 }

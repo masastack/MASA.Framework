@@ -12,15 +12,6 @@ public static class DomainEventOptionsExtensions
         Action<MasaDbContextBuilder>? optionsBuilder = null,
         bool disableRollbackOnFailure = false,
         bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
-        => options.UseUoW<TDbContext, Guid>(optionsBuilder, disableRollbackOnFailure, useTransaction);
-
-    public static IDomainEventOptions UseUoW<TDbContext, TUserId>(
-        this IDomainEventOptions options,
-        Action<MasaDbContextBuilder>? optionsBuilder = null,
-        bool disableRollbackOnFailure = false,
-        bool? useTransaction = null)
-        where TDbContext : MasaDbContext, IMasaDbContext
-        where TUserId : IComparable
-        => options.UseUoW<IDomainEventOptions, TDbContext, TUserId>(optionsBuilder, disableRollbackOnFailure, useTransaction);
+        where TDbContext : DefaultMasaDbContext, IMasaDbContext
+        => options.UseUoW<IDomainEventOptions, TDbContext>(optionsBuilder, disableRollbackOnFailure, useTransaction);
 }

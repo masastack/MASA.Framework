@@ -8,24 +8,27 @@ namespace Masa.BuildingBlocks.SearchEngine.AutoComplete;
 public static class AutoCompleteOptionsExtensions
 {
     public static ElasticSearchBuilder UseElasticSearch(
-        this AutoCompleteOptionsBuilder autoCompleteOptions,
+        this AutoCompleteOptionsBuilder autoCompleteOptionsBuilder,
         Action<ElasticSearchAutoCompleteOptions> action)
     {
         MasaArgumentException.ThrowIfNull(action);
 
-        autoCompleteOptions.Services.AddAutoComplete(autoCompleteOptions.Name, serviceProvider =>
+        autoCompleteOptionsBuilder.Services.TryAddSingleton<IElasticClientProvider, DefaultElasticClientProvider>();
+        autoCompleteOptionsBuilder.UseCustomAutoComplete(serviceProvider =>
         {
             var elasticSearchAutoCompleteOptions = new ElasticSearchAutoCompleteOptions();
             action.Invoke(elasticSearchAutoCompleteOptions);
             MasaArgumentException.ThrowIfNullOrWhiteSpace(elasticSearchAutoCompleteOptions.IndexName);
 
-            var elasticClient = ElasticClientUtils.Create(elasticSearchAutoCompleteOptions.ElasticsearchOptions);
+            var elasticClientProvider = serviceProvider.GetRequiredService<IElasticClientProvider>();
+            var item = elasticClientProvider.GetClient(elasticSearchAutoCompleteOptions.ElasticsearchOptions);
             return new AutoCompleteClient(
-                elasticClient,
-                new DefaultMasaElasticClient(elasticClient),
+                item.ElasticClient,
+                item.MasaElasticClient,
                 serviceProvider.GetService<ILogger<AutoCompleteClient>>(),
                 elasticSearchAutoCompleteOptions,
-                autoCompleteOptions.DocumentType
+                autoCompleteOptionsBuilder.DocumentType,
+                elasticClientProvider
             );
         });
         return new ElasticSearchBuilder();

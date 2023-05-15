@@ -5,5 +5,9 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents;
 
 public interface IPublisher
 {
-    Task PublishAsync<T>(string topicName, T @event, CancellationToken stoppingToken = default) where T : IIntegrationEvent;
+    Task PublishAsync<T>(
+        string topicName,
+        T @event,
+        IntegrationEventExpand? eventMessageExpand,
+        CancellationToken stoppingToken = default);
 }

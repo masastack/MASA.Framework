@@ -11,6 +11,8 @@ public class GetWebsiteMessageModel : PaginatedOptions
 
     public Guid? ChannelId { get; set; }
 
+    public string ChannelCode { get; set; } = string.Empty;
+
     public bool? IsRead { get; set; }
 
     public string Tag { get; set; } = string.Empty;

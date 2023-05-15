@@ -18,12 +18,7 @@ public class MasaDaprClient : MasaCallerClient
         }
     }
 
-    internal MasaDaprClient()
+    public MasaDaprClient(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-    }
-
-    public MasaDaprClient(string appid)
-    {
-        AppId = appid;
     }
 }

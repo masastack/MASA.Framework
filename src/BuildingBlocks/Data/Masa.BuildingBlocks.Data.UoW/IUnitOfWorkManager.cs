@@ -13,5 +13,5 @@ public interface IUnitOfWorkManager
     /// <returns></returns>
     IUnitOfWork CreateDbContext(bool lazyLoading = true);
 
-    IUnitOfWork CreateDbContext(MasaDbContextConfigurationOptions dbContextOptions);
+    IUnitOfWork CreateDbContext(DbContextConnectionStringOptions connectionStringOptions);
 }
