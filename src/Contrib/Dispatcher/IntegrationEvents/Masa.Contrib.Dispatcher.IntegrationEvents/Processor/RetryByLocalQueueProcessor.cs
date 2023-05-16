@@ -5,7 +5,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 
 public class RetryByLocalQueueProcessor : ProcessorBase
 {
-    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
+    private readonly IOptions<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly IOptions<IntegrationEventOptions> _options;
     private readonly ILogger<RetryByLocalQueueProcessor>? _logger;
 
@@ -14,7 +14,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
     public RetryByLocalQueueProcessor(
         IServiceProvider serviceProvider,
         IOptions<IntegrationEventOptions> options,
-        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
+        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<RetryByLocalQueueProcessor>? logger = null) : base(serviceProvider)
     {
         _masaAppConfigureOptions = masaAppConfigureOptions;
@@ -63,7 +63,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
             {
                 _logger?.LogError(ex,
                     "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                    eventLog.EventId, _masaAppConfigureOptions?.Value.AppId ?? string.Empty, eventLog);
                 await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
             }
         }

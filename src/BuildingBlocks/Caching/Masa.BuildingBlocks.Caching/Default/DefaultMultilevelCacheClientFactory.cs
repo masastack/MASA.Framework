@@ -11,12 +11,12 @@ public class DefaultMultilevelCacheClientFactory : CacheClientFactoryBase<IManua
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] MultilevelCache, it was not found";
 
     protected override MasaFactoryOptions<MasaRelationOptions<IManualMultilevelCacheClient>> FactoryOptions
-        => _optionsMonitor.CurrentValue;
+        => _options.Value;
 
-    private readonly IOptionsMonitor<MultilevelCacheFactoryOptions> _optionsMonitor;
+    private readonly IOptions<MultilevelCacheFactoryOptions> _options;
 
     public DefaultMultilevelCacheClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<MultilevelCacheFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<MultilevelCacheFactoryOptions>>();
     }
 }

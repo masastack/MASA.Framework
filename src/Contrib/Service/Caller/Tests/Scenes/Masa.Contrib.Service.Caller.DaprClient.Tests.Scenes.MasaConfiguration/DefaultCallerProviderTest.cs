@@ -27,7 +27,7 @@ public class DefaultCallerProviderTest
 
         var serviceProvider = builder.Services.BuildServiceProvider();
 
-        var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+        var daprOptions = serviceProvider.GetRequiredService<IOptions<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration);
         string actualAppId = callerProvider.CompletionAppId(APPID);
@@ -52,7 +52,7 @@ public class DefaultCallerProviderTest
 
         var serviceProvider = builder.Services.BuildServiceProvider();
 
-        var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+        var daprOptions = serviceProvider.GetRequiredService<IOptions<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration);
         string actualAppId = callerProvider.CompletionAppId(APPID);
@@ -73,7 +73,7 @@ public class DefaultCallerProviderTest
 
         var serviceProvider = builder.Services.BuildServiceProvider();
 
-        var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+        var daprOptions = serviceProvider.GetRequiredService<IOptions<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration, builder.Services.GetMasaConfiguration());
         string actualAppId = callerProvider.CompletionAppId(APPID);
@@ -96,7 +96,7 @@ public class DefaultCallerProviderTest
 
         var serviceProvider = builder.Services.BuildServiceProvider();
 
-        var daprOptions = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
+        var daprOptions = serviceProvider.GetRequiredService<IOptions<DaprOptions>>();
 
         var callerProvider = new DefaultCallerProvider(daprOptions, builder.Configuration, builder.Services.GetMasaConfiguration());
         string actualAppId = callerProvider.CompletionAppId(APPID);

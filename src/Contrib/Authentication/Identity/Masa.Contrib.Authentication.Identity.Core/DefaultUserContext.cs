@@ -5,7 +5,7 @@ namespace Masa.Contrib.Authentication.Identity;
 
 internal class DefaultUserContext : UserContext
 {
-    private readonly IOptionsMonitor<IdentityClaimOptions> _optionsMonitor;
+    private readonly IOptions<IdentityClaimOptions> _options;
     private static readonly MemoryCache<Type, CustomizeModelRelation> ModelRelationCache = new();
 
     private ClaimsPrincipal? ClaimsPrincipal { get; set; }
@@ -13,17 +13,17 @@ internal class DefaultUserContext : UserContext
     public DefaultUserContext(
         ITypeConvertProvider typeConvertProvider,
         ICurrentPrincipalAccessor currentPrincipalAccessor,
-        IOptionsMonitor<IdentityClaimOptions> optionsMonitor)
+        IOptions<IdentityClaimOptions> options)
         : base(typeConvertProvider)
     {
-        _optionsMonitor = optionsMonitor;
-        _optionsMonitor.CurrentValue.Initialize();
+        _options = options;
+        _options.Value.Initialize();
         ClaimsPrincipal = currentPrincipalAccessor.GetCurrentPrincipal();
     }
 
     protected override object? GetUser(Type userType)
     {
-        var userClaimType = _optionsMonitor.CurrentValue.GetClaimType(nameof(_optionsMonitor.CurrentValue.UserId))!;
+        var userClaimType = _options.Value.GetClaimType(nameof(_options.Value.UserId))!;
         var userId = ClaimsPrincipal?.FindClaimValue(userClaimType);
         if (userId == null)
             return null;
@@ -40,7 +40,7 @@ internal class DefaultUserContext : UserContext
         var userModel = modelRelation.Func.Invoke(Array.Empty<object>());
         foreach (var property in userType.GetProperties())
         {
-            var claimType = _optionsMonitor.CurrentValue.GetClaimType(property.Name);
+            var claimType = _options.Value.GetClaimType(property.Name);
             if (claimType == null)
                 continue;
 

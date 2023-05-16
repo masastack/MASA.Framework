@@ -5,11 +5,11 @@ namespace Masa.Contrib.Service.Caller.DaprClient;
 
 public class DefaultCallerProvider : ICallerProvider
 {
-    private readonly IOptionsMonitor<DaprOptions> _daprOptions;
+    private readonly IOptions<DaprOptions> _daprOptions;
     private readonly IConfiguration? _configuration;
     private readonly IMasaConfiguration? _masaConfiguration;
 
-    public DefaultCallerProvider(IOptionsMonitor<DaprOptions> daprOptions,
+    public DefaultCallerProvider(IOptions<DaprOptions> daprOptions,
         IConfiguration? configuration = null,
         IMasaConfiguration? masaConfiguration = null)
     {
@@ -20,7 +20,7 @@ public class DefaultCallerProvider : ICallerProvider
 
     public string CompletionAppId(string appId)
     {
-        var daprOptions = _daprOptions.CurrentValue;
+        var daprOptions = _daprOptions.Value;
         if (daprOptions.AppPort > 0 && daprOptions.IsIncompleteAppId())
             appId = $"{appId}{daprOptions.AppIdDelimiter}{daprOptions.AppIdSuffix ?? NetworkUtils.GetPhysicalAddress()}";
 

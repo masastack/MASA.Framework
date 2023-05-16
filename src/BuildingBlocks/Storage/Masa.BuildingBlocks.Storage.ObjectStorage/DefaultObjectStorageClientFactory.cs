@@ -8,12 +8,12 @@ public class DefaultObjectStorageClientFactory : MasaFactoryBase<IManualObjectSt
     protected override string DefaultServiceNotFoundMessage => "No default ObjectStorage found";
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] ObjectStorage, it was not found";
 
-    protected override MasaFactoryOptions<MasaRelationOptions<IManualObjectStorageClient>> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<MasaRelationOptions<IManualObjectStorageClient>> FactoryOptions => _options.Value;
 
-    private readonly IOptionsMonitor<ObjectStorageFactoryOptions> _options;
+    private readonly IOptions<ObjectStorageFactoryOptions> _options;
 
     public DefaultObjectStorageClientFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsMonitor<ObjectStorageFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<ObjectStorageFactoryOptions>>();
     }
 }

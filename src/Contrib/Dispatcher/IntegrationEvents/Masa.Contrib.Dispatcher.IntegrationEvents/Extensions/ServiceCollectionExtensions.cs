@@ -67,7 +67,7 @@ public static class ServiceCollectionExtensions
             new Lazy<IEventBus?>(serviceProvider.GetService<IEventBus>),
             new Lazy<IPublisher>(serviceProvider.GetRequiredService<IPublisher>()),
             serviceProvider.GetService<IIntegrationEventLogService>(),
-            serviceProvider.GetService<IOptionsMonitor<MasaAppConfigureOptions>>(),
+            serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>(),
             serviceProvider.GetService<ILogger<IntegrationEventBus>>(),
             serviceProvider.GetService<IUnitOfWork>()
         ));

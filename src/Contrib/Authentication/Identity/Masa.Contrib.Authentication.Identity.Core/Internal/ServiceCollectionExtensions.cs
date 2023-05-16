@@ -94,7 +94,7 @@ internal static class ServiceCollectionExtensions
         services.TryAddScoped<DefaultUserContext>(serviceProvider => new DefaultUserContext(
             func.Invoke(serviceProvider),
             serviceProvider.GetRequiredService<ICurrentPrincipalAccessor>(),
-            serviceProvider.GetRequiredService<IOptionsMonitor<IdentityClaimOptions>>())
+            serviceProvider.GetRequiredService<IOptions<IdentityClaimOptions>>())
         );
         services.TryAddScoped<IUserSetter>(serviceProvider => serviceProvider.GetService<DefaultUserContext>()!);
         services.TryAddScoped<IUserContext>(serviceProvider => serviceProvider.GetService<DefaultUserContext>()!);

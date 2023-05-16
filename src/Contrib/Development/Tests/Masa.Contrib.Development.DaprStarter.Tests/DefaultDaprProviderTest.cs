@@ -206,7 +206,9 @@ public class DefaultDaprProviderTest
                 AppId = inputGlobalAppId
             });
         var services = new ServiceCollection();
-        services.AddMasaConfiguration(builder => { builder.AddJsonFile("appsettings.json"); });
+        services.AddMasaConfiguration(optionsBuilder =>
+        {
+        });
         var serviceProvider = services.BuildServiceProvider();
         var defaultDaprProvider = new DefaultDaprProvider(
             masaAppConfigureOptions,

@@ -9,11 +9,11 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection InitializeAppConfiguration(this IServiceCollection services)
     {
-        var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
         return services.InitializeGlobalAppConfiguration(configuration);
     }
 
-    public static IServiceCollection InitializeGlobalAppConfiguration(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection InitializeGlobalAppConfiguration(this IServiceCollection services, IConfiguration? configuration)
     {
         if (services.Any(service => service.ImplementationType == typeof(InitializeAppConfigurationProvider)))
             return services;

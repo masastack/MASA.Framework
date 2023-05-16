@@ -14,7 +14,7 @@ public class IntegrationEventBus : IIntegrationEventBus
 
     private readonly ILogger<IntegrationEventBus>? _logger;
     private readonly IIntegrationEventLogService? _eventLogService;
-    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
+    private readonly IOptions<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly IUnitOfWork? _unitOfWork;
     private readonly IsolationOptions? _isolationOptions;
     private readonly IMultiTenantContext? _multiTenantContext;
@@ -25,7 +25,7 @@ public class IntegrationEventBus : IIntegrationEventBus
         Lazy<IEventBus?> eventBusLazy,
         Lazy<IPublisher> publisherLazy,
         IIntegrationEventLogService? eventLogService = null,
-        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
+        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<IntegrationEventBus>? logger = null,
         IUnitOfWork? unitOfWork = null)
     {
@@ -83,7 +83,7 @@ public class IntegrationEventBus : IIntegrationEventBus
             _logger?.LogDebug(
                 "----- Publishing integration event (don't use local message): {IntegrationEventIdPublished} from {AppId} - ({IntegrationEvent})",
                 @event.GetEventId(),
-                _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, @event);
+                _masaAppConfigureOptions?.Value.AppId ?? string.Empty, @event);
 
             await Publisher.PublishAsync(topicName, (dynamic)@event, integrationEventMessageExpand, cancellationToken);
         }

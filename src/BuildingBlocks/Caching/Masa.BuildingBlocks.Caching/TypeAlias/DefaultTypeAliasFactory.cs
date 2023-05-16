@@ -10,12 +10,12 @@ public class DefaultTypeAliasFactory : MasaFactoryBase<ITypeAliasProvider, TypeA
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] TypeAlias, it was not found";
 
-    protected override MasaFactoryOptions<TypeAliasRelationOptions> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<TypeAliasRelationOptions> FactoryOptions => _options.Value;
 
-    private readonly IOptionsMonitor<TypeAliasFactoryOptions> _options;
+    private readonly IOptions<TypeAliasFactoryOptions> _options;
 
     public DefaultTypeAliasFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsMonitor<TypeAliasFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<TypeAliasFactoryOptions>>();
     }
 }

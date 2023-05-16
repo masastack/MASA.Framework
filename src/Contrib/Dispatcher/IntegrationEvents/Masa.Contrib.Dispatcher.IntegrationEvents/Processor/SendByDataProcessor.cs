@@ -6,7 +6,7 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Processor;
 public class SendByDataProcessor : ProcessorBase
 {
     private readonly IOptions<IntegrationEventOptions> _options;
-    private readonly IOptionsMonitor<MasaAppConfigureOptions>? _masaAppConfigureOptions;
+    private readonly IOptions<MasaAppConfigureOptions>? _masaAppConfigureOptions;
     private readonly ILogger<SendByDataProcessor>? _logger;
 
     public override int Delay => 1;
@@ -14,7 +14,7 @@ public class SendByDataProcessor : ProcessorBase
     public SendByDataProcessor(
         IServiceProvider serviceProvider,
         IOptions<IntegrationEventOptions> options,
-        IOptionsMonitor<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
+        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null,
         ILogger<SendByDataProcessor>? logger = null) : base(serviceProvider)
     {
         _masaAppConfigureOptions = masaAppConfigureOptions;
@@ -58,7 +58,7 @@ public class SendByDataProcessor : ProcessorBase
             {
                 _logger?.LogError(ex,
                     "Error Publishing integration event: {IntegrationEventId} from {AppId} - ({IntegrationEvent})",
-                    eventLog.EventId, _masaAppConfigureOptions?.CurrentValue.AppId ?? string.Empty, eventLog);
+                    eventLog.EventId, _masaAppConfigureOptions?.Value.AppId ?? string.Empty, eventLog);
                 await eventLogService.MarkEventAsFailedAsync(eventLog.EventId, stoppingToken);
 
                 LocalQueueProcessor.Default.AddJobs(new IntegrationEventLogItem(eventLog.EventId, eventLog.Topic, eventLog.Event, eventLog.EventExpand));

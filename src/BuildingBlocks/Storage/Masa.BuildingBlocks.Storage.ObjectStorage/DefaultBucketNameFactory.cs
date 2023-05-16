@@ -7,12 +7,12 @@ public class DefaultBucketNameFactory : MasaFactoryBase<IBucketNameProvider, Mas
 {
     protected override string DefaultServiceNotFoundMessage => "No default ObjectStorageBucketName found";
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] ObjectStorageBucketName, it was not found";
-    protected override MasaFactoryOptions<MasaRelationOptions<IBucketNameProvider>> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<MasaRelationOptions<IBucketNameProvider>> FactoryOptions => _options.Value;
 
-    private readonly IOptionsMonitor<BucketNameFactoryOptions> _options;
+    private readonly IOptions<BucketNameFactoryOptions> _options;
 
     public DefaultBucketNameFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsMonitor<BucketNameFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<BucketNameFactoryOptions>>();
     }
 }

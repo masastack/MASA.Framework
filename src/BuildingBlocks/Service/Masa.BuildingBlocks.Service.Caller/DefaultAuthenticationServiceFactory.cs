@@ -11,12 +11,12 @@ public class DefaultAuthenticationServiceFactory :
 
     protected override string SpecifyServiceNotFoundMessage => "Please make sure you have used [{0}] AuthenticationService, it was not found";
 
-    protected override MasaFactoryOptions<AuthenticationServiceRelationOptions> FactoryOptions => _options.CurrentValue;
+    protected override MasaFactoryOptions<AuthenticationServiceRelationOptions> FactoryOptions => _options.Value;
 
-    private readonly IOptionsMonitor<AuthenticationServiceFactoryOptions> _options;
+    private readonly IOptions<AuthenticationServiceFactoryOptions> _options;
 
     public DefaultAuthenticationServiceFactory(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _options = serviceProvider.GetRequiredService<IOptionsMonitor<AuthenticationServiceFactoryOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptions<AuthenticationServiceFactoryOptions>>();
     }
 }

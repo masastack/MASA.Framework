@@ -98,7 +98,7 @@ public class ProcessorTest
         RetryByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
+            Mock.Of<IOptions<MasaAppConfigureOptions>>(a => a.Value == masaAppConfigureOptions),
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
@@ -185,7 +185,7 @@ public class ProcessorTest
         RetryByDataProcessor retryByDataProcessor = new(
             serviceProvider,
             options.Object,
-            Mock.Of<IOptionsMonitor<MasaAppConfigureOptions>>(a => a.CurrentValue == masaAppConfigureOptions),
+            Mock.Of<IOptions<MasaAppConfigureOptions>>(a => a.Value == masaAppConfigureOptions),
             serviceProvider.GetService<ILogger<RetryByDataProcessor>>());
         await retryByDataProcessor.ExecuteAsync(cancellationTokenSource.Token);
 
