@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
+[ExcludeFromCodeCoverage]
 public static class ConfigurationApiExtensions
 {
     public static IConfiguration GetDefault(this IConfigurationApi configurationApi)

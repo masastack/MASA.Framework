@@ -12,6 +12,7 @@ internal static class DccSectionOptionsExtensions
         Func<MasaAppConfigureOptions> globalConfigureSetter,
         Func<IDistributedCacheClient> distributedCacheClientSetter,
         Func<string> defaultEnvironmentSetter,
+        Func<string> defaultClusterSetter,
         bool skipComplementAppId)
     {
         MasaAppConfigureOptions? masaAppConfigureOptions = null;
@@ -19,7 +20,7 @@ internal static class DccSectionOptionsExtensions
         if (!skipComplementAppId) dccSectionOptions.ComplementAppId(() => GetMasaAppConfigureOptions().AppId);
 
         dccSectionOptions.ComplementEnvironment(defaultEnvironmentSetter);
-        dccSectionOptions.ComplementCluster(() => GetMasaAppConfigureOptions().Cluster);
+        dccSectionOptions.ComplementCluster(defaultClusterSetter);
         dccSectionOptions.ComplementConfigObjects(() =>
         {
             var distributedCacheClient = distributedCacheClientSetter.Invoke();
@@ -55,7 +56,7 @@ internal static class DccSectionOptionsExtensions
 
     public static void ComplementConfigObjects(this DccSectionOptions dccSectionOptions, Func<List<string>> setter)
     {
-        if (!dccSectionOptions.ConfigObjects.Any())
+        if (dccSectionOptions.ConfigObjects.Any())
             return;
 
         dccSectionOptions.ConfigObjects = setter.Invoke();

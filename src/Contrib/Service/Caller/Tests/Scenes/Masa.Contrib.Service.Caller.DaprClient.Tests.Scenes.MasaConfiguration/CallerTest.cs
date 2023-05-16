@@ -20,7 +20,7 @@ public class CallerTest
 
         var builder = WebApplication.CreateBuilder();
         var services = builder.Services;
-        AddJsonConfig(services);
+        services.AddMasaConfiguration();
 
         services.AddCaller(callerBuilder =>
         {
@@ -43,7 +43,7 @@ public class CallerTest
     {
         var builder = WebApplication.CreateBuilder();
         var services = builder.Services;
-        AddJsonConfig(services);
+        services.AddMasaConfiguration();
 
         services.AddCaller(callerBuilder =>
         {
@@ -64,8 +64,7 @@ public class CallerTest
     public void TestAppIdByUseDaprAndUseJsonConfig2()
     {
         var services = new ServiceCollection();
-
-        AddJsonConfig(services);
+        services.AddMasaConfiguration();
 
         services.AddCaller(callerBuilder =>
         {
@@ -80,15 +79,6 @@ public class CallerTest
         Assert.IsNotNull(caller);
 
         Assert.AreEqual(APP_ID_BY_JSON_CONFIG, GetAppId(caller));
-    }
-
-    private static void AddJsonConfig(IServiceCollection services)
-    {
-        services.AddMasaConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-        });
     }
 
     private static string GetAppId(ICaller caller) =>

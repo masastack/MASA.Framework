@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
+[ExcludeFromCodeCoverage]
 public static class DccConfig
 {
     public static string AppId { get; internal set; }

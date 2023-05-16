@@ -34,3 +34,4 @@ global using static Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Con
 global using Masa.Contrib.Caching.MultilevelCache;
 global using Masa.Utils.Caching.Memory;
 global using Masa.Contrib.Configuration;
+global using System.Diagnostics.CodeAnalysis;

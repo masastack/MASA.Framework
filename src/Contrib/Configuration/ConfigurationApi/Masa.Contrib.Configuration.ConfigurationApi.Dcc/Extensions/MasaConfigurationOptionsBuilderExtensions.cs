@@ -180,9 +180,7 @@ public static class MasaConfigurationOptionsBuilderExtensions
             return DccFactory.CreateClient(
                 serviceProvider,
                 jsonSerializerOption,
-                dccConfigurationOptions.ConfigObjectSecret,
-                dccConfigurationOptions.DefaultSection,
-                dccConfigurationOptions.ExpandSections);
+                dccConfigurationOptions);
         }
     }
 
@@ -200,8 +198,7 @@ public static class MasaConfigurationOptionsBuilderExtensions
             return DccFactory.CreateManage(
                 callerFactory.Create(DEFAULT_CLIENT_NAME),
                 jsonSerializerOptions,
-                dccConfigurationOptions.DefaultSection,
-                dccConfigurationOptions.ExpandSections);
+                dccConfigurationOptions);
         });
         return masaConfigurationOptionsBuilder;
     }

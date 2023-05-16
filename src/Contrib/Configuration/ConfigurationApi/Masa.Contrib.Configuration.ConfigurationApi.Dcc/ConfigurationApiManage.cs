@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
-public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
+internal class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiManage
 {
     private readonly ICaller _caller;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -11,9 +11,8 @@ public class ConfigurationApiManage : ConfigurationApiBase, IConfigurationApiMan
     public ConfigurationApiManage(
         ICaller caller,
         JsonSerializerOptions jsonSerializerOptions,
-        DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions>? expandSectionOptions)
-        : base(defaultSectionOption, expandSectionOptions)
+        DccConfigurationOptions dccConfigurationOptions)
+        : base(dccConfigurationOptions.DefaultSection, dccConfigurationOptions.ExpandSections)
     {
         _caller = caller;
         _jsonSerializerOptions = jsonSerializerOptions;

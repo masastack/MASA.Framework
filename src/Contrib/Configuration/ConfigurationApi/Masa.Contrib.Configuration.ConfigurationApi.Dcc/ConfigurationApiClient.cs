@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
-public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
+internal class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiClient
 {
     private readonly IMultilevelCacheClient _multilevelCacheClient;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -19,11 +19,9 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
     public ConfigurationApiClient(
         IMultilevelCacheClient multilevelCacheClient,
         JsonSerializerOptions jsonSerializerOptions,
-        string? configObjectSecret,
-        DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions>? expandSectionOptions,
+        DccConfigurationOptions dccConfigurationOptions,
         ILogger<ConfigurationApiClient>? logger = null)
-        : base(defaultSectionOption, expandSectionOptions)
+        : base(dccConfigurationOptions.DefaultSection, dccConfigurationOptions.ExpandSections)
     {
         ArgumentNullException.ThrowIfNull(multilevelCacheClient);
 
@@ -34,7 +32,7 @@ public class ConfigurationApiClient : ConfigurationApiBase, IConfigurationApiCli
         _logger = logger;
         _yamlSerializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
         _yamlDeserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        _configObjectSecret = configObjectSecret;
+        _configObjectSecret = dccConfigurationOptions.ConfigObjectSecret;
     }
 
     public Task<(string Raw, ConfigurationTypes ConfigurationType)> GetRawAsync(string configObject, Action<string>? valueChanged)

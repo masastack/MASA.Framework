@@ -3,6 +3,9 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
+/// <summary>
+/// Configuration information required for using DCC
+/// </summary>
 public class DccOptions : DccSectionOptions
 {
     public RedisConfigurationOptions RedisOptions { get; set; } = new();

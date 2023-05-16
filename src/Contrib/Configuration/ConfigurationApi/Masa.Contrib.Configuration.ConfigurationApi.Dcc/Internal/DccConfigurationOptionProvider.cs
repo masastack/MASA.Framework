@@ -10,9 +10,7 @@ internal class DccConfigurationOptionProvider
     private readonly DccConfigurationOptionsCache _dccConfigurationOptionsCache;
 
     public DccConfigurationOptionProvider(DccConfigurationOptionsCache dccConfigurationOptionsCache)
-    {
-        _dccConfigurationOptionsCache = dccConfigurationOptionsCache;
-    }
+        => _dccConfigurationOptionsCache = dccConfigurationOptionsCache;
 
     public DccConfigurationOptions GetOptions(
         IServiceProvider serviceProvider,

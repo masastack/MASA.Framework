@@ -4,133 +4,124 @@
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests;
 
 [TestClass]
-public class DccClientTest
+public class ConfigurationApiClientTest
 {
-    private const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
+    private DccConfigurationOptions _dccConfigurationOptions;
     private Mock<IManualMultilevelCacheClient> _client;
-    private IServiceCollection _services;
-    private IServiceProvider _serviceProvider => _services.BuildServiceProvider();
     private JsonSerializerOptions _jsonSerializerOptions;
-    private DccOptions _dccOptions;
-    private DccSectionOptions _dccSectionOptions;
     private CustomTrigger _trigger;
-    private IYamlSerializer _serializer;
-    private IYamlDeserializer _deserializer;
 
     [TestInitialize]
     public void Initialize()
     {
-        Mock<IMultilevelCacheClientFactory> multilevelCacheClientFactory = new();
         _client = new Mock<IManualMultilevelCacheClient>();
-        _services = new ServiceCollection();
+
+        _dccConfigurationOptions = new DccConfigurationOptions()
+        {
+            DefaultSection = new DccSectionOptions()
+            {
+                Environment = "Test",
+                Cluster = "Default",
+                AppId = "DccTest",
+                ConfigObjects = new List<string>()
+                {
+                    "Test1"
+                },
+                Secret = ""
+            }
+        };
+
         _jsonSerializerOptions = new JsonSerializerOptions()
         {
             PropertyNameCaseInsensitive = true
         };
-        _dccOptions = Mock.Of<DccOptions>();
-        _dccSectionOptions = new DccSectionOptions()
-        {
-            Environment = "Test",
-            Cluster = "Default",
-            AppId = "DccTest",
-            ConfigObjects = new List<string>()
-            {
-                "Test1"
-            },
-            Secret = ""
-        };
         _trigger = new CustomTrigger(_jsonSerializerOptions);
-        _serializer = new DefaultYamlSerializer(new SerializerBuilder().JsonCompatible().Build());
-        _deserializer = new DefaultYamlDeserializer(new DeserializerBuilder().Build());
-        multilevelCacheClientFactory
-            .Setup(factory => factory.Create("masa.contrib.configuration.configurationapi.dcc"))
-            .Returns(() => _client.Object);
-        _services.AddSingleton(_ => multilevelCacheClientFactory.Object);
-
-        var serializerFactory = new Mock<ISerializerFactory>();
-        var deserializerFactory = new Mock<IDeserializerFactory>();
-        serializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _serializer);
-        deserializerFactory.Setup(factory => factory.Create(DEFAULT_CLIENT_NAME)).Returns(() => _deserializer);
-
-        _services.AddSingleton(_ => serializerFactory.Object);
-        _services.AddSingleton(_ => deserializerFactory.Object);
     }
 
     [TestMethod]
     public void TestFormatCodeErrorRawReturnThrowNotSupportedException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var model = new PublishReleaseModel()
         {
             Content = "",
             FormatLabelCode = "json",
         };
-        Assert.ThrowsException<NotSupportedException>(() => client.TestFormatRaw(model, "DccObjectName"), "configObject invalid");
+        Assert.ThrowsException<NotSupportedException>(() => client.FormatRawByTest(model, "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
     public void TestJsonFormatCodeRawReturnConfigurationTypeIsJson()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var model = new PublishReleaseModel()
         {
             Content = "",
             FormatLabelCode = "JSON",
         };
-        var result = client.TestFormatRaw(model, "DccObjectName");
+        var result = client.FormatRawByTest(model, "DccObjectName");
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Json);
     }
 
     [TestMethod]
     public void TestFormatNullRawReturnThrowArgumentException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(null, "DccObjectName"), "configObject invalid");
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        Assert.ThrowsException<ArgumentException>(() => client.FormatRawByTest(null, "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
     public void TestFormatNotSupportRawReturnThrowArgumentException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(new(), "DccObjectName"), "configObject invalid");
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        Assert.ThrowsException<ArgumentException>(() => client.FormatRawByTest(new(), "DccObjectName"), "configObject invalid");
     }
 
     [TestMethod]
     public void TestFormatRawByJsonReturnConfigurationTypeIsJson()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        var content = JsonSerializer.Serialize(new
+        {
+            Name = "Microsoft"
+        }, _jsonSerializerOptions);
         var model = new PublishReleaseModel()
         {
             Content = content,
             ConfigFormat = ConfigFormats.JSON
         };
-        var result = client.TestFormatRaw(model, "DccObjectName");
+        var result = client.FormatRawByTest(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Json);
     }
 
     [TestMethod]
     public void TestFormatEncryptionRawByJsonReturnConfigurationTypeIsJson()
     {
-        _dccOptions.ConfigObjectSecret = "secret";
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
-        var encryptContent = AesUtils.Encrypt(content, _dccOptions.ConfigObjectSecret, FillType.Left);
+        _dccConfigurationOptions.ConfigObjectSecret = "secret";
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        var content = JsonSerializer.Serialize(new
+        {
+            Name = "Microsoft"
+        }, _jsonSerializerOptions);
+        var encryptContent = AesUtils.Encrypt(content, _dccConfigurationOptions.ConfigObjectSecret, FillType.Left);
         var model = new PublishReleaseModel()
         {
             Content = encryptContent,
             ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
-        var result = client.TestFormatRaw(model, "DccObjectName");
+        var result = client.FormatRawByTest(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Json);
     }
 
     [TestMethod]
     public void TestFormatEncryptionRawByJsonReturnConfigurationTypeIsJson2()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        var content = JsonSerializer.Serialize(new { Name = "Microsoft" }, _jsonSerializerOptions);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        var content = JsonSerializer.Serialize(new
+        {
+            Name = "Microsoft"
+        }, _jsonSerializerOptions);
         var encryptContent = AesUtils.Encrypt(content, "secret", FillType.Left);
         var model = new PublishReleaseModel()
         {
@@ -138,27 +129,27 @@ public class DccClientTest
             ConfigFormat = ConfigFormats.JSON,
             Encryption = true
         };
-        Assert.ThrowsException<ArgumentNullException>(() => client.TestFormatRaw(model, "DccObjectName"));
+        Assert.ThrowsException<MasaArgumentException>(() => client.FormatRawByTest(model, "DccObjectName"));
     }
 
     [TestMethod]
     public void TestFormatRawByTextReturnConfigurationTypeIsText()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var content = "Microsoft";
         var model = new PublishReleaseModel()
         {
             Content = content,
             ConfigFormat = ConfigFormats.RAW
         };
-        var result = client.TestFormatRaw(model, "DccObjectName");
+        var result = client.FormatRawByTest(model, "DccObjectName");
         Assert.IsTrue(result.Raw == content && result.ConfigurationType == ConfigurationTypes.Text);
     }
 
     [TestMethod]
     public void TestFormatRawByPropertiesReturnConfigurationTypeIsProperties()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var list = new List<Property>()
         {
             new()
@@ -177,7 +168,7 @@ public class DccClientTest
             Content = JsonSerializer.Serialize(list),
             ConfigFormat = ConfigFormats.Properties
         };
-        var result = client.TestFormatRaw(model, "DccObjectName");
+        var result = client.FormatRawByTest(model, "DccObjectName");
         Dictionary<string, string> dictionary = new(list.Select(x => new KeyValuePair<string, string>(x.Key, x.Value)).ToList());
         Assert.IsTrue(result.Raw == JsonSerializer.Serialize(dictionary, _jsonSerializerOptions) &&
             result.ConfigurationType == ConfigurationTypes.Properties);
@@ -186,35 +177,43 @@ public class DccClientTest
     [TestMethod]
     public void TestFormatRawByPropertiesAndContentIsErrorReturnThrowArgumentException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var content = JsonSerializer.Serialize(new
         {
             Key = "Name",
             Value = "Microsoft"
         }, _jsonSerializerOptions);
-        var raw = new PublishReleaseModel() { Content = content, ConfigFormat = ConfigFormats.Properties };
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        var raw = new PublishReleaseModel()
+        {
+            Content = content,
+            ConfigFormat = ConfigFormats.Properties
+        };
+        Assert.ThrowsException<ArgumentException>(() => client.FormatRawByTest(raw, "DccObjectName"));
     }
 
     [TestMethod]
     public void TestFormatRawByXmlAndContentIsErrorReturnThrowArgumentException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         string xml = @"<?xxx version='1.0' xx='no'?>
                     <root>
                       <name1>blazor</name>
                       <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.XML };
+        var raw = new PublishReleaseModel()
+        {
+            Content = xml,
+            ConfigFormat = ConfigFormats.XML
+        };
 
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        Assert.ThrowsException<ArgumentException>(() => client.FormatRawByTest(raw, "DccObjectName"));
     }
 
     [TestMethod]
     public void TestFormatRawByXmlReturnConfigurationTypeIsXml()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         string xml = @"<?xml version='1.0' standalone='no'?>
                     <root>
                       <person id='1'>
@@ -222,8 +221,12 @@ public class DccClientTest
                           <url>https://blazor.masastack.com/</url>
                       </person>
                     </root>";
-        var raw = new PublishReleaseModel() { Content = xml, ConfigFormat = ConfigFormats.XML };
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        var raw = new PublishReleaseModel()
+        {
+            Content = xml,
+            ConfigFormat = ConfigFormats.XML
+        };
+        var result = client.FormatRawByTest(raw, "DccObjectName");
 
         Assert.IsTrue(result.ConfigurationType == ConfigurationTypes.Xml);
     }
@@ -231,21 +234,25 @@ public class DccClientTest
     [TestMethod]
     public void TestFormatRawByYamlAndContentIsErrorReturnThrowArgumentException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         string yaml = @"
 name： Masa,
 age: 1.5
 addresses:
 home:
     city: hangzhou";
-        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.YAML };
-        Assert.ThrowsException<ArgumentException>(() => client.TestFormatRaw(raw, "DccObjectName"));
+        var raw = new PublishReleaseModel()
+        {
+            Content = yaml,
+            ConfigFormat = ConfigFormats.YAML
+        };
+        Assert.ThrowsException<ArgumentException>(() => client.FormatRawByTest(raw, "DccObjectName"));
     }
 
     [TestMethod]
     public void TestFormatRawByYamlReturnConfigurationTypeIsXml()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         string yaml = @"
 name: Masa
 age: 1.5
@@ -257,8 +264,12 @@ addresses:
 
         var serializer = new SerializerBuilder().JsonCompatible().Build();
         var json = serializer.Serialize(yamlObject);
-        var raw = new PublishReleaseModel() { Content = yaml, ConfigFormat = ConfigFormats.YAML };
-        var result = client.TestFormatRaw(raw, "DccObjectName");
+        var raw = new PublishReleaseModel()
+        {
+            Content = yaml,
+            ConfigFormat = ConfigFormats.YAML
+        };
+        var result = client.FormatRawByTest(raw, "DccObjectName");
 
         Assert.IsTrue(result.Raw == json && result.ConfigurationType == ConfigurationTypes.Yaml);
     }
@@ -266,7 +277,7 @@ addresses:
     [TestMethod]
     public async Task TestGetRawByKeyAsyncReturnConfigurationTypeIsText()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         string content = "Microsoft";
         var model = new PublishReleaseModel()
         {
@@ -278,7 +289,7 @@ addresses:
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(model)
-            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
+            .Callback((string _, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? _) =>
             {
                 _trigger.Formats = ConfigFormats.RAW;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
@@ -288,7 +299,7 @@ addresses:
                 }, _jsonSerializerOptions);
                 _trigger.Action = action;
             });
-        var result = await client.TestGetRawByKeyAsync(key, message =>
+        var result = await client.GetRawByKeyAsyncByTest(key, _ =>
         {
             isExecute = true;
         });
@@ -301,8 +312,8 @@ addresses:
     [TestMethod]
     public void TestGetDynamicAsyncByEmptyKeyReturnThrowArgumentNullException()
     {
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        Assert.ThrowsExceptionAsync<ArgumentNullException>(() => client.TestGetDynamicAsync(string.Empty, null));
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        Assert.ThrowsExceptionAsync<ArgumentNullException>(() => client.GetDynamicAsyncByTest(string.Empty, null));
     }
 
     [TestMethod]
@@ -321,7 +332,7 @@ addresses:
         _client
             .Setup(c => c.GetAsync(key, It.IsAny<Action<PublishReleaseModel>>()!, null))
             .ReturnsAsync(raw)
-            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
+            .Callback((string _, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? _) =>
             {
                 _trigger.Formats = ConfigFormats.JSON;
                 _trigger.Content = JsonSerializer.Serialize(new PublishReleaseModel()
@@ -336,8 +347,8 @@ addresses:
                 _trigger.Action = action;
             });
         bool isExecute = false;
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
-        dynamic result = await client.TestGetDynamicAsync(key, (key, value, options) =>
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
+        dynamic result = await client.GetDynamicAsyncByTest(key, (_, _, _) =>
         {
             isExecute = true;
         });
@@ -370,7 +381,7 @@ addresses:
                 ConfigFormat = ConfigFormats.Properties,
                 Content = brand.Serialize(_jsonSerializerOptions)
             })
-            .Callback((string value, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
+            .Callback((string _, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? _) =>
             {
                 _trigger.Formats = ConfigFormats.Properties;
                 _trigger.Content = new List<Property>()
@@ -389,9 +400,9 @@ addresses:
                 _trigger.Action = action;
             })
             .Verifiable();
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         bool isExecute = false;
-        var result = await client.GetDynamicAsync(environment, cluster, appId, configObject, value => isExecute = true);
+        var result = await client.GetDynamicAsync(environment, cluster, appId, configObject, _ => isExecute = true);
         _trigger.Execute();
         Assert.IsTrue((result as ExpandoObject)!.Count() == 2);
         Assert.IsTrue(isExecute);
@@ -415,7 +426,7 @@ addresses:
                 Content = brand.Serialize(_jsonSerializerOptions)
             })
             .Verifiable();
-        var client = new CustomConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new CustomConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
 
         string key = "environment-cluster-appId-configObject";
         var result = await client.GetDynamicAsync(key);
@@ -438,14 +449,14 @@ addresses:
                     ConfigFormat = ConfigFormats.JSON,
                     Content = brand.Serialize(_jsonSerializerOptions)
                 })
-            .Callback((string str, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? cacheOptionsAction) =>
+            .Callback((string _, Action<PublishReleaseModel> action, Action<MultilevelCacheOptions>? _) =>
             {
                 _trigger.Formats = ConfigFormats.JSON;
                 _trigger.Content = newBrand.Serialize(_jsonSerializerOptions);
                 _trigger.Action = action;
             });
 
-        var client = new ConfigurationApiClient(_serviceProvider, _jsonSerializerOptions, _dccOptions, _dccSectionOptions, null);
+        var client = new ConfigurationApiClient(_client.Object, _jsonSerializerOptions, _dccConfigurationOptions);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, (Brands br) =>
         {
             Assert.IsTrue(br.Id == newBrand.Id);
@@ -472,30 +483,21 @@ addresses:
             Content = brand.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.RAW
         };
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-        memoryCacheClient
+        Mock<IManualMultilevelCacheClient> multilevelCacheClient = new();
+        multilevelCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
         var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
+            multilevelCacheClient.Object,
             _jsonSerializerOptions,
-            _dccOptions,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+            new DccConfigurationOptions());
 
-        Assert.IsTrue(
+        Assert.AreEqual(response.Content,
             configurationApiClient
                 .GetRawAsync(environment, cluster, appId, configObject, It.IsAny<Action<string>>())
                 .GetAwaiter()
-                .GetResult().Raw == brand.Serialize(_jsonSerializerOptions));
+                .GetResult().Raw);
         trigger.Execute();
     }
 
@@ -503,71 +505,59 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection2(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
-        Dictionary<string, string> masaDic = new Dictionary<string, string>()
+        Mock<IManualMultilevelCacheClient> multilevelCacheClient = new();
+        var masaDic = new Dictionary<string, string>()
         {
-            { "Id", Guid.NewGuid().ToString() },
-            { "Name", "Masa" }
+            {
+                "Id", Guid.NewGuid().ToString()
+            },
+            {
+                "Name", "Masa"
+            }
         };
         var response = new PublishReleaseModel()
         {
             Content = masaDic.Serialize(_jsonSerializerOptions),
             ConfigFormat = ConfigFormats.JSON
         };
-        memoryCacheClient
+        multilevelCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
 
         var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
+            multilevelCacheClient.Object,
             _jsonSerializerOptions,
-            _dccOptions,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+            new DccConfigurationOptions());
 
-        Assert.IsTrue(
+        Assert.AreEqual(
+            response.Content,
             configurationApiClient.GetRawAsync(
                 environment,
                 cluster,
                 appId,
                 configObject,
-                It.IsAny<Action<string>>()).Result.Raw == masaDic.Serialize(_jsonSerializerOptions));
+                It.IsAny<Action<string>>()).Result.Raw);
     }
 
     [DataTestMethod]
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection3(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> multilevelCacheClient = new();
 
         var response = new PublishReleaseModel()
         {
             Content = "Test",
             ConfigFormat = ConfigFormats.RAW
         };
-        memoryCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
+        multilevelCacheClient.Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
         var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
+            multilevelCacheClient.Object ,
             _jsonSerializerOptions,
-            _dccOptions,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+            new DccConfigurationOptions());
 
         Assert.IsTrue(configurationApiClient.GetRawAsync(
             environment,
@@ -581,37 +571,28 @@ addresses:
     [DataRow("Development", "Default", "WebApplication1", "Brand")]
     public void TestSingleSection4(string environment, string cluster, string appId, string configObject)
     {
-        Mock<IManualMultilevelCacheClient> memoryCacheClient = new();
+        Mock<IManualMultilevelCacheClient> multilevelCacheClient = new();
 
         var response = new PublishReleaseModel()
         {
             Content = null,
             ConfigFormat = ConfigFormats.RAW
         };
-        memoryCacheClient
+        multilevelCacheClient
             .Setup(client => client.GetAsync(It.IsAny<string>(), It.IsAny<Action<PublishReleaseModel?>>(), null).Result)
             .Returns(() => response);
 
-        Mock<IMultilevelCacheClientFactory> memoryCacheClientFactory = new();
-        memoryCacheClientFactory
-            .Setup(factory => factory.Create(DEFAULT_CLIENT_NAME))
-            .Returns(() => memoryCacheClient.Object);
-        _services.AddSingleton(_ => memoryCacheClientFactory.Object);
-
         var configurationApiClient = new ConfigurationApiClient(
-            _services.BuildServiceProvider(),
+            multilevelCacheClient.Object,
             _jsonSerializerOptions,
-            _dccOptions,
-            new Mock<DccSectionOptions>().Object,
-            new List<DccSectionOptions>());
-        _services.AddSingleton<IConfigurationApiClient>(configurationApiClient);
+            new DccConfigurationOptions());
 
-        Assert.IsTrue(configurationApiClient.GetRawAsync(
+        Assert.AreEqual(null, configurationApiClient.GetRawAsync(
             environment,
             cluster,
             appId,
             configObject,
-            It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw == null);
+            It.IsAny<Action<string>>()).GetAwaiter().GetResult().Raw);
     }
 
     [DataTestMethod]
@@ -639,10 +620,9 @@ addresses:
                 Content = brand.Serialize(_jsonSerializerOptions)
             }).Verifiable();
         var client = new ConfigurationApiClient(
-            _serviceProvider,
+            _client.Object,
             _jsonSerializerOptions,
-            _dccOptions,
-            _dccSectionOptions,
+            new DccConfigurationOptions(),
             null);
         var ret = await client.GetAsync(environment, cluster, appId, configObject, It.IsAny<Action<Brands>>());
         Assert.IsNotNull(ret);

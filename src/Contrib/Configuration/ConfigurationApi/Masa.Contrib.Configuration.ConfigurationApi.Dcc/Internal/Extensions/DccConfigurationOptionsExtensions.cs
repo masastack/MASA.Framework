@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Configuration.ConfigurationApi.Dcc.Tests")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
@@ -51,6 +53,7 @@ internal static class DccConfigurationOptionsExtensions
             GetMasaAppConfigureOptions,
             GetDistributedCacheClient,
             GetDefaultEnvironment,
+            () => GetMasaAppConfigureOptions().Cluster,
             false);
 
         dccConfigurationOptions.ComplementPublicId(()
@@ -72,6 +75,7 @@ internal static class DccConfigurationOptionsExtensions
                 GetMasaAppConfigureOptions,
                 GetDistributedCacheClient,
                 GetDefaultEnvironment,
+                () => dccConfigurationOptions.DefaultSection.Cluster,
                 true);
         }
 
@@ -93,7 +97,7 @@ internal static class DccConfigurationOptionsExtensions
 
     public static void ComplementPublicId(this DccConfigurationOptions dccConfigurationOptions, Func<string> setter)
     {
-        if (dccConfigurationOptions.PublicId.IsNullOrWhiteSpace())
+        if (!dccConfigurationOptions.PublicId.IsNullOrWhiteSpace())
             return;
 
         dccConfigurationOptions.PublicId = setter.Invoke();

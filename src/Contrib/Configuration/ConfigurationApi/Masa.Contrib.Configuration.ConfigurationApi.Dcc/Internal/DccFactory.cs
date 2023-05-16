@@ -3,29 +3,25 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
+[ExcludeFromCodeCoverage]
 internal static class DccFactory
 {
     public static IConfigurationApiClient CreateClient(
         IServiceProvider serviceProvider,
         JsonSerializerOptions jsonSerializerOptions,
-        string? configObjectSecret,
-        DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions>? expandSectionOptions)
+        DccConfigurationOptions dccConfigurationOptions)
     {
         var multilevelCacheClient = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
         var logger = serviceProvider.GetService<ILogger<ConfigurationApiClient>>();
         return new ConfigurationApiClient(multilevelCacheClient,
             jsonSerializerOptions,
-            configObjectSecret,
-            defaultSectionOption,
-            expandSectionOptions,
+            dccConfigurationOptions,
             logger);
     }
 
     public static IConfigurationApiManage CreateManage(
         ICaller caller,
         JsonSerializerOptions jsonSerializerOptions,
-        DccSectionOptions defaultSectionOption,
-        List<DccSectionOptions>? expandSectionOptions)
-        => new ConfigurationApiManage(caller, jsonSerializerOptions,defaultSectionOption,  expandSectionOptions);
+        DccConfigurationOptions dccConfigurationOptions)
+        => new ConfigurationApiManage(caller, jsonSerializerOptions, dccConfigurationOptions);
 }
