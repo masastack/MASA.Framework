@@ -18,6 +18,34 @@ public static class MasaConfigurationOptionsBuilderExtensions
 
     public static void UseDcc(
         this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder,
+        Action<DccOptions> dccOptionsFun,
+        Action<JsonSerializerOptions>? jsonSerializerOptionsConfigure = null,
+        Action<CallerBuilder>? action = null)
+    {
+        masaConfigurationOptionsBuilder.TryUseDccCore(jsonSerializerOptionsConfigure, action, _ =>
+        {
+            var dccOptions = new DccOptions();
+            dccOptionsFun.Invoke(dccOptions);
+            return dccOptions;
+        });
+    }
+
+    public static void UseDcc(
+        this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder,
+        Action<DccOptions, IServiceProvider> dccOptionsFun,
+        Action<JsonSerializerOptions>? jsonSerializerOptionsConfigure = null,
+        Action<CallerBuilder>? action = null)
+    {
+        masaConfigurationOptionsBuilder.TryUseDccCore(jsonSerializerOptionsConfigure, action, serviceProvider =>
+        {
+            var dccOptions = new DccOptions();
+            dccOptionsFun.Invoke(dccOptions, serviceProvider);
+            return dccOptions;
+        });
+    }
+
+    public static void UseDcc(
+        this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder,
         Func<IServiceProvider, DccOptions> dccOptionsFun,
         Action<JsonSerializerOptions>? jsonSerializerOptionsConfigure = null,
         Action<CallerBuilder>? action = null)
@@ -73,7 +101,13 @@ public static class MasaConfigurationOptionsBuilderExtensions
                     var dccConfigurationOptions = serviceProvider.GetRequiredService<DccConfigurationOptionProvider>()
                         .GetOptions(serviceProvider, dccOptionsFunc);
 
-                    var configurationApiClient = serviceProvider.GetRequiredService<IConfigurationApiClient>();
+                    var configurationApiClient = ConfigurationApiFactory.CreateClient(
+                        CacheUtils.CreateMultilevelCacheClient(dccConfigurationOptions, serviceProvider),
+                        serviceProvider.GetService<ILogger<ConfigurationApiClient>>(),
+                        jsonSerializerOption,
+                        dccConfigurationOptions
+                    );
+
                     var configurationRepository = new DccConfigurationRepository(
                         dccConfigurationOptions.GetAllAvailabilitySections(),
                         configurationApiClient,
@@ -177,8 +211,9 @@ public static class MasaConfigurationOptionsBuilderExtensions
             var dccConfigurationOptions = serviceProvider.GetRequiredService<DccConfigurationOptionProvider>()
                 .GetOptions(serviceProvider, dccOptionsFunc);
 
-            return DccFactory.CreateClient(
-                serviceProvider,
+            return ConfigurationApiFactory.CreateClient(
+                CacheUtils.CreateMultilevelCacheClient(dccConfigurationOptions, serviceProvider),
+                serviceProvider.GetService<ILogger<ConfigurationApiClient>>(),
                 jsonSerializerOption,
                 dccConfigurationOptions);
         }
@@ -195,7 +230,7 @@ public static class MasaConfigurationOptionsBuilderExtensions
                 .GetOptions(serviceProvider, dccOptionsFunc);
 
             var callerFactory = serviceProvider.GetRequiredService<ICallerFactory>();
-            return DccFactory.CreateManage(
+            return ConfigurationApiFactory.CreateManage(
                 callerFactory.Create(DEFAULT_CLIENT_NAME),
                 jsonSerializerOptions,
                 dccConfigurationOptions);
@@ -208,8 +243,18 @@ public static class MasaConfigurationOptionsBuilderExtensions
     {
         masaConfigurationOptionsBuilder.Services.TryAddTransient<DccConfigurationOptionsCache>();
 
-        masaConfigurationOptionsBuilder.Services.TryAddSingleton<SingletonService<DccConfigurationOptionProvider>>();
-        masaConfigurationOptionsBuilder.Services.TryAddScoped<SingletonService<DccConfigurationOptionProvider>>();
+        masaConfigurationOptionsBuilder.Services.TryAddSingleton<SingletonService<DccConfigurationOptionProvider>>(serviceProvider =>
+        {
+            var dccConfigurationOptionProvider =
+                new DccConfigurationOptionProvider(serviceProvider.GetRequiredService<DccConfigurationOptionsCache>());
+            return new SingletonService<DccConfigurationOptionProvider>(dccConfigurationOptionProvider);
+        });
+        masaConfigurationOptionsBuilder.Services.TryAddScoped<ScopedService<DccConfigurationOptionProvider>>(serviceProvider =>
+        {
+            var dccConfigurationOptionProvider =
+                new DccConfigurationOptionProvider(serviceProvider.GetRequiredService<DccConfigurationOptionsCache>());
+            return new ScopedService<DccConfigurationOptionProvider>(dccConfigurationOptionProvider);
+        });
 
         masaConfigurationOptionsBuilder.Services.TryAddScoped<DccConfigurationOptionProvider>(serviceProvider =>
         {

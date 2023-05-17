@@ -13,7 +13,7 @@ internal static class ConfigurationUtils
                 relation.ParentSection == configurationRelations.ParentSection &&
                 relation.SectionType == configurationRelations.SectionType &&
                 relation.Section == configurationRelations.Section &&
-                relation.Name == configurationRelations.Name &&
+                relation.OptionsName == configurationRelations.OptionsName &&
                 relation.ObjectType == configurationRelations.ObjectType))
             throw new MasaException("The current section already has a configuration");
 

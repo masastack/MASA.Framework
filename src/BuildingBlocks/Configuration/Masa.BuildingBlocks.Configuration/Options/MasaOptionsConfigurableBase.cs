@@ -9,21 +9,26 @@ public abstract class MasaOptionsConfigurableBase : IMasaOptionsConfigurable
     /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType
     /// </summary>
     [JsonIgnore]
-    public virtual string? ParentSection => null;
+    protected virtual string? ParentSection => null;
 
     /// <summary>
     /// The section null means same as the class name, else load from the specify section
     /// </summary>
-    [JsonIgnore]
-    public virtual string? Section => null;
+    protected virtual string? Section => null;
 
-    [JsonIgnore]
-    public abstract SectionTypes SectionType { get; }
+    protected abstract SectionTypes SectionType { get; }
 
     /// <summary>
     /// The name of the options instance
     /// Normally it is string.Empty
     /// </summary>
-    [JsonIgnore]
-    public virtual string Name => string.Empty;
+    protected virtual string OptionsName => string.Empty;
+
+    public string? GetParentSection() => ParentSection;
+
+    public string? GetSection() => Section;
+
+    public SectionTypes GetSectionType() => SectionType;
+
+    public string GetOptionsName() => OptionsName;
 }

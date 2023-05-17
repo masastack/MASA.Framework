@@ -33,7 +33,7 @@ public class MasaConfigurationRelationOptionsTest
         Assert.AreEqual(false, RelationOptionsList[0].IsRequiredConfigComponent);
         Assert.AreEqual(SectionTypes.Local, RelationOptionsList[0].SectionType);
         Assert.AreEqual(null, RelationOptionsList[0].ParentSection);
-        Assert.AreEqual(expectedName, RelationOptionsList[0].Name);
+        Assert.AreEqual(expectedName, RelationOptionsList[0].OptionsName);
         Assert.AreEqual(expectedSection, RelationOptionsList[0].Section);
     }
 
@@ -65,7 +65,7 @@ public class MasaConfigurationRelationOptionsTest
         Assert.AreEqual(false, RelationOptionsList[0].IsRequiredConfigComponent);
         Assert.AreEqual(SectionTypes.ConfigurationApi, RelationOptionsList[0].SectionType);
         Assert.AreEqual(expectedParentSection, RelationOptionsList[0].ParentSection);
-        Assert.AreEqual(expectedName, RelationOptionsList[0].Name);
+        Assert.AreEqual(expectedName, RelationOptionsList[0].OptionsName);
         Assert.AreEqual(expectedSection, RelationOptionsList[0].Section);
     }
 }

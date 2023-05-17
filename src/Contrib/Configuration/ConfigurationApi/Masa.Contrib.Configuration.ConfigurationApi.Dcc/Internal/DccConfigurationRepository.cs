@@ -23,16 +23,16 @@ internal class DccConfigurationRepository : ConfigurationRepositoryBase
 
         foreach (var sectionOption in sectionOptions)
         {
-            Initialize(sectionOption).ConfigureAwait(false).GetAwaiter().GetResult();
+            Initialize(sectionOption);
         }
     }
 
-    private async Task Initialize(DccSectionOptions sectionOption)
+    private void Initialize(DccSectionOptions sectionOption)
     {
         foreach (var configObject in sectionOption.ConfigObjects)
         {
             var key = $"{sectionOption.Environment}-{sectionOption.Cluster}-{sectionOption.AppId}-{configObject}".ToLower();
-            var result = await _client.GetRawAsync(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
+            var result = _client.GetRaw(sectionOption.Environment, sectionOption.Cluster, sectionOption.AppId, configObject, (val) =>
             {
                 if (_configObjectConfigurationTypeRelations.TryGetValue(key, out var configurationType))
                 {
@@ -46,21 +46,25 @@ internal class DccConfigurationRepository : ConfigurationRepositoryBase
         }
     }
 
-    private static IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw, ConfigurationTypes configurationType)
+    private static IDictionary<string, string> FormatRaw(string appId, string configObject, string? raw,
+        ConfigurationTypes configurationType)
     {
         if (raw == null)
             return new Dictionary<string, string>();
 
         return configurationType switch
         {
-            ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
-            ConfigurationTypes.Properties => SecondaryFormat(appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
+            ConfigurationTypes.Json => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)!),
+            ConfigurationTypes.Properties => SecondaryFormat(appId, configObject,
+                JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
             ConfigurationTypes.Text => new Dictionary<string, string>
             {
-                    { $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw }
-                },
-            ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
-            ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)),
+                {
+                    $"{appId}{ConfigurationPath.KeyDelimiter}{configObject}", raw
+                }
+            },
+            ConfigurationTypes.Xml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)!),
+            ConfigurationTypes.Yaml => SecondaryFormat(appId, configObject, JsonConfigurationParser.Parse(raw)!),
             _ => throw new NotSupportedException(nameof(configurationType)),
         };
     }

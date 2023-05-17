@@ -19,16 +19,21 @@ internal class DccConfigurationOptions
     public string? SubscribeKeyPrefix { get; set; }
 
     /// <summary>
-    /// public config id
-    /// </summary>
-    internal string? PublicId { get; set; }
-
-    internal string? PublicSecret { get; set; }
-
-    /// <summary>
     /// Key for global encryption config object
     /// </summary>
     public string? ConfigObjectSecret { get; set; }
+
+    /// <summary>
+    /// Whether to enable public configuration
+    /// default: true
+    /// </summary>
+    public bool EnablePublicConfig { get; set; } = true;
+
+    /// <summary>
+    /// Public configuration information
+    /// default: null
+    /// </summary>
+    public PublicConfigOptions? PublicConfig { get; set; }
 
     public DccSectionOptions DefaultSection { get; set; }
 
@@ -39,15 +44,25 @@ internal class DccConfigurationOptions
 
     public DccConfigurationOptions() => ExpandSections = new();
 
-    public IEnumerable<DccSectionOptions> GetAllAvailabilitySections()
+    private List<DccSectionOptions>? _allAvailabilitySections;
+
+    public List<DccSectionOptions> GetAllAvailabilitySections()
     {
+        if (_allAvailabilitySections != null)
+            return _allAvailabilitySections;
+
         var sections = new List<DccSectionOptions>(ExpandSections)
         {
             DefaultSection
         };
-        return sections.Where(section =>
-            !section.AppId.IsNullOrWhiteSpace() &&
-            !section.Environment.IsNullOrWhiteSpace() &&
-            !section.Cluster.IsNullOrWhiteSpace());
+        if (PublicConfig != null) sections.Add(PublicConfig);
+
+        _allAvailabilitySections = sections
+            .Where(section =>
+                !section.AppId.IsNullOrWhiteSpace() &&
+                !section.Environment.IsNullOrWhiteSpace() &&
+                !section.Cluster.IsNullOrWhiteSpace())
+            .ToList();
+        return _allAvailabilitySections;
     }
 }

@@ -11,9 +11,7 @@ public abstract class LocalMasaOptionsConfigurable : MasaOptionsConfigurableBase
     /// <summary>
     /// ParentSection is not required for local configuration
     /// </summary>
-    [JsonIgnore]
-    public sealed override string? ParentSection => null;
+    protected sealed override string? ParentSection => null;
 
-    [JsonIgnore]
-    public sealed override SectionTypes SectionType => SectionTypes.Local;
+    protected sealed override SectionTypes SectionType => SectionTypes.Local;
 }

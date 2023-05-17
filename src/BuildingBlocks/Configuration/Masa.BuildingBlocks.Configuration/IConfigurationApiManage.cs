@@ -17,4 +17,17 @@ public interface IConfigurationApiManage
     Task AddAsync(string environment, string cluster, string appId, Dictionary<string, object> configObjects, bool isEncryption = false);
 
     Task UpdateAsync(string environment, string cluster, string appId, string configObject, object value);
+
+    /// <summary>
+    /// Initialize config object
+    /// </summary>
+    /// <param name="environment">Environment name</param>
+    /// <param name="cluster">Cluster name</param>
+    /// <param name="appId">App id</param>
+    /// <param name="configObjects">Config objects,Key:config object name,Value:config object content</param>
+    /// <param name="isEncryption">Config object content whether to encrypt</param>
+    /// <returns></returns>
+    void Add(string environment, string cluster, string appId, Dictionary<string, object> configObjects, bool isEncryption = false);
+
+    void Update(string environment, string cluster, string appId, string configObject, object value);
 }

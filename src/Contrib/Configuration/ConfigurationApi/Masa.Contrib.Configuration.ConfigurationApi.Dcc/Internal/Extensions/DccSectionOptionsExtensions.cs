@@ -13,21 +13,55 @@ internal static class DccSectionOptionsExtensions
         Func<IDistributedCacheClient> distributedCacheClientSetter,
         Func<string> defaultEnvironmentSetter,
         Func<string> defaultClusterSetter,
+        Func<string?> defaultSecretSetter,
         bool skipComplementAppId)
     {
         MasaAppConfigureOptions? masaAppConfigureOptions = null;
 
         if (!skipComplementAppId) dccSectionOptions.ComplementAppId(() => GetMasaAppConfigureOptions().AppId);
 
+        dccSectionOptions.ComplementDccSectionOptions(
+            distributedCacheClientSetter,
+            () => dccSectionOptions.AppId,
+            defaultEnvironmentSetter,
+            defaultClusterSetter,
+            defaultSecretSetter
+        );
+
+        MasaAppConfigureOptions GetMasaAppConfigureOptions() => masaAppConfigureOptions ??= globalConfigureSetter.Invoke();
+    }
+
+    public static void ComplementDccConfigurationOptions(
+        this PublicConfigOptions publicConfigOptions,
+        Func<IDistributedCacheClient> distributedCacheClientSetter,
+        Func<string> defaultEnvironmentSetter,
+        Func<string> defaultClusterSetter,
+        Func<string?> defaultSecretSetter)
+        => publicConfigOptions.ComplementDccSectionOptions(
+            distributedCacheClientSetter,
+            () => publicConfigOptions.AppId,
+            defaultEnvironmentSetter,
+            defaultClusterSetter,
+            defaultSecretSetter
+        );
+
+    private static void ComplementDccSectionOptions(
+        this DccSectionOptionsBase dccSectionOptions,
+        Func<IDistributedCacheClient> distributedCacheClientSetter,
+        Func<string> defaultAppIdSetter,
+        Func<string> defaultEnvironmentSetter,
+        Func<string> defaultClusterSetter,
+        Func<string?> defaultSecretSetter)
+    {
         dccSectionOptions.ComplementEnvironment(defaultEnvironmentSetter);
         dccSectionOptions.ComplementCluster(defaultClusterSetter);
         dccSectionOptions.ComplementConfigObjects(() =>
         {
             var distributedCacheClient = distributedCacheClientSetter.Invoke();
-            return distributedCacheClient.GetAllConfigObjects(dccSectionOptions.AppId, dccSectionOptions.Environment, dccSectionOptions.Cluster);
+            return distributedCacheClient.GetAllConfigObjects(defaultAppIdSetter.Invoke(), dccSectionOptions.Environment,
+                dccSectionOptions.Cluster);
         });
-
-        MasaAppConfigureOptions GetMasaAppConfigureOptions() => masaAppConfigureOptions ??= globalConfigureSetter.Invoke();
+        dccSectionOptions.ComplementSecret(defaultSecretSetter);
     }
 
     public static void ComplementAppId(this DccSectionOptions dccSectionOptions, Func<string> setter)
@@ -38,7 +72,7 @@ internal static class DccSectionOptionsExtensions
         dccSectionOptions.AppId = setter.Invoke();
     }
 
-    public static void ComplementEnvironment(this DccSectionOptions dccSectionOptions, Func<string> setter)
+    public static void ComplementEnvironment(this DccSectionOptionsBase dccSectionOptions, Func<string> setter)
     {
         if (!dccSectionOptions.Environment.IsNullOrWhiteSpace())
             return;
@@ -46,7 +80,7 @@ internal static class DccSectionOptionsExtensions
         dccSectionOptions.Environment = setter.Invoke();
     }
 
-    public static void ComplementCluster(this DccSectionOptions dccSectionOptions, Func<string> setter)
+    public static void ComplementCluster(this DccSectionOptionsBase dccSectionOptions, Func<string> setter)
     {
         if (!dccSectionOptions.Cluster.IsNullOrWhiteSpace())
             return;
@@ -54,11 +88,19 @@ internal static class DccSectionOptionsExtensions
         dccSectionOptions.Cluster = setter.Invoke();
     }
 
-    public static void ComplementConfigObjects(this DccSectionOptions dccSectionOptions, Func<List<string>> setter)
+    public static void ComplementConfigObjects(this DccSectionOptionsBase dccSectionOptions, Func<List<string>> setter)
     {
         if (dccSectionOptions.ConfigObjects.Any())
             return;
 
         dccSectionOptions.ConfigObjects = setter.Invoke();
+    }
+
+    public static void ComplementSecret(this DccSectionOptionsBase dccSectionOptions, Func<string?> setter)
+    {
+        if (!dccSectionOptions.Secret.IsNullOrWhiteSpace())
+            return;
+
+        dccSectionOptions.Secret = setter.Invoke();
     }
 }

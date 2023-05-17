@@ -6,13 +6,13 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 [ExcludeFromCodeCoverage]
 public static class ConfigurationApiExtensions
 {
-    public static IConfiguration GetDefault(this IConfigurationApi configurationApi)
-    {
-        return configurationApi.Get(DccConfig.AppId);
-    }
+    // public static IConfiguration GetDefault(this IConfigurationApi configurationApi)
+    // {
+    //     return configurationApi.Get(DccConfig.AppId);
+    // }
 
     public static IConfiguration GetPublic(this IConfigurationApi configurationApi)
     {
-        return configurationApi.Get(DccConfig.PublicId);
+        return configurationApi.Get(DEFAULT_PUBLIC_ID);
     }
 }

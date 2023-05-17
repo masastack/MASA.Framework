@@ -33,8 +33,8 @@ internal static class DccOptionsExtensions
             },
             ManageServiceAddress = options.ManageServiceAddress,
             SubscribeKeyPrefix = options.SubscribeKeyPrefix,
-            PublicId = options.PublicId,
-            PublicSecret = options.PublicSecret,
+            EnablePublicConfig = options.EnablePublicConfig,
+            PublicConfig = options.PublicConfig,
             ConfigObjectSecret = options.ConfigObjectSecret,
             DefaultSection = new DccSectionOptions(
                 options.AppId,

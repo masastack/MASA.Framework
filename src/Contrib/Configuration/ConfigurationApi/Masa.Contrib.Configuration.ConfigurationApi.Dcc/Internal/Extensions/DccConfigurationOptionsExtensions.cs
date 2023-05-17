@@ -40,6 +40,10 @@ internal static class DccConfigurationOptionsExtensions
         if (dccConfigurationOptions.ExpandSections.DistinctBy(sections => sections.AppId).Count() !=
             dccConfigurationOptions.ExpandSections.Count)
             throw new ArgumentException("AppId cannot be repeated", nameof(dccConfigurationOptions));
+
+        if (dccConfigurationOptions is { EnablePublicConfig: true, PublicConfig: not null } &&
+            dccConfigurationOptions.ExpandSections.Any(options => options.AppId == dccConfigurationOptions.PublicConfig.AppId))
+            throw new MasaException($"Duplicate AppId, AppId: {dccConfigurationOptions.PublicConfig.AppId}");
     }
 
     public static void ComplementDccConfigurationOptions(
@@ -47,22 +51,20 @@ internal static class DccConfigurationOptionsExtensions
         IServiceProvider serviceProvider)
     {
         MasaAppConfigureOptions? masaAppConfigureOptions = null;
-        IDistributedCacheClient? distributedCacheClient = null;
+        IManualDistributedCacheClient? distributedCacheClient = null;
 
         dccConfigurationOptions.DefaultSection.ComplementDccSectionOptions(
             GetMasaAppConfigureOptions,
             GetDistributedCacheClient,
             GetDefaultEnvironment,
             () => GetMasaAppConfigureOptions().Cluster,
+            () => dccConfigurationOptions.ConfigObjectSecret,
             false);
 
-        dccConfigurationOptions.ComplementPublicId(()
-            => GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicId), () => DEFAULT_PUBLIC_ID));
-        dccConfigurationOptions.ComplementPublicSecret(() => GetMasaAppConfigureOptions().GetValue(nameof(DccOptions.PublicSecret)));
-        dccConfigurationOptions.ComplementExpandSections();
-
-        DccConfig.AppId = dccConfigurationOptions.DefaultSection.AppId;
-        DccConfig.PublicId = dccConfigurationOptions.PublicId!;
+        dccConfigurationOptions.ComplementPublicConfig(GetDistributedCacheClient,
+            GetDefaultEnvironment,
+            () => GetMasaAppConfigureOptions().Cluster,
+            () => dccConfigurationOptions.ConfigObjectSecret);
 
         if (dccConfigurationOptions.ExpandSections.Any(sectionOption
                 => sectionOption.AppId == dccConfigurationOptions.DefaultSection.AppId))
@@ -76,14 +78,15 @@ internal static class DccConfigurationOptionsExtensions
                 GetDistributedCacheClient,
                 GetDefaultEnvironment,
                 () => dccConfigurationOptions.DefaultSection.Cluster,
+                () => dccConfigurationOptions.ConfigObjectSecret,
                 true);
         }
 
         MasaAppConfigureOptions GetMasaAppConfigureOptions()
             => masaAppConfigureOptions ??= serviceProvider.GetRequiredService<IOptions<MasaAppConfigureOptions>>().Value;
 
-        IDistributedCacheClient GetDistributedCacheClient()
-            => distributedCacheClient ?? serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create(DEFAULT_CLIENT_NAME);
+        IManualDistributedCacheClient GetDistributedCacheClient()
+            => distributedCacheClient ??= CacheUtils.CreateDistributedCacheClient(dccConfigurationOptions, serviceProvider);
 
         string GetDefaultEnvironment()
         {
@@ -95,32 +98,21 @@ internal static class DccConfigurationOptionsExtensions
         }
     }
 
-    public static void ComplementPublicId(this DccConfigurationOptions dccConfigurationOptions, Func<string> setter)
+    public static void ComplementPublicConfig(
+        this DccConfigurationOptions dccConfigurationOptions,
+        Func<IDistributedCacheClient> distributedCacheClientSetter,
+        Func<string> defaultEnvironmentSetter,
+        Func<string> defaultClusterSetter,
+        Func<string?> defaultSecretSetter)
     {
-        if (!dccConfigurationOptions.PublicId.IsNullOrWhiteSpace())
+        if (!dccConfigurationOptions.EnablePublicConfig)
             return;
 
-        dccConfigurationOptions.PublicId = setter.Invoke();
-    }
-
-    public static void ComplementPublicSecret(this DccConfigurationOptions dccConfigurationOptions, Func<string> setter)
-    {
-        if (!dccConfigurationOptions.PublicSecret.IsNullOrWhiteSpace())
-            return;
-
-        dccConfigurationOptions.PublicSecret = setter.Invoke();
-    }
-
-    public static void ComplementExpandSections(this DccConfigurationOptions dccConfigurationOptions)
-    {
-        if (dccConfigurationOptions.ExpandSections.All(section => section.AppId != dccConfigurationOptions.PublicId))
-        {
-            var publicSection = new DccSectionOptions
-            {
-                AppId = dccConfigurationOptions.PublicId!,
-                Secret = dccConfigurationOptions.PublicSecret
-            };
-            dccConfigurationOptions.ExpandSections.Add(publicSection);
-        }
+        dccConfigurationOptions.PublicConfig ??= new PublicConfigOptions();
+        dccConfigurationOptions.PublicConfig.ComplementDccConfigurationOptions(
+            distributedCacheClientSetter,
+            defaultEnvironmentSetter,
+            defaultClusterSetter,
+            defaultSecretSetter);
     }
 }

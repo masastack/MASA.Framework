@@ -22,5 +22,5 @@ public class ConfigurationRelationOptions
     /// </summary>
     public Type ObjectType { get; set; } = default!;
 
-    public string Name { get; set; }
+    public string OptionsName { get; set; } = string.Empty;
 }

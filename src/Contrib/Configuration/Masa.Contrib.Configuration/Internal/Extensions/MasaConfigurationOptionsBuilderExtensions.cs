@@ -45,11 +45,11 @@ internal static class MasaConfigurationOptionsBuilderExtensions
 
             var configurationRelationOptions = new ConfigurationRelationOptions
             {
-                SectionType = option.SectionType,
-                ParentSection = option.ParentSection,
-                Section = option.Section ?? optionType.Name,
+                SectionType = option.GetSectionType(),
+                ParentSection = option.GetParentSection(),
+                Section = option.GetSection() ?? optionType.Name,
                 ObjectType = optionType,
-                Name = option.Name
+                OptionsName = option.GetOptionsName()
             };
             masaConfigurationOptionsBuilder.AddRegistrationOptions(configurationRelationOptions);
         });
@@ -117,7 +117,7 @@ internal static class MasaConfigurationOptionsBuilderExtensions
         var configureOptionsType = typeof(IConfigureOptions<>);
         var implementationGenericType = typeof(MasaConfigureNamedOptions<>);
 
-        var configurationRelationOptions = relationOptions.ToDictionary(options => (options.ObjectType, options.Name), options => options);
+        var configurationRelationOptions = relationOptions.ToDictionary(options => (options.ObjectType, Name: options.OptionsName), options => options);
 
         foreach (var objectType in relationOptions.Select(options => options.ObjectType).Distinct())
         {

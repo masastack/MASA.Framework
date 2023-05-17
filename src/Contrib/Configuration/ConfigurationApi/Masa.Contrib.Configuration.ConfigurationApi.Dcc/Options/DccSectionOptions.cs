@@ -3,27 +3,12 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Options;
 
-public class DccSectionOptions
+public class DccSectionOptions : DccSectionOptionsBase
 {
-    /// <summary>
-    /// The environment name.
-    /// Get from the environment variable ASPNETCORE_ENVIRONMENT when Environment is null or empty
-    /// </summary>
-    public string Environment { get; set; } = string.Empty;
-
-    /// <summary>
-    /// The cluster name.
-    /// </summary>
-    public string Cluster { get; set; } = string.Empty;
-
     /// <summary>
     /// The app id.
     /// </summary>
     public string AppId { get; set; } = string.Empty;
-
-    public List<string> ConfigObjects { get; set; } = new();
-
-    public string? Secret { get; set; }
 
     public DccSectionOptions()
     {

@@ -27,7 +27,7 @@ public class MasaConfigurationOptionsBuilderTest
             ParentSection = "ParentSection",
             SectionType = SectionTypes.Local,
             Section = "Section",
-            Name = Options.DefaultName,
+            OptionsName = Options.DefaultName,
             ObjectType = typeof(string)
         });
         var options = new ConfigurationRelationOptions()
@@ -35,7 +35,7 @@ public class MasaConfigurationOptionsBuilderTest
             ParentSection = parentSection,
             SectionType = sectionType,
             Section = section,
-            Name = name,
+            OptionsName = name,
             ObjectType = objectType
         };
 

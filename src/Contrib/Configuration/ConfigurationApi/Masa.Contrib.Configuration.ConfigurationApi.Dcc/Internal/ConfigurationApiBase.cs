@@ -1,39 +1,36 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
+// ReSharper disable once CheckNamespace
 
-public class ConfigurationApiBase
+namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+
+internal class ConfigurationApiBase
 {
-    private readonly DccSectionOptions _defaultSectionOption;
-    private readonly List<DccSectionOptions> _expandSectionOptions;
+    private readonly DccConfigurationOptions _dccConfigurationOptions;
 
-    protected ConfigurationApiBase(DccSectionOptions defaultSectionOption, List<DccSectionOptions>? expandSectionOptions)
+    protected ConfigurationApiBase(DccConfigurationOptions dccConfigurationOptions)
     {
-        _defaultSectionOption = defaultSectionOption;
-        _expandSectionOptions = expandSectionOptions ?? new();
+        _dccConfigurationOptions = dccConfigurationOptions;
     }
 
     protected string GetSecret(string appId)
     {
-        if (_defaultSectionOption.AppId == GetAppId(appId))
-            return _defaultSectionOption.Secret ?? "";
-
-        var option = _expandSectionOptions.FirstOrDefault(x => x.AppId == appId);
-        if (option == null)
-            throw new ArgumentNullException(nameof(appId));
-
-        return option.Secret ?? "";
+        return _dccConfigurationOptions
+            .GetAllAvailabilitySections()
+            .Where(options => options.AppId == appId)
+            .Select(options => options.Secret)
+            .FirstOrDefault() ?? string.Empty;
     }
 
-    protected string GetEnvironment(string environment)
-        => !string.IsNullOrEmpty(environment) ? environment : _defaultSectionOption.Environment!;
+    protected string GetEnvironment(string? environment = null)
+        => !string.IsNullOrEmpty(environment) ? environment : _dccConfigurationOptions.DefaultSection.Environment!;
 
-    protected string GetCluster(string cluster)
-        => !string.IsNullOrEmpty(cluster) ? cluster : _defaultSectionOption.Cluster!;
+    protected string GetCluster(string? cluster = null)
+        => !string.IsNullOrEmpty(cluster) ? cluster : _dccConfigurationOptions.DefaultSection.Cluster!;
 
-    protected string GetAppId(string appId)
-        => !string.IsNullOrEmpty(appId) ? appId : _defaultSectionOption.AppId!;
+    protected string GetAppId(string? appId = null)
+        => !string.IsNullOrEmpty(appId) ? appId : _dccConfigurationOptions.DefaultSection.AppId!;
 
     protected string GetConfigObject(string configObject)
         => !string.IsNullOrEmpty(configObject) ? configObject : throw new ArgumentNullException(nameof(configObject));

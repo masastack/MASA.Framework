@@ -26,7 +26,7 @@ internal class DccConfigurationOptionProvider
         string environment,
         Func<IServiceProvider, DccOptions>? dccOptionsFunc)
     {
-        return _dccConfigurationOptionsCache.GetOrAdd(environment, _ =>
+        var options = _dccConfigurationOptionsCache.GetOrAdd(environment, _ =>
         {
             var dccOptions = dccOptionsFunc == null ?
                 serviceProvider.GetRequiredService<IOptions<DccOptions>>().Value :
@@ -37,5 +37,6 @@ internal class DccConfigurationOptionProvider
             dccConfigurationOptions.CheckAndComplementDccConfigurationOptions(serviceProvider);
             return dccConfigurationOptions;
         });
+        return options;
     }
 }

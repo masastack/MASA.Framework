@@ -16,22 +16,18 @@ public interface IMasaOptionsConfigurable
     /// <summary>
     /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType
     /// </summary>
-    [JsonIgnore]
-    string? ParentSection { get; }
+    string? GetParentSection();
 
     /// <summary>
     /// The section null means same as the class name, else load from the specify section
     /// </summary>
-    [JsonIgnore]
-    string? Section { get; }
+    string? GetSection();
 
-    [JsonIgnore]
-    SectionTypes SectionType { get; }
+    SectionTypes GetSectionType();
 
     /// <summary>
     /// The name of the options instance
     /// Normally it is string.Empty
     /// </summary>
-    [JsonIgnore]
-    string Name { get; }
+    string GetOptionsName();
 }

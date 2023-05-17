@@ -8,22 +8,19 @@ public abstract class ConfigurationApiMasaOptionsConfigurable : MasaOptionsConfi
     /// <summary>
     /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType
     /// </summary>
-    [JsonIgnore]
-    public sealed override string? ParentSection => AppId;
+    protected sealed override string? ParentSection => AppId;
 
-    public virtual string AppId => DccConfig.AppId;
+    protected virtual string? AppId => null;
 
     /// <summary>
     /// The section null means same as the class name, else load from the specify section
     /// </summary>
-    [JsonIgnore]
-    public sealed override string? Section => ObjectName;
+    protected sealed override string? Section => ObjectName;
 
-    public virtual string? ObjectName { get; }
+    protected virtual string? ObjectName => null;
 
     /// <summary>
     /// Configuration object name
     /// </summary>
-    [JsonIgnore]
-    public sealed override SectionTypes SectionType => SectionTypes.ConfigurationApi;
+    protected sealed override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 }

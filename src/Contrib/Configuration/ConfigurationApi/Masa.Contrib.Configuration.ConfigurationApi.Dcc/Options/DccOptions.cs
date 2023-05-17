@@ -18,13 +18,6 @@ public class DccOptions : DccSectionOptions
     public string? SubscribeKeyPrefix { get; set; }
 
     /// <summary>
-    /// public config id
-    /// </summary>
-    public string? PublicId { get; set; } = default!;
-
-    public string? PublicSecret { get; set; }
-
-    /// <summary>
     /// Key for global encryption config object
     /// </summary>
     public string? ConfigObjectSecret { get; set; }
@@ -33,4 +26,16 @@ public class DccOptions : DccSectionOptions
     /// Expansion section information
     /// </summary>
     public List<DccSectionOptions> ExpandSections { get; set; } = new();
+
+    /// <summary>
+    /// Whether to enable public configuration
+    /// default: true
+    /// </summary>
+    public bool EnablePublicConfig { get; set; } = true;
+
+    /// <summary>
+    /// Public configuration information
+    /// default: null
+    /// </summary>
+    public PublicConfigOptions? PublicConfig { get; set; }
 }
