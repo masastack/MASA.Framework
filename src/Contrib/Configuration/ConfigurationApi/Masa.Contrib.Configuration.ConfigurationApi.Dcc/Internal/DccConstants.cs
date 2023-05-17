@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal;
 
-internal static class Constants
+internal static class DccConstants
 {
     internal const string DEFAULT_CLIENT_NAME = "masa.contrib.configuration.configurationapi.dcc";
 

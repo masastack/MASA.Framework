@@ -21,5 +21,5 @@ public class RabbitMqOptions : LocalMasaOptionsConfigurable
     /// The section null means same as the class name, else load from the specify section
     /// </summary>
     [JsonIgnore]
-    public override string? Section => "RabbitMq";
+    protected override string? Section => "RabbitMq";
 }

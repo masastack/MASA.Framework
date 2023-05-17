@@ -8,7 +8,6 @@ public abstract class MasaOptionsConfigurableBase : IMasaOptionsConfigurable
     /// <summary>
     /// The name of the parent section, if it is empty, it will be mounted under SectionType, otherwise it will be mounted to the specified section under SectionType
     /// </summary>
-    [JsonIgnore]
     protected virtual string? ParentSection => null;
 
     /// <summary>

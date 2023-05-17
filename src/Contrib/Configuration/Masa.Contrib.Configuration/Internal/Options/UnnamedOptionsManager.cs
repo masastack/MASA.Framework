@@ -5,6 +5,10 @@
 
 namespace Masa.Contrib.Configuration;
 
+/// <summary>
+/// Provider for default IOptions
+/// </summary>
+/// <typeparam name="TOptions"></typeparam>
 internal sealed class UnnamedOptionsManager<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]TOptions> :
     IOptions<TOptions>
     where TOptions : class

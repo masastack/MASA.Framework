@@ -19,6 +19,7 @@ public class MasaConfigurationEnvironmentProviderTest
         string expectedEnvironment)
     {
         var services = new ServiceCollection();
+        services.AddTransient<MasaConfigurationEnvironmentCache>();
         services.Configure<MasaAppConfigureOptions>(options =>
         {
             options.Environment = globalEnvironment;
@@ -33,11 +34,12 @@ public class MasaConfigurationEnvironmentProviderTest
             multiEnvironmentContext.Setup(context => context.CurrentEnvironment).Returns(environment);
             services.AddSingleton<IMultiEnvironmentContext>(_ => multiEnvironmentContext.Object);
         }
-        var rootServiceProvider = services.BuildServiceProvider();
-        var masaConfigurationEnvironmentProvider = new MasaConfigurationEnvironmentProvider(new MasaConfigurationEnvironmentCache());
 
-        var result = masaConfigurationEnvironmentProvider.TryGetDefaultEnvironment(rootServiceProvider.CreateScope().ServiceProvider,
-            out string? env);
+        var rootServiceProvider = services.BuildServiceProvider();
+        using var scope = rootServiceProvider.CreateScope();
+        var masaConfigurationEnvironmentProvider = new MasaConfigurationEnvironmentProvider(scope.ServiceProvider);
+
+        var result = masaConfigurationEnvironmentProvider.GetCurrentEnvironment(enableMultiEnvironment);
         Assert.AreEqual(expectedResult, result);
         Assert.AreEqual(expectedEnvironment, env);
     }

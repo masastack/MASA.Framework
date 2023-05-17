@@ -5,26 +5,25 @@
 
 namespace Masa.Contrib.Configuration;
 
+/// <summary>
+/// When isolation is not enabled
+/// </summary>
+/// <typeparam name="TOptions"></typeparam>
 internal sealed class MasaUnnamedOptionsManager<TOptions> :
     IOptions<TOptions>
     where TOptions : class
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly MasaUnnamedOptionsProvider _masaUnnamedOptionsProvider;
 
     public MasaUnnamedOptionsManager(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _masaUnnamedOptionsProvider = serviceProvider.GetRequiredService<MasaUnnamedOptionsProvider>();
     }
 
-    public TOptions Value
-    {
-        get
-        {
-            var masaUnnamedOptionsProvider = _serviceProvider.GetService<MasaUnnamedOptionsProvider<TOptions>>();
-            if (masaUnnamedOptionsProvider != null)
-                return masaUnnamedOptionsProvider.GetOptions(_serviceProvider);
-
-            return _serviceProvider.GetRequiredService<UnnamedOptionsManager<TOptions>>().Value;
-        }
-    }
+    /// <summary>
+    ///
+    /// </summary>
+    public TOptions Value => _masaUnnamedOptionsProvider.GetOptions<TOptions>(_serviceProvider);
 }

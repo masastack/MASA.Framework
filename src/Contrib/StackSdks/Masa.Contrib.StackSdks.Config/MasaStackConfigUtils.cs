@@ -23,12 +23,11 @@ internal static class MasaStackConfigUtils
             {
                 Servers = new List<Caching.Distributed.StackExchangeRedis.RedisServerOptions>
             {
-                new Caching.Distributed.StackExchangeRedis.RedisServerOptions(redis.RedisHost,redis.RedisPort)
+                new(redis.RedisHost,redis.RedisPort)
             },
                 DefaultDatabase = redis.RedisDb,
                 Password = redis.RedisPassword
             },
-            PublicSecret = secret,
             ConfigObjectSecret = secret
         };
 

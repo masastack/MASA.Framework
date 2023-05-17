@@ -7,17 +7,20 @@ namespace Masa.Contrib.Configuration;
 
 internal class MasaOptionsMonitorProvider
 {
-    private readonly IReadOnlyList<ConfigurationRelationOptions> _relationOptions;
+    private readonly Lazy<HashSet<Type>> _autoMapTypesLazy;
+    private  HashSet<Type> AutoMapTypes => _autoMapTypesLazy.Value;
 
-    public MasaOptionsMonitorProvider(IReadOnlyList<ConfigurationRelationOptions> relationOptions)
-        => _relationOptions = relationOptions;
+    public MasaOptionsMonitorProvider(IServiceProvider serviceProvider)
+        => _autoMapTypesLazy = new Lazy<HashSet<Type>>(() => serviceProvider.GetRequiredService<AutoMapOptionsProvider>().AutoMapTypes);
 
-    public IOptionsMonitor<TOptions> GetOptionsMonitor<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)] TOptions>(
+    public IOptionsMonitor<TOptions> GetOptionsMonitor<
+        [DynamicallyAccessedMembers(ConfigurationConstant.DYNAMICALLY_ACCESSED_MEMBERS)]
+        TOptions>(
         IServiceProvider serviceProvider)
         where TOptions : class
     {
-        var enableMultiEnvironment = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>().Value.EnableMultiEnvironment;
-        if (enableMultiEnvironment && _relationOptions.Any(options => options.ObjectType == typeof(TOptions)))
+        var enableMultiEnvironment = serviceProvider.EnableMultiEnvironment();
+        if (enableMultiEnvironment && AutoMapTypes.Contains(typeof(TOptions)))
             throw new NotSupportedException($"Multi-environment mode does not support IOptionsMonitor<{typeof(TOptions).FullName}>");
 
         return serviceProvider.GetRequiredService<OptionsMonitor<TOptions>>();

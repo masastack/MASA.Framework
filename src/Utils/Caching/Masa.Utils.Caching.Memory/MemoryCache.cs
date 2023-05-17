@@ -29,9 +29,19 @@ public class MemoryCache<TKey, TValue> : IDisposable where TKey : notnull
         {
             if (_dicCache.TryGetValue(key, out var lazyValue))
                 return lazyValue.Value;
-            
+
             return default;
         }
+    }
+
+    public MemoryCache()
+    {
+
+    }
+
+    public MemoryCache(IEnumerable<KeyValuePair<TKey, TValue>> collection) : this()
+    {
+        _dicCache = new ConcurrentDictionary<TKey, Lazy<TValue>>(collection.Select(item => new KeyValuePair<TKey, Lazy<TValue>>(item.Key, new Lazy<TValue>(() => item.Value))));
     }
 
     public bool Get(TKey key, out TValue? value)

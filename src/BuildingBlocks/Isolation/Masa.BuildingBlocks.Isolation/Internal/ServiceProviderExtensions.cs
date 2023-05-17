@@ -16,4 +16,7 @@ internal static class ServiceProviderExtensions
 {
     public static bool EnableIsolation(this IServiceProvider serviceProvider)
         => serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value.Enable ?? false;
+
+    public static bool EnableMultiEnvironment(this IServiceProvider serviceProvider)
+        => serviceProvider.GetService<IOptions<IsolationOptions>>()?.Value.EnableMultiEnvironment ?? false;
 }

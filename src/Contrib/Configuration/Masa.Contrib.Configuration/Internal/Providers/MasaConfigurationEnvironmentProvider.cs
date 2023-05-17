@@ -9,26 +9,40 @@ namespace Masa.Contrib.Configuration;
 
 internal class MasaConfigurationEnvironmentProvider
 {
-    private readonly MasaConfigurationEnvironmentCache _masaConfigurationEnvironmentCache;
+    private string? _environment;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly object _lock;
 
-    public MasaConfigurationEnvironmentProvider(MasaConfigurationEnvironmentCache masaConfigurationEnvironmentCache)
-        => _masaConfigurationEnvironmentCache = masaConfigurationEnvironmentCache;
-
-    public bool TryGetDefaultEnvironment(IServiceProvider serviceProvider, [NotNullWhen(true)] out string? environment)
+    public MasaConfigurationEnvironmentProvider(IServiceProvider serviceProvider)
     {
-        environment = _masaConfigurationEnvironmentCache.GetOrAdd(serviceProvider, sp =>
-        {
-            var isolationOptions = sp.GetRequiredService<IOptions<IsolationOptions>>();
-            if (!isolationOptions.Value.EnableMultiEnvironment)
-            {
-                var globalMasaAppOptions = sp.GetRequiredService<IOptions<MasaAppConfigureOptions>>();
-                return globalMasaAppOptions.Value.Environment;
-            }
+        _serviceProvider = serviceProvider;
+        _lock = new();
+    }
 
-            var multiEnvironmentContext = sp.GetService<IMultiEnvironmentContext>();
-            MasaArgumentException.ThrowIfNull(multiEnvironmentContext);
-            return multiEnvironmentContext.CurrentEnvironment;
-        });
-        return !environment.IsNullOrWhiteSpace();
+    public string GetCurrentEnvironment(bool enableMultiEnvironment)
+    {
+        var environment= _environment;
+        if (environment != null)
+            return environment;
+
+        lock (_lock)
+        {
+            if (_environment != null)
+                return _environment;
+
+            if (!enableMultiEnvironment)
+            {
+                environment = ConfigurationUtils.GetEnvironmentWhenDisableMultiEnvironment();
+            }
+            else
+            {
+                // Use the environment information of the current user context when multi-environment is enabled
+                var multiEnvironmentContext = _serviceProvider.GetService<IMultiEnvironmentContext>();
+                MasaArgumentException.ThrowIfNull(multiEnvironmentContext);
+                environment = multiEnvironmentContext.CurrentEnvironment;
+            }
+            _environment = environment;
+        }
+        return environment;
     }
 }

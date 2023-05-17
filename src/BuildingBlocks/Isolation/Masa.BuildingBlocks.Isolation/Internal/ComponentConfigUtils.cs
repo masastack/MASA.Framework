@@ -18,7 +18,7 @@ internal static class ComponentConfigUtils
         string sectionName)
         where TComponentConfig : class
     {
-        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<IsolationOptions<TComponentConfig>>>().Get(name);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsSnapshot<IsolationOptions<TComponentConfig>>>().Get(name);
         if (optionsMonitor.Data.Count > 0)
             return optionsMonitor.Data;
 
@@ -47,8 +47,7 @@ internal static class ComponentConfigUtils
         string sectionName,
         Func<TComponentConfig> defaultFunc) where TComponentConfig : class
     {
-        var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
-        if (isolationOptions.Value.Enable)
+        if (serviceProvider.EnableIsolation())
         {
             return serviceProvider
                 .GetRequiredService<IIsolationConfigProvider>()

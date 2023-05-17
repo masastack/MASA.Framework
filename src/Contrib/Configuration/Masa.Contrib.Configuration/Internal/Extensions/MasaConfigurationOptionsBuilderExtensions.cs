@@ -9,15 +9,17 @@ namespace Masa.Contrib.Configuration;
 
 internal static class MasaConfigurationOptionsBuilderExtensions
 {
-    public static void AddOptions(this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder)
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="masaConfigurationOptionsBuilder"></param>
+    public static void AddOptions(
+        this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder)
     {
-        var relations = masaConfigurationOptionsBuilder.BuildOptionsRelations();
+        masaConfigurationOptionsBuilder.BuildOptionsRelations();
 
-        AddOrUpdateOptions(masaConfigurationOptionsBuilder.Services, relations);
-
-        AddOrUpdateOptionsSnapshot(masaConfigurationOptionsBuilder.Services, relations);
-
-        AddOrUpdateOptionsMonitor(masaConfigurationOptionsBuilder.Services, relations);
+        AddOptions(masaConfigurationOptionsBuilder.Services);
+        AddOrUpdateOptionsMonitor(masaConfigurationOptionsBuilder.Services);
     }
 
     /// <summary>
@@ -25,13 +27,33 @@ internal static class MasaConfigurationOptionsBuilderExtensions
     /// </summary>
     /// <param name="masaConfigurationOptionsBuilder"></param>
     /// <exception cref="MasaException"></exception>
-    public static IReadOnlyList<ConfigurationRelationOptions> BuildOptionsRelations(
-        this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder)
+    public static void BuildOptionsRelations(this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder)
     {
-        if (!masaConfigurationOptionsBuilder.EnableAutoMapOptions)
-            return masaConfigurationOptionsBuilder.RegistrationOptions;
+        var autoMapOptionsAll = new List<ConfigurationRelationOptions>(masaConfigurationOptionsBuilder.AutoMapOptionsByManual);
+        if (masaConfigurationOptionsBuilder.EnableAutoMapOptions)
+        {
+            var autoMapOptionsByAutomatic = GetAutoMasaOptionsByAutomatic(masaConfigurationOptionsBuilder.GetAssemblies());
 
-        var optionTypes = GetAutoOptionsTypes(masaConfigurationOptionsBuilder.GetAssemblies());
+            foreach (var item in autoMapOptionsByAutomatic)
+            {
+                ConfigurationUtils.AddAutoMapOptions(autoMapOptionsAll, item);
+            }
+        }
+
+        // List of documented support option patterns
+        masaConfigurationOptionsBuilder.Services.Configure<ConfigurationAutoMapOptions>(options =>
+        {
+            foreach (var item in autoMapOptionsAll)
+            {
+                ConfigurationUtils.AddAutoMapOptions(options.Data, item);
+            }
+        });
+    }
+
+    private static List<ConfigurationRelationOptions> GetAutoMasaOptionsByAutomatic(IEnumerable<Assembly> assemblies)
+    {
+        var optionTypes = GetAutoOptionsTypes();
+        var data = new List<ConfigurationRelationOptions>();
 
         optionTypes.ForEach(optionType =>
         {
@@ -51,12 +73,12 @@ internal static class MasaConfigurationOptionsBuilderExtensions
                 ObjectType = optionType,
                 OptionsName = option.GetOptionsName()
             };
-            masaConfigurationOptionsBuilder.AddRegistrationOptions(configurationRelationOptions);
+            ConfigurationUtils.AddAutoMapOptions(data, configurationRelationOptions);
         });
 
-        return masaConfigurationOptionsBuilder.RegistrationOptions;
+        return data;
 
-        List<Type> GetAutoOptionsTypes(IEnumerable<Assembly> assemblies)
+        List<Type> GetAutoOptionsTypes()
         {
             return assemblies
                 .SelectMany(assembly => assembly.GetTypes())
@@ -67,77 +89,23 @@ internal static class MasaConfigurationOptionsBuilderExtensions
         }
     }
 
-    private static void AddOrUpdateOptions(IServiceCollection services,
-        IReadOnlyList<ConfigurationRelationOptions> relationOptions)
+    private static void AddOptions(IServiceCollection services)
     {
-        var singletonServiceGenericType = typeof(SingletonService<>);
-        var scopedServiceGenericType = typeof(ScopedService<>);
-        var masaUnnamedOptionsProviderGenericType = typeof(MasaUnnamedOptionsProvider<>);
-        var masaUnnamedOptionsCacheGenericType = typeof(MasaUnnamedOptionsCache<>);
-
-        foreach (var objectType in relationOptions.Select(options => options.ObjectType).Distinct())
-        {
-            var masaUnnamedOptionsCacheType = masaUnnamedOptionsCacheGenericType.MakeGenericType(objectType);
-            var masaUnnamedOptionsProviderType = masaUnnamedOptionsProviderGenericType.MakeGenericType(objectType);
-
-            var singleMasaUnnamedOptionsProviderType = singletonServiceGenericType.MakeGenericType(masaUnnamedOptionsProviderType);
-            var scopedMasaUnnamedOptionsProviderType = scopedServiceGenericType.MakeGenericType(masaUnnamedOptionsProviderType);
-
-            services.AddSingleton(singleMasaUnnamedOptionsProviderType, serviceProvider =>
-            {
-                var masaUnnamedOptionsCache = serviceProvider.GetService(masaUnnamedOptionsCacheType);
-                var masaUnnamedOptionsProvider = Activator.CreateInstance(masaUnnamedOptionsProviderType, masaUnnamedOptionsCache);
-                return Activator.CreateInstance(singleMasaUnnamedOptionsProviderType, masaUnnamedOptionsProvider)!;
-            });
-
-            services.AddScoped(scopedMasaUnnamedOptionsProviderType, serviceProvider =>
-            {
-                var masaUnnamedOptionsCache = serviceProvider.GetService(masaUnnamedOptionsCacheType);
-                var masaUnnamedOptionsProvider = Activator.CreateInstance(masaUnnamedOptionsProviderType, masaUnnamedOptionsCache);
-                return Activator.CreateInstance(scopedMasaUnnamedOptionsProviderType, masaUnnamedOptionsProvider)!;
-            });
-
-            services.AddTransient(masaUnnamedOptionsProviderType, serviceProvider =>
-            {
-                var enableMultiEnvironment = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>().Value.EnableMultiEnvironment;
-                return enableMultiEnvironment ?
-                    (serviceProvider.GetRequiredService(scopedMasaUnnamedOptionsProviderType) as LifetimeServiceBase)!.GetService() :
-                    (serviceProvider.GetRequiredService(singleMasaUnnamedOptionsProviderType) as LifetimeServiceBase)!.GetService();
-            });
-        }
-
-        services.AddSingleton(typeof(UnnamedOptionsManager<>));
-        services.AddTransient(masaUnnamedOptionsCacheGenericType);
+        services.Replace(new ServiceDescriptor(typeof(IConfigureNamedOptions<>), typeof(MasaConfigureNamedOptions<>), ServiceLifetime.Transient));
+        services.Replace(new ServiceDescriptor(typeof(IConfigureOptions<>), typeof(MasaConfigureNamedOptions<>), ServiceLifetime.Transient));
+        services.AddTransient(typeof(MasaConfigureNamedOptions<>));
+        services.AddTransient<MasaConfigureNamedOptionsProvider, MasaConfigureNamedOptionsProvider>();
         services.Replace(new ServiceDescriptor(typeof(IOptions<>), typeof(MasaUnnamedOptionsManager<>), ServiceLifetime.Transient));
+        services.AddTransient<MasaUnnamedOptionsProvider>();
+        services.AddTransient(typeof(MasaUnnamedOptionsProvider<>));
+        services.AddSingleton(typeof(MasaUnnamedOptionsCache<>));
+        services.AddSingleton(typeof(UnnamedOptionsManager<>));
     }
 
-    private static void AddOrUpdateOptionsSnapshot(IServiceCollection services, IReadOnlyList<ConfigurationRelationOptions> relationOptions)
-    {
-        var serviceGenericType = typeof(IConfigureNamedOptions<>);
-        var configureOptionsType = typeof(IConfigureOptions<>);
-        var implementationGenericType = typeof(MasaConfigureNamedOptions<>);
-
-        var configurationRelationOptions = relationOptions.ToDictionary(options => (options.ObjectType, Name: options.OptionsName), options => options);
-
-        foreach (var objectType in relationOptions.Select(options => options.ObjectType).Distinct())
-        {
-            var serviceType = serviceGenericType.MakeGenericType(objectType);
-            var implementationType = implementationGenericType.MakeGenericType(objectType);
-
-            services.TryAddTransient(configureOptionsType.MakeGenericType(objectType),
-                serviceProvider => serviceProvider.GetRequiredService(serviceType));
-            services.TryAddTransient(serviceType, serviceProvider =>
-            {
-                var implementation = Activator.CreateInstance(implementationType, serviceProvider, configurationRelationOptions);
-                return implementation!;
-            });
-        }
-    }
-
-    private static void AddOrUpdateOptionsMonitor(IServiceCollection services, IReadOnlyList<ConfigurationRelationOptions> relationOptions)
+    private static void AddOrUpdateOptionsMonitor(IServiceCollection services)
     {
         services.Replace(new ServiceDescriptor(typeof(IOptionsMonitor<>), typeof(MasaOptionsMonitor<>), ServiceLifetime.Transient));
-        services.AddSingleton<MasaOptionsMonitorProvider>(_ => new MasaOptionsMonitorProvider(relationOptions));
+        services.AddTransient<MasaOptionsMonitorProvider>();
         services.AddSingleton(typeof(OptionsMonitor<>));
     }
 }

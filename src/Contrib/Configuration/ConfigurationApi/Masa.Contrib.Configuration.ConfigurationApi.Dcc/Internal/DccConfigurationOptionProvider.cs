@@ -5,36 +5,43 @@
 
 namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
+/// <summary>
+/// Get Dcc configuration information
+/// </summary>
 internal class DccConfigurationOptionProvider
 {
+    private readonly IServiceProvider _serviceProvider;
     private readonly DccConfigurationOptionsCache _dccConfigurationOptionsCache;
+    private readonly string _currentEnvironment;
 
-    public DccConfigurationOptionProvider(DccConfigurationOptionsCache dccConfigurationOptionsCache)
-        => _dccConfigurationOptionsCache = dccConfigurationOptionsCache;
+    public DccConfigurationOptionProvider(IServiceProvider serviceProvider)
+    {
+        _dccConfigurationOptionsCache = serviceProvider.GetRequiredService<DccConfigurationOptionsCache>();
+        _serviceProvider = serviceProvider;
+
+        var masaConfigurationEnvironmentProvider = _serviceProvider.GetRequiredService<MasaConfigurationEnvironmentProvider>();
+        _currentEnvironment = masaConfigurationEnvironmentProvider.GetCurrentEnvironment(serviceProvider.EnableMultiEnvironment());
+    }
 
     public DccConfigurationOptions GetOptions(
-        IServiceProvider serviceProvider,
         Func<IServiceProvider, DccOptions>? dccOptionsFunc)
     {
-        var masaConfigurationEnvironmentProvider = serviceProvider.GetRequiredService<MasaConfigurationEnvironmentProvider>();
-        masaConfigurationEnvironmentProvider.TryGetDefaultEnvironment(serviceProvider, out var environment);
-        return GetOptions(serviceProvider, environment ?? string.Empty, dccOptionsFunc);
+        return GetOptions(_serviceProvider, _currentEnvironment, dccOptionsFunc);
     }
 
     private DccConfigurationOptions GetOptions(
         IServiceProvider serviceProvider,
-        string environment,
+        string currentEnvironment,
         Func<IServiceProvider, DccOptions>? dccOptionsFunc)
     {
-        var options = _dccConfigurationOptionsCache.GetOrAdd(environment, _ =>
+        var options = _dccConfigurationOptionsCache.GetOrAdd(currentEnvironment, environment =>
         {
             var dccOptions = dccOptionsFunc == null ?
                 serviceProvider.GetRequiredService<IOptions<DccOptions>>().Value :
                 dccOptionsFunc.Invoke(serviceProvider);
 
             var dccConfigurationOptions = dccOptions.ConvertToDccConfigurationOptions();
-
-            dccConfigurationOptions.CheckAndComplementDccConfigurationOptions(serviceProvider);
+            dccConfigurationOptions.CheckAndComplementDccConfigurationOptions(environment, serviceProvider);
             return dccConfigurationOptions;
         });
         return options;

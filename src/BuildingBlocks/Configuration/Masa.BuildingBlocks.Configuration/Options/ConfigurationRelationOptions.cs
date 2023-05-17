@@ -7,6 +7,7 @@ public class ConfigurationRelationOptions
 {
     /// <summary>
     /// Whether it is a required (required when initializing the configuration) configuration component
+    /// Whether it is required (required when initializing the configuration) to configure the component, SectionType is not equal to Local
     /// default: false
     /// </summary>
     public bool IsRequiredConfigComponent { get; set; } = false;

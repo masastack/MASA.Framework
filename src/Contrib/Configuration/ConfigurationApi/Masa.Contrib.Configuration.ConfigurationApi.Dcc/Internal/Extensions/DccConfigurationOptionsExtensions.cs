@@ -9,13 +9,17 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc;
 
 internal static class DccConfigurationOptionsExtensions
 {
+    private static readonly Lazy<string> DefaultAppIdLazy = new(() => (Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly()).GetName().Name!.Replace(".", "-"));
+    private static string DefaultAppId => DefaultAppIdLazy.Value;
+
     public static void CheckAndComplementDccConfigurationOptions(
         this DccConfigurationOptions dccConfigurationOptions,
+        string currentEnvironment,
         IServiceProvider serviceProvider)
     {
         dccConfigurationOptions.CheckDccConfigurationOptions();
 
-        dccConfigurationOptions.ComplementDccConfigurationOptions(serviceProvider);
+        dccConfigurationOptions.ComplementDccConfigurationOptions(currentEnvironment, serviceProvider);
     }
 
     public static void CheckDccConfigurationOptions(this DccConfigurationOptions dccConfigurationOptions)
@@ -48,22 +52,23 @@ internal static class DccConfigurationOptionsExtensions
 
     public static void ComplementDccConfigurationOptions(
         this DccConfigurationOptions dccConfigurationOptions,
+        string currentEnvironment,
         IServiceProvider serviceProvider)
     {
-        MasaAppConfigureOptions? masaAppConfigureOptions = null;
+        IMasaConfiguration? masaConfiguration = null;
         IManualDistributedCacheClient? distributedCacheClient = null;
 
         dccConfigurationOptions.DefaultSection.ComplementDccSectionOptions(
-            GetMasaAppConfigureOptions,
             GetDistributedCacheClient,
+            GetDefaultAppId,
             GetDefaultEnvironment,
-            () => GetMasaAppConfigureOptions().Cluster,
+            GetDefaultCluster,
             () => dccConfigurationOptions.ConfigObjectSecret,
             false);
 
         dccConfigurationOptions.ComplementPublicConfig(GetDistributedCacheClient,
             GetDefaultEnvironment,
-            () => GetMasaAppConfigureOptions().Cluster,
+            GetDefaultCluster,
             () => dccConfigurationOptions.ConfigObjectSecret);
 
         if (dccConfigurationOptions.ExpandSections.Any(sectionOption
@@ -74,28 +79,39 @@ internal static class DccConfigurationOptionsExtensions
         foreach (var sectionOption in dccConfigurationOptions.ExpandSections)
         {
             sectionOption.ComplementDccSectionOptions(
-                GetMasaAppConfigureOptions,
                 GetDistributedCacheClient,
+                GetDefaultAppId,
                 GetDefaultEnvironment,
-                () => dccConfigurationOptions.DefaultSection.Cluster,
+                GetDefaultCluster,
                 () => dccConfigurationOptions.ConfigObjectSecret,
                 true);
         }
 
-        MasaAppConfigureOptions GetMasaAppConfigureOptions()
-            => masaAppConfigureOptions ??= serviceProvider.GetRequiredService<IOptions<MasaAppConfigureOptions>>().Value;
-
         IManualDistributedCacheClient GetDistributedCacheClient()
             => distributedCacheClient ??= CacheUtils.CreateDistributedCacheClient(dccConfigurationOptions, serviceProvider);
 
-        string GetDefaultEnvironment()
+        string GetDefaultAppId()
         {
-            var masaConfigurationEnvironmentProvider = serviceProvider.GetRequiredService<MasaConfigurationEnvironmentProvider>();
-            if (masaConfigurationEnvironmentProvider.TryGetDefaultEnvironment(serviceProvider, out var environment))
-                return environment;
-
-            return string.Empty;
+            var appId = GetMasaConfiguration().Local.GetSection(nameof(MasaAppConfigureOptions.AppId)).Value;
+            return !appId.IsNullOrWhiteSpace() ? appId : DefaultAppId;
         }
+
+        string GetDefaultCluster()
+        {
+            var cluster = GetMasaConfiguration().Local.GetSection(nameof(MasaAppConfigureOptions.Cluster)).Value;
+            return !cluster.IsNullOrWhiteSpace() ? cluster : ConfigurationConstant.DEFAULT_CLUSTER;
+        }
+
+        IMasaConfiguration GetMasaConfiguration()
+        {
+            if (masaConfiguration != null)
+                return masaConfiguration;
+
+            masaConfiguration = serviceProvider.GetRequiredService<IMasaConfigurationFactory>().Create(SectionTypes.Local);
+            return masaConfiguration;
+        }
+
+        string GetDefaultEnvironment() => currentEnvironment;
     }
 
     public static void ComplementPublicConfig(

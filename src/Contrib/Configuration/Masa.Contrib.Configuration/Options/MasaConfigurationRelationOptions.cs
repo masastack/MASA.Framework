@@ -9,8 +9,8 @@ public class MasaConfigurationRelationOptions
 {
     private readonly List<ConfigurationRelationOptions> _relationOptions;
 
-    public MasaConfigurationRelationOptions(List<ConfigurationRelationOptions> relationOptions)
-        => _relationOptions = relationOptions;
+    public MasaConfigurationRelationOptions(List<ConfigurationRelationOptions> autoMapOptionsByManual)
+        => _relationOptions = autoMapOptionsByManual;
 
     /// <summary>
     /// Map Section relationship By Local
@@ -30,7 +30,8 @@ public class MasaConfigurationRelationOptions
     /// <param name="section">The default is null, which is consistent with the mapping class name, and string.Empty when no root node exists</param>
     /// <param name="optionsName"></param>
     /// <returns></returns>
-    public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string appId, string? section = null, string? optionsName = null)
+    public MasaConfigurationRelationOptions MappingConfigurationApi<TModel>(string appId, string? section = null,
+        string? optionsName = null)
         where TModel : class
     {
         MasaArgumentException.ThrowIfNullOrWhiteSpace(appId);
@@ -57,7 +58,7 @@ public class MasaConfigurationRelationOptions
         optionsName ??= Options.DefaultName;
         section ??= typeof(TModel).Name;
 
-        ConfigurationUtils.AddRegistrationOptions(_relationOptions, new ConfigurationRelationOptions()
+        ConfigurationUtils.AddAutoMapOptions(_relationOptions, new ConfigurationRelationOptions()
         {
             SectionType = sectionType,
             ParentSection = parentSection,
@@ -66,5 +67,10 @@ public class MasaConfigurationRelationOptions
             OptionsName = optionsName
         });
         return this;
+    }
+
+    public List<ConfigurationRelationOptions> GetAutoMasaOptionsByManual()
+    {
+        return _relationOptions;
     }
 }

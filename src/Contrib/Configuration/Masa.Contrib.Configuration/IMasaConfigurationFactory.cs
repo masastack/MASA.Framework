@@ -5,5 +5,11 @@ namespace Masa.Contrib.Configuration;
 
 public interface IMasaConfigurationFactory
 {
+    /// <summary>
+    /// Get the configuration information of the specified node type
+    /// When multiple environments are enabled, the obtained configuration is the configuration information in the current environment
+    /// </summary>
+    /// <param name="sectionType"></param>
+    /// <returns></returns>
     IMasaConfiguration Create(SectionTypes sectionType);
 }

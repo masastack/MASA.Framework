@@ -61,13 +61,9 @@ public static class ServiceCollectionExtensions
 
     private static void TryAddBucketNameProvider(this IServiceCollection services)
     {
-        services.TryAddTransient<IBucketNameProvider>(serviceProvider =>
-        {
-            if (serviceProvider.EnableIsolation())
-                return serviceProvider.GetRequiredService<ScopedService<IBucketNameProvider>>().Service;
-
-            return serviceProvider.GetRequiredService<SingletonService<IBucketNameProvider>>().Service;
-        });
+        services.TryAddTransient<IBucketNameProvider>(serviceProvider => serviceProvider.EnableIsolation() ?
+            serviceProvider.GetRequiredService<ScopedService<IBucketNameProvider>>().Service :
+            serviceProvider.GetRequiredService<SingletonService<IBucketNameProvider>>().Service);
         services.TryAddTransient<IBucketNameFactory, DefaultBucketNameFactory>();
     }
 

@@ -11,7 +11,7 @@ public static class MasaConfigurationOptionsBuilderExtensions
         this MasaConfigurationOptionsBuilder masaConfigurationOptionsBuilder,
         Action<MasaConfigurationRelationOptions> configure)
     {
-        var masaConfigurationRelationOptions = new MasaConfigurationRelationOptions(masaConfigurationOptionsBuilder.GetRegistrationOptions());
+        var masaConfigurationRelationOptions = new MasaConfigurationRelationOptions(masaConfigurationOptionsBuilder.AutoMapOptionsByManual);
         configure.Invoke(masaConfigurationRelationOptions);
     }
 }

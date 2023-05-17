@@ -9,13 +9,13 @@ namespace Masa.Contrib.Configuration;
 public class DefaultMasaConfiguration : IMasaConfiguration
 {
     private readonly IConfiguration _configuration;
-    private readonly Lazy<IConfigurationApi> _configurationApiLazy;
+    private readonly Lazy<IConfigurationApi?> _configurationApiLazy;
 
     public IConfiguration Local => GetConfiguration(SectionTypes.Local);
 
-    public IConfigurationApi ConfigurationApi => _configurationApiLazy.Value;
+    public IConfigurationApi? ConfigurationApi => _configurationApiLazy.Value;
 
-    public DefaultMasaConfiguration(IConfiguration configuration, Lazy<IConfigurationApi> configurationApiLazy)
+    public DefaultMasaConfiguration(IConfiguration configuration, Lazy<IConfigurationApi?> configurationApiLazy)
     {
         _configuration = configuration;
         _configurationApiLazy = configurationApiLazy;

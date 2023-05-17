@@ -5,21 +5,30 @@
 
 namespace Masa.Contrib.Configuration;
 
-internal class MasaUnnamedOptionsProvider<TOptions> where TOptions : class
+internal class MasaUnnamedOptionsProvider
 {
-    private readonly MasaUnnamedOptionsCache<TOptions> _optionsCache;
+    private readonly IServiceProvider _serviceProvider;
 
-    public MasaUnnamedOptionsProvider(MasaUnnamedOptionsCache<TOptions> optionsCache)
+    private readonly Lazy<HashSet<Type>> _autoMapOptionsTypesLazy;
+    private HashSet<Type> AutoMapOptionsTypes => _autoMapOptionsTypesLazy.Value;
+
+    public MasaUnnamedOptionsProvider(IServiceProvider serviceProvider)
     {
-        _optionsCache = optionsCache;
+        _serviceProvider = serviceProvider;
+        _autoMapOptionsTypesLazy = new(() => serviceProvider.GetRequiredService<AutoMapOptionsProvider>().AutoMapTypes);
     }
 
-    public TOptions GetOptions(IServiceProvider serviceProvider)
+    public TOptions GetOptions<[DynamicallyAccessedMembers(ConfigurationConstant.DYNAMICALLY_ACCESSED_MEMBERS)] TOptions>(
+        IServiceProvider serviceProvider) where TOptions : class
     {
-        return _optionsCache.GetOrAdd(serviceProvider, sp =>
+        if (!ConfigurationUtils.IsSkipAutoOptions(typeof(TOptions)) &&
+            AutoMapOptionsTypes.Contains(typeof(TOptions)) &&
+            _serviceProvider.EnableMultiEnvironment())
         {
-            var factory = sp.GetRequiredService<IOptionsFactory<TOptions>>();
-            return factory.Create(Options.DefaultName);
-        });
+            return serviceProvider.GetRequiredService<MasaUnnamedOptionsProvider<TOptions>>().GetOptions();
+        }
+
+        // Use the default option mode, which does not support isolation
+        return _serviceProvider.GetRequiredService<UnnamedOptionsManager<TOptions>>().Value;
     }
 }

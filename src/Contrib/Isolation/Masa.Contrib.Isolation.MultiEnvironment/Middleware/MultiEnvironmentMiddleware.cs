@@ -5,7 +5,7 @@ namespace Masa.Contrib.Isolation.MultiEnvironment.Middleware;
 
 public class MultiEnvironmentMiddleware : IIsolationMiddleware
 {
-    private const string DEFAULT_ENVIRONMENT_NAME = "ASPNETCORE_ENVIRONMENT";
+    private const string DEFAULT_ENVIRONMENT_NAME = ConfigurationConstant.ENVIRONMENT_VARIABLE_NAME;
     private readonly ILogger<MultiEnvironmentMiddleware>? _logger;
     private readonly IEnumerable<IParserProvider> _parserProviders;
     private readonly IMultiEnvironmentContext _environmentContext;
@@ -17,12 +17,10 @@ public class MultiEnvironmentMiddleware : IIsolationMiddleware
     public MultiEnvironmentMiddleware(
         IServiceProvider serviceProvider,
         string? environmentKey,
-        IEnumerable<IParserProvider>? parserProviders,
-        IOptions<MasaAppConfigureOptions>? masaAppConfigureOptions = null)
+        IEnumerable<IParserProvider>? parserProviders)
     {
-        _environmentKey = environmentKey ??
-            masaAppConfigureOptions?.Value.GetVariable(nameof(MasaAppConfigureOptions.Environment))?.Variable ??
-            DEFAULT_ENVIRONMENT_NAME;
+        //需要更改
+        _environmentKey = environmentKey ?? DEFAULT_ENVIRONMENT_NAME;
         _parserProviders = parserProviders ?? GetDefaultParserProviders();
         _logger = serviceProvider.GetService<ILogger<MultiEnvironmentMiddleware>>();
         _environmentContext = serviceProvider.GetRequiredService<IMultiEnvironmentContext>();

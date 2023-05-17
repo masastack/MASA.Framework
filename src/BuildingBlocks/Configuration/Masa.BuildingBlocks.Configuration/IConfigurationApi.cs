@@ -6,4 +6,6 @@ namespace Masa.BuildingBlocks.Configuration;
 public interface IConfigurationApi
 {
     public IConfiguration Get(string appId);
+
+    // string GetDefaultAppId();
 }

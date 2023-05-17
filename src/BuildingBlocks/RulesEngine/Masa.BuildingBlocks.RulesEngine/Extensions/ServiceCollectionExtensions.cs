@@ -20,13 +20,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<ScopedService<IRulesEngineClient>>(serviceProvider
             => new ScopedService<IRulesEngineClient>(serviceProvider.GetRequiredService<IRulesEngineFactory>().Create()));
 
-        services.TryAddTransient(serviceProvider =>
-        {
-            if (serviceProvider.EnableIsolation())
-                return serviceProvider.GetRequiredService<ScopedService<IRulesEngineClient>>().Service;
-
-            return serviceProvider.GetRequiredService<SingletonService<IRulesEngineClient>>().Service;
-        });
+        services.TryAddTransient(serviceProvider => serviceProvider.EnableIsolation() ?
+                serviceProvider.GetRequiredService<ScopedService<IRulesEngineClient>>().Service :
+                serviceProvider.GetRequiredService<SingletonService<IRulesEngineClient>>().Service);
         var rulesEngineOptionsBuilder = new RulesEngineOptionsBuilder(services, name);
         action.Invoke(rulesEngineOptionsBuilder);
         return services;

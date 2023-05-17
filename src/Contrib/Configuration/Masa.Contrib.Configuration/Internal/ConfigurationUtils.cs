@@ -7,7 +7,8 @@ namespace Masa.Contrib.Configuration;
 
 internal static class ConfigurationUtils
 {
-    public static void AddRegistrationOptions(List<ConfigurationRelationOptions> relationOptionsCollection, ConfigurationRelationOptions configurationRelations)
+    public static void AddAutoMapOptions(List<ConfigurationRelationOptions> relationOptionsCollection,
+        ConfigurationRelationOptions configurationRelations)
     {
         if (relationOptionsCollection.Any(relation =>
                 relation.ParentSection == configurationRelations.ParentSection &&
@@ -18,5 +19,37 @@ internal static class ConfigurationUtils
             throw new MasaException("The current section already has a configuration");
 
         relationOptionsCollection.Add(configurationRelations);
+    }
+
+    /// <summary>
+    /// Get current environment information (Multi-environment not enabled)
+    /// Priority: environment variables > appsettings.json > Production
+    /// </summary>
+    /// <returns></returns>
+    public static string GetEnvironmentWhenDisableMultiEnvironment()
+    {
+        var environment = Environment.GetEnvironmentVariable(ConfigurationConstant.ENVIRONMENT_VARIABLE_NAME);
+        if (!string.IsNullOrWhiteSpace(environment))
+            return environment;
+
+        var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
+        configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        configurationBuilder.AddEnvironmentVariables();
+        var configurationRoot = configurationBuilder.Build();
+        environment= configurationRoot.GetSection(ConfigurationConstant.ENVIRONMENT_VARIABLE_NAME).Value;
+        if (!environment.IsNullOrWhiteSpace())
+            return environment;
+
+        return ConfigurationConstant.DEFAULT_ENVIRONMENT;
+    }
+
+    private static readonly List<Type> SkipAutoMapTypes = new()
+    {
+        typeof(ConfigurationAutoMapOptions)
+    };
+
+    public static bool IsSkipAutoOptions(Type optionsType)
+    {
+        return SkipAutoMapTypes.Contains(optionsType);
     }
 }

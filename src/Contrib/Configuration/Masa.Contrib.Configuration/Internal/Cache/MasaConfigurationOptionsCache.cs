@@ -9,7 +9,7 @@ namespace Masa.Contrib.Configuration;
 /// Configure the cache, and get MasaConfiguration according to the storage environment and node type
 /// </summary>
 [ExcludeFromCodeCoverage]
-internal class MasaConfigurationOptionsCache : MemoryCache<(string Name, SectionTypes SectionType), IMasaConfiguration>
+internal class MasaConfigurationOptionsCache : MemoryCache<(string Environment, SectionTypes SectionType), IMasaConfiguration>
 {
 
 }

@@ -9,46 +9,47 @@ internal class DefaultMasaConfigurationFactory : IMasaConfigurationFactory
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly MasaConfigurationOptionsCache _masaConfigurationOptionsCache;
-    private readonly Lazy<IConfigurationApi> _configurationApiLazy;
-    private readonly IOptions<MasaConfigurationOptions> _options;
+    private readonly Lazy<IConfigurationApi?> _configurationApiLazy;
+    private readonly IMasaConfigurationChangeListener _masaConfigurationChangeListener;
 
     public DefaultMasaConfigurationFactory(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
         _masaConfigurationOptionsCache = serviceProvider.GetRequiredService<MasaConfigurationOptionsCache>();
-        _configurationApiLazy = new Lazy<IConfigurationApi>(serviceProvider.GetRequiredService<IConfigurationApi>);
+        _configurationApiLazy = new Lazy<IConfigurationApi?>(serviceProvider.GetService<IConfigurationApi>);
 
-        _options = serviceProvider.GetRequiredService<IOptions<MasaConfigurationOptions>>();
+        _masaConfigurationChangeListener = _serviceProvider.GetRequiredService<IMasaConfigurationChangeListener>();
     }
 
     public IMasaConfiguration Create(SectionTypes sectionType)
     {
         var configurationEnvironmentProvider = _serviceProvider.GetRequiredService<MasaConfigurationEnvironmentProvider>();
-        configurationEnvironmentProvider.TryGetDefaultEnvironment(_serviceProvider, out var environment);
-        return _masaConfigurationOptionsCache.GetOrAdd((environment ?? string.Empty, sectionType), item =>
+        var currentEnvironment = configurationEnvironmentProvider.GetCurrentEnvironment(_serviceProvider.EnableMultiEnvironment());
+        return _masaConfigurationOptionsCache.GetOrAdd((currentEnvironment, sectionType), item =>
         {
-            var configuration = GetConfiguration(item.SectionType);
+            var configuration = GetConfiguration(item.Environment, item.SectionType);
             return new DefaultMasaConfiguration(configuration, _configurationApiLazy);
         });
     }
 
-    private IConfiguration GetConfiguration(SectionTypes sectionType)
+    private IConfiguration GetConfiguration(string environment, SectionTypes sectionType)
     {
-        List<IConfigurationRepository> repositories = new List<IConfigurationRepository>();
+        var options = _serviceProvider.GetRequiredService<IOptions<MasaConfigurationOptions>>();
 
-        foreach (var handler in _options.Value.ConfigurationRepositoryHandlers)
-        {
-            if ((sectionType & handler.SectionType) == handler.SectionType)
-            {
-                var configurationRepository = handler.Func.Invoke(_serviceProvider);
-                repositories.Add(configurationRepository);
-            }
-        }
+        var repositories = (
+            from handler in options.Value.ConfigurationRepositoryHandlers
+            where (sectionType & handler.SectionType) == handler.SectionType
+            select handler.Func.Invoke(_serviceProvider)).ToList();
 
         var source = new MasaConfigurationSource(repositories);
         var configuration = new ConfigurationBuilder()
             .Add(source)
             .Build();
+
+        ChangeToken.OnChange(() => configuration.GetReloadToken(), () =>
+        {
+            _masaConfigurationChangeListener.OnChanged(new MasaConfigurationChangeOptions(configuration, environment));
+        });
 
         return configuration;
     }

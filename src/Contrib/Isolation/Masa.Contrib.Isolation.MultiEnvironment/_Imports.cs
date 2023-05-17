@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 global using Masa.BuildingBlocks.Authentication.Identity;
+global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Configuration.Options;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.Isolation;

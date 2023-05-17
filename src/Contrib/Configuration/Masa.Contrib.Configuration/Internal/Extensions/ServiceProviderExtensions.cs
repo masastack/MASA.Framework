@@ -12,14 +12,26 @@ internal static class ServiceProviderExtensions
         this IServiceProvider serviceProvider,
         Action<IConfigurationBuilder, IServiceProvider>? configurationBuilderAction)
     {
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
-        var masaConfigurationEnvironmentProvider = serviceProvider.GetRequiredService<MasaConfigurationEnvironmentProvider>();
-        if (masaConfigurationEnvironmentProvider.TryGetDefaultEnvironment(serviceProvider, out var env))
+        var enableMultiEnvironment = serviceProvider.EnableMultiEnvironment();
+        var environment = !enableMultiEnvironment ?
+            GetEnvironmentByDisableMultiEnvironment() :
+            serviceProvider.GetRequiredService<IMultiEnvironmentContext>().CurrentEnvironment;
+
+        var configurationBuilder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory());
+        configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+        if (!environment.IsNullOrWhiteSpace())
         {
-            configurationBuilder.AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false);
+            configurationBuilder.AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true);
         }
+        if (!enableMultiEnvironment) configurationBuilder.AddEnvironmentVariables();
+
         configurationBuilderAction?.Invoke(configurationBuilder, serviceProvider);
         return new LocalMasaConfigurationRepository(configurationBuilder.Build(), serviceProvider.GetService<ILoggerFactory>());
+    }
+
+    private static string? GetEnvironmentByDisableMultiEnvironment()
+    {
+        var environment = Environment.GetEnvironmentVariable(ConfigurationConstant.ENVIRONMENT_VARIABLE_NAME);
+        return environment;
     }
 }

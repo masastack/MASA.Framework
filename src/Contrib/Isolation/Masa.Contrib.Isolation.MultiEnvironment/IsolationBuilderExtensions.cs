@@ -34,8 +34,7 @@ public static class IsolationBuilderExtensions
                 new MultiEnvironmentMiddleware(
                     serviceProvider,
                     actualEnvironmentName,
-                    parserProviders,
-                    serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()));
+                    parserProviders));
         isolationBuilder.Services.TryAddScoped<MultiEnvironmentContext>();
         isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentContext), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
         isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentSetter), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());

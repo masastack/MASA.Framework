@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Configuration;
 
-internal class MasaUnnamedOptionsCache<TOptions> : MemoryCache<IServiceProvider, TOptions>
+internal class MasaUnnamedOptionsCache<TOptions> : MemoryCache<string, TOptions>
     where TOptions : class
 {
 
