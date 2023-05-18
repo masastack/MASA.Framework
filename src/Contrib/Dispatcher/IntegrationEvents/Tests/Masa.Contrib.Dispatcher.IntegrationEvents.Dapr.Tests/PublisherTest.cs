@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.Extensions.Logging;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Tests;
 
 [TestClass]
@@ -27,7 +24,7 @@ public class PublisherTest
     public async Task TestPublishAsync(string daprAppId, bool enableIsolation, bool isThrowException, int writeLogTimer)
     {
         Mock<ILogger<Publisher>> logger = new();
-        logger.Setup(log => log.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>())).Verifiable();
+        logger.Setup(log => log.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), ((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!)).Verifiable();
         Mock<DaprClient> client = new();
         string topicName = nameof(RegisterUserIntegrationEvent);
         client.Setup(c => c.PublishEventAsync(_pubSubName, topicName, It.IsAny<object>(), It.IsAny<CancellationToken>()));
@@ -47,7 +44,7 @@ public class PublisherTest
         {
             Assert.ThrowsException<MasaArgumentException>(()
                 => publisher = new Publisher(serviceProvider, _pubSubName, "appId", daprAppId));
-            logger.Verify(c => c.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(writeLogTimer));
+            logger.Verify(c => c.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), ((Func<It.IsAnyType, Exception, string>)It.IsAny<object>())!), Times.Exactly(writeLogTimer));
             return;
         }
 
