@@ -227,7 +227,7 @@ public class MultilevelCacheClientTest : TestBase
     }
 
     [TestMethod]
-    public async Task TestGetOrSet3AsyncBySync()
+    public async Task TestGetOrSetAsyncBySync()
     {
         var id = Guid.NewGuid().ToString();
         var result = GetValueByCaching(true);
@@ -260,6 +260,22 @@ public class MultilevelCacheClientTest : TestBase
                 },
                 options => options.AbsoluteExpirationRelativeToNow = timeSpan);
         }
+    }
+
+    [DataTestMethod]
+    public void TestGetOrSetBySync()
+    {
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        Mock<IManualDistributedCacheClient> distributedCacheClient = new();
+
+        distributedCacheClient
+            .Setup(client => client.GetOrSet(It.IsAny<string>(), It.IsAny<Func<CacheEntry<string>>>(), null))
+            .Returns("success");
+
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache, distributedCacheClient.Object);
+        multilevelCacheClient.GetOrSet(Guid.NewGuid().ToString(), () => new CacheEntry<string>("success"));
+
+        distributedCacheClient.Verify(client => client.Publish(It.IsAny<string>(), It.IsAny<Action<PublishOptions>>()), Times.Never);
     }
 
     [TestMethod]
@@ -341,6 +357,22 @@ public class MultilevelCacheClientTest : TestBase
                 },
                 options => options.AbsoluteExpirationRelativeToNow = timeSpan);
         }
+    }
+
+    [DataTestMethod]
+    public async Task TestGetOrSetAsyncAndPresetDataByRedis()
+    {
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        Mock<IManualDistributedCacheClient> distributedCacheClient = new();
+
+        distributedCacheClient
+            .Setup(client => client.GetOrSetAsync(It.IsAny<string>(), It.IsAny<Func<CacheEntry<string>>>(), null))
+            .Returns(Task.FromResult("success")!);
+
+        var multilevelCacheClient = new MultilevelCacheClient(memoryCache, distributedCacheClient.Object);
+        await multilevelCacheClient.GetOrSetAsync(Guid.NewGuid().ToString(), () => new CacheEntry<string>("success"));
+
+        distributedCacheClient.Verify(client => client.PublishAsync(It.IsAny<string>(), It.IsAny<Action<PublishOptions>>()), Times.Never);
     }
 
     private static int? GetValue(bool isReturnNull) => isReturnNull ? null : 1;
