@@ -38,15 +38,15 @@ public abstract class RedisCacheClientBase : DistributedCacheClientBase
 
     private RedisCacheClientBase(
         CacheOptions globalCacheOptions,
-        CacheEntryOptions expiredEntryOptions,
+        CacheEntryOptions globalExpiredOptions,
         JsonSerializerOptions? jsonSerializerOptions)
     {
         _globalCacheOptions = globalCacheOptions;
         _globalCacheEntryOptions = new CacheEntryOptions
         {
-            AbsoluteExpiration = expiredEntryOptions.AbsoluteExpiration,
-            AbsoluteExpirationRelativeToNow = expiredEntryOptions.AbsoluteExpirationRelativeToNow,
-            SlidingExpiration = expiredEntryOptions.SlidingExpiration
+            AbsoluteExpiration = globalExpiredOptions.AbsoluteExpiration,
+            AbsoluteExpirationRelativeToNow = globalExpiredOptions.AbsoluteExpirationRelativeToNow,
+            SlidingExpiration = globalExpiredOptions.SlidingExpiration
         };
         GlobalJsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions().EnableDynamicTypes();
     }

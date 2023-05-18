@@ -7,7 +7,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-internal class DefaultMultilevelCacheClient : DefaultCacheClient, IManualMultilevelCacheClient
+internal sealed class DefaultMultilevelCacheClient : DefaultCacheClient, IManualMultilevelCacheClient
 {
     private readonly IManualMultilevelCacheClient _cacheClient;
 
@@ -119,7 +119,7 @@ internal class DefaultMultilevelCacheClient : DefaultCacheClient, IManualMultile
         GC.SuppressFinalize(this);
     }
 
-    protected virtual void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         //don't need to be released
     }

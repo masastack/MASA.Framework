@@ -158,7 +158,7 @@ public class MultilevelCacheTest : TestBase
         VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
         VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as
-                MultilevelCacheClient);
+            MultilevelCacheClient);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
 
@@ -226,7 +226,6 @@ public class MultilevelCacheTest : TestBase
         Assert.AreEqual("configuration json", value);
         multilevelCacheClient.Remove<string>("configuration");
     }
-
 
     [TestMethod]
     public void TestFormatCacheKeyByTypeNameAlias2()

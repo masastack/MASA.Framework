@@ -655,13 +655,15 @@ public class MultilevelCacheClientTest : TestBase
         _distributedCacheClient.Set("test_multilevel_cache_2", 99.99m);
     }
 
-    private static IManualMultilevelCacheClient InitializeByCacheEntryOptionsIsNull()
+    private static IManualMultilevelCacheClient InitializeByCacheEntryOptionsIsNull(
+        RedisConfigurationOptions? redisConfigurationOptions = null,
+        Action<MultilevelCacheGlobalOptions>? multilevelCacheOptionsAction = null)
     {
         var services = new ServiceCollection();
         services.AddMultilevelCache("test", distributedCacheBuilder =>
         {
-            distributedCacheBuilder.UseStackExchangeRedisCache(RedisConfigurationOptions);
-        });
+            distributedCacheBuilder.UseStackExchangeRedisCache(redisConfigurationOptions ?? RedisConfigurationOptions);
+        }, multilevelCacheOptionsAction);
         var serviceProvider = services.BuildServiceProvider();
         var cacheClientFactory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         var multilevelCacheClient = cacheClientFactory.Create("test");
@@ -721,6 +723,48 @@ public class MultilevelCacheClientTest : TestBase
 
         await Task.Delay(1000);
         Assert.AreEqual(null, await multilevelCacheClient.GetAsync<string>(key));
+    }
+
+    [DataTestMethod]
+    [DataRow("cache_test", "content")]
+    public async Task SetAndSpecifyTimeAsyncAndUseGlobalOptions(string key, string value)
+    {
+        var globalRedisConfigurationOptions = RedisConfigurationOptions;
+        globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull(globalRedisConfigurationOptions, options =>
+        {
+            options.GlobalCacheOptions = new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            };
+        });
+
+        var database = (await ConnectionMultiplexer.ConnectAsync(globalRedisConfigurationOptions)).GetDatabase();
+
+        await multilevelCacheClient.SetAsync(key, value);
+        CheckLifeCycle(database, key, 55, 60);
+        await multilevelCacheClient.RemoveAsync<string>(key);
+    }
+
+    [DataTestMethod]
+    [DataRow("cache_test", "content")]
+    public void SetAndSpecifyTimeAndUseGlobalOptions(string key, string value)
+    {
+        var globalRedisConfigurationOptions = RedisConfigurationOptions;
+        globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
+        using var multilevelCacheClient = InitializeByCacheEntryOptionsIsNull(globalRedisConfigurationOptions, options =>
+        {
+            options.GlobalCacheOptions = new CacheOptions()
+            {
+                CacheKeyType = CacheKeyType.None
+            };
+        });
+
+        var database = ConnectionMultiplexer.Connect(globalRedisConfigurationOptions).GetDatabase();
+
+        multilevelCacheClient.Set(key, value);
+        CheckLifeCycle(database, key, 55, 60);
+        multilevelCacheClient.Remove<string>(key);
     }
 
     [TestMethod]

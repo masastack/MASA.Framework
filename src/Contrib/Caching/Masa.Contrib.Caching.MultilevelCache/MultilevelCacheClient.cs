@@ -174,7 +174,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            Pub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
+            Pub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry.CacheOptions);
         }
 
         return value;
@@ -233,7 +233,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            await PubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
+            await PubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry.CacheOptions)
                 .ConfigureAwait(false);
         }
 
