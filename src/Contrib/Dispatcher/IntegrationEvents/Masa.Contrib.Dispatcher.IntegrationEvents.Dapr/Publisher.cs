@@ -21,7 +21,8 @@ public class Publisher : IPublisher
         _pubSubName = pubSubName;
         if (serviceProvider.EnableIsolation())
         {
-            _logger?.LogError("Isolation is enabled but dapr AppId required for integration events is not configured");
+            if (_daprAppId.IsNullOrWhiteSpace()) _logger?.LogError("Isolation is enabled but dapr AppId required for integration events is not configured");
+
             MasaArgumentException.ThrowIfNullOrWhiteSpace(daprAppId);
         }
 

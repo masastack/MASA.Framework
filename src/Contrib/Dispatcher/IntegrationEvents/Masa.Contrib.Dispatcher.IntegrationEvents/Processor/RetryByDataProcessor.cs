@@ -27,8 +27,6 @@ public class RetryByDataProcessor : ProcessorBase
         var unitOfWork = serviceProvider.GetService<IUnitOfWork>();
         if (unitOfWork != null)
             unitOfWork.UseTransaction = false;
-
-        var publisher = serviceProvider.GetRequiredService<IPublisher>();
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
         var retrieveEventLogs =
@@ -37,6 +35,11 @@ public class RetryByDataProcessor : ProcessorBase
                 _options.Value.MaxRetryTimes,
                 _options.Value.MinimumRetryInterval,
                 stoppingToken);
+
+        if(!retrieveEventLogs.Any())
+            return;
+
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
         foreach (var eventLog in retrieveEventLogs)
         {
