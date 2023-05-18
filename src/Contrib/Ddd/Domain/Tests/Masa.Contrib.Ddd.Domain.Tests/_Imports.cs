@@ -9,6 +9,7 @@ global using Masa.BuildingBlocks.Dispatcher.IntegrationEvents;
 global using Masa.Contrib.Ddd.Domain.Tests.DomainServices;
 global using Masa.Contrib.Ddd.Domain.Tests.Events;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
 global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
 global using System.Collections.Concurrent;

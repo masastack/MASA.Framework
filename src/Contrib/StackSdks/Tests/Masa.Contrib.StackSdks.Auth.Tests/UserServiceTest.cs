@@ -113,17 +113,17 @@ public class UserServiceTest
     [TestMethod]
     public async Task TestGetListByRoleAsync()
     {
-        var data = new List<StaffModel>()
+        var data = new List<UserModel>()
         {
-            new StaffModel()
+            new UserModel()
         };
         Guid roleId = Guid.NewGuid();
-        var requestUri = $"api/staff/getListByRole";
+        var requestUri = $"api/user/getListByRole";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
+        caller.Setup(provider => provider.GetAsync<object, List<UserModel>>(requestUri, It.IsAny<object>(), default)).ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
         var result = await userService.GetListByRoleAsync(roleId);
-        caller.Verify(provider => provider.GetAsync<object, List<StaffModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
+        caller.Verify(provider => provider.GetAsync<object, List<UserModel>>(requestUri, It.IsAny<object>(), default), Times.Once);
         Assert.IsTrue(result.Count == 1);
     }
 
@@ -718,6 +718,36 @@ public class UserServiceTest
         var userService = GetUserService(caller);
         await userService.RemoveAsync(default);
         caller.Verify(provider => provider.DeleteAsync("api/user", It.IsAny<object>(), true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestBindRolesAsync()
+    {
+        var model = new BindUserRolesModel
+        {
+            Id = Guid.NewGuid(),
+            RoleCodes = new[] { "test_code" }
+        };
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync("api/user/bind_roles", model, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.BindRolesAsync(model);
+        caller.Verify(provider => provider.PostAsync("api/user/bind_roles", model, true, default), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task TestUnbindRolesAsync()
+    {
+        var model = new UnbindUserRolesModel
+        {
+            Id = Guid.NewGuid(),
+            RoleCodes = new[] { "test_code" }
+        };
+        var caller = new Mock<ICaller>();
+        caller.Setup(provider => provider.PostAsync("api/user/unbind_roles", model, true, default)).Verifiable();
+        var userService = GetUserService(caller);
+        await userService.UnbindRolesAsync(model);
+        caller.Verify(provider => provider.PostAsync("api/user/unbind_roles", model, true, default), Times.Once);
     }
 
     static UserService GetUserService(Mock<ICaller> caller, Mock<IUserContext>? userContext = null)

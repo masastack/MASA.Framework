@@ -68,4 +68,25 @@ public class EnvironmentTest
         Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentContext>() != null);
         Assert.IsTrue(serviceProvider.GetService<IMultiEnvironmentSetter>() != null);
     }
+
+    [DataRow("env", "env", true)]
+    [DataRow("", IsolationConstant.DEFAULT_MULTI_ENVIRONMENT_NAME, true)]
+    [DataRow(null, IsolationConstant.DEFAULT_MULTI_ENVIRONMENT_NAME, true)]
+    [DataTestMethod]
+    public void TestSetEnvironmentByAssignName(
+        string? inputEnvironmentName,
+        string expectedEnvironmentName,
+        bool expectedEnableMultiEnvironment)
+    {
+        var services = new ServiceCollection();
+        Mock<IIsolationBuilder> isolationBuilder = new();
+        isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
+        isolationBuilder.Object.UseMultiEnvironment(inputEnvironmentName);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+        Assert.AreEqual(expectedEnvironmentName, isolationOptions.Value.MultiEnvironmentName);
+        Assert.AreEqual(expectedEnableMultiEnvironment, isolationOptions.Value.EnableMultiEnvironment);
+        Assert.AreEqual(false, isolationOptions.Value.EnableMultiTenant);
+    }
 }

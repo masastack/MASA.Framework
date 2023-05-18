@@ -132,4 +132,14 @@ public class DispatcherOptionTest
 
         Assert.ThrowsException<MasaArgumentException>(() => _options.BatchSize = -1);
     }
+
+    [TestMethod]
+    public void SetExecuteInterval()
+    {
+        Assert.AreEqual(1,_options.ExecuteInterval);
+        _options.ExecuteInterval = 2;
+        Assert.AreEqual(2, _options.ExecuteInterval);
+
+        Assert.ThrowsException<MasaArgumentException>(() => _options.ExecuteInterval = 0);
+    }
 }

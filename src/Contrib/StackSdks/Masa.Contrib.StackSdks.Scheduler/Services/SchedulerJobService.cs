@@ -14,28 +14,20 @@ public class SchedulerJobService : ISchedulerJobService
         _caller = caller;
     }
 
-    public async Task<Guid> AddAsync(AddSchedulerJobRequest request)
+    public async Task<Guid> AddAsync(UpsertSchedulerJobRequest job)
     {
-        if (string.IsNullOrWhiteSpace(request.ProjectIdentity))
-        {
-            throw new ArgumentNullException(nameof(request.ProjectIdentity));
-        }
+        ValidateUpsertSchedulerJobRequest(job);
 
-        switch (request.JobType)
-        {
-            case JobTypes.JobApp:
-                ArgumentNullException.ThrowIfNull(request.JobAppConfig, nameof(request.JobAppConfig));
-                break;
-            case JobTypes.Http:
-                ArgumentNullException.ThrowIfNull(request.HttpConfig, nameof(request.HttpConfig));
-                break;
-            case JobTypes.DaprServiceInvocation:
-                ArgumentNullException.ThrowIfNull(request.DaprServiceInvocationConfig, nameof(request.DaprServiceInvocationConfig));
-                break;
-        }
-        
         var requestUri = $"{API}/addSchedulerJobBySdk";
-        return await _caller.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, request);
+        return await _caller.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, job);
+    }
+
+    public async Task UpdateAsync(Guid id, UpsertSchedulerJobRequest job)
+    {
+        ValidateUpsertSchedulerJobRequest(job);
+
+        var requestUri = $"{API}/{id}/updateSchedulerJobBySdk";
+        await _caller.PutAsync<UpsertSchedulerJobRequest>(requestUri, job);
     }
 
     public async Task<bool> DisableAsync(SchedulerJobRequestBase request)
@@ -82,5 +74,23 @@ public class SchedulerJobService : ISchedulerJobService
         var requestUri = $"{API}/startJob";
         await _caller.PutAsync(requestUri, request);
         return true;
+    }
+
+    private static void ValidateUpsertSchedulerJobRequest(UpsertSchedulerJobRequest job)
+    {
+        MasaArgumentException.ThrowIfNull(job.ProjectIdentity, nameof(job.ProjectIdentity));
+
+        switch (job.JobType)
+        {
+            case JobTypes.JobApp:
+                MasaArgumentException.ThrowIfNull(job.JobAppConfig, nameof(job.JobAppConfig));
+                break;
+            case JobTypes.Http:
+                MasaArgumentException.ThrowIfNull(job.HttpConfig, nameof(job.HttpConfig));
+                break;
+            case JobTypes.DaprServiceInvocation:
+                MasaArgumentException.ThrowIfNull(job.DaprServiceInvocationConfig, nameof(job.DaprServiceInvocationConfig));
+                break;
+        }
     }
 }

@@ -4,25 +4,24 @@
 namespace Masa.Contrib.Development.DaprStarter;
 
 [ExcludeFromCodeCoverage]
-public class DaprProvider : IDaprProvider
+public class DaprProcessProvider : IDaprProcessProvider
 {
-    private readonly ILoggerFactory? _loggerFactory;
-    private readonly ILogger<DaprProvider>? _logger;
+    private readonly ILogger<DaprProcessProvider>? _logger;
 
-    public DaprProvider(ILoggerFactory? loggerFactory)
+    public DaprProcessProvider(ILogger<DaprProcessProvider>? logger = null)
     {
-        _loggerFactory = loggerFactory;
-        _logger = loggerFactory?.CreateLogger<DaprProvider>();
+        _logger = logger;
     }
 
-    public List<DaprRuntimeOptions> GetDaprList(string appId)
+    public List<DaprRuntimeOptions> GetDaprList(string fileName, string appId, out bool isException)
     {
-        var processUtils = new ProcessUtils(_loggerFactory);
+        isException = false;
+        var processUtils = new ProcessUtils(_logger);
         processUtils.Exit += delegate
         {
-            _logger?.LogDebug("{Name} process has exited", Constant.DEFAULT_FILE_NAME);
+            _logger?.LogDebug("{Name} process has exited, appid: {AppId}", DaprStarterConstant.DEFAULT_PROCESS_NAME, appId);
         };
-        processUtils.Run(Constant.DEFAULT_FILE_NAME, "list -o json", out string response, true, true);
+        processUtils.Run(fileName, "list -o json", out string response, true, true);
         List<DaprRuntimeOptions> daprList = new();
         try
         {
@@ -45,18 +44,21 @@ public class DaprProvider : IDaprProvider
         }
         catch (Exception exception)
         {
+            isException = true;
             _logger?.LogWarning(exception, "----- Error getting list of running dapr, response message is {Response}", response);
             return new List<DaprRuntimeOptions>();
         }
+
         return daprList.Where(dapr => dapr.AppId == appId).ToList();
     }
 
-    public Process DaprStart(string arguments,
+    public Process DaprStart(string fileName,
+        string arguments,
         bool createNoWindow,
         Action<object?, DataReceivedEventArgs> outputDataReceivedAction,
         Action exitAction)
     {
-        var processUtils = new ProcessUtils(_loggerFactory);
+        var processUtils = new ProcessUtils(_logger);
 
         processUtils.OutputDataReceived += delegate(object? sender, DataReceivedEventArgs args)
         {
@@ -67,9 +69,9 @@ public class DaprProvider : IDaprProvider
         processUtils.Exit += delegate
         {
             exitAction.Invoke();
-            _logger?.LogDebug("{Name} process has exited", Constant.DEFAULT_FILE_NAME);
+            _logger?.LogDebug("{Name} process has exited", DaprStarterConstant.DEFAULT_PROCESS_NAME);
         };
-        return processUtils.Run(Constant.DEFAULT_FILE_NAME, $"run {arguments}", createNoWindow);
+        return processUtils.Run(fileName, $" {arguments}", createNoWindow);
     }
 
     private static void DaprProcess_OutputDataReceived(DataReceivedEventArgs e)
@@ -112,15 +114,22 @@ public class DaprProvider : IDaprProvider
         Console.ForegroundColor = color;
     }
 
-    public void DaprStop(string appId)
+    public void DaprStop(string fileName, string appId)
     {
-        var process = new ProcessUtils(_loggerFactory).Run(
-            $"{Constant.DEFAULT_FILE_NAME}",
-            $"stop {appId}",
-            createNoWindow: false,
-            isWait: false);
-        process.WaitForExit();
-    }
+        var daprList = GetDaprList(fileName, appId, out _);
 
-    public bool IsExist(string appId) => GetDaprList(appId).Any();
+        var pidList = daprList.Select(dapr => dapr.PId).ToList();
+        foreach (var pid in pidList)
+        {
+            try
+            {
+                var process = Process.GetProcessById(pid);
+                process.Kill();
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error stopping dapr sidecar, appid is {AppId}, pid is {PId}", appId, pid);
+            }
+        }
+    }
 }

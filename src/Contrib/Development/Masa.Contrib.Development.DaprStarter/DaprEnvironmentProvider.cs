@@ -9,9 +9,15 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
 
     private const string HTTP_PORT = "DAPR_HTTP_PORT";
 
+    private const string METRICS_PORT = "DAPR_METRICS_PORT";
+
+    public string? GetDaprAppId() => Environment.GetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID);
+
     public ushort? GetHttpPort() => GetEnvironmentVariable(HTTP_PORT);
 
     public ushort? GetGrpcPort() => GetEnvironmentVariable(GRPC_PORT);
+
+    public ushort? GetMetricsPort() => GetEnvironmentVariable(METRICS_PORT);
 
     private static ushort? GetEnvironmentVariable(string environment)
     {
@@ -25,33 +31,37 @@ public class DaprEnvironmentProvider : IDaprEnvironmentProvider
     {
         if (httpPort is > 0)
         {
-            SetHttpPort(httpPort.Value);
+            Environment.SetEnvironmentVariable(HTTP_PORT, httpPort.Value.ToString());
             return true;
         }
+
         return false;
     }
 
-    // ReSharper disable once InconsistentNaming
     public bool TrySetGrpcPort(ushort? grpcPort)
     {
         if (grpcPort is > 0)
         {
-            SetGrpcPort(grpcPort.Value);
+            Environment.SetEnvironmentVariable(GRPC_PORT, grpcPort.Value.ToString());
             return true;
         }
+
         return false;
     }
 
-    public void SetHttpPort(ushort httpPort) => Environment.SetEnvironmentVariable(HTTP_PORT, httpPort.ToString());
-
-    // ReSharper disable once InconsistentNaming
-    public void SetGrpcPort(ushort grpcPort) => Environment.SetEnvironmentVariable(GRPC_PORT, grpcPort.ToString());
-
-    // ReSharper disable once InconsistentNaming
-    public void CompleteDaprEnvironment(ushort? httpPort, ushort? grpcPort)
+    public bool TrySetMetricsPort(ushort? metricsPort)
     {
-        if (grpcPort is > 0) SetGrpcPort(grpcPort.Value);
+        if (metricsPort is > 0)
+        {
+            Environment.SetEnvironmentVariable(METRICS_PORT, metricsPort.Value.ToString());
+            return true;
+        }
 
-        if (httpPort is > 0) SetHttpPort(httpPort.Value);
+        return false;
+    }
+
+    public void SetDaprAppId(string appId)
+    {
+        Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, appId);
     }
 }

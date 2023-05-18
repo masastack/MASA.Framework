@@ -14,7 +14,7 @@ public class LocalEventBus : ILocalEventBus
     private readonly IUnitOfWork? _unitOfWork;
 
 #pragma warning disable S5332
-    private const string LOAD_EVENT_HELP_LINK = "http://docs.masastack.com/framework/concepts/faq/load-event";
+    private const string LOAD_EVENT_HELP_LINK = "https://docs.masastack.com/framework/building-blocks/dispatcher/faq#section-8fdb7a0b51854e8b4ef6";
 #pragma warning restore S5332
 
     private readonly IInitializeServiceProvider _initializeServiceProvider;
@@ -33,7 +33,7 @@ public class LocalEventBus : ILocalEventBus
 
     public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
-        ArgumentNullException.ThrowIfNull(@event, nameof(@event));
+        MasaArgumentException.ThrowIfNull(@event);
         var eventType = @event.GetType();
 
         var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();

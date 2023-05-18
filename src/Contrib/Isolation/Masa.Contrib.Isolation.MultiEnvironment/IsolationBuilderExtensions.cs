@@ -13,7 +13,9 @@ public static class IsolationBuilderExtensions
     public static IIsolationBuilder UseMultiEnvironment(this IIsolationBuilder isolationBuilder, List<IParserProvider>? parserProviders)
         => isolationBuilder.UseMultiEnvironment(null, parserProviders);
 
-    public static IIsolationBuilder UseMultiEnvironment(this IIsolationBuilder isolationBuilder, string? environmentName,
+    public static IIsolationBuilder UseMultiEnvironment(
+        this IIsolationBuilder isolationBuilder,
+        string? environmentName,
         List<IParserProvider>? parserProviders = null)
     {
         if (isolationBuilder.Services.Any(service => service.ImplementationType == typeof(EnvironmentProvider)))
@@ -21,26 +23,26 @@ public static class IsolationBuilderExtensions
 
         isolationBuilder.Services.AddSingleton<EnvironmentProvider>();
 
+        var actualEnvironmentName = !environmentName.IsNullOrWhiteSpace() ? environmentName : IsolationConstant.DEFAULT_MULTI_ENVIRONMENT_NAME;
+
+        isolationBuilder.Services.Configure<IsolationOptions>(options => options.MultiEnvironmentName = actualEnvironmentName);
+
         isolationBuilder.Services
             .AddHttpContextAccessor()
             .AddTransient(typeof(IEventMiddleware<>), typeof(IsolationEventMiddleware<>))
             .AddScoped<IIsolationMiddleware>(serviceProvider =>
                 new MultiEnvironmentMiddleware(
                     serviceProvider,
-                    environmentName,
+                    actualEnvironmentName,
                     parserProviders,
                     serviceProvider.GetService<IOptions<MasaAppConfigureOptions>>()));
         isolationBuilder.Services.TryAddScoped<MultiEnvironmentContext>();
-        isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentContext),
-            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
-        isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentSetter),
-            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentContext), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IMultiEnvironmentSetter), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
 
 #pragma warning disable CS0618
-        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentContext),
-            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
-        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentSetter),
-            serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentContext), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
+        isolationBuilder.Services.TryAddScoped(typeof(IEnvironmentSetter), serviceProvider => serviceProvider.GetRequiredService<MultiEnvironmentContext>());
 #pragma warning restore CS0618
         return isolationBuilder;
     }

@@ -3,11 +3,15 @@
 
 namespace Masa.BuildingBlocks.Development.DaprStarter;
 
-public static class Constant
+public static class DaprStarterConstant
 {
     public const string DEFAULT_APPID_DELIMITER = "-";
 
-    public const string DEFAULT_FILE_NAME = "dapr";
+    public const string DEFAULT_DAPR_FILE_NAME = "dapr";
+
+    public const string DEFAULT_FILE_NAME = "daprd";
+
+    public const string DEFAULT_PROCESS_NAME = "dapr-starter";
 
     public const string DEFAULT_ARGUMENT_PREFIX = "--";
 
@@ -20,4 +24,9 @@ public static class Constant
     /// Default number of retries
     /// </summary>
     public const int DEFAULT_RETRY_TIME = 10;
+
+    /// <summary>
+    /// When sidecar is started, the appid of the current dapr will be set to this environment variable
+    /// </summary>
+    public const string DEFAULT_DAPR_APPID = "DAPR_APPID";
 }

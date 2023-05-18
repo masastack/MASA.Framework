@@ -5,16 +5,16 @@ namespace Masa.Contrib.Ddd.Domain;
 
 public class DomainEventBus : IDomainEventBus
 {
-    private readonly IEventBus _eventBus;
-    private readonly IIntegrationEventBus _integrationEventBus;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IEventBus? _eventBus;
+    private readonly IIntegrationEventBus? _integrationEventBus;
+    private readonly IUnitOfWork? _unitOfWork;
 
     private readonly ConcurrentQueue<IDomainEvent> _eventQueue = new();
 
     public DomainEventBus(
-        IEventBus eventBus,
-        IIntegrationEventBus integrationEventBus,
-        IUnitOfWork unitOfWork)
+        IEventBus? eventBus = null,
+        IIntegrationEventBus? integrationEventBus = null,
+        IUnitOfWork? unitOfWork = null)
     {
         _eventBus = eventBus;
         _integrationEventBus = integrationEventBus;
@@ -30,10 +30,15 @@ public class DomainEventBus : IDomainEventBus
         if (@event is IIntegrationEvent integrationEvent)
         {
             integrationEvent.UnitOfWork ??= _unitOfWork;
+
+            MasaArgumentException.ThrowIfNull(_integrationEventBus);
+
             await _integrationEventBus.PublishAsync(integrationEvent, cancellationToken);
         }
         else
         {
+            MasaArgumentException.ThrowIfNull(_eventBus);
+
             await _eventBus.PublishAsync(@event, cancellationToken);
         }
 
@@ -74,5 +79,8 @@ public class DomainEventBus : IDomainEventBus
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)
-        => await _unitOfWork.CommitAsync(cancellationToken);
+    {
+        MasaArgumentException.ThrowIfNull(_unitOfWork);
+        await _unitOfWork.CommitAsync(cancellationToken);
+    }
 }
