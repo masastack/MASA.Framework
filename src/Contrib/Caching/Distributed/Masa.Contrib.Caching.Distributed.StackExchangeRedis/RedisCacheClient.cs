@@ -98,7 +98,7 @@ public class RedisCacheClient : RedisCacheClientBase
             if (cacheEntry.Value == null)
                 return default;
 
-            SetCoreAsync(key, cacheEntry.Value, cacheEntry).ConfigureAwait(false).GetAwaiter().GetResult();
+            SetCoreAsync(key, cacheEntry.Value, cacheEntry.CacheOptions).ConfigureAwait(false).GetAwaiter().GetResult();
             return cacheEntry.Value;
         });
     }
@@ -120,7 +120,7 @@ public class RedisCacheClient : RedisCacheClientBase
             if (cacheEntry.Value == null)
                 return default;
 
-            await SetCoreAsync(key, cacheEntry.Value, cacheEntry).ConfigureAwait(false);
+            await SetCoreAsync(key, cacheEntry.Value, cacheEntry.CacheOptions).ConfigureAwait(false);
             return cacheEntry.Value;
         }).ConfigureAwait(false);
     }
