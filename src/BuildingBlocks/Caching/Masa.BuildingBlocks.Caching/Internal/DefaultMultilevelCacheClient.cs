@@ -115,13 +115,7 @@ internal sealed class DefaultMultilevelCacheClient : DefaultCacheClient, IManual
 #pragma warning disable S3881
     public void Dispose()
     {
-        Dispose(true);
         GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        //don't need to be released
     }
 #pragma warning restore S3881
 }
