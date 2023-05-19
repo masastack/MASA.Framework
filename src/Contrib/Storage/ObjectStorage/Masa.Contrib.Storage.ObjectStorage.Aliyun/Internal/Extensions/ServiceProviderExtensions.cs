@@ -14,9 +14,9 @@ internal static class ServiceProviderExtensions
     {
         return ComponentConfigUtils.GetComponentConfigByExecute(serviceProvider, name,
             sectionName,
-            () =>
+            (enableIsolation) =>
             {
-                if (serviceProvider.EnableIsolation())
+                if (enableIsolation)
                     return serviceProvider.GetRequiredService<IOptionsSnapshot<AliyunStorageConfigureOptions>>().Get(name);
 
                 var optionsSnapshot = serviceProvider.GetRequiredService<IOptionsMonitor<AliyunStorageConfigureOptions>>();

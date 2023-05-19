@@ -45,15 +45,15 @@ internal static class ComponentConfigUtils
     public static TComponentConfig GetComponentConfigByExecute<TComponentConfig>(IServiceProvider serviceProvider,
         string name,
         string sectionName,
-        Func<TComponentConfig> defaultFunc) where TComponentConfig : class
+        Func<bool,TComponentConfig> defaultFunc) where TComponentConfig : class
     {
         var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
         if (isolationOptions.Value.Enable)
         {
             return serviceProvider
                 .GetRequiredService<IIsolationConfigProvider>()
-                .GetComponentConfig<TComponentConfig>(sectionName, name) ?? defaultFunc.Invoke();
+                .GetComponentConfig<TComponentConfig>(sectionName, name) ?? defaultFunc.Invoke(isolationOptions.Value.Enable);
         }
-        return defaultFunc.Invoke();
+        return defaultFunc.Invoke(isolationOptions.Value.Enable);
     }
 }
