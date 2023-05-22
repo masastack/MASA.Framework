@@ -8,7 +8,13 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-internal interface ILocalEventBus : IEventBus
+internal interface ILocalEventBusWrapper
 {
+    Task PublishAsync<TEvent>(
+        TEvent @event,
+        IEnumerable<IEventMiddleware<TEvent>> eventMiddlewares,
+        CancellationToken cancellationToken = default)
+        where TEvent : IEvent;
 
+    Task CommitAsync(CancellationToken cancellationToken = default);
 }

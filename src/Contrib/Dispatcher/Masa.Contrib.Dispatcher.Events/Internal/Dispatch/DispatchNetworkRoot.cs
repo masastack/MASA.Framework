@@ -7,45 +7,63 @@ namespace Masa.Contrib.Dispatcher.Events;
 
 internal class DispatchNetworkRoot : IDispatchNetworkRoot
 {
-    public IReadOnlyDictionary<Type, List<DispatchRelationOptions>> DispatchNetwork { get; }
+    public IReadOnlyDictionary<Type, List<DispatchRelationOptions>> DispatchNetworks { get; }
+
+    public IReadOnlyDictionary<Type, List<EventHandlerAttribute>> CancelHandlerNetworks { get; }
 
     public DispatchNetworkRoot(List<IDispatchNetworkProvider> providers)
-        => DispatchNetwork = BuildNetwork(providers);
-
-    private static Dictionary<Type, List<DispatchRelationOptions>> BuildNetwork(List<IDispatchNetworkProvider> providers)
     {
-        return BuildNetwork(
+        DispatchNetworks = BuildDispatchNetworks(providers);
+        CancelHandlerNetworks = BuildCancelHandlerNetworks(providers);
+    }
+
+    private static Dictionary<Type, List<DispatchRelationOptions>> BuildDispatchNetworks(List<IDispatchNetworkProvider> providers)
+    {
+        return BuildDispatchNetworks(
             providers.SelectMany(provider => provider.HandlerNetwork).ToList(),
             providers.SelectMany(provider => provider.CancelHandlerNetwork).ToList());
     }
 
-    private static Dictionary<Type, List<DispatchRelationOptions>> BuildNetwork(
-        IReadOnlyList<EventHandlerAttribute> handlerNetworks,
-        IReadOnlyList<EventHandlerAttribute> cancelHandlerNetworks)
+    private static Dictionary<Type, List<DispatchRelationOptions>> BuildDispatchNetworks(
+        IReadOnlyList<EventHandlerAttribute> handlers,
+        IReadOnlyList<EventHandlerAttribute> cancelHandlers)
     {
         var dispatchNetwork = new Dictionary<Type, List<DispatchRelationOptions>>();
 
-        foreach (var eventType in handlerNetworks.Select(attr => attr.EventType).Distinct())
+        foreach (var eventType in handlers.Select(attr => attr.EventType).Distinct())
         {
-            var list = new List<DispatchRelationOptions>();
-            foreach (var handlerNetwork in handlerNetworks.Where(attr => attr.EventType == eventType))
-            {
-                var dispatchRelationOptions = new DispatchRelationOptions(handlerNetwork)
+            var list = handlers.Where(attr => attr.EventType == eventType)
+                .Select(handlerNetwork => new DispatchRelationOptions(handlerNetwork)
                 {
-                    CancelHandlers = cancelHandlerNetworks.Where(attr =>
-                        attr.EventType == eventType &&
-                        attr.IsCancel &&
-                        ((attr.Order < handlerNetwork.Order && handlerNetwork.FailureLevels == FailureLevels.Throw) ||
-                            attr.Order <= handlerNetwork.Order && handlerNetwork.FailureLevels == FailureLevels.ThrowAndCancel))
-                        .OrderBy(attr=> attr.Order)
+                    CancelHandlers = cancelHandlers
+                        .Where(attr => attr.EventType == eventType && attr.IsCancel &&
+                            ((attr.Order < handlerNetwork.Order && handlerNetwork.FailureLevels == FailureLevels.Throw) ||
+                                attr.Order <= handlerNetwork.Order && handlerNetwork.FailureLevels == FailureLevels.ThrowAndCancel))
+                        .OrderBy(attr => attr.Order)
                         .Reverse()
-                };
-
-                list.Add(dispatchRelationOptions);
-            }
+                })
+                .ToList();
 
             dispatchNetwork.Add(eventType, list);
         }
         return dispatchNetwork;
+    }
+
+    private static Dictionary<Type, List<EventHandlerAttribute>> BuildCancelHandlerNetworks(List<IDispatchNetworkProvider> providers)
+    {
+        return BuildCancelHandlerNetworks(providers.SelectMany(provider => provider.CancelHandlerNetwork).ToList());
+    }
+
+    private static Dictionary<Type, List<EventHandlerAttribute>> BuildCancelHandlerNetworks(List<EventHandlerAttribute> cancelHandlers)
+    {
+        var cancelHandlerNetworks = new Dictionary<Type, List<EventHandlerAttribute>>();
+
+        foreach (var eventType in cancelHandlers.Select(attr => attr.EventType).Distinct())
+        {
+            var cancelHandlersTemp = cancelHandlers.Where(attr => attr.EventType == eventType).ToList();
+            cancelHandlerNetworks.Add(eventType, cancelHandlersTemp);
+        }
+
+        return cancelHandlerNetworks;
     }
 }

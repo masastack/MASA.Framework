@@ -14,7 +14,10 @@ public class ExecutionStrategy : IExecutionStrategy
         _logger = logger;
     }
 
-    public async Task ExecuteAsync<TEvent>(StrategyOptions strategyOptions, TEvent @event, Func<TEvent, Task> func,
+    public async Task ExecuteAsync<TEvent>(
+        StrategyOptions strategyOptions,
+        TEvent @event,
+        Func<TEvent, Task> func,
         Func<TEvent, Exception, FailureLevels, Task> cancel)
         where TEvent : IEvent
     {

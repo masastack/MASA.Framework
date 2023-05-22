@@ -5,35 +5,32 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-internal class LocalEventBus : ILocalEventBus
+internal class LocalEventBusWrapper : ILocalEventBusWrapper
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    private readonly Lazy<LocalEventBusPublisher> _publisherLazy;
+    private readonly Lazy<ILocalEventBus> _publisherLazy;
 
     private readonly DispatcherOptions _options;
 
     private readonly IUnitOfWork? _unitOfWork;
 
 #pragma warning disable S5332
-    private const string LOAD_EVENT_HELP_LINK = "https://docs.masastack.com/framework/building-blocks/dispatcher/faq#section-8fdb7a0b51854e8b4ef6";
+    private const string LOAD_EVENT_HELP_LINK =
+        "https://docs.masastack.com/framework/building-blocks/dispatcher/faq#section-8fdb7a0b51854e8b4ef6";
 #pragma warning restore S5332
 
-    private readonly IInitializeServiceProvider _initializeServiceProvider;
-
-    public LocalEventBus(IServiceProvider serviceProvider,
+    public LocalEventBusWrapper(IServiceProvider serviceProvider,
         IOptions<DispatcherOptions> options,
-        IInitializeServiceProvider initializeServiceProvider,
         IUnitOfWork? unitOfWork = null)
     {
-        _serviceProvider = serviceProvider;
-        _publisherLazy = new Lazy<LocalEventBusPublisher>(serviceProvider.GetRequiredService<LocalEventBusPublisher>);
+        _publisherLazy = new Lazy<ILocalEventBus>(serviceProvider.GetRequiredService<ILocalEventBus>);
         _options = options.Value;
-        _initializeServiceProvider = initializeServiceProvider;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(
+        TEvent @event,
+        IEnumerable<IEventMiddleware<TEvent>> eventMiddlewares,
+        CancellationToken cancellationToken = default) where TEvent : IEvent
     {
         MasaArgumentException.ThrowIfNull(@event);
         var eventType = @event.GetType();
@@ -49,17 +46,11 @@ internal class LocalEventBus : ILocalEventBus
             transactionEvent.UnitOfWork = _unitOfWork;
         }
 
-        var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();
-        if (_initializeServiceProvider.IsInitialize)
-            middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
-
-        _initializeServiceProvider.Initialize();
-
         EventHandlerDelegate eventHandlerDelegate = async () =>
         {
-            await _publisherLazy.Value.PublishEventAsync(@event, cancellationToken);
+            await _publisherLazy.Value.ExecuteHandlerAsync(@event, cancellationToken);
         };
-        await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
+        await eventMiddlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
     public async Task CommitAsync(CancellationToken cancellationToken = default)

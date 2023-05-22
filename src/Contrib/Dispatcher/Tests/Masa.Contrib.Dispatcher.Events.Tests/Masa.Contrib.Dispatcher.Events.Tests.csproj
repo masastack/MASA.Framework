@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.InMemory\Masa.Contrib.Data.EFCore.InMemory.csproj" />
+    <ProjectReference Include="..\..\..\Data\Orm\EFCore\Masa.Contrib.Data.EFCore.Sqlite\Masa.Contrib.Data.EFCore.Sqlite.csproj" />
+    <ProjectReference Include="..\..\..\Data\UoW\Masa.Contrib.Data.UoW.EFCore\Masa.Contrib.Data.UoW.EFCore.csproj" />
     <ProjectReference Include="..\..\Masa.Contrib.Dispatcher.Events\Masa.Contrib.Dispatcher.Events.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsParameterNotNull\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsParameterType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.csproj" />

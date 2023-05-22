@@ -12,7 +12,6 @@ public class TestBase
 
     public TestBase() : this(null)
     {
-
     }
 
     public TestBase(Func<IServiceCollection, IServiceCollection>? func = null) => ResetMemoryEventBus(func, false, null);

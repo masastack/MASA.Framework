@@ -38,29 +38,6 @@ public class TransferEventHandler : ISagaEventHandler<TransferEvent>
         }
         return Task.CompletedTask;
     }
-
-    [EventHandler]
-    public async Task DeductionMoneyHandler(IEventBus eventBus, DeductionMoneyEvent @event)
-    {
-        // TODO: The simulated deduction is successful
-
-        _logger?.LogInformation("deduct account balance {event}", @event.ToString());
-
-        var increaseMoneyEvent = new IncreaseMoneyEvent()
-        {
-            Account = @event.PayeeAccount,
-            TransferAccount = @event.Account,
-            Money = @event.Money
-        };
-        await eventBus.PublishAsync(increaseMoneyEvent);
-    }
-
-    [EventHandler]
-    public Task IncreaseMoneyHandler(IncreaseMoneyEvent @event)
-    {
-        // TODO: Succeeded in simulated increase
-        return Task.CompletedTask;
-    }
 }
 
 public class ReceiveTransferHandler

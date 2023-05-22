@@ -26,7 +26,7 @@ public class AssemblyResolutionTests
         Assert.ThrowsException<MasaArgumentException>(() =>
         {
             Assembly[] assemblies = null!;
-            services.AddEventBus(assemblies!);
+            services.AddEventBus(assemblies);
         });
     }
 

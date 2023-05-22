@@ -7,5 +7,7 @@ namespace Masa.Contrib.Dispatcher.Events;
 
 public interface IDispatchNetworkRoot
 {
-    IReadOnlyDictionary<Type, List<DispatchRelationOptions>> DispatchNetwork { get; }
+    IReadOnlyDictionary<Type, List<DispatchRelationOptions>> DispatchNetworks { get; }
+
+    IReadOnlyDictionary<Type,List<EventHandlerAttribute>> CancelHandlerNetworks { get; }
 }

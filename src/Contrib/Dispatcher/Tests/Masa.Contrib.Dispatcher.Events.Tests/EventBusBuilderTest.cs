@@ -36,7 +36,7 @@ public class EventBusBuilderTest
 
         var middlewares = serviceProvider.GetService<IEnumerable<IEventMiddleware<MiddlewareEvent>>>();
         Assert.IsNotNull(middlewares);
-        Assert.AreEqual(3, middlewares.Count());
+        Assert.AreEqual(4, middlewares.Count());
 
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         var @event = new MiddlewareEvent();

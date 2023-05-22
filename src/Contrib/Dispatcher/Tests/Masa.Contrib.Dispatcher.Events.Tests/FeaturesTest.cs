@@ -99,24 +99,6 @@ public class FeaturesTest : TestBase
         });
     }
 
-    // [TestMethod]
-    // public Task TestOnlyCancelHandler()
-    // {
-    //     Assert.ThrowsException<NotSupportedException>(() =>
-    //     {
-    //         try
-    //         {
-    //             ResetMemoryEventBus(typeof(BindPhoneNumberEvent).Assembly);
-    //         }
-    //         catch (NotSupportedException)
-    //         {
-    //             ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
-    //             throw;
-    //         }
-    //     });
-    //     return Task.CompletedTask;
-    // }
-
     [TestMethod]
     public async Task TestHandlerIsIgnore()
     {
@@ -141,24 +123,24 @@ public class FeaturesTest : TestBase
         });
     }
 
-    // [TestMethod]
-    // public async Task TestPublishIntegrationEventAndUseUoW()
-    // {
-    //     ResetMemoryEventBus(services =>
-    //     {
-    //         var unitOfWork = new Mock<IUnitOfWork>();
-    //         services.AddScoped(_ => unitOfWork.Object);
-    //         return services;
-    //     }, true, typeof(AssemblyResolutionTests).Assembly);
-    //     var @event = new OrderPaymentFailedIntegrationEvent()
-    //     {
-    //         OrderId = "123456789012",
-    //     };
-    //     await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
-    //     {
-    //         await Services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
-    //     });
-    // }
+    [TestMethod]
+    public async Task TestPublishIntegrationEventAndUseUoW()
+    {
+        ResetMemoryEventBus(services =>
+        {
+            var unitOfWork = new Mock<IUnitOfWork>();
+            services.AddScoped(_ => unitOfWork.Object);
+            return services;
+        }, true, typeof(AssemblyResolutionTests).Assembly);
+        var @event = new OrderPaymentFailedIntegrationEvent()
+        {
+            OrderId = "123456789012",
+        };
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
+        {
+            await Services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
+        });
+    }
 
     [TestMethod]
     public async Task TestTransferEventAndOpenTransaction()
@@ -218,19 +200,30 @@ public class FeaturesTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow(1, 2, -1)]
-    [DataRow(5, 4, 24)]
-    public async Task TestEventBusCancelOrder(int parameterA, int parameterB, int result)
+    [DataRow(1, 2, -1, true)]
+    [DataRow(5, 4, 24, true)]
+    public async Task TestEventBusCancelOrder(int parameterA, int parameterB, int result, bool isException)
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddEventBus(new[] { typeof(CalculateEvent).Assembly }, ServiceLifetime.Scoped);
+        services.AddEventBus(new[]
+        {
+            typeof(CalculateEvent).Assembly
+        }, ServiceLifetime.Scoped);
         var @event = new CalculateEvent()
         {
             ParameterA = parameterA,
             ParameterB = parameterB
         };
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
-        await eventBus.PublishAsync(@event);
+
+        if (isException)
+        {
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await eventBus.PublishAsync(@event));
+        }
+        else
+        {
+            await eventBus.PublishAsync(@event);
+        }
         Assert.IsTrue(@event.Result == result);
     }
 
@@ -333,7 +326,6 @@ public class FeaturesTest : TestBase
             eventAttribute.FailureLevels == FailureLevels.Throw &&
             eventAttribute.IsCancel == isCancel
         );
-
     }
 
     [TestMethod]
@@ -349,9 +341,57 @@ public class FeaturesTest : TestBase
     public async Task TestEventBusExceptionAsync()
     {
         var services = new ServiceCollection();
-        services.AddEventBus(new[] { typeof(FeaturesTest).Assembly }, ServiceLifetime.Scoped);
+        services.AddEventBus(new[]
+        {
+            typeof(FeaturesTest).Assembly
+        }, ServiceLifetime.Scoped);
         var registerUserEvent = new RegisterUserEvent("Jim");
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
+    }
+
+    [TestMethod]
+    public async Task TestEventBusSaveChangeFiledByTransactionMiddlewareAsync()
+    {
+        var services = new ServiceCollection();
+        services
+            .AddMasaDbContext<OrderDbContext>(options => options.UseSqlite($"Data Source={Guid.NewGuid()}.db;"))
+            .AddEventBus(new[]
+            {
+                typeof(FeaturesTest).Assembly
+            }, builder =>
+            {
+                builder.UseUoW<OrderDbContext>();
+            });
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<OrderDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.MigrateAsync();
+        var orderStatus = new OrderStatus()
+        {
+            Id = 1,
+            Name = "AwaitPay"
+        };
+        var order = new Order()
+        {
+            Id = 1,
+            Name = "Water Purifier",
+            OrderStatusId = 1
+        };
+        await dbContext.Set<OrderStatus>().AddAsync(orderStatus);
+        await dbContext.Set<Order>().AddAsync(order);
+        await dbContext.SaveChangesAsync();
+
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+
+        var @event = new CreateOrderEvent()
+        {
+            Id = 2,
+            Name = "Water Purifier",
+            IsExecuteCancel = false
+        };
+        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await eventBus.PublishAsync(@event));
+
+        Assert.AreEqual(true, @event.IsExecuteCancel);
     }
 }

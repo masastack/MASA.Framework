@@ -13,10 +13,10 @@ public class Handler
             throw new Exception("result is even");
     }
 
-    [EventHandler(Order = 2, IsCancel = true)]
-    public void SecondCancal(CalculateEvent @event)
+    [EventHandler(Order = 1, IsCancel = true)]
+    public void FirstCancel(CalculateEvent @event)
     {
-        @event.Result = @event.Result - 2;
+        @event.Result -= 3;
     }
 
     [EventHandler(Order = 2, FailureLevels = FailureLevels.Throw)]
@@ -26,6 +26,12 @@ public class Handler
 
         if (@event.Result / 12 > 0)
             throw new Exception("result must not be greater than 11");
+    }
+
+    [EventHandler(Order = 2, IsCancel = true)]
+    public void SecondCancel(CalculateEvent @event)
+    {
+        @event.Result = @event.Result - 2;
     }
 
     [EventHandler(Order = 3, FailureLevels = FailureLevels.ThrowAndCancel)]
@@ -39,11 +45,5 @@ public class Handler
     public void ThirdCancel(CalculateEvent @event)
     {
         @event.Result -= 5;
-    }
-
-    [EventHandler(Order = 1, IsCancel = true)]
-    public void FirstCancal(CalculateEvent @event)
-    {
-        @event.Result -= 3;
     }
 }
