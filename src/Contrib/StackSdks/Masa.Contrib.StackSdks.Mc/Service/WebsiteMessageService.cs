@@ -70,10 +70,17 @@ public class WebsiteMessageService : IWebsiteMessageService
         await _caller.PostAsync(requestUri, userIds);
     }
 
-    public async Task<List<WebsiteMessageModel>> GetListByTagAsync(List<string> tags, string channelCode)
+    public async Task<List<WebsiteMessageTagModel>> GetListByTagAsync(List<string> tags, string channelCode)
     {
         var requestUri = $"{_party}/ListByTag";
         var options = new { tags = string.Join(",", tags), channelCode };
-        return await _caller.GetAsync<List<WebsiteMessageModel>>(requestUri, options) ?? new();
+        return await _caller.GetAsync<List<WebsiteMessageTagModel>>(requestUri, options) ?? new();
+    }
+
+    public async Task<int> GetUnreadAsync(string channelCode)
+    {
+        var requestUri = $"{_party}/Unread";
+        var options = new { channelCode };
+        return await _caller.GetAsync<int>(requestUri, options);
     }
 }
