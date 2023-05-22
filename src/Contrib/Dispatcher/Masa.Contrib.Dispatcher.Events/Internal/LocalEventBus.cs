@@ -1,13 +1,15 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+// ReSharper disable once CheckNamespace
+
 namespace Masa.Contrib.Dispatcher.Events;
 
-public class LocalEventBus : ILocalEventBus
+internal class LocalEventBus : ILocalEventBus
 {
     private readonly IServiceProvider _serviceProvider;
 
-    private readonly Internal.Dispatch.Dispatcher _dispatcher;
+    private readonly Lazy<LocalEventBusPublisher> _publisherLazy;
 
     private readonly DispatcherOptions _options;
 
@@ -25,7 +27,7 @@ public class LocalEventBus : ILocalEventBus
         IUnitOfWork? unitOfWork = null)
     {
         _serviceProvider = serviceProvider;
-        _dispatcher = serviceProvider.GetRequiredService<Internal.Dispatch.Dispatcher>();
+        _publisherLazy = new Lazy<LocalEventBusPublisher>(serviceProvider.GetRequiredService<LocalEventBusPublisher>);
         _options = options.Value;
         _initializeServiceProvider = initializeServiceProvider;
         _unitOfWork = unitOfWork;
@@ -35,8 +37,6 @@ public class LocalEventBus : ILocalEventBus
     {
         MasaArgumentException.ThrowIfNull(@event);
         var eventType = @event.GetType();
-
-        var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();
         if (!_options.UnitOfWorkRelation.ContainsKey(eventType))
         {
             throw new NotSupportedException(
@@ -49,6 +49,7 @@ public class LocalEventBus : ILocalEventBus
             transactionEvent.UnitOfWork = _unitOfWork;
         }
 
+        var middlewares = _serviceProvider.GetRequiredService<IEnumerable<IEventMiddleware<TEvent>>>();
         if (_initializeServiceProvider.IsInitialize)
             middlewares = middlewares.Where(middleware => middleware.SupportRecursive);
 
@@ -56,18 +57,15 @@ public class LocalEventBus : ILocalEventBus
 
         EventHandlerDelegate eventHandlerDelegate = async () =>
         {
-            await _dispatcher.PublishEventAsync(_serviceProvider, @event, cancellationToken);
+            await _publisherLazy.Value.PublishEventAsync(@event, cancellationToken);
         };
         await middlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }
 
-#pragma warning disable S3928
     public async Task CommitAsync(CancellationToken cancellationToken = default)
     {
-        if (_unitOfWork is null)
-            throw new ArgumentNullException(nameof(IUnitOfWork), "You need to UseUoW when adding services");
+        MasaArgumentException.ThrowIfNull(_unitOfWork);
 
         await _unitOfWork.CommitAsync(cancellationToken);
     }
-#pragma warning restore S3928
 }

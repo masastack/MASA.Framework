@@ -11,7 +11,7 @@ global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNo
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.Events;
 global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.Events;
-global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler.Events;
+global using Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.Events;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using Microsoft.Extensions.Logging;

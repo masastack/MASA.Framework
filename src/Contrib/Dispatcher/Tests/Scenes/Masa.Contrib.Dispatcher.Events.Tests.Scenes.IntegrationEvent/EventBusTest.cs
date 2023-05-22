@@ -11,7 +11,9 @@ public class EventBusTest
     {
         Mock<ILocalEventBus> localEventBus = new();
         Mock<IIntegrationEventBus> integrationEventBus = new();
-        var eventBus = new EventBus(localEventBus.Object, new Lazy<IIntegrationEventBus?>(integrationEventBus.Object));
+        var eventBus = new EventBus(
+            new Lazy<ILocalEventBus>(() => localEventBus.Object),
+            new Lazy<IIntegrationEventBus?>(integrationEventBus.Object));
         var @event = new RegisterUserIntegrationEvent()
         {
             Account = "masa"
@@ -25,7 +27,9 @@ public class EventBusTest
     public async Task TestPublishIntegrationEventByIntegrationEventBusIsNullAsync()
     {
         Mock<ILocalEventBus> localEventBus = new();
-        var eventBus = new EventBus(localEventBus.Object, new Lazy<IIntegrationEventBus?>(() => null));
+        var eventBus = new EventBus(
+            new Lazy<ILocalEventBus>(() => localEventBus.Object),
+            new Lazy<IIntegrationEventBus?>(() => null));
         var @event = new RegisterUserIntegrationEvent()
         {
             Account = "masa"

@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.Events;
-
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -12,7 +10,7 @@ public class SagaTest : TestBase
 
     public SagaTest() : base()
     {
-        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _eventBus = ServiceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]
@@ -20,7 +18,7 @@ public class SagaTest : TestBase
     [DataRow("601454112", "error", "the delivery failed, rolling back success")]
     public async Task TestExecuteAbnormalExit(string orderId, string orderState, string result)
     {
-        ShipOrderEvent @event = new ShipOrderEvent()
+        var @event = new ShipOrderEvent()
         {
             OrderId = orderId,
             OrderState = orderState
@@ -70,10 +68,10 @@ public class SagaTest : TestBase
     [DataRow("smith", "alice", "1000", 0)]
     [DataRow("roller", "alice", "1000", 1)]
     [DataRow("eddie", "clark", "2000", 0)]
-    [DataRow("eddie", "clark", "20000000", 1)]
+    [DataRow("thomas", "clark", "20000000", 1)]
     public async Task TestMultiHandlerBySaga(string account, string optAccount, string price, int isError)
     {
-        TransferEvent @event = new TransferEvent()
+        var @event = new TransferEvent()
         {
             Account = account,
             OptAccount = optAccount,
@@ -96,7 +94,7 @@ public class SagaTest : TestBase
         Assert.ThrowsException<ArgumentException>(() =>
         {
             ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
-            eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+            eventBus = ServiceProvider.GetRequiredService<IEventBus>();
         });
         EditCategoryEvent @event = new EditCategoryEvent()
         {

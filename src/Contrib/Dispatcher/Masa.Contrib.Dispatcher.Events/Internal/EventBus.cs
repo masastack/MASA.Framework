@@ -9,30 +9,31 @@ namespace Masa.Contrib.Dispatcher.Events;
 
 internal class EventBus : IEventBus
 {
-    private readonly ILocalEventBus _localEventBus;
+    private readonly Lazy<ILocalEventBus> _localEventBusLazy;
+    private ILocalEventBus LocalEventBus => _localEventBusLazy.Value;
 
-    private readonly Lazy<IIntegrationEventBus?> _lazyIntegrationEventBus;
-    private IIntegrationEventBus? IntegrationEventBus => _lazyIntegrationEventBus.Value;
+    private readonly Lazy<IIntegrationEventBus?> _integrationEventBusLazy;
 
-    public EventBus(ILocalEventBus localEventBus, Lazy<IIntegrationEventBus?> integrationEventBusLazy)
+    private IIntegrationEventBus? IntegrationEventBus => _integrationEventBusLazy.Value;
+
+    public EventBus(Lazy<ILocalEventBus> localEventBusLazy, Lazy<IIntegrationEventBus?> integrationEventBusLazy)
     {
-        _localEventBus = localEventBus;
-        _lazyIntegrationEventBus = integrationEventBusLazy;
+        _localEventBusLazy = localEventBusLazy;
+        _integrationEventBusLazy = integrationEventBusLazy;
     }
 
     public Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) where TEvent : IEvent
     {
-        if (@event is IIntegrationEvent _)
-        {
-            if (IntegrationEventBus == null)
-                throw new NotSupportedException("Integration events are not supported, please ensure integration events are registered");
+        if (@event is not IIntegrationEvent _)
+            return LocalEventBus.PublishAsync(@event, cancellationToken);
 
-            return IntegrationEventBus.PublishAsync(@event, cancellationToken);
-        }
+        if (IntegrationEventBus == null)
+            throw new NotSupportedException("Integration events are not supported, please ensure integration events are registered");
 
-        return _localEventBus.PublishAsync(@event, cancellationToken);
+        return IntegrationEventBus.PublishAsync(@event, cancellationToken);
+
     }
 
     public Task CommitAsync(CancellationToken cancellationToken = default)
-        => _localEventBus.CommitAsync(cancellationToken);
+        => LocalEventBus.CommitAsync(cancellationToken);
 }

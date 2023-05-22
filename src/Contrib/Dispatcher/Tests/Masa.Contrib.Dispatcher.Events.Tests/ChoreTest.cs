@@ -9,7 +9,7 @@ public class ChoreTest : TestBase
     private readonly IEventBus _eventBus;
     public ChoreTest()
     {
-        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _eventBus = ServiceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]
