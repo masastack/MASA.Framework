@@ -28,13 +28,17 @@ public class SendByDataProcessor : ProcessorBase
         if (unitOfWork != null)
             unitOfWork.UseTransaction = false;
 
-        var publisher = serviceProvider.GetRequiredService<IPublisher>();
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
         var retrieveEventLogs =
             await eventLogService.RetrieveEventLogsPendingToPublishAsync(
                 _options.Value.BatchSize,
                 stoppingToken);
+
+        if(!retrieveEventLogs.Any())
+            return;
+
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
         foreach (var eventLog in retrieveEventLogs)
         {

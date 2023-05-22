@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.Caching;
 
-public class CacheEntry<T> : CacheEntryOptions<T>
+public class CacheEntry<T> : CacheEntryOptionsBase
 {
     public T? Value { get; }
 
@@ -12,9 +12,9 @@ public class CacheEntry<T> : CacheEntryOptions<T>
         Value = value;
     }
 
-    public CacheEntry(T value, DateTimeOffset absoluteExpiration) : this(value)
+    public CacheEntry(T? value, DateTimeOffset absoluteExpiration) : this(value)
         => AbsoluteExpiration = absoluteExpiration;
 
-    public CacheEntry(T value, TimeSpan absoluteExpirationRelativeToNow) : this(value)
+    public CacheEntry(T? value, TimeSpan absoluteExpirationRelativeToNow) : this(value)
         => AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow;
 }
