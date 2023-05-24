@@ -33,7 +33,6 @@
     <ProjectReference Include="..\Scenes\CheckMethodsParameterNotNull\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterNotNull.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsParameterType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsParameterType.csproj" />
     <ProjectReference Include="..\Scenes\CheckMethodsType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.csproj" />
-    <ProjectReference Include="..\Scenes\HandlerOrder\Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.csproj" />
     <ProjectReference Include="..\Scenes\OnlyCancelHandler\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler.csproj" />
     <ProjectReference Include="..\Scenes\OrderEqualBySaga\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.csproj" />
   </ItemGroup>

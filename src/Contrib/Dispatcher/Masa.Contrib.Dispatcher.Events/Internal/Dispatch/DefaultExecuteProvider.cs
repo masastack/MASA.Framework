@@ -5,17 +5,17 @@ namespace Masa.Contrib.Dispatcher.Events.Internal.Dispatch;
 
 internal class DefaultExecuteProvider : IExecuteProvider
 {
-    private int _timer;
-    public int Timer => _timer;
+    public int Timer { get; private set; }
 
     public EventExecuteInfo ExecuteResult { get; private set; }
 
     public DefaultExecuteProvider()
-    {
-        _timer = 0;
-    }
+        => ResetTimer();
 
-    public void ExecuteHandler() => _timer++;
+    public void ResetTimer()
+        => Timer = 0;
+
+    public void ExecuteHandler() => Timer++;
 
     public void Initialize()
     {
@@ -24,7 +24,6 @@ internal class DefaultExecuteProvider : IExecuteProvider
             Exception = null,
             Status = ExecuteStatus.InProgress
         };
-        _timer = 0;
     }
 
     public void SetExecuteResult(EventExecuteInfo executeInfo)

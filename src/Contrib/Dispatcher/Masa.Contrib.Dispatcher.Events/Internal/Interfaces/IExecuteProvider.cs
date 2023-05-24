@@ -18,6 +18,8 @@ internal interface IExecuteProvider
     /// </summary>
     EventExecuteInfo ExecuteResult { get; }
 
+    void ResetTimer();
+
     /// <summary>
     /// execute event handler
     /// Publishing local events through IEventBus will execute

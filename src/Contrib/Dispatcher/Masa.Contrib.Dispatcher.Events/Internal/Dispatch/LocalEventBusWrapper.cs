@@ -7,7 +7,7 @@ namespace Masa.Contrib.Dispatcher.Events;
 
 internal class LocalEventBusWrapper : ILocalEventBusWrapper
 {
-    private readonly Lazy<ILocalEventBus> _publisherLazy;
+    private readonly Lazy<ILocalEventBus> _localEventBusLazy;
 
     private readonly DispatcherOptions _options;
 
@@ -18,13 +18,13 @@ internal class LocalEventBusWrapper : ILocalEventBusWrapper
         "https://docs.masastack.com/framework/building-blocks/dispatcher/faq#section-8fdb7a0b51854e8b4ef6";
 #pragma warning restore S5332
 
-    public LocalEventBusWrapper(IServiceProvider serviceProvider,
-        IOptions<DispatcherOptions> options,
-        IUnitOfWork? unitOfWork = null)
+    public LocalEventBusWrapper(
+        IServiceProvider serviceProvider,
+        DispatcherOptions options)
     {
-        _publisherLazy = new Lazy<ILocalEventBus>(serviceProvider.GetRequiredService<ILocalEventBus>);
-        _options = options.Value;
-        _unitOfWork = unitOfWork;
+        _localEventBusLazy = new Lazy<ILocalEventBus>(serviceProvider.GetRequiredService<ILocalEventBus>);
+        _options = options;
+        _unitOfWork = serviceProvider.GetService<IUnitOfWork>();
     }
 
     public async Task PublishAsync<TEvent>(
@@ -48,7 +48,7 @@ internal class LocalEventBusWrapper : ILocalEventBusWrapper
 
         EventHandlerDelegate eventHandlerDelegate = async () =>
         {
-            await _publisherLazy.Value.ExecuteHandlerAsync(@event, cancellationToken);
+            await _localEventBusLazy.Value.ExecuteHandlerAsync(@event, cancellationToken);
         };
         await eventMiddlewares.Reverse().Aggregate(eventHandlerDelegate, (next, middleware) => () => middleware.HandleAsync(@event, next))();
     }

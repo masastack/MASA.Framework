@@ -54,7 +54,7 @@ internal class LocalEventBus : LocalEventBusBase, ILocalEventBus
         {
             //When a cancellation handler exists
             var cancelHandlerResult = await ExecuteCancelHandlerAsync(cancelHandlers, @event, cancellationToken);
-            var executeInfo = ExecuteProvider.ExecuteResult!;
+            var executeInfo = ExecuteProvider.ExecuteResult;
             if (cancelHandlerResult.IsSucceed)
             {
                 executeInfo.Status = ExecuteStatus.RollbackSucceeded;

@@ -20,16 +20,4 @@
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="废弃\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="废弃\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="废弃\**" />
-  </ItemGroup>
-
 </Project>

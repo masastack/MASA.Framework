@@ -13,7 +13,6 @@ internal class DefaultDispatchNetworkProvider : IDispatchNetworkProvider
 
     public IReadOnlyList<EventHandlerAttribute> CancelHandlerNetwork => _cancelHandlerNetwork;
 
-
     private readonly ILogger<DefaultDispatchNetworkProvider>? _logger;
 
     public DefaultDispatchNetworkProvider(Assembly[] assemblies, ILoggerFactory? loggerFactory)

@@ -1,9 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.EventHandlers;
+// ReSharper disable once CheckNamespace
 
-public class Handler
+namespace Masa.Contrib.Dispatcher.Events.Tests;
+
+public class CalculateHandler
 {
     [EventHandler(Order = 1)]
     public void First(CalculateEvent @event)

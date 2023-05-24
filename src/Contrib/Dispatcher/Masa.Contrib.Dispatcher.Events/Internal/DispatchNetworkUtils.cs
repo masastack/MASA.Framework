@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+[assembly: InternalsVisibleTo("Masa.Contrib.Dispatcher.Events.Tests")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Masa.Contrib.Dispatcher.Events;
@@ -8,10 +10,8 @@ namespace Masa.Contrib.Dispatcher.Events;
 internal static class DispatchNetworkUtils
 {
     public static bool IsSagaMode(Type handlerType, MethodInfo method) =>
-        typeof(IEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) &&
-        method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync)) ||
-        typeof(ISagaEventHandler<>).IsGenericInterfaceAssignableFrom(handlerType) &&
-        method.Name.Equals(nameof(ISagaEventHandler<IEvent>.CancelAsync));
+        (handlerType.IsImplementerOfGeneric(typeof(IEventHandler<>)) && method.Name.Equals(nameof(IEventHandler<IEvent>.HandleAsync))) ||
+        (handlerType.IsImplementerOfGeneric(typeof(ISagaEventHandler<>)) && method.Name.Equals(nameof(ISagaEventHandler<IEvent>.CancelAsync)));
 
     public static List<Type> GetServiceTypes(List<DispatchRelationOptions> dispatchRelationOptions)
     {

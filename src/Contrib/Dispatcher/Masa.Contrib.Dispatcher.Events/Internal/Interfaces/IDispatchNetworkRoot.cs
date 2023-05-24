@@ -5,7 +5,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
-public interface IDispatchNetworkRoot
+internal interface IDispatchNetworkRoot
 {
     IReadOnlyDictionary<Type, List<DispatchRelationOptions>> DispatchNetworks { get; }
 
