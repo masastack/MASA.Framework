@@ -42,13 +42,13 @@ internal class DefaultSagaDispatchNetworkProvider : IDispatchNetworkProvider
 
         foreach (var handler in eventHandlers)
         {
-            if ((handler.IsCancel && _cancelHandlerNetwork.Any(attr => attr.ActionMethodInfo == handler.ActionMethodInfo))
-                || (!handler.IsCancel && _handlerNetwork.Any(attr => attr.ActionMethodInfo == handler.ActionMethodInfo)))
+            if ((handler.IsCancel &&
+                    _cancelHandlerNetwork.Any(cancelHandler => cancelHandler.ActionMethodInfo == handler.ActionMethodInfo)) ||
+                (!handler.IsCancel && _handlerNetwork.Any(attr => attr.ActionMethodInfo == handler.ActionMethodInfo)))
             {
                 continue;
             }
 
-            //希望Saga实例中 Handler与CancelHandler的Order保持一致
             if (actualOrder != handler.Order) handler.Order = actualOrder;
 
             if (!handler.IsCancel) _handlerNetwork.Add(handler);
@@ -95,13 +95,11 @@ internal class DefaultSagaDispatchNetworkProvider : IDispatchNetworkProvider
         return eventHandlers;
     }
 
-
-    //需要验证返回集合类型是 IEventHandler<> 或者 ISagaEventHandler<> 的派生类
     internal List<Type> GetEventHandlerInstanceTypeList(Type eventHandlerGenericType)
     {
         var types = _assemblies
             .SelectMany(assembly => assembly.GetTypes())
-            .Where(type => !type.IsGeneric() && type.IsConcrete() && eventHandlerGenericType.IsGenericInterfaceAssignableFrom(type))
+            .Where(type => type.IsConcrete() && type.IsImplementerOfGeneric(eventHandlerGenericType))
             .ToList();
         return types;
     }

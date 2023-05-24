@@ -32,10 +32,12 @@ public class TestBase
             });
         }
 
-        Services.AddTransient(typeof(IEventMiddleware<>), typeof(LoggingEventMiddleware<>));
         func?.Invoke(Services);
 
-        Services.AddEventBus(assemblies?? DefaultAssemblies, ServiceLifetime.Scoped);
+        Services.AddEventBus(assemblies?? DefaultAssemblies, ServiceLifetime.Scoped, builder =>
+        {
+            builder.UseMiddleware(typeof(LoggingEventMiddleware<>));
+        });
         ServiceProvider = Services.BuildServiceProvider();
     }
 

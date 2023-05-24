@@ -1,16 +1,18 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events.Options;
+// ReSharper disable once CheckNamespace
 
-public class DispatcherOptions
+namespace Masa.Contrib.Dispatcher.Events;
+
+internal class DispatcherOptions
 {
     private IServiceCollection Services { get; }
 
     private Assembly[] Assemblies { get; }
 
     private bool IsSupportUnitOfWork(Type eventType)
-        => typeof(ITransaction).IsAssignableFrom(eventType) && !typeof(IDomainQuery<>).IsGenericInterfaceAssignableFrom(eventType);
+        => typeof(ITransaction).IsAssignableFrom(eventType) && !eventType.IsImplementerOfGeneric(typeof(IDomainQuery<>));
 
     internal Dictionary<Type, bool> UnitOfWorkRelation { get; } = new();
 

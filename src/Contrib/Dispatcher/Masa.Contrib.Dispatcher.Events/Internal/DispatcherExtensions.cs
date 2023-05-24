@@ -5,13 +5,15 @@ namespace Masa.Contrib.Dispatcher.Events.Internal;
 
 internal static class DispatcherExtensions
 {
-    public static bool IsGeneric(this Type type) => type.GetTypeInfo().IsGenericTypeDefinition || type.GetTypeInfo().ContainsGenericParameters;
+    public static bool IsGenericInterfaceAssignableFrom(this Type genericInterfaceType, Type genericImplementationType)
+    {
+        if (!genericImplementationType.IsGenericTypeDefinition ||
+            genericImplementationType.IsAbstract ||
+            genericImplementationType.IsInterface)
+            return false;
 
-    public static bool IsConcrete(this Type type) => !type.GetTypeInfo().IsAbstract && !type.GetTypeInfo().IsInterface;
-
-    public static bool IsGenericInterfaceAssignableFrom(this Type eventHandlerType, Type type) =>
-        type.IsConcrete() &&
-        type.GetInterfaces().Any(t => t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == eventHandlerType);
+        return genericImplementationType.GetInterfaces().Any(type => type.GetGenericTypeDefinition() == genericInterfaceType);
+    }
 
     /// <summary>
     /// Keep the original stack information and throw an exception

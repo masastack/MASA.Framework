@@ -3,7 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Internal.Dispatch;
 
-public abstract class LocalEventBusBase
+internal abstract class LocalEventBusBase
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly IDispatchNetworkRoot _dispatchNetworkRoot;

@@ -29,8 +29,10 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(ExceptionEventMiddleware<>), ServiceLifetime.Transient));
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>), ServiceLifetime.Transient));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(ExceptionEventMiddleware<>),
+            ServiceLifetime.Transient));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>),
+            ServiceLifetime.Transient));
 
         var builder = new EventBusBuilder(services);
         eventBusBuilder?.Invoke(builder);
@@ -53,15 +55,14 @@ public static class ServiceCollectionExtensions
             services.TryAdd(new ServiceDescriptor(serviceType, serviceType, lifetime));
         }
 
-        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
-        services.AddSingleton<IOptions<DispatcherOptions>>(_ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
         services.TryAddScoped<IExecuteProvider, DefaultExecuteProvider>();
-
         services.TryAdd(new ServiceDescriptor(typeof(ILocalEventBus), typeof(LocalEventBus), lifetime));
-        services.TryAdd(new ServiceDescriptor(typeof(ILocalEventBusWrapper), typeof(LocalEventBusWrapper), lifetime));
+
+        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
+        services.TryAdd(new ServiceDescriptor(typeof(ILocalEventBusWrapper), serviceProvider => new LocalEventBusWrapper(serviceProvider, dispatcherOptions), lifetime));
+
         services.TryAdd(new ServiceDescriptor(typeof(IEventBus), typeof(EventBus), lifetime));
 
         MasaApp.TrySetServiceCollection(services);

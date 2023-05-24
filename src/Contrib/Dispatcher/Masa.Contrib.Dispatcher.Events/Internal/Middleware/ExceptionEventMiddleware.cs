@@ -51,5 +51,9 @@ internal class ExceptionEventMiddleware<TEvent> : EventMiddleware<TEvent>
 
             executeResult.Exception!.ThrowException();
         }
+        finally
+        {
+            ExecuteProvider.ResetTimer();
+        }
     }
 }

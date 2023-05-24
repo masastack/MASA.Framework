@@ -30,7 +30,10 @@ public class TypeTest
         res = typeof(Repository<,>).IsImplementerOfGeneric(typeof(Repository<>));
         Assert.IsTrue(res);
 
-        res = typeof(String).IsImplementerOfGeneric(typeof(IEquatable<>));
+        res = typeof(string).IsImplementerOfGeneric(typeof(IEquatable<>));
+        Assert.IsTrue(res);
+
+        res = typeof(Repository<Demo>).IsImplementerOfGeneric(typeof(IRepository<>));
         Assert.IsTrue(res);
     }
 

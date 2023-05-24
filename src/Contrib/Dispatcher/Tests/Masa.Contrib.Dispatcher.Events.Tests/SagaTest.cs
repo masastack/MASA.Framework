@@ -43,7 +43,7 @@ public class SagaTest : TestBase
             Name = "Microsoft"
         };
         await _eventBus.PublishAsync(@event);
-        Assert.IsTrue(((AddGoodsEvent)@event).Count == 1);
+        Assert.IsTrue(((AddGoodsEvent)@event).Stock == 1);
     }
 
     [DataTestMethod]
@@ -104,7 +104,7 @@ public class SagaTest : TestBase
             ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
             eventBus = ServiceProvider.GetRequiredService<IEventBus>();
         });
-        EditCategoryEvent @event = new EditCategoryEvent()
+        var @event = new EditCategoryEvent()
         {
             CategoryId = new Random().Next(100, 10000).ToString(),
             CategoryName = "Name"
