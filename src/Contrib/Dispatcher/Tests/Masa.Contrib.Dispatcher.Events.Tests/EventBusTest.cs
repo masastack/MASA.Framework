@@ -53,6 +53,6 @@ public class EventBusTest
         };
         await _eventBus.PublishAsync(@event);
 
-        _localEventBusWrapperMock.Setup(eventBus => eventBus.PublishAsync(@event, It.IsAny<IEnumerable<IEventMiddleware<AddGoodsEvent>>>(), It.IsAny<CancellationToken>()));
+        _localEventBusWrapperMock.Verify(eventBus => eventBus.PublishAsync(@event, It.IsAny<IEnumerable<IEventMiddleware<AddGoodsEvent>>>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 }

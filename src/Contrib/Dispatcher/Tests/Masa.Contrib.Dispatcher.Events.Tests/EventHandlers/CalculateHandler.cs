@@ -5,6 +5,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
+#pragma warning disable CA1822
 public class CalculateHandler
 {
     [EventHandler(Order = 1)]
@@ -49,3 +50,4 @@ public class CalculateHandler
         @event.Result -= 5;
     }
 }
+#pragma warning restore CA1822

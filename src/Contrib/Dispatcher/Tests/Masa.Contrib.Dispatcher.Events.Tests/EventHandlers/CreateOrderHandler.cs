@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events.Tests.EventHandlers;
 
+#pragma warning disable CA1822
 public class CreateOrderHandler
 {
     [EventHandler(FailureLevels = FailureLevels.ThrowAndCancel)]
@@ -25,3 +26,4 @@ public class CreateOrderHandler
         return Task.CompletedTask;
     }
 }
+#pragma warning restore CA1822
