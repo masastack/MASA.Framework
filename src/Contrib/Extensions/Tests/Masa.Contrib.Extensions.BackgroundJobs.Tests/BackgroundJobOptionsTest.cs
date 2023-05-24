@@ -11,7 +11,7 @@ public class BackgroundJobOptionsTest
     {
         var backgroundJobOptions = new BackgroundJobOptions();
         Assert.AreEqual(30, backgroundJobOptions.BatchSize);
-        Assert.AreEqual(30, backgroundJobOptions.MaxRetryTimes);
+        Assert.AreEqual(10, backgroundJobOptions.MaxRetryTimes);
         Assert.AreEqual(60, backgroundJobOptions.FirstWaitDuration);
         Assert.AreEqual(2, backgroundJobOptions.WaitDuration);
 
