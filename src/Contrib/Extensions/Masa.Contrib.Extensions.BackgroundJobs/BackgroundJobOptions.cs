@@ -38,11 +38,11 @@ public class BackgroundJobOptions
         }
     }
 
-    private int _maxRetryTimes = 30;
+    private int _maxRetryTimes = 10;
 
     /// <summary>
     /// Maximum number of retries
-    /// Default is 10
+    /// Default: 10
     /// </summary>
     public int MaxRetryTimes
     {
