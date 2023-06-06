@@ -1,7 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.EventHandlers;
+// ReSharper disable once CheckNamespace
+
+namespace Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga;
 
 public class EditCategoryHandler : ISagaEventHandler<EditCategoryEvent>
 {
@@ -11,14 +13,14 @@ public class EditCategoryHandler : ISagaEventHandler<EditCategoryEvent>
     [EventHandler(10)]
     public Task CancelAsync(EditCategoryEvent @event, CancellationToken cancellationToken = default)
     {
-        _logger?.LogInformation($"cancel edit category log,CategoryId:{@event.CategoryId},Name:{@event.CategoryName}");
+        _logger?.LogInformation($"cancel edit category log, CategoryId:{@event.CategoryId}, Name:{@event.CategoryName}");
         return Task.CompletedTask;
     }
 
     [EventHandler(20)]
     public Task HandleAsync(EditCategoryEvent @event, CancellationToken cancellationToken = default)
     {
-        _logger?.LogInformation($"edit category log,CategoryId:{@event.CategoryId},Name:{@event.CategoryName}");
+        _logger?.LogInformation($"edit category log, CategoryId:{@event.CategoryId}, Name:{@event.CategoryName}");
         return Task.CompletedTask;
     }
 }
