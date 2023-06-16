@@ -33,7 +33,7 @@ internal static class IElasticClientExtenstion
     }
 
     #region mapping
-    
+
     public static async Task<IEnumerable<MappingResponseDto>> GetMappingAsync(this ICaller caller, string indexName, CancellationToken token = default)
     {
         var path = $"/{indexName}/_mapping";
@@ -41,9 +41,11 @@ internal static class IElasticClientExtenstion
         var json = (JsonElement)result!;
         JsonElement? root = null;
         foreach (var item in json.EnumerateObject())
-        {          
-            root = item.Value;
-            break;
+        {
+            if (!root.HasValue)
+                root = item.Value;
+            else
+                break;
         }
 
         if (!root.HasValue || !root.Value.TryGetProperty("mappings", out JsonElement mapping))
