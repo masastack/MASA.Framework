@@ -34,24 +34,25 @@ internal static class IElasticClientExtenstion
 
     #region mapping
 
-    /// <summary>
-    /// 获取mapping
-    /// </summary>
-    /// <param name="caller"></param>
-    /// <param name="indexName"></param>                    
-    /// <param name="token"></param>
-    /// <returns></returns>
     public static async Task<IEnumerable<MappingResponseDto>> GetMappingAsync(this ICaller caller, string indexName, CancellationToken token = default)
     {
         var path = $"/{indexName}/_mapping";
         var result = await caller.GetAsync<object>(path, false, token);
         var json = (JsonElement)result!;
-        if (!json.TryGetProperty(indexName, out JsonElement root) || !root.TryGetProperty("mappings", out JsonElement mapping))
+        JsonElement mapping = default;
+        bool findMapping = false;
+        foreach (var item in json.EnumerateObject())
         {
-            return default!;
+            if (!findMapping && item.Value.TryGetProperty("mappings", out mapping))
+            {
+                findMapping = true;
+                break;
+            }
         }
 
-        return GetRepProperties(mapping, default!)!;
+        if (findMapping)
+            return GetRepProperties(mapping, default!)!;
+        throw new UserFriendlyException($"can't find mapping for index: {indexName}");
     }
 
     private static IEnumerable<MappingResponseDto>? GetRepProperties(JsonElement node, string? parentName = default)
