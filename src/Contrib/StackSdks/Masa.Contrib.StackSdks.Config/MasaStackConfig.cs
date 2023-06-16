@@ -47,7 +47,7 @@ public class MasaStackConfig : IMasaStackConfig
 
     public string Environment => GetValue(MasaStackConfigConstant.ENVIRONMENT);
 
-    public string Namespace => GetValue(MasaStackConfigConstant.MASA_NAMESPACE);
+    public string Namespace => GetValue(MasaStackConfigConstant.NAMESPACE);
 
     public string AdminPwd => GetValue(MasaStackConfigConstant.ADMIN_PWD);
 
