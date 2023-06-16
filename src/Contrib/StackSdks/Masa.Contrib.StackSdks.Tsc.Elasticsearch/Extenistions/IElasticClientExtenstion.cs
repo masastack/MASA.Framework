@@ -39,21 +39,20 @@ internal static class IElasticClientExtenstion
         var path = $"/{indexName}/_mapping";
         var result = await caller.GetAsync<object>(path, false, token);
         var json = (JsonElement)result!;
-        JsonElement? root = null;
+        JsonElement mapping = default;
+        bool findMapping = false;
         foreach (var item in json.EnumerateObject())
         {
-            if (!root.HasValue)
-                root = item.Value;
-            else
+            if (!findMapping && item.Value.TryGetProperty("mappings", out mapping))
+            {
+                findMapping = true;
                 break;
+            }
         }
 
-        if (!root.HasValue || !root.Value.TryGetProperty("mappings", out JsonElement mapping))
-        {
-            return default!;
-        }
-
-        return GetRepProperties(mapping, default!)!;
+        if (findMapping)
+            return GetRepProperties(mapping, default!)!;
+        throw new UserFriendlyException($"can't find mapping for index: {indexName}");
     }
 
     private static IEnumerable<MappingResponseDto>? GetRepProperties(JsonElement node, string? parentName = default)
