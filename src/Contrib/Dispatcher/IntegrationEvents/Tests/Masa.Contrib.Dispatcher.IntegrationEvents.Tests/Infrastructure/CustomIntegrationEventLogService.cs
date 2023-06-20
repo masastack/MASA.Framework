@@ -39,7 +39,11 @@ public class CustomIntegrationEventLogService : IIntegrationEventLogService
         return Task.FromResult(new List<IntegrationEventLog>().AsEnumerable());
     }
 
-    public Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default)
+    public Task SaveEventAsync(
+        IIntegrationEvent @event,
+        IntegrationEventExpand? eventExpand,
+        DbTransaction transaction,
+        CancellationToken cancellationToken = default)
     {
         return Task.CompletedTask;
     }

@@ -1,11 +1,14 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Isolation;
+
 namespace Masa.Contrib.Dispatcher.IntegrationEvents.Tests;
 
 [TestClass]
 public class IntegrationEventBusTest
 {
+    private Mock<IServiceProvider> _serviceProvider;
     private Mock<IDispatcherOptions> _options;
     private Mock<IOptions<IntegrationEventOptions>> _dispatcherOptions;
     private Mock<IPublisher> _publisher;
@@ -18,6 +21,7 @@ public class IntegrationEventBusTest
     [TestInitialize]
     public void Initialize()
     {
+        _serviceProvider = new();
         _options = new();
         _options.Setup(option => option.Services).Returns(new ServiceCollection()).Verifiable();
         _dispatcherOptions = new();
@@ -27,7 +31,7 @@ public class IntegrationEventBusTest
         _publisher = new();
         _logger = new();
         _eventLog = new();
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default)).Verifiable();
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsPublishedAsync(It.IsAny<Guid>(), default)).Verifiable();
         _eventLog.Setup(eventLog => eventLog.MarkEventAsFailedAsync(It.IsAny<Guid>(), default)).Verifiable();
@@ -67,8 +71,9 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -78,16 +83,18 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(), It.IsAny<DbTransaction>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Never);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Never);
     }
 
     [DataTestMethod]
@@ -96,8 +103,9 @@ public class IntegrationEventBusTest
     public async Task TestPublishIntegrationEventAndNotUoWAsync(bool useLogger)
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null);
@@ -106,16 +114,18 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<IntegrationEventExpand?>(), It.IsAny<DbTransaction>(),
+                It.IsAny<CancellationToken>()),
             Times.Never);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Once);
     }
 
     [DataTestMethod]
@@ -125,8 +135,9 @@ public class IntegrationEventBusTest
     {
         _uoW.Setup(uoW => uoW.UseTransaction).Returns(false);
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -136,16 +147,17 @@ public class IntegrationEventBusTest
             Account = "masa",
             Password = "123456"
         };
-        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, default))
+        _publisher.Setup(client => client.PublishAsync(@event.Topic, @event, null, default))
             .Verifiable();
         await integrationEventBus.PublishAsync(@event);
 
-        _eventLog.Verify(e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
+        _eventLog.Verify(
+            e => e.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()),
             Times.Never);
         _eventLog.Verify(e => e.MarkEventAsInProgressAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsPublishedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         _eventLog.Verify(e => e.MarkEventAsFailedAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
-        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, default), Times.Once);
+        _publisher.Verify(pub => pub.PublishAsync(@event.Topic, @event, null, default), Times.Once);
     }
 
     [DataTestMethod]
@@ -153,11 +165,12 @@ public class IntegrationEventBusTest
     [DataRow(false)]
     public async Task TestSaveEventFailedAsync(bool useLogger)
     {
-        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null!, default))
+        _eventLog.Setup(eventLog => eventLog.SaveEventAsync(It.IsAny<IIntegrationEvent>(), null, null!, default))
             .Callback(() => throw new Exception("custom exception"));
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             useLogger ? _logger.Object : null,
@@ -175,8 +188,9 @@ public class IntegrationEventBusTest
     {
         _eventBus.Setup(eventBus => eventBus.PublishAsync(It.IsAny<CreateUserEvent>(), default)).Verifiable();
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -194,8 +208,9 @@ public class IntegrationEventBusTest
     public async Task TestPublishEventAndNotEventBusAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -205,15 +220,16 @@ public class IntegrationEventBusTest
             Name = "Tom"
         };
         await integrationEventBus.PublishAsync(@event);
-        _eventBus.Verify(bus=>bus.PublishAsync(It.IsAny<CreateUserEvent>(),It.IsAny<CancellationToken>()), Times.Once);
+        _eventBus.Verify(bus => bus.PublishAsync(It.IsAny<CreateUserEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [TestMethod]
     public async Task TestCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
@@ -227,14 +243,59 @@ public class IntegrationEventBusTest
     public async Task TestNotUseUowCommitAsync()
     {
         var integrationEventBus = new IntegrationEventBus(
+            _serviceProvider.Object,
             new Lazy<IEventBus?>(_eventBus.Object),
-            _publisher.Object,
+            new Lazy<IPublisher>(_publisher.Object),
             _eventLog.Object,
             _masaAppConfigureOptions.Object,
             _logger.Object,
             null);
 
         await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await integrationEventBus.CommitAsync());
+    }
+
+    [DataRow("env", "tenant", "1", "dev", 2)]
+    [DataRow("env", "tenant", "", "dev", 1)]
+    [DataRow("env", "tenant", "1", "", 1)]
+    [DataRow("env", "tenant", "", "", 0)]
+    [DataTestMethod]
+    public void TestTryAddIntegrationEventMessageExpand(
+        string multiEnvironmentName,
+        string multiTenantIdName,
+        string inputCurrentTenantId,
+        string inputCurrentEnvironment,
+        int expectedCount)
+    {
+        var services = new ServiceCollection();
+
+        services.Configure<IsolationOptions>(options =>
+        {
+            options.MultiEnvironmentName = multiEnvironmentName;
+            options.MultiTenantIdName = multiTenantIdName;
+        });
+        Mock<IMultiTenantContext> multiTenantContext = new();
+        if (!inputCurrentTenantId.IsNullOrWhiteSpace())
+            multiTenantContext.Setup(context => context.CurrentTenant).Returns(new Tenant(inputCurrentTenantId));
+        services.AddSingleton(_ => multiTenantContext.Object);
+
+        Mock<IMultiEnvironmentContext> multiEnvironmentContext = new();
+        if (!inputCurrentEnvironment.IsNullOrWhiteSpace())
+            multiEnvironmentContext.Setup(context => context.CurrentEnvironment).Returns(inputCurrentEnvironment);
+        services.AddSingleton(_ => multiEnvironmentContext.Object);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var integrationEventBus = new IntegrationEventBus(
+            serviceProvider,
+            new Lazy<IEventBus?>(_eventBus.Object),
+            new Lazy<IPublisher>(_publisher.Object),
+            _eventLog.Object,
+            _masaAppConfigureOptions.Object,
+            _logger.Object);
+        var integrationEventExpand = integrationEventBus.TryAddIntegrationEventMessageExpand();
+        Assert.IsNotNull(integrationEventExpand);
+        Assert.IsNotNull(integrationEventExpand.Isolation);
+
+        Assert.AreEqual(expectedCount, integrationEventExpand.Isolation.Count);
     }
 
     [TestMethod]

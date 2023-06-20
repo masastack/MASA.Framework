@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.Dispatcher.Events;
 
+[ExcludeFromCodeCoverage]
 public class DefaultExceptionStrategyProvider : IExceptionStrategyProvider
 {
     private readonly ILogger<DefaultExceptionStrategyProvider>? _logger;

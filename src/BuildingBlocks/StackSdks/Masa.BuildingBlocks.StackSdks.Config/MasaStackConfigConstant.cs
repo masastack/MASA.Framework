@@ -5,14 +5,14 @@ namespace Masa.BuildingBlocks.StackSdks.Config;
 
 public static class MasaStackConfigConstant
 {
-    public const string VERSION = "VERSION";
+    public const string VERSION = "MASA_VERSION";
     public const string ELASTIC = "ELASTIC";
-    public const string ENVIRONMENT = "ENVIRONMENT";
+    public const string ENVIRONMENT = "MASA_ENVIRONMENT";
     public const string IS_DEMO = "IS_DEMO";
     public const string REDIS = "REDIS";
-    public const string CLUSTER = "CLUSTER";
+    public const string CLUSTER = "MASA_CLUSTER";
     public const string DOMAIN_NAME = "DOMAIN_NAME";
-    public const string NAMESPACE = "NAMESPACE";
+    public const string NAMESPACE = "MASA_NAMESPACE";
     public const string CONNECTIONSTRING = "CONNECTIONSTRING";
     public const string MASA_STACK = "MASA_STACK";
     public const string OTLP_URL = "OTLP_URL";

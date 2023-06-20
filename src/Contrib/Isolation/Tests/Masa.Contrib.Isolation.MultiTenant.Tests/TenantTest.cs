@@ -21,4 +21,25 @@ public class TenantTest
         serviceProvider.GetRequiredService<IMultiTenantSetter>().SetTenant(tenant);
         Assert.IsTrue(serviceProvider.GetRequiredService<IMultiTenantContext>().CurrentTenant == tenant);
     }
+
+    [DataRow("tenant", "tenant", true)]
+    [DataRow("", IsolationConstant.DEFAULT_MULTI_TENANT_NAME, true)]
+    [DataRow(null, IsolationConstant.DEFAULT_MULTI_TENANT_NAME, true)]
+    [DataTestMethod]
+    public void TestSetTenantByAssignName(
+        string? inputTenantIdName,
+        string expectedTenantIdName,
+        bool expectedEnableMultiTenant)
+    {
+        var services = new ServiceCollection();
+        Mock<IIsolationBuilder> isolationBuilder = new();
+        isolationBuilder.Setup(builder => builder.Services).Returns(services).Verifiable();
+        isolationBuilder.Object.UseMultiTenant(inputTenantIdName);
+
+        var serviceProvider = services.BuildServiceProvider();
+        var isolationOptions = serviceProvider.GetRequiredService<IOptions<IsolationOptions>>();
+        Assert.AreEqual(expectedTenantIdName, isolationOptions.Value.MultiTenantIdName);
+        Assert.AreEqual(expectedEnableMultiTenant, isolationOptions.Value.EnableMultiTenant);
+        Assert.AreEqual(false, isolationOptions.Value.EnableMultiEnvironment);
+    }
 }

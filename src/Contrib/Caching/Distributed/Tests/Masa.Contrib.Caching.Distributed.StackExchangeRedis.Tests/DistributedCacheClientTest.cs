@@ -26,7 +26,7 @@ public class DistributedCacheClientTest : TestBase
     public async Task SetAsync(string key, string value)
     {
         await _distributedCacheClient.RemoveAsync(key);
-        await _distributedCacheClient.SetAsync(key, value, new CacheEntryOptions<string>(TimeSpan.FromMinutes(1))
+        await _distributedCacheClient.SetAsync(key, value, new CacheEntryOptions(TimeSpan.FromMinutes(1))
         {
             SlidingExpiration = TimeSpan.FromSeconds(30)
         });
@@ -41,7 +41,7 @@ public class DistributedCacheClientTest : TestBase
     public void Set(string key, string value)
     {
         _distributedCacheClient.Remove(key);
-        _distributedCacheClient.Set(key, value, new CacheEntryOptions<string>(TimeSpan.FromMinutes(1))
+        _distributedCacheClient.Set(key, value, new CacheEntryOptions(TimeSpan.FromMinutes(1))
         {
             SlidingExpiration = TimeSpan.FromSeconds(30)
         });
@@ -68,9 +68,7 @@ public class DistributedCacheClientTest : TestBase
     public async Task SetAndSpecifyTimeSpanAsync(string key, string value)
     {
         await _distributedCacheClient.SetAsync(key, value, TimeSpan.FromSeconds(30));
-        var expireTimeSpan = await _database.KeyTimeToLiveAsync(key);
-        Assert.IsNotNull(expireTimeSpan);
-        Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 30 and >= 25);
+        CheckLifeCycle(_database, key, 25, 30);
         await _distributedCacheClient.RemoveAsync(key);
     }
 
@@ -79,9 +77,7 @@ public class DistributedCacheClientTest : TestBase
     public void SetAndSpecifyTime(string key, string value)
     {
         _distributedCacheClient.Set(key, value, DateTimeOffset.Now.AddMinutes(1));
-        var expireTimeSpan = _database.KeyTimeToLive(key);
-        Assert.IsNotNull(expireTimeSpan);
-        Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 60 and >= 55);
+        CheckLifeCycle(_database, key, 55, 60);
         _distributedCacheClient.Remove(key);
     }
 
@@ -90,10 +86,36 @@ public class DistributedCacheClientTest : TestBase
     public async Task SetAndSpecifyTimeAsync(string key, string value)
     {
         await _distributedCacheClient.SetAsync(key, value, DateTimeOffset.Now.AddMinutes(1));
-        var expireTimeSpan = await _database.KeyTimeToLiveAsync(key);
-        Assert.IsNotNull(expireTimeSpan);
-        Assert.IsTrue(expireTimeSpan.Value.TotalSeconds is <= 60 and >= 55);
+        CheckLifeCycle(_database, key, 55, 60);
         await _distributedCacheClient.RemoveAsync(key);
+    }
+
+    [DataTestMethod]
+    [DataRow("cache_test", "content")]
+    public async Task SetAndSpecifyTimeAsyncAndUseGlobalOptions(string key, string value)
+    {
+        var globalRedisConfigurationOptions = GetConfigurationOptions();
+        globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
+        var distributedCacheClient = new RedisCacheClient(globalRedisConfigurationOptions);
+        var database = (await ConnectionMultiplexer.ConnectAsync(globalRedisConfigurationOptions)).GetDatabase();
+
+        await distributedCacheClient.SetAsync(key, value);
+        CheckLifeCycle(database, key, 55, 60);
+        await distributedCacheClient.RemoveAsync(key);
+    }
+
+    [DataTestMethod]
+    [DataRow("cache_test", "content")]
+    public void SetAndSpecifyTimeAndUseGlobalOptions(string key, string value)
+    {
+        var globalRedisConfigurationOptions = GetConfigurationOptions();
+        globalRedisConfigurationOptions.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60);
+        var distributedCacheClient = new RedisCacheClient(globalRedisConfigurationOptions);
+        var database = ConnectionMultiplexer.Connect(globalRedisConfigurationOptions).GetDatabase();
+
+        distributedCacheClient.Set(key, value);
+        CheckLifeCycle(database, key, 55, 60);
+        distributedCacheClient.Remove(key);
     }
 
     [DataTestMethod]
@@ -423,6 +445,9 @@ public class DistributedCacheClientTest : TestBase
         });
 
         Assert.AreEqual(value, res);
+        var expireTimeSpan = _database.KeyTimeToLive(key);
+
+
         _distributedCacheClient.Remove(key);
     }
 

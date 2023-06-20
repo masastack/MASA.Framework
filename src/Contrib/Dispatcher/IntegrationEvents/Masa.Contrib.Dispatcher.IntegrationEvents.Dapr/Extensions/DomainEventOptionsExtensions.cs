@@ -34,7 +34,7 @@ public static class DomainEventOptionsExtensions
 
         dispatcherOptions.Services.TryAddDaprEventBus<TIntegrationEventLogService>(dispatcherOptions.Assemblies, option =>
         {
-            option.PubSubName = Constant.DAPR_PUBSUB_NAME;
+            option.PubSubName = DaprConstant.DAPR_PUBSUB_NAME;
             optionAction?.Invoke(option);
         }, builder);
         return dispatcherOptions;

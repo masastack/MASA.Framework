@@ -447,8 +447,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Eve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType", "src\Contrib\Dispatcher\Tests\Scenes\CheckMethodsType\Masa.Contrib.Dispatcher.Events.Tests.Scenes.CheckMethodsType.csproj", "{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder", "src\Contrib\Dispatcher\Tests\Scenes\HandlerOrder\Masa.Contrib.Dispatcher.Events.Tests.Scenes.HandlerOrder.csproj", "{5CD85A3F-428B-44B8-830C-05A97BA7610B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler", "src\Contrib\Dispatcher\Tests\Scenes\OnlyCancelHandler\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OnlyCancelHandler.csproj", "{A6DEC75B-B7FB-43C8-815E-F4F4689326C3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga", "src\Contrib\Dispatcher\Tests\Scenes\OrderEqualBySaga\Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.csproj", "{F1FD125A-9795-4533-86CA-37274EAAD540}"
@@ -1783,14 +1781,6 @@ Global
 		{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45}.Release|x64.ActiveCfg = Release|Any CPU
 		{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45}.Release|x64.Build.0 = Release|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Debug|x64.Build.0 = Debug|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Release|x64.ActiveCfg = Release|Any CPU
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B}.Release|x64.Build.0 = Release|Any CPU
 		{A6DEC75B-B7FB-43C8-815E-F4F4689326C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6DEC75B-B7FB-43C8-815E-F4F4689326C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6DEC75B-B7FB-43C8-815E-F4F4689326C3}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -2762,7 +2752,6 @@ Global
 		{44B0463B-8F56-49A6-8373-0141B66461BE} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{41E12E1D-CC99-48D1-B7D2-928BE23EC3DD} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{2355FDB2-ACC3-44F3-9D2E-DCFFCC82DB45} = {08B138B5-2599-4F42-9584-6AE736673882}
-		{5CD85A3F-428B-44B8-830C-05A97BA7610B} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{A6DEC75B-B7FB-43C8-815E-F4F4689326C3} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{F1FD125A-9795-4533-86CA-37274EAAD540} = {08B138B5-2599-4F42-9584-6AE736673882}
 		{6616A9E2-66F3-4AEB-BE0D-77346B3F3B06} = {48853497-9C2D-4ADA-AED3-61280AF1418D}

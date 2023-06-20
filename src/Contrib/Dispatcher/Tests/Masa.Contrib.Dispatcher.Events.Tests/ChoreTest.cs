@@ -9,7 +9,7 @@ public class ChoreTest : TestBase
     private readonly IEventBus _eventBus;
     public ChoreTest()
     {
-        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _eventBus = ServiceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]
@@ -17,7 +17,7 @@ public class ChoreTest : TestBase
     [DataRow("tom", "18888888888", 0, "A girl who likes to dance")]
     public async Task TestNotHandler(string account, string phone, int gender, string abstracts)
     {
-        AddUserEvent @event = new AddUserEvent()
+        var @event = new AddUserEvent()
         {
             Account = account,
             Phone = phone,

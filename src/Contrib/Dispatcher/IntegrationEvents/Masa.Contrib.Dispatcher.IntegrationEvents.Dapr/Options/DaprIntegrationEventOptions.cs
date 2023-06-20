@@ -6,6 +6,13 @@ namespace Masa.Contrib.Dispatcher.IntegrationEvents.Dapr.Options;
 [Obsolete("Later versions will be changed to Internal")]
 public class DaprIntegrationEventOptions : Masa.Contrib.Dispatcher.IntegrationEvents.Options.IntegrationEventOptions
 {
+    /// <summary>
+    /// dapr appid
+    /// It is a must when using isolation
+    /// priority: User specified appid > environment variable (dapr-appid) > global appId
+    /// </summary>
+    public string? DaprAppId { get; set; }
+
     private string _pubSubName = "pubsub";
 
     public string PubSubName

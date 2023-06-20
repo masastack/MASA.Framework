@@ -26,7 +26,7 @@ public class AssemblyResolutionTests
         Assert.ThrowsException<MasaArgumentException>(() =>
         {
             Assembly[] assemblies = null!;
-            services.AddEventBus(assemblies!);
+            services.AddEventBus(assemblies);
         });
     }
 
@@ -48,7 +48,7 @@ public class AssemblyResolutionTests
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
         Assert.ThrowsException<MasaArgumentException>(() =>
         {
-            services.AddTestEventBus(null!, ServiceLifetime.Scoped);
+            services.AddEventBus(null!, ServiceLifetime.Scoped);
         });
     }
 
@@ -57,7 +57,7 @@ public class AssemblyResolutionTests
     {
         var services = new ServiceCollection();
         services.AddLogging(loggingBuilder => loggingBuilder.AddConsole());
-        services.AddTestEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped,eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingEventMiddleware<>)));
+        services.AddEventBus(AppDomain.CurrentDomain.GetAssemblies(), ServiceLifetime.Scoped,eventBusBuilder => eventBusBuilder.UseMiddleware(typeof(LoggingEventMiddleware<>)));
         var serviceProvider = services.BuildServiceProvider();
         var eventBus = serviceProvider.GetService<IEventBus>();
         Assert.IsNotNull(eventBus, "Event bus injection failed");

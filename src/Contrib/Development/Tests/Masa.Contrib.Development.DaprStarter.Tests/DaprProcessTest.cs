@@ -6,18 +6,27 @@ namespace Masa.Contrib.Development.DaprStarter.Tests;
 [TestClass]
 public class DaprProcessTest
 {
-    [DataRow(true, "AppId", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(true, "AppId", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(true, "AppId", true, "", "", "", "", "")]
-    [DataRow(true, "AppId", false, "", "", "", "", "")]
-    [DataRow(false, "AppId-AppIdSuffix", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(false, "AppId-AppIdSuffix", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
-    [DataRow(false, "AppId-AppIdSuffix", true, "", "", "", "", "")]
-    [DataRow(false, "AppId-AppIdSuffix", false, "", "", "", "", "")]
+    [DataRow(true, "", "AppId", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "AppId-ByEnvironment", "AppId-ByEnvironment", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "", "AppId", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "AppId-ByEnvironment", "AppId-ByEnvironment", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(true, "", "AppId", true, "", "", "", "", "")]
+    [DataRow(true, "AppId-ByEnvironment", "AppId-ByEnvironment", true, "", "", "", "", "")]
+    [DataRow(true, "", "AppId", false, "", "", "", "", "")]
+    [DataRow(true, "AppId-ByEnvironment", "AppId-ByEnvironment", false, "", "", "", "", "")]
+    [DataRow(false, "", "AppId-AppIdSuffix", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "AppId-ByEnvironment", "AppId-ByEnvironment", true, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "", "AppId-AppIdSuffix", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "AppId-ByEnvironment", "AppId-ByEnvironment", false, "inputPlacementHostAddress", "inputRootPath", "inputDaprRootPath", "inputComponentPath", "inputConfig")]
+    [DataRow(false, "", "AppId-AppIdSuffix", true, "", "", "", "", "")]
+    [DataRow(false, "AppId-ByEnvironment", "AppId-ByEnvironment", true, "", "", "", "", "")]
+    [DataRow(false, "", "AppId-AppIdSuffix", false, "", "", "", "", "")]
+    [DataRow(false, "AppId-ByEnvironment", "AppId-ByEnvironment", false, "", "", "", "", "")]
     [DataTestMethod]
     public void TestConvertToSidecarOptions(
         bool disableAppIdSuffix,
-        string expectedAppId,
+        string inputDaprAppIdByEnvironment,
+        string expectedDaprAppId,
         bool inputEnableDefaultPlacementHostAddress,
         string inputPlacementHostAddress,
         string inputRootPath,
@@ -25,6 +34,7 @@ public class DaprProcessTest
         string inputComponentPath,
         string inputConfig)
     {
+        Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, inputDaprAppIdByEnvironment);
         var daprOptions = new DaprOptions()
         {
             AppPort = 5000,
@@ -62,12 +72,11 @@ public class DaprProcessTest
             Mode = "Mode",
             ExtendedParameter = "ExtendedParameter"
         };
-        Mock<IDaprEnvironmentProvider> daprEnvironmentProvider = new();
         Mock<IOptionsMonitor<DaprOptions>> optionsMonitor = new();
 
-        var customDaprProcess = new CustomDaprProcess(daprEnvironmentProvider.Object, new DefaultDaprProvider(), optionsMonitor.Object);
+        var customDaprProcess = new CustomDaprProcess(new DaprEnvironmentProvider(), new DefaultDaprProvider(), optionsMonitor.Object);
         var sidecarOptions = customDaprProcess.ConvertToSidecarOptions(daprOptions);
-        Assert.AreEqual(expectedAppId, sidecarOptions.AppId);
+        Assert.AreEqual(expectedDaprAppId, sidecarOptions.AppId);
         Assert.AreEqual(daprOptions.AppPort, sidecarOptions.AppPort);
         Assert.AreEqual(daprOptions.AppProtocol, sidecarOptions.AppProtocol);
         Assert.AreEqual(daprOptions.EnableSsl, sidecarOptions.EnableSsl);
@@ -90,7 +99,8 @@ public class DaprProcessTest
         Assert.AreEqual(daprOptions.UnixDomainSocket, sidecarOptions.UnixDomainSocket);
         Assert.AreEqual(daprOptions.EnableDefaultPlacementHostAddress, sidecarOptions.EnableDefaultPlacementHostAddress);
 
-        Assert.AreEqual(GetPlacementHostAddress(inputEnableDefaultPlacementHostAddress, inputPlacementHostAddress), sidecarOptions.PlacementHostAddress);
+        Assert.AreEqual(GetPlacementHostAddress(inputEnableDefaultPlacementHostAddress, inputPlacementHostAddress),
+            sidecarOptions.PlacementHostAddress);
         Assert.AreEqual(daprOptions.AllowedOrigins, sidecarOptions.AllowedOrigins);
         Assert.AreEqual(daprOptions.ControlPlaneAddress, sidecarOptions.ControlPlaneAddress);
         Assert.AreEqual(daprOptions.DaprHttpMaxRequestSize, sidecarOptions.DaprHttpMaxRequestSize);
@@ -100,6 +110,8 @@ public class DaprProcessTest
         Assert.AreEqual(daprOptions.EnableMetrics, sidecarOptions.EnableMetrics);
         Assert.AreEqual(daprOptions.Mode, sidecarOptions.Mode);
         Assert.AreEqual(daprOptions.ExtendedParameter, sidecarOptions.ExtendedParameter);
+
+        Environment.SetEnvironmentVariable(DaprStarterConstant.DEFAULT_DAPR_APPID, "");
 
         string GetPlacementHostAddress(bool enableDefaultPlacementHostAddress, string placementHostAddress)
         {

@@ -40,10 +40,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = departmentId }) ?? new();
     }
 
-    public async Task<List<StaffModel>> GetListByRoleAsync(Guid roleId)
+    public async Task<List<UserModel>> GetListByRoleAsync(Guid roleId)
     {
-        var requestUri = $"api/staff/getListByRole";
-        return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = roleId }) ?? new();
+        var requestUri = $"api/user/getListByRole";
+        return await _caller.GetAsync<object, List<UserModel>>(requestUri, new { id = roleId }) ?? new();
     }
 
     public async Task<List<StaffModel>> GetListByTeamAsync(Guid teamId)
@@ -361,6 +361,18 @@ public class UserService : IUserService
     {
         var requestUri = $"api/user/select?search={search}";
         return await _caller.GetAsync<List<UserSelectModel>>(requestUri) ?? new();
+    }
+
+    public Task BindRolesAsync(BindUserRolesModel model)
+    {
+        var requestUri = $"api/user/bind_roles";
+        return _caller.PostAsync(requestUri, model);
+    }
+
+    public Task UnbindRolesAsync(UnbindUserRolesModel model)
+    {
+        var requestUri = $"api/user/unbind_roles";
+        return _caller.PostAsync(requestUri, model);
     }
 }
 

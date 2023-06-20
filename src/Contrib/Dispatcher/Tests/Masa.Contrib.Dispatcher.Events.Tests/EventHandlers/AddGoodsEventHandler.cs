@@ -7,7 +7,7 @@ public class AddGoodsEventHandler : IEventHandler<AddGoodsEvent>
 {
     public Task HandleAsync(AddGoodsEvent @event, CancellationToken cancellationToken = default)
     {
-        @event.Count++;
+        @event.Stock++;
         return Task.CompletedTask;
     }
 }

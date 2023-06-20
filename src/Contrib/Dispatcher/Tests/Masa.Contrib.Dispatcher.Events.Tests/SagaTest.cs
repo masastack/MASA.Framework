@@ -1,8 +1,6 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.Events.Tests.Scenes.OrderEqualBySaga.Events;
-
 namespace Masa.Contrib.Dispatcher.Events.Tests;
 
 [TestClass]
@@ -10,22 +8,30 @@ public class SagaTest : TestBase
 {
     private readonly IEventBus _eventBus;
 
-    public SagaTest() : base()
+    public SagaTest()
     {
-        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _eventBus = ServiceProvider.GetRequiredService<IEventBus>();
     }
 
     [DataTestMethod]
-    [DataRow("60040012", "success", "the delivery and notice success")]
-    [DataRow("601454112", "error", "the delivery failed, rolling back success")]
-    public async Task TestExecuteAbnormalExit(string orderId, string orderState, string result)
+    [DataRow("60040012", "success", "the delivery and notice success", false)]
+    [DataRow("601454112", "error", "the delivery failed, rolling back success", true)]
+    public async Task TestExecuteAbnormalExit(string orderId, string orderState, string result, bool isException)
     {
-        ShipOrderEvent @event = new ShipOrderEvent()
+        var @event = new ShipOrderEvent()
         {
             OrderId = orderId,
             OrderState = orderState
         };
-        await _eventBus.PublishAsync(@event);
+
+        if (isException)
+        {
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await _eventBus.PublishAsync(@event));
+        }
+        else
+        {
+            await _eventBus.PublishAsync(@event);
+        }
         Assert.IsTrue(@event.Message == result);
     }
 
@@ -37,18 +43,18 @@ public class SagaTest : TestBase
             Name = "Microsoft"
         };
         await _eventBus.PublishAsync(@event);
-        Assert.IsTrue(((AddGoodsEvent)@event).Count == 1);
+        Assert.IsTrue(((AddGoodsEvent)@event).Stock == 1);
     }
 
     [DataTestMethod]
-    [DataRow("roller", "change password notcices", 0)]
-    [DataRow("mark", "change password notcices @", 1)]
-    [DataRow("roller", "change password notcices @", 0)]
-    [DataRow("jordan", "change password notcices @", 0)]
+    [DataRow("roller", "change password notice", 0)]
+    [DataRow("mark", "change password notice @", 1)]
+    [DataRow("roller", "change password notice @", 1)]
+    [DataRow("jordan", "change password notice @", 1)]
     public async Task TestLastCancelError(string account, string content, int isError)
     {
         ResetMemoryEventBus(false, null!);
-        ChangePasswordEvent @event = new ChangePasswordEvent()
+        var @event = new ChangePasswordEvent()
         {
             Account = account,
             Content = content
@@ -69,11 +75,11 @@ public class SagaTest : TestBase
     [DataTestMethod]
     [DataRow("smith", "alice", "1000", 0)]
     [DataRow("roller", "alice", "1000", 1)]
-    [DataRow("eddie", "clark", "2000", 0)]
-    [DataRow("eddie", "clark", "20000000", 1)]
+    [DataRow("eddie", "clark", "2000", 1)]
+    [DataRow("thomas", "clark", "20000000", 1)]
     public async Task TestMultiHandlerBySaga(string account, string optAccount, string price, int isError)
     {
-        TransferEvent @event = new TransferEvent()
+        var @event = new TransferEvent()
         {
             Account = account,
             OptAccount = optAccount,
@@ -96,9 +102,9 @@ public class SagaTest : TestBase
         Assert.ThrowsException<ArgumentException>(() =>
         {
             ResetMemoryEventBus(false, typeof(SagaTest).Assembly, typeof(EditCategoryEvent).Assembly);
-            eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+            eventBus = ServiceProvider.GetRequiredService<IEventBus>();
         });
-        EditCategoryEvent @event = new EditCategoryEvent()
+        var @event = new EditCategoryEvent()
         {
             CategoryId = new Random().Next(100, 10000).ToString(),
             CategoryName = "Name"
