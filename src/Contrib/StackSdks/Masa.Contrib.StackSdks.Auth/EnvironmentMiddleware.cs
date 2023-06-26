@@ -19,8 +19,7 @@ public class EnvironmentMiddleware : ICallerMiddleware
                 });
                 if (!string.IsNullOrEmpty(obj?.Environment))
                 {
-#warning IsolationConsts.ENVIRONMENT
-                    masaHttpContext.RequestMessage.Headers.Add("Environment", obj?.Environment);
+                    masaHttpContext.RequestMessage.Headers.Add(IsolationConsts.ENVIRONMENT, obj?.Environment);
                 }
             }
             catch

@@ -15,6 +15,7 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Authentication\Masa.BuildingBlocks.Authentication.Identity\Masa.BuildingBlocks.Authentication.Identity.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Authentication\OpenIdConnect\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models\Masa.BuildingBlocks.Authentication.OpenIdConnect.Models.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Auth\Masa.BuildingBlocks.StackSdks.Auth\Masa.BuildingBlocks.StackSdks.Auth.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\StackSdks\Masa.BuildingBlocks.StackSdks.Isolation\Masa.BuildingBlocks.StackSdks.Isolation.csproj" />
     <ProjectReference Include="..\..\..\Utils\Configuration\Masa.Utils.Configuration.Json\Masa.Utils.Configuration.Json.csproj" />
     <ProjectReference Include="..\..\..\Utils\Extensions\Masa.Utils.Extensions.DependencyInjection\Masa.Utils.Extensions.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\Caching\Distributed\Masa.Contrib.Caching.Distributed.StackExchangeRedis\Masa.Contrib.Caching.Distributed.StackExchangeRedis.csproj" />
