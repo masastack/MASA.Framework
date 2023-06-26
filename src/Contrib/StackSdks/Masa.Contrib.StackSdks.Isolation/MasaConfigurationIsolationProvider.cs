@@ -28,26 +28,17 @@ internal class MasaConfigurationIsolationProvider : ConfigurationProvider, IRepo
             return;
 
         _data[sectionType] = newProperties;
-
         SetData();
-
         OnReload();
     }
 
     void SetData()
     {
-        Dictionary<string, string> data = new(StringComparer.OrdinalIgnoreCase);
-
-        foreach (var configurationType in _data.Keys)
-        {
-            var properties = _data[configurationType];
-            foreach (var key in properties.GetPropertyNames())
-            {
-                data[$"{configurationType}{ConfigurationPath.KeyDelimiter}{key}"] = properties.GetProperty(key)!;
-            }
-        }
-
-        Data = data;
+        Data = _data.SelectMany(kv =>
+            kv.Value.GetPropertyNames().Select(key =>
+                new KeyValuePair<string, string>($"{kv.Key}{ConfigurationPath.KeyDelimiter}{key}", kv.Value.GetProperty(key)!)
+            )
+        ).ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
     }
 
     public void Dispose()
