@@ -13,6 +13,4 @@ public class RegisterByEmailModel : RegisterByPhoneModel, IEnvironmentModel
     public string Email { get; set; }
 
     public string EmailCode { get; set; }
-
-    public string Environment { get; set; }
 }

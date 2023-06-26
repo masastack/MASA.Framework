@@ -5,7 +5,7 @@ namespace Masa.BuildingBlocks.StackSdks.Isolation;
 
 public class EnvironmentProvider
 {
-    List<string> _environments = new();
+    readonly List<string> _environments;
 
     public EnvironmentProvider(List<string> environments)
     {

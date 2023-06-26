@@ -53,11 +53,11 @@ internal class MasaConfigurationIsolationProvider : ConfigurationProvider, IRepo
     public void Dispose()
     {
         Dispose(true);
-        _configurationIsolationRepository.RemoveChangeListener(this);
         GC.SuppressFinalize(this);
     }
 
     protected virtual void Dispose(bool disposing)
     {
+        _configurationIsolationRepository.RemoveChangeListener(this);
     }
 }

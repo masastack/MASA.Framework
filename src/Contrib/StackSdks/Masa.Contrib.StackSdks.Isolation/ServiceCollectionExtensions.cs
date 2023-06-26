@@ -100,14 +100,12 @@ public static class ServiceCollectionExtensions
 
     static void ConfigureMultilevelCacheOptions(this IServiceCollection services)
     {
-        var (environments, multiEnvironmentMasaStackConfig, masaStackConfig) = services.GetInternal();
+        var (environments, _, _) = services.GetInternal();
         string subKeyPrefix = Assembly.GetEntryAssembly()?.GetName().Name ?? "";
         services.Configure<IsolationOptions<MultilevelCacheGlobalOptions>>(options =>
         {
-
             foreach (var environment in environments)
             {
-                var redisModel = multiEnvironmentMasaStackConfig.SetEnvironment(environment).RedisModel;
                 options.Data.Add(new IsolationConfigurationOptions<MultilevelCacheGlobalOptions>()
                 {
                     Environment = environment,
@@ -139,7 +137,7 @@ public static class ServiceCollectionExtensions
                 {
                     var ossOptions = await configurationApiClient.GetAsync<OssOptions>(environment, "Default", "public-$Config", "$public.OSS", ossOptions =>
                     {
-                        var item = options.Data.FirstOrDefault(s => s.Environment == environment);
+                        var item = options.Data.Find(s => s.Environment == environment);
                         if (item != null)
                         {
                             item.Data = Convert(ossOptions);

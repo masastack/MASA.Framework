@@ -43,7 +43,7 @@ internal static class MasaConfigurationBuilderExtensions
         foreach (var environment in environmentProvider.GetEnvionments())
         {
             if (environment != dccConfigurationOptions.DefaultSection.Environment &&
-                !dccConfigurationOptions.ExpandSections.Any(section => section.AppId.Equals(dccConfigurationOptions.DefaultSection.AppId)
+                !dccConfigurationOptions.ExpandSections.Exists(section => section.AppId.Equals(dccConfigurationOptions.DefaultSection.AppId)
                 && section.Environment.Equals(environment)))
             {
                 var environmentAppSection = new DccSectionOptions
@@ -56,7 +56,7 @@ internal static class MasaConfigurationBuilderExtensions
                 environmentAppSection.ComplementConfigObjects(cacheClient);
                 dccConfigurationOptions.ExpandSections.Add(environmentAppSection);
             }
-            if (!dccConfigurationOptions.ExpandSections.Any(section => section.AppId.Equals(dccConfigurationOptions.PublicId) && section.Environment.Equals(environment)))
+            if (!dccConfigurationOptions.ExpandSections.Exists(section => section.AppId.Equals(dccConfigurationOptions.PublicId) && section.Environment.Equals(environment)))
             {
                 var publicSection = new DccSectionOptions
                 {

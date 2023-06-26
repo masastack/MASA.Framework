@@ -10,7 +10,7 @@ public class EsIsolationConfigProvider
     readonly IMultiEnvironmentMasaStackConfig _multiEnvironmentMasaStackConfig;
     readonly ILogger<EsIsolationConfigProvider>? _logger;
 
-    Dictionary<string, ElasticModel> _esOptions = new();
+    readonly Dictionary<string, ElasticModel> _esOptions = new();
 
     public EsIsolationConfigProvider(
         EnvironmentProvider environmentProvider,
@@ -33,7 +33,7 @@ public class EsIsolationConfigProvider
             var result = _esOptions.TryAdd(envionment, _multiEnvironmentMasaStackConfig.SetEnvironment(envionment).ElasticModel);
             if (!result)
             {
-                _logger?.LogWarning($"Duplicate key {envionment}");
+                _logger?.LogWarning("Duplicate key {Envionment}", envionment);
             }
         }
     }

@@ -10,6 +10,4 @@ public class RegisterThirdPartyUserModel : RegisterByEmailModel, IEnvironmentMod
     public object ExtendedData { get; set; }
 
     public string Scheme { get; set; }
-
-    public string Environment { get; set; }
 }

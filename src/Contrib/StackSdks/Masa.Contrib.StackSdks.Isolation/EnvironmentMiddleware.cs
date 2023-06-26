@@ -17,8 +17,7 @@ namespace Masa.Contrib.StackSdks.Isolation
 
         public Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            _logger.LogDebug("----- Current Environment Is [{0}] -----", _multiEnvironmentContext.CurrentEnvironment);
-            //context.Items.Add(IsolationConsts.ENVIRONMENT, _multiEnvironmentContext.CurrentEnvironment);
+            _logger.LogDebug("----- Current Environment Is [{CurrentEnvironment}] -----", _multiEnvironmentContext.CurrentEnvironment);
             return next(context);
         }
     }
