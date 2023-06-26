@@ -3,15 +3,17 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByPasswordModel
+public class LoginByPasswordModel : IEnvironmentModel
 {
     public string ClientId { get; set; } = "";
 
     public string ClientSecret { get; set; } = "";
 
-    public List<string> Scope { get; set; } = new (){ "openid", "profile" };
+    public List<string> Scope { get; set; } = new() { "openid", "profile" };
 
     public string Account { get; set; }
 
     public string Password { get; set; }
+
+    public string Environment { get; set; }
 }

@@ -50,6 +50,7 @@ public static class ServiceCollectionExtensions
         var configs = GetConfigMap(services);
 
         dccOptions ??= MasaStackConfigUtils.GetDefaultDccOptions(configs);
+        services.AddSingleton(dccOptions);
         services.AddMasaConfiguration(builder => builder.UseDcc(dccOptions));
 
         if (init)
@@ -75,6 +76,11 @@ public static class ServiceCollectionExtensions
     public static IMasaStackConfig GetMasaStackConfig(this IServiceCollection services)
     {
         return services.BuildServiceProvider().GetRequiredService<IMasaStackConfig>();
+    }
+
+    public static DccOptions? GetDccOptions(this IServiceCollection services)
+    {
+        return services.BuildServiceProvider().GetService<DccOptions>();
     }
 
     public static IMultiEnvironmentMasaStackConfig GetMultiEnvironmentMasaStackConfig(this IServiceCollection services)

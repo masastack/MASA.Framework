@@ -3,13 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByPhoneNumberModel : IEnvironmentModel
+public interface IEnvironmentModel
 {
-    public string PhoneNumber { get; set; } = "";
-
-    public string Code { get; set; } = "";
-
-    public bool RegisterLogin { get; set; }
-
     public string Environment { get; set; }
 }

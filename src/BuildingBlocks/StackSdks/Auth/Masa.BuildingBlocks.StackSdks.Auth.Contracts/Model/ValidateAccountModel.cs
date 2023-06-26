@@ -3,19 +3,13 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public abstract class RegisterModel : IEnvironmentModel
+public class ValidateAccountModel : IEnvironmentModel
 {
-    public string? Account { get; set; }
+    public string Account { get; set; }
 
     public string Password { get; set; }
 
-    public string? Avatar { get; set; }
-
-    public string? DisplayName { get; set; }
-
-    public string? Name { get; set; }
-
-    public string? IdCard { get; set; }
+    public bool LdapLogin { get; set; }
 
     public string Environment { get; set; }
 }

@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByThirdPartyIdpModel
+public class LoginByThirdPartyIdpModel : IEnvironmentModel
 {
     public string ClientId { get; set; } = "";
 
@@ -16,4 +16,6 @@ public class LoginByThirdPartyIdpModel
     public string? Code { get; set; }
 
     public string? IdToken { get; set; }
+
+    public string Environment { get; set; }
 }

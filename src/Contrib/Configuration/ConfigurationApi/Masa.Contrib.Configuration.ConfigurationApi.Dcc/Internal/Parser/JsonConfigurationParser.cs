@@ -8,7 +8,7 @@ namespace Masa.Contrib.Configuration.ConfigurationApi.Dcc.Internal.Parser;
 /// <summary>
 /// https://github.com/dotnet/runtime/blob/main/src/libraries/Microsoft.Extensions.Configuration.Json/src/JsonConfigurationFileParser.cs
 /// </summary>
-internal sealed class JsonConfigurationParser
+public sealed class JsonConfigurationParser
 {
     private JsonConfigurationParser() { }
 
@@ -28,10 +28,12 @@ internal sealed class JsonConfigurationParser
 
         using (JsonDocument doc = JsonDocument.Parse(input, jsonDocumentOptions))
         {
-            if (doc.RootElement.ValueKind == JsonValueKind.Object) {
+            if (doc.RootElement.ValueKind == JsonValueKind.Object)
+            {
                 VisitObjectElement(doc.RootElement);
             }
-            else if (doc.RootElement.ValueKind == JsonValueKind.Array) {
+            else if (doc.RootElement.ValueKind == JsonValueKind.Array)
+            {
                 VisitArrayElement(doc.RootElement);
             }
             else
