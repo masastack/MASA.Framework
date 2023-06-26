@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public abstract class RegisterModel
+public abstract class RegisterModel : IEnvironmentModel
 {
     public string? Account { get; set; }
 
@@ -16,4 +16,6 @@ public abstract class RegisterModel
     public string? Name { get; set; }
 
     public string? IdCard { get; set; }
+
+    public string Environment { get; set; }
 }

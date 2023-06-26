@@ -49,9 +49,9 @@ public static class ServiceCollectionExtensions
             }
         });
 
-        services.Configure<ConnectionStrings>(options => new List<KeyValuePair<string, string>>()
+        services.Configure<ConnectionStrings>(options =>
         {
-            new(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, masaStackConfig.GetConnectionString(name))
+            options.Add(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, masaStackConfig.GetConnectionString(name));
         });
     }
 
@@ -163,7 +163,9 @@ public static class ServiceCollectionExtensions
         services.Configure<AliyunStorageConfigureOptions>(async options =>
         {
             var ossOptions = await configurationApiClient.GetAsync<OssOptions>(masaStackConfig.Environment, "Default", "public-$Config", "$public.OSS");
+#pragma warning disable S1854
             options = Convert(ossOptions);
+#pragma warning disable S1854
         });
 
         AliyunStorageConfigureOptions Convert(OssOptions ossOptions)

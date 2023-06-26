@@ -9,7 +9,7 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
 
     public override SectionTypes SectionType => SectionTypes.ConfigurationApi;
 
-    readonly ConcurrentDictionary<string, IDictionary<string, string>> _dictionaries = new();
+    readonly ConcurrentDictionary<string, IDictionary<string, string?>> _dictionaries = new();
 
     readonly ConcurrentDictionary<string, ConfigurationTypes> _configObjectConfigurationTypeRelations = new();
 
@@ -46,16 +46,16 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
         }
     }
 
-    private static IDictionary<string, string> FormatRaw(string environment, string appId, string configObject, string? raw, ConfigurationTypes configurationType)
+    private static IDictionary<string, string?> FormatRaw(string environment, string appId, string configObject, string? raw, ConfigurationTypes configurationType)
     {
         if (raw == null)
-            return new Dictionary<string, string>();
+            return new Dictionary<string, string?>();
 
         return configurationType switch
         {
             ConfigurationTypes.Json => SecondaryFormat(environment, appId, configObject, JsonConfigurationParser.Parse(raw)),
             ConfigurationTypes.Properties => SecondaryFormat(environment, appId, configObject, JsonSerializer.Deserialize<Dictionary<string, string>>(raw)!),
-            ConfigurationTypes.Text => new Dictionary<string, string>
+            ConfigurationTypes.Text => new Dictionary<string, string?>
         {
             { $"{environment}{ConfigurationPath.KeyDelimiter}{appId}{ConfigurationPath.KeyDelimiter}{configObject}" , raw }
         },
@@ -65,13 +65,13 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
         };
     }
 
-    private static IDictionary<string, string> SecondaryFormat(
+    private static IDictionary<string, string?> SecondaryFormat(
         string environment,
         string appId,
         string configObject,
-        IDictionary<string, string> data)
+        IDictionary<string, string?> data)
     {
-        var dictionary = new Dictionary<string, string>();
+        var dictionary = new Dictionary<string, string?>();
         foreach (var item in data)
         {
             dictionary[$"{environment}{ConfigurationPath.KeyDelimiter}{appId}{ConfigurationPath.KeyDelimiter}{configObject}{ConfigurationPath.KeyDelimiter}{item.Key}"] = item.Value;
@@ -81,14 +81,10 @@ internal class DccConfigurationIsolationRepository : AbstractConfigurationReposi
 
     public override Properties Load()
     {
-        Dictionary<string, string> properties = new();
-        foreach (var item in _dictionaries)
-        {
-            foreach (var key in item.Value.Keys)
-            {
-                properties[key] = item.Value[key];
-            }
-        }
+        Dictionary<string, string> properties = _dictionaries
+        .SelectMany(item => item.Value)
+        .ToDictionary(keyValuePair => keyValuePair.Key, keyValuePair => keyValuePair.Value ?? "");
+
         return new Properties(properties);
     }
 }
