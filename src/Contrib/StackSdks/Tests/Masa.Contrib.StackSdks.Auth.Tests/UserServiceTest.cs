@@ -180,7 +180,12 @@ public class UserServiceTest
         caller.Setup(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default))
             .ReturnsAsync(data).Verifiable();
         var userService = GetUserService(caller);
-        var result = await userService.ValidateCredentialsByAccountAsync(account, password);
+        var result = await userService.ValidateAccountAsync(new ValidateAccountModel
+        {
+            Account = account,
+            Password = password,
+            Environment = "Develop"
+        });
         caller.Verify(provider => provider.PostAsync<object, UserModel>(requestUri, It.IsAny<object>(), default), Times.Once);
     }
 
