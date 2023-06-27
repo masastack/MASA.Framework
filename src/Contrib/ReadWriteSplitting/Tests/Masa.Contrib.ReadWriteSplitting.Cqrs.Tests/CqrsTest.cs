@@ -41,6 +41,14 @@ public class CQRSTest
         }
     }
 
+    [DataTestMethod]
+    public void TestOrderCommand()
+    {
+        var command = new OrderCommand();
+        _eventBus.PublishAsync(command);
+        Assert.IsTrue(command.Count == int.MaxValue);
+    }
+
     [TestMethod]
     public void TestQuery()
     {

@@ -51,7 +51,11 @@ public static class ServiceCollectionExtensions
 
         services.Configure<ConnectionStrings>(options =>
         {
-            options.Add(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, masaStackConfig.GetConnectionString(name));
+            //default value map appsettings.json -> ConnectionStrings -> DefaultConnection
+            if (!options.Any())
+            {
+                options.Add(ConnectionStrings.DEFAULT_CONNECTION_STRING_NAME, masaStackConfig.GetConnectionString(name));
+            }
         });
     }
 
