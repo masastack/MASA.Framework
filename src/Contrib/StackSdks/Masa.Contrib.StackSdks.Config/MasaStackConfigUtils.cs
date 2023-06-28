@@ -6,7 +6,7 @@ namespace Masa.Contrib.StackSdks.Config;
 
 internal static class MasaStackConfigUtils
 {
-    public static DccOptions GetDefaultDccOptions(Dictionary<string, string> configMap)
+    public static DccOptions GetDefaultDccOptions(Dictionary<string, string> configMap, string appId)
     {
         var value = configMap.GetValueOrDefault(MasaStackConfigConstant.MASA_STACK) ?? "";
         var data = JsonSerializer.Deserialize<JsonArray>(value) ?? new();
@@ -29,7 +29,8 @@ internal static class MasaStackConfigUtils
                 Password = redis.RedisPassword
             },
             PublicSecret = secret,
-            ConfigObjectSecret = secret
+            ConfigObjectSecret = secret,
+            AppId = appId
         };
 
         return options;
