@@ -81,7 +81,7 @@ public static class TypeHelper
     {
         if (t.GetGenericArguments().Length > 0 && t.GetGenericTypeDefinition() == typeof(Nullable<>))
         {
-            return t.GetGenericArguments().FirstOrDefault();
+            return t.GetGenericArguments().FirstOrDefault() ?? t;
         }
 
         return t;
@@ -148,7 +148,7 @@ public static class TypeHelper
     {
         return TypeDescriptor
             .GetConverter(targetType)
-            .ConvertFrom(value);
+            .ConvertFrom(value)?? value;
     }
 
     public static Type StripNullable(Type type)

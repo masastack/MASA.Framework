@@ -19,13 +19,13 @@ public static class DictionaryExtensions
     internal static bool TryGetValue<T>(this IDictionary<string, object> dictionary, string key, out T value)
     {
         object valueObj;
-        if (dictionary.TryGetValue(key, out valueObj) && valueObj is T)
+        if (dictionary.TryGetValue(key, out valueObj!) && valueObj is T)
         {
             value = (T)valueObj;
             return true;
         }
 
-        value = default;
+        value = default!;
         return false;
     }
 
@@ -77,9 +77,15 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey">Type of the key</typeparam>
     /// <typeparam name="TValue">Type of the value</typeparam>
     /// <returns>Value if found, default if can not found.</returns>
-    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, Func<TKey, TValue> factory)
+    public static TValue? GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, Func<TKey, TValue> factory)
     {
-        TValue obj;
+        TValue? obj;
+
+        if (key == null)
+        {
+            throw new KeyNotFoundException();
+        }
+
         if (dictionary.TryGetValue(key, out obj))
         {
             return obj;
@@ -97,7 +103,7 @@ public static class DictionaryExtensions
     /// <typeparam name="TKey">Type of the key</typeparam>
     /// <typeparam name="TValue">Type of the value</typeparam>
     /// <returns>Value if found, default if can not found.</returns>
-    public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, Func<TValue> factory)
+    public static TValue? GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [NotNull] TKey key, Func<TValue> factory)
     {
         return dictionary.GetOrAdd(key, k => factory());
     }
