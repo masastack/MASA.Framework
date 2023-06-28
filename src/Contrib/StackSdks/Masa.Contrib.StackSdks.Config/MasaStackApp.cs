@@ -5,10 +5,10 @@ namespace Masa.Contrib.StackSdks.Config;
 
 public class MasaStackApp : Enumeration
 {
-    static readonly MasaStackApp WEB = new(1, nameof(WEB).ToLowerInvariant());
-    static readonly MasaStackApp SSO = new(2, nameof(SSO).ToLowerInvariant());
-    static readonly MasaStackApp Service = new(3, nameof(Service).ToLowerInvariant());
-    static readonly MasaStackApp Worker = new(4, nameof(Worker).ToLowerInvariant());
+    public static readonly MasaStackApp WEB = new(1, nameof(WEB).ToLowerInvariant());
+    public static readonly MasaStackApp SSO = new(2, nameof(SSO).ToLowerInvariant());
+    public static readonly MasaStackApp Service = new(3, nameof(Service).ToLowerInvariant());
+    public static readonly MasaStackApp Worker = new(4, nameof(Worker).ToLowerInvariant());
 
     MasaStackApp(int id, string name)
         : base(id, name)
