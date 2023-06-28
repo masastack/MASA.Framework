@@ -28,8 +28,7 @@ internal static class IElasticClientExtenstion
         }
         catch (Exception ex)
         {
-            ServiceExtenistion.Logger.LogError(ex, "SearchAsync execute error");
-            throw new UserFriendlyException($"SearchAsync execute error {ex.Message}");
+            throw new UserFriendlyException($"SearchAsync execute error", ex);
         }
     }
 
