@@ -10,13 +10,13 @@ public static class ExtraPropertiesExtensions
         return source.ContainsKey(name);
     }
 
-    public static object GetProperty(this ExtraPropertyDictionary source, string name, object defaultValue = null)
+    public static object? GetProperty(this ExtraPropertyDictionary source, string name, object? defaultValue = null)
     {
         return source.GetOrDefault(name)
                ?? defaultValue;
     }
 
-    public static TProperty GetProperty<TProperty>(this ExtraPropertyDictionary source, string name, TProperty defaultValue = default)
+    public static TProperty? GetProperty<TProperty>(this ExtraPropertyDictionary source, string name, TProperty? defaultValue = default)
     {
         var value = source.GetProperty(name);
         if (value == null)
@@ -34,15 +34,15 @@ public static class ExtraPropertiesExtensions
 
             if (conversionType == typeof(Guid))
             {
-                return (TProperty)TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(value.ToString());
+                return (TProperty?)TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(value.ToString()!);
             }
 
             if (conversionType == typeof(DateTimeOffset))
             {
-                return (TProperty)TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(value.ToString());
+                return (TProperty?)TypeDescriptor.GetConverter(conversionType).ConvertFromInvariantString(value.ToString()!);
             }
 
-            return (TProperty)Convert.ChangeType(value?.ToString(), conversionType, CultureInfo.InvariantCulture);
+            return (TProperty?)Convert.ChangeType(value?.ToString(), conversionType, CultureInfo.InvariantCulture);
         }
 
         throw new Exception("GetProperty<TProperty> does not support non-primitive types. Use non-generic GetProperty method and handle type casting manually.");
