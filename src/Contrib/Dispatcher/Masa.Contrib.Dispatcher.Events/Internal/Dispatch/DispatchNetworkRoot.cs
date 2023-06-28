@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -20,7 +20,7 @@ internal class DispatchNetworkRoot : IDispatchNetworkRoot
     private static Dictionary<Type, List<DispatchRelationOptions>> BuildDispatchNetworks(List<IDispatchNetworkProvider> providers)
     {
         return BuildDispatchNetworks(
-            providers.SelectMany(provider => provider.HandlerNetwork).ToList(),
+            providers.SelectMany(provider => provider.HandlerNetwork).OrderBy(provider => provider.Order).ToList(),
             providers.SelectMany(provider => provider.CancelHandlerNetwork).ToList());
     }
 

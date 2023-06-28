@@ -5,6 +5,16 @@ namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests;
 
 internal class OrderCommandHandler
 {
+    [EventHandler]
+    public void Handler(OrderCommand command)
+    {
+        command.Count = int.MaxValue;
+        if (command.Cancel)
+        {
+            throw new Exception("cancel");
+        }
+    }
+
     [EventHandler(1)]
     public void Handler1(OrderCommand command)
     {
@@ -17,9 +27,15 @@ internal class OrderCommandHandler
         command.Count = 2;
     }
 
-    [EventHandler]
-    public void Handler(OrderCommand command)
+    [EventHandler(1, IsCancel = true)]
+    public void HandlerCancel1(OrderCommand command)
     {
-        command.Count = int.MaxValue;
+        command.Count = 0;
+    }
+
+    [EventHandler(2, IsCancel = true)]
+    public void HandlerCancel2(OrderCommand command)
+    {
+        command.Count = 1;
     }
 }

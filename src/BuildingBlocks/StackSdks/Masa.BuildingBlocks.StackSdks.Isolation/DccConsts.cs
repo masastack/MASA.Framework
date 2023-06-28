@@ -1,9 +1,9 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests.Commands;
+namespace Masa.BuildingBlocks.StackSdks.Isolation;
 
-internal record OrderCommand(bool Cancel) : Command
+public static class DccConsts
 {
-    public int Count { get; set; }
+    public const string PUBLIC_ID = "public-$Config";
 }

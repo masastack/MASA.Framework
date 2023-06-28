@@ -14,6 +14,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton((sp) => { return new EnvironmentProvider(environments); });
 
+        services.AddDccIsolation(builder => builder.UseDccIsolation());
+
         if (!name.IsNullOrEmpty())
         {
             services.ConfigureConnectionStrings(name);
@@ -25,8 +27,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<EsIsolationConfigProvider>();
 
         services.AddScoped<EnvironmentMiddleware>();
-
-        services.AddDccIsolation(builder => builder.UseDccIsolation());
 
         return services;
     }
@@ -132,21 +132,15 @@ public static class ServiceCollectionExtensions
     static void ConfigStorageOptions(this IServiceCollection services)
     {
         var (environments, _, masaStackConfig) = services.GetInternal();
-        var configurationApiClient = services.BuildServiceProvider().GetRequiredService<IConfigurationApiClient>();
-        services.Configure<IsolationOptions<AliyunStorageConfigureOptions>>(async options =>
+        var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+        services.Configure<IsolationOptions<AliyunStorageConfigureOptions>>(options =>
         {
             foreach (var environment in environments)
             {
                 try
                 {
-                    var ossOptions = await configurationApiClient.GetAsync<OssOptions>(environment, "Default", "public-$Config", "$public.OSS", ossOptions =>
-                    {
-                        var item = options.Data.Find(s => s.Environment == environment);
-                        if (item != null)
-                        {
-                            item.Data = Convert(ossOptions);
-                        }
-                    });
+                    var ossOptions = configuration.GetSection(SectionTypes.ConfigurationApi.ToString()).GetSection(environment)
+                        .GetSection(DccConsts.PUBLIC_ID).GetSection("$public.OSS").Get<OssOptions>();
                     if (ossOptions == null)
                     {
                         continue;
@@ -155,21 +149,32 @@ public static class ServiceCollectionExtensions
                     {
                         Environment = environment,
                         Data = Convert(ossOptions)
-                    });
+                    }); ;
                 }
                 catch (Exception ex)
                 {
-                    await Console.Out.WriteLineAsync(ex.Message);
+                    Console.Out.WriteLine(ex.Message);
                 }
             }
         });
 
-        services.Configure<AliyunStorageConfigureOptions>(async options =>
+        services.Configure<AliyunStorageConfigureOptions>(options =>
         {
-            var ossOptions = await configurationApiClient.GetAsync<OssOptions>(masaStackConfig.Environment, "Default", "public-$Config", "$public.OSS");
-#pragma warning disable S1854
-            options = Convert(ossOptions);
-#pragma warning disable S1854
+            var ossOptions = configuration.GetSection(SectionTypes.ConfigurationApi.ToString())
+                .GetSection(DccConsts.PUBLIC_ID).GetSection("$public.OSS").Get<OssOptions>();
+            options.AccessKeyId = ossOptions.AccessId;
+            options.AccessKeySecret = ossOptions.AccessSecret;
+            options.Sts = new AliyunStsOptions
+            {
+                RegionId = ossOptions.RegionId
+            };
+            options.Storage = new AliyunStorageOptions
+            {
+                BucketNames = new BucketNames(new Dictionary<string, string> { { BucketNames.DEFAULT_BUCKET_NAME, ossOptions.Bucket } }),
+                Endpoint = ossOptions.Endpoint,
+                RoleArn = ossOptions.RoleArn,
+                RoleSessionName = ossOptions.RoleSessionName
+            };
         });
 
         AliyunStorageConfigureOptions Convert(OssOptions ossOptions)
