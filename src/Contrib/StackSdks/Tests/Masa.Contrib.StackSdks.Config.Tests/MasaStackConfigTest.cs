@@ -58,7 +58,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetDefaultDccOptions()
     {
-        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config, "test");
+        var dccOptions = MasaStackConfigUtils.GetDefaultDccOptions(_config, MasaStackProject.Auth, MasaStackApp.WEB);
 
         Assert.IsNotNull(dccOptions?.RedisOptions);
     }
@@ -128,7 +128,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetServiceId()
     {
-        var pmServiceId = _stackConfig.GetServiceId(MasaStackConstant.PM);
+        var pmServiceId = _stackConfig.GetServiceId(MasaStackProject.PM);
 
         Assert.AreEqual("pm-service", pmServiceId);
     }
@@ -136,7 +136,7 @@ public class MasaStackConfigTest
     [TestMethod]
     public void TestGetWebId()
     {
-        var pmWebId = _stackConfig.GetWebId(MasaStackConstant.PM);
+        var pmWebId = _stackConfig.GetWebId(MasaStackProject.PM);
 
         Assert.AreEqual("pm-web", pmWebId);
     }

@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Ddd.Domain.SeedWork;
+namespace Masa.BuildingBlocks.Data.Contracts;
 
 /// <summary>
 /// Reference from https://docs.microsoft.com/zh-cn/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types
@@ -70,3 +70,4 @@ public abstract class Enumeration : IComparable
 
     public int CompareTo(object? other) => Id.CompareTo(((Enumeration?)other)?.Id);
 }
+
