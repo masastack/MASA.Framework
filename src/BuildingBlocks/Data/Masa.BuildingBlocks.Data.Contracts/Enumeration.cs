@@ -68,6 +68,27 @@ public abstract class Enumeration : IComparable
         return matchingItem;
     }
 
-    public int CompareTo(object? other) => Id.CompareTo(((Enumeration?)other)?.Id);
+    public int CompareTo(object? obj) => Id.CompareTo(((Enumeration?)obj)?.Id);
+
+    public static bool operator ==(Enumeration left, Enumeration right)
+    {
+        if (object.ReferenceEquals(left, null))
+        {
+            return object.ReferenceEquals(right, null);
+        }
+        return left.Equals(right);
+    }
+    public static bool operator >(Enumeration left, Enumeration right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+    public static bool operator <(Enumeration left, Enumeration right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+    public static bool operator !=(Enumeration left, Enumeration right)
+    {
+        return !(left == right);
+    }
 }
 
