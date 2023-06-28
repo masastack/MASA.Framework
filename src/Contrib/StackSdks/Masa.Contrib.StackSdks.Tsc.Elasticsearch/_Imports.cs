@@ -15,6 +15,7 @@ global using Masa.Contrib.StackSdks.Tsc.Elasticsearch.Model;
 global using Masa.Utils.Data.Elasticsearch;
 global using Masa.Utils.Models;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
 global using Nest;
 global using System.Runtime.CompilerServices;
 global using System.Text.Json;

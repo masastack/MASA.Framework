@@ -7,6 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ServiceExtenistion
 {
+    internal static ILogger Logger { private set; get; }
+
     public static IServiceCollection AddElasticClientLog(this IServiceCollection services, string[] nodes, string indexName)
     {
         ElasticConstant.InitLog(indexName, true);
@@ -72,6 +74,7 @@ public static class ServiceExtenistion
 
     private static IServiceCollection AddElasticsearch(IServiceCollection services, string[] nodes, string name)
     {
+        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LogService>>();
         return services.AddElasticsearch(name, options =>
             {
                 options.UseNodes(nodes).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -91,7 +94,7 @@ public static class ServiceExtenistion
         Action<MasaHttpClient> callerAction, string name)
     {
         ArgumentNullException.ThrowIfNull(callerAction);
-
+        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LogService>>();
         return services.AddElasticsearch(name, elasticsearchConnectionAction)
             .AddCaller(name, option => option.UseHttpClient(callerAction).UseAuthentication());
     }

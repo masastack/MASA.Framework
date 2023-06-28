@@ -28,6 +28,7 @@ internal static class IElasticClientExtenstion
         }
         catch (Exception ex)
         {
+            ServiceExtenistion.Logger.LogError(ex, "SearchAsync execute error");
             throw new UserFriendlyException($"SearchAsync execute error {ex.Message}");
         }
     }
@@ -37,21 +38,19 @@ internal static class IElasticClientExtenstion
     public static async Task<IEnumerable<MappingResponseDto>> GetMappingAsync(this ICaller caller, string indexName, CancellationToken token = default)
     {
         var path = $"/{indexName}/_mapping";
-        var result = await caller.GetAsync<object>(path, false, token);
+        var result = await caller.GetAsync<object>(path, token);
         var json = (JsonElement)result!;
-        JsonElement mapping = default;
-        bool findMapping = false;
         foreach (var item in json.EnumerateObject())
         {
-            if (!findMapping && item.Value.TryGetProperty("mappings", out mapping))
+            JsonElement mapping;
+            if (item.Value.TryGetProperty("mappings", out mapping))
             {
-                findMapping = true;
-                break;
+                var mappings = GetRepProperties(mapping, default!)!;
+                if (mappings != null && mappings.Any())
+                    return mappings;
             }
         }
 
-        if (findMapping)
-            return GetRepProperties(mapping, default!)!;
         throw new UserFriendlyException($"can't find mapping for index: {indexName}");
     }
 
@@ -197,7 +196,7 @@ internal static class IElasticClientExtenstion
         }
         if (!string.IsNullOrEmpty(query.Keyword))
         {
-            list.Add(queryContainer => queryContainer.QueryString(queryString => queryString.Query(query.Keyword)));
+            list.Add(queryContainer => queryContainer.QueryString(queryString => queryString.Query(query.Keyword).DefaultOperator(Operator.And)));
         }
 
         query.AppendConditions();
@@ -257,6 +256,7 @@ internal static class IElasticClientExtenstion
     {
         CreateFieldKeyword(query.Name, mapping, out var fieldName, out var keyword);
         var value = query.Value;
+        bool isDate = value is DateTime;
 
         switch (query.Type)
         {
@@ -265,12 +265,20 @@ internal static class IElasticClientExtenstion
             case ConditionTypes.NotEqual:
                 return (container) => !container.Match(f => f.Field(keyword).Query(value?.ToString()));
             case ConditionTypes.Great:
+                if (isDate)
+                    return (container) => container.DateRange(f => f.Field(keyword).GreaterThan((DateTime)value));
                 return (container) => container.Range(f => f.Field(keyword).GreaterThan(Convert.ToDouble(value)));
             case ConditionTypes.Less:
+                if (isDate)
+                    return (container) => container.DateRange(f => f.Field(keyword).LessThan((DateTime)value));
                 return (container) => container.Range(f => f.Field(keyword).LessThan(Convert.ToDouble(value)));
             case ConditionTypes.GreatEqual:
+                if (isDate)
+                    return (container) => container.DateRange(f => f.Field(keyword).GreaterThanOrEquals((DateTime)value));
                 return (container) => container.Range(f => f.Field(keyword).GreaterThanOrEquals(Convert.ToDouble(value)));
             case ConditionTypes.LessEqual:
+                if (isDate)
+                    return (container) => container.DateRange(f => f.Field(keyword).LessThanOrEquals((DateTime)value));
                 return (container) => container.Range(f => f.Field(keyword).LessThanOrEquals(Convert.ToDouble(value)));
             case ConditionTypes.In:
                 return (container) => container.Terms(f => f.Field(keyword).Terms((IEnumerable<object>)value));
