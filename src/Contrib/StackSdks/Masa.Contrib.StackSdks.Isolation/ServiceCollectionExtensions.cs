@@ -131,7 +131,7 @@ public static class ServiceCollectionExtensions
 
     static void ConfigStorageOptions(this IServiceCollection services)
     {
-        var (environments, _, masaStackConfig) = services.GetInternal();
+        var (environments, _, _) = services.GetInternal();
         var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
         services.Configure<IsolationOptions<AliyunStorageConfigureOptions>>(options =>
         {
@@ -149,7 +149,7 @@ public static class ServiceCollectionExtensions
                     {
                         Environment = environment,
                         Data = Convert(ossOptions)
-                    }); ;
+                    });
                 }
                 catch (Exception ex)
                 {

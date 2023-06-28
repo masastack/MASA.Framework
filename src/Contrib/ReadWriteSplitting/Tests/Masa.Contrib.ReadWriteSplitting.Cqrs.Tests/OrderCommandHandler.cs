@@ -3,6 +3,7 @@
 
 namespace Masa.Contrib.ReadWriteSplitting.Cqrs.Tests;
 
+#pragma warning disable CA1822
 internal class OrderCommandHandler
 {
     [EventHandler]
@@ -39,3 +40,4 @@ internal class OrderCommandHandler
         command.Count = 1;
     }
 }
+#pragma warning restore CA1822
