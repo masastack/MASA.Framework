@@ -32,7 +32,7 @@ internal static class MasaConfigurationBuilderExtensions
         var cacheClient = serviceProvider.GetRequiredService<IDistributedCacheClientFactory>().Create("masa.contrib.configuration.configurationapi.dcc");
         var masaAppConfigureOptions = serviceProvider.GetRequiredService<IOptions<MasaAppConfigureOptions>>().Value;
 
-        dccConfigurationOptions.PublicId = masaAppConfigureOptions.GetValue(nameof(DccOptions.PublicId), () => "public-$Config");
+        dccConfigurationOptions.PublicId = masaAppConfigureOptions.GetValue(nameof(DccOptions.PublicId), () => DccConsts.PUBLIC_ID);
         dccConfigurationOptions.PublicSecret = masaAppConfigureOptions.GetValue(nameof(DccOptions.PublicSecret));
 
         dccConfigurationOptions.DefaultSection.ComplementAndCheckAppId(masaAppConfigureOptions.AppId);
