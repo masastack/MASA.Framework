@@ -1,7 +1,7 @@
 // Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.BuildingBlocks.Ddd.Domain.SeedWork;
+namespace Masa.BuildingBlocks.Data.Contracts;
 
 /// <summary>
 /// Reference from https://docs.microsoft.com/zh-cn/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/enumeration-classes-over-enum-types
@@ -68,5 +68,27 @@ public abstract class Enumeration : IComparable
         return matchingItem;
     }
 
-    public int CompareTo(object? other) => Id.CompareTo(((Enumeration?)other)?.Id);
+    public int CompareTo(object? obj) => Id.CompareTo(((Enumeration?)obj)?.Id);
+
+    public static bool operator ==(Enumeration left, Enumeration right)
+    {
+        if (object.ReferenceEquals(left, null))
+        {
+            return object.ReferenceEquals(right, null);
+        }
+        return left.Equals(right);
+    }
+    public static bool operator >(Enumeration left, Enumeration right)
+    {
+        return left.CompareTo(right) > 0;
+    }
+    public static bool operator <(Enumeration left, Enumeration right)
+    {
+        return left.CompareTo(right) < 0;
+    }
+    public static bool operator !=(Enumeration left, Enumeration right)
+    {
+        return !(left == right);
+    }
 }
+
