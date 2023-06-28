@@ -13,7 +13,7 @@ public class MasaStackProject : Enumeration
     public static readonly MasaStackProject Scheduler = new(6, nameof(Scheduler).ToLowerInvariant());
     public static readonly MasaStackProject TSC = new(7, nameof(TSC).ToLowerInvariant());
 
-    MasaStackProject(int id, string name)
+    public MasaStackProject(int id, string name)
         : base(id, name)
     {
     }

@@ -10,7 +10,7 @@ public class MasaStackApp : Enumeration
     public static readonly MasaStackApp Service = new(3, nameof(Service).ToLowerInvariant());
     public static readonly MasaStackApp Worker = new(4, nameof(Worker).ToLowerInvariant());
 
-    MasaStackApp(int id, string name)
+    public MasaStackApp(int id, string name)
         : base(id, name)
     {
     }
