@@ -74,7 +74,7 @@ public static class ServiceExtenistion
 
     private static IServiceCollection AddElasticsearch(IServiceCollection services, string[] nodes, string name)
     {
-        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LogService>>();
+        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<ElasticseacherMappingResponseDto>>();
         return services.AddElasticsearch(name, options =>
             {
                 options.UseNodes(nodes).UseConnectionSettings(setting => setting.EnableApiVersioningHeader(false));
@@ -94,7 +94,7 @@ public static class ServiceExtenistion
         Action<MasaHttpClient> callerAction, string name)
     {
         ArgumentNullException.ThrowIfNull(callerAction);
-        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<LogService>>();
+        Logger = services.BuildServiceProvider().GetRequiredService<ILogger<ElasticseacherMappingResponseDto>>();
         return services.AddElasticsearch(name, elasticsearchConnectionAction)
             .AddCaller(name, option => option.UseHttpClient(callerAction).UseAuthentication());
     }
