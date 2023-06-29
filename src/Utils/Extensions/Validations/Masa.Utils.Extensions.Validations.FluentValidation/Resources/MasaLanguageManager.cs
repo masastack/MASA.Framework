@@ -22,6 +22,8 @@ public class MasaLanguageManager : LanguageManager
                 languageProvider.GetTranslation(nameof(ChineseLetterNumberValidator<string>)));
             AddTranslation(language, nameof(ChineseLetterNumberUnderlineValidator<string>),
                 languageProvider.GetTranslation(nameof(ChineseLetterNumberUnderlineValidator<string>)));
+            AddTranslation(language, nameof(LetterNumberUnderlineValidator<string>),
+                languageProvider.GetTranslation(nameof(LetterNumberUnderlineValidator<string>)));
             AddTranslation(language, nameof(ChineseLetterValidator<string>),
                 languageProvider.GetTranslation(nameof(ChineseLetterValidator<string>)));
             AddTranslation(language, nameof(ChineseLetterUnderlineValidator<string>),
