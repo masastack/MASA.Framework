@@ -11,6 +11,7 @@ internal class ChineseSimplifiedLanguage : ILanguageProvider
     public string GetTranslation(string key) => key switch
     {
         "ChineseLetterNumberUnderlineValidator" => "'{PropertyName}'必须是中文、数字、字母或下划线。",
+        "LetterNumberUnderlineValidator" => "'{PropertyName}'必须是数字、字母或下划线。",
         "ChineseLetterNumberValidator" => "'{PropertyName}'必须是中文、数字、字母。",
         "ChineseLetterUnderlineValidator" => "'{PropertyName}'必须是中文、字母或下划线。",
         "ChineseLetterValidator" => "'{PropertyName}'必须是中文、字母。",

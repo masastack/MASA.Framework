@@ -11,6 +11,7 @@ internal class EnglishLanguage : ILanguageProvider
     public string GetTranslation(string key) => key switch
     {
         "ChineseLetterNumberUnderlineValidator" => "'{PropertyName}' must be Chinese, numbers, letters or underscores.",
+        "LetterNumberUnderlineValidator" => "'{PropertyName}' must be numbers, letters or underscores.",
         "ChineseLetterNumberValidator" => "'{PropertyName}' must be Chinese, numbers, letters.",
         "ChineseLetterUnderlineValidator" => "'{PropertyName}' must be Chinese, letters or underscores.",
         "ChineseLetterValidator" => "'{PropertyName}' must be Chinese, letters.",

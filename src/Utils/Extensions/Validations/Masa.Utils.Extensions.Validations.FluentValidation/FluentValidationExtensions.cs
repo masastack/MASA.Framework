@@ -37,6 +37,9 @@ public static class FluentValidationExtensions
     public static IRuleBuilderOptions<T, string?> ChineseLetterNumber<T>(this IRuleBuilder<T, string?> ruleBuilder)
         => ruleBuilder.SetValidator(new ChineseLetterNumberValidator<T>());
 
+    public static IRuleBuilderOptions<T, string?> LetterNumberUnderline<T>(this IRuleBuilder<T, string?> ruleBuilder)
+        => ruleBuilder.SetValidator(new LetterNumberUnderlineValidator<T>());
+
     public static IRuleBuilderOptions<T, string?> Phone<T>(this IRuleBuilder<T, string?> ruleBuilder, string? culture = null)
         => ruleBuilder.SetValidator(new PhoneValidator<T>(culture));
 
