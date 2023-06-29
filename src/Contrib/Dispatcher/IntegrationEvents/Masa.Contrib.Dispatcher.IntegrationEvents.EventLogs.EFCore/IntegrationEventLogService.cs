@@ -72,7 +72,11 @@ public class IntegrationEventLogService : IIntegrationEventLogService
         return result;
     }
 
-    public async Task SaveEventAsync(IIntegrationEvent @event, DbTransaction transaction, CancellationToken cancellationToken = default)
+    public async Task SaveEventAsync(
+        IIntegrationEvent @event,
+        IntegrationEventExpand? messageExpand,
+        DbTransaction transaction,
+        CancellationToken cancellationToken = default)
     {
         MasaArgumentException.ThrowIfNull(transaction);
 
@@ -80,7 +84,7 @@ public class IntegrationEventLogService : IIntegrationEventLogService
             await _eventLogContext.DbContext.Database.UseTransactionAsync(transaction, Guid.NewGuid(),
                 cancellationToken: cancellationToken);
 
-        var eventLogEntry = new IntegrationEventLog(@event, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
+        var eventLogEntry = new IntegrationEventLog(@event, messageExpand, _eventLogContext.DbContext.Database.CurrentTransaction!.TransactionId);
         await _eventLogContext.EventLogs.AddAsync(eventLogEntry, cancellationToken);
         await _eventLogContext.DbContext.SaveChangesAsync(cancellationToken);
 

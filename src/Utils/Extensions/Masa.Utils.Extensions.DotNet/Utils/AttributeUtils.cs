@@ -7,7 +7,7 @@ namespace System;
 
 public static class AttributeUtils
 {
-    [Obsolete("Use GetDescriptionValueByField instead")]
+    [Obsolete("Use GetDescriptionByField instead")]
     public static string? GetDescriptionByConst<TClass>(string fieldName, BindingFlags? bindingFlags = null)
         => GetDescriptionValueByField(typeof(TClass), fieldName, bindingFlags);
 

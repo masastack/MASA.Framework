@@ -39,7 +39,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         IFormatCacheKeyProvider? formatCacheKeyProvider = null,
         string? instanceId = null) : this(typeAliasProvider, formatCacheKeyProvider, instanceId)
     {
-        _memoryCache = memoryCache?? new MemoryCache(new MultilevelCacheGlobalOptions());
+        _memoryCache = memoryCache ?? new MemoryCache(new MultilevelCacheGlobalOptions());
         _distributedCacheClient = distributedCacheClient;
         _subscribeKeyType = subscribeKeyType;
         GlobalCacheOptions = multilevelCacheOptions ?? new MultilevelCacheOptions();
@@ -147,7 +147,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            CacheEntry<T> cacheEntry = default!;
+            CacheEntry<T>? cacheEntry = null;
             if (combinedCacheEntry.DistributedCacheEntryFunc != null)
             {
                 value = _distributedCacheClient.GetOrSet(
@@ -174,7 +174,10 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            Pub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry);
+            if (cacheEntry != null)
+            {
+                Pub(key, formattedKey, SubscribeOperation.Set, value, cacheEntry.CacheOptions);
+            }
         }
 
         return value;
@@ -194,7 +197,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
 
         if (!_memoryCache.TryGetValue(formattedKey, out T? value))
         {
-            CacheEntry<T> cacheEntry = default!;
+            CacheEntry<T>? cacheEntry = null;
             if (combinedCacheEntry.DistributedCacheEntryFunc != null)
             {
                 value = await _distributedCacheClient.GetOrSetAsync(
@@ -233,8 +236,11 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
                 MemoryCacheEntryOptions = memoryCacheEntryOptions
             });
 
-            await PubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry)
-                .ConfigureAwait(false);
+            if (cacheEntry != null)
+            {
+                await PubAsync(key, formattedKey, SubscribeOperation.Set, value, cacheEntry.CacheOptions)
+                    .ConfigureAwait(false);
+            }
         }
 
         return value;
@@ -261,7 +267,7 @@ public class MultilevelCacheClient : MultilevelCacheClientBase
         });
 
         Pub(key, formattedKey, SubscribeOperation.Set, value, options?.DistributedCacheEntryOptions);
-    }
+    }  
 
     public override async Task SetAsync<T>(string key, T value, CombinedCacheEntryOptions? options, Action<CacheOptions>? action = null)
     {

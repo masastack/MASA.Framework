@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Contrib\Extensions\Masa.Contrib.Extensions.BackgroundJobs.Memory\Masa.Contrib.Extensions.BackgroundJobs.Memory.csproj" />
     <ProjectReference Include="..\..\Masa.BuildingBlocks.Data\Masa.BuildingBlocks.Data.csproj" />
   </ItemGroup>
 

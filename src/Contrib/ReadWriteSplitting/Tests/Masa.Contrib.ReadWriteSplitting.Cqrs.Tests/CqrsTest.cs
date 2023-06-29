@@ -41,6 +41,23 @@ public class CQRSTest
         }
     }
 
+    [DataTestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void TestOrderCommand(bool cancel)
+    {
+        var command = new OrderCommand(cancel);
+        _eventBus.PublishAsync(command);
+        if (cancel)
+        {
+            Assert.IsTrue(command.Count == 0);
+        }
+        else
+        {
+            Assert.IsTrue(command.Count == int.MaxValue);
+        }
+    }
+
     [TestMethod]
     public void TestQuery()
     {

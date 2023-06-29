@@ -3,7 +3,7 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class LoginByLdapModel
+public class LoginByLdapModel : IEnvironmentModel
 {
     public string ClientId { get; set; } = "";
 
@@ -14,4 +14,6 @@ public class LoginByLdapModel
     public string UserName { get; set; }
 
     public string Scheme { get; set; } = "Ldap";
+
+    public string Environment { get; set; }
 }

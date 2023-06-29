@@ -14,6 +14,8 @@ public abstract record IntegrationEvent : IIntegrationEvent
 
     public abstract string Topic { get; set; }
 
+    public Dictionary<string, string> Headers { get; set; } = new();
+
     public IntegrationEvent() : this(Guid.NewGuid(), DateTime.UtcNow) { }
 
     public IntegrationEvent(Guid Id, DateTime CreationTime)

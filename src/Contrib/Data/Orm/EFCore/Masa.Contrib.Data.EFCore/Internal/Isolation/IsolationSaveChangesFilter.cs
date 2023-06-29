@@ -11,13 +11,13 @@ internal class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesF
     where TTenantId : IComparable
 {
     private readonly IMultiTenantContext? _tenantContext;
-    private readonly IConvertProvider? _convertProvider;
+    private readonly ITypeConvertProvider _convertProvider;
     private readonly IMultiEnvironmentContext? _environmentContext;
 
     public IsolationSaveChangesFilter(IServiceProvider serviceProvider)
     {
         _tenantContext = serviceProvider.GetService<IMultiTenantContext>();
-        _convertProvider = serviceProvider.GetService<IConvertProvider>();
+        _convertProvider = serviceProvider.GetService<ITypeConvertProvider>() ?? new DefaultTypeConvertProvider();
         _environmentContext = serviceProvider.GetService<IMultiEnvironmentContext>();
     }
 
@@ -53,10 +53,10 @@ internal class IsolationSaveChangesFilter<TDbContext, TTenantId> : ISaveChangesF
 
     private object? GetTenantId()
     {
-        if (_tenantContext is { CurrentTenant: not null } && !string.IsNullOrEmpty(_tenantContext.CurrentTenant.Id))
+        if (_tenantContext is { CurrentTenant: not null } && !string.IsNullOrWhiteSpace(_tenantContext.CurrentTenant.Id))
         {
             ArgumentNullException.ThrowIfNull(_convertProvider, nameof(_convertProvider));
-            return _convertProvider.ChangeType(_tenantContext.CurrentTenant.Id, typeof(TTenantId));
+            return _convertProvider.ConvertTo(_tenantContext.CurrentTenant.Id, typeof(TTenantId));
         }
         return null;
     }

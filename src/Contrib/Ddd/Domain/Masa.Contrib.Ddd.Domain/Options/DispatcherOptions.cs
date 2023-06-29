@@ -15,7 +15,7 @@ public class DispatcherOptions : IDomainEventOptions
 
     private IEnumerable<Type> Types { get; set; }
 
-    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => t.IsClass && type.IsAssignableFrom(t));
+    private IEnumerable<Type> GetTypes(Type type) => Types.Where(t => t is { IsClass: true, IsPublic: true } && type.IsAssignableFrom(t));
 
     internal List<Type> AllDomainServiceTypes { get; private set; }
 

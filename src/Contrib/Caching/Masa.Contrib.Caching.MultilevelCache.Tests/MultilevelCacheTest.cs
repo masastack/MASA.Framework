@@ -158,7 +158,7 @@ public class MultilevelCacheTest : TestBase
         VerifyOriginal(multilevelCacheClient as MultilevelCacheClient);
 
         VerifyTarget(serviceProvider.CreateScope().ServiceProvider.GetService<IMultilevelCacheClientFactory>()!.Create() as
-                MultilevelCacheClient);
+            MultilevelCacheClient);
 
         await File.WriteAllTextAsync(Path.Combine(rootPath, "appsettings.json"), oldContent);
 
@@ -195,12 +195,19 @@ public class MultilevelCacheTest : TestBase
         }
     }
 
-    [TestMethod]
-    public void TestFormatCacheKeyByTypeNameAlias()
+    [DataRow(true, "configuration json by redis")]
+    [DataRow(false, "configuration json by multilevel cache")]
+    [DataTestMethod]
+    public void TestFormatCacheKeyByTypeNameAlias(bool isPresetByRedis, string expectedValue)
     {
         var services = new ServiceCollection();
+        var globalRedisConfigurationOptions = RedisConfigurationOptions;
+        globalRedisConfigurationOptions.GlobalCacheOptions = new CacheOptions()
+        {
+            CacheKeyType = CacheKeyType.TypeAlias
+        };
         services.AddMultilevelCache(distributedCacheOptions =>
-                distributedCacheOptions.UseStackExchangeRedisCache(RedisConfigurationOptions),
+                distributedCacheOptions.UseStackExchangeRedisCache(globalRedisConfigurationOptions),
             multilevelCacheOptions =>
             {
                 multilevelCacheOptions.GlobalCacheOptions = new CacheOptions()
@@ -221,12 +228,18 @@ public class MultilevelCacheTest : TestBase
         var serviceProvider = services.BuildServiceProvider();
         var factory = serviceProvider.GetRequiredService<IMultilevelCacheClientFactory>();
         Assert.IsNotNull(factory);
+
+        if (isPresetByRedis)
+        {
+            var distributedCacheClient = serviceProvider.GetRequiredService<IDistributedCacheClient>();
+            distributedCacheClient.Set("configuration", "configuration json by redis");
+        }
+
         using var multilevelCacheClient = factory.Create();
-        var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json"));
-        Assert.AreEqual("configuration json", value);
+        var value = multilevelCacheClient.GetOrSet("configuration", () => new CacheEntry<string>("configuration json by multilevel cache"));
+        Assert.AreEqual(expectedValue, value);
         multilevelCacheClient.Remove<string>("configuration");
     }
-
 
     [TestMethod]
     public void TestFormatCacheKeyByTypeNameAlias2()

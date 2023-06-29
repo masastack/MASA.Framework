@@ -52,7 +52,10 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestDbContext5()
     {
-        Services.Configure<AppConfigOptions>(options => { options.DbConnectionString = MemoryConnectionString; });
+        Services.Configure<AppConfigOptions>(options =>
+        {
+            options.DbConnectionString = MemoryConnectionString;
+        });
         var dbContext = CreateDbContext<CustomDbContext5>(null);
         var student = GenerateStudent();
         dbContext.Set<Student>().Add(student);
@@ -76,7 +79,10 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestDbContext7()
     {
-        Services.Configure<AppConfigOptions>(options => { options.DbConnectionString = MemoryConnectionString; });
+        Services.Configure<AppConfigOptions>(options =>
+        {
+            options.DbConnectionString = MemoryConnectionString;
+        });
         var dbContext = CreateDbContext<CustomDbContext7>(null);
         var student = GenerateStudent();
         dbContext.Set<Student>().Add(student);
@@ -287,7 +293,10 @@ public class DbContextTest : TestBase
 
         IServiceProvider serviceProvider = default!;
         var dbContext =
-            await CreateDbContextAsync<CustomDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); }, sp => serviceProvider = sp);
+            await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlite();
+            }, sp => serviceProvider = sp);
 
         var connectionStringProvider = serviceProvider.GetService<IConnectionStringProvider>();
         Assert.IsNotNull(connectionStringProvider);
@@ -338,20 +347,32 @@ public class DbContextTest : TestBase
             .Build();
         Services.AddSingleton<IConfiguration>(configuration);
 
-        await CreateDbContextAsync<CustomDbContext>(optionsBuilder => { optionsBuilder.UseSqlite(); });
+        await CreateDbContextAsync<CustomDbContext>(optionsBuilder =>
+        {
+            optionsBuilder.UseSqlite();
+        });
         await Assert.ThrowsExceptionAsync<ArgumentException>(async () =>
         {
-            await CreateDbContextAsync<CustomDbContext2>(optionsBuilder => { optionsBuilder.UseSqlite(SqliteConnectionString); });
+            await CreateDbContextAsync<CustomDbContext2>(optionsBuilder =>
+            {
+                optionsBuilder.UseSqlite(SqliteConnectionString);
+            });
         });
     }
 
     [TestMethod]
     public async Task TestAddMultiDbContextAsync()
     {
-        Services.AddMasaDbContext<CustomDbContext>(dbContextBuilder => { dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString); });
+        Services.AddMasaDbContext<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+        });
         IServiceProvider serviceProvider = default!;
         var customDbContext2 = await CreateDbContextAsync<CustomDbContext2>(
-            dbContextBuilder => { dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString); }, sp => serviceProvider = sp);
+            dbContextBuilder =>
+            {
+                dbContextBuilder.UseInMemoryDatabase(MemoryConnectionString);
+            }, sp => serviceProvider = sp);
 
         var customDbContext = serviceProvider.GetService<CustomDbContext>();
         Assert.IsNotNull(customDbContext);
@@ -467,10 +488,7 @@ public class DbContextTest : TestBase
                 .UseFilter();
         });
         Assert.IsNotNull(dbContext);
-        await dbContext.Set<Goods2>().AddAsync(new Goods2()
-        {
-            Name = "masa"
-        });
+        await dbContext.Set<Goods2>().AddAsync(new Goods2("masa"));
         await dbContext.SaveChangesAsync();
 
         var goodsByCreate = await dbContext.Set<Goods2>().FirstOrDefaultAsync();
@@ -480,7 +498,9 @@ public class DbContextTest : TestBase
         var modifierByCreate = goodsByCreate.Modifier;
         var modificationTimeByCreate = goodsByCreate.ModificationTime;
         Assert.AreEqual(expectedCreator, goodsByCreate.Creator);
-        Assert.AreEqual(expectedCreator, goodsByCreate.Modifier);
+        Assert.AreEqual(modifierByCreate, goodsByCreate.Modifier);
+        Assert.IsTrue((DateTime.UtcNow - creationTimeByCreate).TotalSeconds < 1);
+        Assert.IsTrue((DateTime.UtcNow - modificationTimeByCreate).TotalSeconds < 1);
 
         customUserContext.SetUserId(modifier?.ToString());
         goodsByCreate.Name = "masa1";
@@ -498,6 +518,7 @@ public class DbContextTest : TestBase
         Assert.AreEqual(creationTimeByCreate, creationTimeByUpdate);
         Assert.AreEqual(expectedModifier, modifierByUpdate);
         Assert.AreNotEqual(modificationTimeByCreate, modificationTimeByUpdate);
+        Assert.IsTrue((DateTime.UtcNow - modificationTimeByUpdate).TotalSeconds < 1);
 
         customUserContext.SetUserId(deleter?.ToString());
 
@@ -510,6 +531,7 @@ public class DbContextTest : TestBase
         Assert.AreEqual(creationTimeByUpdate, goodsByDelete.CreationTime);
         Assert.AreEqual(expectedDeleter, goodsByDelete.Modifier);
         Assert.AreNotEqual(modificationTimeByUpdate, goodsByUpdate.ModificationTime);
+        Assert.IsTrue((DateTime.UtcNow - goodsByDelete.ModificationTime).TotalSeconds < 1);
     }
 
     [DataRow(1, 2, 1, "2023-01-01 00:00:00", "2023-01-01 00:00:00", 3, 3, "2023-01-02 00:00:00", "2023-01-02 00:00:00")]
@@ -571,6 +593,76 @@ public class DbContextTest : TestBase
         Assert.AreNotEqual(inputModificationTime.AddDays(2), modificationTimeByUpdate);
     }
 
+    [TestMethod]
+    public async Task TestAddOrUpdateOrDeleteWhenUserIdIsStringAsync()
+    {
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(string));
+
+        var creator = "admin";
+        var customUserContext = new CustomUserContext(creator);
+        Services.AddSingleton<IUserContext>(customUserContext);
+
+        var connectionString = MemoryConnectionString;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder
+                .UseInMemoryDatabase(connectionString)
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .UseFilter();
+        });
+        Assert.IsNotNull(dbContext);
+        await dbContext.Set<People2>().AddAsync(new People2()
+        {
+            Name = "masa"
+        });
+        await dbContext.SaveChangesAsync();
+
+        var people = await dbContext.Set<People2>().FirstOrDefaultAsync();
+        Assert.IsNotNull(people);
+        Assert.AreEqual(creator, people.Creator);
+        Assert.AreEqual(creator, people.Modifier);
+    }
+
+    [TestMethod]
+    public async Task TestAddOrUpdateOrDeleteWhenUserIdIsGuidAsync()
+    {
+        Services.Configure<AuditEntityOptions>(options => options.UserIdType = typeof(Guid));
+
+        var customUserContext = new CustomUserContext("");
+        Services.AddSingleton<IUserContext>(customUserContext);
+
+        var connectionString = MemoryConnectionString;
+        var dbContext = await CreateDbContextAsync<CustomDbContext>(dbContextBuilder =>
+        {
+            dbContextBuilder
+                .UseInMemoryDatabase(connectionString)
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll)
+                .UseFilter();
+        });
+        Assert.IsNotNull(dbContext);
+        await dbContext.Set<People>().AddAsync(new People()
+        {
+            Name = "masa"
+        });
+        await dbContext.SaveChangesAsync();
+
+        var people = await dbContext.Set<People>().AsTracking().FirstOrDefaultAsync();
+        Assert.IsNotNull(people);
+        Assert.AreEqual(null, people.Creator);
+        Assert.AreEqual(null, people.Modifier);
+
+        var creator = Guid.NewGuid();
+        customUserContext.SetUserId(creator.ToString());
+
+        dbContext.Set<People>().Update(people);
+        await dbContext.SaveChangesAsync();
+
+        var peopleByUpdate = await dbContext.Set<People>().AsTracking().FirstOrDefaultAsync();
+        Assert.IsNotNull(peopleByUpdate);
+        Assert.AreEqual(null, peopleByUpdate.Creator);
+        Assert.AreEqual(creator, peopleByUpdate.Modifier);
+    }
+
     #endregion
 
     #region Test Model Mapping
@@ -578,7 +670,10 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestCustomTableName()
     {
-        var dbContext = CreateDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(MemoryConnectionString); });
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(MemoryConnectionString);
+        });
         var entityTableName = dbContext.Model.FindEntityType(typeof(Student))?.GetTableName();
 
         Assert.AreEqual("masa_students", entityTableName);
@@ -591,7 +686,10 @@ public class DbContextTest : TestBase
     [TestMethod]
     public void TestQueryTrackingBehaviorByDefault()
     {
-        var dbContext = CreateDbContext<CustomDbContext>(dbContext => { dbContext.UseInMemoryDatabase(MemoryConnectionString); });
+        var dbContext = CreateDbContext<CustomDbContext>(dbContext =>
+        {
+            dbContext.UseInMemoryDatabase(MemoryConnectionString);
+        });
         Assert.AreEqual(QueryTrackingBehavior.NoTracking, dbContext.ChangeTracker.QueryTrackingBehavior);
     }
 
@@ -627,4 +725,5 @@ public class DbContextTest : TestBase
     }
 
     #endregion
+
 }

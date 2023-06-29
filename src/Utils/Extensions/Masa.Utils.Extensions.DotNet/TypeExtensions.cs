@@ -70,4 +70,17 @@ public static class TypeExtensions
 
     public static object? GetDefaultValue(this Type type)
         => type.IsValueType ? Activator.CreateInstance(type) : null;
+
+    /// <summary>
+    /// is an explicit class
+    /// non-generic class, non-interface class
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsConcrete(this Type type, bool isContainAbstract = false)
+    {
+        if (isContainAbstract)
+            return type is { IsGenericTypeDefinition: false, IsInterface: false };
+
+        return type is { IsGenericTypeDefinition: false, IsInterface: false, IsAbstract: false };
+    }
 }

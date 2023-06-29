@@ -34,7 +34,8 @@ public static class ServiceCollectionExtensions
 
         MasaApp.TrySetServiceCollection(services);
         services.TryAddSingleton<IDaprProcess, DaprProcess>();
-        services.TryAddSingleton<IDaprProvider, DaprProvider>();
+        services.TryAddSingleton<IDaprProvider, DefaultDaprProvider>();
+        services.TryAddSingleton<IDaprProcessProvider, DaprProcessProvider>();
         services.TryAddSingleton<IProcessProvider, ProcessProvider>();
         services.TryAddSingleton<IDaprEnvironmentProvider, DaprEnvironmentProvider>();
         return services;
@@ -42,6 +43,5 @@ public static class ServiceCollectionExtensions
 
     private sealed class DaprService
     {
-
     }
 }

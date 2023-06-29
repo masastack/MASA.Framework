@@ -25,5 +25,7 @@ public interface IWebsiteMessageService
 
     Task SendGetNotificationAsync(List<string> userIds);
 
-    Task<List<WebsiteMessageModel>> GetListByTagAsync(List<string> tags);
+    Task<List<WebsiteMessageTagModel>> GetListByTagAsync(List<string> tags, string channelCode);
+
+    Task<int> GetUnreadAsync(string channelCode);
 }

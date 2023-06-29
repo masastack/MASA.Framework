@@ -28,12 +28,16 @@ public class RetryByLocalQueueProcessor : ProcessorBase
         if (unitOfWork != null)
             unitOfWork.UseTransaction = false;
 
-        var publisher = serviceProvider.GetRequiredService<IPublisher>();
         var eventLogService = serviceProvider.GetRequiredService<IIntegrationEventLogService>();
 
         var retrieveEventLogs =
             LocalQueueProcessor.Default.RetrieveEventLogsFailedToPublishAsync(_options.Value.LocalRetryTimes,
                 _options.Value.RetryBatchSize);
+
+        if(!retrieveEventLogs.Any())
+            return;
+
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
         foreach (var eventLog in retrieveEventLogs)
         {
@@ -48,7 +52,7 @@ public class RetryByLocalQueueProcessor : ProcessorBase
                     eventLog,
                     eventLog.Topic);
 
-                await publisher.PublishAsync(eventLog.Topic, eventLog.Event, stoppingToken);
+                await publisher.PublishAsync(eventLog.Topic, eventLog.Event,  eventLog.EventExpand, stoppingToken);
 
                 await eventLogService.MarkEventAsPublishedAsync(eventLog.EventId, stoppingToken);
 

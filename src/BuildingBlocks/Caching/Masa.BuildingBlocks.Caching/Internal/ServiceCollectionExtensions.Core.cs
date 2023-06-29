@@ -3,6 +3,7 @@
 
 [assembly: InternalsVisibleTo("Masa.Contrib.Caching.Distributed.StackExchangeRedis")]
 [assembly: InternalsVisibleTo("Masa.Contrib.Caching.MultilevelCache")]
+
 // ReSharper disable once CheckNamespace
 
 namespace Masa.BuildingBlocks.Caching;

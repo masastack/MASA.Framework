@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the MIT License. See LICENSE.txt in the project root for license information.
 
 // ReSharper disable once CheckNamespace
@@ -28,15 +28,15 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNull(services);
         MasaArgumentException.ThrowIfNull(name);
 
-        services.TryAddSingleton<SingletonService<IManualObjectStorageClient>>(serviceProvider
+        services.TryAddSingleton(serviceProvider
             => new SingletonService<IManualObjectStorageClient>(serviceProvider.GetRequiredService<IObjectStorageClientFactory>()
                 .Create()));
-        services.TryAddScoped<ScopedService<IManualObjectStorageClient>>(serviceProvider
+        services.TryAddScoped(serviceProvider
             => new ScopedService<IManualObjectStorageClient>(serviceProvider.GetRequiredService<IObjectStorageClientFactory>().Create()));
 
-        services.TryAddSingleton<SingletonService<IBucketNameProvider>>(serviceProvider
+        services.TryAddSingleton(serviceProvider
             => new SingletonService<IBucketNameProvider>(serviceProvider.GetRequiredService<IBucketNameFactory>().Create()));
-        services.TryAddScoped<ScopedService<IBucketNameProvider>>(serviceProvider
+        services.TryAddScoped(serviceProvider
             => new ScopedService<IBucketNameProvider>(serviceProvider.GetRequiredService<IBucketNameFactory>().Create()));
 
         services.TryAddObjectStorageClient();
@@ -61,13 +61,10 @@ public static class ServiceCollectionExtensions
 
     private static void TryAddBucketNameProvider(this IServiceCollection services)
     {
-        services.TryAddTransient<IBucketNameProvider>(serviceProvider =>
-        {
-            if (serviceProvider.EnableIsolation())
-                return serviceProvider.GetRequiredService<ScopedService<IBucketNameProvider>>().Service;
+        services.TryAddTransient(serviceProvider => serviceProvider.EnableIsolation() ?
+            serviceProvider.GetRequiredService<ScopedService<IBucketNameProvider>>().Service :
+            serviceProvider.GetRequiredService<SingletonService<IBucketNameProvider>>().Service);
 
-            return serviceProvider.GetRequiredService<SingletonService<IBucketNameProvider>>().Service;
-        });
         services.TryAddTransient<IBucketNameFactory, DefaultBucketNameFactory>();
     }
 

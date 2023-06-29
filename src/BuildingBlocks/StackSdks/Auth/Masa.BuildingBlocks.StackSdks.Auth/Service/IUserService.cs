@@ -7,7 +7,7 @@ public interface IUserService
 {
     Task<List<StaffModel>> GetListByTeamAsync(Guid teamId);
 
-    Task<List<StaffModel>> GetListByRoleAsync(Guid roleId);
+    Task<List<UserModel>> GetListByRoleAsync(Guid roleId);
 
     Task<List<StaffModel>> GetListByDepartmentAsync(Guid departmentId);
 
@@ -27,7 +27,7 @@ public interface IUserService
 
     Task<UserModel> UpsertAsync(UpsertUserModel user);
 
-    Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false);
+    Task<UserModel?> ValidateAccountAsync(ValidateAccountModel validateAccountModel);
 
     Task<UserModel?> GetByAccountAsync(string account);
 
@@ -59,7 +59,7 @@ public interface IUserService
 
     Task UpdateBasicInfoAsync(UpdateUserBasicInfoModel user);
 
-    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel user);
+    Task UpdateStaffBasicInfoAsync(UpdateStaffBasicInfoModel staff);
 
     Task<List<UserModel>> GetListByIdsAsync(params Guid[] userIds);
 
@@ -100,5 +100,11 @@ public interface IUserService
     Task<bool> ResetPasswordByPhoneAsync(ResetPasswordByPhoneModel resetPasswordByPhoneModel);
 
     Task RemoveAsync(Guid id);
+
+    Task<List<UserSelectModel>> SearchAsync(string search);
+
+    Task BindRolesAsync(BindUserRolesModel model);
+
+    Task UnbindRolesAsync(UnbindUserRolesModel model);
 }
 

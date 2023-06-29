@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
         {
             callerBuilder
                 .UseHttpClient(builder => builder.BaseAddress = authServiceBaseAddress)
+                .AddMiddleware<EnvironmentMiddleware>()
                 .UseAuthentication();
         }, redisOptions);
     }
@@ -37,7 +38,6 @@ public static class ServiceCollectionExtensions
         if (services.All(service => service.ServiceType != typeof(IMultiEnvironmentUserContext)))
             throw new Exception("Please add IMultiEnvironmentUserContext first.");
 
-        services.TryAddScoped<IEnvironmentProvider, EnvironmentProvider>();
         services.AddCaller(DEFAULT_CLIENT_NAME, callerBuilder);
 
         services.AddAuthClientMultilevelCache(redisOptions);

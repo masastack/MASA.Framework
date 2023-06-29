@@ -3,13 +3,15 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class SendMsgCodeModel
+public class SendMsgCodeModel : IEnvironmentModel
 {
     public Guid UserId { get; set; }
 
     public string PhoneNumber { get; set; } = "";
 
     public SendMsgCodeTypes SendMsgCodeType { get; set; } = SendMsgCodeTypes.VerifiyPhoneNumber;
+
+    public string Environment { get; set; }
 
     public SendMsgCodeModel()
     {

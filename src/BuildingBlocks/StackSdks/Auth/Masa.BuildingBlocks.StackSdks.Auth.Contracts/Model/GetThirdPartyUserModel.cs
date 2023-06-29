@@ -3,9 +3,11 @@
 
 namespace Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 
-public class GetThirdPartyUserModel
+public class GetThirdPartyUserModel : IEnvironmentModel
 {
     public string ThridPartyIdentity { get; set; }
 
     public ThirdPartyIdpTypes ThirdPartyIdpType { get; set; }
+
+    public string Environment { get; set; }
 }

@@ -8,9 +8,9 @@ public class FeaturesTest : TestBase
 {
     private readonly IEventBus _eventBus;
 
-    public FeaturesTest() : base()
+    public FeaturesTest()
     {
-        _eventBus = _serviceProvider.GetRequiredService<IEventBus>();
+        _eventBus = ServiceProvider.GetRequiredService<IEventBus>();
     }
 
     [TestMethod]
@@ -64,7 +64,7 @@ public class FeaturesTest : TestBase
     public async Task TestNullEvent()
     {
         AddShoppingCartEvent? @event = null;
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await _eventBus.PublishAsync(@event!));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await _eventBus.PublishAsync(@event!));
     }
 
     [DataTestMethod]
@@ -100,24 +100,6 @@ public class FeaturesTest : TestBase
     }
 
     [TestMethod]
-    public Task TestOnlyCancelHandler()
-    {
-        Assert.ThrowsException<NotSupportedException>(() =>
-        {
-            try
-            {
-                ResetMemoryEventBus(typeof(BindPhoneNumberEvent).Assembly);
-            }
-            catch (NotSupportedException)
-            {
-                ResetMemoryEventBus(typeof(FeaturesTest).Assembly);
-                throw;
-            }
-        });
-        return Task.CompletedTask;
-    }
-
-    [TestMethod]
     public async Task TestHandlerIsIgnore()
     {
         var @event = new OrderPaymentSucceededEvent()
@@ -131,44 +113,44 @@ public class FeaturesTest : TestBase
     [TestMethod]
     public async Task TestPublishIntegrationEvent()
     {
-        var @event = new OrderPaymentFailedIntegrationEvent()
+        var integrationEvent = new OrderPaymentFailedIntegrationEvent()
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
         {
-            await _eventBus.PublishAsync(@event);
+            await _eventBus.PublishAsync(integrationEvent);
         });
     }
 
     [TestMethod]
     public async Task TestPublishIntegrationEventAndUseUoW()
     {
-        base.ResetMemoryEventBus(services =>
+        ResetMemoryEventBus(services =>
         {
             var unitOfWork = new Mock<IUnitOfWork>();
-            services.AddScoped(serviceProvider => unitOfWork.Object);
+            services.AddScoped(_ => unitOfWork.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new OrderPaymentFailedIntegrationEvent()
         {
             OrderId = "123456789012",
         };
-        await Assert.ThrowsExceptionAsync<UserFriendlyException>(async () =>
+        await Assert.ThrowsExceptionAsync<NotSupportedException>(async () =>
         {
-            await _services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
+            await Services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
         });
     }
 
     [TestMethod]
     public async Task TestTransferEventAndOpenTransaction()
     {
-        base.ResetMemoryEventBus(services =>
+        ResetMemoryEventBus(services =>
         {
             var uoW = new Mock<IUnitOfWork>();
             uoW.Setup(x => x.TransactionHasBegun).Returns(true);
             uoW.Setup(e => e.CommitAsync(CancellationToken.None)).Verifiable();
-            services.AddScoped(serviceProvider => uoW.Object);
+            services.AddScoped(_ => uoW.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new DeductionMoneyEvent()
@@ -177,36 +159,31 @@ public class FeaturesTest : TestBase
             PayeeAccount = "Jim",
             Money = 100
         };
-        await _services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
+        await Services.BuildServiceProvider().GetRequiredService<IEventBus>().PublishAsync(@event);
     }
 
     [TestMethod]
     public async Task TestCommitAsync()
     {
-        base.ResetMemoryEventBus(services =>
+        ResetMemoryEventBus(services =>
         {
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
-        var @event = new DeductionMoneyEvent()
-        {
-            Account = "tom",
-            PayeeAccount = "Jim",
-            Money = 100
-        };
-        var serviceProvider = _services.BuildServiceProvider();
+
+        var serviceProvider = Services.BuildServiceProvider();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
 
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await eventBus.CommitAsync(default));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await eventBus.CommitAsync());
     }
 
     [TestMethod]
     public async Task TestUseUoWCommitAsync()
     {
         var uoW = new Mock<IUnitOfWork>();
-        base.ResetMemoryEventBus(services =>
+        ResetMemoryEventBus(services =>
         {
             uoW.Setup(e => e.CommitAsync(CancellationToken.None)).Verifiable();
-            services.AddScoped(serviceProvider => uoW.Object);
+            services.AddScoped(_ => uoW.Object);
             return services;
         }, true, typeof(AssemblyResolutionTests).Assembly);
         var @event = new DeductionMoneyEvent()
@@ -215,7 +192,7 @@ public class FeaturesTest : TestBase
             PayeeAccount = "Jim",
             Money = 100
         };
-        var serviceProvider = _services.BuildServiceProvider();
+        var serviceProvider = Services.BuildServiceProvider();
         var eventBus = serviceProvider.GetRequiredService<IEventBus>();
         await eventBus.PublishAsync(@event);
 
@@ -223,19 +200,30 @@ public class FeaturesTest : TestBase
     }
 
     [DataTestMethod]
-    [DataRow(1, 2, -1)]
-    [DataRow(5, 4, 24)]
-    public async Task TestEventBusCancelOrder(int parameterA, int parameterB, int result)
+    [DataRow(1, 2, -1, true)]
+    [DataRow(5, 4, 24, true)]
+    public async Task TestEventBusCancelOrder(int parameterA, int parameterB, int result, bool isException)
     {
         IServiceCollection services = new ServiceCollection();
-        services.AddTestEventBus(new[] { typeof(CalculateEvent).Assembly }, ServiceLifetime.Scoped);
+        services.AddEventBus(new[]
+        {
+            typeof(CalculateEvent).Assembly
+        }, ServiceLifetime.Scoped);
         var @event = new CalculateEvent()
         {
             ParameterA = parameterA,
             ParameterB = parameterB
         };
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
-        await eventBus.PublishAsync(@event);
+
+        if (isException)
+        {
+            await Assert.ThrowsExceptionAsync<Exception>(async () => await eventBus.PublishAsync(@event));
+        }
+        else
+        {
+            await eventBus.PublishAsync(@event);
+        }
         Assert.IsTrue(@event.Result == result);
     }
 
@@ -338,7 +326,6 @@ public class FeaturesTest : TestBase
             eventAttribute.FailureLevels == FailureLevels.Throw &&
             eventAttribute.IsCancel == isCancel
         );
-
     }
 
     [TestMethod]
@@ -354,9 +341,57 @@ public class FeaturesTest : TestBase
     public async Task TestEventBusExceptionAsync()
     {
         var services = new ServiceCollection();
-        services.AddTestEventBus(new Assembly[] { typeof(FeaturesTest).Assembly }, ServiceLifetime.Scoped);
+        services.AddEventBus(new[]
+        {
+            typeof(FeaturesTest).Assembly
+        }, ServiceLifetime.Scoped);
         var registerUserEvent = new RegisterUserEvent("Jim");
         var eventBus = services.BuildServiceProvider().GetRequiredService<IEventBus>();
         await Assert.ThrowsExceptionAsync<NotSupportedException>(async () => await eventBus.PublishAsync(registerUserEvent));
+    }
+
+    [TestMethod]
+    public async Task TestEventBusSaveChangeFiledByTransactionMiddlewareAsync()
+    {
+        var services = new ServiceCollection();
+        services
+            .AddMasaDbContext<OrderDbContext>(options => options.UseSqlite($"Data Source={Guid.NewGuid()}.db;"))
+            .AddEventBus(new[]
+            {
+                typeof(FeaturesTest).Assembly
+            }, builder =>
+            {
+                builder.UseUoW<OrderDbContext>();
+            });
+        var serviceProvider = services.BuildServiceProvider();
+        var dbContext = serviceProvider.GetRequiredService<OrderDbContext>();
+        await dbContext.Database.EnsureCreatedAsync();
+        await dbContext.Database.MigrateAsync();
+        var orderStatus = new OrderStatus()
+        {
+            Id = 1,
+            Name = "AwaitPay"
+        };
+        var order = new Order()
+        {
+            Id = 1,
+            Name = "Water Purifier",
+            OrderStatusId = 1
+        };
+        await dbContext.Set<OrderStatus>().AddAsync(orderStatus);
+        await dbContext.Set<Order>().AddAsync(order);
+        await dbContext.SaveChangesAsync();
+
+        var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+
+        var @event = new CreateOrderEvent()
+        {
+            Id = 2,
+            Name = "Water Purifier",
+            IsExecuteCancel = false
+        };
+        await Assert.ThrowsExceptionAsync<DbUpdateException>(async () => await eventBus.PublishAsync(@event));
+
+        Assert.AreEqual(true, @event.IsExecuteCancel);
     }
 }

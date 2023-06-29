@@ -63,7 +63,7 @@ public class ExceptionHandlerMiddleware
 
             if (masaExceptionContext.Exception is MasaException masaException)
             {
-                await httpContext.Response.WriteTextAsync(httpStatusCode, masaException.GetLocalizedMessage());
+                await httpContext.Response.WriteTextAsync(httpStatusCode, masaException.Message);
             }
             else if (_options.CatchAllException)
             {

@@ -46,7 +46,7 @@ public class EventMiddlewareTest
         {
             return new MasaStackConfig(dccClient.Object, configs);
         });
-        builder.Services.AddTestEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
+        builder.Services.AddEventBus(new Assembly[1] { Assembly.GetExecutingAssembly() }, ServiceLifetime.Scoped);
         builder.Services.AddStackMiddleware();
 
         _serviceProvider = builder.Services.BuildServiceProvider();

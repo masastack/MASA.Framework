@@ -49,14 +49,15 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<DaprService>();
 
         services.TryAddSingleton<IAppPortProvider, DefaultAppPortProvider>();
+        services.TryAddSingleton<IAvailabilityPortProvider, DefaultAvailabilityPortProvider>();
         action.Invoke();
 
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetRequiredService<IOptionsMonitor<DaprOptions>>();
-        var daprEnvironmentProvider = serviceProvider.GetRequiredService<IDaprEnvironmentProvider>();
-        daprEnvironmentProvider.CompleteDaprEnvironment(options.CurrentValue.DaprHttpPort, options.CurrentValue.DaprGrpcPort);
 
         if (isDelay) return services.AddHostedService<DaprBackgroundService>();
+
+        PortUtils.CheckCompletionPort(options.CurrentValue, serviceProvider);
 
         ArgumentNullException.ThrowIfNull(options.CurrentValue.AppPort);
         var daprProcess = serviceProvider.GetRequiredService<IDaprProcess>();
@@ -65,8 +66,9 @@ public static class ServiceCollectionExtensions
     }
 
 
+
+
     private sealed class DaprService
     {
-
     }
 }

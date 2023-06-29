@@ -19,4 +19,11 @@ public class TestBase
                 CacheKeyType = CacheKeyType.None
             }
         };
+
+    public static void CheckLifeCycle(IDatabase database, string key, double minVal, double maxVal)
+    {
+        var expireTimeSpan = database.KeyTimeToLive(key);
+        Assert.IsNotNull(expireTimeSpan);
+        Assert.IsTrue(expireTimeSpan.Value.TotalSeconds <= maxVal && expireTimeSpan.Value.TotalSeconds >= minVal);
+    }
 }

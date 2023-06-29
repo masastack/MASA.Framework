@@ -40,10 +40,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = departmentId }) ?? new();
     }
 
-    public async Task<List<StaffModel>> GetListByRoleAsync(Guid roleId)
+    public async Task<List<UserModel>> GetListByRoleAsync(Guid roleId)
     {
-        var requestUri = $"api/staff/getListByRole";
-        return await _caller.GetAsync<object, List<StaffModel>>(requestUri, new { id = roleId }) ?? new();
+        var requestUri = $"api/user/getListByRole";
+        return await _caller.GetAsync<object, List<UserModel>>(requestUri, new { id = roleId }) ?? new();
     }
 
     public async Task<List<StaffModel>> GetListByTeamAsync(Guid teamId)
@@ -70,10 +70,10 @@ public class UserService : IUserService
         return await _caller.GetAsync<object, long>(requestUri, new { id = teamId });
     }
 
-    public async Task<UserModel?> ValidateCredentialsByAccountAsync(string account, string password, bool isLdap = false)
+    public async Task<UserModel?> ValidateAccountAsync(ValidateAccountModel validateAccountModel)
     {
         var requestUri = $"api/user/validateByAccount";
-        return await _caller.PostAsync<object, UserModel>(requestUri, new { account, password, isLdap });
+        return await _caller.PostAsync<object, UserModel>(requestUri, validateAccountModel);
     }
 
     public async Task<UserModel?> GetByAccountAsync(string account)
@@ -355,6 +355,24 @@ public class UserService : IUserService
     {
         var requestUri = "api/user";
         await _caller.DeleteAsync(requestUri, new RemoveUserModel(id));
+    }
+
+    public async Task<List<UserSelectModel>> SearchAsync(string search)
+    {
+        var requestUri = $"api/user/select?search={search}";
+        return await _caller.GetAsync<List<UserSelectModel>>(requestUri) ?? new();
+    }
+
+    public Task BindRolesAsync(BindUserRolesModel model)
+    {
+        var requestUri = $"api/user/bind_roles";
+        return _caller.PostAsync(requestUri, model);
+    }
+
+    public Task UnbindRolesAsync(UnbindUserRolesModel model)
+    {
+        var requestUri = $"api/user/unbind_roles";
+        return _caller.PostAsync(requestUri, model);
     }
 }
 

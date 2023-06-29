@@ -15,7 +15,7 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestAddSchedulerHttpJobAsync()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.Http,
@@ -51,10 +51,10 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
-        caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
     }
@@ -62,7 +62,7 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestAddSchedulerJobApp()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.JobApp,
@@ -90,10 +90,10 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
-        caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
     }
@@ -101,7 +101,7 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestAddSchedulerDaprServiceInvocationJob()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.DaprServiceInvocation,
@@ -128,10 +128,10 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
         var result = await schedulerClient.SchedulerJobService.AddAsync(requestData);
-        caller.Verify(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
+        caller.Verify(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default), Times.Once);
 
         Assert.AreNotEqual<Guid>(Guid.Empty, result);
     }
@@ -139,42 +139,26 @@ public class SchedulerJobServiceTest
     [TestMethod]
     public async Task TestAddSchedulerJobArgumentNullException()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.Http,
             CronExpression = "",
             JobIdentity = "masa-mc-sync-job",
-            HttpConfig = new SchedulerJobHttpConfig()
-            {
-                RequestUrl = "www.baidu.com",
-                HttpVerifyType = HttpVerifyTypes.CustomStatusCode,
-                HttpBody = "",
-                HttpHeaders = new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36")
-                },
-                HttpMethod = HttpMethods.GET,
-                VerifyContent = "200",
-                HttpParameters = new List<KeyValuePair<string, string>>()
-                {
-                    new KeyValuePair<string, string>("ie", "utf-8"),
-                }
-            },
             OperatorId = Guid.NewGuid()
         };
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
     [TestMethod]
     public async Task TestAddSchedulerHttpJobArgumentNullException()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.Http,
@@ -184,15 +168,15 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
     [TestMethod]
     public async Task TestAddSchedulerJobAppArgumentNullException()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.JobApp,
@@ -202,15 +186,15 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
     [TestMethod]
     public async Task TestAddSchedulerDaprInvocationJobArgumentNullException()
     {
-        var requestData = new AddSchedulerJobRequest()
+        var requestData = new UpsertSchedulerJobRequest()
         {
             Name = "TestJob",
             JobType = JobTypes.DaprServiceInvocation,
@@ -220,9 +204,9 @@ public class SchedulerJobServiceTest
 
         var requestUri = $"{API}/addSchedulerJobBySdk";
         var caller = new Mock<ICaller>();
-        caller.Setup(provider => provider.PostAsync<AddSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
+        caller.Setup(provider => provider.PostAsync<UpsertSchedulerJobRequest, Guid>(requestUri, requestData, default)).ReturnsAsync(Guid.NewGuid()).Verifiable();
         var schedulerClient = new SchedulerClient(caller.Object);
-        await Assert.ThrowsExceptionAsync<ArgumentNullException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
+        await Assert.ThrowsExceptionAsync<MasaArgumentException>(async () => await schedulerClient.SchedulerJobService.AddAsync(requestData));
     }
 
     [TestMethod]

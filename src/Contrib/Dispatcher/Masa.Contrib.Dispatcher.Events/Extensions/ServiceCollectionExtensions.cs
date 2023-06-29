@@ -29,6 +29,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<EventBusProvider>();
 
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(ExceptionEventMiddleware<>),
+            ServiceLifetime.Transient));
         services.TryAddEnumerable(new ServiceDescriptor(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>),
             ServiceLifetime.Transient));
 
@@ -38,49 +40,32 @@ public static class ServiceCollectionExtensions
         MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
 
         var assemblyArray = assemblies.Distinct().ToArray();
-        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
-        services.AddSingleton(typeof(IOptions<DispatcherOptions>),
-            _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-        services.AddSingleton(new SagaDispatcher(services, assemblyArray).Build(lifetime));
-        services.AddSingleton(new Dispatcher(services, assemblyArray).Build(lifetime));
+
+        var dispatchNetworkBuilder = new DispatchRelationNetworkBuilder();
+        var loggerFactory = services.BuildServiceProvider().GetService<ILoggerFactory>();
+        dispatchNetworkBuilder.Add(new DefaultDispatchNetworkProvider(assemblyArray, loggerFactory));
+        dispatchNetworkBuilder.Add(new DefaultSagaDispatchNetworkProvider(assemblyArray, loggerFactory));
+        var dispatchNetworkRoot = dispatchNetworkBuilder.Build();
+        services.AddSingleton<IDispatchNetworkRoot>(_ => dispatchNetworkRoot);
+
+        var serviceTypes =
+            DispatchNetworkUtils.GetServiceTypes(dispatchNetworkRoot.DispatchNetworks.SelectMany(item => item.Value).ToList());
+        foreach (var serviceType in serviceTypes)
+        {
+            services.TryAdd(new ServiceDescriptor(serviceType, serviceType, lifetime));
+        }
+
         services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
         services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
-        services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
+        services.TryAddScoped<IExecuteProvider, DefaultExecuteProvider>();
+        services.TryAdd(new ServiceDescriptor(typeof(ILocalEventBus), typeof(LocalEventBus), lifetime));
 
-        services.AddScoped<ILocalEventBus, LocalEventBus>();
-        services.AddScoped<IEventBus>(serviceProvider => new EventBus(
-            serviceProvider.GetRequiredService<ILocalEventBus>(),
-            new Lazy<IIntegrationEventBus?>(serviceProvider.GetService<IIntegrationEventBus>())));
+        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
+        services.TryAdd(new ServiceDescriptor(typeof(ILocalEventBusWrapper), serviceProvider => new LocalEventBusWrapper(serviceProvider, dispatcherOptions), lifetime));
+
+        services.TryAdd(new ServiceDescriptor(typeof(IEventBus), typeof(EventBus), lifetime));
+
         MasaApp.TrySetServiceCollection(services);
-        return services;
-    }
-
-    public static IServiceCollection AddTestEventBus(
-        this IServiceCollection services,
-        IEnumerable<Assembly> assemblies,
-        ServiceLifetime lifetime,
-        Action<EventBusBuilder>? eventBusBuilder = null)
-    {
-        if (services.Any(service => service.ImplementationType == typeof(EventBusProvider)))
-            return services;
-
-        services.AddSingleton<EventBusProvider>();
-
-        eventBusBuilder?.Invoke(new EventBusBuilder(services));
-
-        MasaArgumentException.ThrowIfNullOrEmptyCollection(assemblies);
-
-        var assemblyArray = assemblies.Distinct().ToArray();
-        var dispatcherOptions = new DispatcherOptions(services, assemblyArray);
-        services.AddSingleton(typeof(IOptions<DispatcherOptions>),
-            _ => Microsoft.Extensions.Options.Options.Create(dispatcherOptions));
-        services.AddSingleton(new SagaDispatcher(services, assemblyArray, true).Build(lifetime));
-        services.AddSingleton(new Dispatcher(services, assemblyArray).Build(lifetime));
-        services.TryAddSingleton<IExceptionStrategyProvider, DefaultExceptionStrategyProvider>();
-        services.TryAdd(typeof(IExecutionStrategy), typeof(ExecutionStrategy), ServiceLifetime.Singleton);
-        services.TryAddScoped<IInitializeServiceProvider, InitializeServiceProvider>();
-        services.AddTransient(typeof(IEventMiddleware<>), typeof(TransactionEventMiddleware<>));
-        services.AddScoped(typeof(IEventBus), typeof(LocalEventBus));
 
         return services;
     }
