@@ -26,15 +26,15 @@ public static class ElasticConstant
 
     internal static void InitLog(string indexName, bool isIndependent = false)
     {
-        if (Log != null || string.IsNullOrEmpty(indexName))
+        if (string.IsNullOrEmpty(indexName))
             return;
         Log = new LogTraceSetting(indexName, isIndependent, TIMESTAMP);
     }
 
     internal static void InitTrace(string indexName, bool isIndependent = false)
     {
-        if (Trace != null || string.IsNullOrEmpty(indexName))
-            return;     
+        if (string.IsNullOrEmpty(indexName))
+            return;
         Trace = new LogTraceSetting(indexName, isIndependent, TIMESTAMP);
     }
 }
