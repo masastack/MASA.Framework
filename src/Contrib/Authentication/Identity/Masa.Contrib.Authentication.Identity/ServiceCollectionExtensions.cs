@@ -50,7 +50,7 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddMasaIdentityCore(IServiceCollection services)
     {
         services.AddHttpContextAccessor();
-        services.TryAddScoped<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
+        services.TryAddSingleton<ICurrentPrincipalAccessor, HttpContextCurrentPrincipalAccessor>();
         return services;
     }
 }
