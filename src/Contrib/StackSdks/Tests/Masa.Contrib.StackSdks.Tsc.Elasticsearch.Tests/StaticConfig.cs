@@ -6,6 +6,7 @@ namespace Masa.Contrib.StackSdks.Tsc.Elasticsearch.Tests;
 public static class StaticConfig
 {
     internal const string LOG_INDEX_NAME = "test_logs";
+    internal const string LOG_INDEX_RENAME = "test_logs_new";
     internal const string HOST = "http://localhost:9200";
     internal const string TRACE_INDEX_NAME = "test_traces";
     private static IConfiguration Configuration;

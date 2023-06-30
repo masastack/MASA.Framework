@@ -17,6 +17,10 @@ public class LogServiceTests
         httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_NAME, HttpMethod.Delete));
         httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_NAME, HttpMethod.Put, mapping));
         httpClient.Send(StaticConfig.CreateMessage($"{StaticConfig.LOG_INDEX_NAME}/_doc", HttpMethod.Post, dataJson));
+
+        httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_RENAME, HttpMethod.Delete));
+        httpClient.Send(StaticConfig.CreateMessage(StaticConfig.LOG_INDEX_RENAME, HttpMethod.Put, mapping));
+        httpClient.Send(StaticConfig.CreateMessage($"{StaticConfig.LOG_INDEX_RENAME}/_doc", HttpMethod.Post, dataJson));
         Task.Delay(1000).Wait();
     }
 
@@ -25,6 +29,7 @@ public class LogServiceTests
     {
         ServiceCollection services = new();
         services.AddElasticClientLog(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_NAME);
+        services.AddElasticClientLog(new string[] { StaticConfig.HOST }, StaticConfig.LOG_INDEX_RENAME);
         var serviceProvider = services.BuildServiceProvider();
         _logService = serviceProvider.GetRequiredService<ILogService>();
     }
